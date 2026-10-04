@@ -1865,6 +1865,575 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
+
+function internalAssetPlatformCompatible(platform='',target=''){
+  const p=clean(platform).toUpperCase(),t=clean(target).toUpperCase();
+  if(!p||p==='SHARED'||p.startsWith('SHARED_'))return true;
+  if(t==='WEB'&&p.includes('WEB'))return true;
+  return p===t||p.includes(t);
+}
+function internalAssetCodePath(value=''){
+  const file=posix(value);
+  return Boolean(file&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|json)$/i.test(file))?file:null;
+}
+function collectInternalAssetSourceFiles(value,out=[],depth=0){
+  if(depth>8||value==null)return out;
+  if(typeof value==='string'){
+    const file=internalAssetCodePath(value);
+    if(file)out.push(file);
+    return out;
+  }
+  if(Array.isArray(value)){
+    for(const item of value)collectInternalAssetSourceFiles(item,out,depth+1);
+    return out;
+  }
+  if(typeof value==='object'){
+    for(const item of Object.values(value))collectInternalAssetSourceFiles(item,out,depth+1);
+  }
+  return out;
+}
+function walkInternalAssetCatalogFiles(cwd=process.cwd()){
+  const root=path.join(cwd,'assets');
+  if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())return[];
+  const out=[];
+  const walk=(dir,depth=0)=>{
+    if(depth>5)return;
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+      if(entry.name.startsWith('.')||['node_modules','generated','previews'].includes(entry.name))continue;
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())walk(full,depth+1);
+      else if(entry.isFile()&&entry.name==='catalog.json')out.push(full);
+    }
+  };
+  walk(root,0);
+  return out.sort();
+}
+function catalogIdentity(row={}){
+  return clean(row?.atomId||row?.assetId||row?.id||row?.componentId||row?.presetId);
+}
+function collectInternalCatalogRows(value,meta,out=[],depth=0){
+  if(depth>7||value==null)return out;
+  if(Array.isArray(value)){
+    for(const item of value)collectInternalCatalogRows(item,meta,out,depth+1);
+    return out;
+  }
+  if(typeof value!=='object')return out;
+  const id=catalogIdentity(value);
+  if(id){
+    const sourceFiles=unique([
+      ...(Array.isArray(value?.sourceFiles)?value.sourceFiles:[]),
+      value?.source,value?.implementation,value?.module,value?.script,value?.path
+    ].flatMap(item=>collectInternalAssetSourceFiles(item,[]))).map(posix).filter(Boolean);
+    out.push(Object.freeze({
+      assetId:id,
+      packId:clean(value?.packId||meta.packId)||null,
+      family:clean(value?.family||value?.category||meta.family).toUpperCase()||null,
+      subfamily:clean(value?.subfamily)||null,
+      role:clean(value?.role||value?.systemRole||value?.itemRole||value?.toolRole||value?.gearRole||value?.environmentRole||value?.buildingRole||value?.worldRole)||null,
+      factory:clean(value?.factory||value?.creator||value?.builder)||null,
+      sourceFiles:Object.freeze(sourceFiles),
+      platform:clean(value?.platform||meta.platform).toUpperCase()||null,
+      license:clean(value?.license||meta.license)||null,
+      productionVerified:value?.productionVerified===true||value?.verifiedCompanyReusable===true,
+      companyCommonBase:value?.companyCommonBase===true||meta.companyCommonBase===true,
+      tags:Object.freeze(unique([
+        ...(Array.isArray(value?.tags)?value.tags:[]),
+        value?.surface,value?.state,value?.priority,value?.bodyPlan,value?.weaponFamily,value?.styleFamily
+      ].map(clean).filter(Boolean))),
+      catalogPath:meta.catalogPath||null
+    }));
+  }
+  for(const item of Object.values(value))collectInternalCatalogRows(item,meta,out,depth+1);
+  return out;
+}
+export function discoverInternalAssetLibraryIndex({cwd=process.cwd(),target=''}={}){
+  const registryPath=path.join(cwd,'company-asset-library.json');
+  const registry=readJson(registryPath,{});
+  const catalogFiles=walkInternalAssetCatalogFiles(cwd);
+  const entries=[];
+  const contentHashes=[];
+  if(fs.existsSync(registryPath)){
+    const raw=fs.readFileSync(registryPath,'utf8');
+    contentHashes.push('company-asset-library.json:'+crypto.createHash('sha256').update(raw).digest('hex'));
+    for(const asset of Array.isArray(registry?.assets)?registry.assets:[]){
+      const id=catalogIdentity(asset);
+      if(!id)continue;
+      const sourceFiles=unique([
+        ...(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[]),
+        asset?.path,asset?.source
+      ].flatMap(item=>collectInternalAssetSourceFiles(item,[]))).map(posix).filter(Boolean);
+      entries.push(Object.freeze({
+        assetId:id,
+        packId:clean(asset?.packId)||null,
+        family:clean(asset?.family||asset?.category).toUpperCase()||null,
+        subfamily:clean(asset?.subfamily)||null,
+        role:clean(asset?.role||asset?.systemRole)||null,
+        factory:clean(asset?.factory)||null,
+        sourceFiles:Object.freeze(sourceFiles),
+        platform:clean(asset?.platform).toUpperCase()||null,
+        license:clean(asset?.license||asset?.policy)||null,
+        productionVerified:asset?.productionVerified===true||asset?.verifiedCompanyReusable===true,
+        companyCommonBase:asset?.companyCommonBase===true,
+        tags:Object.freeze(unique(Array.isArray(asset?.tags)?asset.tags:[])),
+        catalogPath:'company-asset-library.json#assets'
+      }));
+    }
+  }
+  const packIds=new Set(),families=new Set();
+  for(const file of catalogFiles){
+    const raw=fs.readFileSync(file,'utf8');
+    const relative=posix(path.relative(cwd,file));
+    contentHashes.push(relative+':'+crypto.createHash('sha256').update(raw).digest('hex'));
+    let catalog={};
+    try{catalog=JSON.parse(raw);}catch{continue;}
+    const meta={
+      packId:clean(catalog?.packId)||path.basename(path.dirname(file)),
+      family:clean(catalog?.family||catalog?.category).toUpperCase()||null,
+      platform:clean(catalog?.platform).toUpperCase()||null,
+      license:clean(catalog?.license)||null,
+      companyCommonBase:catalog?.companyCommonBase===true||/COMPANY_.*COMMON/i.test(clean(catalog?.reuseScope)),
+      catalogPath:relative
+    };
+    if(meta.packId)packIds.add(meta.packId);
+    if(meta.family)families.add(meta.family);
+    collectInternalCatalogRows(catalog,meta,entries,0);
+  }
+  const sectionNames=Object.keys(registry||{}).filter(key=>{
+    const value=registry?.[key];
+    return value&&typeof value==='object'&&!Array.isArray(value)&&!['rules','research'].includes(key);
+  }).sort();
+  for(const sectionName of sectionNames){
+    const section=registry[sectionName];
+    const sourceFiles=unique(collectInternalAssetSourceFiles(section,[])).map(posix).filter(Boolean);
+    entries.push(Object.freeze({
+      assetId:'LIBRARY_SECTION:'+sectionName,
+      packId:null,
+      family:'LIBRARY_SYSTEM',
+      subfamily:null,
+      role:sectionName,
+      factory:null,
+      sourceFiles:Object.freeze(sourceFiles),
+      platform:null,
+      license:null,
+      productionVerified:section?.productionVerified===true,
+      companyCommonBase:true,
+      tags:Object.freeze(unique(Object.keys(section||{}).slice(0,40))),
+      catalogPath:'company-asset-library.json#'+sectionName
+    }));
+  }
+  const deduped=[...new Map(entries.map(row=>[
+    [row.assetId,row.packId||'',row.catalogPath||''].join('|'),row
+  ])).values()].sort((a,b)=>a.assetId.localeCompare(b.assetId)||clean(a.packId).localeCompare(clean(b.packId)));
+  const compatible=deduped.filter(row=>internalAssetPlatformCompatible(row.platform,target));
+  const familyCounts={};
+  for(const row of compatible){
+    const family=row.family||'UNCLASSIFIED';
+    familyCounts[family]=(familyCounts[family]||0)+1;
+    if(row.family)families.add(row.family);
+  }
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify({
+    version:Number(registry?.version||0),
+    target:clean(target).toUpperCase(),
+    contentHashes:[...contentHashes].sort()
+  })).digest('hex');
+  return Object.freeze({
+    version:1,
+    registryVersion:Number(registry?.version||0),
+    target:clean(target).toLowerCase()||null,
+    fingerprint,
+    catalogCount:catalogFiles.length,
+    entryCount:compatible.length,
+    totalEntryCount:deduped.length,
+    packIds:Object.freeze([...packIds].sort()),
+    families:Object.freeze([...families].sort()),
+    familyCounts:Object.freeze({...familyCounts}),
+    sectionNames:Object.freeze(sectionNames),
+    entries:Object.freeze(compatible),
+    allLibraryComponentsCandidateEligible:true,
+    futureCatalogAutoDiscovery:true,
+    futureAtomAutoDiscovery:true,
+    hardcodedPackAllowlistRequired:false
+  });
+}
+function inferInternalAssetFamiliesFromOrder(order={}){
+  const textValue=[
+    order?.goal,order?.selectedTask?.goal,order?.selectedTask?.buildUpGoal,
+    order?.selectedTask?.buildUpDirective?.thisLoopPrimaryGoal,
+    ...(order?.selectedTask?.responsibleSystems||[]),
+    ...(order?.selectedTask?.evidence||[])
+  ].map(clean).join(' ').toLowerCase();
+  const rules=[
+    [['attack','combat','hit','combo','block','parry','dodge','전투','공격','피격','패링','회피'],['WEAPON','MOTION','VFX','AUDIO']],
+    [['skill','spell','cast','ability','스킬','마법','시전'],['SKILL','MOTION','VFX','AUDIO','UI']],
+    [['monster','enemy','boss','npc','creature','몬스터','적','보스'],['CHARACTER','CREATURE','MOTION','VFX','AUDIO']],
+    [['inventory','equipment','equip','weapon','item','인벤토리','장비','무기','아이템'],['UI','WEAPON','CHARACTER','PROP']],
+    [['quest','objective','reward','level','progress','퀘스트','목표','보상','레벨','진행'],['UI','VFX','AUDIO','ENVIRONMENT']],
+    [['shop','trade','vendor','상점','거래','상인'],['UI','PROP','CHARACTER','BUILDING','AUDIO']],
+    [['craft','gather','mine','chop','harvest','build','제작','채집','채광','벌목','건축'],['PROP','BUILDING','MOTION','WEAPON','VFX','AUDIO','UI']],
+    [['weather','rain','snow','wind','fog','storm','time','day','night','날씨','비','눈','바람','안개','폭풍','낮','밤'],['ENVIRONMENT','MATERIAL','PROP','AUDIO','VFX','MOTION']],
+    [['world','map','biome','terrain','village','dungeon','landmark','월드','맵','바이옴','지형','마을','던전','랜드마크'],['ENVIRONMENT','BUILDING','PROP','MATERIAL','AUDIO']],
+    [['intro','loading','event','cutscene','menu','hud','screen','ui','인트로','로딩','이벤트','컷신','메뉴','화면'],['UI','VFX','AUDIO','ENVIRONMENT','CHARACTER','MOTION']],
+    [['camera','cinematic','카메라','연출'],['MOTION','VFX','AUDIO','UI']],
+    [['mobile','performance','lod','optimization','모바일','성능','최적화'],['ENVIRONMENT','PROP','VFX','MOTION','UI','MATERIAL']]
+  ];
+  const out=[];
+  for(const [terms,families] of rules)if(terms.some(term=>textValue.includes(term)))out.push(...families);
+  return unique(out);
+}
+function internalAssetMatchText(row={}){
+  return [
+    row.assetId,row.packId,row.family,row.subfamily,row.role,row.factory,row.catalogPath,
+    ...(row.tags||[]),...(row.sourceFiles||[])
+  ].map(clean).join(' ').toLowerCase();
+}
+function matchInternalAssetCatalog(index={},order={},selectedIds=[]){
+  const wantedFamilies=new Set(inferInternalAssetFamiliesFromOrder(order));
+  const selected=new Set((selectedIds||[]).map(clean).filter(Boolean));
+  const rawGoal=[
+    order?.goal,order?.selectedTask?.goal,order?.selectedTask?.buildUpGoal,
+    order?.selectedTask?.buildUpDirective?.thisLoopPrimaryGoal
+  ].map(clean).join(' ').toLowerCase();
+  const tokens=unique(rawGoal.split(/[^a-z0-9가-힣_]+/i).filter(token=>token.length>=2));
+  return (index?.entries||[]).map(row=>{
+    const hay=internalAssetMatchText(row);
+    const exact=selected.has(row.assetId);
+    const family=wantedFamilies.has(clean(row.family).toUpperCase());
+    const tokenHits=tokens.reduce((n,token)=>n+(hay.includes(token)?1:0),0);
+    const score=(exact?10000:0)+(family?1000:0)+(row.companyCommonBase?100:0)+(row.productionVerified?20:0)+tokenHits*10+(row.factory?4:0)+(row.sourceFiles?.length?3:0);
+    return{...row,exactSelected:exact,currentFamilyRelevant:family,tokenHits,matchScore:score};
+  }).filter(row=>row.exactSelected||row.currentFamilyRelevant||row.tokenHits>0)
+    .sort((a,b)=>b.matchScore-a.matchScore||a.assetId.localeCompare(b.assetId));
+}
+
+export function buildInternalAssetSourceUsageContract(order={},{cwd=process.cwd()}={}){
+  const target=clean(order?.target).toLowerCase();
+  const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
+  const assetProduction=order?.assetProduction||{};
+  const loadout=assetProduction?.baseMaterialLoadout||{};
+  const flowLoadout=assetProduction?.flowAssetLoadout||{};
+  const familyEntries=Object.entries(loadout?.families||{})
+    .map(([family,atoms])=>[clean(family).toUpperCase(),unique((atoms||[]).map(clean).filter(Boolean)).sort()])
+    .filter(([family,atoms])=>family&&atoms.length);
+  const exactFamilies=Object.freeze(Object.fromEntries(familyEntries));
+  const libraryIndex=discoverInternalAssetLibraryIndex({cwd,target});
+  const flowSelections=(flowLoadout?.selections||[]).map(row=>Object.freeze({
+    requirementId:clean(row?.requirementId||row?.id)||null,
+    assetId:clean(row?.assetId||row?.selectedAssetId||row?.id)||null,
+    family:clean(row?.family||row?.category).toUpperCase()||null,
+    role:clean(row?.role||row?.systemRole||row?.requirementRole)||null,
+    applicationMode:clean(row?.applicationMode||row?.mode)||null,
+    sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).slice(0,8))
+  })).filter(row=>row.assetId||row.requirementId);
+  const sourceCandidates=[];
+  for(const decision of assetProduction?.decisions||[]){
+    for(const row of [...(decision?.applyFirst?.candidates||[]),...(decision?.reuseCandidates||[])]){
+      const id=clean(row?.id||row?.assetId);
+      if(!id)continue;
+      sourceCandidates.push(Object.freeze({
+        assetId:id,
+        type:clean(decision?.type)||null,
+        family:clean(row?.family||row?.category).toUpperCase()||null,
+        role:clean(row?.role||row?.systemRole)||null,
+        sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).slice(0,8)),
+        path:posix(row?.path)||null,
+        sourceTier:clean(row?.sourceTier)||null
+      }));
+    }
+  }
+  const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
+    .sort((a,b)=>a.assetId.localeCompare(b.assetId));
+  const selectedIds=unique([
+    ...Object.values(exactFamilies).flat(),
+    ...flowSelections.map(row=>row.assetId),
+    ...dedupedSources.map(row=>row.assetId)
+  ].map(clean).filter(Boolean));
+  const catalogMatches=matchInternalAssetCatalog(libraryIndex,order,selectedIds);
+  const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const payload={
+    version:2,target,gameId,libraryVersion,
+    exactFamilies,
+    flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
+    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier})),
+    libraryIndexFingerprint:libraryIndex.fingerprint,
+    catalogMatches:catalogMatches.map(row=>({assetId:row.assetId,packId:row.packId,family:row.family,role:row.role,factory:row.factory,sourceFiles:[...(row.sourceFiles||[])],catalogPath:row.catalogPath,matchScore:row.matchScore}))
+  };
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+  const usageMatrix=Object.freeze([
+    Object.freeze({signal:'ATTACK_OR_COMBO',families:Object.freeze(['WEAPON','MOTION','VFX','AUDIO']),optional:Object.freeze(['UI']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'gameplay owns hit damage cooldown combo legality; assets express anticipation contact recoil recovery'}),
+    Object.freeze({signal:'CHARGED_OR_HEAVY_ATTACK',families:Object.freeze(['WEAPON','MOTION','VFX','AUDIO']),optional:Object.freeze(['MATERIAL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume existing charge state and release moment; presentation may amplify weight without moving authoritative timing'}),
+    Object.freeze({signal:'HIT_BLOCK_PARRY_CRITICAL',families:Object.freeze(['MOTION','VFX','AUDIO']),optional:Object.freeze(['UI']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume direction strength and result emitted by gameplay; never calculate the result in the asset layer'}),
+    Object.freeze({signal:'DODGE_EVADE_COUNTER',families:Object.freeze(['MOTION','VFX','AUDIO']),optional:Object.freeze(['UI']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'gameplay owns invulnerability/counter windows; assets express readable evade and counter confirmation'}),
+    Object.freeze({signal:'PROJECTILE_FIRE_FLIGHT_IMPACT',families:Object.freeze(['WEAPON','SKILL','VFX','AUDIO','MOTION']),optional:Object.freeze(['MATERIAL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'projectile authority remains gameplay owned; assets bind launch trail flight and impact presentation to existing projectile events'}),
+    Object.freeze({signal:'SKILL_CAST_RELEASE_IMPACT',families:Object.freeze(['SKILL','MOTION','VFX','AUDIO']),optional:Object.freeze(['UI']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'bind prepare charge release impact residue and recovery presentation to existing skill events and approved timing markers'}),
+    Object.freeze({signal:'STATUS_EFFECT_APPLIED_REFRESHED_CLEARED',families:Object.freeze(['VFX','UI','AUDIO','MATERIAL']),optional:Object.freeze(['MOTION']),channels:Object.freeze([]),rule:'status rules duration stacks and gameplay modifiers remain authoritative; assets visualize current status only'}),
+    Object.freeze({signal:'DEATH_RESPAWN_REVIVE',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER','CREATURE']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'death respawn and revive rules remain gameplay owned; presentation consumes exact lifecycle state'}),
+    Object.freeze({signal:'COMBO_STREAK_FINISHER',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['WEAPON','SKILL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'combo count and finisher eligibility remain gameplay owned; assets escalate presentation by emitted combo state'}),
+    Object.freeze({signal:'COOLDOWN_READY_OR_RESOURCE_READY',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['SKILL','WEAPON']),channels:Object.freeze([]),rule:'cooldown and resource math remain gameplay owned; assets show ready charging exhausted and unavailable states'}),
+    Object.freeze({signal:'EQUIP_UNEQUIP_LOADOUT',families:Object.freeze(['WEAPON','CHARACTER','MOTION','UI']),optional:Object.freeze(['VFX','AUDIO']),channels:Object.freeze([]),rule:'inventory and equipment remain authoritative; assets update attachment pose locomotion profile and readable equipped state'}),
+    Object.freeze({signal:'WEAPON_TOOL_DURABILITY_BREAK_REPAIR',families:Object.freeze(['WEAPON','MATERIAL','VFX','AUDIO','UI']),optional:Object.freeze(['MOTION']),channels:Object.freeze([]),rule:'durability math remains gameplay owned; assets consume healthy worn broken repairing and restored states'}),
+    Object.freeze({signal:'ITEM_RARITY_DROP_PICKUP',families:Object.freeze(['PROP','MATERIAL','VFX','AUDIO','UI']),optional:Object.freeze(['MOTION']),channels:Object.freeze([]),rule:'rarity probability and reward contents remain gameplay owned; assets vary world pickup and acquisition presentation'}),
+    Object.freeze({signal:'NPC_CREATURE_STATE',families:Object.freeze(['CHARACTER','CREATURE','MOTION']),optional:Object.freeze(['VFX','AUDIO','UI']),channels:Object.freeze([]),rule:'AI owns intent target choice and navigation; assets consume calm alert search fear anger injured sleeping and dead states'}),
+    Object.freeze({signal:'NPC_ROLE_PROFESSION',families:Object.freeze(['CHARACTER','PROP','MOTION','UI']),optional:Object.freeze(['BUILDING','AUDIO']),channels:Object.freeze([]),rule:'merchant guard farmer blacksmith quest giver companion and similar roles select readable clothing props idle and interaction presentation'}),
+    Object.freeze({signal:'NPC_EMOTION_RELATIONSHIP',families:Object.freeze(['CHARACTER','MOTION','UI','AUDIO']),optional:Object.freeze(['VFX']),channels:Object.freeze([]),rule:'relationship memory and dialogue decisions remain gameplay owned; assets consume emotion trust hostility fear fatigue and celebration states'}),
+    Object.freeze({signal:'CREATURE_BODY_PLAN_LOCOMOTION',families:Object.freeze(['CREATURE','MOTION','MATERIAL']),optional:Object.freeze(['VFX','AUDIO']),channels:Object.freeze([]),rule:'select motion and secondary response by actual body plan weight and locomotion mode rather than scaling humanoid motion blindly'}),
+    Object.freeze({signal:'MONSTER_COMBAT_ROLE',families:Object.freeze(['CREATURE','CHARACTER','MOTION','VFX']),optional:Object.freeze(['WEAPON','AUDIO','UI']),channels:Object.freeze([]),rule:'tank ranged assassin swarm support and boss roles alter silhouette stance telegraph and reaction presentation without changing AI rules'}),
+    Object.freeze({signal:'REGIONAL_CREATURE_VARIANT',families:Object.freeze(['CREATURE','CHARACTER','MATERIAL','PROP']),optional:Object.freeze(['VFX','AUDIO','MOTION']),channels:Object.freeze([]),rule:'snow swamp desert volcanic coastal cave and faction variants derive from compatible base assets using material silhouette accessories and ambient presentation'}),
+    Object.freeze({signal:'COMMON_ELITE_BOSS_VISUAL_ESCALATION',families:Object.freeze(['CHARACTER','CREATURE','MATERIAL','VFX','AUDIO','MOTION']),optional:Object.freeze(['WEAPON','UI']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'rank emitted by gameplay controls presentation budget only; common elite boss tiers deepen silhouette detail aura entrance hit and death readability'}),
+    Object.freeze({signal:'BOSS_PHASE_OR_SIGNATURE_EVENT',families:Object.freeze(['CHARACTER','CREATURE','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['ENVIRONMENT','MATERIAL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'boss logic owns phase and mechanics; assets change acting threat display environment pressure and presentation only'}),
+    Object.freeze({signal:'BOSS_INTRO_ENRAGE_STAGGER_DEATH',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['ENVIRONMENT','CHARACTER','CREATURE']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'bind cinematic presentation to existing boss lifecycle events without introducing cutscene authority over gameplay'}),
+    Object.freeze({signal:'STEALTH_DETECTION_ALERT',families:Object.freeze(['MOTION','UI','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','CREATURE']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'detection math and aggro remain AI owned; assets show suspicion search spotted lost-target and danger transitions'}),
+    Object.freeze({signal:'GROUP_SWARM_PARTY_FORMATION_PRESENTATION',families:Object.freeze(['MOTION','UI','VFX']),optional:Object.freeze(['CHARACTER','CREATURE','AUDIO']),channels:Object.freeze([]),rule:'formation and synchronization visuals follow existing group state; never create new combat authority'}),
+    Object.freeze({signal:'BIOME_PACKAGE',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','MATERIAL','AUDIO']),optional:Object.freeze(['VFX','MOTION','UI']),channels:Object.freeze([]),rule:'biome selection drives terrain composition set dressing background depth vegetation soundscape and compatible surface presentation as one package'}),
+    Object.freeze({signal:'WEATHER_STATE',families:Object.freeze(['ENVIRONMENT','MATERIAL','VFX','AUDIO','PROP']),optional:Object.freeze(['MOTION','UI','BUILDING']),channels:Object.freeze([]),rule:'weather system owns current weather; presentation consumes rain snow fog storm wind and related state across sky surfaces props foliage and sound'}),
+    Object.freeze({signal:'TIME_OF_DAY',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','AUDIO','MATERIAL']),optional:Object.freeze(['MOTION','VFX','UI']),channels:Object.freeze([]),rule:'time system owns clock state; assets vary sky windows lamps ambience idle behavior density and background layers'}),
+    Object.freeze({signal:'CELESTIAL_SPECIAL_STATE',families:Object.freeze(['ENVIRONMENT','VFX','AUDIO','MATERIAL']),optional:Object.freeze(['UI','MOTION']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'white night eclipse aurora and similar states alter background silhouette lighting ambience and optional warning presentation only'}),
+    Object.freeze({signal:'REGION_FACTION_STYLE_VARIANT',families:Object.freeze(['MATERIAL','BUILDING','PROP','CHARACTER']),optional:Object.freeze(['WEAPON','UI','AUDIO','VFX']),channels:Object.freeze([]),rule:'reuse compatible bases then adapt palette material trim silhouette accessories signs and presentation language to region or faction identity'}),
+    Object.freeze({signal:'LANDMARK_DISCOVERY_POI',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','UI','AUDIO']),optional:Object.freeze(['VFX']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'world logic owns discovery state; assets reinforce landmark hierarchy path readability discovery cue and map feedback'}),
+    Object.freeze({signal:'WORLD_DENSITY_IMPORTANCE',families:Object.freeze(['ENVIRONMENT','PROP','BUILDING']),optional:Object.freeze(['AUDIO','MATERIAL','VFX']),channels:Object.freeze([]),rule:'hero landmark settlement road wilderness and background importance states adjust asset density and detail without random clutter'}),
+    Object.freeze({signal:'INTERIOR_EXTERIOR_TRANSITION',families:Object.freeze(['BUILDING','PROP','MATERIAL','AUDIO','ENVIRONMENT']),optional:Object.freeze(['VFX','UI']),channels:Object.freeze([]),rule:'consume existing interior/exterior state for lighting material soundscape occlusion prop density and transition presentation'}),
+    Object.freeze({signal:'WATER_DEPTH_SWIM_DIVE',families:Object.freeze(['ENVIRONMENT','MATERIAL','VFX','AUDIO','MOTION']),optional:Object.freeze(['UI']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'movement and breath rules remain gameplay owned; assets consume shore surface underwater dive and emerge states'}),
+    Object.freeze({signal:'BUILDING_ROLE',families:Object.freeze(['BUILDING','PROP','MATERIAL','UI']),optional:Object.freeze(['AUDIO','VFX','ENVIRONMENT']),channels:Object.freeze([]),rule:'shop blacksmith house tavern temple hospital workshop outpost and similar roles assemble compatible modules props signs lighting and role UI'}),
+    Object.freeze({signal:'BUILDING_ACTIVITY_STATE',families:Object.freeze(['BUILDING','PROP','AUDIO','VFX','MATERIAL']),optional:Object.freeze(['UI','MOTION']),channels:Object.freeze([]),rule:'open closed active idle occupied damaged abandoned and powered states update presentation around the existing building system'}),
+    Object.freeze({signal:'DAMAGE_WEAR_DESTRUCTION_STATE',families:Object.freeze(['MATERIAL','PROP','BUILDING','VFX','AUDIO']),optional:Object.freeze(['MOTION']),channels:Object.freeze([]),rule:'health durability and destruction thresholds remain gameplay owned; assets consume normal damaged critical destroyed repaired and rebuilt states'}),
+    Object.freeze({signal:'AMBIENT_PROP_REACTIVITY',families:Object.freeze(['PROP','MOTION','AUDIO','MATERIAL']),optional:Object.freeze(['VFX','ENVIRONMENT']),channels:Object.freeze([]),rule:'trees cloth signs chains lamps machines grass foliage and similar props react to wind time weather proximity and existing interaction state'}),
+    Object.freeze({signal:'INTERACTION_GATHER_CRAFT_OPEN_USE',families:Object.freeze(['PROP','BUILDING','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER','WEAPON']),channels:Object.freeze([]),rule:'interaction system owns availability cost reward and completion; assets express hand tool object contact and feedback'}),
+    Object.freeze({signal:'PAIR_TOOL_TARGET_INTERACTION',families:Object.freeze(['MOTION','WEAPON','PROP','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','ENVIRONMENT']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'compose user tool target and contact presentation for axe-tree pickaxe-ore hammer-workbench fishing-water and similar existing interactions'}),
+    Object.freeze({signal:'CRAFTING_PROCESS',families:Object.freeze(['PROP','UI','MOTION','VFX','AUDIO']),optional:Object.freeze(['BUILDING','WEAPON']),channels:Object.freeze([]),rule:'recipe inventory cost and result remain gameplay owned; assets present station use progress contact completion and failure reason'}),
+    Object.freeze({signal:'BUILD_PLACEMENT_CONSTRUCTION',families:Object.freeze(['BUILDING','PROP','MATERIAL','UI','VFX']),optional:Object.freeze(['MOTION','AUDIO']),channels:Object.freeze([]),rule:'placement validity and resource spending remain gameplay owned; assets present preview valid invalid construction progress and completion'}),
+    Object.freeze({signal:'DOOR_CONTAINER_MACHINE_SWITCH',families:Object.freeze(['PROP','BUILDING','MOTION','AUDIO','VFX']),optional:Object.freeze(['UI']),channels:Object.freeze([]),rule:'open lock loot power and permission remain gameplay owned; assets bind moving parts sounds lights and interaction prompts'}),
+    Object.freeze({signal:'MOUNT_VEHICLE_RIDE',families:Object.freeze(['CHARACTER','CREATURE','PROP','MOTION','UI']),optional:Object.freeze(['AUDIO','VFX']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'mount vehicle speed and control remain gameplay owned; assets handle mounting seating suspension secondary motion and readable ride feedback'}),
+    Object.freeze({signal:'FISHING_FARMING_HARVEST',families:Object.freeze(['PROP','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['ENVIRONMENT','WEAPON']),channels:Object.freeze([]),rule:'yield timing resource gain and success remain gameplay owned; assets express cast bite harvest growth-ready and collection feedback'}),
+    Object.freeze({signal:'QUEST_OBJECTIVE_STATE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT','PROP']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'quest logic owns objective state; assets show active update complete failed locked and location guidance without changing quest rules'}),
+    Object.freeze({signal:'LEVEL_UP_UNLOCK_REWARD',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','MOTION']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'progression owns XP unlocks and rewards; assets present level-up unlock choice and reward confirmation'}),
+    Object.freeze({signal:'INVENTORY_EQUIPMENT_SCREEN',families:Object.freeze(['UI','WEAPON','CHARACTER','PROP']),optional:Object.freeze(['MOTION','AUDIO']),channels:Object.freeze([]),rule:'inventory state stays authoritative; common UI components bind live item equipment compare selected locked and full states'}),
+    Object.freeze({signal:'SHOP_TRADE_VENDOR',families:Object.freeze(['UI','PROP','CHARACTER','AUDIO']),optional:Object.freeze(['BUILDING','MOTION']),channels:Object.freeze([]),rule:'economy owns price currency and transaction; assets present vendor identity item cards availability affordability and purchase feedback'}),
+    Object.freeze({signal:'MAP_MINIMAP_POI_ROUTE',families:Object.freeze(['UI','ENVIRONMENT']),optional:Object.freeze(['PROP','VFX']),channels:Object.freeze([]),rule:'navigation and objective truth remain gameplay owned; assets render current player party danger objective and POI state'}),
+    Object.freeze({signal:'PARTY_MULTIPLAYER_MEMBER_STATE',families:Object.freeze(['UI','CHARACTER','VFX']),optional:Object.freeze(['AUDIO','MOTION']),channels:Object.freeze([]),rule:'server owns participant state; assets consume healthy hurt downed disconnected joined and party-role states'}),
+    Object.freeze({signal:'CONTEXT_ACTION_PROMPT',families:Object.freeze(['UI','PROP']),optional:Object.freeze(['MOTION','AUDIO']),channels:Object.freeze([]),rule:'existing proximity and interaction rules choose TALK OPEN GATHER CRAFT TRADE REVIVE USE and similar actions; common UI presents the current valid action'}),
+    Object.freeze({signal:'TUTORIAL_HINT_DISCOVERABILITY',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['PROP','ENVIRONMENT']),channels:Object.freeze([]),rule:'tutorial progression stays gameplay owned; assets point to existing actions and state changes without fake tutorial mechanics'}),
+    Object.freeze({signal:'PAUSE_SETTINGS_ACCESSIBILITY',families:Object.freeze(['UI','AUDIO']),optional:Object.freeze(['VFX']),channels:Object.freeze([]),rule:'settings system owns preferences; common UI exposes actual toggles readability audio and accessibility state'}),
+    Object.freeze({signal:'NOTIFICATION_TOAST_WARNING_RESULT',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze([]),channels:Object.freeze([]),rule:'reuse common notification and result surfaces for real source events rather than creating one-off panels'}),
+    Object.freeze({signal:'SESSION_START_LOADING_LOBBY_RESULT',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze(['ENVIRONMENT','CHARACTER']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'session authority remains existing code; assets provide coherent entry loading lobby transition result and next-action presentation'}),
+    Object.freeze({signal:'GAME_BOOT_SPLASH_BRAND_ENTRY',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze(['ENVIRONMENT']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'bind splash and brand entry to real boot/session readiness; presentation must not fake or delay ready state'}),
+    Object.freeze({signal:'LOADING_PROGRESS_STATE',families:Object.freeze(['UI','AUDIO']),optional:Object.freeze(['VFX','ENVIRONMENT']),channels:Object.freeze([]),rule:'loading bar tips art and labels bind real loader progress and readiness; fabricated progress is forbidden'}),
+    Object.freeze({signal:'LOADING_PHASE_TRANSITION',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT','CHARACTER']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume existing loading prepared entering ready phases without creating a second session state machine'}),
+    Object.freeze({signal:'INTRO_CINEMATIC',families:Object.freeze(['ENVIRONMENT','CHARACTER','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['PROP','BUILDING','MATERIAL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'existing intro/story/session events drive camera acting ambience and skip UI; intro presentation never owns gameplay progression'}),
+    Object.freeze({signal:'CUTSCENE_SCENE_BEAT',families:Object.freeze(['CHARACTER','MOTION','ENVIRONMENT','AUDIO','VFX','UI']),optional:Object.freeze(['PROP','BUILDING','MATERIAL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'current story beat speaker target and event state drive scene presentation; never invent narrative progression'}),
+    Object.freeze({signal:'CUTSCENE_SKIP_PAUSE_RESUME',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze(['MOTION']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'skip pause resume binds existing cutscene/session controls and restores current authoritative state cleanly'}),
+    Object.freeze({signal:'EVENT_ANNOUNCEMENT',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'event title warning location and rules summary display existing event data only; never invent rewards timers or requirements'}),
+    Object.freeze({signal:'EVENT_COUNTDOWN_START_ACTIVE_END',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT','PROP']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'countdown active overtime success fail and end presentation follows real event state and timer'}),
+    Object.freeze({signal:'WORLD_EVENT_PRESSURE_PRESENTATION',families:Object.freeze(['ENVIRONMENT','VFX','AUDIO','UI']),optional:Object.freeze(['PROP','MATERIAL','MOTION']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'existing world event state may intensify ambience sky props warning UI and effects while mechanics remain gameplay owned'}),
+    Object.freeze({signal:'MAIN_MENU_STATE',families:Object.freeze(['UI','AUDIO']),optional:Object.freeze(['VFX','ENVIRONMENT','CHARACTER']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'common main menu components bind actual continue new game play mode settings credits and offline availability'}),
+    Object.freeze({signal:'MENU_NAVIGATION_FOCUS_SELECTION',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze([]),channels:Object.freeze([]),rule:'hover focus pressed selected disabled locked badged states bind actual navigation state with touch gamepad keyboard parity'}),
+    Object.freeze({signal:'MENU_TRANSITION_STACK',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze([]),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'reuse panel tab modal drawer and screen transitions while preserving current menu stack back behavior and input ownership'}),
+    Object.freeze({signal:'MODAL_CONFIRMATION_WARNING_ERROR',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze([]),channels:Object.freeze([]),rule:'common modal toast confirm warning error retry presentation binds real actions and errors; never invent destructive actions'}),
+    Object.freeze({signal:'PAUSE_MENU_STATE',families:Object.freeze(['UI','AUDIO']),optional:Object.freeze(['VFX']),channels:Object.freeze([]),rule:'pause UI reflects actual pausable blocked unsaved multiplayer or combat restrictions'}),
+    Object.freeze({signal:'SETTINGS_PANEL_STATE',families:Object.freeze(['UI','AUDIO']),optional:Object.freeze(['VFX']),channels:Object.freeze([]),rule:'visual audio control accessibility and input settings bind existing preference sources and supported options only'}),
+    Object.freeze({signal:'ACCESSIBILITY_PRESENTATION',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze(['MATERIAL']),channels:Object.freeze([]),rule:'text scale contrast reduced motion captions sound cues and control readability consume existing accessibility settings without changing difficulty'}),
+    Object.freeze({signal:'HUD_CORE_STATUS',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze([]),channels:Object.freeze([]),rule:'health stamina mana wave objective resource cooldown and status components bind current authoritative values'}),
+    Object.freeze({signal:'HUD_CONTEXTUAL_LAYER',families:Object.freeze(['UI','VFX']),optional:Object.freeze(['AUDIO']),channels:Object.freeze([]),rule:'show contextual HUD only for existing combat interaction quest boss hazard party or navigation state'}),
+    Object.freeze({signal:'RESULT_SUCCESS_FAIL_REWARD_SCREEN',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','MOTION','ENVIRONMENT']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'result screen consumes real win fail reward statistics and next-action data from session/progression systems'}),
+    Object.freeze({signal:'TUTORIAL_STEP_COACHMARK',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['PROP','ENVIRONMENT']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'coachmarks highlights prompts and completion feedback bind real tutorial step state and existing controls'}),
+    Object.freeze({signal:'DIALOGUE_CONVERSATION_STATE',families:Object.freeze(['UI','CHARACTER','MOTION','AUDIO']),optional:Object.freeze(['VFX','PROP']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'dialogue panel choices typing speaker focus and acting bind current dialogue graph and relationship state; dialogue assets never choose story outcomes'}),
+    Object.freeze({signal:'QUEST_LOG_TRACKER_DETAIL',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze(['ENVIRONMENT']),channels:Object.freeze([]),rule:'quest list tracker detail prerequisites progress and completion states bind existing quest data'}),
+    Object.freeze({signal:'CODEX_COLLECTION_ACHIEVEMENT',families:Object.freeze(['UI','AUDIO','VFX']),optional:Object.freeze(['PROP','CHARACTER','CREATURE']),channels:Object.freeze([]),rule:'collection codex discovery achievement and seen-state surfaces bind real unlock/seen data'}),
+    Object.freeze({signal:'SOCIAL_PARTY_MATCHMAKING_LOBBY_UI',families:Object.freeze(['UI','CHARACTER','AUDIO','VFX']),optional:Object.freeze([]),channels:Object.freeze([]),rule:'party ready invite join leave matchmaking and lobby presentation bind actual multiplayer/session state'})
+    Object.freeze({signal:'CAMERA_LANGUAGE_EVENT',families:Object.freeze(['VFX','MOTION']),optional:Object.freeze(['UI','AUDIO']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'normal combat heavy hit boss intro discovery level-up death and similar emitted events choose existing camera presentation without changing gameplay position authority'}),
+    Object.freeze({signal:'SOUNDSCAPE_ZONE_STATE',families:Object.freeze(['AUDIO','ENVIRONMENT','PROP']),optional:Object.freeze(['BUILDING','MATERIAL']),channels:Object.freeze([]),rule:'zone state selects bed near distant scatter one-shot and interaction-source layers with distance weather and interior blending'}),
+    Object.freeze({signal:'MUSIC_INTENSITY_PRESENTATION_STATE',families:Object.freeze(['AUDIO']),optional:Object.freeze(['UI','VFX']),channels:Object.freeze([]),rule:'game state owns intensity and transitions; asset layer selects or blends existing music presentation roles without inventing progression'}),
+    Object.freeze({signal:'AUTHORITATIVE_STATE_REPLICATION_PRESENTATION',families:Object.freeze(['UI','VFX','MOTION','AUDIO']),optional:Object.freeze(['CHARACTER','CREATURE','PROP']),channels:Object.freeze([]),rule:'server replicates authoritative state only; each client renders internal asset presentation from that state without duplicating game rules'}),
+    Object.freeze({signal:'JOIN_LATE_JOIN_REJOIN_PRESENTATION',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','ENVIRONMENT']),channels:Object.freeze([]),rule:'consume current authoritative snapshot so late join and rejoin presentation catches up without replaying ownership logic'}),
+    Object.freeze({signal:'NETWORK_CORRECTION_RECOVERY_PRESENTATION',families:Object.freeze(['UI','VFX']),optional:Object.freeze(['MOTION','AUDIO']),channels:Object.freeze([]),rule:'network correction remains transport owned; presentation smooths or communicates correction without hiding gameplay truth'}),
+    Object.freeze({signal:'MOBILE_PERFORMANCE_LOD',families:Object.freeze(['ENVIRONMENT','PROP','VFX','MOTION','UI']),optional:Object.freeze(['AUDIO','MATERIAL']),channels:Object.freeze([]),rule:'reduce density secondary motion background layers and expensive effects only; preserve gameplay state silhouette and essential feedback'}),
+    Object.freeze({signal:'DISTANCE_SCREEN_SPACE_LOD',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','CHARACTER','CREATURE']),optional:Object.freeze(['VFX','MOTION']),channels:Object.freeze([]),rule:'game camera distance and importance choose detail tiers so hero and near-contact assets receive detail while distant assets stay efficient'}),
+    Object.freeze({signal:'QUALITY_DEBT_REPLACEMENT',families:Object.freeze(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']),optional:Object.freeze([]),channels:Object.freeze([]),rule:'low-score compatible assets stay in use; replace or adapt only when a safer better compatible candidate is ready and preserve current coverage until then'}),
+    Object.freeze({signal:'BUILD_UP_REUSE_FIRST',families:Object.freeze(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']),optional:Object.freeze([]),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'every BUILD_UP inspects current game systems and selected internal scripts first, connects reusable capability to existing responsibility, and authors new presentation only for uncovered gaps'}),
+    Object.freeze({signal:'CROSS_SYSTEM_PRESENTATION_BUNDLE',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER','CREATURE','WEAPON','SKILL','PROP','ENVIRONMENT','MATERIAL']),channels:Object.freeze(['CAMERA_PRESENTATION']),rule:'one existing gameplay event may consume multiple compatible internal families together; avoid isolated color-only changes when a coherent bundle can be reused'})
+  ]);
+  return Object.freeze({
+    version:3,
+    target:target||null,
+    gameId:gameId||null,
+    libraryVersion,
+    fingerprint,
+    exactFamilies,
+    flowSelections:Object.freeze(flowSelections),
+    sourceCandidates:Object.freeze(dedupedSources),
+    catalogIndex:Object.freeze({
+      fingerprint:libraryIndex.fingerprint,
+      registryVersion:libraryIndex.registryVersion,
+      catalogCount:libraryIndex.catalogCount,
+      entryCount:libraryIndex.entryCount,
+      totalEntryCount:libraryIndex.totalEntryCount,
+      packIds:libraryIndex.packIds,
+      families:libraryIndex.families,
+      familyCounts:libraryIndex.familyCounts,
+      sectionNames:libraryIndex.sectionNames,
+      allLibraryComponentsCandidateEligible:true,
+      futureCatalogAutoDiscovery:true,
+      futureAtomAutoDiscovery:true,
+      hardcodedPackAllowlistRequired:false
+    }),
+    catalogMatches:Object.freeze(catalogMatches),
+    synchronization:Object.freeze({
+      mode:'INCREMENTAL_SELECTION_FINGERPRINT',
+      fullLibraryReplicationForbidden:true,
+      fullCatalogPromptInjectionForbidden:true,
+      selectedSubsetOnly:true,
+      unchangedFingerprintReusePreferred:true,
+      changedFamilyRebindOnly:true,
+      sourceApiContextOnlyForSelectedAssets:true,
+      catalogFingerprintRequired:true,
+      libraryUpdateForcesRematch:true,
+      futureCatalogAutoDiscovery:true,
+      futureAtomAutoDiscovery:true,
+      hardcodedPackAllowlistRequired:false
+    }),
+    eligibility:Object.freeze({
+      genreRestrictionApplied:false,
+      crossGenreReuseAllowed:true,
+      genreUsedAsStylePreferenceOnly:true,
+      hardOrder:Object.freeze([
+        'SAFETY_LICENSE_AND_PLATFORM_COMPATIBILITY',
+        'EXISTING_GAME_SYSTEM_AND_STATE_APPLICABILITY',
+        'EXACT_FAMILY_ROLE_AND_BODY_PLAN_MATCH',
+        'RESPONSIBLE_SOURCE_AND_FACTORY_API_COMPATIBILITY',
+        'GAME_IDENTITY_AND_STYLE_ADAPTABILITY',
+        'INTEGRATION_COST_AND_EXISTING_BINDING_REUSE',
+        'EFFECTIVE_QUALITY_AFTER_ADAPTATION',
+        'DIVERSITY_AND_REPETITION_DEBT_TIEBREAK'
+      ]),
+      qualityScoreIsUsageGate:false,
+      lowScoreCompatibleAssetUseAllowed:true,
+      safeCompatibleFallbackPreferredOverBlank:true,
+      safeCompatibleFallbackPreferredOverPrimitivePlaceholder:true,
+      lowScoreUseKeepsQualityDebtOpen:true,
+      qualityMayNotOverrideRoleMismatch:true,
+      highScoreWrongRoleMustLose:true,
+      lowerScoreExactFitMayWin:true,
+      noMinimumScoreForSafeCompatibleUse:true,
+      adaptBeforeRejectPreferred:true
+    }),
+    applicationCoverage:Object.freeze({
+      noArtificialAssetCountCap:true,
+      noArtificialFamilyUseCap:true,
+      noArtificialGameplaySignalCoverageCap:true,
+      noArtificialCombinationCap:true,
+      allApplicableExistingSystemsEligible:true,
+      allApplicableSelectedAssetsEligible:true,
+      continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
+      contextBudgetIsNotUsageCap:true,
+      apiContextBatchingAllowedForSynchronizationEfficiency:true,
+      independentResponsibleFilesMayApplyInParallel:true,
+      exactResponsibleFileConflictStillSerializes:true,
+      hardBlockersOnly:Object.freeze(['SECURITY','LICENSE','CORRUPT_SOURCE','PLATFORM_INCOMPATIBLE','EXPLICIT_INTERNAL_USE_FORBIDDEN']),
+      usageRecipeCount:usageMatrix.length,
+      compositionPolicy:Object.freeze({
+        stateDrivenBundleSelection:true,
+        crossFamilyCompositionPreferred:true,
+        reuseSameAssetAcrossCompatibleStatesAllowed:true,
+        reuseSameCommonScriptAcrossGamesAllowed:true,
+        forkCommonScriptPerGameForbidden:true,
+        isolatedColorOnlyUseIsLastResort:true,
+        missingOptionalFamilyDoesNotBlockOtherApplicableFamilies:true,
+        gameplayEventMayDriveMultiplePresentationFamilies:true,
+        existingGameplaySignalDiscoveryRequired:true
+      })
+    }),
+    usageMatrix
+  });
+}
+
+function selectInternalAssetApiPaths(order={},contract={}){
+  const wantedFamilies=new Set(inferInternalAssetFamiliesFromOrder(order));
+  const rows=new Map();
+  const add=(file,{family='',exact=false,flow=false,role='',matchScore=0}={})=>{
+    const relative=posix(file);
+    if(!relative||path.isAbsolute(relative)||relative.split('/').includes('..')||!/^assets\//.test(relative)||!/.(?:lua|luau|js|mjs)$/i.test(relative))return;
+    const normalizedFamily=clean(family).toUpperCase();
+    const row=rows.get(relative)||{path:relative,score:0};
+    row.score+=Number(matchScore||0);
+    if(exact)row.score+=10000;
+    if(flow)row.score+=3000;
+    if(normalizedFamily&&wantedFamilies.has(normalizedFamily))row.score+=1500;
+    if(clean(role))row.score+=20;
+    if(/common-/i.test(relative))row.score+=10;
+    rows.set(relative,row);
+  };
+  for(const row of contract.flowSelections||[])for(const file of row?.sourceFiles||[])add(file,{family:row.family,flow:true,role:row.role});
+  for(const row of contract.sourceCandidates||[]){
+    for(const file of row?.sourceFiles||[])add(file,{family:row.family,role:row.role});
+    if(row?.path)add(row.path,{family:row.family,role:row.role});
+  }
+  for(const row of contract.catalogMatches||[])for(const file of row?.sourceFiles||[])add(file,{
+    family:row.family,role:row.role,exact:row.exactSelected===true,matchScore:row.matchScore
+  });
+  const seed=clean(order?.taskId||order?.selectedTask?.id||order?.gameId||contract.fingerprint);
+  const tie=value=>crypto.createHash('sha256').update(seed+'|'+value).digest('hex');
+  return [...rows.values()].sort((a,b)=>b.score-a.score||tie(a.path).localeCompare(tie(b.path))).map(row=>row.path);
+}
+function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),order={},contract=null}={}){
+  if(!context||!Array.isArray(context.files)||!contract)return context;
+  const selectedPaths=selectInternalAssetApiPaths(order,contract).slice(0,6);
+  if(!selectedPaths.length)return context;
+  const existing=new Set(context.files.map(row=>posix(row?.path)));
+  const apiFiles=[];
+  let remaining=20000;
+  for(const relative of selectedPaths){
+    if(existing.has(relative)||remaining<=0)continue;
+    const absolute=path.resolve(cwd,relative);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
+    const raw=fs.readFileSync(absolute,'utf8');
+    const excerpt=boundedPromptText(raw,Math.min(4000,remaining));
+    const bytes=Buffer.byteLength(excerpt,'utf8');
+    remaining-=bytes;
+    apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
+  }
+  if(!apiFiles.length)return context;
+  return{
+    ...context,
+    files:[...context.files,...apiFiles],
+    bytes:Number(context.bytes||0)+apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
+    internalAssetApiContextFiles:apiFiles.map(row=>row.path),
+    internalAssetApiContextBytes:apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
+    internalAssetApiContextBounded:true,
+    internalAssetApiContextPriorityFamilies:inferInternalAssetFamiliesFromOrder(order),
+    internalAssetApiContextSelectedCount:apiFiles.length
+  };
+}
+
+function internalAssetSourceUsageGuidance(order={}){
+  const contract=buildInternalAssetSourceUsageContract(order);
+  if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
+  const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
+  const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
+  const sourceRows=contract.sourceCandidates
+    .filter(row=>row.sourceFiles.length||row.path)
+    .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
+    .join('; ');
+  return [
+    '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
+    'Exact selected family IDs only: '+(exactRows||'NONE'),
+    'Exact flow selections: '+(flowRows||'NONE'),
+    'Selected source/API references: '+(sourceRows||'NONE'),
+    'Live library index: fingerprint='+contract.catalogIndex.fingerprint+'; registryVersion='+contract.catalogIndex.registryVersion+'; catalogs='+contract.catalogIndex.catalogCount+'; entries='+contract.catalogIndex.entryCount+'; packs='+contract.catalogIndex.packIds.join('|')+'; families='+contract.catalogIndex.families.join('|'),
+    'All current and future library components are candidate-eligible when safety/license/platform/role compatibility passes. Every BUILD_UP rebuilds this index from company-asset-library.json and discovered assets/**/catalog.json; no hardcoded pack allowlist may decide eligibility.',
+    'Current exact/applicable catalog matches: '+boundedPromptText((contract.catalogMatches||[]).map(row=>[row.assetId,row.packId,row.family,row.role,row.factory,(row.sourceFiles||[]).join('|')].filter(Boolean).join(':')).join('; '),10000),
+    'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
+    'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
+    'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
+    'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
+    'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
+    'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
+    ...contract.usageMatrix.map(row=>'- '+row.signal+': '+row.families.join('+')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
+    'Reuse existing common asset scripts/factories when the selected source/API reference is available. Call them from the current responsible game code or bind their returned native objects there; do not fork/copy a common script into each game.',
+    'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
+    '[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'
+  ].join('\n');
+}
+
 function universalAssetWorkerGuidance(order={}) {
   const target=clean(order?.target).toLowerCase();
   if(!['roblox','unity','web'].includes(target))return'';
@@ -1884,7 +2453,7 @@ function universalAssetWorkerGuidance(order={}) {
     'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
     'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
     'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
-    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
+    target==='roblox'?'Roblox source link: selected internal assets are already exposed through the existing shared Config.StudioAssets.Families table. Read the needed family directly from that table in the current responsible Luau source and use those selected atoms while authoring the existing Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator ownership. Do not edit company-asset-library.json or create a second asset pipeline. Use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } as trace evidence only; metadata never replaces actual native source use.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
     'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
     'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
   ].filter(Boolean).join('\n');
@@ -2406,6 +2975,7 @@ learningContract.block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
+internalAssetSourceUsageGuidance(order),
 gameContextCapsuleGuidance(order,exploration,responsibleFiles),
 preSubmitSelfReviewGuidance(order),
 studioAssetQualityCoreGuidance(order),
@@ -4220,7 +4790,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
     :null;
   if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
-  const context=unityBootstrapContext
+  const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order,{cwd});
+  let context=unityBootstrapContext
     ||(!sourceRootExists&&bootstrap
       ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
       :(focusedContext||{
@@ -4237,6 +4808,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       exactSourceWindows:false,
       fullFileFallback:focusedWebRepair
     }));
+  context=attachSelectedInternalAssetApiContext(context,{cwd,order,contract:assetSourceUsageContract});
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
   const verifiedExternalLearningContract=buildVerifiedExternalLearningPromptContract(order);
@@ -4540,6 +5112,25 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedExternalLearningDeterministicCoveragePct:Number(generation.deterministicVerifiedExternalLearningCoveragePct||0),
     verifiedExternalLearningDeterministicContractConsumed:generation.deterministicVerifiedExternalLearningContractConsumed===true,
     deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
+    internalAssetSourceUsageFingerprint:assetSourceUsageContract.fingerprint,
+    internalAssetSourceUsageLibraryVersion:assetSourceUsageContract.libraryVersion,
+    internalAssetSourceUsageSelectedFamilies:Object.keys(assetSourceUsageContract.exactFamilies||{}),
+    internalAssetSourceUsageSyncMode:assetSourceUsageContract.synchronization.mode,
+    internalAssetCatalogFingerprint:assetSourceUsageContract.catalogIndex?.fingerprint||null,
+    internalAssetCatalogCount:Number(assetSourceUsageContract.catalogIndex?.catalogCount||0),
+    internalAssetCatalogEntryCount:Number(assetSourceUsageContract.catalogIndex?.entryCount||0),
+    internalAssetCatalogMatchCount:Number(assetSourceUsageContract.catalogMatches?.length||0),
+    internalAssetFutureCatalogAutoDiscovery:assetSourceUsageContract.catalogIndex?.futureCatalogAutoDiscovery===true,
+    internalAssetGenreRestrictionApplied:false,
+    internalAssetQualityMayNotOverrideRoleMismatch:true,
+    internalAssetQualityScoreIsUsageGate:false,
+    internalAssetLowScoreCompatibleUseAllowed:true,
+    internalAssetSafeFallbackPreferredOverBlank:true,
+    internalAssetApplicationNoArtificialCap:true,
+    internalAssetContextBudgetIsNotUsageCap:true,
+    internalAssetApiContextFiles:Object.freeze([...(context.internalAssetApiContextFiles||[])]),
+    internalAssetApiContextBytes:Number(context.internalAssetApiContextBytes||0),
+    internalAssetApiContextBounded:context.internalAssetApiContextBounded===true,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',
@@ -4642,6 +5233,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     designEvidence:waitingDesignEvidence(),
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
+    internalAssetSourceUsage:assetSourceUsageContract,
     imageAssetObservation,
     runtimeVisualObservation,
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
