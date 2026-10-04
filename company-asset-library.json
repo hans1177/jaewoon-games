@@ -1,5 +1,5 @@
 {
-  "version": 65,
+  "version": 66,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -11342,9 +11342,9 @@
         "assets/roblox/common-character-gear-v1/quality-evidence.json"
       ],
       "id": "roblox-common-character-gear-v1",
-      "title": "Roblox 회사 공용 방어구/의상 8종 v1",
+      "title": "Roblox 회사 공용 방어구/의상 18종 v3",
       "subfamily": "GEAR_PACK",
-      "itemCount": 8,
+      "itemCount": 18,
       "complementsExistingCommonSubfamilies": [
         "TORSO_CLOTH",
         "SHOULDER_LIGHT",
@@ -11356,27 +11356,21 @@
         "PALETTE_ADAPTABLE",
         "CHARACTER",
         "GEAR",
-        "BODY_PLAN_COMPATIBILITY"
+        "BODY_PLAN_COMPATIBILITY",
+        "CROSS_GENRE_VOLUME_UP",
+        "SET_SOCKET_UPGRADE_WEAR_TRANSMOG"
       ],
       "systemDepthAudit": {
         "domain": "CHARACTER_GEAR",
-        "currentCount": 8,
+        "currentCount": 18,
         "requiredComponentCount": 18,
-        "priorityGaps": [
-          "LEGS",
-          "SHOULDER",
-          "BELT",
-          "RING",
-          "AMULET",
-          "SET_IDENTITY",
-          "SOCKET_POINT",
-          "TRANSMOG_BASE"
-        ],
-        "state": "GAP_FILL_REQUIRED"
+        "priorityGaps": [],
+        "state": "BASE_COVERAGE_COMPLETE"
       },
       "seedIdeaConsumerCandidates": [
         "seed-action-survival-rogu-echoes-of-the-lost-star"
-      ]
+      ],
+      "seedCompositionContractRef": "assets/roblox/common-character-gear-v1/catalog.json#seedCompositionContract"
     },
     {
       "category": "CHARACTER",
@@ -11440,12 +11434,14 @@
         "subfamily": "TORSO_GEAR",
         "gearRole": "LIGHT_TORSO",
         "familyRootId": "GEAR_TUNIC",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11509,12 +11505,14 @@
         "subfamily": "TORSO_GEAR",
         "gearRole": "MEDIUM_TORSO",
         "familyRootId": "GEAR_VEST",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11578,12 +11576,14 @@
         "subfamily": "TORSO_GEAR",
         "gearRole": "HEAVY_TORSO",
         "familyRootId": "GEAR_CHESTPLATE",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11647,12 +11647,14 @@
         "subfamily": "HEAD_GEAR",
         "gearRole": "LIGHT_HEAD",
         "familyRootId": "GEAR_HOOD",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11716,12 +11718,14 @@
         "subfamily": "HEAD_GEAR",
         "gearRole": "HEAVY_HEAD",
         "familyRootId": "GEAR_HELMET",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11785,12 +11789,14 @@
         "subfamily": "HAND_GEAR",
         "gearRole": "HAND",
         "familyRootId": "GEAR_GLOVES",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11854,12 +11860,14 @@
         "subfamily": "FOOT_GEAR",
         "gearRole": "FOOT",
         "familyRootId": "GEAR_BOOTS",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "CHARACTER",
@@ -11923,12 +11931,14 @@
         "subfamily": "BACK_GEAR",
         "gearRole": "BACK",
         "familyRootId": "GEAR_CLOAK",
+        "systemRoles": [],
         "visualAnchor": "VisualAnchor",
         "bodyPlanCompatibilityRequired": true,
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "UI",
@@ -38799,6 +38809,782 @@
         "audioPlaybackAuthority": false,
         "cameraAuthority": false
       }
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-leg-plates",
+      "title": "다리 보호대",
+      "subfamily": "LEG_GEAR",
+      "assetId": "LEG_PLATES",
+      "gearRole": "LEGS",
+      "familyRootId": "GEAR_LEGS",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "LEG_GEAR",
+        "LEGS",
+        "LEG_PLATES"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "LEG_GEAR",
+        "gearRole": "LEGS",
+        "familyRootId": "GEAR_LEGS",
+        "systemRoles": [
+          "LEGS"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "LEGS"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-shoulder-pauldrons",
+      "title": "어깨 견갑",
+      "subfamily": "SHOULDER_GEAR",
+      "assetId": "SHOULDER_PAULDRONS",
+      "gearRole": "SHOULDER",
+      "familyRootId": "GEAR_SHOULDER",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "SHOULDER_GEAR",
+        "SHOULDER",
+        "SHOULDER_PAULDRONS"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "SHOULDER_GEAR",
+        "gearRole": "SHOULDER",
+        "familyRootId": "GEAR_SHOULDER",
+        "systemRoles": [
+          "SHOULDER"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "SHOULDER"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-utility-belt",
+      "title": "다용도 벨트",
+      "subfamily": "BELT_GEAR",
+      "assetId": "UTILITY_BELT",
+      "gearRole": "BELT",
+      "familyRootId": "GEAR_BELT",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "BELT_GEAR",
+        "BELT",
+        "UTILITY_BELT",
+        "ACCESSORY",
+        "SOCKET_POINT"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "BELT_GEAR",
+        "gearRole": "BELT",
+        "familyRootId": "GEAR_BELT",
+        "systemRoles": [
+          "BELT",
+          "ACCESSORY",
+          "SOCKET_POINT"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "BELT",
+        "ACCESSORY",
+        "SOCKET_POINT"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-signet-ring",
+      "title": "인장 반지",
+      "subfamily": "RING_GEAR",
+      "assetId": "SIGNET_RING",
+      "gearRole": "RING",
+      "familyRootId": "GEAR_RING",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "RING_GEAR",
+        "RING",
+        "SIGNET_RING",
+        "ACCESSORY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "RING_GEAR",
+        "gearRole": "RING",
+        "familyRootId": "GEAR_RING",
+        "systemRoles": [
+          "RING",
+          "ACCESSORY"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "RING",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-travel-amulet",
+      "title": "여행 목걸이",
+      "subfamily": "AMULET_GEAR",
+      "assetId": "TRAVEL_AMULET",
+      "gearRole": "AMULET",
+      "familyRootId": "GEAR_AMULET",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "AMULET_GEAR",
+        "AMULET",
+        "TRAVEL_AMULET",
+        "ACCESSORY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "AMULET_GEAR",
+        "gearRole": "AMULET",
+        "familyRootId": "GEAR_AMULET",
+        "systemRoles": [
+          "AMULET",
+          "ACCESSORY"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "AMULET",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-cosmetic-sash",
+      "title": "장식 띠",
+      "subfamily": "COSMETIC_OVERLAY",
+      "assetId": "COSMETIC_SASH",
+      "gearRole": "COSMETIC_OVERLAY",
+      "familyRootId": "GEAR_COSMETIC_SASH",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "COSMETIC_OVERLAY",
+        "COSMETIC_SASH",
+        "TRANSMOG_BASE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "COSMETIC_OVERLAY",
+        "gearRole": "COSMETIC_OVERLAY",
+        "familyRootId": "GEAR_COSMETIC_SASH",
+        "systemRoles": [
+          "COSMETIC_OVERLAY",
+          "TRANSMOG_BASE"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "COSMETIC_OVERLAY",
+        "TRANSMOG_BASE"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-set-crest",
+      "title": "세트 문장",
+      "subfamily": "ACCESSORY_GEAR",
+      "assetId": "SET_CREST",
+      "gearRole": "SET_IDENTITY",
+      "familyRootId": "GEAR_SET_CREST",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "ACCESSORY_GEAR",
+        "SET_IDENTITY",
+        "SET_CREST",
+        "ACCESSORY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "ACCESSORY_GEAR",
+        "gearRole": "SET_IDENTITY",
+        "familyRootId": "GEAR_SET_CREST",
+        "systemRoles": [
+          "SET_IDENTITY",
+          "ACCESSORY"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "SET_IDENTITY",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-socket-charm",
+      "title": "소켓 부적",
+      "subfamily": "ACCESSORY_GEAR",
+      "assetId": "SOCKET_CHARM",
+      "gearRole": "SOCKET_POINT",
+      "familyRootId": "GEAR_SOCKET_CHARM",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "ACCESSORY_GEAR",
+        "SOCKET_POINT",
+        "SOCKET_CHARM",
+        "ACCESSORY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "ACCESSORY_GEAR",
+        "gearRole": "SOCKET_POINT",
+        "familyRootId": "GEAR_SOCKET_CHARM",
+        "systemRoles": [
+          "SOCKET_POINT",
+          "ACCESSORY"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "SOCKET_POINT",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-upgrade-trim",
+      "title": "강화 장식 테두리",
+      "subfamily": "COSMETIC_OVERLAY",
+      "assetId": "UPGRADE_TRIM",
+      "gearRole": "UPGRADE_STAGE_VISUAL",
+      "familyRootId": "GEAR_UPGRADE_TRIM",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "COSMETIC_OVERLAY",
+        "UPGRADE_STAGE_VISUAL",
+        "UPGRADE_TRIM",
+        "LIGHT_MEDIUM_HEAVY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "COSMETIC_OVERLAY",
+        "gearRole": "UPGRADE_STAGE_VISUAL",
+        "familyRootId": "GEAR_UPGRADE_TRIM",
+        "systemRoles": [
+          "UPGRADE_STAGE_VISUAL",
+          "LIGHT_MEDIUM_HEAVY"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "UPGRADE_STAGE_VISUAL",
+        "LIGHT_MEDIUM_HEAVY"
+      ]
+    },
+    {
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-character-gear-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+      "previewPath": "/assets/roblox/common-character-gear-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "VisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
+        "assets/roblox/common-character-gear-v1/catalog.json",
+        "assets/roblox/common-character-gear-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-character-gear-worn-armor-patch",
+      "title": "손상 장비 패치",
+      "subfamily": "COSMETIC_OVERLAY",
+      "assetId": "WORN_ARMOR_PATCH",
+      "gearRole": "DAMAGE_WEAR_VARIANT",
+      "familyRootId": "GEAR_WEAR_PATCH",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CHARACTER",
+        "GEAR",
+        "COSMETIC_OVERLAY",
+        "DAMAGE_WEAR_VARIANT",
+        "WORN_ARMOR_PATCH",
+        "TRANSMOG_BASE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CHARACTER",
+        "subfamily": "COSMETIC_OVERLAY",
+        "gearRole": "DAMAGE_WEAR_VARIANT",
+        "familyRootId": "GEAR_WEAR_PATCH",
+        "systemRoles": [
+          "DAMAGE_WEAR_VARIANT",
+          "TRANSMOG_BASE"
+        ],
+        "visualAnchor": "VisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "DAMAGE_WEAR_VARIANT",
+        "TRANSMOG_BASE"
+      ]
     }
   ],
   "research": [
@@ -43059,19 +43845,10 @@
       {
         "domain": "CHARACTER_GEAR",
         "packId": "roblox-common-character-gear-v1",
-        "currentCount": 8,
+        "currentCount": 18,
         "requiredComponentCount": 18,
-        "priorityGaps": [
-          "LEGS",
-          "SHOULDER",
-          "BELT",
-          "RING",
-          "AMULET",
-          "SET_IDENTITY",
-          "SOCKET_POINT",
-          "TRANSMOG_BASE"
-        ],
-        "state": "GAP_FILL_REQUIRED"
+        "priorityGaps": [],
+        "state": "BASE_COVERAGE_COMPLETE"
       },
       {
         "domain": "SKILL",
@@ -43223,13 +44000,14 @@
     "crossPackCoverageRequired": true,
     "perPackGapMayBeResolvedByOtherCompanyCommonPack": true,
     "latestVolumeUp": {
-      "version": 2,
+      "version": 3,
       "vfxCount": 27,
       "materialCount": 25,
       "source": "COMPANY_COMMON_SEED_ASSET_IDEATION",
       "volumeBeforeQuality": true,
       "productionVerificationUnchanged": true,
-      "skillCount": 20
+      "skillCount": 20,
+      "characterGearCount": 18
     }
   },
   "commonGenreSystemExpectations": {
