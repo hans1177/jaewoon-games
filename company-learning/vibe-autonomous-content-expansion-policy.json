@@ -112,6 +112,16 @@
         "base": 0,
         "stepEveryCycles": 2,
         "max": 3
+      },
+      "sourceCompositionDepthLevel": {
+        "base": 1,
+        "stepEveryCycles": 1,
+        "max": null
+      },
+      "activeSourceCompositionDimensions": {
+        "base": 2,
+        "stepEveryCycles": 1,
+        "max": 12
       }
     },
     "tiers": [
@@ -196,7 +206,11 @@
       "STUDIO_IS_NOT_REQUIRED_FOR_INTERNAL_AUDIT_OR_EXPECTATION_ESCALATION",
       "RUNTIME_OR_STUDIO_EVIDENCE_IS_REQUIRED_ONLY_WHERE_THE_EXISTING_CANONICAL_STAGE_ALREADY_REQUIRES_IT",
       "SAME_QA_OR_CHECK_REPASS_ALONE_COUNTS_ZERO_GROWTH",
-      "CONNECTED_CONTENT_BUNDLE_MUST_CHANGE_REAL_PLAYER_FLOW_NOT_ONLY_OBJECT_COUNT"
+      "CONNECTED_CONTENT_BUNDLE_MUST_CHANGE_REAL_PLAYER_FLOW_NOT_ONLY_OBJECT_COUNT",
+      "ASSET_QUALITY_GROWTH_MUST_PULL_APPLICABLE_GAME_SOURCE_COMPOSITION_UPWARD_NOT_ONLY_REPLACE_VISUALS",
+      "ADVANCED_ASSET_OR_PRESENTATION_SURFACE_WITHOUT_GAMEPLAY_STATE_TIMING_OR_PLAYER_FLOW_BINDING_COUNTS_ZERO_SOURCE_EVOLUTION",
+      "CUTSCENE_INTRO_LOADING_MENU_AND_HUB_SURFACES_MUST_CONNECT_TO_REAL_SESSION_OR_CONTENT_STATE_WHEN_APPLICABLE",
+      "SOURCE_COMPOSITION_DEPTH_CONTINUES_AFTER_ALL_NAMED_DIMENSIONS_ARE_ACTIVE"
     ],
     "acceptance": [
       "REAL_SOURCE_DELTA",
@@ -211,7 +225,10 @@
       "MINIMUM_PLAYER_FACING_PROOFS_MET",
       "QUALITATIVE_DETAIL_DEPTH_MUST_CONTINUE_AFTER_QUANTITATIVE_THRESHOLDS_CAP",
       "MINIMUM_CONNECTED_CONTENT_BUNDLES_MET_WHEN_REQUIRED",
-      "SAME_QA_REPASS_ALONE_IS_NOT_GROWTH"
+      "SAME_QA_REPASS_ALONE_IS_NOT_GROWTH",
+      "MINIMUM_ACTIVE_SOURCE_COMPOSITION_DIMENSIONS_MET_OR_CAUSAL_REPAIR_DEFERRED",
+      "ASSET_LIBRARY_SOURCE_PARITY_MET_WHEN_APPLICABLE",
+      "ASSET_ONLY_SWAP_IS_NOT_SOURCE_EVOLUTION"
     ],
     "studioRequired": false,
     "internalAuditCanPassWithoutStudio": true,
@@ -222,7 +239,10 @@
       "insufficientConnectedSourceDeltaFailsCandidate": true,
       "newValidationStageCreated": false,
       "studioRuntimeRequired": false,
-      "note": "Uses the existing source-candidate delta gate. The field name is historical; this enforcement is static source validation and does not require Roblox Studio."
+      "note": "Uses the existing source-candidate delta gate. Planner raises the same requiredConnectedImprovements minimum to the active source-composition minimum when the internal asset library is present, so source composition growth is enforced without changing the locked worker or requiring Roblox Studio.",
+      "sourceCompositionMinimumFeedsExistingConnectedDeltaGate": true,
+      "assetLibraryReferenceIsReadOnly": true,
+      "assetOnlyUpgradeCannotSatisfyConnectedSourceDelta": true
     },
     "detailDimensions": [
       "CORE_INTERACTION_RESPONSE",
@@ -237,7 +257,7 @@
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
     "detailDimensionRule": "Each verified iteration adds another required detail dimension until all are active; after all dimensions are active, detailDepthLevel continues to rise so the same dimensions must be treated more deeply rather than merely repeated.",
-    "quantityGrowthSafety": "Connected source delta has a bounded anti-bloat threshold; qualitative detail depth remains unbounded and must not be replaced by object-count growth.",
+    "quantityGrowthSafety": "Connected source delta remains bounded by the 12 source-composition dimensions to prevent bloat; qualitative detailDepthLevel and sourceCompositionDepthLevel remain unbounded and must be satisfied by deeper connected behavior, content structure, transitions, and consequences rather than object-count growth.",
     "contentBundleDefinition": {
       "minimumConnectedComponents": 3,
       "components": [
@@ -249,6 +269,39 @@
       ],
       "duplicateObjectCountDoesNotCount": true,
       "statOnlyVariantDoesNotCount": true
+    },
+    "sourceCompositionDimensions": [
+      "CORE_LOOP_ORCHESTRATION",
+      "WORLD_STATE_AND_EVENT_CAUSALITY",
+      "ENCOUNTER_BEHAVIOR_AND_COUNTERPLAY",
+      "CONTENT_GRAPH_AND_PROGRESSION_NETWORK",
+      "CINEMATIC_CUTSCENE_AND_EVENT_BINDING",
+      "INTRO_LOADING_AND_SESSION_CONTINUITY",
+      "MENU_HUB_AND_META_LOOP_INTEGRATION",
+      "NPC_CHARACTER_REACTIVITY",
+      "QUEST_STORY_AND_DISCOVERY_CHAINING",
+      "MID_LATE_ENDGAME_AND_REPLAY_STRUCTURE",
+      "PRESENTATION_AUDIO_VFX_MOTION_TIMING",
+      "PERFORMANCE_STREAMING_SAVE_AND_NETWORK_RESILIENCE"
+    ],
+    "sourceCompositionRule": "Each verified iteration activates more source-composition dimensions until all are active. After that, sourceCompositionDepthLevel keeps rising, so the same dimensions must gain deeper state transitions, causal links, encounter variation, content-network consequences, recovery behavior, pacing, and production resilience rather than only more files or objects.",
+    "assetLibrarySourceParity": {
+      "version": 1,
+      "status": "ACTIVE",
+      "libraryPath": "company-asset-library.json",
+      "assetUniversePath": "assets/vibe-studio-asset-universe.js",
+      "target": "HIGH_END_STUDIO_ASSET_UNIVERSE",
+      "sourceMustKeepPaceWithApplicableAssetCapability": true,
+      "applicableOnly": true,
+      "notApplicableRequiresReason": true,
+      "assetOnlySwapCountsAsEvolution": false,
+      "markerOnlySourceParityForbidden": true,
+      "actualGameplayOrPresentationBindingRequired": true,
+      "advancedAssetSurfaceMustHaveStateTimingOrPlayerFlowPurpose": true,
+      "cutsceneIntroLoadingMenuMustRemainSkippableRecoverableAndGameplayConnectedWhenApplicable": true,
+      "existingGameRulesBalanceSaveAndNetworkMeaningMustBePreserved": true,
+      "internalAssetGradeMayImproveWithoutForcingUnsafeGameplayRewrite": true,
+      "studioNotRequiredForStaticSourceParityAudit": true
     }
   },
   "expansionDomains": [
