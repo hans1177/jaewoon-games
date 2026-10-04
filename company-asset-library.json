@@ -1,5 +1,5 @@
 {
-  "version": 50,
+  "version": 51,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -14466,6 +14466,3642 @@
       "lowScoreWouldStillBeUsable": true,
       "higherCompatibleInternalScoreAutoPreferred": true,
       "productionVerificationSeparate": true
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-v1",
+      "title": "Roblox 회사 공용 메뉴·운영 UI 18종 v1",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "assetCount": 18,
+      "stylePresetCount": 6,
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "MAIN_MENU",
+        "PAUSE_MENU",
+        "SETTINGS",
+        "NAVIGATION",
+        "INVENTORY",
+        "EQUIPMENT",
+        "MAP",
+        "JOURNAL",
+        "INPUT_HINT",
+        "SAVE_STATUS",
+        "PROFILE"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-main-menu-shell",
+      "title": "Roblox 공용 메뉴 MAIN_MENU_SHELL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "MAIN_MENU_SHELL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "MAIN_MENU_SHELL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-top-status-bar",
+      "title": "Roblox 공용 메뉴 TOP_STATUS_BAR",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "NAVIGATION",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "TOP_STATUS_BAR",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "TOP_STATUS_BAR"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-side-navigation",
+      "title": "Roblox 공용 메뉴 SIDE_NAVIGATION",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "NAVIGATION",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "SIDE_NAVIGATION",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "SIDE_NAVIGATION"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-bottom-action-bar",
+      "title": "Roblox 공용 메뉴 BOTTOM_ACTION_BAR",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "NAVIGATION",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "BOTTOM_ACTION_BAR",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "BOTTOM_ACTION_BAR"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-pause-menu",
+      "title": "Roblox 공용 메뉴 PAUSE_MENU",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "PAUSE_MENU",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "PAUSE_MENU"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-settings-panel",
+      "title": "Roblox 공용 메뉴 SETTINGS_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "SETTINGS",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "SETTINGS_PANEL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "SETTINGS_PANEL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-settings-row",
+      "title": "Roblox 공용 메뉴 SETTINGS_ROW",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "SETTINGS",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "SETTINGS_ROW",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "SETTINGS_ROW"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-search-bar",
+      "title": "Roblox 공용 메뉴 SEARCH_BAR",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "SEARCH_BAR",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "SEARCH_BAR"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-filter-chip",
+      "title": "Roblox 공용 메뉴 FILTER_CHIP",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "FILTER_CHIP",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "FILTER_CHIP"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-sort-selector",
+      "title": "Roblox 공용 메뉴 SORT_SELECTOR",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "SORT_SELECTOR",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "SORT_SELECTOR"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-inventory-panel",
+      "title": "Roblox 공용 메뉴 INVENTORY_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INVENTORY",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "INVENTORY_PANEL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "INVENTORY_PANEL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-item-detail-panel",
+      "title": "Roblox 공용 메뉴 ITEM_DETAIL_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INVENTORY",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "ITEM_DETAIL_PANEL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "ITEM_DETAIL_PANEL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-equipment-panel",
+      "title": "Roblox 공용 메뉴 EQUIPMENT_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "EQUIPMENT",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "EQUIPMENT_PANEL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "EQUIPMENT_PANEL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-map-panel",
+      "title": "Roblox 공용 메뉴 MAP_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MAP",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "MAP_PANEL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "MAP_PANEL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-journal-panel",
+      "title": "Roblox 공용 메뉴 JOURNAL_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "JOURNAL",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "JOURNAL_PANEL",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "JOURNAL_PANEL"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-input-hint-bar",
+      "title": "Roblox 공용 메뉴 INPUT_HINT_BAR",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "NAVIGATION",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "INPUT_HINT_BAR",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "INPUT_HINT_BAR"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-save-status",
+      "title": "Roblox 공용 메뉴 SAVE_STATUS",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "SAVE_STATUS",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "SAVE_STATUS"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-menu-profile-summary",
+      "title": "Roblox 공용 메뉴 PROFILE_SUMMARY",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "MENU",
+      "path": "/assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/common-menu-v1/RobloxCommonMenu.luau",
+        "assets/roblox/common-menu-v1/catalog.json",
+        "assets/roblox/common-menu-v1/quality-evidence.json",
+        "assets/roblox/common-menu-v1/design-principles.json",
+        "assets/roblox/common-menu-v1/README.md"
+      ],
+      "packId": "roblox-common-menu-v1",
+      "atomId": "PROFILE_SUMMARY",
+      "internalAuditScore": 957.9,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-menu-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "MENU_INFORMATION_ARCHITECTURE",
+          "STYLE_PRESET_SELECTION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "THEME",
+          "TYPOGRAPHY",
+          "LAYOUT",
+          "FOCUS_STATES",
+          "BACKGROUND_INTEGRATION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "MAIN_MENU",
+          "PAUSE_MENU",
+          "SETTINGS",
+          "INVENTORY",
+          "EQUIPMENT",
+          "MAP",
+          "JOURNAL"
+        ],
+        "BUILD_UP": [
+          "SEARCH_FILTER_SORT",
+          "INPUT_HINTS",
+          "PROFILE",
+          "SAVE_STATUS",
+          "DETAIL_PANELS"
+        ],
+        "PRESENTATION_POLISH": [
+          "FOCUS_MOTION",
+          "DEPTH",
+          "READABILITY",
+          "ACCESSIBILITY"
+        ]
+      },
+      "presentationRoles": [
+        "PROFILE_SUMMARY"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-v1",
+      "title": "Roblox 회사 공용 로딩·인트로 연출 v1",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "LOADING",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "assetCount": 11,
+      "introPresetCount": 3,
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LOADING",
+        "INTRO",
+        "SCREEN_TRANSITION",
+        "BRAND",
+        "BACKGROUND_MOTION"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-brand-mark",
+      "title": "Roblox 공용 프레젠테이션 BRAND_MARK",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "BRAND_MARK",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "BRAND_MARK"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-loading-screen",
+      "title": "Roblox 공용 프레젠테이션 LOADING_SCREEN",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "LOADING",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "LOADING_SCREEN",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LOADING_SCREEN"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-loading-spinner",
+      "title": "Roblox 공용 프레젠테이션 LOADING_SPINNER",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "LOADING",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "LOADING_SPINNER",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LOADING_SPINNER"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-loading-progress",
+      "title": "Roblox 공용 프레젠테이션 LOADING_PROGRESS",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "LOADING",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "LOADING_PROGRESS",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LOADING_PROGRESS"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-loading-tip",
+      "title": "Roblox 공용 프레젠테이션 LOADING_TIP",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "LOADING",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "LOADING_TIP",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LOADING_TIP"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-intro-canvas",
+      "title": "Roblox 공용 프레젠테이션 INTRO_CANVAS",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "INTRO_CANVAS",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "INTRO_CANVAS"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-intro-title-card",
+      "title": "Roblox 공용 프레젠테이션 INTRO_TITLE_CARD",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "INTRO_TITLE_CARD",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "INTRO_TITLE_CARD"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-transition-curtain",
+      "title": "Roblox 공용 프레젠테이션 TRANSITION_CURTAIN",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "TRANSITION_CURTAIN",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "TRANSITION_CURTAIN"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-vignette-overlay",
+      "title": "Roblox 공용 프레젠테이션 VIGNETTE_OVERLAY",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "VIGNETTE_OVERLAY",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "VIGNETTE_OVERLAY"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-letterbox",
+      "title": "Roblox 공용 프레젠테이션 LETTERBOX",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "LETTERBOX",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LETTERBOX"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-presentation-layered-parallax",
+      "title": "Roblox 공용 프레젠테이션 LAYERED_PARALLAX",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "INTRO",
+      "path": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+      "sourceFiles": [
+        "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
+        "assets/roblox/common-presentation-v1/catalog.json",
+        "assets/roblox/common-presentation-v1/quality-evidence.json",
+        "assets/roblox/common-presentation-v1/README.md"
+      ],
+      "packId": "roblox-common-presentation-v1",
+      "atomId": "LAYERED_PARALLAX",
+      "internalAuditScore": 961.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-presentation-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "INTRO_TONE",
+          "BRAND_MARK",
+          "LOADING_INFORMATION"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "BACKGROUND",
+          "MARK",
+          "TYPE",
+          "PROGRESS",
+          "TIP",
+          "TRANSITION"
+        ],
+        "SOURCE_COMPOSITION": [
+          "LOADING_SCREEN",
+          "INTRO_CANVAS",
+          "TRANSITION_CURTAIN"
+        ],
+        "BUILD_UP": [
+          "MULTIPLE_INTRO_PRESETS",
+          "TIP_ROTATION",
+          "STATUS_VARIANTS",
+          "PARALLAX"
+        ],
+        "PRESENTATION_POLISH": [
+          "TIMING",
+          "REDUCED_MOTION",
+          "CONTRAST",
+          "DEPTH",
+          "SAFE_SKIP_HANDOFF"
+        ]
+      },
+      "presentationRoles": [
+        "LAYERED_PARALLAX"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-v1",
+      "title": "Roblox 회사 공용 레이어형 배경 14종 v1",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "assetCount": 14,
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "LOADING_BACKGROUND",
+        "MENU_BACKGROUND",
+        "INTRO_BACKGROUND",
+        "CHAPTER_BACKGROUND",
+        "RESULT_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-forest-dawn",
+      "title": "Roblox 공용 배경 FOREST_DAWN",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "FOREST_DAWN",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-deep-forest",
+      "title": "Roblox 공용 배경 DEEP_FOREST",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "DEEP_FOREST",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-snow-field",
+      "title": "Roblox 공용 배경 SNOW_FIELD",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "SNOW_FIELD",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-desert-dusk",
+      "title": "Roblox 공용 배경 DESERT_DUSK",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "DESERT_DUSK",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-swamp-mist",
+      "title": "Roblox 공용 배경 SWAMP_MIST",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "SWAMP_MIST",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-cave-blue",
+      "title": "Roblox 공용 배경 CAVE_BLUE",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "CAVE_BLUE",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-crystal-cavern",
+      "title": "Roblox 공용 배경 CRYSTAL_CAVERN",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "CRYSTAL_CAVERN",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-coast-sunset",
+      "title": "Roblox 공용 배경 COAST_SUNSET",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "COAST_SUNSET",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-village-warm",
+      "title": "Roblox 공용 배경 VILLAGE_WARM",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "VILLAGE_WARM",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-city-night",
+      "title": "Roblox 공용 배경 CITY_NIGHT",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "CITY_NIGHT",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-ruins-moon",
+      "title": "Roblox 공용 배경 RUINS_MOON",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "RUINS_MOON",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-volcanic-glow",
+      "title": "Roblox 공용 배경 VOLCANIC_GLOW",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "VOLCANIC_GLOW",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-sky-island",
+      "title": "Roblox 공용 배경 SKY_ISLAND",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "SKY_ISLAND",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
+    },
+    {
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "automaticCrossGameReuseAllowed": true,
+      "internalAuditStudioRequired": false,
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true,
+      "gameplayAuthority": false,
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "id": "roblox-common-background-horror-corridor",
+      "title": "Roblox 공용 배경 HORROR_CORRIDOR",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "BACKGROUND",
+      "path": "/assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+      "sourceFiles": [
+        "assets/roblox/common-background-v1/RobloxCommonBackgrounds.luau",
+        "assets/roblox/common-background-v1/catalog.json",
+        "assets/roblox/common-background-v1/quality-evidence.json",
+        "assets/roblox/common-background-v1/README.md"
+      ],
+      "packId": "roblox-common-background-v1",
+      "backgroundProfile": "HORROR_CORRIDOR",
+      "internalAuditScore": 953.4,
+      "internalAuditGrade": "ELITE",
+      "internalAuditEvidenceRef": "assets/roblox/common-background-v1/quality-evidence.json",
+      "flowStageUse": [
+        "DESIGN_REFINEMENT",
+        "GRAPHICS_PRODUCTION",
+        "SOURCE_COMPOSITION",
+        "BUILD_UP",
+        "PRESENTATION_POLISH"
+      ],
+      "stageRoles": {
+        "DESIGN_REFINEMENT": [
+          "BIOME_TONE",
+          "DEPTH_PLAN",
+          "LANDMARK_ROLE"
+        ],
+        "GRAPHICS_PRODUCTION": [
+          "PALETTE",
+          "LIGHTING",
+          "LAYER_SHAPES",
+          "FOG",
+          "ACCENT"
+        ],
+        "SOURCE_COMPOSITION": [
+          "BACKGROUND_PROFILE_BINDING"
+        ],
+        "BUILD_UP": [
+          "PROFILE_VARIANTS",
+          "WEATHER_OVERLAY",
+          "LANDMARK_VARIANTS"
+        ],
+        "PRESENTATION_POLISH": [
+          "PARALLAX_DEPTH",
+          "CONTRAST",
+          "FOCAL_READABILITY",
+          "REDUCED_MOTION"
+        ]
+      },
+      "presentationRoles": [
+        "PRESENTATION_BACKGROUND"
+      ]
     }
   ],
   "research": [
@@ -18626,5 +22262,28 @@
       "runtimeFailureIsPriorityPenaltyNotAutomaticUsageBan": true,
       "provenUsageIsPriorityBonusNotStudioGate": true
     }
+  },
+  "commonPresentationCoverage": {
+    "version": 1,
+    "status": "ACTIVE_INTERNAL_ASSET_SURFACE",
+    "studioRequired": false,
+    "packs": [
+      "roblox-common-menu-v1",
+      "roblox-common-presentation-v1",
+      "roblox-common-background-v1"
+    ],
+    "menuComponents": 18,
+    "introLoadingComponents": 11,
+    "backgroundProfiles": 14,
+    "externalReferencePolicy": "DISTILLED_PRINCIPLES_ONLY_NO_PROTECTED_UI_OR_ART_COPY",
+    "flowIntegration": "EXISTING_STUDIO_ASSET_UNIVERSE_LOADOUT",
+    "stages": [
+      "DESIGN_REFINEMENT",
+      "GRAPHICS_PRODUCTION",
+      "SOURCE_COMPOSITION",
+      "BUILD_UP",
+      "PRESENTATION_POLISH"
+    ],
+    "continualImprovement": true
   }
 }
