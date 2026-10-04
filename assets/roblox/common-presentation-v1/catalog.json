@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "packId": "roblox-common-presentation-v1",
+  "title": "Roblox 회사 공용 로딩·인트로 연출 v1",
+  "family": "UI",
+  "subfamily": "LOADING_INTRO",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "license": "project-original",
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "internalAuditStudioRequired": false,
+  "gameplayAuthority": false,
+  "flowStageUse": [
+    "DESIGN_REFINEMENT",
+    "GRAPHICS_PRODUCTION",
+    "SOURCE_COMPOSITION",
+    "BUILD_UP",
+    "PRESENTATION_POLISH"
+  ],
+  "stageRoles": {
+    "DESIGN_REFINEMENT": [
+      "INTRO_TONE",
+      "BRAND_MARK",
+      "LOADING_INFORMATION"
+    ],
+    "GRAPHICS_PRODUCTION": [
+      "BACKGROUND",
+      "MARK",
+      "TYPE",
+      "PROGRESS",
+      "TIP",
+      "TRANSITION"
+    ],
+    "SOURCE_COMPOSITION": [
+      "LOADING_SCREEN",
+      "INTRO_CANVAS",
+      "TRANSITION_CURTAIN"
+    ],
+    "BUILD_UP": [
+      "MULTIPLE_INTRO_PRESETS",
+      "TIP_ROTATION",
+      "STATUS_VARIANTS",
+      "PARALLAX"
+    ],
+    "PRESENTATION_POLISH": [
+      "TIMING",
+      "REDUCED_MOTION",
+      "CONTRAST",
+      "DEPTH",
+      "SAFE_SKIP_HANDOFF"
+    ]
+  },
+  "atoms": [
+    {
+      "atomId": "BRAND_MARK",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateBrandMark",
+      "role": "BRAND"
+    },
+    {
+      "atomId": "LOADING_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLoadingScreen",
+      "role": "LOADING_SCREEN"
+    },
+    {
+      "atomId": "LOADING_SPINNER",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLoadingSpinner",
+      "role": "LOADING_FEEDBACK"
+    },
+    {
+      "atomId": "LOADING_PROGRESS",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLoadingProgress",
+      "role": "LOADING_PROGRESS"
+    },
+    {
+      "atomId": "LOADING_TIP",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLoadingTip",
+      "role": "LOADING_TIP"
+    },
+    {
+      "atomId": "INTRO_CANVAS",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateIntroCanvas",
+      "role": "INTRO"
+    },
+    {
+      "atomId": "INTRO_TITLE_CARD",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateIntroTitleCard",
+      "role": "INTRO_TITLE"
+    },
+    {
+      "atomId": "TRANSITION_CURTAIN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateTransitionCurtain",
+      "role": "SCREEN_TRANSITION"
+    },
+    {
+      "atomId": "VIGNETTE_OVERLAY",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateVignette",
+      "role": "ATMOSPHERE"
+    },
+    {
+      "atomId": "LETTERBOX",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLetterbox",
+      "role": "INTRO_FRAMING"
+    },
+    {
+      "atomId": "LAYERED_PARALLAX",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateLayeredParallax",
+      "role": "BACKGROUND_MOTION"
+    }
+  ],
+  "introPresets": [
+    "SIMPLE_FADE",
+    "LOGO_REVEAL",
+    "TITLE_CARD"
+  ],
+  "compositionRules": {
+    "defaultIntroComplexity": "SIMPLE_FIRST",
+    "maxDefaultIntroSeconds": 4,
+    "skipOrFastForwardOwnedByGame": true,
+    "reducedMotionVariantRequired": true,
+    "gameStartMayNotDependOnPresentationCompletion": true,
+    "loadingProgressOwnedByGame": true,
+    "backgroundCanComeFrom": "roblox-common-background-v1"
+  }
+}
