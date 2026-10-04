@@ -15,15 +15,15 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 15,
+      "calls": 17,
       "successes": 3,
-      "failures": 12,
+      "failures": 14,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 38825,
-      "lastMs": 3035,
+      "totalMs": 43969,
+      "lastMs": 3554,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T13:05:34.504Z"
+      "updatedAt": "2026-10-04T13:06:48.047Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -70,15 +70,15 @@
       "updatedAt": "2026-10-04T12:55:37.539Z"
     },
     "gemini:gemini-3.1-pro-preview": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 23628,
-      "lastMs": 3693,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 10h56m35.409472077s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
-      "updatedAt": "2026-10-04T13:03:24.601Z"
+      "totalMs": 27285,
+      "lastMs": 3657,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 10h53m11.860128638s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerMinute-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.1-pro\", \"location\": \"global\"",
+      "updatedAt": "2026-10-04T13:06:48.150Z"
     },
     "gemini:gemini-2.5-pro": {
       "calls": 1,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-04T12:55:37.887Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 12,
+      "calls": 14,
       "successes": 0,
-      "failures": 12,
+      "failures": 14,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 95316,
-      "lastMs": 5886,
+      "totalMs": 106881,
+      "lastMs": 6722,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T13:05:37.355Z"
+      "updatedAt": "2026-10-04T13:06:51.215Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 5,
+      "calls": 6,
       "successes": 0,
-      "failures": 5,
+      "failures": 6,
       "timeouts": 3,
-      "jsonFailures": 2,
-      "totalMs": 548878,
-      "lastMs": 120008,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T13:05:27.794Z"
+      "jsonFailures": 3,
+      "totalMs": 612916,
+      "lastMs": 64038,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T13:06:41.394Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T13:05:37.355Z"
+  "updatedAt": "2026-10-04T13:06:51.216Z"
 }
