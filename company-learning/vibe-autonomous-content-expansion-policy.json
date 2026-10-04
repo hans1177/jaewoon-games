@@ -97,6 +97,16 @@
         "base": 1,
         "stepEveryCycles": 2,
         "max": 4
+      },
+      "activeDetailDimensions": {
+        "base": 2,
+        "stepEveryCycles": 1,
+        "max": 10
+      },
+      "playerFacingProofs": {
+        "base": 1,
+        "stepEveryCycles": 3,
+        "max": 4
       }
     },
     "tiers": [
@@ -189,7 +199,10 @@
       "MINIMUM_CROSS_SYSTEM_CONNECTIONS_MET",
       "TIER_REQUIREMENTS_MET_OR_EXPLICIT_CAUSAL_REPAIR_DEFERRAL",
       "NO_PROTECTED_REGRESSION",
-      "RELEVANT_EXISTING_QA_AND_RUNTIME_EVIDENCE"
+      "RELEVANT_EXISTING_QA_AND_RUNTIME_EVIDENCE",
+      "MINIMUM_ACTIVE_DETAIL_DIMENSIONS_MET_OR_CAUSAL_REPAIR_DEFERRED",
+      "MINIMUM_PLAYER_FACING_PROOFS_MET",
+      "QUALITATIVE_DETAIL_DEPTH_MUST_CONTINUE_AFTER_QUANTITATIVE_THRESHOLDS_CAP"
     ],
     "studioRequired": false,
     "internalAuditCanPassWithoutStudio": true,
@@ -201,7 +214,21 @@
       "newValidationStageCreated": false,
       "studioRuntimeRequired": false,
       "note": "Uses the existing source-candidate delta gate. The field name is historical; this enforcement is static source validation and does not require Roblox Studio."
-    }
+    },
+    "detailDimensions": [
+      "CORE_INTERACTION_RESPONSE",
+      "STATE_TRANSITIONS_AND_CONTINUITY",
+      "EDGE_CASES_AND_RECOVERY",
+      "DISCOVERABILITY_AND_INFORMATION",
+      "PACING_AND_FRICTION",
+      "CONTENT_CAUSALITY_AND_WORLD_LOGIC",
+      "REWARD_AND_PROGRESSION_PURPOSE",
+      "COUNTERPLAY_AND_REPLAY_VARIATION",
+      "PRESENTATION_READABILITY_AND_FEEDBACK",
+      "PERFORMANCE_AND_RUNTIME_STABILITY"
+    ],
+    "detailDimensionRule": "Each verified iteration adds another required detail dimension until all are active; after all dimensions are active, detailDepthLevel continues to rise so the same dimensions must be treated more deeply rather than merely repeated.",
+    "quantityGrowthSafety": "Connected source delta has a bounded anti-bloat threshold; qualitative detail depth remains unbounded and must not be replaced by object-count growth."
   },
   "expansionDomains": [
     "WORLD_BACKGROUND_AND_ENVIRONMENT",
