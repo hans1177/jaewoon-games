@@ -60,6 +60,7 @@ function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
 export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
 function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
@@ -503,6 +504,44 @@ export function projectSort(a,b){
 }
 function centralPresentationPolicy(repoRoot=process.cwd()){
   return readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),{});
+}
+export function buildUpGrowthExpectation({cycle=1,repoRoot=process.cwd()}={}){
+  const policy=readJson(path.join(repoRoot,AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH),{});
+  const contract=policy?.progressiveGrowthExpectation||{};
+  const tiers=Array.isArray(contract?.tiers)?contract.tiers:[];
+  const currentCycle=Math.max(1,Math.floor(Number(cycle)||1));
+  let tier=tiers.find(row=>currentCycle>=Number(row?.minCycle||1)&&(row?.maxCycle==null||currentCycle<=Number(row.maxCycle)));
+  if(!tier)tier=tiers.at(-1)||{
+    id:'FALLBACK_GROWTH',minCycle:1,maxCycle:null,minimumGrowthPoints:6,minimumConnectedImprovements:3,
+    minimumDistinctImprovementAxes:2,minimumConnectedContentBundles:0,expectations:['BEAT_PREVIOUS_VERIFIED_BASELINE']
+  };
+  const repeat=tier?.repeatEscalation||{};
+  const beyond=Math.max(0,currentCycle-Number(tier?.minCycle||currentCycle));
+  const pointStep=Math.max(1,Number(repeat?.everyAdditionalCycles||0));
+  const connectedStep=Math.max(1,Number(repeat?.connectedImprovementsPlusEvery||0));
+  const bundleStep=Math.max(1,Number(repeat?.contentBundlesPlusEvery||0));
+  const extraPoints=repeat?.everyAdditionalCycles?Math.floor(beyond/pointStep)*Math.max(0,Number(repeat?.growthPointsPlus||0)):0;
+  const extraConnected=repeat?.connectedImprovementsPlusEvery?Math.floor(beyond/connectedStep)*Math.max(0,Number(repeat?.connectedImprovementsPlus||0)):0;
+  const extraBundles=repeat?.contentBundlesPlusEvery?Math.floor(beyond/bundleStep)*Math.max(0,Number(repeat?.contentBundlesPlus||0)):0;
+  return Object.freeze({
+    version:Number(contract?.version||1),
+    cycle:currentCycle,
+    tier:clean(tier?.id)||'FALLBACK_GROWTH',
+    studioRequired:contract?.studioRequired===true,
+    studioEvidenceRole:clean(contract?.studioEvidenceRole)||'OPTIONAL_SUPPORTING_EVIDENCE_ONLY',
+    minimumGrowthPoints:Math.max(1,Number(tier?.minimumGrowthPoints||6)+extraPoints),
+    minimumConnectedImprovements:Math.max(1,Number(tier?.minimumConnectedImprovements||3)+extraConnected),
+    minimumDistinctImprovementAxes:Math.max(1,Number(tier?.minimumDistinctImprovementAxes||2)),
+    minimumConnectedContentBundles:Math.max(0,Number(tier?.minimumConnectedContentBundles||0)+extraBundles),
+    expectations:Object.freeze([...(tier?.expectations||[]).map(clean).filter(Boolean)]),
+    zeroGrowth:Object.freeze([
+      'SAME_CHECK_REPASS','MARKER_ONLY_CHANGE','DOCUMENTATION_ONLY_CHANGE','NAME_COLOR_OR_STAT_ONLY_CLONE'
+    ]),
+    previousVerifiedBaselineMustBeBeaten:contract?.rules?.previousVerifiedBaselineMustBeBeaten!==false,
+    accumulatedGrowthMustRemainVisible:contract?.rules?.accumulatedGrowthMustRemainVisible!==false,
+    sourceAndPlayerEffectRequired:contract?.rules?.sourceAndPlayerEffectRequired!==false,
+    growthPointModel:Object.freeze({...contract?.growthPointModel})
+  });
 }
 function assetProductionEnabled(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot),contract=policy?.assetProductionParallelContract||{};
@@ -2424,6 +2463,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const qualityBuildUpRequired=project?.queueRobloxQualityBuildUpRequired===true;
   const cycle=verified.length+1;
   const phase=qualityBuildUpRequired||latestFailed?'REPAIR':previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
+  const growthExpectation=buildUpGrowthExpectation({cycle,repoRoot});
 
   const knownSignals=[
     ...(project?.developmentValidation?.blockers||[]),
@@ -2519,7 +2559,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const baselineId=clean(previous?.id)||`source:${sourceRoot}`;
   const explicitGap=knownSignals[0]||(existingHolisticBackfillRequired?`EXISTING_GAME_HOLISTIC_BACKFILL:${focusPillar}`:`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`);
   const phaseInstruction=phase==='BUILD_UP'
-    ?'설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
+    ?`설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 이번 cycle은 이전 verified baseline보다 실제 게임이 커져야 하며 서로 연결된 구현을 최소 ${growthExpectation.minimumConnectedImprovements}개 이상 필요한 만큼 한 패키지에서 완성한다. 최소 성장 포인트 ${growthExpectation.minimumGrowthPoints}, 서로 다른 개선 축 ${growthExpectation.minimumDistinctImprovementAxes}개, 연결 콘텐츠 묶음 ${growthExpectation.minimumConnectedContentBundles}개 기준을 만족한다. 같은 QA 재통과·마커 변경·문서만 변경·이름/색/수치 복제는 성장 0점이다.`
     :phase==='REPAIR'
       ?'최근 실패/차단 근거를 먼저 재현하고 원인 책임 시스템을 직접 수리한다. 같은 증상을 다른 wrapper나 임시 override로 덮지 말고 원인을 제거한 뒤 동일 시나리오를 다시 검증한다. 수리 범위 안에서 작은 품질 개선도 함께 남긴다.'
       :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
@@ -2536,6 +2576,9 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     :'';
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
 ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
+[PROGRESSIVE_GROWTH_EXPECTATION] cycle=${growthExpectation.cycle}; tier=${growthExpectation.tier}; minGrowthPoints=${growthExpectation.minimumGrowthPoints}; minConnected=${growthExpectation.minimumConnectedImprovements}; minAxes=${growthExpectation.minimumDistinctImprovementAxes}; minBundles=${growthExpectation.minimumConnectedContentBundles}; studioRequired=${growthExpectation.studioRequired?'YES':'NO'}
+반복 성장 요구=${growthExpectation.expectations.join(' | ')||'BEAT_PREVIOUS_VERIFIED_BASELINE'}
+0점 처리=${growthExpectation.zeroGrowth.join(',')}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
@@ -2559,6 +2602,13 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     'studio-quality-design-is-not-implementation-ceiling',
     'studio-quality-real-source-delta-required',
     'studio-quality-next-cycle-required:YES',
+    'progressive-growth-expectation:v1',
+    'progressive-growth-tier:'+growthExpectation.tier,
+    'progressive-growth-min-points:'+String(growthExpectation.minimumGrowthPoints),
+    'progressive-growth-min-connected:'+String(growthExpectation.minimumConnectedImprovements),
+    'progressive-growth-min-axes:'+String(growthExpectation.minimumDistinctImprovementAxes),
+    'progressive-growth-min-bundles:'+String(growthExpectation.minimumConnectedContentBundles),
+    'progressive-growth-studio-required:NO',
     ...(existingHolisticBackfillRequired?[
       'existing-holistic-backfill:v1',
       'existing-holistic-backfill-focus:'+focusPillar,
@@ -2606,7 +2656,8 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     strictDesignScore:designContext?.strictScore??null,
     approvedDesignElements:gameplayDesignRequired?designSummary:null,
     designIsImplementationCeiling:false,
-    requiredConnectedImprovements:{min:3,max:null},
+    requiredConnectedImprovements:{min:growthExpectation.minimumConnectedImprovements,max:null},
+    progressiveGrowthExpectation:growthExpectation,
     existingHolisticBackfillRequired,
     existingHolisticBackfillVersion:project?.existing===true?1:null,
     existingHolisticBackfillFocus:existingHolisticBackfillRequired?focusPillar:null,
