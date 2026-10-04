@@ -15,15 +15,15 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 14,
+      "calls": 15,
       "successes": 3,
-      "failures": 11,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 51168,
-      "lastMs": 1146,
+      "totalMs": 54060,
+      "lastMs": 2892,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T16:58:45.696Z"
+      "updatedAt": "2026-10-04T16:58:47.442Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,15 +114,15 @@
       "updatedAt": "2026-10-04T16:48:11.149Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 10,
+      "calls": 12,
       "successes": 0,
-      "failures": 10,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 100660,
-      "lastMs": 9071,
+      "totalMs": 111054,
+      "lastMs": 7192,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T16:56:40.428Z"
+      "updatedAt": "2026-10-04T16:58:51.742Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 5,
@@ -137,5 +137,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T16:58:45.696Z"
+  "updatedAt": "2026-10-04T16:58:51.742Z"
 }
