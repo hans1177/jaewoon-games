@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "packId": "roblox-common-character-gear-v1",
+  "recordedAt": "2026-10-04",
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "eightReusableCharacterGearVisuals": true,
+      "companyCommonBase": true,
+      "currentRobloxGameNeedsMapped": true,
+      "bodyPlanCompatibilityRequired": true,
+      "visualAnchorProvided": true,
+      "paletteAdaptation": true,
+      "farMidNearDetailLevels": true,
+      "worldAndViewportSharedSource": true,
+      "gameplayAuthorityFalse": true,
+      "armorHealthMovementEquipInventorySaveNetworkUntouched": true,
+      "runtimeVerificationNotClaimed": true
+    }
+  },
+  "runtimeQuality": {
+    "claimedScore": null,
+    "requiredBeforeProductionVerified": true,
+    "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
+    "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
+  }
+}
