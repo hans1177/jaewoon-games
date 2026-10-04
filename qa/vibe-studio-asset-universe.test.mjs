@@ -34,6 +34,7 @@ import {
   INTERNAL_ASSET_STYLE_EXPRESSION_AXES,
   INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,
   INTERNAL_ASSET_STUDIO_VARIATION_AXES,
+  INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT,
   buildInternalAssetMaintenanceSnapshot,
   resolveInternalAssetStyleExpressionProfile,
   selectInternalProgressionComplexityProfile,
@@ -3849,6 +3850,40 @@ test('internal asset maintenance refreshes on type role and quality evolution wi
   assert.equal(second.continueWithoutChatgpt,true);
 });
 
+test('studio audio breadth covers music ambience creature howls spatial layers and continuous quality',()=>{
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.roleTargetMin,180);
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.actualVerifiedAudioFileCountSeparateFromRoleCoverage,true);
+  for(const role of ['TITLE_MENU','EXPLORATION_CALM','COMBAT_LAYER_LOW','COMBAT_LAYER_HIGH','BOSS_FINAL_PHASE','VICTORY','DEFEAT']){
+    assert.ok(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.music.roles.includes(role),role);
+  }
+  for(const role of ['RAIN_LIGHT','THUNDER_NEAR','THUNDER_FAR','CAVE_AIR','CITY_CROWD','STRUCTURE_CREAK']){
+    assert.ok(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.ambience.roles.includes(role),role);
+  }
+  for(const role of ['WOLF_HOWL_NEAR','WOLF_HOWL_DISTANT','COYOTE_HOWL_DISTANT','BEAR_ROAR','BOSS_VOCAL_PHASE']){
+    assert.ok(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.creatureVocals.roles.includes(role),role);
+  }
+  for(const role of ['WEAPON_HIT_FLESH','WEAPON_HIT_ARMOR','PROJECTILE_FLYBY','SKILL_IMPACT','CRAFT_COMPLETE','CHEST_OPEN']){
+    assert.ok(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.gameplaySfx.roles.includes(role),role);
+  }
+  assert.deepEqual(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.spatialMix.distanceBands,['NEAR','MID','FAR','DISTANT']);
+  assert.ok(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.spatialMix.requirements.includes('OCCLUSION_FILTER_ROLE'));
+  assert.ok(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.spatialMix.requirements.includes('REVERB_ZONE_ROLE'));
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.variation.singleLoopOnlyForbidden,true);
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.variation.minimumRepeaterVariantsRecommended,4);
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.quality.continual,true);
+  assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.quality.oneAndDoneForbidden,true);
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('BGM_COMBAT_LOW_MID_HIGH_STEMS'));
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('WOLF_HOWL_NEAR_DISTANT_SET'));
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('OCCLUSION_REVERB_ZONE_ROLES'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required.includes('CREATURE_HOWL'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required.includes('MUSIC_BOSS_PHASE'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required.includes('REVERB_ZONE_ROLE'));
+  assert.ok(INTERNAL_ASSET_STUDIO_VARIATION_AXES.AUDIO.includes('MUSIC_STATE'));
+  assert.ok(INTERNAL_ASSET_STUDIO_VARIATION_AXES.AUDIO.includes('CREATURE_SPECIES_STATE'));
+  assert.ok(INTERNAL_ASSET_STUDIO_VARIATION_AXES.AUDIO.includes('OCCLUSION_REVERB'));
+});
+
 test('internal asset library automation uses loose bands and concrete UI subsystem idea pools',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -3874,7 +3909,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,10);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,11);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -3952,6 +3987,14 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(plan.qualityTarget,1000);
   assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,true);
   assert.equal(plan.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.equal(plan.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
+  assert.equal(plan.audioStudioBreadth.roleTargetMin,180);
+  const audioDomain=plan.domains.find(row=>row.domain==='AUDIO');
+  assert.ok(audioDomain);
+  assert.equal(audioDomain.targetMin,180);
+  assert.ok(audioDomain.missingDepthRoles.includes('CREATURE_HOWL'));
+  assert.ok(audioDomain.missingDepthRoles.includes('MUSIC_EXPLORATION'));
+  assert.ok(audioDomain.missingDepthRoles.includes('REVERB_ZONE_ROLE'));
   assert.equal(plan.autonomousOperatingContract.chatgptPresenceRequired,false);
   assert.equal(plan.autonomousOperatingContract.humanPresenceRequired,false);
   assert.equal(plan.autonomousContinuationRequired,true);
@@ -4090,7 +4133,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,10);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,11);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -4164,7 +4207,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,10);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,11);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4181,6 +4224,8 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.internalAssetLibraryAutomation.humanPresenceRequired,false);
     assert.equal(first.registry.internalAssetLibraryAutomation.chatgptPresenceRequired,false);
     assert.equal(first.registry.internalAssetLibraryAutomation.autonomousOperatingContract.executionLane,'ASSET_DEVELOPMENT');
+    assert.equal(first.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
+    assert.equal(first.registry.internalAssetLibraryAutomation.audioStudioBreadth.roleTargetMin,180);
     assert.equal(first.registry.internalAssetLibraryAutomation.autonomousMaintenanceContract.status,'ACTIVE_SELF_MAINTAINING_LIBRARY');
     assert.equal(first.registry.internalAssetLibraryAutomation.maintenance.status,'SELF_MAINTENANCE_READY');
     assert.equal(first.registry.internalAssetLibraryAutomation.maintenance.continueWithoutHuman,true);
@@ -4221,9 +4266,11 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,10);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,11);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
+  assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
+  assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.roleTargetMin,180);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
   assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,22);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogSufficiencyCount,12);
