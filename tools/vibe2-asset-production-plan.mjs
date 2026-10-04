@@ -591,6 +591,47 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     shadowSystemCreated:false
   };
 
+  next.characterNpcCustomization={
+    ...(next.characterNpcCustomization||{}),
+    version:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.version,
+    status:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.status,
+    contract:'assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT',
+    target:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.target,
+    referenceUse:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.referenceUse,
+    protectedExpressionCopyForbidden:true,
+    exactThirdPartyFaceHairTattooOutfitUiCopyForbidden:true,
+    sharedAssetPoolForPlayerAndNpc:true,
+    npcUsesSameMorphPartMaterialAndMotionGrammar:true,
+    generatedCombinationSpaceIsNotAuthoredAssetCount:true,
+    targetMinimums:{...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.targetMinimums},
+    bodyAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.bodyAxes],
+    faceAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.faceAxes],
+    surfaceAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.surfaceAxes],
+    eyeHairAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.eyeHairAxes],
+    speciesAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.speciesAxes],
+    outfitAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.outfitAxes],
+    npcContextAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.npcContextAxes],
+    presentationAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.presentationAxes],
+    npcPopulationRules:{...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.npcPopulationRules},
+    production:{...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.production},
+    referenceImageIdeaIntegration:{
+      enabled:true,
+      sourceBoundObservationRequired:true,
+      taskLocalWorklistOnly:true,
+      persistentRawImageLearningForbidden:true,
+      visibleFeaturesMaySeedCustomizationIdeas:true,
+      unseenGeometryAndMotionRemainCreativeProposals:true,
+      directReferenceCopyForbidden:true
+    },
+    productionVerified:false,
+    runtimeVerificationRequired:true,
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    saveAuthority:false,
+    networkAuthority:false
+  };
+
+
   const comparableKeys=unique([...Object.keys(original),...Object.keys(next)]).filter(key=>key!=='version'&&key!=='updatedAt').sort();
   const changedSections=comparableKeys.filter(key=>JSON.stringify(original[key])!==JSON.stringify(next[key]));
   const beforeComparable=JSON.stringify({...original,version:0,updatedAt:null});
