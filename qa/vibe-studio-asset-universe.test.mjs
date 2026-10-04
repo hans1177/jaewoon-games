@@ -4164,13 +4164,14 @@ test('catalog-driven company asset registry synchronization is persistent only w
     fs.mkdirSync(path.join(root,'assets','roblox','common-vfx-v1'),{recursive:true});
     fs.mkdirSync(path.join(root,'assets','roblox','common-ui-v1'),{recursive:true});
     fs.mkdirSync(path.join(root,'artbook-submissions','seed-demo'),{recursive:true});
+    fs.mkdirSync(path.join(root,'roblox-games','demo','shared'),{recursive:true});
 
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
       assets:[
-        {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false},
-        {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false},
-        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false}
+        {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false,path:'assets/roblox/common-ui-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'}
       ],
       commonLibrarySystemDepthAudit:{status:'EXPANDED',scoreIsUsageGate:false,existingAssetsRemainUsable:true,rows:[]}
     },null,2)+'\n');
@@ -4196,6 +4197,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
     fs.writeFileSync(path.join(root,'artbook-submissions','seed-demo','current.json'),JSON.stringify({
       gameId:'seed-demo',gameName:'Demo',designCore:{coreFun:'combat survival',coreLoop:['combat','upgrade','boss'],signatureSystems:['action']}
     },null,2)+'\n');
+    fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','index.luau'),'return {}\n','utf8');
+    fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','index.luau'),'return {}\n','utf8');
+    fs.writeFileSync(path.join(root,'roblox-games','demo','shared','GameConfig.luau'),"local assetId = 'roblox-common-vfx-v1'\nreturn {assetId=assetId}\n",'utf8');
 
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
     assert.equal(first.changed,true);
@@ -4250,6 +4254,28 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.internalAssetLibraryAutomation.schedulerCreated,false);
     assert.equal(first.registry.internalAssetLibraryAutomation.queueCreated,false);
     assert.equal(first.registry.internalAssetLibraryAutomation.pipelineCreated,false);
+    const repositorySync=first.registry.internalAssetLibraryAutomation.repositoryAssetSync;
+    assert.equal(repositorySync.totalAssetRows,first.registry.assets.length);
+    assert.ok(repositorySync.repositoryPathPresentCount>=3);
+    assert.ok(repositorySync.automaticSearchEligibleCount>=3);
+    assert.ok(repositorySync.sourceConsumerAssetCount>=1);
+    assert.ok(repositorySync.sourceConsumerBindingCount>=1);
+    assert.ok(repositorySync.sourceConsumerGameIds.includes('demo'));
+    assert.equal(repositorySync.sourceConsumptionDoesNotPromoteProductionVerification,true);
+    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').automaticSearchEligible,true);
+    assert.ok(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').detectedSourceConsumerGameIds.includes('demo'));
+    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').sourceConsumptionIsRuntimeVerification,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.blankAssetForbidden,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.closestCompatibleLibraryAssetRequired,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.qualityScoreBlocksInitialLibraryUse,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.internalAuditScoreBlocksInitialLibraryUse,false);
+    assert.ok(first.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget>0);
+    assert.ok(first.registry.internalAssetLibraryAutomation.volumeHealth.totalDeficit>=0);
+    assert.ok(first.registry.internalAssetLibraryAutomation.qualityHealth.scoredAssetCount>=0);
+    assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.automaticSearchEligibleCount>=3);
+    assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks));
+    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.continueWithoutHuman,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.continueWithoutChatgpt,true);
 
     const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
     assert.equal(second.changed,false);
@@ -4301,6 +4327,14 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.ok(result.registry.internalAssetLibraryAutomation.nextVolumeActions.every(row=>row.styleExpressionAxisIds.length>0));
   assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.totalAssetRows,result.registry.assets.length);
+  assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.automaticSearchEligibleCount>0);
+  assert.ok(result.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget>0);
+  assert.ok(result.registry.internalAssetLibraryAutomation.volumeHealth.completionPercent>=0);
+  assert.ok(result.registry.internalAssetLibraryAutomation.qualityHealth.scoredAssetCount>=0);
+  assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.volume.totalTarget,result.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget);
+  assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.quality.target,1000);
+  assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.sourceConsumptionDoesNotPromoteProductionVerification,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.schedulerCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.queueCreated,false);
