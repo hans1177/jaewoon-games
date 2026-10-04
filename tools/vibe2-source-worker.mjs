@@ -1468,6 +1468,76 @@ export function evaluatePresentationCandidateDelta({candidate={},sourceRoot='',c
   };
 }
 
+function stripBuildUpNonEvolutionBindings(text=''){
+  return String(text??'')
+    .replace(/-- STUDIO_ASSET_BINDING_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_END\n?/g,'')
+    .replace(/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n?/g,'')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_BINDING_END\n?/g,'')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END\n?/g,'')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END\n?/g,'')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END\n?/g,'')
+    .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}\s*/g,'')
+    .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}\s*/g,'')
+    .replace(/^.*SetAttribute\s*\(\s*["']StudioAsset(?:Family|Atom|BindingVersion|Atoms)["'][^\n]*$/gm,'')
+    .replace(/^\s*(?:--.*)?$/gm,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+export function evaluateBuildUpImplementationDelta({order={},candidate={},sourceRoot=''}={}){
+  const directive=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||order?.workPackage?.sharedContext?.buildUpDirective||null;
+  const directiveId=clean(directive?.directiveId);
+  if(!directiveId)return Object.freeze({required:false,pass:true,directiveId:null,touchedFiles:Object.freeze([]),meaningfulFiles:Object.freeze([]),reason:'NOT_REQUIRED'});
+  const touched=unique([
+    ...(candidate?.edits||[]).map(row=>posix(row?.path)),
+    ...(candidate?.newFiles||[]).map(row=>posix(row?.path)),
+    ...(candidate?.replaceFiles||[]).map(row=>posix(row?.path))
+  ]).filter(Boolean);
+  const sourceRootHint=posix(
+    order?.selectedTask?.sourceRoot
+    ||order?.source?.sourceRoot
+    ||order?.sourceRoot
+    ||order?.workPackage?.sharedContext?.sourceRoot
+    ||''
+  );
+  const toRelative=value=>{
+    const file=posix(value);
+    if(sourceRootHint&&file.startsWith(sourceRootHint+'/'))return file.slice(sourceRootHint.length+1);
+    const native=file.match(/^(?:roblox-games|unity-games|web-games)\/[^/]+\/(.+)$/);
+    return native?native[1]:file;
+  };
+  const responsible=new Set((directive?.responsibleSystemsAndFiles?.files||directive?.robloxNativeExecution?.responsibleFiles||[])
+    .map(toRelative).filter(Boolean));
+  const scopedTouched=touched.filter(file=>!responsible.size||responsible.has(file));
+  const candidateRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-build-up-delta-'));
+  const meaningful=[];
+  try{
+    createCandidateSnapshot(sourceRoot,candidateRoot,candidate);
+    const filesRoot=path.join(candidateRoot,'files');
+    for(const relative of scopedTouched){
+      if(path.basename(relative).toLowerCase()==='roblox-source-bootstrap.json')continue;
+      const beforePath=path.join(sourceRoot,relative);
+      const afterPath=path.join(filesRoot,relative);
+      let before='',after='';
+      if(fs.existsSync(beforePath)&&fs.statSync(beforePath).isFile())before=fs.readFileSync(beforePath,'utf8');
+      if(fs.existsSync(afterPath)&&fs.statSync(afterPath).isFile())after=fs.readFileSync(afterPath,'utf8');
+      if(stripBuildUpNonEvolutionBindings(before)!==stripBuildUpNonEvolutionBindings(after))meaningful.push(relative);
+    }
+  }finally{
+    fs.rmSync(candidateRoot,{recursive:true,force:true});
+  }
+  const pass=meaningful.length>0;
+  return Object.freeze({
+    required:true,pass,directiveId,
+    generation:Number(directive?.generation||0)||null,
+    focus:clean(directive?.primaryFocus)||null,
+    touchedFiles:Object.freeze(scopedTouched),
+    meaningfulFiles:Object.freeze(meaningful),
+    markerOnlyOrMetadataOnly:!pass,
+    reason:pass?'RESPONSIBLE_GAME_SOURCE_DELTA_PRESENT':'BUILD_UP_METADATA_OR_BINDING_ONLY_DELTA'
+  });
+}
+
 export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={}}={}){
   if(!contract||typeof contract!=='object')return{required:false,pass:true,phase:null,focusPillar:null,requiredSourceDeltaUnits:0,sourceDeltaUnits:0,requiredVisualUnits:0,visualUnits:0,reason:'NOT_REQUIRED'};
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
@@ -1884,7 +1954,7 @@ function universalAssetWorkerGuidance(order={}) {
     'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
     'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
     'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
-    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
+    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding. Every APPLIED family must tag at least one actually used native Instance with SetAttribute("StudioAssetFamily", "<FAMILY>") and SetAttribute("StudioAssetAtom", "<SELECTED_ATOM>"). Tag the real rendered/audible/animated object, never a proxy evidence object; Open Cloud/Studio runtime will inspect these live instances.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
     'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
     'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
   ].filter(Boolean).join('\n');
@@ -4410,7 +4480,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
+    const buildUpImplementationDelta=evaluateBuildUpImplementationDelta({order,candidate,sourceRoot});
+    if(buildUpImplementationDelta.required&&!buildUpImplementationDelta.pass){
+      throw new Error('BUILD_UP_IMPLEMENTATION_DELTA_REQUIRED:'+buildUpImplementationDelta.directiveId+':'+buildUpImplementationDelta.reason);
+    }
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,buildUpImplementationDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
@@ -4472,6 +4546,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const runtimePromotionCandidates=collectNativeAssetRuntimePromotionCandidates({order,candidate});
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
+  const buildUpImplementationDelta=semanticDiffEnforcement?.buildUpImplementationDelta||evaluateBuildUpImplementationDelta({order,candidate,sourceRoot});
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
   const robloxNativeCandidateQuality=target==='roblox'?inspectRobloxNativeCandidateQuality({candidate,sourceRoot}):{required:false,findingCount:0,findings:[],securityRelevantFindings:[],automaticGameWideBlock:false};
   if(target==='roblox'){
@@ -4539,6 +4614,16 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedExternalLearningDeterministicIds:Array.isArray(generation.deterministicVerifiedExternalLearningIds)?generation.deterministicVerifiedExternalLearningIds.slice(0,64):[],
     verifiedExternalLearningDeterministicCoveragePct:Number(generation.deterministicVerifiedExternalLearningCoveragePct||0),
     verifiedExternalLearningDeterministicContractConsumed:generation.deterministicVerifiedExternalLearningContractConsumed===true,
+    verifiedExternalLearningApplicationStages:Object.freeze({
+      retrieved:verifiedExternalLearningContract.required===true&&Number(verifiedExternalLearningContract.count||0)>0,
+      mapped:verifiedExternalLearningContract.required===true&&Number(verifiedExternalLearningContract.coveragePct||0)===100,
+      sourceApplied:verifiedExternalLearningContract.required===true&&buildUpImplementationDelta?.pass===true,
+      sourceAppliedFiles:Object.freeze([...(buildUpImplementationDelta?.meaningfulFiles||[])]),
+      runtimeObserved:false,
+      effectVerified:false,
+      authority:'candidate-source-only-runtime-and-effect-still-required'
+    }),
+    buildUpImplementationDelta,
     deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
