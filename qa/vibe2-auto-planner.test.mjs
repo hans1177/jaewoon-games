@@ -4483,3 +4483,36 @@ test('company runtime projects project exact post-F9 Roblox continuation and pri
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+test('studio build-up task carries concept-matched survival systems and reusable library hints',()=>{
+  const root=tempRepo();
+  const gameId='survival-flow-systems';
+  const source=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(source,'client'),{recursive:true});
+  fs.mkdirSync(path.join(source,'server'),{recursive:true});
+  fs.mkdirSync(path.join(source,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(source,'client','Game.client.luau'),'local ui = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'server','Game.server.luau'),'local world = {}\n','utf8');
+  fs.writeFileSync(path.join(source,'shared','GameConfig.luau'),'return {}\n','utf8');
+  writeStudioDesign(root,gameId,{
+    identity:'야생에서 채집하고 제작해 거점을 세우는 생존 게임',
+    coreFun:'자원과 위험을 읽고 제작과 하우징으로 다음 탐험 선택을 확장한다.',
+    coreLoop:['자원과 위험 지역을 고른다','채집한 재료로 도구를 제작한다','하우징과 거점을 확장한다','더 위험한 지역을 탐험한다'],
+    progressionDirection:'새 제작법과 거점 기능이 새로운 생존 전략과 지역을 연다.'
+  });
+  const project={gameId,name:'Survival Flow Systems',genre:'ACTION_SURVIVAL_ROGUELITE',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(task);
+  const ids=new Set(task.systemRequirements.filter(row=>row.stage==='REQUIRED').map(row=>row.id));
+  for(const id of ['GATHERING_RESOURCE','INVENTORY_EQUIPMENT','CRAFTING','HOUSING_BUILDING','THREAT_ECOLOGY'])assert.ok(ids.has(id),id);
+  assert.ok(task.systemRequirements.some(row=>(row.reusableLibraryHints||[]).includes('assets/crafting-recipes.js')));
+  assert.ok(task.systemRequirements.some(row=>(row.reusableLibraryHints||[]).includes('assets/inventory-equipment.js')));
+  assert.ok(task.systemInterconnectionChains.includes('GATHERING_RESOURCE->CRAFTING->HOUSING_BUILDING'));
+  assert.match(task.goal,/FLOW_SYSTEM_BLUEPRINT=/);
+  assert.match(task.goal,/생존은 채집→제작→하우징\/장비→탐험\/위험/);
+  assert.ok(task.evidence.includes('flow-system-blueprint:v1'));
+  assert.equal(task.studioQualityEvolution.flowSystemProfile,'ACTION_SURVIVAL_ROGUELITE');
+  assert.ok(task.studioQualityEvolution.flowRequiredSystemCount>=8);
+  assert.equal(task.studioQualityEvolution.flowSystemExistingLibraryFirst,true);
+  assert.equal(task.studioQualityEvolution.flowSystemShadowAuthorityForbidden,true);
+});
