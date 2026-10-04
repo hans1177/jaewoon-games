@@ -511,7 +511,7 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
   version:1,
   scope:'INTERNAL_ASSETS_ONLY',
-  humanDocument:'assets/ASSET-STANDARD.md',
+  documentationMode:'MACHINE_READABLE_ONLY',
   mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
   flowMutationAllowed:false,
   workflowMutationAllowed:false,
