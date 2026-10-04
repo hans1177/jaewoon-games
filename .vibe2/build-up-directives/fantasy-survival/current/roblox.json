@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g13-e4d90d1eaefd",
-  "directiveFingerprint": "e4d90d1eaefd987ddd13b4098dbfa646d09611ae7e33f7af5d67139710fe6249",
-  "previousDirectiveFingerprint": "d70770a8f7abd1e683f3e8f0000afbaafe9c59ebb5d60bbece5b3e94b74e4140",
-  "forbiddenRepeatFingerprint": "d70770a8f7abd1e683f3e8f0000afbaafe9c59ebb5d60bbece5b3e94b74e4140",
+  "directiveId": "fantasy-survival-build-up-g12-d70770a8f7ab",
+  "directiveFingerprint": "d70770a8f7abd1e683f3e8f0000afbaafe9c59ebb5d60bbece5b3e94b74e4140",
+  "previousDirectiveFingerprint": "fb02da1f27598524047e71d0401ccd9d694ebac5b0527e00210d011268875619",
+  "forbiddenRepeatFingerprint": "fb02da1f27598524047e71d0401ccd9d694ebac5b0527e00210d011268875619",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 13,
+  "generation": 12,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "fd7b64c72f2c64caefab6529f9a4f8febe1412958b3e5c8ec6f6bdd0a3cc91b7",
+  "sourceTreeFingerprint": "8586b23ca75cc99ca3784dfe9c4c41ba440234127f124e1438a496bfe71175ce",
   "designFingerprint": "c73a53e121ef51a605007aa1df16ee39732f54300166fd6e453eb97497f1f07e",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -258,19 +258,19 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "8586b23ca75cc99ca3784dfe9c4c41ba440234127f124e1438a496bfe71175ce",
-    "currentSourceTreeFingerprint": "fd7b64c72f2c64caefab6529f9a4f8febe1412958b3e5c8ec6f6bdd0a3cc91b7",
+    "previousGeneration": 11,
+    "previousSourceTreeFingerprint": "43108874373e445ad7b7e8eb54419ab526a18ff67842e40f5686386b968b6947",
+    "currentSourceTreeFingerprint": "8586b23ca75cc99ca3784dfe9c4c41ba440234127f124e1438a496bfe71175ce",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1468,8 +1468,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 4,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1479,7 +1479,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 4
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1492,7 +1492,6 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1528,7 +1527,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 182,
+        "score": 200,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1880,9 +1879,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2042,9 +2041,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2191,9 +2190,9 @@
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "impact": {
@@ -2271,16 +2270,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure",
+      "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "fd7b64c72f2c64caefab6529f9a4f8febe1412958b3e5c8ec6f6bdd0a3cc91b7",
+      "sourceTreeFingerprint": "8586b23ca75cc99ca3784dfe9c4c41ba440234127f124e1438a496bfe71175ce",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2291,8 +2290,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2323,7 +2322,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 13,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2393,5 +2392,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T20:30:33.445Z"
+  "generatedAt": "2026-10-04T17:25:08.869Z"
 }
