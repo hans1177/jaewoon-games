@@ -2611,7 +2611,7 @@ function commonDepthDomainMatch(domain,asset={}){
   if(domain==='MATERIAL')return family==='MATERIAL';
   if(domain==='ENVIRONMENT')return family==='ENVIRONMENT';
   if(domain==='BUILDING')return family==='BUILDING';
-  if(domain==='WORLD_PROP')return family==='PROP'&&!asset.itemRole&&(Boolean(asset.worldRole)||packId==='roblox-common-world-props-v1'||packId==='roblox-survival-core-world-v1');
+  if(domain==='WORLD_PROP')return family==='PROP'&&!asset.itemRole&&packId!=='roblox-common-items-v1';
   if(domain==='CREATURE')return family==='CREATURE';
   if(domain==='AUDIO')return family==='AUDIO';
   if(domain==='FOLIAGE')return packId==='roblox-common-foliage-v1'||(family==='ENVIRONMENT'&&['GRASS','BUSH','FERN','FLOWER','STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE'].includes(upper(asset.subfamily)));
