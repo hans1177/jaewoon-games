@@ -555,9 +555,10 @@ test('Unity direct native changes override unrelated representative canary selec
   assert.match(workflowSource,/const selected=requestedIds\.length\?requestedRows\.slice/);
 });
 
-test('Unity prepare uses slim ingress capacity while technical validation stays on the full runner pool',()=>{
+test('Unity orchestration uses slim capacity so child native builds do not starve Vibe workers',()=>{
   assert.match(workflowSource,/\n  prepare:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
-  assert.match(workflowSource,/\n  unity-technical-validation:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  assert.match(workflowSource,/\n  unity-technical-validation:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(workflowSource,/This job orchestrates child cloud\/runtime\/QA runs/);
 });
 
 test('Unity child QA dispatch reuses an active exact immutable-build run instead of duplicating runner work',()=>{

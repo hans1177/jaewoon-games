@@ -452,7 +452,9 @@ jobs:
       fail-fast: false
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    runs-on: ubuntu-latest
+    # This job orchestrates child cloud/runtime/QA runs; Unity itself runs in the child workflow.
+    # Keep heavy ubuntu-latest capacity available for Vibe workers and the native Unity build.
+    runs-on: ubuntu-slim
     timeout-minutes: 160
     steps:
       - name: Checkout current canonical implementation
