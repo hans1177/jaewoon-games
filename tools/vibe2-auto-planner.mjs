@@ -2579,6 +2579,7 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
 [PROGRESSIVE_GROWTH_EXPECTATION] cycle=${growthExpectation.cycle}; tier=${growthExpectation.tier}; minGrowthPoints=${growthExpectation.minimumGrowthPoints}; minConnected=${growthExpectation.minimumConnectedImprovements}; minAxes=${growthExpectation.minimumDistinctImprovementAxes}; minBundles=${growthExpectation.minimumConnectedContentBundles}; studioRequired=${growthExpectation.studioRequired?'YES':'NO'}
 반복 성장 요구=${growthExpectation.expectations.join(' | ')||'BEAT_PREVIOUS_VERIFIED_BASELINE'}
 0점 처리=${growthExpectation.zeroGrowth.join(',')}
+성장점 계산=${Object.entries(growthExpectation.growthPointModel||{}).map(([key,value])=>key+':'+String(value)).join(',')}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
