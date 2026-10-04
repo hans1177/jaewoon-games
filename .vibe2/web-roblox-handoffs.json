@@ -21,7 +21,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/amusement-tycoon",
+        "sourcePath": "unity-games/amusement-tycoon",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -124,8 +124,8 @@
     },
     {
       "gameId": "daechung-rpg",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "RELEASE_PROMOTION",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -146,9 +146,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -180,12 +184,12 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PROMOTE_EXACT_VERIFIED_RELEASE"
     },
     {
       "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -206,9 +210,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -229,7 +237,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "line-defense",
@@ -343,8 +351,8 @@
     },
     {
       "gameId": "cozy-island",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -365,9 +373,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -388,7 +400,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "fantasy-survival",
@@ -398,7 +410,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/fantasy-survival",
+        "sourcePath": "unity-games/fantasy-survival",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -514,7 +526,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "sourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -672,7 +684,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
+        "sourcePath": "unity-games/seed-puzzle-chromatic-cascade",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -804,7 +816,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "sourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
