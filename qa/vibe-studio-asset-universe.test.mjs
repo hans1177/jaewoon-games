@@ -2823,3 +2823,102 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
   const merelyLow=evaluateInternalAssetReuse({asset:{...base,license:'project-original'},gameDna,requirement:{family:'PROP',subfamily:'INTERACTIVE'}});
   assert.equal(merelyLow.usable,true);
 });
+
+
+test('common menu presentation and background packs expose stage-ready internal assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const menuDir=path.join(root,'assets','roblox','common-menu-v1');
+  const presentationDir=path.join(root,'assets','roblox','common-presentation-v1');
+  const backgroundDir=path.join(root,'assets','roblox','common-background-v1');
+
+  const menuCatalog=JSON.parse(fs.readFileSync(path.join(menuDir,'catalog.json'),'utf8'));
+  const menuQuality=JSON.parse(fs.readFileSync(path.join(menuDir,'quality-evidence.json'),'utf8'));
+  const menuSource=fs.readFileSync(path.join(menuDir,'RobloxCommonMenu.luau'),'utf8');
+  assert.equal(menuCatalog.atoms.length,18);
+  assert.equal(menuCatalog.stylePresets.length,6);
+  assert.equal(menuCatalog.internalAuditStudioRequired,false);
+  for(const stage of ['DESIGN_REFINEMENT','GRAPHICS_PRODUCTION','SOURCE_COMPOSITION','BUILD_UP','PRESENTATION_POLISH'])assert.ok(menuCatalog.flowStageUse.includes(stage));
+  for(const atom of ['MAIN_MENU_SHELL','PAUSE_MENU','SETTINGS_PANEL','INVENTORY_PANEL','EQUIPMENT_PANEL','MAP_PANEL','JOURNAL_PANEL','INPUT_HINT_BAR']){
+    assert.ok(menuCatalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.ok(menuSource.includes(atom),atom+':source');
+  }
+  assert.equal(menuQuality.sourceAudit.studioRequired,false);
+  assert.equal(menuQuality.sourceAudit.targetGrade,'ELITE');
+
+  const presentationCatalog=JSON.parse(fs.readFileSync(path.join(presentationDir,'catalog.json'),'utf8'));
+  const presentationSource=fs.readFileSync(path.join(presentationDir,'RobloxCommonPresentation.luau'),'utf8');
+  assert.equal(presentationCatalog.atoms.length,11);
+  assert.deepEqual(presentationCatalog.introPresets,['SIMPLE_FADE','LOGO_REVEAL','TITLE_CARD']);
+  assert.equal(presentationCatalog.compositionRules.gameStartMayNotDependOnPresentationCompletion,true);
+  for(const atom of ['BRAND_MARK','LOADING_SCREEN','LOADING_SPINNER','LOADING_PROGRESS','LOADING_TIP','INTRO_CANVAS','INTRO_TITLE_CARD','TRANSITION_CURTAIN','LAYERED_PARALLAX']){
+    assert.ok(presentationCatalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.ok(presentationSource.includes(atom),atom+':source');
+  }
+  assert.match(presentationSource,/OwnsLoadCompletion",false/);
+  assert.match(presentationSource,/OwnsSpawnAuthority",false/);
+
+  const backgroundCatalog=JSON.parse(fs.readFileSync(path.join(backgroundDir,'catalog.json'),'utf8'));
+  const backgroundSource=fs.readFileSync(path.join(backgroundDir,'RobloxCommonBackgrounds.luau'),'utf8');
+  assert.equal(backgroundCatalog.profiles.length,14);
+  assert.deepEqual(backgroundCatalog.layerGrammar,['SKY_GRADIENT','FAR_SILHOUETTE','MID_STRUCTURE','NEAR_FOREGROUND','FOG_OR_LIGHT','LANDMARK']);
+  for(const profile of ['FOREST_DAWN','SNOW_FIELD','DESERT_DUSK','SWAMP_MIST','CRYSTAL_CAVERN','CITY_NIGHT','VOLCANIC_GLOW','HORROR_CORRIDOR']){
+    assert.ok(backgroundCatalog.profiles.includes(profile),profile);
+    assert.ok(backgroundSource.includes(profile),profile+':source');
+  }
+  assert.match(backgroundSource,/WorldGeometryAuthority",false/);
+});
+
+test('asset universe recommends presentation assets without making them mandatory',()=>{
+  assert.equal(DEFAULT_COVERAGE_BASELINES.UI.MENU,18);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.UI.LOADING,8);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.UI.INTRO,8);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.ENVIRONMENT.BACKGROUND,14);
+  assert.ok(INTERNAL_ASSET_MINIMUM_COVERAGE.UI.SETTINGS>=12);
+  assert.ok(INTERNAL_ASSET_MINIMUM_COVERAGE.UI.MENU>=18);
+  assert.ok(INTERNAL_ASSET_MINIMUM_COVERAGE.ENVIRONMENT.BACKGROUND_PROFILE>=14);
+  for(const surface of ['MAIN_MENU','PAUSE_MENU','SETTINGS','MAP_PANEL','JOURNAL','LOADING','INTRO','SCREEN_TRANSITION'])assert.ok(COMMON_UI_SURFACE_EXPECTATIONS.includes(surface),surface);
+
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const plan=createStudioAssetUniversePlan({
+    assets:registry.assets,
+    platform:'ROBLOX',
+    gameId:'presentation-recommendation-test',
+    styleFamily:'CARTOON',
+    concept:{styles:[{family:'CARTOON',weight:1}]},
+    activeDemand:{}
+  });
+  const recommended=plan.loadout.selections.filter(row=>row.recommended===true);
+  for(const key of ['UI:MENU','UI:SETTINGS','UI:NAVIGATION','UI:LOADING','UI:INTRO','UI:INVENTORY','UI:MAP','UI:JOURNAL','ENVIRONMENT:BACKGROUND']){
+    const [family,subfamily]=key.split(':');
+    const row=recommended.find(item=>item.family===family&&item.subfamily===subfamily);
+    assert.ok(row,key);
+    assert.equal(row.required,false,key+':required');
+    assert.equal(row.flowStageRecommended,true,key+':stage');
+    assert.ok(row.assetId,key+':asset');
+    assert.equal(row.internalAuditStudioRequired,false,key+':studio');
+    assert.ok(Array.isArray(row.flowStageUse)&&row.flowStageUse.length>=3,key+':flowStageUse');
+  }
+  assert.equal(plan.loadout.unresolved.filter(row=>row.recommended).length,0);
+});
+
+test('company registry exposes common presentation coverage without claiming runtime verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.commonPresentationCoverage.status,'ACTIVE_INTERNAL_ASSET_SURFACE');
+  assert.equal(registry.commonPresentationCoverage.studioRequired,false);
+  assert.equal(registry.commonPresentationCoverage.menuComponents,18);
+  assert.equal(registry.commonPresentationCoverage.introLoadingComponents,11);
+  assert.equal(registry.commonPresentationCoverage.backgroundProfiles,14);
+  for(const id of ['roblox-common-menu-v1','roblox-common-presentation-v1','roblox-common-background-v1']){
+    const asset=registry.assets.find(row=>row.id===id);
+    assert.ok(asset,id);
+    assert.equal(asset.productionVerified,false,id);
+    assert.equal(asset.verifiedCompanyReusable,false,id);
+    assert.equal(asset.internalAuditStudioRequired,false,id);
+    assert.ok(asset.internalAuditScore>=950,id);
+    assert.ok(asset.flowStageUse.includes('SOURCE_COMPOSITION'),id);
+    assert.ok(asset.flowStageUse.includes('PRESENTATION_POLISH'),id);
+  }
+});
