@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-world-props-v1",
-  "title": "Roblox 회사 공용 월드 소품 8종 v1",
+  "title": "Roblox 회사 공용 월드·하우징·정착지 소품 24종 v3",
   "platform": "ROBLOX",
   "family": "PROP",
   "subfamily": "WORLD_PROP_PACK",
@@ -76,6 +76,134 @@
       "subfamily": "WELL",
       "worldRole": "LANDMARK_PROP",
       "familyRootId": "WORLD_WELL"
+    },
+    {
+      "assetId": "BED_SINGLE",
+      "name": "침대",
+      "subfamily": "BED",
+      "worldRole": "HOUSING_BED",
+      "familyRootId": "WORLD_FURNITURE",
+      "propKind": "BED"
+    },
+    {
+      "assetId": "WARDROBE",
+      "name": "옷장",
+      "subfamily": "WARDROBE",
+      "worldRole": "HOUSING_STORAGE",
+      "familyRootId": "WORLD_FURNITURE",
+      "propKind": "WARDROBE"
+    },
+    {
+      "assetId": "SHELF",
+      "name": "선반",
+      "subfamily": "SHELF",
+      "worldRole": "DISPLAY_STORAGE",
+      "familyRootId": "WORLD_FURNITURE",
+      "propKind": "SHELF"
+    },
+    {
+      "assetId": "WORKBENCH",
+      "name": "작업대",
+      "subfamily": "WORKBENCH",
+      "worldRole": "CRAFT_STATION",
+      "familyRootId": "WORLD_CRAFT_STATION",
+      "propKind": "WORKBENCH"
+    },
+    {
+      "assetId": "CRAFT_TABLE",
+      "name": "제작 테이블",
+      "subfamily": "CRAFT_STATION",
+      "worldRole": "CRAFT_STATION",
+      "familyRootId": "WORLD_CRAFT_STATION",
+      "propKind": "CRAFT_TABLE"
+    },
+    {
+      "assetId": "COOKING_HEARTH",
+      "name": "화덕",
+      "subfamily": "COOKING",
+      "worldRole": "COOKING_STATION",
+      "familyRootId": "WORLD_COOKING",
+      "propKind": "HEARTH"
+    },
+    {
+      "assetId": "STORAGE_CABINET",
+      "name": "수납장",
+      "subfamily": "STORAGE",
+      "worldRole": "STORAGE",
+      "familyRootId": "WORLD_STORAGE",
+      "propKind": "CABINET"
+    },
+    {
+      "assetId": "PLANTER_BOX",
+      "name": "화분 상자",
+      "subfamily": "PLANTER",
+      "worldRole": "FARMING_DECOR",
+      "familyRootId": "WORLD_GARDEN",
+      "propKind": "PLANTER"
+    },
+    {
+      "assetId": "CROP_PLOT",
+      "name": "재배 구획",
+      "subfamily": "CROP_PLOT",
+      "worldRole": "FARMING_PLOT_VISUAL",
+      "familyRootId": "WORLD_GARDEN",
+      "propKind": "CROP_PLOT"
+    },
+    {
+      "assetId": "ANIMAL_TROUGH",
+      "name": "먹이통",
+      "subfamily": "ANIMAL_TROUGH",
+      "worldRole": "ANIMAL_HOUSING_VISUAL",
+      "familyRootId": "WORLD_ANIMAL_HOME",
+      "propKind": "TROUGH"
+    },
+    {
+      "assetId": "FLOOR_LAMP",
+      "name": "스탠드 조명",
+      "subfamily": "LIGHT_SOURCE",
+      "worldRole": "HOUSING_LIGHT",
+      "familyRootId": "WORLD_LIGHT",
+      "propKind": "FLOOR_LAMP"
+    },
+    {
+      "assetId": "WALL_SWITCH",
+      "name": "벽 스위치",
+      "subfamily": "INTERACTIVE_SWITCH",
+      "worldRole": "INTERACTION_CONTROL_VISUAL",
+      "familyRootId": "WORLD_CONTROL",
+      "propKind": "SWITCH"
+    },
+    {
+      "assetId": "LEVER_CONTROL",
+      "name": "레버",
+      "subfamily": "DOOR_CONTROL",
+      "worldRole": "INTERACTION_CONTROL_VISUAL",
+      "familyRootId": "WORLD_CONTROL",
+      "propKind": "LEVER"
+    },
+    {
+      "assetId": "NOTICE_BOARD",
+      "name": "게시판",
+      "subfamily": "QUEST_PROP",
+      "worldRole": "QUEST_DISPLAY",
+      "familyRootId": "WORLD_QUEST_PROP",
+      "propKind": "NOTICE"
+    },
+    {
+      "assetId": "RUG",
+      "name": "러그",
+      "subfamily": "DECORATION",
+      "worldRole": "HOUSING_DECOR",
+      "familyRootId": "WORLD_DECOR",
+      "propKind": "RUG"
+    },
+    {
+      "assetId": "DECOR_STATUE",
+      "name": "장식 조각상",
+      "subfamily": "DECORATION",
+      "worldRole": "HOUSING_DECOR",
+      "familyRootId": "WORLD_DECOR",
+      "propKind": "STATUE"
     }
   ],
   "systemDepthContract": {
@@ -112,31 +240,64 @@
       "BENCH",
       "TABLE",
       "MARKET_STALL",
-      "WELL"
+      "WELL",
+      "BED",
+      "WARDROBE",
+      "SHELF",
+      "WORKBENCH",
+      "CRAFT_STATION",
+      "COOKING",
+      "STORAGE",
+      "PLANTER",
+      "CROP_PLOT",
+      "ANIMAL_TROUGH",
+      "LIGHT_SOURCE",
+      "INTERACTIVE_SWITCH",
+      "DOOR_CONTROL",
+      "QUEST_PROP",
+      "DECORATION"
     ],
     "missingComponentCandidates": [
       "CONTAINER",
       "CHEST",
       "CRATE",
       "FURNITURE",
-      "LIGHT_SOURCE",
       "MARKET",
-      "CRAFT_STATION",
-      "WORKBENCH",
-      "COOKING",
-      "STORAGE",
-      "INTERACTIVE_SWITCH",
-      "DOOR_CONTROL",
       "LORE_COLLECTIBLE",
       "DESTRUCTIBLE",
       "RESOURCE_NODE",
-      "QUEST_PROP",
-      "DECORATION",
       "COLLISION_PROXY",
       "LOD"
     ],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
-    "gameplayAuthority": false
+    "gameplayAuthority": false,
+    "currentAssetCount": 24
+  },
+  "housingSettlementContract": {
+    "referenceSystems": [
+      "SURVIVAL_HOUSING_COMMON_PATTERNS",
+      "COZY_HOME_CUSTOMIZATION_COMMON_PATTERNS",
+      "SETTLEMENT_COMMON_PATTERNS"
+    ],
+    "noGameSpecificCopy": true,
+    "visualOnly": true,
+    "categories": [
+      "SLEEP_RESPAWN_VISUAL",
+      "STORAGE",
+      "CRAFT_STATION",
+      "COOKING",
+      "FARMING",
+      "ANIMAL_HOUSING",
+      "LIGHTING",
+      "CONTROL",
+      "QUEST_PROP",
+      "DECORATION"
+    ],
+    "gameplayAuthority": false,
+    "storageAuthority": false,
+    "craftingAuthority": false,
+    "farmingAuthority": false,
+    "npcAssignmentAuthority": false
   }
 }
