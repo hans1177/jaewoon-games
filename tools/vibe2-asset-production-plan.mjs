@@ -510,7 +510,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     byGame.get(game).add([kind,sourcePath].filter(Boolean).join(':'));
   };
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
-  const sourceExt=/\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
+  const sourceExt=/\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|json|ya?ml|gd|tscn|cs|uxml|uss|shader|prefab|unity|asset|mat|controller|anim)$/i;
   const sourceIdentityCandidates=new Map();
   const addSourceIdentity=(value,assetId,field)=>{
     const marker=clean(value),id=clean(assetId);
@@ -533,9 +533,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceIdentityMap.set(marker,{assetId:assetIds[0],fields:[...new Set(pool.filter(row=>row.assetId===assetIds[0]).map(row=>row.field))]});
   }
   const sourceIdentitySet=new Set(sourceIdentityMap.keys());
-  const assetIdTokenPattern=/[A-Za-z0-9][A-Za-z0-9._:\/-]{3,127}/g;
+  const sourceIdentityLiteralPattern=/["'`]([A-Za-z0-9][A-Za-z0-9._:\/-]{3,127})["'`]/g;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
-  let sourceFilesScanned=0,sourceBytesScanned=0,sourceTokenCandidatesScanned=0,sourceExactIdentityTokenHits=0,sourceExactAssetIdTokenHits=0,sourceAliasTokenHits=0;
+  let sourceFilesScanned=0,sourceBytesScanned=0,sourceLiteralCandidatesScanned=0,sourceExactIdentityLiteralHits=0,sourceExactAssetIdTokenHits=0,sourceAliasTokenHits=0;
   for(const gameRootName of gameRoots){
     const gameRoot=path.join(repoRoot,gameRootName);
     let gameDirs=[];
@@ -584,17 +584,17 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           sourceBytesScanned+=Buffer.byteLength(content,'utf8');
           const relativeSource=path.relative(repoRoot,full).replaceAll('\\','/');
           const seenInFile=new Set();
-          for(const match of content.matchAll(assetIdTokenPattern)){
-            sourceTokenCandidatesScanned++;
-            const marker=match[0],identity=sourceIdentityMap.get(marker);
+          for(const match of content.matchAll(sourceIdentityLiteralPattern)){
+            sourceLiteralCandidatesScanned++;
+            const marker=match[1],identity=sourceIdentityMap.get(marker);
             if(!sourceIdentitySet.has(marker)||!identity)continue;
             const evidenceKey=marker+'|'+identity.assetId;
             if(seenInFile.has(evidenceKey))continue;
             seenInFile.add(evidenceKey);
-            sourceExactIdentityTokenHits++;
+            sourceExactIdentityLiteralHits++;
             if(identity.fields.includes('id'))sourceExactAssetIdTokenHits++;
             else sourceAliasTokenHits++;
-            addConsumption(identity.assetId,gameId,'SOURCE_IDENTITY_MARKER_'+identity.fields.join('_').toUpperCase(),relativeSource);
+            addConsumption(identity.assetId,gameId,'SOURCE_IDENTITY_LITERAL_'+identity.fields.join('_').toUpperCase(),relativeSource);
           }
         }
       }
@@ -643,25 +643,28 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
     sourceConsumptionCoveragePct,
-    sourceScanStrategy:'SINGLE_PASS_REGISTRY_IDENTITY_TOKEN_SET',
+    sourceScanStrategy:'SINGLE_PASS_QUOTED_REGISTRY_IDENTITY_SET',
     sourceIdentityFields:Object.freeze(['id','assetId','atomId']),
     sourceIdentityMarkerCount:sourceIdentityMap.size,
     ambiguousSourceIdentityMarkerCount,
     sourceFilesScanned,
     sourceBytesScanned,
-    sourceTokenCandidatesScanned,
-    sourceExactIdentityTokenHits,
+    sourceLiteralCandidatesScanned,
+    sourceExactIdentityLiteralHits,
     sourceExactAssetIdTokenHits,
     sourceAliasTokenHits,
     naiveIdentityFileComparisonUpperBound:sourceFilesScanned*sourceIdentityMap.size,
     naiveAssetIdFileComparisonUpperBound:sourceFilesScanned*next.assets.length,
     perFileAssetIdLoopEliminated:true,
     ambiguousAliasesDoNotCountAsConsumption:true,
-    sourceScanComplexity:'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)',
+    exactQuotedIdentityRequired:true,
+    unquotedGenericTokenDoesNotCountAsConsumption:true,
+    scannedTextExtensions:Object.freeze(['lua','luau','js','mjs','cjs','ts','tsx','jsx','html','css','json','yaml','yml','gd','tscn','cs','uxml','uss','shader','prefab','unity','asset','mat','controller','anim']),
+    sourceScanComplexity:'O(SOURCE_BYTES_PLUS_QUOTED_LITERALS)',
     bottleneckState:repositoryAssetBottleneckState,
     bottleneckActions:repositoryAssetBottleneckActions,
     bottleneckScope:'INTERNAL_ASSET_SEARCH_AND_SOURCE_CONSUMPTION_ONLY',
-    sourceConsumptionEvidenceMode:'EXACT_REGISTRY_ID_ASSET_ID_OR_ATOM_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
+    sourceConsumptionEvidenceMode:'EXACT_QUOTED_REGISTRY_ID_ASSET_ID_OR_ATOM_ID_OR_EXACT_PROJECT_PATH_BINDING',
     sourceConsumptionDoesNotPromoteProductionVerification:true
   };
 
