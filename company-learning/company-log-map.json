@@ -375,7 +375,8 @@
       "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
       "WORKER_CONTEXT_FINAL_CHAIN_LOCK",
       "WORKER_CONTEXT_SYNC=PASS"
-    ]
+    ],
+    "fixedAutonomousDevelopmentOperatingContractRequired": true
   },
   "dualNativeCorrelation": {
     "gameKey": "GAME_ID",
@@ -2962,5 +2963,65 @@
     "wholeGameSerializationForbidden": true,
     "queueReductionTarget": "EXACT_DUPLICATE_STAGE_RUNS_ONLY",
     "independentGamesContinueOnOtherGameFailure": true
+  },
+  "fixedAutonomousDevelopmentOperatingEvidence": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract",
+    "normalOperatingLoop": [
+      "BUILD_UP",
+      "F0",
+      "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "F1_TO_F8_RUNTIME_AND_QA",
+      "F9",
+      "RELEASE_CLASSIFICATION",
+      "IMMEDIATE_NEXT_BUILD_UP"
+    ],
+    "normalCycleDoesNotWaitForOwnerOrChatgpt": true,
+    "workerAndChatSessionPreflightUsesExistingSharedContext": true,
+    "requiredContextChecks": [
+      "LATEST_MAIN",
+      "CENTRAL_FOUR_DOCUMENT_HASHES",
+      "FINAL_DEVELOPMENT_LOCK_V2",
+      "FIXED_AUTONOMOUS_DEVELOPMENT_OPERATING_CONTRACT"
+    ],
+    "existingPerGameFlowEvidenceReused": true,
+    "detailChainOptimizationOnly": true,
+    "noSeparateEvidencePipeline": true,
+    "autonomousBottleneckManagementOwner": "VIBE2_VIBE3_EXISTING_SYSTEM_AI",
+    "ownerOrChatgptBottleneckPresenceRequired": false,
+    "existingBottleneckEvidenceSources": [
+      "SYSTEM_AI_BOTTLENECK_SENSOR",
+      "VIBE2_QUEUE_CONTROL",
+      "RECOVERY_QUEUE",
+      "ACTIONS_RUN_STATUS",
+      "PER_GAME_STAGE_MARKERS"
+    ],
+    "managedBottleneckEvidence": [
+      "RUNNER_QUEUE_PRESSURE",
+      "SOURCE_CANDIDATE_GENERATION",
+      "VERIFIED_LEARNING_REFRESH_BACKLOG",
+      "SOURCE_BIND_BACKLOG",
+      "PRIVATE_RUNTIME_DEPLOY_BACKLOG",
+      "RUNTIME_OBSERVATION_BACKLOG",
+      "F9_NEXT_BUILD_UP_HANDOFF",
+      "EXACT_DUPLICATE_STAGE",
+      "STALE_RESERVATION",
+      "SHARED_STATE_WRITE_CONFLICT",
+      "GAME_STAGE_LOCAL_REPAIR_RETRY"
+    ],
+    "unrelatedGameProgressMustContinue": true,
+    "vibeOwnsAllNormalProcessManagement": true,
+    "chatgptNormalOperationsOwner": false,
+    "sourceGrowthIntegrityEvidenceRequired": true,
+    "sourceGrowthEvidence": [
+      "BUILD_UP_RESPONSIBLE_FILES",
+      "BUILD_UP_SOURCE_REVISION",
+      "REAL_GAME_SOURCE_DIFF_WHEN_IMPLEMENTATION_REQUIRED",
+      "F0_EXACT_SOURCE_REVISION_BINDING",
+      "F1_TO_F8_EXACT_CANDIDATE_RUNTIME_QA",
+      "F9_EXACT_SOURCE_ARTIFACT_REVIEW",
+      "NEXT_BUILD_UP_AFTER_F9"
+    ],
+    "evaluationOnlyCompletionForbiddenWhenSourceMutationRequired": true
   }
 }
