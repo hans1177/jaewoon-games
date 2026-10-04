@@ -826,6 +826,8 @@ test('company free source registry expands high-priority volume domains without 
   assert.ok(registry.externalSources.find(row=>row.id==='kenney-rpg-audio').categories.includes('AUDIO'));
   assert.ok(registry.externalSources.find(row=>row.id==='poly-haven-cc0-library').categories.includes('MATERIAL'));
   assert.equal(registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
+  assert.equal(registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,18);
+  assert.ok(registry.internalAssetLibraryAutomation.nextVolumeActions.some(row=>row.domain==='BUILDING'&&row.freeSourceCandidateIds.includes('kenney-modular-buildings')));
 });
 
 test('natural language concept inference covers full preset families and concept axes',async()=>{
@@ -3563,12 +3565,13 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
       };
     });
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
-  const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId)});
+  const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,4);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,5);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,8);
   assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
@@ -3593,6 +3596,13 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(plan.nextVolumeActions.length>0);
     assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
     assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
+    assert.ok(plan.nextVolumeActions.some(row=>row.freeSourceAvailable===true));
+    assert.ok(plan.nextVolumeActions.every(row=>Array.isArray(row.freeSourceCandidateIds)));
+    const buildingAction=plan.nextVolumeActions.find(row=>row.domain==='BUILDING');
+    assert.ok(buildingAction?.freeSourceCandidateIds.includes('kenney-modular-buildings'));
+    assert.ok(buildingAction?.freeSourceCandidateIds.includes('quaternius-ultimate-buildings'));
+    const audioAction=plan.nextVolumeActions.find(row=>row.domain==='AUDIO');
+    assert.deepEqual(audioAction?.freeSourceCandidateIds,['kenney-ui-audio','kenney-interface-sounds','kenney-rpg-audio','kenney-impact-sounds']);
     assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
     assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
   }
@@ -3627,6 +3637,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
   assert.equal(plan.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(plan.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.equal(plan.eligibleFreeSourceCount,18);
   assert.equal(plan.qualityUpPolicy.selection,'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST');
   assert.equal(plan.qualityUpPolicy.workingBandMin,980);
   assert.equal(plan.qualityUpPolicy.target,1000);
@@ -3669,7 +3680,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,4);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,5);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -3743,7 +3754,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,4);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,5);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -3781,10 +3792,11 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,4);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,5);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
+  assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,18);
   assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
