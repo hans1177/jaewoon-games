@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-skill-v1",
   "family": "SKILL",
   "platform": "ROBLOX",
@@ -34,5 +34,61 @@
       "role": "SMALL_IMPACT_PRESENTATION",
       "reuses": "roblox-common-vfx-impact-flash"
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "CAST",
+      "TELEGRAPH",
+      "PROJECTILE",
+      "TRAIL",
+      "IMPACT",
+      "AREA",
+      "CHANNEL",
+      "BEAM",
+      "SUMMON",
+      "DASH",
+      "SHIELD",
+      "HEAL",
+      "AURA",
+      "STATUS_APPLY",
+      "STATUS_CLEANSE",
+      "INTERRUPT",
+      "ICON",
+      "AUDIO_ROLE",
+      "CAMERA_ROLE",
+      "MOBILE_DENSITY"
+    ],
+    "currentDeclaredComponents": [
+      "CAST_HAND",
+      "TELEGRAPH_CIRCLE",
+      "IMPACT_SMALL"
+    ],
+    "currentAssetCount": 3,
+    "missingComponentCandidates": [
+      "CAST",
+      "TELEGRAPH",
+      "PROJECTILE",
+      "TRAIL",
+      "IMPACT",
+      "AREA",
+      "CHANNEL",
+      "BEAM",
+      "SUMMON",
+      "DASH",
+      "SHIELD",
+      "HEAL",
+      "AURA",
+      "STATUS_APPLY",
+      "STATUS_CLEANSE",
+      "INTERRUPT",
+      "ICON",
+      "AUDIO_ROLE",
+      "CAMERA_ROLE",
+      "MOBILE_DENSITY"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
