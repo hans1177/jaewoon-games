@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -6199,7 +6199,7 @@
     },
     {
       "id": "roblox-common-ui-v1",
-      "title": "Roblox 회사 공용 UI 베이스 11종 v2",
+      "title": "Roblox 회사 공용 UI·AI/NPC 상호작용 32종 + 벡터 아이콘 12종 v3",
       "category": "UI",
       "family": "UI",
       "platform": "ROBLOX",
@@ -6222,8 +6222,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -6244,7 +6246,41 @@
       ],
       "subfamily": "UI_PACK",
       "assetCount": 11,
-      "sourceAuthority": "company-asset-library.json#companyCommonBase"
+      "sourceAuthority": "company-asset-library.json#companyCommonBase",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "componentCount": 32,
+      "vectorIconCount": 12,
+      "uiSurfaces": [
+        "HUD",
+        "NAVIGATION",
+        "INVENTORY",
+        "EQUIPMENT",
+        "CHARACTER_SHEET",
+        "MINIMAP",
+        "DIALOGUE",
+        "AI_DIALOGUE_HELPER",
+        "NPC_INTERACTION",
+        "QUEST",
+        "PARTY",
+        "CRAFTING",
+        "SHOP",
+        "NOTIFICATION",
+        "STATUS_EFFECT",
+        "HOTBAR",
+        "INTERACTION_PROMPT",
+        "TOOLTIP",
+        "MODAL"
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950
     },
     {
       "id": "roblox-common-ui-frame-panel",
@@ -6271,8 +6307,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -6300,7 +6338,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "id": "roblox-common-ui-button-primary",
@@ -6327,8 +6374,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -6356,7 +6405,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "id": "roblox-common-ui-bar-health",
@@ -6383,8 +6441,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -6412,7 +6472,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "id": "roblox-common-items-v1",
@@ -11287,8 +11356,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11318,7 +11389,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11343,8 +11423,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11374,7 +11456,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11399,8 +11490,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11430,7 +11523,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11455,8 +11557,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11486,7 +11590,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11511,8 +11624,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11542,7 +11657,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11567,8 +11691,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11598,7 +11724,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11623,8 +11758,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11654,7 +11791,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "UI",
@@ -11679,8 +11825,10 @@
       "previewPath": "/assets/roblox/common-ui-v1/preview.svg",
       "sourceFiles": [
         "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
         "assets/roblox/common-ui-v1/catalog.json",
-        "assets/roblox/common-ui-v1/quality-evidence.json"
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
       ],
       "companyCommonBase": true,
       "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -11710,7 +11858,16 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameThemeInsteadOfDuplicatingBase": true,
         "preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority": true
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ]
     },
     {
       "category": "CREATURE",
@@ -12818,6 +12975,1175 @@
         "deriveGameTintInsteadOfDuplicatingBase": true,
         "preservePhysicalCollisionTouchQueryGameplaySaveAndNetworkAuthority": true
       }
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-button",
+      "title": "Roblox 공용 ICON_BUTTON",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "ICON_BUTTON"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-dialogue-assistant-button",
+      "title": "Roblox 공용 DIALOGUE_ASSISTANT_BUTTON",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "DIALOGUE_ASSISTANT_BUTTON"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-dialogue-panel",
+      "title": "Roblox 공용 DIALOGUE_PANEL",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "DIALOGUE_PANEL"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-dialogue-choice",
+      "title": "Roblox 공용 DIALOGUE_CHOICE",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "DIALOGUE_CHOICE"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-dialogue-input",
+      "title": "Roblox 공용 DIALOGUE_INPUT",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "DIALOGUE_INPUT"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-typing-indicator",
+      "title": "Roblox 공용 TYPING_INDICATOR",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "TYPING_INDICATOR"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-dialogue-history",
+      "title": "Roblox 공용 DIALOGUE_HISTORY",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "DIALOGUE_HISTORY"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-npc-interaction-prompt",
+      "title": "Roblox 공용 NPC_INTERACTION_PROMPT",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "NPC_INTERACTION_PROMPT"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-npc-interaction-menu",
+      "title": "Roblox 공용 NPC_INTERACTION_MENU",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "NPC_INTERACTION_MENU"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-npc-relationship-card",
+      "title": "Roblox 공용 NPC_RELATIONSHIP_CARD",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "NPC_RELATIONSHIP_CARD"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-inventory-grid",
+      "title": "Roblox 공용 INVENTORY_GRID",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "INVENTORY_GRID"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-equipment-slot",
+      "title": "Roblox 공용 EQUIPMENT_SLOT",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "EQUIPMENT_SLOT"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-character-sheet",
+      "title": "Roblox 공용 CHARACTER_SHEET",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "CHARACTER_SHEET"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-minimap",
+      "title": "Roblox 공용 MINIMAP",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "MINIMAP"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-quest-tracker",
+      "title": "Roblox 공용 QUEST_TRACKER",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "QUEST_TRACKER"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-party-member-card",
+      "title": "Roblox 공용 PARTY_MEMBER_CARD",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "PARTY_MEMBER_CARD"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-crafting-recipe-card",
+      "title": "Roblox 공용 CRAFTING_RECIPE_CARD",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "CRAFTING_RECIPE_CARD"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-shop-item-card",
+      "title": "Roblox 공용 SHOP_ITEM_CARD",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "SHOP_ITEM_CARD"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-notification-toast",
+      "title": "Roblox 공용 NOTIFICATION_TOAST",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "NOTIFICATION_TOAST"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-status-effect-chip",
+      "title": "Roblox 공용 STATUS_EFFECT_CHIP",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "STATUS_EFFECT_CHIP"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-hotbar",
+      "title": "Roblox 공용 HOTBAR",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "packId": "roblox-common-ui-v1",
+      "atomId": "HOTBAR"
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icons-v1",
+      "title": "Roblox 회사 공용 벡터 UI 아이콘 12종 v1",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-v1",
+      "iconCount": 12,
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-chat",
+      "title": "Roblox 공용 UI 아이콘 CHAT",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "CHAT",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-ai-spark",
+      "title": "Roblox 공용 UI 아이콘 AI_SPARK",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "AI_SPARK",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-inventory",
+      "title": "Roblox 공용 UI 아이콘 INVENTORY",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "INVENTORY",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-character",
+      "title": "Roblox 공용 UI 아이콘 CHARACTER",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "CHARACTER",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-equipment",
+      "title": "Roblox 공용 UI 아이콘 EQUIPMENT",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "EQUIPMENT",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-minimap",
+      "title": "Roblox 공용 UI 아이콘 MINIMAP",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "MINIMAP",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-quest",
+      "title": "Roblox 공용 UI 아이콘 QUEST",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "QUEST",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-party",
+      "title": "Roblox 공용 UI 아이콘 PARTY",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "PARTY",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-craft",
+      "title": "Roblox 공용 UI 아이콘 CRAFT",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "CRAFT",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-shop",
+      "title": "Roblox 공용 UI 아이콘 SHOP",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "SHOP",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-notification",
+      "title": "Roblox 공용 UI 아이콘 NOTIFICATION",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "NOTIFICATION",
+      "imageAssetDependency": false
+    },
+    {
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+        "assets/roblox/common-ui-v1/catalog.json",
+        "assets/roblox/common-ui-v1/quality-evidence.json",
+        "assets/roblox/common-ui-v1/preview.svg"
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "gameplayAuthority": false,
+      "id": "roblox-common-ui-icon-settings",
+      "title": "Roblox 공용 UI 아이콘 SETTINGS",
+      "path": "/assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
+      "packId": "roblox-common-ui-icons-v1",
+      "iconId": "SETTINGS",
+      "imageAssetDependency": false
     }
   ],
   "research": [
