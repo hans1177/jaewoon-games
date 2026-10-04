@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g14-5905f0b4874b",
-  "directiveFingerprint": "5905f0b4874bfd1dbab122067a7a837186aa338cd7e9891f18ca430488635131",
-  "previousDirectiveFingerprint": "da737453d4a459b9db61e00a35de6f570fbfaa9d59a8e6d8ed1b20b21cb12e7e",
-  "forbiddenRepeatFingerprint": "da737453d4a459b9db61e00a35de6f570fbfaa9d59a8e6d8ed1b20b21cb12e7e",
+  "directiveId": "daechung-rpg-build-up-g15-af6d295dcb1c",
+  "directiveFingerprint": "af6d295dcb1c3b9323b5e2772c28c35677c646d97b0edc19f8946c81accc2eb1",
+  "previousDirectiveFingerprint": "5905f0b4874bfd1dbab122067a7a837186aa338cd7e9891f18ca430488635131",
+  "forbiddenRepeatFingerprint": "5905f0b4874bfd1dbab122067a7a837186aa338cd7e9891f18ca430488635131",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "generation": 14,
+  "generation": 15,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
+  "sourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
   "designFingerprint": "180b392ae260071d960a586fd46e312d83468098133916a5cd5f62c7bdd7feaa",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,19 +547,19 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 13,
-    "previousSourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
-    "currentSourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
+    "previousGeneration": 14,
+    "previousSourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
+    "currentSourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1729,13 +1729,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
+    "themeDepth": 4,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1753,7 +1753,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
@@ -1789,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 158,
+        "score": 140,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -2524,16 +2524,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
+      "sourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2544,8 +2544,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2576,7 +2576,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 15,
+    "nextGeneration": 16,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2641,5 +2641,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T17:25:08.568Z"
+  "generatedAt": "2026-10-04T20:30:32.829Z"
 }

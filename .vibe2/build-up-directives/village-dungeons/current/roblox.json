@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g13-e267f81737dc",
-  "directiveFingerprint": "e267f81737dc15dcca7029a88021c8dd166e48753c0aae9252e13f19e0fb385a",
-  "previousDirectiveFingerprint": "ad7cc5abe0de573ca88fa8960006e81fb13f4a398729120a1b7c66175bdd8da4",
-  "forbiddenRepeatFingerprint": "ad7cc5abe0de573ca88fa8960006e81fb13f4a398729120a1b7c66175bdd8da4",
+  "directiveId": "village-dungeons-build-up-g14-df94981a1d82",
+  "directiveFingerprint": "df94981a1d82640f9f5bb27473eabec69dd44de96e1f71eb73918aa9db60eed4",
+  "previousDirectiveFingerprint": "e267f81737dc15dcca7029a88021c8dd166e48753c0aae9252e13f19e0fb385a",
+  "forbiddenRepeatFingerprint": "e267f81737dc15dcca7029a88021c8dd166e48753c0aae9252e13f19e0fb385a",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 13,
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "b8d406b36784435625b2af2940289aaaeef7cc6c99e1358ccb17ad5de2aff749",
+  "sourceTreeFingerprint": "52f724a3b040e178fd1caee4483297ca7bbc82d16ca4290235aa288fdef62af4",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -363,9 +363,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "45bb39bf1f10f6d1d6ef907b8e0f298ef167a29ede273f05e38b1d02cf2ae606",
-    "currentSourceTreeFingerprint": "b8d406b36784435625b2af2940289aaaeef7cc6c99e1358ccb17ad5de2aff749",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "b8d406b36784435625b2af2940289aaaeef7cc6c99e1358ccb17ad5de2aff749",
+    "currentSourceTreeFingerprint": "52f724a3b040e178fd1caee4483297ca7bbc82d16ca4290235aa288fdef62af4",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1555,8 +1555,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1566,7 +1566,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 7
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1576,7 +1576,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1615,7 +1615,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 138,
+        "score": 120,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2346,7 +2346,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "b8d406b36784435625b2af2940289aaaeef7cc6c99e1358ccb17ad5de2aff749",
+      "sourceTreeFingerprint": "52f724a3b040e178fd1caee4483297ca7bbc82d16ca4290235aa288fdef62af4",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2393,7 +2393,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2461,5 +2461,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T17:25:08.796Z"
+  "generatedAt": "2026-10-04T20:30:33.191Z"
 }

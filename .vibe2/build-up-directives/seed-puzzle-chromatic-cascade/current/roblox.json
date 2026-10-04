@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g14-105061832255",
-  "directiveFingerprint": "10506183225522d43a0e8751ad532ec5152f76c85c7c78779d0cb36d50a1aaff",
-  "previousDirectiveFingerprint": "b59f180300317b4ea2c193b5122098fac9a21a6f916302c4bc340c0cb9a3f050",
-  "forbiddenRepeatFingerprint": "b59f180300317b4ea2c193b5122098fac9a21a6f916302c4bc340c0cb9a3f050",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g15-daefb30798bc",
+  "directiveFingerprint": "daefb30798bcb8e5bbe3585aa49741007fde6aaeedc368550a67b5ce3b97b70e",
+  "previousDirectiveFingerprint": "10506183225522d43a0e8751ad532ec5152f76c85c7c78779d0cb36d50a1aaff",
+  "forbiddenRepeatFingerprint": "10506183225522d43a0e8751ad532ec5152f76c85c7c78779d0cb36d50a1aaff",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 14,
+  "generation": 15,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "591cfeb4d36f03a8737b8e845eeffe9f812b98fdbb9fd4f3c6eaeaab8af88b60",
+  "sourceTreeFingerprint": "793741efa9f94e429a65059f6289e9d4a2e5738e6bcead0b377120df058fa109",
   "designFingerprint": "491530ac1f5db9c62af2793e2ee12a69b743f3c5da0750f0b2628d384ed75efb",
   "gameIdentityAndNonNegotiables": {
     "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
@@ -258,9 +258,9 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 13,
-    "previousSourceTreeFingerprint": "a1e31d8add8828d9ad611062bccea5cd3ae71ca862417c074af1e61018572c1e",
-    "currentSourceTreeFingerprint": "591cfeb4d36f03a8737b8e845eeffe9f812b98fdbb9fd4f3c6eaeaab8af88b60",
+    "previousGeneration": 14,
+    "previousSourceTreeFingerprint": "591cfeb4d36f03a8737b8e845eeffe9f812b98fdbb9fd4f3c6eaeaab8af88b60",
+    "currentSourceTreeFingerprint": "793741efa9f94e429a65059f6289e9d4a2e5738e6bcead0b377120df058fa109",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -357,9 +357,21 @@
         }
       ]
     },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1508,7 +1520,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1553,8 +1565,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=8; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1564,7 +1576,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 8
+        "PRESENTATION_WORLD_COHESION": 9
       },
       "sequence": [
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1572,7 +1584,7 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1613,7 +1625,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 102,
+        "score": 84,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2356,15 +2368,15 @@
     "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
+      "reason": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "591cfeb4d36f03a8737b8e845eeffe9f812b98fdbb9fd4f3c6eaeaab8af88b60",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "793741efa9f94e429a65059f6289e9d4a2e5738e6bcead0b377120df058fa109",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2376,7 +2388,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2407,7 +2419,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 15,
+    "nextGeneration": 16,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2480,5 +2492,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T17:25:08.732Z"
+  "generatedAt": "2026-10-04T20:30:33.095Z"
 }
