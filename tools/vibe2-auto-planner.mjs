@@ -2037,7 +2037,20 @@ export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
   ].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
   if(!candidates.length)return null;
   const sourceText=candidates.map(relative=>readText(sourceFile(repoRoot,relative))).join('\n');
-  if(/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(sourceText)&&/(?:StudioAssets|StudioAssetAtoms|StudioAssetAtom)/.test(sourceText))return null;
+  const assetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const selectionPresent=/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(sourceText)&&/(?:StudioAssets|StudioAssetAtoms|StudioAssetAtom)/.test(sourceText);
+  const statusBody=sourceText.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const familyStatus=Object.fromEntries([...statusBody.matchAll(/\b([A-Z][A-Z0-9_]*)\s*=\s*["'](APPLIED|NOT_APPLICABLE)["']/g)].map(match=>[match[1],match[2]]));
+  const allFamiliesAccounted=assetFamilies.every(family=>familyStatus[family]==='APPLIED'||familyStatus[family]==='NOT_APPLICABLE');
+  const appliedFamilies=assetFamilies.filter(family=>familyStatus[family]==='APPLIED');
+  const runtimeTaggedFamilies=new Set([...sourceText.matchAll(/SetAttribute\s*\(\s*["']StudioAssetFamily["']\s*,\s*["']([A-Z][A-Z0-9_]*)["']/g)].map(match=>match[1]));
+  const runtimeAtomTagged=/SetAttribute\s*\(\s*["']StudioAssetAtom["']\s*,\s*["'][A-Z][A-Z0-9_]*["']\s*\)/.test(sourceText);
+  const actualSourceApplicationComplete=selectionPresent
+    &&allFamiliesAccounted
+    &&appliedFamilies.length>0
+    &&appliedFamilies.every(family=>runtimeTaggedFamilies.has(family))
+    &&runtimeAtomTagged;
+  if(actualSourceApplicationComplete)return null;
   const id=`${project.gameId}-roblox-studio-asset-backfill-v1`;
   if(hasTask(queue,id))return null;
   const goal=`[PRESENTATION_PASS:ASSET_ADAPTATION] [ROBLOX_STUDIO_ASSET_BACKFILL]
@@ -2048,6 +2061,7 @@ export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
 적용은 현재 게임의 아트 방향, Style Lock, 기존 실루엣/재질/환경/UI 언어를 보존하고 실제 Instance/Model/MeshPart/Material/Sound/Particle/Trail/UI/Animator 표현에 연결한다.
 CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 12개 계열을 전부 평가하고, 기존 시스템은 APPLIED, 실제로 없는 시스템만 근거와 함께 NOT_APPLICABLE로 기록한다.
 local STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION, STUDIO_ASSET_FAMILY_STATUS를 실제 바인딩과 함께 남기며 마커/주석/상수만 추가하는 no-op은 금지한다.
+APPLIED 계열은 실제 사용되는 native Instance에 StudioAssetFamily와 StudioAssetAtom attribute를 직접 기록해 Open Cloud/Studio 런타임이 선택 목록이 아니라 실제 사용 객체를 관찰할 수 있게 한다.
 배경·지형·마을·집·학교·상점·랜드마크·나무·바위·가구·표지판 등 현재 맵 구성은 ENVIRONMENT/BUILDING/PROP 실제 에셋을 사용한다.
 데미지·체력·쿨다운·히트박스·경제·진행·저장 의미·네트워크 권한은 변경하지 않는다.
 적용 후 incremental static binding QA → 정확한 Roblox target-engine atom selection match → F5 UI/input + F8 core loop + runtime acceptance → fan-in/security 순으로 검증한다.
