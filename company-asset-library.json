@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -50678,7 +50678,14 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "categories": [
+        "MOTION"
+      ],
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true
     },
     {
       "id": "kaykit-adventurers",
@@ -50739,7 +50746,14 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "categories": [
+        "MOTION"
+      ],
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true
     },
     {
       "id": "quaternius-universal-animation-library-2",
@@ -50772,7 +50786,14 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "categories": [
+        "MOTION"
+      ],
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true
     },
     {
       "id": "quaternius-universal-base-characters",
@@ -50834,7 +50855,14 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
-      "reuseAcquiredSourceWhenCompatible": true
+      "reuseAcquiredSourceWhenCompatible": true,
+      "categories": [
+        "CREATURE"
+      ],
+      "volumeAdaptationEligible": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true
     },
     {
       "id": "quaternius-bestiary-dungeon-monsters",
@@ -56914,7 +56942,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 86,
+    "lastCatalogSynchronizedVersion": 87,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -57540,9 +57568,11 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "quaternius-ultimate-animated-animals"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -57576,9 +57606,11 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "quaternius-ultimate-animated-animals"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -57612,9 +57644,11 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "quaternius-ultimate-animated-animals"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -57648,9 +57682,11 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "quaternius-ultimate-animated-animals"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -57770,9 +57806,13 @@
         "priority": 300,
         "targetMin": 200,
         "currentCount": 61,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -58318,9 +58358,13 @@
         "priority": 262,
         "targetMin": 200,
         "currentCount": 61,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -58348,9 +58392,13 @@
         "priority": 262,
         "targetMin": 180,
         "currentCount": 20,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -58750,9 +58798,13 @@
         "priority": 238,
         "targetMin": 200,
         "currentCount": 61,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -59263,9 +59315,13 @@
         "priority": 226,
         "targetMin": 200,
         "currentCount": 61,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
@@ -60955,7 +61011,7 @@
       "nativeAdaptationRequired": true,
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
-    "eligibleFreeSourceCount": 18,
+    "eligibleFreeSourceCount": 22,
     "freeSourceCandidateLimitPerAction": 8,
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
