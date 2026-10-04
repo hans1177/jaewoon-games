@@ -1,5 +1,5 @@
 {
-  "version": 32,
+  "version": 33,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -5887,6 +5887,172 @@
         "atomId": "CLAW",
         "replaceOnlyMatchingModule": true,
         "preserveGameplayDamageMovementSaveAndNetworkAuthority": true
+      }
+    },
+    {
+      "id": "roblox-survival-ui-v1",
+      "title": "나의 생존기 Roblox UI 3종 v1",
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival"
+      ],
+      "packId": "roblox-survival-ui-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+      "previewPath": "/assets/roblox/survival-ui-v1/preview.svg",
+      "sourceFiles": [
+        "assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+        "assets/roblox/survival-ui-v1/catalog.json",
+        "assets/roblox/survival-ui-v1/quality-evidence.json"
+      ],
+      "subfamily": "UI_PACK",
+      "assetCount": 3,
+      "sourceAuthority": "roblox-games/survival/shared/GameConfig.luau#StudioAssets.Families.UI"
+    },
+    {
+      "id": "roblox-survival-ui-frame-panel",
+      "title": "survival FRAME_PANEL",
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival"
+      ],
+      "packId": "roblox-survival-ui-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+      "previewPath": "/assets/roblox/survival-ui-v1/preview.svg",
+      "sourceFiles": [
+        "assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+        "assets/roblox/survival-ui-v1/catalog.json",
+        "assets/roblox/survival-ui-v1/quality-evidence.json"
+      ],
+      "subfamily": "FRAME_PANEL",
+      "atomId": "FRAME_PANEL",
+      "factory": "CreatePanel",
+      "role": "SURVIVAL_READABLE_PANEL",
+      "bindingHint": {
+        "gameId": "survival",
+        "configCollection": "StudioAssets.Families.UI",
+        "family": "UI",
+        "atomId": "FRAME_PANEL",
+        "factory": "CreatePanel",
+        "replaceOnlyMatchingUiAtom": true,
+        "preserveGameplayHealthInputSaveAndNetworkAuthority": true
+      }
+    },
+    {
+      "id": "roblox-survival-ui-button-primary",
+      "title": "survival BUTTON_PRIMARY",
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival"
+      ],
+      "packId": "roblox-survival-ui-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+      "previewPath": "/assets/roblox/survival-ui-v1/preview.svg",
+      "sourceFiles": [
+        "assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+        "assets/roblox/survival-ui-v1/catalog.json",
+        "assets/roblox/survival-ui-v1/quality-evidence.json"
+      ],
+      "subfamily": "BUTTON_PRIMARY",
+      "atomId": "BUTTON_PRIMARY",
+      "factory": "CreatePrimaryButton",
+      "role": "PRIMARY_TOUCH_ACTION",
+      "bindingHint": {
+        "gameId": "survival",
+        "configCollection": "StudioAssets.Families.UI",
+        "family": "UI",
+        "atomId": "BUTTON_PRIMARY",
+        "factory": "CreatePrimaryButton",
+        "replaceOnlyMatchingUiAtom": true,
+        "preserveGameplayHealthInputSaveAndNetworkAuthority": true
+      }
+    },
+    {
+      "id": "roblox-survival-ui-bar-health",
+      "title": "survival BAR_HEALTH",
+      "category": "UI",
+      "family": "UI",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival"
+      ],
+      "packId": "roblox-survival-ui-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+      "previewPath": "/assets/roblox/survival-ui-v1/preview.svg",
+      "sourceFiles": [
+        "assets/roblox/survival-ui-v1/SurvivalUIAssets.luau",
+        "assets/roblox/survival-ui-v1/catalog.json",
+        "assets/roblox/survival-ui-v1/quality-evidence.json"
+      ],
+      "subfamily": "BAR_HEALTH",
+      "atomId": "BAR_HEALTH",
+      "factory": "CreateHealthBar",
+      "role": "HEALTH_STATUS_READOUT",
+      "bindingHint": {
+        "gameId": "survival",
+        "configCollection": "StudioAssets.Families.UI",
+        "family": "UI",
+        "atomId": "BAR_HEALTH",
+        "factory": "CreateHealthBar",
+        "replaceOnlyMatchingUiAtom": true,
+        "preserveGameplayHealthInputSaveAndNetworkAuthority": true
       }
     }
   ],
