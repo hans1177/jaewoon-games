@@ -1856,3 +1856,31 @@ test('flow asset requirements resolve through the latest company library and are
   assert.match(guidance,/최신 company-asset-library\.json/);
   assert.match(guidance,/gameplay\/balance\/progression\/save\/network 권한을 갖지 않는다/);
 });
+
+
+test('flow asset requirements survive queue handoff through existing BUILD_UP directive',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{
+      gameId:'directive-flow-loadout-fixture',
+      goal:'기존 BUILD_UP directive에서 실제 내부 자산 loadout을 복구한다',
+      buildUpDirective:{
+        directiveId:'directive-flow-loadout-fixture-g1',
+        assetRequirementsVersion:1,
+        assetRequirementHandoff:'EXISTING_BUILD_UP_DIRECTIVE',
+        assetRequirements:[
+          {family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'},
+          {family:'ENVIRONMENT',subfamily:'LANDMARK',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'},
+          {family:'VFX',subfamily:'IMPACT',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'}
+        ]
+      }
+    }
+  });
+  assert.equal(plan.flowAssetRequirementSource,'BUILD_UP_DIRECTIVE');
+  assert.equal(plan.flowAssetRequirements.length,3);
+  assert.equal(plan.flowAssetLoadout.selections.length,3);
+  assert.ok(plan.flowAssetLoadout.selections.every(row=>row.family));
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/source=BUILD_UP_DIRECTIVE/);
+  assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
+});
