@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 생물/몬스터 외형 모듈 8종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 생물/몬스터 외형 모듈 24종 생성
 -- 원칙: 순수 표현 자산만 제공한다. AI/체력/데미지/이동/히트박스/드랍/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonCreatureParts = {}
@@ -43,6 +43,23 @@ local Catalog=table.freeze({
 		id="TENTACLE_CLUSTER",name="촉수 군락",familyRootId="CREATURE_TENTACLE",family="CREATURE",subfamily="TENTACLE_CLUSTER",creatureRole="APPENDAGE",
 		silhouette="RADIAL_TAPERED_TENTACLES",palette=table.freeze({body=c(109,77,104),light=c(151,104,143),dark=c(66,48,67),sucker=c(190,143,164)}),
 	}),
+
+	ARACHNID_CORE=table.freeze({id="ARACHNID_CORE",name="거미형 코어",familyRootId="CREATURE_ARACHNID",family="CREATURE",subfamily="ARACHNID_CORE",creatureRole="BODY_CORE",bodyPlan="ARACHNID",ecologyRole="AMBUSH_PREDATOR",silhouette="LOW_CEPHALOTHORAX_ROUND_ABDOMEN",palette=table.freeze({body=c(64,58,55),light=c(94,84,75),dark=c(38,35,34),accent=c(149,89,64)})}),
+	SERPENT_BODY=table.freeze({id="SERPENT_BODY",name="뱀형 몸체",familyRootId="CREATURE_SERPENT",family="CREATURE",subfamily="SERPENT_BODY",creatureRole="BODY_CORE",bodyPlan="SERPENT",ecologyRole="AMBUSH_PREDATOR",silhouette="LONG_SEGMENTED_SERPENT_BODY",palette=table.freeze({body=c(76,91,66),light=c(112,129,88),dark=c(44,54,41),accent=c(160,132,73)})}),
+	AQUATIC_BODY=table.freeze({id="AQUATIC_BODY",name="수생형 몸체",familyRootId="CREATURE_AQUATIC",family="CREATURE",subfamily="AQUATIC_BODY",creatureRole="BODY_CORE",bodyPlan="AQUATIC",ecologyRole="AQUATIC_PREDATOR_OR_PREY",silhouette="STREAMLINED_TORPEDO_BODY",palette=table.freeze({body=c(61,101,117),light=c(100,148,160),dark=c(34,62,72),accent=c(155,181,152)})}),
+	FLYING_BODY=table.freeze({id="FLYING_BODY",name="비행형 몸체",familyRootId="CREATURE_FLYING",family="CREATURE",subfamily="FLYING_BODY",creatureRole="BODY_CORE",bodyPlan="FLYING",ecologyRole="FLYING_PREDATOR_OR_SCAVENGER",silhouette="LIGHT_KEELED_TORSO",palette=table.freeze({body=c(93,83,72),light=c(135,121,103),dark=c(52,48,44),accent=c(165,139,82)})}),
+	GOLEM_CORE=table.freeze({id="GOLEM_CORE",name="골렘 코어",familyRootId="CREATURE_GOLEM",family="CREATURE",subfamily="GOLEM_CORE",creatureRole="BODY_CORE",bodyPlan="GOLEM",ecologyRole="CONSTRUCT_GUARDIAN",silhouette="BLOCKY_STONE_CORE_SHOULDERS",palette=table.freeze({body=c(102,102,96),light=c(142,140,129),dark=c(61,63,61),accent=c(103,182,194)})}),
+	GIANT_TORSO=table.freeze({id="GIANT_TORSO",name="거대형 몸통",familyRootId="CREATURE_GIANT",family="CREATURE",subfamily="GIANT_TORSO",creatureRole="BODY_CORE",bodyPlan="GIANT",ecologyRole="GIANT_OR_BOSS",silhouette="MASSIVE_BROAD_TORSO",palette=table.freeze({body=c(116,92,75),light=c(157,128,101),dark=c(67,52,45),accent=c(150,101,62)})}),
+	HUMANOID_RAIDER_TORSO=table.freeze({id="HUMANOID_RAIDER_TORSO",name="인간형 약탈자 몸통",familyRootId="CREATURE_HUMANOID",family="CREATURE",subfamily="HUMANOID_RAIDER_TORSO",creatureRole="BODY_CORE",bodyPlan="HUMANOID",ecologyRole="HUMANOID_FACTION",silhouette="ARMORED_BIPED_TORSO",palette=table.freeze({body=c(104,92,82),light=c(139,122,105),dark=c(58,53,49),accent=c(155,115,63)})}),
+	UNDEAD_TORSO=table.freeze({id="UNDEAD_TORSO",name="언데드 몸통",familyRootId="CREATURE_UNDEAD",family="CREATURE",subfamily="UNDEAD_TORSO",creatureRole="BODY_CORE",bodyPlan="UNDEAD",ecologyRole="UNDEAD",silhouette="GAUNT_RIBCAGE_TORSO",palette=table.freeze({body=c(117,111,94),light=c(159,151,126),dark=c(65,63,57),accent=c(91,132,115)})}),
+	PREDATOR_HEAD=table.freeze({id="PREDATOR_HEAD",name="포식자 머리",familyRootId="CREATURE_HEAD",family="CREATURE",subfamily="PREDATOR_HEAD",creatureRole="HEAD_VARIANT",bodyPlan="MULTI",ecologyRole="PREDATOR",silhouette="LONG_MUZZLE_STRONG_JAW",palette=table.freeze({body=c(91,76,63),light=c(132,111,88),dark=c(49,43,39),accent=c(184,159,112)})}),
+	GRAZER_HEAD=table.freeze({id="GRAZER_HEAD",name="초식동물 머리",familyRootId="CREATURE_HEAD",family="CREATURE",subfamily="GRAZER_HEAD",creatureRole="HEAD_VARIANT",bodyPlan="QUADRUPED",ecologyRole="PREY_GRAZER",silhouette="NARROW_MUZZLE_LONG_EARS",palette=table.freeze({body=c(125,107,83),light=c(166,145,112),dark=c(72,62,51),accent=c(180,154,105)})}),
+	INSECT_HEAD=table.freeze({id="INSECT_HEAD",name="곤충 머리",familyRootId="CREATURE_INSECT_HEAD",family="CREATURE",subfamily="INSECT_HEAD",creatureRole="HEAD_VARIANT",bodyPlan="INSECT",ecologyRole="INSECT",silhouette="COMPOUND_EYE_MANDIBLE_HEAD",palette=table.freeze({body=c(66,82,65),light=c(99,117,86),dark=c(38,49,39),accent=c(169,130,63)})}),
+	ARACHNID_LEG_CLUSTER=table.freeze({id="ARACHNID_LEG_CLUSTER",name="거미 다리 군락",familyRootId="CREATURE_ARACHNID_LEGS",family="CREATURE",subfamily="ARACHNID_LEG_CLUSTER",creatureRole="APPENDAGE",bodyPlan="ARACHNID",ecologyRole="ARACHNID",silhouette="EIGHT_ARTICULATED_LEGS",palette=table.freeze({body=c(62,56,53),light=c(92,82,72),dark=c(35,33,32),accent=c(140,84,60)})}),
+	FIN_PAIR=table.freeze({id="FIN_PAIR",name="지느러미 한 쌍",familyRootId="CREATURE_FINS",family="CREATURE",subfamily="FIN_PAIR",creatureRole="APPENDAGE",bodyPlan="AQUATIC",ecologyRole="AQUATIC",silhouette="TAPERED_SIDE_FINS",palette=table.freeze({body=c(62,104,119),light=c(108,154,164),dark=c(35,62,71),accent=c(144,183,174)})}),
+	CLAW_PAIR=table.freeze({id="CLAW_PAIR",name="발톱 한 쌍",familyRootId="CREATURE_CLAWS",family="CREATURE",subfamily="CLAW_PAIR",creatureRole="APPENDAGE",bodyPlan="MULTI",ecologyRole="PREDATOR",silhouette="CURVED_TWIN_CLAWS",palette=table.freeze({body=c(122,111,91),light=c(177,165,137),dark=c(70,65,57),accent=c(195,173,126)})}),
+	MANDIBLE_PAIR=table.freeze({id="MANDIBLE_PAIR",name="턱 한 쌍",familyRootId="CREATURE_MANDIBLES",family="CREATURE",subfamily="MANDIBLE_PAIR",creatureRole="HEAD_APPENDAGE",bodyPlan="INSECT",ecologyRole="INSECT_PREDATOR",silhouette="CURVED_OPPOSING_MANDIBLES",palette=table.freeze({body=c(74,81,64),light=c(111,121,91),dark=c(42,47,38),accent=c(174,133,62)})}),
+	ELITE_ORNAMENT=table.freeze({id="ELITE_ORNAMENT",name="엘리트 장식",familyRootId="CREATURE_ELITE",family="CREATURE",subfamily="ELITE_ORNAMENT",creatureRole="ELITE_ORNAMENT",bodyPlan="MULTI",ecologyRole="ELITE_VARIANT",silhouette="BACK_SPIKE_SHOULDER_CREST",palette=table.freeze({body=c(93,73,61),light=c(137,105,81),dark=c(52,43,39),accent=c(218,156,67)})}),
 })
 
 local function makePart(name,size,color,material,shape)
@@ -219,6 +236,58 @@ local function addTentacles(model,root,row,level)
 	if detail(level,2) then weld(root,makePart("Core",Vector3.new(1.45,0.72,1.45),p.dark,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(0,0,0)) end
 end
 
+
+local function addCreatureExpansion(model,root,row,level)
+	local p=row.palette
+	local id=row.id
+	if id=="ARACHNID_CORE" then
+		weld(root,makePart("Thorax",Vector3.new(1.75,1.15,1.55),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(-0.55,0,0))
+		weld(root,makePart("Abdomen",Vector3.new(2.15,1.55,1.90),p.light,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(1.05,0.15,0))
+	elseif id=="SERPENT_BODY" then
+		local count=level==1 and 5 or level==2 and 7 or 9
+		for i=1,count do local t=i-1; local sz=1.15-t*0.055; weld(root,makePart("Segment"..i,Vector3.new(sz,sz,sz*1.15),i%2==0 and p.light or p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(0,0,t*0.78)) end
+	elseif id=="AQUATIC_BODY" then
+		weld(root,makePart("Body",Vector3.new(1.9,1.45,4.25),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		weld(root,wedge("Nose",Vector3.new(1.35,1.05,1.55),p.light,Enum.Material.SmoothPlastic),CFrame.new(0,0,-2.55)*CFrame.Angles(math.rad(90),0,0))
+	elseif id=="FLYING_BODY" then
+		weld(root,makePart("Keel",Vector3.new(1.75,2.05,1.45),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		weld(root,makePart("Chest",Vector3.new(2.15,1.05,1.35),p.light,Enum.Material.SmoothPlastic),CFrame.new(0,0.25,-0.35))
+	elseif id=="GOLEM_CORE" then
+		weld(root,makePart("Core",Vector3.new(2.8,3.0,2.2),p.body,Enum.Material.Slate),CFrame.new(0,0,0))
+		for _,x in ipairs({-1.65,1.65}) do weld(root,makePart("Shoulder"..x,Vector3.new(1.2,1.2,1.2),p.light,Enum.Material.Slate),CFrame.new(x,0.75,0)) end
+		if detail(level,2) then weld(root,makePart("GlowCore",Vector3.new(0.65,0.65,0.40),p.accent,Enum.Material.Neon),CFrame.new(0,0,-1.15)) end
+	elseif id=="GIANT_TORSO" then
+		weld(root,makePart("Torso",Vector3.new(4.2,4.6,2.7),p.body,Enum.Material.SmoothPlastic),CFrame.new())
+		weld(root,makePart("ShoulderMass",Vector3.new(5.2,1.25,2.9),p.light,Enum.Material.SmoothPlastic),CFrame.new(0,1.55,0))
+	elseif id=="HUMANOID_RAIDER_TORSO" then
+		weld(root,makePart("Torso",Vector3.new(2.55,2.85,1.35),p.body,Enum.Material.Fabric),CFrame.new())
+		weld(root,makePart("ChestPlate",Vector3.new(2.25,1.65,0.35),p.light,Enum.Material.Metal),CFrame.new(0,0.25,-0.72))
+		if detail(level,2) then weld(root,makePart("Belt",Vector3.new(2.65,0.28,1.42),p.accent,Enum.Material.Fabric),CFrame.new(0,-1.15,0)) end
+	elseif id=="UNDEAD_TORSO" then
+		weld(root,makePart("Spine",Vector3.new(0.42,2.65,0.42),p.dark,Enum.Material.SmoothPlastic),CFrame.new())
+		for i=-2,2 do weld(root,makePart("Rib"..i,Vector3.new(2.15-math.abs(i)*0.20,0.18,0.30),i%2==0 and p.light or p.body,Enum.Material.SmoothPlastic),CFrame.new(0,i*0.38,-0.05)) end
+	elseif id=="PREDATOR_HEAD" then
+		weld(root,makePart("Skull",Vector3.new(1.75,1.45,1.75),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		weld(root,wedge("Muzzle",Vector3.new(1.15,0.85,1.65),p.light,Enum.Material.SmoothPlastic),CFrame.new(0,-0.15,-1.35)*CFrame.Angles(math.rad(90),0,0))
+	elseif id=="GRAZER_HEAD" then
+		weld(root,makePart("Skull",Vector3.new(1.45,1.45,1.75),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		for _,x in ipairs({-0.85,0.85}) do weld(root,wedge("Ear"..x,Vector3.new(0.55,1.15,0.22),p.light,Enum.Material.SmoothPlastic),CFrame.new(x,0.55,0)*CFrame.Angles(0,0,math.rad(x<0 and 35 or -35))) end
+	elseif id=="INSECT_HEAD" then
+		weld(root,makePart("Head",Vector3.new(1.75,1.45,1.45),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		for _,x in ipairs({-0.62,0.62}) do weld(root,makePart("Eye"..x,Vector3.new(0.62,0.62,0.32),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(x,0.28,-0.65)) end
+	elseif id=="ARACHNID_LEG_CLUSTER" then
+		for side=-1,1,2 do for i=1,4 do local z=-1.25+(i-1)*0.82; weld(root,makePart("Leg"..side.."_"..i,Vector3.new(2.45,0.18,0.18),i%2==0 and p.light or p.body,Enum.Material.SmoothPlastic),CFrame.new(side*1.25,0,z)*CFrame.Angles(0,0,math.rad(side*(18+i*6)))) end end
+	elseif id=="FIN_PAIR" then
+		for _,x in ipairs({-1,1}) do weld(root,wedge("Fin"..x,Vector3.new(1.25,0.22,1.75),p.light,Enum.Material.SmoothPlastic),CFrame.new(x*0.95,0,0)*CFrame.Angles(0,math.rad(x*12),math.rad(x*28))) end
+	elseif id=="CLAW_PAIR" then
+		for _,x in ipairs({-1,1}) do weld(root,wedge("Claw"..x,Vector3.new(0.48,0.55,1.45),p.light,Enum.Material.SmoothPlastic),CFrame.new(x*0.48,0,-0.45)*CFrame.Angles(math.rad(90),0,math.rad(x*14))) end
+	elseif id=="MANDIBLE_PAIR" then
+		for _,x in ipairs({-1,1}) do weld(root,wedge("Mandible"..x,Vector3.new(0.55,0.55,1.55),p.body,Enum.Material.SmoothPlastic),CFrame.new(x*0.52,0,-0.65)*CFrame.Angles(math.rad(90),0,math.rad(x*22))) end
+	elseif id=="ELITE_ORNAMENT" then
+		for i=-2,2 do weld(root,wedge("Crest"..i,Vector3.new(0.50,1.05+math.abs(i)*0.15,0.30),i%2==0 and p.accent or p.light,Enum.Material.SmoothPlastic),CFrame.new(i*0.48,0.65,0)*CFrame.Angles(0,0,math.rad(i*6))) end
+	end
+end
+
 local BUILDERS=table.freeze({
 	BIPED_TORSO=addBipedTorso,
 	QUADRUPED_TORSO=addQuadrupedTorso,
@@ -228,12 +297,30 @@ local BUILDERS=table.freeze({
 	HORN_PAIR=addHorns,
 	SHELL_BACK=addShell,
 	TENTACLE_CLUSTER=addTentacles,
+	ARACHNID_CORE=addCreatureExpansion,
+	SERPENT_BODY=addCreatureExpansion,
+	AQUATIC_BODY=addCreatureExpansion,
+	FLYING_BODY=addCreatureExpansion,
+	GOLEM_CORE=addCreatureExpansion,
+	GIANT_TORSO=addCreatureExpansion,
+	HUMANOID_RAIDER_TORSO=addCreatureExpansion,
+	UNDEAD_TORSO=addCreatureExpansion,
+	PREDATOR_HEAD=addCreatureExpansion,
+	GRAZER_HEAD=addCreatureExpansion,
+	INSECT_HEAD=addCreatureExpansion,
+	ARACHNID_LEG_CLUSTER=addCreatureExpansion,
+	FIN_PAIR=addCreatureExpansion,
+	CLAW_PAIR=addCreatureExpansion,
+	MANDIBLE_PAIR=addCreatureExpansion,
+	ELITE_ORNAMENT=addCreatureExpansion,
 })
 
 local function applyModelMetadata(model,row,quality)
 	model:SetAttribute("StudioAssetFamilyRootId",row.familyRootId)
 	model:SetAttribute("StudioAssetSubfamily",row.subfamily)
 	model:SetAttribute("StudioAssetCreatureRole",row.creatureRole)
+	model:SetAttribute("CreatureBodyPlan",row.bodyPlan or "MULTI")
+	model:SetAttribute("CreatureEcologyRole",row.ecologyRole or "GENERAL")
 	model:SetAttribute("StudioAssetSilhouette",row.silhouette)
 	model:SetAttribute("StudioAssetQualityLevel",quality)
 	model:SetAttribute("StudioAssetQualityTarget",100)
