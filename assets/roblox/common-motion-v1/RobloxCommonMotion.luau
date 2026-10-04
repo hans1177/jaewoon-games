@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-motion-v1/RobloxCommonMotion.luau
--- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 40종
+-- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 61종
 -- 원칙: 관절 포즈만 소유한다. Humanoid 이동속도/위치/루트모션/데미지/게임플레이 권한은 소유하지 않는다.
 
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
@@ -47,6 +47,27 @@ local MOTION = table.freeze({
 	CHANNEL_LOOP = table.freeze({looped = true, priority = Enum.AnimationPriority.Action3, duration = 1.20, mode = "CHANNEL"}),
 	HIT_BACK = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.55, mode = "HIT_BACK"}),
 	BLEND_NEUTRAL = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.24, mode = "BLEND"}),
+	SIT_DOWN = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.75, mode = "LIFE_ACTION", variant = "SIT_DOWN"}),
+	STAND_UP = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.72, mode = "LIFE_ACTION", variant = "STAND_UP"}),
+	LEAN_WALL_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Idle, duration = 1.80, mode = "LIFE_ACTION", variant = "LEAN"}),
+	OPEN_DOOR = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.75, mode = "LIFE_ACTION", variant = "OPEN_DOOR"}),
+	OPEN_CONTAINER = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.68, mode = "LIFE_ACTION", variant = "OPEN_CONTAINER"}),
+	PICKUP_GROUND = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.72, mode = "LIFE_ACTION", variant = "PICKUP"}),
+	PLACE_GROUND = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.72, mode = "LIFE_ACTION", variant = "PLACE"}),
+	PUSH_OBJECT = table.freeze({looped = true, priority = Enum.AnimationPriority.Action, duration = 1.20, mode = "LIFE_ACTION", variant = "PUSH"}),
+	PULL_OBJECT = table.freeze({looped = true, priority = Enum.AnimationPriority.Action, duration = 1.20, mode = "LIFE_ACTION", variant = "PULL"}),
+	TALK_GESTURE = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 1.10, mode = "LIFE_ACTION", variant = "TALK_GESTURE"}),
+	NPC_WORK_LOOP = table.freeze({looped = true, priority = Enum.AnimationPriority.Action, duration = 1.40, mode = "LIFE_ACTION", variant = "NPC_WORK"}),
+	COOK_LOOP = table.freeze({looped = true, priority = Enum.AnimationPriority.Action, duration = 1.30, mode = "LIFE_ACTION", variant = "COOK"}),
+	FARM_TEND = table.freeze({looped = true, priority = Enum.AnimationPriority.Action2, duration = 1.15, mode = "LIFE_ACTION", variant = "FARM"}),
+	FISH_CAST = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 1.00, mode = "LIFE_ACTION", variant = "FISH"}),
+	BED_LIE_DOWN = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 1.10, mode = "LIFE_ACTION", variant = "BED"}),
+	LADDER_ENTER = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.60, mode = "LIFE_ACTION", variant = "LADDER_ENTER"}),
+	LADDER_EXIT = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.65, mode = "LIFE_ACTION", variant = "LADDER_EXIT"}),
+	SLOPE_ASCEND = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.90, mode = "LIFE_ACTION", variant = "SLOPE_ASCEND"}),
+	SLOPE_DESCEND = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.90, mode = "LIFE_ACTION", variant = "SLOPE_DESCEND"}),
+	FATIGUED_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Idle, duration = 1.80, mode = "LIFE_ACTION", variant = "FATIGUE"}),
+	INJURED_WALK = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.15, mode = "LIFE_ACTION", variant = "INJURY"}),
 })
 
 local HIERARCHY = table.freeze({
@@ -740,6 +761,98 @@ local function makeHitBack(sequence,row)
 	addFrame(sequence,row.duration,{},"Recover")
 end
 
+
+local function makeLifeAction(sequence,row)
+	local v=row.variant
+	if v=="SIT_DOWN" then
+		addFrame(sequence,0,{LowerTorso=angles(0,0,0),UpperTorso=angles(0,0,0)},"Stand")
+		addFrame(sequence,row.duration*0.48,{LowerTorso=angles(16,0,0),UpperTorso=angles(-9,0,0),LeftUpperLeg=angles(-38,0,-4),RightUpperLeg=angles(-38,0,4),LeftLowerLeg=angles(64,0,0),RightLowerLeg=angles(64,0,0),LeftUpperArm=angles(-10,0,-8),RightUpperArm=angles(-10,0,8)},"Lower")
+		addFrame(sequence,row.duration,{LowerTorso=angles(10,0,0),UpperTorso=angles(-5,0,0),LeftUpperLeg=angles(-72,0,-4),RightUpperLeg=angles(-72,0,4),LeftLowerLeg=angles(82,0,0),RightLowerLeg=angles(82,0,0)},"Seated")
+	elseif v=="STAND_UP" then
+		addFrame(sequence,0,{LowerTorso=angles(10,0,0),UpperTorso=angles(-5,0,0),LeftUpperLeg=angles(-72,0,-4),RightUpperLeg=angles(-72,0,4),LeftLowerLeg=angles(82,0,0),RightLowerLeg=angles(82,0,0)},"Seated")
+		addFrame(sequence,row.duration*0.48,{LowerTorso=angles(18,0,0),UpperTorso=angles(-10,0,0),LeftUpperLeg=angles(-34,0,-3),RightUpperLeg=angles(-34,0,3),LeftLowerLeg=angles(58,0,0),RightLowerLeg=angles(58,0,0)},"Rise")
+		addFrame(sequence,row.duration,{},"Stand")
+	elseif v=="LEAN" then
+		for i=0,4 do
+			local t=row.duration*i/4
+			local b=math.sin(i*math.pi/2)
+			addFrame(sequence,t,{LowerTorso=angles(-5,0,8),UpperTorso=angles(6,0,-10),Head=angles(-2,b*2,4),LeftUpperArm=angles(-8,0,-16),RightUpperArm=angles(-5,0,8),LeftUpperLeg=angles(-6,0,-4),RightUpperLeg=angles(8,0,4)},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+		end
+	elseif v=="OPEN_DOOR" or v=="OPEN_CONTAINER" then
+		addFrame(sequence,0,{},"Ready")
+		addFrame(sequence,row.duration*0.42,{UpperTorso=angles(5,-12,0),Head=angles(-2,-14,0),RightUpperArm=angles(-62,28,18),RightLowerArm=angles(-54,0,6),RightHand=angles(-12,0,-4)},"Grip")
+		addFrame(sequence,row.duration*0.72,{LowerTorso=angles(-2,10,0),UpperTorso=angles(4,-22,0),RightUpperArm=angles(-34,48,20),RightLowerArm=angles(-42,0,8)},"Open")
+		addFrame(sequence,row.duration,{UpperTorso=angles(1,0,0),RightUpperArm=angles(-8,4,5)},"Release")
+	elseif v=="PICKUP" or v=="PLACE" then
+		addFrame(sequence,0,{LowerTorso=angles(2,0,0)},"Ready")
+		addFrame(sequence,row.duration*0.42,{LowerTorso=angles(32,0,0),UpperTorso=angles(18,0,0),Head=angles(8,0,0),LeftUpperLeg=angles(-26,0,-3),RightUpperLeg=angles(-26,0,3),LeftLowerLeg=angles(42,0,0),RightLowerLeg=angles(42,0,0),LeftUpperArm=angles(-74,-8,-18),RightUpperArm=angles(-74,8,18),LeftLowerArm=angles(-62,0,-8),RightLowerArm=angles(-62,0,8)},"ReachGround")
+		addFrame(sequence,row.duration*0.70,{LowerTorso=angles(18,0,0),UpperTorso=angles(8,0,0),LeftUpperArm=angles(-48,-10,-16),RightUpperArm=angles(-48,10,16),LeftLowerArm=angles(-76,0,-8),RightLowerArm=angles(-76,0,8)},"HandleObject")
+		addFrame(sequence,row.duration,{},"Recover")
+	elseif v=="PUSH" or v=="PULL" then
+		local dir=v=="PUSH" and 1 or -1
+		for i=0,4 do
+			local t=row.duration*i/4
+			local a=math.sin(i*math.pi/2)
+			addFrame(sequence,t,{LowerTorso=angles(-dir*9+a*2,0,0),UpperTorso=angles(dir*7-a*2,0,0),Head=angles(-dir*3,0,0),LeftUpperArm=angles(-68,-12,-18),LeftLowerArm=angles(-34-dir*24,0,-8),RightUpperArm=angles(-68,12,18),RightLowerArm=angles(-34-dir*24,0,8),LeftUpperLeg=angles(-dir*10+a*8,0,-3),RightUpperLeg=angles(dir*7-a*8,0,3)},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+		end
+	elseif v=="TALK_GESTURE" then
+		addFrame(sequence,0,{},"Neutral")
+		addFrame(sequence,row.duration*0.32,{UpperTorso=angles(2,-5,0),Head=angles(-2,-8,0),RightUpperArm=angles(-58,24,24),RightLowerArm=angles(-72,0,12),LeftUpperArm=angles(-18,-8,-10)},"Explain")
+		addFrame(sequence,row.duration*0.64,{UpperTorso=angles(1,6,0),Head=angles(-1,10,0),LeftUpperArm=angles(-52,-26,-22),LeftLowerArm=angles(-62,0,-10),RightUpperArm=angles(-24,10,12)},"Respond")
+		addFrame(sequence,row.duration,{},"Neutral")
+	elseif v=="NPC_WORK" or v=="COOK" or v=="FARM" then
+		for i=0,4 do
+			local t=row.duration*i/4
+			local a=math.sin(i*math.pi/2)
+			local farm=v=="FARM" and 1 or 0
+			addFrame(sequence,t,{LowerTorso=angles(5+farm*8,0,a*2),UpperTorso=angles(-2+farm*5,a*4,-a*2),Head=angles(3,-a*3,0),LeftUpperArm=angles(-52+a*18,-12,-16),LeftLowerArm=angles(-62-a*18,0,-8),RightUpperArm=angles(-52-a*18,12,16),RightLowerArm=angles(-62+a*18,0,8)},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+		end
+	elseif v=="FISH" then
+		addFrame(sequence,0,{LowerTorso=angles(-4,-8,0),UpperTorso=angles(7,12,0),RightUpperArm=angles(-100,18,28),RightLowerArm=angles(-72,0,12),LeftUpperArm=angles(-58,-12,-18),LeftLowerArm=angles(-78,0,-8)},"BackCast")
+		addFrame(sequence,row.duration*0.45,{LowerTorso=angles(7,10,2),UpperTorso=angles(-8,-16,-3),RightUpperArm=angles(28,-22,12),RightLowerArm=angles(-12,0,4),LeftUpperArm=angles(-36,-8,-12)},"Cast")
+		addFrame(sequence,row.duration,{UpperTorso=angles(1,0,0),RightUpperArm=angles(-38,8,12),RightLowerArm=angles(-58,0,8),LeftUpperArm=angles(-32,-8,-12),LeftLowerArm=angles(-54,0,-8)},"Hold")
+	elseif v=="BED" then
+		addFrame(sequence,0,{},"Stand")
+		addFrame(sequence,row.duration*0.45,{LowerTorso=angles(30,0,0),UpperTorso=angles(22,0,0),LeftUpperLeg=angles(-28,0,-3),RightUpperLeg=angles(-28,0,3),LeftLowerLeg=angles(46,0,0),RightLowerLeg=angles(46,0,0)},"Lower")
+		addFrame(sequence,row.duration,{LowerTorso=angles(78,0,0),UpperTorso=angles(72,0,0),Head=angles(34,0,0),LeftUpperArm=angles(22,0,-16),RightUpperArm=angles(20,0,16),LeftUpperLeg=angles(-12,0,-3),RightUpperLeg=angles(-8,0,3),LeftLowerLeg=angles(18,0,0),RightLowerLeg=angles(14,0,0)},"Lie")
+	elseif v=="LADDER_ENTER" then
+		addFrame(sequence,0,{},"Approach")
+		addFrame(sequence,row.duration*0.52,{LowerTorso=angles(-5,0,0),UpperTorso=angles(8,0,0),LeftUpperArm=angles(-88,-6,-8),RightUpperArm=angles(-72,8,8),LeftUpperLeg=angles(18,0,-3),RightUpperLeg=angles(-10,0,3),LeftLowerLeg=angles(42,0,0)},"Grip")
+		addFrame(sequence,row.duration,{LowerTorso=angles(-6,0,0),UpperTorso=angles(9,0,0),LeftUpperArm=angles(-112,0,-8),RightUpperArm=angles(-78,0,8),LeftUpperLeg=angles(22,0,-3),RightUpperLeg=angles(-12,0,3)},"ClimbReady")
+	elseif v=="LADDER_EXIT" then
+		addFrame(sequence,0,{LowerTorso=angles(-6,0,0),UpperTorso=angles(9,0,0),LeftUpperArm=angles(-112,0,-8),RightUpperArm=angles(-78,0,8),LeftUpperLeg=angles(22,0,-3),RightUpperLeg=angles(-12,0,3)},"Climb")
+		addFrame(sequence,row.duration*0.55,{LowerTorso=angles(18,0,0),UpperTorso=angles(-8,0,0),LeftUpperArm=angles(-58,-8,-10),RightUpperArm=angles(-52,8,10),LeftUpperLeg=angles(-34,0,-4),RightUpperLeg=angles(12,0,4),LeftLowerLeg=angles(62,0,0)},"StepOver")
+		addFrame(sequence,row.duration,{},"Stand")
+	elseif v=="SLOPE_ASCEND" or v=="SLOPE_DESCEND" or v=="INJURY" then
+		for i=0,6 do
+			local t=row.duration*i/6
+			local phase=math.pi*2*i/6
+			local profile=v=="INJURY" and {stride=0.40,lift=0.12,lean=0.10} or {stride=0.62,lift=0.22,lean=v=="SLOPE_ASCEND" and 0.16 or -0.08}
+			local pose=locomotionTransforms(phase,profile)
+			if v=="INJURY" then
+				pose.UpperTorso=angles(10,-5,8)
+				pose.LeftUpperArm=angles(-28,-10,-26)
+				pose.LeftLowerArm=angles(-72,0,-12)
+			elseif v=="SLOPE_ASCEND" then
+				pose.LowerTorso=angles(-10,0,0)
+				pose.UpperTorso=angles(8,0,0)
+			else
+				pose.LowerTorso=angles(7,0,0)
+				pose.UpperTorso=angles(-5,0,0)
+			end
+			addFrame(sequence,t,pose,i==0 and "LoopStart" or i==6 and "LoopEnd" or nil)
+		end
+	elseif v=="FATIGUE" then
+		for i=0,4 do
+			local t=row.duration*i/4
+			local b=math.sin(i*math.pi/2)
+			addFrame(sequence,t,{LowerTorso=angles(10+b*1.2,0,0),UpperTorso=angles(14+b*1.5,0,0),Head=angles(10+b,0,0),LeftUpperArm=angles(-22,0,-12),LeftLowerArm=angles(-78,0,-8),RightUpperArm=angles(-22,0,12),RightLowerArm=angles(-78,0,8),LeftUpperLeg=angles(-6,0,-3),RightUpperLeg=angles(5,0,3)},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+		end
+	else
+		makeInteract(sequence,row)
+	end
+end
+
 local function makeBlend(sequence,row)
 	addFrame(sequence,0,{
 		LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0),
@@ -788,6 +901,7 @@ local BUILDERS = table.freeze({
 	CHANNEL = makeChannel,
 	HIT_BACK = makeHitBack,
 	BLEND = makeBlend,
+	LIFE_ACTION = makeLifeAction,
 })
 
 local function resolve(atomId)
@@ -866,11 +980,11 @@ function RobloxCommonMotion.Audit()
 	end
 	table.sort(ids)
 	return table.freeze({
-		version = 4,
+		version = 5,
 		packId = "roblox-common-motion-v1",
 		atoms = table.freeze(ids),
 		atomCount = #ids,
-		expectedAtomCount = 40,
+		expectedAtomCount = 61,
 		companyCommonBase = true,
 		compatibleRig = "R15",
 		keyframeSequenceSource = true,
