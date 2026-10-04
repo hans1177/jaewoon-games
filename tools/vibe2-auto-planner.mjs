@@ -1943,6 +1943,7 @@ function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
     }
     if(status!=='verified')continue;
     for(const marker of evidence){
+      if(/^studio-quality-/i.test(marker))continue;
       if(!presentationRelevantText(marker))continue;
       if(/^owner-presentation-change:/i.test(marker)){
         const intent=marker.slice('owner-presentation-change:'.length),eventId=ownerPresentationEventIdentity(item,evidence),repeat=ownerPresentationRepeatCount(queue,project,intent);
