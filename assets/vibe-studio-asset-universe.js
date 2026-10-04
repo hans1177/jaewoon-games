@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:8,
+  version:9,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1486,6 +1486,9 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'ATTACH_STYLE_EXPRESSION_AXES_TO_WORKLIST',
     'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
+    'CONTINUE_NORMAL_SAFE_ASSET_WORK_WITHOUT_HUMAN_OR_CHATGPT_PRESENCE',
+    'QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION',
+    'ENTER_QUALITY_UP_1000_IMMEDIATELY_AFTER_RECOMMENDED_VOLUME',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
   ]),
   countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1542,6 +1545,64 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     directProtectedCommercialGameAssetCopyForbidden:true,
     nativeAdaptationRequired:true,
     runtimeVerificationRequiredBeforeProductionPromotion:true
+  }),
+  autonomousOperatingContract:Object.freeze({
+    version:1,
+    status:'ACTIVE_EXISTING_VIBE_ASSET_LOOP',
+    executionLane:'ASSET_DEVELOPMENT',
+    normalCycleOwner:'VIBE_EXISTING_ASSET_DEVELOPMENT_LOOP',
+    ownerPresenceRequired:false,
+    humanPresenceRequired:false,
+    chatgptPresenceRequired:false,
+    manualApprovalRequiredForNormalSafeAssetWork:false,
+    existingRuntimeBindings:Object.freeze({
+      scheduler:'.github/workflows/vibe2-24h-runner.yml',
+      executor:'.github/workflows/vibe2-continuous-core.yml',
+      planner:'tools/vibe2-asset-production-plan.mjs',
+      library:'assets/vibe-studio-asset-universe.js',
+      registry:'company-asset-library.json',
+      qa:'qa/vibe-studio-asset-universe.test.mjs'
+    }),
+    cycle:Object.freeze([
+      'SYNC_EXISTING_CATALOGS_AND_REGISTRY',
+      'REBUILD_DEDUPED_PRIORITY_WORKLIST',
+      'OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS_WHEN_PRESENT',
+      'APPLY_CONCEPT_STYLE_EXPRESSION_AXES',
+      'CONSUME_HIGHEST_PRIORITY_SAFE_ACTION',
+      'REUSE_EXISTING',
+      'DERIVE_VARIANT',
+      'RECOMBINE_EXISTING',
+      'LICENSE_VERIFIED_FREE_SOURCE_ADAPT_ON_DEMAND',
+      'NEW_AUTHORING_ONLY_IF_PRIOR_OPTIONS_FAIL',
+      'RUN_EXISTING_ASSET_QA_AND_IDEMPOTENCY',
+      'PERSIST_REGISTRY_IF_CHANGED',
+      'REPEAT_UNTIL_RECOMMENDED_VOLUME_AND_REQUIRED_ROLES_PASS',
+      'ENTER_QUALITY_UP_1000_IMMEDIATELY',
+      'IMPROVE_WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
+      'REPEAT_QUALITY_QA_UNTIL_INTERNAL_1000'
+    ]),
+    resumeSource:'company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions',
+    resumeAfterInterruption:true,
+    continueAfterSafeActionCompletion:true,
+    blockedActionPolicy:'QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION',
+    ambiguousLicensePolicy:'REJECT_SOURCE_AND_CONTINUE_NEXT_VERIFIED_CANDIDATE',
+    missingFreeSourcePolicy:'CONTINUE_RESOLUTION_ORDER_TO_NEW_AUTHORING',
+    runtimeEvidenceMissingPolicy:'KEEP_PRODUCTION_UNVERIFIED_AND_CONTINUE_INTERNAL_QUALITY_WORK',
+    failureRetryPolicy:'REBUILD_FROM_LATEST_REGISTRY_AND_RETRY_SAFE_ASSET_SCOPE',
+    volumeExitCondition:'RECOMMENDED_VOLUME_AND_REQUIRED_ROLE_GAPS_CLEAR',
+    qualityEntryAction:'QUALITY_UP_1000',
+    qualitySelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
+    qualityTarget:1000,
+    postQualityTargetAction:'HOLD_RECOMMENDED_VOLUME_AND_REOPEN_ONLY_FOR_NEW_VERIFIED_GAP_OR_QUALITY_REGRESSION',
+    terminalStateForbidden:true,
+    internalQualityDoesNotPromoteProduction:true,
+    rawReferencePersistenceForbidden:true,
+    newWorkflowRequired:false,
+    newSchedulerRequired:false,
+    newQueueRequired:false,
+    newPipelineRequired:false,
+    newWrapperRequired:false,
+    newShadowSystemRequired:false
   }),
   reuseAdaptRecombineBeforeNewAuthoring:true,
   deleteExistingAssetAutomatically:false,
@@ -1842,7 +1903,13 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const nextVolumeActionRows=volumeReady?[]:[
     ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
     ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
-  ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96);
+  ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96).sort((a,b)=>{
+    const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
+    const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
+    const scoreA=Number(a.priority||0)+deficitA;
+    const scoreB=Number(b.priority||0)+deficitB;
+    return scoreB-scoreA||Number(b.priority||0)-Number(a.priority||0)||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId));
+  });
   const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
     const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
@@ -1860,6 +1927,28 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
     });
   });
+  const autonomousNextAction=volumeReady
+    ?Object.freeze({
+      kind:'QUALITY_UP_1000',
+      phase:'QUALITY_UP_1000',
+      selection:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpSelection,
+      workingBandMin:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,
+      target:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,
+      continueWithoutHuman:true
+    })
+    :nextVolumeActions.length
+      ?Object.freeze({
+        kind:'CONSUME_PRIORITY_WORKLIST_ACTION',
+        phase:'VOLUME_UP',
+        action:nextVolumeActions[0],
+        continueAfterCompletion:true,
+        continueWithoutHuman:true
+      })
+      :Object.freeze({
+        kind:'REBUILD_VOLUME_WORKLIST',
+        phase:'VOLUME_UP',
+        continueWithoutHuman:true
+      });
   return Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1875,6 +1964,12 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeBlockingDomains:Object.freeze(volumeBlockingDomains),
     uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
     nextVolumeActions:Object.freeze(nextVolumeActions),
+    autonomousOperatingContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract,
+    autonomousNextAction,
+    autonomousContinuationRequired:true,
+    ownerPresenceRequired:false,
+    humanPresenceRequired:false,
+    chatgptPresenceRequired:false,
     persistentWorklistField:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,
     volumeActionConsumption:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,
     reuseResolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,

@@ -3844,7 +3844,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,8);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,9);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -3861,6 +3861,29 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionRequiredForAllDomains,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionContractRef,'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionDomainBindingRef,'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS');
+  const autonomous=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract;
+  assert.equal(autonomous.status,'ACTIVE_EXISTING_VIBE_ASSET_LOOP');
+  assert.equal(autonomous.executionLane,'ASSET_DEVELOPMENT');
+  assert.equal(autonomous.ownerPresenceRequired,false);
+  assert.equal(autonomous.humanPresenceRequired,false);
+  assert.equal(autonomous.chatgptPresenceRequired,false);
+  assert.equal(autonomous.manualApprovalRequiredForNormalSafeAssetWork,false);
+  assert.equal(autonomous.existingRuntimeBindings.scheduler,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(autonomous.existingRuntimeBindings.executor,'.github/workflows/vibe2-continuous-core.yml');
+  assert.equal(autonomous.resumeAfterInterruption,true);
+  assert.equal(autonomous.continueAfterSafeActionCompletion,true);
+  assert.equal(autonomous.blockedActionPolicy,'QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION');
+  assert.equal(autonomous.ambiguousLicensePolicy,'REJECT_SOURCE_AND_CONTINUE_NEXT_VERIFIED_CANDIDATE');
+  assert.equal(autonomous.qualityEntryAction,'QUALITY_UP_1000');
+  assert.equal(autonomous.qualitySelection,'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST');
+  assert.equal(autonomous.qualityTarget,1000);
+  assert.equal(autonomous.internalQualityDoesNotPromoteProduction,true);
+  assert.equal(autonomous.newWorkflowRequired,false);
+  assert.equal(autonomous.newSchedulerRequired,false);
+  assert.equal(autonomous.newQueueRequired,false);
+  assert.equal(autonomous.newPipelineRequired,false);
+  assert.equal(autonomous.newWrapperRequired,false);
+  assert.equal(autonomous.newShadowSystemRequired,false);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.sourceCatalogMode,'SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.bulkPrefetchForbidden,true);
@@ -3880,6 +3903,18 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(plan.qualityTarget,1000);
   assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,true);
   assert.equal(plan.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.equal(plan.autonomousOperatingContract.chatgptPresenceRequired,false);
+  assert.equal(plan.autonomousOperatingContract.humanPresenceRequired,false);
+  assert.equal(plan.autonomousContinuationRequired,true);
+  assert.equal(plan.ownerPresenceRequired,false);
+  assert.equal(plan.humanPresenceRequired,false);
+  assert.equal(plan.chatgptPresenceRequired,false);
+  assert.ok(['CONSUME_PRIORITY_WORKLIST_ACTION','REBUILD_VOLUME_WORKLIST','QUALITY_UP_1000'].includes(plan.autonomousNextAction.kind));
+  if(plan.focusPhase==='VOLUME_UP'&&plan.nextVolumeActions.length){
+    assert.equal(plan.autonomousNextAction.kind,'CONSUME_PRIORITY_WORKLIST_ACTION');
+    assert.equal(plan.autonomousNextAction.action.ideaId,plan.nextVolumeActions[0].ideaId);
+    assert.equal(plan.autonomousNextAction.continueWithoutHuman,true);
+  }
   assert.ok(['VOLUME_UP','QUALITY_UP_1000'].includes(plan.focusPhase));
   if(plan.focusPhase==='VOLUME_UP'){
     assert.ok(plan.nextVolumeActions.length>0);
@@ -3902,6 +3937,13 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     const motionAction=plan.nextVolumeActions.find(row=>row.domain==='MOTION');
     assert.deepEqual(motionAction?.freeSourceCandidateIds,['kaykit-character-animations-1-1','quaternius-universal-animation-library','quaternius-universal-animation-library-2']);
     assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
+    const volumePriorityScore=row=>Number(row.priority||0)+Math.max(0,Number(row.targetMin||0)-Number(row.currentCount||0));
+    for(let index=1;index<plan.nextVolumeActions.length;index++){
+      assert.ok(volumePriorityScore(plan.nextVolumeActions[index-1])>=volumePriorityScore(plan.nextVolumeActions[index]));
+    }
+    assert.equal(plan.nextVolumeActions[0].domain,'CREATURE');
+    assert.ok(plan.nextVolumeActions.slice(0,12).some(row=>row.domain==='SKILL'));
+    assert.equal(plan.nextVolumeActions.slice(0,12).some(row=>row.kind==='UI_SUBSYSTEM_VOLUME'),false);
     assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
   }
 
@@ -3982,7 +4024,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,8);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,9);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -4056,7 +4098,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,8);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,9);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4068,6 +4110,12 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.target,1000);
     assert.equal(first.registry.internalAssetLibraryAutomation.productionRuntimeVerificationSeparateFromInternalQuality,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.styleExpressionRequiredForAllDomains,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.autonomousContinuationRequired,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.ownerPresenceRequired,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.humanPresenceRequired,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.chatgptPresenceRequired,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.autonomousOperatingContract.executionLane,'ASSET_DEVELOPMENT');
+    assert.ok(['CONSUME_PRIORITY_WORKLIST_ACTION','REBUILD_VOLUME_WORKLIST','QUALITY_UP_1000'].includes(first.registry.internalAssetLibraryAutomation.autonomousNextAction.kind));
     assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionAxes.SURFACE_FEEL.includes('ROUGH'));
     assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionAxes.SURFACE_FEEL.includes('SOFT'));
     assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionDomainBindings.BUILDING.includes('MATERIAL_FINISH'));
@@ -4100,7 +4148,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,8);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,9);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
@@ -4113,6 +4161,12 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.taskLocalOnly,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.styleExpressionRequiredForAllDomains,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.autonomousContinuationRequired,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.ownerPresenceRequired,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.humanPresenceRequired,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.chatgptPresenceRequired,false);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.autonomousOperatingContract,result.automationPlan.autonomousOperatingContract);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.autonomousNextAction,result.automationPlan.autonomousNextAction);
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.styleExpressionDomainBindings,result.automationPlan.styleExpressionDomainBindings);
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.styleExpressionAxes,result.automationPlan.styleExpressionAxes);
   assert.ok(result.registry.internalAssetLibraryAutomation.nextVolumeActions.every(row=>row.styleExpressionAdaptationRequired===true));
