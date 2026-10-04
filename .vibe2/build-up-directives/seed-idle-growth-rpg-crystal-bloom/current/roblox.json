@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g12-89ac5d312e66",
-  "directiveFingerprint": "89ac5d312e66625787841d480c4e650003f71a3a2e84dbbcd56461919dedc116",
-  "previousDirectiveFingerprint": "40f139d672fec772e00e39ffd52aeb8877066800031b8bd757d655a226725255",
-  "forbiddenRepeatFingerprint": "40f139d672fec772e00e39ffd52aeb8877066800031b8bd757d655a226725255",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g13-e640c96ca880",
+  "directiveFingerprint": "e640c96ca8809b8b2b5c7f38f03110ec6f3dfdd5f764c2d73ddf0e2c97e2286b",
+  "previousDirectiveFingerprint": "89ac5d312e66625787841d480c4e650003f71a3a2e84dbbcd56461919dedc116",
+  "forbiddenRepeatFingerprint": "89ac5d312e66625787841d480c4e650003f71a3a2e84dbbcd56461919dedc116",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 12,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "cb34a429092fc3d3469fcdd5b674aa6322f65e595f5c065fd6f4fcbe49562f64",
+  "sourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
   "designFingerprint": "ef35a29bbdc82e258294cf850dba5b5e5b90ae0c4b91c74ed85f48a7f1a8a708",
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
@@ -258,17 +258,17 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 11,
-    "previousSourceTreeFingerprint": "a91d72eadd14aa8c0f71cb5ccd1a8a8708acd90992e205f7ebe7c6658d583033",
-    "currentSourceTreeFingerprint": "cb34a429092fc3d3469fcdd5b674aa6322f65e595f5c065fd6f4fcbe49562f64",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "cb34a429092fc3d3469fcdd5b674aa6322f65e595f5c065fd6f4fcbe49562f64",
+    "currentSourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1468,8 +1468,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 4,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
+    "themeDepth": 5,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1479,7 +1479,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 4
+        "PRESENTATION_WORLD_COHESION": 5
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1491,6 +1491,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1527,7 +1528,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 174,
+        "score": 156,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2275,11 +2276,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "cb34a429092fc3d3469fcdd5b674aa6322f65e595f5c065fd6f4fcbe49562f64",
+      "sourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2322,7 +2323,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 13,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2395,5 +2396,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T21:57:05.469Z"
+  "generatedAt": "2026-10-04T22:37:08.366Z"
 }
