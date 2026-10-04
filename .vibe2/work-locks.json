@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-13eegjv",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/asset.glb",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/preview.png",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/background/evidence.json",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/asset.glb",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/preview.png",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/item/evidence.json",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/asset.glb",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/preview.png",
+        "assets/generated/unity/seed-single-defense-strat-celestial-bastion/prop/evidence.json"
+      ],
+      "baseSha": "8ae452c72c30c75d99aca9584fc4e5dd9383ed4f",
+      "runId": "37240449492",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-04T22:39:45.561Z",
+      "expiresAt": "2026-10-04T23:24:45.561Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
