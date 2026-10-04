@@ -1,5 +1,5 @@
 {
-  "version": 56,
+  "version": 57,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -69,7 +69,11 @@
     "noScheduledAssetReviewWorkflowCreated": true,
     "internalAssetDocumentationMode": "MACHINE_READABLE_ONLY",
     "humanAssetStandardDocumentRequired": false,
-    "allCompanyCommonAssetsInheritInternalAssetStandard": true
+    "allCompanyCommonAssetsInheritInternalAssetStandard": true,
+    "allInternalAssetsComposableAcrossExistingFlowStages": true,
+    "internalAssetConsumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
+    "compositionUsesExistingAssetUniverseOnly": true,
+    "compositionMayNotCreateFlowPipelineWrapperOrShadowSystem": true
   },
   "platformPacks": [
     {
@@ -27480,7 +27484,10 @@
     "inheritanceMode": "TOP_LEVEL_DEFAULT_WITH_PACK_OVERRIDE",
     "companyCommonSelector": "companyCommonBase=true OR reuseScope=COMPANY_ROBLOX_COMMON_BASE",
     "humanDocumentationRequired": false,
-    "humanDocumentationPath": null
+    "humanDocumentationPath": null,
+    "consumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
+    "allInternalAssetsComposableAcrossExistingStages": true,
+    "compositionContract": "company-asset-library.json#internalAssetCompositionContract"
   },
   "internalAssetRoutineReview": {
     "version": 1,
@@ -27558,6 +27565,40 @@
     "reviewExecutionOwner": "EXISTING_ASSET_RESPONSIBILITY_ONLY",
     "createsBackgroundAutomation": false,
     "createsScheduler": false,
-    "createsWorkflow": false
+    "createsWorkflow": false,
+    "consumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
+    "allInternalAssetsComposableAcrossExistingStages": true
+  },
+  "internalAssetCompositionContract": {
+    "version": 1,
+    "scope": "ALL_INTERNAL_ASSETS",
+    "consumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
+    "allInternalAssetsComposableAcrossExistingStages": true,
+    "stageSpecificCombinationAllowed": true,
+    "crossFamilyCompositionAllowed": true,
+    "compositionMode": "SELECT_COMBINE_ADAPT_RECOMBINE_WITHIN_EXISTING_ASSET_UNIVERSE",
+    "compatibilityRequired": [
+      "LICENSE",
+      "SECURITY",
+      "PLATFORM",
+      "ROLE",
+      "STYLE",
+      "BODY_PLAN_WHEN_APPLICABLE"
+    ],
+    "hardBlockersStillApply": true,
+    "lowScoreUseAllowed": true,
+    "internalScoreIsNotUsageGate": true,
+    "compositionDoesNotGrantGameplayAuthority": true,
+    "compositionDoesNotGrantSaveAuthority": true,
+    "compositionDoesNotGrantNetworkAuthority": true,
+    "compositionDoesNotGrantFlowAuthority": true,
+    "modifiesFlow": false,
+    "modifiesWorkflow": false,
+    "modifiesQueue": false,
+    "modifiesScheduler": false,
+    "modifiesDeployment": false,
+    "createsPipeline": false,
+    "createsWrapper": false,
+    "createsShadowSystem": false
   }
 }
