@@ -1826,7 +1826,10 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
   const rows=(assets||[]).map(asset=>{
     const family=upper(asset?.family||asset?.category);
     const roles=internalAssetMaintenanceRoleTokens(asset);
+    const audit=scoreInternalAssetAudit1000({asset});
     const quality=internalAssetMaintenanceQuality(asset);
+    const weakestQualityAxis=Object.entries(audit?.axes||{})
+      .sort((a,b)=>Number(a[1])-Number(b[1])||(INTERNAL_ASSET_AUDIT_WEIGHTS[b[0]]||0)-(INTERNAL_ASSET_AUDIT_WEIGHTS[a[0]]||0)||a[0].localeCompare(b[0]))[0]?.[0]||null;
     return Object.freeze({
       id:text(asset?.id||asset?.assetId||asset?.atomId),
       packId:text(asset?.packId),
@@ -1834,7 +1837,8 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       subfamily:upper(asset?.subfamily||asset?.type),
       roles:Object.freeze(roles),
       quality,
-      qualityGrade:text(asset?.internalAuditGrade)||null,
+      weakestQualityAxis,
+      qualityGrade:text(asset?.internalAuditGrade)||audit?.grade||null,
       catalogState:upper(asset?.catalogState),
       catalogActive:asset?.catalogActive!==false,
       status:upper(asset?.status),
@@ -1854,8 +1858,37 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
   const sortedTypeRoleTokens=[...typeRoleTokens].sort();
   const inventoryFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows));
   const typeRoleFingerprint=stableAssetMaintenanceHash(JSON.stringify(sortedTypeRoleTokens));
-  const qualityRows=rows.filter(row=>row.quality!==null).map(row=>({id:row.id,quality:row.quality,grade:row.qualityGrade,family:row.family,packId:row.packId})).sort((a,b)=>a.id.localeCompare(b.id));
+  const qualityRows=rows.filter(row=>row.quality!==null).map(row=>({id:row.id,quality:row.quality,grade:row.qualityGrade,family:row.family,packId:row.packId,weakestQualityAxis:row.weakestQualityAxis})).sort((a,b)=>a.id.localeCompare(b.id));
   const qualityFingerprint=stableAssetMaintenanceHash(JSON.stringify(qualityRows));
+  const qualityScores=qualityRows.map(row=>Number(row.quality)||0);
+  const weakestAxisCounts={};
+  for(const row of qualityRows){
+    const axis=upper(row.weakestQualityAxis);
+    if(axis)weakestAxisCounts[axis]=(weakestAxisCounts[axis]||0)+1;
+  }
+  const weakestAxes=Object.entries(weakestAxisCounts)
+    .map(([axis,count])=>Object.freeze({axis,count}))
+    .sort((a,b)=>b.count-a.count||a.axis.localeCompare(b.axis));
+  const weakestQualityAssets=qualityRows
+    .slice()
+    .sort((a,b)=>Number(a.quality)-Number(b.quality)||a.id.localeCompare(b.id))
+    .slice(0,48)
+    .map(row=>Object.freeze({...row}));
+  const qualitySummary=Object.freeze({
+    scoredAssetCount:qualityRows.length,
+    unscoredAssetCount:Math.max(0,rows.length-qualityRows.length),
+    averageScore:qualityScores.length?Math.round(qualityScores.reduce((sum,value)=>sum+value,0)/qualityScores.length*10)/10:0,
+    minimumScore:qualityScores.length?Math.min(...qualityScores):0,
+    maximumScore:qualityScores.length?Math.max(...qualityScores):0,
+    pass880Count:qualityRows.filter(row=>Number(row.quality)>=INTERNAL_ASSET_AUDIT_PASS).length,
+    band980Count:qualityRows.filter(row=>Number(row.quality)>=980).length,
+    target1000Count:qualityRows.filter(row=>Number(row.quality)>=1000).length,
+    below880Count:qualityRows.filter(row=>Number(row.quality)<INTERNAL_ASSET_AUDIT_PASS).length,
+    weakestAxes:Object.freeze(weakestAxes.slice(0,16)),
+    weakestQualityAssets:Object.freeze(weakestQualityAssets),
+    nextQualityAsset:weakestQualityAssets[0]||null,
+    productionVerificationSeparate:true
+  });
   const staleRowIds=rows.filter(row=>row.catalogActive===false||row.catalogState==='STALE_CATALOG_ROW_REVIEW').map(row=>row.id);
   const semanticGroups=new Map();
   for(const row of rows){
@@ -1901,6 +1934,8 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     familyCount:new Set(rows.map(row=>row.family).filter(Boolean)).size,
     typeRoleTokenCount:sortedTypeRoleTokens.length,
     scoredAssetCount:qualityRows.length,
+    qualitySummary,
+    weakestQualityAssets:Object.freeze(weakestQualityAssets),
     typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
     newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,192)),
     removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,192)),
@@ -2222,6 +2257,47 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .filter(row=>row.currentCount<row.targetMin)
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
+  const domainVolumeRows=sortedDomains.map(row=>Object.freeze({
+    domain:row.domain,
+    currentCount:Number(row.currentCount||0),
+    targetMin:Number(row.targetMin||0),
+    deficit:Math.max(0,Number(row.targetMin||0)-Number(row.currentCount||0)),
+    completionPercent:Number(row.targetMin||0)>0?Math.min(100,Math.round((Number(row.currentCount||0)/Number(row.targetMin||0))*1000)/10):100,
+    missingDepthRoleCount:(row.missingDepthRoles||[]).length,
+    state:row.state
+  }));
+  const totalCurrent=domainVolumeRows.reduce((sum,row)=>sum+row.currentCount,0);
+  const totalTarget=domainVolumeRows.reduce((sum,row)=>sum+row.targetMin,0);
+  const totalDeficit=domainVolumeRows.reduce((sum,row)=>sum+row.deficit,0);
+  const uiTotalCurrent=uiSubsystems.reduce((sum,row)=>sum+Number(row.currentCount||0),0);
+  const uiTotalTarget=uiSubsystems.reduce((sum,row)=>sum+Number(row.targetMin||0),0);
+  const uiTotalDeficit=uiSubsystems.reduce((sum,row)=>sum+Math.max(0,Number(row.targetMin||0)-Number(row.currentCount||0)),0);
+  const volumeHealth=Object.freeze({
+    status:volumeReady?'RECOMMENDED_VOLUME_READY':'VOLUME_GAPS_REMAIN',
+    volumeReady,
+    domainCount:domainVolumeRows.length,
+    blockingDomainCount:volumeBlockingDomains.length,
+    uiBlockingSubsystemCount:uiBlockingSubsystems.length,
+    totalCurrent,
+    totalTarget,
+    totalDeficit,
+    completionPercent:totalTarget>0?Math.min(100,Math.round((totalCurrent/totalTarget)*1000)/10):100,
+    uiTotalCurrent,
+    uiTotalTarget,
+    uiTotalDeficit,
+    domainRows:Object.freeze(domainVolumeRows),
+    largestDomainGaps:Object.freeze(domainVolumeRows.filter(row=>row.deficit>0).sort((a,b)=>b.deficit-a.deficit||a.domain.localeCompare(b.domain)).slice(0,12)),
+    nextPhase:volumeReady?'QUALITY_UP_1000':'VOLUME_UP'
+  });
+  const qualityHealth=Object.freeze({
+    ...maintenance.qualitySummary,
+    phase:volumeReady?'QUALITY_UP_1000':'QUALITY_MONITOR_WHILE_VOLUME_UP',
+    target:INTERNAL_ASSET_AUDIT_MAX,
+    workingBandMin:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,
+    selection:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpSelection,
+    volumeReadyRequiredForPrimaryQualityFocus:true,
+    nextQualityAsset:maintenance.qualitySummary?.nextQualityAsset||null
+  });
   const nextVolumeActionRows=volumeReady?[]:[
     ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
     ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
@@ -2297,6 +2373,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeReady,
     volumeBlockingDomains:Object.freeze(volumeBlockingDomains),
     uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
+    volumeHealth,
+    qualityHealth,
     nextVolumeActions:Object.freeze(nextVolumeActions),
     autonomousOperatingContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract,
     autonomousMaintenanceContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousMaintenanceContract,
@@ -2425,9 +2503,16 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
 });
 
 export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
-  version:3,
+  version:4,
   lowScoreUseAllowed:true,
   scoreIsNotUsageGate:true,
+  blankAssetForbidden:true,
+  noAssetSlotForbidden:true,
+  closestCompatibleLibraryFallbackRequired:true,
+  lowScoreLibraryBindingRequiredWhenSafe:true,
+  qualityScoreOnlyPostBindingDebtPriority:true,
+  internalAuditScoreOnlyPostBindingDebtPriority:true,
+  productionVerificationSeparateFromInitialUse:true,
   studioRequiredForUse:false,
   studioRequiredForAudit:false,
   studioRequiredForReplacement:false,
@@ -2450,6 +2535,9 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
     inspectCompanyLibraryBeforeNewAuthoring:true,
     inspectExistingGameAssetsBeforeNewAuthoring:true,
     preferExistingAndCompanyCommonAssets:true,
+    exactRoleThenClosestCompatibleLibraryAsset:true,
+    blankOrPrimitiveFallbackForbidden:true,
+    qualityScoreCannotSuppressSafeLibraryCandidate:true,
     metadataSources:Object.freeze([
       'company-asset-library.json',
       'assets/vibe-studio-asset-universe.js',
@@ -2485,6 +2573,9 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
     higherCompatibleEffectiveQualityPreferred:true,
     currentAssetMayRemainUntilAdaptationReady:true,
     noEmptySlotDuringReplacement:true,
+    noEmptySlotDuringInitialBinding:true,
+    closestCompatibleLibraryAssetBeforeNewAuthoring:true,
+    scoreCannotDelayInitialBinding:true,
     manualOrGameLockWins:true,
     studioNotRequired:true
   })
