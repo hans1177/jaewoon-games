@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, buildInternalAssetSourceUsageContract, discoverInternalAudioSources } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -40,6 +40,55 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     workerPolicy: { directMainWrite: false }
   };
 }
+
+test('internal audio discovery finds real repository binaries and excludes tiny or game-local recordings',()=>{
+  const root=tempRoot();
+  const real=path.join(root,'assets','roblox','midnight-manor','generated','manor-waltz.mp3');
+  fs.mkdirSync(path.dirname(real),{recursive:true});
+  fs.writeFileSync(real,Buffer.concat([Buffer.from('ID3'),Buffer.alloc(8192)]));
+  const ambient=path.join(root,'assets','roblox','common-environment-v1','ambient-rain.ogg');
+  fs.mkdirSync(path.dirname(ambient),{recursive:true});
+  fs.writeFileSync(ambient,Buffer.concat([Buffer.from('OggS'),Buffer.alloc(6000)]));
+  const tiny=path.join(root,'assets','roblox','bad','tiny.mp3');
+  fs.mkdirSync(path.dirname(tiny),{recursive:true});
+  fs.writeFileSync(tiny,Buffer.alloc(131));
+  const localRecording=path.join(root,'web-games','demo','audio','lab-recorder.m4a');
+  fs.mkdirSync(path.dirname(localRecording),{recursive:true});
+  fs.writeFileSync(localRecording,Buffer.concat([Buffer.from([0,0,0,20]),Buffer.from('ftyp'),Buffer.alloc(6000)]));
+  const rows=discoverInternalAudioSources(root);
+  assert.equal(rows.length,2);
+  assert.deepEqual(rows.map(row=>row.path),[
+    'assets/roblox/common-environment-v1/ambient-rain.ogg',
+    'assets/roblox/midnight-manor/generated/manor-waltz.mp3'
+  ]);
+  assert.equal(rows.find(row=>row.path.endsWith('manor-waltz.mp3')).usageRole,'MUSIC');
+  assert.equal(rows.find(row=>row.path.endsWith('ambient-rain.ogg')).usageRole,'AMBIENCE');
+  assert.ok(rows.every(row=>row.sourceReady===true&&row.runtimeVerified===false&&row.productionVerified===false));
+  assert.ok(rows.every(row=>/^[0-9a-f]{64}$/.test(row.sourceSha256)));
+});
+
+test('Roblox asset source contract keeps real audio source-ready but requires upload binding before playback',()=>{
+  const root=tempRoot();
+  const audio=path.join(root,'assets','roblox','midnight-manor','generated','manor-waltz.mp3');
+  fs.mkdirSync(path.dirname(audio),{recursive:true});
+  fs.writeFileSync(audio,Buffer.concat([Buffer.from('ID3'),Buffer.alloc(8192)]));
+  const work=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau']});
+  const contract=buildInternalAssetSourceUsageContract(work,{repoRoot:root});
+  assert.equal(contract.version,4);
+  assert.equal(contract.audioSourceInventory.actualBinarySourceCount,1);
+  assert.equal(contract.audioSourceInventory.musicSourceCount,1);
+  assert.equal(contract.audioSourceInventory.runtimeReadyCount,0);
+  assert.equal(contract.binaryAudioSources[0].runtimeBindingState,'UPLOAD_BINDING_REQUIRED');
+  assert.equal(contract.binaryAudioSources[0].usageRole,'MUSIC');
+  work.internalAssetSourceUsageContract=contract;
+  const prompt=buildPrompt(work,{files:[{path:'roblox-games/demo/client/Game.client.luau',content:'local ready = true',editable:true}],bytes:18},['roblox-games/demo/client/Game.client.luau']);
+  assert.match(prompt,/Actual internal audio source binaries: assets\/roblox\/midnight-manor\/generated\/manor-waltz\.mp3#MUSIC#UPLOAD_BINDING_REQUIRED/);
+  assert.match(prompt,/repository binary existence means SOURCE_READY only/);
+  assert.match(prompt,/do not fabricate rbxassetid:\/\//);
+  assert.match(prompt,/MUSIC does not satisfy AMBIENCE or SFX/);
+  assert.match(prompt,/REGION_OR_HUB_MUSIC_THEME_STATE/);
+  assert.match(prompt,/BOSS_MUSIC_PHASE_STATE/);
+});
 
 function robloxFullGraphicsMotionPatch(accent='70,95,130') {
   return [
