@@ -11,6 +11,7 @@ import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySema
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
+import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -1670,6 +1671,64 @@ function normalizeFlowAssetRequirements(requirements=[]){
   })).filter(row=>row.family));
 }
 
+
+function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterCustomizationRequested=false}={}){
+  const requestText=clean(request).toUpperCase();
+  const domain=characterCustomizationRequested?'CHARACTER'
+    :/BUILDING|HOUSE|CASTLE|건물|집|성|하우징/.test(requestText)?'BUILDING'
+    :/CREATURE|MONSTER|ANIMAL|몬스터|동물|몹|생물/.test(requestText)?'CREATURE'
+    :/WEAPON|SWORD|GUN|무기|검|총|창|활/.test(requestText)?'WEAPON'
+    :/\bUI\b|HUD|MENU|인벤토리|메뉴|버튼/.test(requestText)?'UI'
+    :/PROP|FURNITURE|소품|가구|상자/.test(requestText)?'PROP'
+    :'ENVIRONMENT';
+  const characterMap=Object.freeze({
+    SILHOUETTE:Object.freeze(['BODY_ARCHETYPE','HEAD_BASE']),
+    PROPORTIONS:Object.freeze(['BODY_PROPORTION','FACE_MORPH']),
+    MATERIAL_REGIONS:Object.freeze(['SKIN_TONE','SKIN_DETAIL','CLOTHING']),
+    PALETTE:Object.freeze(['SKIN_TONE','EYE_COLOR','HAIR_COLOR']),
+    CONSTRUCTION_DETAILS:Object.freeze(['HAIR_STYLE','PIERCING_ACCESSORY','CLOTHING_LAYER']),
+    STYLE_LANGUAGE:Object.freeze(['EXPRESSION','GAIT_IDENTITY']),
+    IDENTITY_ANCHORS:Object.freeze(['SCAR_TATTOO_MAKEUP','SPECIES_PART'])
+  });
+  const genericMap=Object.freeze({
+    SILHOUETTE:Object.freeze(['PRIMARY_FORM_VARIATION']),
+    PROPORTIONS:Object.freeze(['PROPORTION_VARIATION']),
+    MATERIAL_REGIONS:Object.freeze(['MATERIAL_REGION_VARIATION']),
+    PALETTE:Object.freeze(['PALETTE_VARIATION']),
+    CONSTRUCTION_DETAILS:Object.freeze(['CONSTRUCTION_DETAIL_VARIATION']),
+    STYLE_LANGUAGE:Object.freeze(['STYLE_LANGUAGE_VARIATION']),
+    IDENTITY_ANCHORS:Object.freeze(['IDENTITY_ANCHOR_VARIATION'])
+  });
+  const map=domain==='CHARACTER'?characterMap:genericMap;
+  const rows=[];
+  for(const study of studies||[]){
+    if(!study?.observation?.valid||!study?.request?.sourceId)continue;
+    for(const [featureKey,axes] of Object.entries(map)){
+      if(!clean(study.observation?.features?.[featureKey]))continue;
+      for(const axis of axes){
+        const sourceToken=clean(study.request.sourceId).toUpperCase().replace(/[^A-Z0-9]+/g,'_');
+        rows.push(freeze({
+          kind:'REFERENCE_IMAGE_IDEA',
+          domain,
+          ideaId:['REFERENCE',sourceToken,axis].join('_'),
+          referenceSourceId:clean(study.request.sourceId),
+          referenceFeature:featureKey,
+          customizationAxis:axis,
+          priority:285,
+          sourceBound:true,
+          verifiedAgainstSource:study.observation.verifiedAgainstSource===true,
+          ideaOnly:true,
+          directCopyForbidden:true,
+          sourceImagePersistentLearningForbidden:true,
+          unseenGeometryAndMotionRemainCreativeProposals:true,
+          productionVerified:false
+        }));
+      }
+    }
+  }
+  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,64));
+}
+
 export function buildVibeAssetProductionPlan({
   task={},
   target='',
@@ -1749,6 +1808,7 @@ export function buildVibeAssetProductionPlan({
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
+  const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
   const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
   const survivalWildlifeRequested=/(?:gravewood|그레이브우드|생존|survival|야생동물|동물|wildlife|animal|곰|bear|멧돼지|boar|사슴|deer|elk|엘크|moose|무스|bison|들소|wolf|늑대|fox|여우|rabbit|토끼|raccoon|너구리|squirrel|다람쥐|beaver|비버|badger|오소리|goat|염소|turkey|칠면조|crow|까마귀)/i.test(request);
   const requestedWildlifeSpecies=/멧돼지|boar/i.test(request)?'BOAR'
@@ -1903,6 +1963,18 @@ export function buildVibeAssetProductionPlan({
     }):null;
     return freeze({request,observation});
   }));
+  const referenceDrivenAssetIdeas=buildReferenceDrivenAssetIdeaWorklist({
+    studies:referenceImageStudies,
+    request,
+    characterCustomizationRequested
+  });
+  const npcCustomizationPopulation=characterCustomizationRequested?createVibeNpcCustomizationPopulation({
+    count:Number(task.npcCustomization?.previewCount||task.characterCustomization?.npcPreviewCount||48),
+    seed:clean(task.gameId||task.characterCustomization?.seed||'npc-population'),
+    roles:Array.isArray(task.npcCustomization?.roles)?task.npcCustomization.roles:Array.isArray(task.npcRoles)?task.npcRoles:[],
+    regions:Array.isArray(task.npcCustomization?.regions)?task.npcCustomization.regions:Array.isArray(task.regions)?task.regions:[],
+    species:Array.isArray(task.npcCustomization?.species)?task.npcCustomization.species:Array.isArray(task.species)?task.species:[]
+  }):null;
   const selector=planAssetApplication({
     prompt:request,
     manifest:manifestInput,
@@ -2234,7 +2306,11 @@ export function buildVibeAssetProductionPlan({
       minimumQuality:studioUniversePlan?.customization?.minimumQuality||null,
       singleImageAccepted:true,missingTextBriefAllowed:true,
       unseenGeometryIsCreativeProposal:true,stillImageDoesNotProveMotion:true,
-      pixelObservationRequired:true,generatedAsset:false,runtimeVerified:false
+      pixelObservationRequired:true,
+      ideaWorklist:referenceDrivenAssetIdeas,
+      ideaWorklistIsTaskLocal:true,
+      ideaWorklistPersistenceForbidden:true,
+      generatedAsset:false,runtimeVerified:false
     }),
     styleBible:assetSynchronization?.document?.styleBible||studioUniversePlan?.styleBible||null,
     motionStyle:assetSynchronization?.document?deriveMotionStyleVariant({style:assetSynchronization.document.motionStyle.profileKey,modifiers:assetSynchronization.document.motionStyle.modifiers}):motionStyle,
@@ -2246,6 +2322,16 @@ export function buildVibeAssetProductionPlan({
       executionLane:clean(companyLibrary?.executionLane)||null,
       reusableProductionTarget:freeze(companyLibrary?.reusableProductionTarget||companyRegistry?.universalCoverage?.reusableProductionTargets||{}),
       platformProfile:resolvedTarget.toUpperCase(),
+      characterNpcCustomization:freeze({
+        enabled:true,
+        requested:characterCustomizationRequested,
+        contract:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,
+        npcPopulationPreview:npcCustomizationPopulation,
+        referenceDrivenIdeaCount:referenceDrivenAssetIdeas.filter(row=>row.domain==='CHARACTER').length,
+        playerAndNpcShareAssetPool:true,
+        productionVerified:false,
+        gameplayAuthority:false
+      }),
       baseArchetypes:freezeList(companyLibrary?.characterPreparation?.baseArchetypes||[]),
       modularParts:freezeList(companyLibrary?.characterPreparation?.modularParts||[]),
       weaponPacks:freezeList(unique([...(companyLibrary?.actionMotionLibrary?.weaponPacks||[]),...(companyRegistry?.duelCombatMotion?.weaponFamilies||[])])),
@@ -2683,6 +2769,7 @@ export function assetProductionGuidance(plan={}){
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
     plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
     plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰한다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
+    plan.companyGraphicsLibrary?.characterNpcCustomization?.requested?`[CHARACTER NPC CUSTOMIZATION] ${JSON.stringify(plan.companyGraphicsLibrary.characterNpcCustomization)}. 플레이어와 NPC는 같은 체형·머리·얼굴·피부·눈·헤어·수염·흉터·문신·화장·피어싱·종족 파츠·의상·액세서리·표정·보행 자산 풀을 공유한다. NPC는 지역/직업/계층/연령/기후/개인 이력으로 조합 편향만 주고 색상만 다른 복제 NPC를 만들지 않는다. 사진 레퍼런스는 보이는 형태와 재질 아이디어만 source-bound로 사용하고 고유 얼굴·의상·UI를 직접 복제하지 않는다.`:'',
     plan.assetSynchronization?`[UNITY / WEB SHARED VISUAL DOCUMENT] status=${plan.assetSynchronization.status}; issues=${plan.assetSynchronization.issues.join('|')||'NONE'}; document=${JSON.stringify(plan.assetSynchronization.document)}; applications=${JSON.stringify(plan.assetSynchronization.applications)}; motions=${JSON.stringify(plan.assetSynchronization.motions)}. 같은 gameId/revision/sourceHash의 커마·스타일·UI·아이콘·동작 설정을 기존 자산 저장소와 작업주문으로 공유한다. SYNC_CONFLICT면 재조회하며 부분 적용하지 않는다. 플랫폼 변형이나 연결점이 없으면 AUTHORING_REQUIRED로 제작하고 문서만으로 동기화 완료를 주장하지 않는다.`:'',
     plan.assetSynchronization?'Unity는 기존 Renderer/SkinnedMeshRenderer/Animator/UI에, 일반 Web은 기존 glTF/렌더러/AnimationMixer 또는 Canvas/DOM/UI 책임 함수에 연결한다. Unity WebGL은 Unity와 같은 C# 프로젝트·프리팹·Animator를 사용한다. 엔진별 morph 축척·재질·리그·LOD는 선언된 platformVariants로 변환한다. 공격 이벤트·클립 길이·저장·권한은 보존하고 같은 정면/측면/후면/동작 프레임·아이콘 크기에서 두 플랫폼을 비교한다.':'',
     plan.assetCustomization?`[CUSTOMIZABLE ASSET AUTHORING] 제작 순서=${plan.assetCustomization.workflow.join('→')}; 초기 조립 ${plan.assetCustomization.effort.quickAssemblyPercent}%, 디테일·모션 마감 ${plan.assetCustomization.effort.detailAndMotionPercent}%, 화면 비교·런타임 검수 ${plan.assetCustomization.effort.comparisonAndRuntimeQaPercent}%. 작업시간은 계획 비율이며 경과시간이나 부품 수만으로 품질을 통과시키지 않는다.`:'',
