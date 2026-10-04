@@ -352,6 +352,17 @@ test('reference image observations become task-local character customization ide
   assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.directCopyForbidden===true&&row.productionVerified===false));
   assert.ok(plan.imageAssetCreation.ideaWorklist.some(row=>row.customizationAxis==='BODY_ARCHETYPE'));
   assert.ok(plan.imageAssetCreation.ideaWorklist.some(row=>row.customizationAxis==='SCAR_TATTOO_MAKEUP'));
+  assert.equal(plan.imageAssetCreation.volumeWorklistOverlayConsumesBeforePersistentActions,true);
+  assert.equal(plan.imageAssetCreation.volumeWorklistOverlayCount,plan.imageAssetCreation.ideaWorklist.length);
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.every(row=>row.kind==='REFERENCE_IMAGE_VOLUME'));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.every(row=>row.taskLocalOnly===true&&row.persistToCentralWorklist===false));
+  assert.equal(plan.internalLibraryEvolution.referenceImageObservationOverlay,true);
+  assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
+  assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
+  assert.equal(plan.internalLibraryEvolution.taskLocalReferenceActionCount,plan.imageAssetCreation.ideaWorklist.length);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
+  assert.match(plan.internalLibraryEvolution.worklistSource,/^TASK_REFERENCE_IMAGE_OVERLAY_ON_/);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.requested,true);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.playerAndNpcShareAssetPool,true);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.npcPopulationPreview.total,12);
@@ -3669,11 +3680,16 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,6);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,7);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,8);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.enabled,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.taskLocalOnly,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.rawImagePersistentLearningForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.directCopyForbidden,true);
   assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
@@ -3793,7 +3809,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,6);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,7);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -3867,7 +3883,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,6);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,7);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -3905,7 +3921,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,6);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,7);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
@@ -3914,6 +3930,9 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogReady,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
   assert.equal(result.registry.internalAssetLibraryAutomation.primaryAttention,'QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL');
+  assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.enabled,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.taskLocalOnly,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
