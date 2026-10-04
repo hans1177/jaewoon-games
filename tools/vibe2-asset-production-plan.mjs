@@ -1731,6 +1731,9 @@ export function buildVibeAssetProductionPlan({
       unresolved:freezeList(studioUniversePlan?.loadout?.unresolved||[]),
       selections:freezeList(studioUniversePlan?.loadout?.selections||[]),
       resolutionMode:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+      genreRestrictionApplied:false,
+      crossGenreReuseAllowed:true,
+      genreUsedForEligibility:false,
       assetIdPinnedByFlow:false,
       gameplayAuthority:false
     }),
@@ -2190,6 +2193,9 @@ export function buildVibeAssetProductionPlan({
       referenceObservationMustBeSourceBound:universeContract?.worldGenerationStudio?.referenceAbstraction?.visionObservationContract?.observationMustBeBoundToSourceId===true,
       gameVisualDnaRequired:universeContract?.gameVisualDna?.enabled===true,
       assetLoadoutSelectorRequired:universeContract?.assetLoadoutSelector?.enabled===true,
+      internalLibraryGenreRestrictionForbidden:true,
+      crossGenreInternalAssetReuseAllowed:true,
+      genreMayInfluencePreferenceOnly:true,
       futureDemandForecastEnabled:universeContract?.futureDemandForecast?.enabled===true,
       studioTestbedEnabled:universeContract?.studioTestbed?.enabled===true,
       verifiedUsageFeedbackEnabled:universeContract?.verifiedUsageFeedback?.enabled===true,
@@ -2205,7 +2211,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
-    plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
+    plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
     plan.studioQuality120?.maxScore?`[STUDIO ASSET QUALITY 120] ${JSON.stringify(plan.studioQuality120)}. 120점은 최고 품질 목표이지 게임 연결 허가선이 아니다. 안전·권리·플랫폼 호환을 만족하는 대안이 없으면 100점 미만, 85점 미만 자산도 현재 게임에 실제 연결해 사용하고 Visual Debt를 열어 둔 채 같은 자산을 최약점부터 개선한다. 점수만 낮다는 이유로 빈 primitive나 무자산 상태를 유지하지 않는다. Hero 자산은 전체 게임 품질 기준점으로 먼저 끌어올리고, UI/HUD/인벤토리/아이콘·아이템 월드모델/드랍/장착/제작 아이콘·캐릭터·몬스터·환경·건물·무기·재질·모션·VFX·오디오를 같은 Asset DNA 계보로 묶는다. 매 사이클 weakestAxis/weakestCritic을 우선 수정하고 강한 축은 보존한다. 120점이어도 새로운 검증된 결함이나 더 좋은 제작법이 생기면 계속 진화한다. production-verified는 점수와 별개이며 실제 대상 게임 런타임·바인딩·모바일 성능·회귀·권리 증거가 모두 있어야 한다. positive learning은 검증된 실제 결과만 기존 학습 모터에 넣는다.`:'',
