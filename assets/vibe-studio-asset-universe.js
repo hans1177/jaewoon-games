@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:7,
+  version:8,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1483,6 +1483,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'KEEP_FREE_SOURCE_CANDIDATES_METADATA_ONLY_UNTIL_SELECTED',
     'ACQUIRE_SELECTED_FREE_SOURCE_ON_DEMAND',
     'OVERLAY_SOURCE_BOUND_REFERENCE_IMAGE_IDEAS_FOR_CURRENT_TASK',
+    'ATTACH_STYLE_EXPRESSION_AXES_TO_WORKLIST',
     'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
@@ -1504,6 +1505,9 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
   freeSourceCandidateLimitPerAction:8,
   freeSourceCatalogSufficiencyCount:12,
+  styleExpressionRequiredForAllDomains:true,
+  styleExpressionContractRef:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES',
+  styleExpressionDomainBindingRef:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS',
   referenceImageIdeaOverlay:Object.freeze({
     enabled:true,
     priority:'CURRENT_TASK_BEFORE_PERSISTED_GENERIC_VOLUME_ACTIONS',
@@ -1850,6 +1854,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       bulkPrefetchAllowed:false,
       speculativeDownloadAllowed:false,
       acquireExternalOnlyAfterInternalReuseFailure:true,
+      styleExpressionAdaptationRequired:true,
+      styleExpressionAxisIds:Object.freeze([...(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS[row.domain]||[])]),
       worklistOrder:index+1,
       resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
     });
@@ -1879,6 +1885,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     freeSourceCatalogReady,
     freeSourceCatalogExpansionMode:freeSourceCatalogReady?'PAUSED_UNTIL_REAL_COVERAGE_GAP':'TARGETED_GAP_ONLY',
     primaryAttention:freeSourceCatalogReady?'QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL':'TARGETED_SOURCE_GAP_AND_QUALITY',
+    styleExpressionAxes:INTERNAL_ASSET_STYLE_EXPRESSION_AXES,
+    styleExpressionDomainBindings:INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,
+    styleExpressionRequiredForAllDomains:true,
     ideaDeduplication:Object.freeze({
       fields:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.ideaDeduplicationFields,
       existingIdentityCount:existingIdentityTokens.size,
@@ -1904,7 +1913,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
 }
 
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
-  version:3,
+  version:4,
   scope:'INTERNAL_ASSETS_ONLY',
   documentationMode:'MACHINE_READABLE_ONLY',
   mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
@@ -1942,6 +1951,8 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'REBUILD_UI_SUBSYSTEM_DEPTH',
     'READ_PERSISTED_NEXT_VOLUME_ACTIONS',
     'OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS',
+    'RESOLVE_CONCEPT_STYLE_EXPRESSION_PROFILE',
+    'APPLY_STYLE_EXPRESSION_AXES_TO_ALL_ASSET_DOMAINS',
     'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
     'FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS',
     'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
@@ -1956,6 +1967,7 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'VOLUME_UP_BEFORE_QUALITY_UP',
     'CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER',
     'QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY',
+    'KEEP_COMMON_ASSET_STYLE_ADAPTIVE_NOT_GAME_STYLE_PINNED',
     'UPDATE_PRIORITY_GAPS',
     'UPDATE_CATALOG_AND_LIBRARY',
     'UPDATE_ASSET_QA'
@@ -2784,15 +2796,105 @@ export const ASSET_STYLE_PROFILES=Object.freeze({
   LOW_POLY:Object.freeze({shapeLanguage:'PURPOSEFUL_FACETED_PLANES_AND_SPECIES_SPECIFIC_MASSES',materialLanguage:'BROAD_MATTE_VALUE_GROUPS_WITH_SPARSE_SURFACE_ACCENTS',animationExaggeration:'CLEAR_JOINT_POSES_AND_GROUNDED_CONTACT',motion:Object.freeze({poseExaggeration:1.1,anticipationScale:1.1,overshootScale:1,squashStretch:0,secondaryMotion:.8,recoveryPresentation:1})})
 });
 
+export const INTERNAL_ASSET_STYLE_EXPRESSION_AXES=Object.freeze({
+  SURFACE_FEEL:Object.freeze(['ROUGH','BALANCED','SOFT']),
+  SHAPE_TEMPER:Object.freeze(['SHARP','ROUND','MIXED','FLOWING','BLOCKY']),
+  EXPRESSION_INTENSITY:Object.freeze(['RESTRAINED','BALANCED','EXPRESSIVE','EXTREME']),
+  MATERIAL_FINISH:Object.freeze(['RAW','MATTE','WEATHERED','CLEAN','GLOSSY']),
+  LINE_ENERGY:Object.freeze(['CALM','FLOWING','DYNAMIC','AGGRESSIVE']),
+  COLOR_ENERGY:Object.freeze(['MUTED','NATURAL','VIBRANT','HIGH_CONTRAST']),
+  DETAIL_DENSITY:Object.freeze(['MINIMAL','MEDIUM','DENSE','SELECTIVE_DENSE']),
+  DAMAGE_WEAR:Object.freeze(['CLEAN','LIGHT_WORN','HEAVY_WORN']),
+  MOTION_ENERGY:Object.freeze(['SUBTLE','GROUNDED','EXPRESSIVE','EXAGGERATED']),
+  VFX_ENERGY:Object.freeze(['SUBTLE','READABLE','PUNCHY','SPECTACULAR']),
+  UI_EXPRESSION:Object.freeze(['MINIMAL','BALANCED','BOLD','ORNATE']),
+  AUDIO_ENERGY:Object.freeze(['SUBTLE','NATURAL','PUNCHY','CINEMATIC']),
+  ATMOSPHERE_WEIGHT:Object.freeze(['AIRY','BALANCED','HEAVY','OPPRESSIVE'])
+});
+
+export const INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS=Object.freeze({
+  BUILDING:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','EXPRESSION_INTENSITY','MATERIAL_FINISH','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR','ATMOSPHERE_WEIGHT']),
+  CREATURE:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','EXPRESSION_INTENSITY','MATERIAL_FINISH','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR','MOTION_ENERGY']),
+  MOTION:Object.freeze(['EXPRESSION_INTENSITY','LINE_ENERGY','MOTION_ENERGY']),
+  UI:Object.freeze(['SHAPE_TEMPER','EXPRESSION_INTENSITY','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','UI_EXPRESSION','MOTION_ENERGY']),
+  WORLD_PROP:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','MATERIAL_FINISH','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR']),
+  ENVIRONMENT:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','MATERIAL_FINISH','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR','ATMOSPHERE_WEIGHT']),
+  ITEM:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','MATERIAL_FINISH','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR']),
+  SKILL:Object.freeze(['SHAPE_TEMPER','EXPRESSION_INTENSITY','LINE_ENERGY','COLOR_ENERGY','MOTION_ENERGY','VFX_ENERGY']),
+  VFX:Object.freeze(['SHAPE_TEMPER','EXPRESSION_INTENSITY','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','VFX_ENERGY']),
+  PRESENTATION:Object.freeze(['EXPRESSION_INTENSITY','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','MOTION_ENERGY','VFX_ENERGY','UI_EXPRESSION','AUDIO_ENERGY','ATMOSPHERE_WEIGHT']),
+  CHARACTER_GEAR:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','EXPRESSION_INTENSITY','MATERIAL_FINISH','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR']),
+  WEAPON:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','EXPRESSION_INTENSITY','MATERIAL_FINISH','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR','MOTION_ENERGY','VFX_ENERGY']),
+  AUDIO:Object.freeze(['EXPRESSION_INTENSITY','AUDIO_ENERGY','ATMOSPHERE_WEIGHT']),
+  FOLIAGE:Object.freeze(['SURFACE_FEEL','SHAPE_TEMPER','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR','MOTION_ENERGY','ATMOSPHERE_WEIGHT']),
+  MATERIAL:Object.freeze(['SURFACE_FEEL','MATERIAL_FINISH','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR'])
+});
+
+const INTERNAL_ASSET_STYLE_EXPRESSION_PRESETS=Object.freeze({
+  SOFT_PLAYFUL:Object.freeze({SURFACE_FEEL:'SOFT',SHAPE_TEMPER:'ROUND',EXPRESSION_INTENSITY:'EXPRESSIVE',MATERIAL_FINISH:'CLEAN',LINE_ENERGY:'DYNAMIC',COLOR_ENERGY:'VIBRANT',DETAIL_DENSITY:'MEDIUM',DAMAGE_WEAR:'CLEAN',MOTION_ENERGY:'EXAGGERATED',VFX_ENERGY:'PUNCHY',UI_EXPRESSION:'BOLD',AUDIO_ENERGY:'PUNCHY',ATMOSPHERE_WEIGHT:'AIRY'}),
+  DARK_ROUGH:Object.freeze({SURFACE_FEEL:'ROUGH',SHAPE_TEMPER:'SHARP',EXPRESSION_INTENSITY:'EXPRESSIVE',MATERIAL_FINISH:'WEATHERED',LINE_ENERGY:'AGGRESSIVE',COLOR_ENERGY:'MUTED',DETAIL_DENSITY:'DENSE',DAMAGE_WEAR:'HEAVY_WORN',MOTION_ENERGY:'GROUNDED',VFX_ENERGY:'PUNCHY',UI_EXPRESSION:'ORNATE',AUDIO_ENERGY:'CINEMATIC',ATMOSPHERE_WEIGHT:'OPPRESSIVE'}),
+  FLOWING_RESTRAINED:Object.freeze({SURFACE_FEEL:'BALANCED',SHAPE_TEMPER:'FLOWING',EXPRESSION_INTENSITY:'RESTRAINED',MATERIAL_FINISH:'MATTE',LINE_ENERGY:'FLOWING',COLOR_ENERGY:'MUTED',DETAIL_DENSITY:'SELECTIVE_DENSE',DAMAGE_WEAR:'LIGHT_WORN',MOTION_ENERGY:'EXPRESSIVE',VFX_ENERGY:'READABLE',UI_EXPRESSION:'MINIMAL',AUDIO_ENERGY:'NATURAL',ATMOSPHERE_WEIGHT:'AIRY'}),
+  GROUNDED_REAL:Object.freeze({SURFACE_FEEL:'BALANCED',SHAPE_TEMPER:'MIXED',EXPRESSION_INTENSITY:'RESTRAINED',MATERIAL_FINISH:'WEATHERED',LINE_ENERGY:'CALM',COLOR_ENERGY:'NATURAL',DETAIL_DENSITY:'DENSE',DAMAGE_WEAR:'LIGHT_WORN',MOTION_ENERGY:'GROUNDED',VFX_ENERGY:'READABLE',UI_EXPRESSION:'BALANCED',AUDIO_ENERGY:'NATURAL',ATMOSPHERE_WEIGHT:'BALANCED'}),
+  CLEAN_TECH:Object.freeze({SURFACE_FEEL:'BALANCED',SHAPE_TEMPER:'SHARP',EXPRESSION_INTENSITY:'BALANCED',MATERIAL_FINISH:'CLEAN',LINE_ENERGY:'DYNAMIC',COLOR_ENERGY:'HIGH_CONTRAST',DETAIL_DENSITY:'SELECTIVE_DENSE',DAMAGE_WEAR:'CLEAN',MOTION_ENERGY:'EXPRESSIVE',VFX_ENERGY:'SPECTACULAR',UI_EXPRESSION:'BOLD',AUDIO_ENERGY:'PUNCHY',ATMOSPHERE_WEIGHT:'BALANCED'}),
+  GENERAL:Object.freeze({SURFACE_FEEL:'BALANCED',SHAPE_TEMPER:'MIXED',EXPRESSION_INTENSITY:'BALANCED',MATERIAL_FINISH:'MATTE',LINE_ENERGY:'DYNAMIC',COLOR_ENERGY:'NATURAL',DETAIL_DENSITY:'MEDIUM',DAMAGE_WEAR:'LIGHT_WORN',MOTION_ENERGY:'GROUNDED',VFX_ENERGY:'READABLE',UI_EXPRESSION:'BALANCED',AUDIO_ENERGY:'NATURAL',ATMOSPHERE_WEIGHT:'BALANCED'})
+});
+
+export function resolveInternalAssetStyleExpressionProfile({styleFamily='',styles=[],artTone=[],overrides={}}={}){
+  const firstStyle=(styles||[])[0];
+  const family=upper(styleFamily||(typeof firstStyle==='string'?firstStyle:firstStyle?.family)||'STYLIZED_FANTASY');
+  const toneSet=new Set(uniq(artTone).map(upper));
+  let preset='GENERAL';
+  if(['CARTOON','CUTE_CASUAL','CHIBI','COZY','FAIRYTALE','PAPER_CRAFT'].some(token=>family.includes(token)))preset='SOFT_PLAYFUL';
+  else if(['DARK_FANTASY','HORROR','GOTHIC','NOIR','TOON_NOIR','POST_APOCALYPSE','UNDEAD'].some(token=>family.includes(token)))preset='DARK_ROUGH';
+  else if(['WUXIA','INK_WASH','HISTORICAL_EAST_ASIAN','EAST_ASIAN_FANTASY','WATERCOLOR'].some(token=>family.includes(token)))preset='FLOWING_RESTRAINED';
+  else if(['REALISTIC','STYLIZED_REALISM','LOW_FANTASY','PRIMITIVE'].some(token=>family.includes(token)))preset='GROUNDED_REAL';
+  else if(['SCI_FI','CYBERPUNK','SOLARPUNK','BIOPUNK','RETRO_FUTURISM','SPACE_OPERA','MECHANICAL_CIVILIZATION'].some(token=>family.includes(token)))preset='CLEAN_TECH';
+  const axes={...INTERNAL_ASSET_STYLE_EXPRESSION_PRESETS[preset]};
+  if(toneSet.has('DARK')||toneSet.has('GRITTY')||toneSet.has('HORROR')){
+    axes.SURFACE_FEEL='ROUGH';axes.MATERIAL_FINISH='WEATHERED';axes.DAMAGE_WEAR='HEAVY_WORN';axes.ATMOSPHERE_WEIGHT='HEAVY';
+  }
+  if(toneSet.has('BRIGHT')||toneSet.has('CUTE')){
+    axes.SURFACE_FEEL='SOFT';axes.SHAPE_TEMPER='ROUND';axes.COLOR_ENERGY='VIBRANT';axes.MATERIAL_FINISH='CLEAN';axes.ATMOSPHERE_WEIGHT='AIRY';
+  }
+  if(toneSet.has('EPIC')){
+    axes.EXPRESSION_INTENSITY='EXPRESSIVE';axes.DETAIL_DENSITY='DENSE';axes.MOTION_ENERGY='EXPRESSIVE';axes.VFX_ENERGY='SPECTACULAR';axes.AUDIO_ENERGY='CINEMATIC';
+  }
+  if(toneSet.has('ELEGANT')){
+    axes.SHAPE_TEMPER='FLOWING';axes.EXPRESSION_INTENSITY='RESTRAINED';axes.LINE_ENERGY='FLOWING';axes.DETAIL_DENSITY='SELECTIVE_DENSE';
+  }
+  if(toneSet.has('SURREAL')){
+    axes.EXPRESSION_INTENSITY='EXPRESSIVE';axes.COLOR_ENERGY='HIGH_CONTRAST';axes.VFX_ENERGY='SPECTACULAR';
+  }
+  if(toneSet.has('COMEDIC')){
+    axes.EXPRESSION_INTENSITY='EXTREME';axes.MOTION_ENERGY='EXAGGERATED';axes.UI_EXPRESSION='BOLD';
+  }
+  for(const [key,value] of Object.entries(overrides||{})){
+    const axis=upper(key),choice=upper(value);
+    if(INTERNAL_ASSET_STYLE_EXPRESSION_AXES[axis]?.includes(choice))axes[axis]=choice;
+  }
+  return Object.freeze({
+    version:1,sourceStyleFamily:family,preset,axes:Object.freeze(axes),
+    conceptStyleLockWins:true,photoReferenceMaySuggestButNotOverrideConceptLock:true,
+    gameplayAuthority:false,balanceAuthority:false,progressionAuthority:false,saveAuthority:false,networkAuthority:false
+  });
+}
+
 export function createStyleBible(input={}){
   const family=upper(input.styleFamily||'STYLIZED_FANTASY');
   const styles=(input.styles||[]).filter(row=>typeof row==='string'||Number(row.weight??1)>0).map(row=>upper(typeof row==='string'?row:row.family));
   const mixedToon=styles.includes('CARTOON')&&styles.some(style=>['DARK_FANTASY','HORROR','NOIR','GOTHIC'].includes(style));
   const profileKey=upper(input.profileKey)||(mixedToon||family==='DARK_CARTOON'?'TOON_NOIR':['HORROR','GOTHIC','NOIR'].includes(family)?'DARK_FANTASY':family);
   const defaults=ASSET_STYLE_PROFILES[profileKey]||{};
+  const styleExpression=resolveInternalAssetStyleExpressionProfile({
+    styleFamily:profileKey,
+    styles:input.styles||[],
+    artTone:input.artTone||[],
+    overrides:input.styleExpressionOverrides||input.expressionAxes||{}
+  });
   const bible={
     styleFamily:family,
     profileKey,
+    styleExpression,
     shapeLanguage:text(input.shapeLanguage||defaults.shapeLanguage||'CLEAR_READABLE_PRIMARY_FORMS'),
     characterProportion:text(input.characterProportion||defaults.characterProportion||'GAME_SPECIFIC'),
     silhouetteRule:text(input.silhouetteRule||'READABLE_AT_GAME_CAMERA_DISTANCE'),
@@ -3131,7 +3233,26 @@ export function synchronizeAssetCustomization({document=null,currentDocument=nul
   };
   if(Object.keys(candidate).some(key=>!['schemaVersion','gameId','revision','baseRevision','styleBible','motionStyle','recipes','motionBindings'].includes(key)))issues.push('NON_VISUAL_DOCUMENT_FIELD');
   const bibleKeys=Object.keys(createStyleBible());
-  if(candidate.styleBible&&Object.entries(candidate.styleBible).some(([key,value])=>!bibleKeys.includes(key)||typeof value!=='string'))issues.push('INVALID_STYLE_FIELD');
+  const styleExpressionKeys=new Set(['version','sourceStyleFamily','preset','axes','conceptStyleLockWins','photoReferenceMaySuggestButNotOverrideConceptLock','gameplayAuthority','balanceAuthority','progressionAuthority','saveAuthority','networkAuthority']);
+  const validStyleExpression=value=>{
+    if(!value||typeof value!=='object'||Array.isArray(value))return false;
+    if(Object.keys(value).some(key=>!styleExpressionKeys.has(key)))return false;
+    if(value.version!==1||typeof value.sourceStyleFamily!=='string'||typeof value.preset!=='string')return false;
+    if(!value.axes||typeof value.axes!=='object'||Array.isArray(value.axes))return false;
+    for(const [axis,choice] of Object.entries(value.axes)){
+      if(!INTERNAL_ASSET_STYLE_EXPRESSION_AXES[axis]?.includes(choice))return false;
+    }
+    return value.conceptStyleLockWins===true
+      &&value.photoReferenceMaySuggestButNotOverrideConceptLock===true
+      &&value.gameplayAuthority===false
+      &&value.balanceAuthority===false
+      &&value.progressionAuthority===false
+      &&value.saveAuthority===false
+      &&value.networkAuthority===false;
+  };
+  if(candidate.styleBible&&Object.entries(candidate.styleBible).some(([key,value])=>
+    !bibleKeys.includes(key)||(key==='styleExpression'?!validStyleExpression(value):typeof value!=='string')
+  ))issues.push('INVALID_STYLE_FIELD');
   if(candidate.motionStyle&&(Object.keys(candidate.motionStyle).some(key=>!['profileKey','modifiers'].includes(key))||Object.keys(candidate.motionStyle.modifiers||{}).some(key=>!Object.hasOwn(modifierBounds,key))))issues.push('NON_VISUAL_MOTION_FIELD');
   if(candidate.schemaVersion!==1)issues.push('UNSUPPORTED_SCHEMA_VERSION');
   if(candidate.gameId!==id||(currentDocument&&currentDocument.gameId!==id))issues.push('GAME_ID_MISMATCH');
@@ -3382,7 +3503,7 @@ function normalizeConceptWeights(rows=[]){
 }
 
 export function createConceptProfile({
-  styles=[],styleFamily='',artTone=[],worldEra=[],combatFeel=[],presentation=[],customTags=[]
+  styles=[],styleFamily='',artTone=[],worldEra=[],combatFeel=[],presentation=[],customTags=[],styleExpressionOverrides={}
 }={}){
   const source=styles.length?styles:[{family:styleFamily||'STYLIZED_FANTASY',weight:1}];
   const weightedStyles=normalizeConceptWeights(source);
@@ -3397,6 +3518,7 @@ export function createConceptProfile({
       PRESENTATION:freezeList(uniq(presentation).map(upper))
     }),
     customTags:freezeList(uniq(customTags).map(upper)),
+    styleExpression:resolveInternalAssetStyleExpressionProfile({styleFamily:dominantStyle,styles:weightedStyles,artTone,overrides:styleExpressionOverrides}),
     freeMixing:true,
     styleLockWins:true,
     gameplayAuthority:false
@@ -3428,7 +3550,7 @@ export function createGameVisualDNA({
   buildingLanguage='',motionLanguage='',vfxLanguage='',audioLanguage='',uiLanguage='',narrativePresentationLanguage=''
 }={}){
   const conceptProfile=concept.weightedStyles?concept:createConceptProfile(concept);
-  const bible=createStyleBible({styleFamily:conceptProfile.dominantStyle,styles:conceptProfile.weightedStyles,...styleBible});
+  const bible=createStyleBible({styleFamily:conceptProfile.dominantStyle,styles:conceptProfile.weightedStyles,artTone:conceptProfile.axes?.ART_TONE||[],styleExpressionOverrides:conceptProfile.styleExpression?.axes||{},...styleBible});
   const fingerprint=[
     text(gameId)||'GAME',
     conceptProfile.weightedStyles.map(row=>row.family+':'+row.weight).join(','),
@@ -4441,7 +4563,7 @@ export function createStudioAssetUniversePlan({
   const gapFill=buildAutonomousAssetGapFillPlan({
     coverageReport:coverage,verifiedAssets:verified,repositoryAssets,externalSources,signalsByKey,qualityProgram:quality120
   });
-  const resolvedBible=createStyleBible({styleFamily:resolvedStyle,styles:conceptProfile.weightedStyles,...styleBible});
+  const resolvedBible=createStyleBible({styleFamily:resolvedStyle,styles:conceptProfile.weightedStyles,artTone:conceptProfile.axes?.ART_TONE||[],styleExpressionOverrides:conceptProfile.styleExpression?.axes||{},...styleBible});
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
   const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));

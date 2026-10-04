@@ -1,5 +1,5 @@
 {
-  "version": 84,
+  "version": 86,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -79,7 +79,11 @@
     "externalSourceSpeculativeDownloadForbidden": true,
     "externalSourceOnDemandAcquisition": true,
     "externalSourceAcquisitionOnlyAfterInternalReuseFailure": true,
-    "qualityAndAutomationDetailPrimaryAttention": true
+    "qualityAndAutomationDetailPrimaryAttention": true,
+    "styleExpressionAxesRequiredForAllInternalAssets": true,
+    "commonAssetsRemainStyleAdaptive": true,
+    "conceptStyleLockWinsOverPhotoStyleSuggestion": true,
+    "photoReferenceMaySuggestStyleButDirectCopyForbidden": true
   },
   "platformPacks": [
     {
@@ -55767,7 +55771,7 @@
     "compositionContract": "company-asset-library.json#internalAssetCompositionContract"
   },
   "internalAssetRoutineReview": {
-    "version": 3,
+    "version": 4,
     "mode": "EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER",
     "scheduleCreated": false,
     "workflowCreated": false,
@@ -55813,7 +55817,9 @@
       "REBUILD_UI_SUBSYSTEM_DEPTH",
       "READ_PERSISTED_NEXT_VOLUME_ACTIONS",
       "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS",
-      "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS"
+      "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS",
+      "RESOLVE_CONCEPT_STYLE_EXPRESSION_PROFILE",
+      "APPLY_STYLE_EXPRESSION_AXES_TO_ALL_ASSET_DOMAINS"
     ],
     "postBindingChecks": [
       "RECORD_SOURCE_FILES",
@@ -55838,7 +55844,8 @@
       "AUTO_SYNC_CATALOG_TO_REGISTRY",
       "REBUILD_LOOSE_VOLUME_PLAN",
       "CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER",
-      "QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY"
+      "QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY",
+      "KEEP_COMMON_ASSET_STYLE_ADAPTIVE_NOT_GAME_STYLE_PINNED"
     ],
     "completionEvidence": [
       "CATALOG_UPDATED",
@@ -56287,7 +56294,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 7,
+    "version": 8,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56907,7 +56914,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 84,
+    "lastCatalogSynchronizedVersion": 86,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -57224,6 +57231,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 1,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57253,6 +57266,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 2,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57282,6 +57301,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 3,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57311,6 +57336,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 4,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57344,6 +57375,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 5,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57377,6 +57420,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 6,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57410,6 +57465,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 7,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57443,6 +57510,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 8,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57467,6 +57546,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 9,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57491,6 +57582,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 10,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57515,6 +57618,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 11,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57539,6 +57654,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 12,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57572,6 +57699,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 13,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57605,6 +57742,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 14,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57629,6 +57776,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 15,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57659,6 +57812,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 16,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57689,6 +57854,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 17,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57719,6 +57896,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 18,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57752,6 +57941,19 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 19,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57785,6 +57987,19 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 20,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57818,6 +58033,19 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 21,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57851,6 +58079,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 22,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57884,6 +58121,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 23,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57917,6 +58163,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 24,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57950,6 +58205,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 25,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57983,6 +58247,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 26,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58016,6 +58290,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 27,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58040,6 +58324,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 28,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58064,6 +58354,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 29,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58090,6 +58389,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 30,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58114,6 +58423,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 31,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58147,6 +58465,19 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 32,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58180,6 +58511,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 33,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58213,6 +58553,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 34,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58246,6 +58595,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 35,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58279,6 +58638,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 36,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58312,6 +58681,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 37,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58345,6 +58723,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 38,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58369,6 +58756,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 39,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58399,6 +58792,18 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 40,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58425,6 +58830,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 41,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58449,6 +58864,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 42,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58482,6 +58906,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 43,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58515,6 +58949,14 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 44,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58541,6 +58983,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 45,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58574,6 +59026,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 46,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58607,6 +59069,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 47,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58640,6 +59112,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
         "worklistOrder": 48,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58673,6 +59155,14 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 49,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58706,6 +59196,14 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 50,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58739,6 +59237,14 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
         "worklistOrder": 51,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58763,6 +59269,12 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 52,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58789,6 +59301,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 53,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58813,6 +59335,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 54,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58837,6 +59368,15 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
+        ],
         "worklistOrder": 55,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58864,6 +59404,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 56,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58891,6 +59441,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 57,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58918,6 +59478,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 58,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58945,6 +59515,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 59,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58972,6 +59552,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 60,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58999,6 +59589,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 61,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59026,6 +59626,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 62,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59053,6 +59663,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 63,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59080,6 +59700,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 64,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59107,6 +59737,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 65,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59134,6 +59774,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 66,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59161,6 +59811,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 67,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59188,6 +59848,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 68,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59215,6 +59885,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 69,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59242,6 +59922,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 70,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59269,6 +59959,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 71,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59296,6 +59996,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 72,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59323,6 +60033,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 73,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59350,6 +60070,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 74,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59377,6 +60107,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 75,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59404,6 +60144,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 76,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59431,6 +60181,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 77,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59458,6 +60218,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 78,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59485,6 +60255,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 79,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59512,6 +60292,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 80,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59539,6 +60329,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 81,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59566,6 +60366,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 82,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59593,6 +60403,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 83,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59620,6 +60440,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 84,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59647,6 +60477,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 85,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59674,6 +60514,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 86,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59701,6 +60551,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 87,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59728,6 +60588,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 88,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59755,6 +60625,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 89,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59782,6 +60662,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 90,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59809,6 +60699,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 91,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59836,6 +60736,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 92,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59863,6 +60773,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 93,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59890,6 +60810,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 94,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59917,6 +60847,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 95,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -59944,6 +60884,16 @@
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 96,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -60022,6 +60972,221 @@
       "unseenGeometryAndMotionRemainCreativeProposals": true,
       "productionPromotionAutomatic": false,
       "producedAssetMayEnterCatalogOnlyAfterNormalAssetQA": true
+    },
+    "styleExpressionRequiredForAllDomains": true,
+    "styleExpressionContractRef": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES",
+    "styleExpressionDomainBindingRef": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS",
+    "styleExpressionAxes": {
+      "SURFACE_FEEL": [
+        "ROUGH",
+        "BALANCED",
+        "SOFT"
+      ],
+      "SHAPE_TEMPER": [
+        "SHARP",
+        "ROUND",
+        "MIXED",
+        "FLOWING",
+        "BLOCKY"
+      ],
+      "EXPRESSION_INTENSITY": [
+        "RESTRAINED",
+        "BALANCED",
+        "EXPRESSIVE",
+        "EXTREME"
+      ],
+      "MATERIAL_FINISH": [
+        "RAW",
+        "MATTE",
+        "WEATHERED",
+        "CLEAN",
+        "GLOSSY"
+      ],
+      "LINE_ENERGY": [
+        "CALM",
+        "FLOWING",
+        "DYNAMIC",
+        "AGGRESSIVE"
+      ],
+      "COLOR_ENERGY": [
+        "MUTED",
+        "NATURAL",
+        "VIBRANT",
+        "HIGH_CONTRAST"
+      ],
+      "DETAIL_DENSITY": [
+        "MINIMAL",
+        "MEDIUM",
+        "DENSE",
+        "SELECTIVE_DENSE"
+      ],
+      "DAMAGE_WEAR": [
+        "CLEAN",
+        "LIGHT_WORN",
+        "HEAVY_WORN"
+      ],
+      "MOTION_ENERGY": [
+        "SUBTLE",
+        "GROUNDED",
+        "EXPRESSIVE",
+        "EXAGGERATED"
+      ],
+      "VFX_ENERGY": [
+        "SUBTLE",
+        "READABLE",
+        "PUNCHY",
+        "SPECTACULAR"
+      ],
+      "UI_EXPRESSION": [
+        "MINIMAL",
+        "BALANCED",
+        "BOLD",
+        "ORNATE"
+      ],
+      "AUDIO_ENERGY": [
+        "SUBTLE",
+        "NATURAL",
+        "PUNCHY",
+        "CINEMATIC"
+      ],
+      "ATMOSPHERE_WEIGHT": [
+        "AIRY",
+        "BALANCED",
+        "HEAVY",
+        "OPPRESSIVE"
+      ]
+    },
+    "styleExpressionDomainBindings": {
+      "BUILDING": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "CREATURE": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "MOTION_ENERGY"
+      ],
+      "MOTION": [
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "MOTION_ENERGY"
+      ],
+      "UI": [
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "UI_EXPRESSION",
+        "MOTION_ENERGY"
+      ],
+      "WORLD_PROP": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ],
+      "ENVIRONMENT": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "ITEM": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ],
+      "SKILL": [
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "MOTION_ENERGY",
+        "VFX_ENERGY"
+      ],
+      "VFX": [
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "VFX_ENERGY"
+      ],
+      "PRESENTATION": [
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "MOTION_ENERGY",
+        "VFX_ENERGY",
+        "UI_EXPRESSION",
+        "AUDIO_ENERGY",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "CHARACTER_GEAR": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ],
+      "WEAPON": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "MOTION_ENERGY",
+        "VFX_ENERGY"
+      ],
+      "AUDIO": [
+        "EXPRESSION_INTENSITY",
+        "AUDIO_ENERGY",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "FOLIAGE": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "MOTION_ENERGY",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "MATERIAL": [
+        "SURFACE_FEEL",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ]
     }
   },
   "characterNpcCustomization": {

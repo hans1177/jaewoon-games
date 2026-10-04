@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
@@ -563,6 +563,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     freeSourceCatalogReady:libraryPlan.freeSourceCatalogReady,
     freeSourceCatalogExpansionMode:libraryPlan.freeSourceCatalogExpansionMode,
     primaryAttention:libraryPlan.primaryAttention,
+    styleExpressionRequiredForAllDomains:libraryPlan.styleExpressionRequiredForAllDomains===true,
+    styleExpressionContractRef:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionContractRef,
+    styleExpressionDomainBindingRef:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionDomainBindingRef,
+    styleExpressionAxes:libraryPlan.styleExpressionAxes,
+    styleExpressionDomainBindings:libraryPlan.styleExpressionDomainBindings,
     ideaDeduplication:libraryPlan.ideaDeduplication,
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     referenceBreadthProfiles:Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES),
@@ -1718,6 +1723,44 @@ function normalizeFlowAssetRequirements(requirements=[]){
 }
 
 
+function inferStyleExpressionOverridesFromText(value=''){
+  const source=clean(value).toUpperCase();
+  const out={};
+  if(/ROUGH|GRITTY|WEATHERED|거칠|거친|황량|투박/.test(source))out.SURFACE_FEEL='ROUGH';
+  else if(/SOFT|SMOOTH|GENTLE|부드|매끈|말랑/.test(source))out.SURFACE_FEEL='SOFT';
+  if(/SHARP|ANGULAR|날카|각진|뾰족/.test(source))out.SHAPE_TEMPER='SHARP';
+  else if(/ROUND|ROUNDED|둥글|원만/.test(source))out.SHAPE_TEMPER='ROUND';
+  else if(/FLOWING|FLUID|유려|흐르는|곡선/.test(source))out.SHAPE_TEMPER='FLOWING';
+  if(/EXTREME|EXAGGERATED|극단|과장/.test(source))out.EXPRESSION_INTENSITY='EXTREME';
+  else if(/EXPRESSIVE|DRAMATIC|강렬|표현력.?강|표현이.?강/.test(source))out.EXPRESSION_INTENSITY='EXPRESSIVE';
+  else if(/RESTRAINED|SUBTLE|절제|은은/.test(source))out.EXPRESSION_INTENSITY='RESTRAINED';
+  if(/GLOSSY|유광|광택/.test(source))out.MATERIAL_FINISH='GLOSSY';
+  else if(/MATTE|무광/.test(source))out.MATERIAL_FINISH='MATTE';
+  else if(/WEATHERED|WORN|낡|마모|풍화/.test(source))out.MATERIAL_FINISH='WEATHERED';
+  else if(/CLEAN|깔끔|깨끗/.test(source))out.MATERIAL_FINISH='CLEAN';
+  if(/MUTED|LOW.?SATURATION|저채도|탁한|차분한 색/.test(source))out.COLOR_ENERGY='MUTED';
+  else if(/HIGH.?CONTRAST|고대비/.test(source))out.COLOR_ENERGY='HIGH_CONTRAST';
+  else if(/VIBRANT|SATURATED|선명|쨍한|화사/.test(source))out.COLOR_ENERGY='VIBRANT';
+  if(/SELECTIVE.?DENSE|선택적.?디테일/.test(source))out.DETAIL_DENSITY='SELECTIVE_DENSE';
+  else if(/DENSE|HIGH.?DETAIL|디테일.?많|촘촘|복잡/.test(source))out.DETAIL_DENSITY='DENSE';
+  else if(/MINIMAL|단순|간결|미니멀/.test(source))out.DETAIL_DENSITY='MINIMAL';
+  if(/HEAVY.?WORN|심한.?마모|낡고.?망가/.test(source))out.DAMAGE_WEAR='HEAVY_WORN';
+  else if(/CLEAN|새것|깨끗/.test(source))out.DAMAGE_WEAR='CLEAN';
+  if(/EXAGGERATED|과장.?모션|과장.?동작/.test(source))out.MOTION_ENERGY='EXAGGERATED';
+  else if(/WEIGHTY|HEAVY|묵직/.test(source))out.MOTION_ENERGY='GROUNDED';
+  else if(/DYNAMIC|역동|활기/.test(source))out.MOTION_ENERGY='EXPRESSIVE';
+  if(/SPECTACULAR|FLASHY|화려|장관/.test(source))out.VFX_ENERGY='SPECTACULAR';
+  else if(/PUNCHY|IMPACTFUL|타격감|강한.?피드백/.test(source))out.VFX_ENERGY='PUNCHY';
+  if(/ORNATE|장식적|화려한.?UI/.test(source))out.UI_EXPRESSION='ORNATE';
+  else if(/MINIMAL|미니멀/.test(source))out.UI_EXPRESSION='MINIMAL';
+  else if(/BOLD|굵직|대담/.test(source))out.UI_EXPRESSION='BOLD';
+  if(/CINEMATIC|EPIC|웅장|시네마틱/.test(source))out.AUDIO_ENERGY='CINEMATIC';
+  else if(/PUNCHY|타격감/.test(source))out.AUDIO_ENERGY='PUNCHY';
+  if(/OPPRESSIVE|CLAUSTROPHOBIC|압박|음산|숨막/.test(source))out.ATMOSPHERE_WEIGHT='OPPRESSIVE';
+  else if(/AIRY|OPEN|맑고.?가벼|개방적/.test(source))out.ATMOSPHERE_WEIGHT='AIRY';
+  return out;
+}
+
 function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterCustomizationRequested=false}={}){
   const requestText=clean(request).toUpperCase();
   const normalizeDomain=value=>{
@@ -1991,6 +2034,10 @@ export function buildVibeAssetProductionPlan({
     :/가드|guard|block/i.test(request)?'GUARD'
     :'LIGHT_COMBO';
   const requestedConcept=inferRequestedConcept(task,request);
+  const explicitStyleExpressionOverrides={
+    ...inferStyleExpressionOverridesFromText(request),
+    ...(task.styleExpressionOverrides||task.styleExpression?.axes||{})
+  };
   const assetLearningRequired=clean(executionLane).toLowerCase()==='asset-development'||['roblox','unity','web'].includes(resolvedTarget);
   const verifiedCommercialReuse=freezeList((verifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))
@@ -2090,6 +2137,20 @@ export function buildVibeAssetProductionPlan({
       domainHints:freezeList(Array.isArray(row?.domains)?row.domains:Array.isArray(row?.categories)?row.categories:[])
     });
   }));
+  const referenceStyleSuggestion=inferStyleExpressionOverridesFromText(
+    referenceImageStudies.map(row=>[
+      row?.observation?.features?.STYLE_LANGUAGE,
+      row?.observation?.features?.MATERIAL_REGIONS,
+      row?.observation?.features?.PALETTE,
+      row?.observation?.features?.CONSTRUCTION_DETAILS
+    ].filter(Boolean).join(' ')).join(' ')
+  );
+  const taskStyleExpression=resolveInternalAssetStyleExpressionProfile({
+    styleFamily:requestedConcept.styles?.[0]?.family||task.styleFamily||task.style||'STYLIZED_FANTASY',
+    styles:requestedConcept.styles||[],
+    artTone:requestedConcept.artTone||[],
+    overrides:{...referenceStyleSuggestion,...explicitStyleExpressionOverrides}
+  });
   const referenceDrivenAssetIdeas=buildReferenceDrivenAssetIdeaWorklist({
     studies:referenceImageStudies,
     request,
@@ -2126,6 +2187,11 @@ export function buildVibeAssetProductionPlan({
       freeSourceCandidateIds:freezeList(freeSourceCandidateIds),
       freeSourceAvailable:freeSourceCandidateIds.length>0,
       resolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
+      styleExpressionAdaptationRequired:true,
+      styleExpressionAxisIds:freezeList(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS[domain]||[]),
+      styleExpression:taskStyleExpression,
+      referenceStyleSuggestion:freeze({...referenceStyleSuggestion}),
+      conceptStyleLockWins:true,
       referenceWorklistOrder:index+1
     });
   }));
@@ -2134,7 +2200,17 @@ export function buildVibeAssetProductionPlan({
       ?[
         ...taskLocalReferenceVolumeActions,
         ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
-      ].slice(0,96).map((row,index)=>freeze({...row,worklistOrder:index+1}))
+      ].slice(0,96).map((row,index)=>{
+        const domain=clean(row?.domain).toUpperCase();
+        return freeze({
+          ...row,
+          styleExpressionAdaptationRequired:true,
+          styleExpressionAxisIds:freezeList(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS[domain]||row?.styleExpressionAxisIds||[]),
+          styleExpression:taskStyleExpression,
+          conceptStyleLockWins:true,
+          worklistOrder:index+1
+        });
+      })
       :[]
   );
   const effectiveInternalLibraryEvolution=freeze({
@@ -2147,7 +2223,11 @@ export function buildVibeAssetProductionPlan({
     taskLocalReferenceActionCount:taskLocalReferenceVolumeActions.length,
     referenceImageObservationOverlay:taskLocalReferenceVolumeActions.length>0,
     referenceImageIdeasPersisted:false,
-    rawReferenceImagePersisted:false
+    rawReferenceImagePersisted:false,
+    styleExpressionRequiredForAllDomains:true,
+    styleExpression:taskStyleExpression,
+    styleExpressionDomainBindings:freeze(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS),
+    photoReferenceMaySuggestButNotOverrideConceptLock:true
   });
   const npcCustomizationPopulation=characterCustomizationRequested?createVibeNpcCustomizationPopulation({
     count:Number(task.npcCustomization?.previewCount||task.characterCustomization?.npcPreviewCount||48),
@@ -2494,6 +2574,9 @@ export function buildVibeAssetProductionPlan({
       volumeWorklistOverlayConsumesBeforePersistentActions:true,
       ideaWorklistIsTaskLocal:true,
       ideaWorklistPersistenceForbidden:true,
+      styleExpression:taskStyleExpression,
+      referenceStyleSuggestion:freeze({...referenceStyleSuggestion}),
+      conceptStyleLockWins:true,
       generatedAsset:false,runtimeVerified:false
     }),
     styleBible:assetSynchronization?.document?.styleBible||studioUniversePlan?.styleBible||null,
