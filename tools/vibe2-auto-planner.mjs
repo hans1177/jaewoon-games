@@ -67,8 +67,22 @@ const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
     detailDepthLevel:Object.freeze({base:1,stepEveryCycles:1,max:null}),
     connectedImprovements:Object.freeze({base:3,stepEveryCycles:2,max:8}),
     meaningfulDistinctAxes:Object.freeze({base:2,stepEveryCycles:3,max:5}),
-    crossSystemConnections:Object.freeze({base:1,stepEveryCycles:2,max:4})
+    crossSystemConnections:Object.freeze({base:1,stepEveryCycles:2,max:4}),
+    activeDetailDimensions:Object.freeze({base:2,stepEveryCycles:1,max:10}),
+    playerFacingProofs:Object.freeze({base:1,stepEveryCycles:3,max:4})
   }),
+  detailDimensions:Object.freeze([
+    'CORE_INTERACTION_RESPONSE',
+    'STATE_TRANSITIONS_AND_CONTINUITY',
+    'EDGE_CASES_AND_RECOVERY',
+    'DISCOVERABILITY_AND_INFORMATION',
+    'PACING_AND_FRICTION',
+    'CONTENT_CAUSALITY_AND_WORLD_LOGIC',
+    'REWARD_AND_PROGRESSION_PURPOSE',
+    'COUNTERPLAY_AND_REPLAY_VARIATION',
+    'PRESENTATION_READABILITY_AND_FEEDBACK',
+    'PERFORMANCE_AND_RUNTIME_STABILITY'
+  ]),
   tiers:Object.freeze([
     Object.freeze({minCycle:1,id:'FOUNDATION_COMPLETENESS',comparativeBaselineRequired:false,existingContentDeepeningRequired:false,coherentContentExpansionRequired:false,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['CLOSE_THE_HIGHEST_VALUE_PLAYER_FACING_COMPLETENESS_GAP','CONNECT_INPUT_STATE_CHANGE_FEEDBACK_AND_NEXT_CHOICE','PRESERVE_EXISTING_GAME_RULE_SAVE_BALANCE_AND_AUTHORITY'])}),
     Object.freeze({minCycle:2,id:'SYSTEM_DEPTH',comparativeBaselineRequired:true,existingContentDeepeningRequired:true,coherentContentExpansionRequired:false,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['DEEPEN_AT_LEAST_ONE_PREVIOUSLY_VERIFIED_SYSTEM_INSTEAD_OF_REPEATING_EQUIVALENT_WORK','ADD_ROLE_BEHAVIOR_FEEDBACK_OR_EXCEPTION_DEPTH','SHOW_MEASURABLE_OR_VISIBLE_IMPROVEMENT_AGAINST_THE_PREVIOUS_VERIFIED_BASELINE'])}),
@@ -96,6 +110,11 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     .map(row=>({...row,minCycle:Math.max(1,Math.floor(Number(row?.minCycle)||1))}))
     .sort((a,b)=>a.minCycle-b.minCycle);
   const tier=tiers.filter(row=>row.minCycle<=level).at(-1)||tiers[0];
+  const detailDimensions=(Array.isArray(policy?.detailDimensions)&&policy.detailDimensions.length?policy.detailDimensions:DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.detailDimensions)
+    .map(clean).filter(Boolean);
+  const minimumActiveDetailDimensions=expectationMetric(growth?.activeDetailDimensions,level,fallbackGrowth.activeDetailDimensions);
+  const activeDetailDimensions=detailDimensions.slice(0,Math.min(detailDimensions.length,minimumActiveDetailDimensions));
+  const minimumPlayerFacingProofs=expectationMetric(growth?.playerFacingProofs,level,fallbackGrowth.playerFacingProofs);
   const repair=clean(phase).toUpperCase()==='REPAIR';
   return Object.freeze({
     version:1,
@@ -109,6 +128,10 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     minimumConnectedImprovements:expectationMetric(growth?.connectedImprovements,level,fallbackGrowth.connectedImprovements),
     minimumMeaningfulDistinctAxes:expectationMetric(growth?.meaningfulDistinctAxes,level,fallbackGrowth.meaningfulDistinctAxes),
     minimumCrossSystemConnections:expectationMetric(growth?.crossSystemConnections,level,fallbackGrowth.crossSystemConnections),
+    minimumActiveDetailDimensions,
+    activeDetailDimensions:Object.freeze([...activeDetailDimensions]),
+    minimumPlayerFacingProofs,
+    qualitativeDetailDepthUnbounded:true,
     comparativeBaselineRequired:tier?.comparativeBaselineRequired===true,
     existingContentDeepeningRequired:tier?.existingContentDeepeningRequired===true,
     coherentContentExpansionRequired:!repair&&tier?.coherentContentExpansionRequired===true,
@@ -138,7 +161,8 @@ function buildUpIterationExpectationPrompt(expectation={}){
   ].filter(Boolean);
   return `[ITERATION_EXPECTATION_ESCALATION] level=${expectation.expectationLevel}; tier=${expectation.tier}; detailDepth=${expectation.detailDepthLevel}
 이 반복의 품질 기준은 이전 verified baseline보다 낮아질 수 없다. 실패 수리는 같은 기대치 레벨을 유지하고, 성공한 반복만 다음 기대치를 올린다. 새 workflow/stage/queue/worker를 만들지 말고 기존 BUILD_UP 책임 작업 안에서 충족한다. 내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다. Studio/실런타임 증거는 기존 canonical 단계가 원래 요구하는 경우에만 별도로 사용한다.
-최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개. 동등한 기능 반복·이름/색/수치 복제·마커/문서만 추가한 변경은 진화로 계산하지 않는다.
+최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 동등한 기능 반복·이름/색/수치 복제·마커/문서만 추가한 변경은 진화로 계산하지 않는다.
+디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
 }
@@ -2650,6 +2674,10 @@ ${expectationInstruction}
     'studio-quality-min-connected-improvements:'+String(iterationExpectation.minimumConnectedImprovements),
     'studio-quality-min-distinct-axes:'+String(iterationExpectation.minimumMeaningfulDistinctAxes),
     'studio-quality-min-cross-system-connections:'+String(iterationExpectation.minimumCrossSystemConnections),
+    'studio-quality-min-active-detail-dimensions:'+String(iterationExpectation.minimumActiveDetailDimensions),
+    'studio-quality-active-detail-dimensions:'+iterationExpectation.activeDetailDimensions.join(','),
+    'studio-quality-min-player-facing-proofs:'+String(iterationExpectation.minimumPlayerFacingProofs),
+    'studio-quality-qualitative-detail-depth:UNBOUNDED',
     'studio-quality-queue-amplification:FORBIDDEN',
     'studio-quality-studio-required:NO',
     'studio-quality-internal-audit-without-studio:ALLOWED',
