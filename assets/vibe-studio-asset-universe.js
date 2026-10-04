@@ -846,8 +846,21 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
     HEAD:Object.freeze(['HEAD_GEAR']),
     CHEST:Object.freeze(['TORSO_GEAR']),
     HANDS:Object.freeze(['HAND_GEAR']),
+    LEGS:Object.freeze(['LEG_GEAR','LEGS']),
     FEET:Object.freeze(['FOOT_GEAR']),
-    BACK:Object.freeze(['BACK_GEAR'])
+    BACK:Object.freeze(['BACK_GEAR']),
+    SHOULDER:Object.freeze(['SHOULDER_GEAR','SHOULDER']),
+    BELT:Object.freeze(['BELT_GEAR','BELT']),
+    RING:Object.freeze(['RING_GEAR','RING']),
+    AMULET:Object.freeze(['AMULET_GEAR','AMULET']),
+    ACCESSORY:Object.freeze(['ACCESSORY_GEAR','ACCESSORY']),
+    COSMETIC_OVERLAY:Object.freeze(['COSMETIC_OVERLAY']),
+    LIGHT_MEDIUM_HEAVY:Object.freeze(['LIGHT_TORSO','MEDIUM_TORSO','HEAVY_TORSO']),
+    SET_IDENTITY:Object.freeze(['SET_IDENTITY']),
+    SOCKET_POINT:Object.freeze(['SOCKET_POINT']),
+    UPGRADE_STAGE_VISUAL:Object.freeze(['UPGRADE_STAGE_VISUAL']),
+    DAMAGE_WEAR_VARIANT:Object.freeze(['DAMAGE_WEAR_VARIANT']),
+    TRANSMOG_BASE:Object.freeze(['TRANSMOG_BASE'])
   }),
   MATERIAL:Object.freeze({
     LEATHER:Object.freeze(['LEATHER_LIKE']),
