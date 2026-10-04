@@ -12,6 +12,7 @@ function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function evidenceSignature(task={}){
+  if(clean(task.failureSignature))return clean(task.failureSignature);
   const ev=uniq(task.evidence);
   const steward=[...ev].reverse().find(x=>x.startsWith('system-steward:failure-signature:'));
   if(steward)return clean(steward.slice('system-steward:failure-signature:'.length));
@@ -26,11 +27,41 @@ function systemAiCohortKey(task={},signature=''){
 }
 function failureStage(task={}){
   const ev=uniq(task.evidence);
-  const recoveryExact=[...ev].reverse().find(x=>x.startsWith('recovery-exact-stage:'));
-  if(recoveryExact)return clean(recoveryExact.slice('recovery-exact-stage:'.length));
-  const explicit=[...ev].reverse().find(x=>x.startsWith('failure-stage:'));
-  if(explicit)return clean(explicit.slice('failure-stage:'.length));
-  return clean(task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE');
+  for(const prefix of ['recovery-exact-stage:','failure-stage:','roblox-stage:','unity-stage:','web-stage:','platform-f0-f9-stage:']){
+    const row=[...ev].reverse().find(x=>x.startsWith(prefix));
+    if(row)return clean(row.slice(prefix.length));
+  }
+  return clean(task.currentStep||task.phase||task?.studioQualityEvolution?.phase||task.blocker||'UNKNOWN_STAGE');
+}
+function flowLane(task={}){
+  return clean(task.target||task?.studioQualityEvolution?.platformLane||task.platform||'UNKNOWN').toUpperCase();
+}
+function canonicalChainStage(stage=''){
+  return /(?:^|_)(?:F[0-9]|SOURCE_PREFLIGHT|PRIVATE_RUNTIME|RUNTIME_CANDIDATE|SERVER_BOOT|WORLD_FOUNDATION|CHARACTER_FOUNDATION|PHYSICS|MOVEMENT|INPUT|CAMERA|CORE_SERVICES|MULTIPLAYER|GAMEPLAY|REGRESSION|RELEASE|PUBLISH|TARGET_PLATFORM_RUNTIME)(?:_|$)/i.test(clean(stage));
+}
+function flowLoopCohorts(tasks=[]){
+  const rows=tasks.map((task,index)=>({task,index,stage:failureStage(task),signature:evidenceSignature(task)}))
+    .filter(row=>{
+      const status=clean(row.task.status).toLowerCase();
+      return !['done','completed','cancelled','verified'].includes(status)
+        &&clean(row.task.gameId)
+        &&canonicalChainStage(row.stage)
+        &&row.signature;
+    });
+  const grouped=new Map();
+  for(const row of rows){
+    const key=[clean(row.task.gameId),flowLane(row.task),row.stage,row.signature].join('|');
+    if(!grouped.has(key))grouped.set(key,[]);
+    grouped.get(key).push(row);
+  }
+  return [...grouped.values()].filter(group=>group.length>=2).map(group=>{
+    const ordered=group.slice().sort((a,b)=>a.index-b.index);
+    return{
+      key:[clean(ordered[0].task.gameId),flowLane(ordered[0].task),ordered[0].stage,ordered[0].signature].join('|'),
+      rows:ordered,
+      recurrenceCount:ordered.length
+    };
+  });
 }
 const CENTRAL_POLICY_FILES=new Set([
   'company-learning/platform-release-roadmap.json',
@@ -52,8 +83,8 @@ function gameRepairRoute(task={}){
   if(gameSource&&scopedExternalRepairEligible(task))return'SYSTEM_AI';
   return gameSource?'VIBE2_VIBE3':'SYSTEM_AI';
 }
-function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-task',relatedTaskIds=[]}){
-  const route=sourceQueue==='system-ai'? 'SYSTEM_AI':gameRepairRoute(task);
+function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-task',relatedTaskIds=[],recurrenceCount=1,forceGameFlow=false}){
+  const route=sourceQueue==='system-ai'?'SYSTEM_AI':(forceGameFlow?'VIBE2_VIBE3':gameRepairRoute(task));
   const sharedInfrastructure=sourceQueue==='system-ai'&&signature==='system-ai-infrastructure-contract-failed';
   const responsibleFiles=sharedInfrastructure
     ?['tools/company-system-ai-worker.mjs','.github/workflows/company-system-ai-workers.yml','qa/company-system-ai-worker.test.mjs','qa/company-system-ai-supervision-loop.test.mjs']
@@ -66,9 +97,9 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
     sourceQueue,sourceTaskId:clean(task.id),gameId:clean(task.gameId),responsibleFiles,contextFiles,
     goal:sharedInfrastructure?'Repair the shared System AI worker infrastructure contract for the repeated failure signature, then rerun the exact failed worker stage without expanding writable scope.':clean(task.goal),
     relatedTaskIds,
-    failureStage:stage,failureSignature:signature,blastRadius,
+    failureStage:stage,failureSignature:signature,blastRadius,recurrenceCount:Math.max(1,Number(recurrenceCount)||1),
     checkpoint:clean(task.candidateSha||task.sourceRevision||task.baseMainSha||task.reservedAt)||null,
-    evidence:uniq([...(task.evidence||[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route,'primary-ai-collaboration:REQUESTED','primary-ai-collaboration-reason:'+(sharedInfrastructure?'SHARED_SYSTEM_AI_INFRASTRUCTURE':blastRadius.startsWith('portfolio')||blastRadius.startsWith('shared-worker-contract')?'COMMON_BOTTLENECK':'REPEATED_FAILURE_SIGNATURE'),'primary-ai-collaboration-task:'+clean(task.id),...(sharedInfrastructure?['shared-system-ai-infrastructure-repair:YES','representative-canary-required:YES']:[])]),
+    evidence:uniq([...(task.evidence||[]),...(forceGameFlow?['flow-stage-loop-detected:YES','flow-sequence-order-preserved:YES']:[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route,'primary-ai-collaboration:REQUESTED','primary-ai-collaboration-reason:'+(sharedInfrastructure?'SHARED_SYSTEM_AI_INFRASTRUCTURE':blastRadius.startsWith('portfolio')||blastRadius.startsWith('shared-worker-contract')?'COMMON_BOTTLENECK':'REPEATED_FAILURE_SIGNATURE'),'primary-ai-collaboration-task:'+clean(task.id),...(sharedInfrastructure?['shared-system-ai-infrastructure-repair:YES','representative-canary-required:YES']:[])]),
     recoveryOwner:route,
     recoveryStrategy:sharedInfrastructure
       ?'REPAIR_SHARED_SYSTEM_AI_INFRASTRUCTURE_WITH_ONE_CANARY_THEN_RELEASE_DEPENDENT_COHORT'
@@ -98,6 +129,19 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
     const sig=evidenceSignature(task);
     if(repeated&&sig)candidates.push({sourceQueue:'vibe2',task,signature:sig,stage:failureStage(task)});
   }
+  for(const cohort of flowLoopCohorts(gameTasks)){
+    const latest=cohort.rows.at(-1);
+    candidates.push({
+      sourceQueue:'vibe2',
+      task:latest.task,
+      signature:latest.signature,
+      stage:latest.stage,
+      flowCohortKey:cohort.key,
+      flowRelatedTaskIds:cohort.rows.map(row=>clean(row.task.id)).filter(Boolean),
+      recurrenceCount:cohort.recurrenceCount,
+      forceGameFlow:true
+    });
+  }
   for(const task of sysTasks){
     const status=clean(task.status).toLowerCase();
     if(['done','completed','cancelled','verified'].includes(status))continue;
@@ -110,23 +154,36 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
   }
   const grouped=new Map();
   for(const row of candidates){
-    const key=row.sourceQueue+'|'+row.signature+(row.sourceQueue==='system-ai'?'|'+systemAiCohortKey(row.task,row.signature):'');
+    const key=row.flowCohortKey
+      ?'vibe2-flow|'+row.flowCohortKey
+      :row.sourceQueue+'|'+row.signature+(row.sourceQueue==='system-ai'?'|'+systemAiCohortKey(row.task,row.signature):'');
     if(!grouped.has(key))grouped.set(key,[]);
     grouped.get(key).push(row);
   }
   const handled=new Set();
   for(const rows of grouped.values()){
     if(rows.length<2)continue;
-    const first=rows[0],ids=rows.map(x=>clean(x.task.id)).filter(Boolean);
+    const first=rows[0];
+    const flowRow=rows.find(row=>row.flowCohortKey)||null;
+    const ids=flowRow?uniq(flowRow.flowRelatedTaskIds):rows.map(x=>clean(x.task.id)).filter(Boolean);
     const result=enqueueRecovery(queue,escalationRow({
       sourceQueue:first.sourceQueue,task:first.task,signature:first.signature,stage:first.stage,
-      blastRadius:(first.sourceQueue==='system-ai'?'shared-worker-contract:':'portfolio:')+rows.length,relatedTaskIds:ids
+      blastRadius:flowRow?('flow-stage:'+Math.max(Number(flowRow.recurrenceCount||0),ids.length)):(first.sourceQueue==='system-ai'?'shared-worker-contract:':'portfolio:')+rows.length,
+      relatedTaskIds:ids,
+      recurrenceCount:flowRow?Math.max(Number(flowRow.recurrenceCount||0),ids.length):rows.length,
+      forceGameFlow:flowRow?.forceGameFlow===true
     }),{reactivateDispatched:rows.some(x=>clean(x.task.status).toLowerCase()==='failed')});
     queue=result.queue;if(result.added)added.push(result.id);if(result.reactivated)reactivated.push(result.id);rows.forEach(x=>handled.add(x.sourceQueue+'|'+clean(x.task.id)));
   }
   for(const row of candidates){
     if(handled.has(row.sourceQueue+'|'+clean(row.task.id)))continue;
-    const result=enqueueRecovery(queue,escalationRow({sourceQueue:row.sourceQueue,task:row.task,signature:row.signature,stage:row.stage}),{reactivateDispatched:clean(row.task.status).toLowerCase()==='failed'});
+    const result=enqueueRecovery(queue,escalationRow({
+      sourceQueue:row.sourceQueue,task:row.task,signature:row.signature,stage:row.stage,
+      blastRadius:row.flowCohortKey?('flow-stage:'+Math.max(Number(row.recurrenceCount||0),(row.flowRelatedTaskIds||[]).length)):'single-task',
+      relatedTaskIds:row.flowRelatedTaskIds||[],
+      recurrenceCount:row.recurrenceCount||1,
+      forceGameFlow:row.forceGameFlow===true
+    }),{reactivateDispatched:clean(row.task.status).toLowerCase()==='failed'});
     queue=result.queue;if(result.added)added.push(result.id);if(result.reactivated)reactivated.push(result.id);
   }
   return{queue,added,reactivated};
