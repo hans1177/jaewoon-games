@@ -70,7 +70,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T18:27:52.679Z",
+      "updatedAt": "2026-10-04T18:28:00.219Z",
       "robloxSourceCommit": "2b7d5927f8bc24d4eb55deb3a65d1ac656a85bca",
       "robloxSourceBootstrapPassedAt": "2026-10-04T18:09:44.559Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T18:10:55.305Z",
@@ -1743,7 +1743,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-amusement-tycoon-37131116107",
       "unitySourceCommit": "1e59c94ee019ad8ab915868d07013e58953d6324",
-      "unityBuildRunId": 37220836465,
+      "unityBuildRunId": 37223629771,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -1801,7 +1801,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T17:45:46.588Z"
+        "verifiedAt": "2026-10-04T18:28:00.219Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -1828,8 +1828,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -1847,20 +1847,20 @@
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": true,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": false,
-          "regression": false
+          "independentQa": true,
+          "regression": true
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": false,
         "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-        "failureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT"
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4"
       },
       "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
@@ -50913,7 +50913,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T18:27:52.679Z",
+  "updatedAt": "2026-10-04T18:28:02.788Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
