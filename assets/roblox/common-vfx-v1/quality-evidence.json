@@ -1,12 +1,11 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-vfx-v1",
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
-      "threeReusableCurrentAtoms": 15,
       "noExternalTextureDependency": 10,
       "nativeRobloxPartTrailTween": 15,
       "colorScaleDurationAdaptation": 10,
@@ -16,7 +15,10 @@
       "automaticCrossGameReuseMetadata": 10,
       "gameplayAuthorityIsolation": 10,
       "blockParryGuardBreakTelegraphCounterFeedback": true,
-      "gameplayTimingDamageStunAuthorityFalse": true
+      "gameplayTimingDamageStunAuthorityFalse": true,
+      "twentySevenReusableCurrentAtoms": 20,
+      "crossGenreSeedCompositionRoles": true,
+      "mobileDensityVariantAvailable": true
     }
   },
   "quality120": {
@@ -29,12 +31,40 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 8,
+  "sourceAssetCount": 27,
   "parryFeedback": {
     "atomCount": 5,
     "reducedMotionVariantRequired": true,
     "gameplayTimingAuthority": false,
     "damageAuthority": false,
     "stunAuthority": false
+  },
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 8,
+    "currentCount": 27,
+    "requiredSystemRolesCovered": [
+      "CRITICAL",
+      "DODGE",
+      "HEAL",
+      "BUFF",
+      "DEBUFF",
+      "STATUS",
+      "LOOT_COMMON",
+      "LOOT_RARE",
+      "LOOT_LEGENDARY",
+      "UPGRADE",
+      "CRAFT",
+      "DISMANTLE",
+      "QUEST_UPDATE",
+      "INTERACTION",
+      "ENVIRONMENT",
+      "WEATHER",
+      "DESTRUCTION",
+      "BOSS",
+      "MOBILE_DENSITY"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
   }
 }
