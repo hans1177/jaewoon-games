@@ -14,6 +14,9 @@ import {
   INTERNAL_ASSET_AUDIT_GRADES,
   INTERNAL_ASSET_FAMILY_EXPECTATIONS,
   COMMON_UI_SURFACE_EXPECTATIONS,
+  COMMON_ENVIRONMENT_BIOME_EXPECTATIONS,
+  COMMON_ENVIRONMENT_ROLE_EXPECTATIONS,
+  COMMON_PRESENTATION_EXPECTATIONS,
   INTERNAL_ASSET_MINIMUM_COVERAGE,
   INTERNAL_ASSET_REUSE_POLICY,
   INTERNAL_ASSET_ADAPTATION_AXES,
@@ -2822,4 +2825,117 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
   }
   const merelyLow=evaluateInternalAssetReuse({asset:{...base,license:'project-original'},gameDna,requirement:{family:'PROP',subfamily:'INTERACTIVE'}});
   assert.equal(merelyLow.usable,true);
+});
+
+
+test('common UI v4 expands full-screen navigation search states and input switching without gameplay authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
+
+  assert.equal(catalog.version,4);
+  assert.equal(catalog.atoms.length,54);
+  assert.equal(evidence.sourceAssetCount,54);
+  for(const atom of [
+    'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_PANEL',
+    'SEARCH_FIELD','FILTER_BAR','SORT_CONTROL','INVENTORY_FULL_SCREEN','EQUIPMENT_FULL_SCREEN',
+    'CHARACTER_DETAIL_SCREEN','MAP_FULL_SCREEN','QUEST_LOG','CRAFTING_FULL_SCREEN','SHOP_FULL_SCREEN',
+    'CONFIRM_DIALOG','POPUP_PANEL','LOADING_STATE','EMPTY_STATE','FAILURE_STATE','LOCKED_STATE','INPUT_HINT'
+  ]){
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.match(source,new RegExp('"' + atom + '"'));
+  }
+  for(const surface of [
+    'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE','SETTINGS','SEARCH_FILTER_SORT',
+    'INVENTORY_FULL','EQUIPMENT_FULL','CHARACTER_DETAIL','MAP_FULL','QUEST_LOG','CRAFTING_FULL',
+    'SHOP_FULL','STATE_FEEDBACK','INPUT_HINT','SCREEN_TRANSITION'
+  ]){
+    assert.ok(catalog.surfaces.includes(surface),surface);
+    assert.ok(COMMON_UI_SURFACE_EXPECTATIONS.includes(surface),surface);
+  }
+  assert.equal(catalog.navigationContract.maxRecommendedDepth,3);
+  assert.equal(catalog.navigationContract.colorOnlyStateForbidden,true);
+  assert.equal(catalog.continuationContract.machineReadableSelectionRequired,true);
+  assert.match(source,/OwnsGameplayAuthority", false/);
+  assert.match(source,/OwnsSaveAuthority", false/);
+  assert.match(source,/OwnsRemoteAuthority", false/);
+  assert.match(source,/OwnsPurchaseAuthority",false/);
+  assert.match(source,/OwnsEconomyAuthority",false/);
+  assert.match(source,/SupportsAutomaticInputModeSwap",true/);
+});
+
+test('common environment v1 provides ten reusable biome kits with terrain road cliff water landmark and set dressing roles',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-environment-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonEnvironment.luau'),'utf8');
+
+  assert.equal(catalog.biomes.length,10);
+  assert.equal(catalog.recipeCount,80);
+  assert.deepEqual(catalog.biomes,COMMON_ENVIRONMENT_BIOME_EXPECTATIONS);
+  assert.deepEqual(catalog.roles,COMMON_ENVIRONMENT_ROLE_EXPECTATIONS);
+  for(const biome of ['FOREST','SNOW','DESERT','SWAMP','CAVE','COAST','VILLAGE','CITY','RUINS','DUNGEON']){
+    assert.match(source,new RegExp('\\b'+biome+'\\b'));
+  }
+  for(const role of ['TERRAIN','PATH_ROAD','CLIFF','WATER','LANDMARK','SET_DRESSING']){
+    assert.match(source,new RegExp(role));
+  }
+  assert.equal(evidence.coverage.recipeCount,80);
+  assert.equal(evidence.productionVerified,false);
+  assert.match(source,/GameplayAuthority",false/);
+  assert.match(source,/PreserveGameSpawnAuthority",true/);
+  assert.match(source,/PreserveGameResourceAuthority",true/);
+});
+
+test('common presentation v1 provides reusable loading and five short intro modes without camera or gameplay authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-presentation-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonPresentation.luau'),'utf8');
+
+  assert.deepEqual(catalog.loadingElements,COMMON_PRESENTATION_EXPECTATIONS.loading);
+  assert.deepEqual(catalog.introModes,COMMON_PRESENTATION_EXPECTATIONS.introModes);
+  assert.deepEqual(catalog.genreBackgrounds,COMMON_PRESENTATION_EXPECTATIONS.genreBackgrounds);
+  assert.deepEqual(catalog.gameSpecificVariationFields,COMMON_PRESENTATION_EXPECTATIONS.gameSpecificVariationFields);
+  assert.equal(catalog.introContract.complexCutsceneRequired,false);
+  assert.equal(catalog.introContract.cameraAuthority,false);
+  assert.match(source,/function Presentation.CreateLoadingScreen/);
+  assert.match(source,/function Presentation.CreateIntro/);
+  assert.match(source,/CameraAuthority",false/);
+  assert.match(source,/GameplayAuthority",false/);
+  assert.match(source,/WorldPanIsVisualRequestOnly/);
+  assert.equal(evidence.productionVerified,false);
+});
+
+test('Vibe loadout returns machine-readable discovery and use contract from existing canonical asset selector',()=>{
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,3);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.enabled,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.newPipelineCreated,false);
+  const asset={
+    id:'common-forest-kit',family:'ENVIRONMENT',subfamily:'BIOME',platform:'ROBLOX',status:'REPO_ASSET',
+    license:'project-original',internalAuditScore:940,companyCommonBase:true,packId:'roblox-common-environment-v1',
+    sourceFiles:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau'],
+    machineTags:['FOREST','BIOME','LANDMARK','SET_DRESSING'],
+    gameSpecificVariationFields:['PALETTE','MATERIAL','LIGHTING'],
+    usageContract:{developmentStageAutoDiscovery:true,ownsGameplayAuthority:false}
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'ENVIRONMENT',subfamily:'FOREST',required:true}],
+    assets:[asset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.complete,true);
+  assert.equal(loadout.machineReadableDiscovery,true);
+  assert.equal(loadout.selectionContractVersion,3);
+  assert.equal(loadout.newPipelineCreated,false);
+  assert.equal(loadout.selections[0].assetId,'common-forest-kit');
+  assert.equal(loadout.selections[0].packId,'roblox-common-environment-v1');
+  assert.ok(loadout.selections[0].sourceFiles.length>0);
+  assert.ok(loadout.selections[0].machineTags.includes('FOREST'));
+  assert.equal(loadout.selections[0].usageContract.developmentStageAutoDiscovery,true);
+  assert.equal(loadout.selections[0].companyCommonBase,true);
 });
