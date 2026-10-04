@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g3-cb09f26f97c7",
-  "directiveFingerprint": "cb09f26f97c7d771ea86adde5200fda2cab61d87d503da64f1b6d33cd1beac28",
+  "directiveId": "bug-defense-build-up-g3-336f197522e4",
+  "directiveFingerprint": "336f197522e4890ac49afc43595e62dab806a5d09918bbf904d52ebf745f4789",
   "previousDirectiveFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
   "forbiddenRepeatFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
   "gameId": "bug-defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "996058756cbe153df547d2fb0a276be85f950e2eef8649d918aa722f2c6fbbf1",
+  "sourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
   "designFingerprint": "b777a30851e67b1b07440b483d12aa7ca6d97f22da5a51fa1a648cdc58102545",
   "gameIdentityAndNonNegotiables": {
     "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
@@ -56,8 +56,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 203,
-      "progression": 190,
+      "combat": 205,
+      "progression": 203,
       "ai": 49,
       "save": 55,
       "multiplayer": 13,
@@ -69,12 +69,12 @@
       "audio": 1,
       "audioDynamics": 17,
       "ui": 57,
-      "uiFlow": 33,
+      "uiFlow": 35,
       "entryFlow": 24,
       "loadingFlow": 0,
       "input": 59,
       "map": 140,
-      "landmark": 56,
+      "landmark": 60,
       "interaction": 29,
       "inventory": 2,
       "equipment": 3,
@@ -97,7 +97,7 @@
       },
       {
         "file": "roblox-games/bug-defense/shared/GameConfig.luau",
-        "score": 253
+        "score": 251
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
@@ -356,7 +356,7 @@
     "previousFocus": "STABILITY",
     "previousGeneration": 2,
     "previousSourceTreeFingerprint": "9e12efda726a161ae595855be281ea66b68909412114dfa294b7730382443054",
-    "currentSourceTreeFingerprint": "996058756cbe153df547d2fb0a276be85f950e2eef8649d918aa722f2c6fbbf1",
+    "currentSourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1532,8 +1532,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 98145,
-        "largestFileBytes": 43823,
+        "sourceBytes": 127405,
+        "largestFileBytes": 43793,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -2366,7 +2366,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "996058756cbe153df547d2fb0a276be85f950e2eef8649d918aa722f2c6fbbf1",
+      "sourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2485,5 +2485,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:33:22.529Z"
+  "generatedAt": "2026-10-04T01:35:52.495Z"
 }
