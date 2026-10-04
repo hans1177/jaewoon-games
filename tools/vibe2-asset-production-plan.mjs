@@ -492,15 +492,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const exists=repositoryPathExists(relative);
     if(!exists){
       if(clean(asset?.id))missingRepositoryAssetIds.push(clean(asset.id));
-      asset.repositoryPathState='MISSING_SOURCE_REVIEW';
-      asset.automaticSearchEligible=false;
-      asset.automaticDeletionForbidden=true;
       continue;
     }
     repositoryPathPresentCount++;
-    asset.repositoryPathState='PRESENT';
-    asset.automaticSearchEligible=asset?.catalogActive!==false&&asset?.referenceOnly!==true&&!licenseBlockedForSync(asset);
-    if(asset.automaticSearchEligible===true)automaticSearchEligibleCount++;
+    const searchEligible=asset?.catalogActive!==false&&asset?.referenceOnly!==true&&!licenseBlockedForSync(asset);
+    if(searchEligible)automaticSearchEligibleCount++;
   }
 
   const consumptionByAssetId=new Map();
@@ -609,24 +605,18 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     }
   }
   const detectedConsumerGameIds=new Set();
-  let sourceConsumerAssetCount=0,sourceConsumerBindingCount=0;
-  for(const asset of next.assets){
-    const byGame=consumptionByAssetId.get(clean(asset?.id));
-    if(!byGame){
-      asset.detectedSourceConsumerGameIds=[];
-      asset.sourceConsumptionEvidence=[];
-      asset.sourceConsumptionIsRuntimeVerification=false;
-      continue;
-    }
-    sourceConsumerAssetCount++;
-    const detected=[...byGame.keys()].sort();
-    for(const gameId of detected)detectedConsumerGameIds.add(gameId);
-    sourceConsumerBindingCount+=detected.length;
-    asset.consumerGameIds=unique([...(Array.isArray(asset.consumerGameIds)?asset.consumerGameIds:[]),...detected]).sort();
-    asset.detectedSourceConsumerGameIds=detected;
-    asset.sourceConsumptionEvidence=detected.map(gameId=>({gameId,evidence:[...byGame.get(gameId)].sort()}));
-    asset.sourceConsumptionIsRuntimeVerification=false;
-  }
+  let sourceConsumerBindingCount=0;
+  const exactAssetConsumption=[...consumptionByAssetId.entries()].map(([assetId,byGame])=>{
+    const gameIds=[...byGame.keys()].sort();
+    for(const gameId of gameIds)detectedConsumerGameIds.add(gameId);
+    sourceConsumerBindingCount+=gameIds.length;
+    return Object.freeze({
+      assetId,
+      gameIds:Object.freeze(gameIds),
+      evidence:Object.freeze(gameIds.map(gameId=>Object.freeze({gameId,evidence:Object.freeze([...byGame.get(gameId)].sort())})))
+    });
+  }).sort((a,b)=>b.gameIds.length-a.gameIds.length||a.assetId.localeCompare(b.assetId));
+  const sourceConsumerAssetCount=exactAssetConsumption.length;
   const libraryModuleConsumerGameIds=new Set();
   let libraryModuleConsumerPathCount=0,libraryModuleConsumerBindingCount=0;
   const libraryModuleConsumption=[...libraryModuleConsumptionByPath.entries()].map(([assetPath,byGame])=>{
@@ -658,6 +648,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerAssetCount,
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
+    exactAssetConsumption:Object.freeze(exactAssetConsumption.slice(0,192)),
+    exactAssetConsumptionIsRuntimeVerification:false,
     libraryModuleConsumerPathCount,
     libraryModuleConsumerBindingCount,
     libraryModuleConsumerGameIds:Object.freeze([...libraryModuleConsumerGameIds].sort()),
