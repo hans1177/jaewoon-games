@@ -749,7 +749,10 @@ jobs:
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;
               if(row.sourceRevision!==item.robloxSourceCommit||row.artifactIdentity!==item.robloxBuildArtifactIdentity)continue;
-              if(item.robloxQualityBuildUpRequired===true||item.robloxStudioLocalPlayRepairRequired===true)continue;
+              const qualityRepairSourceRevision=String(item.robloxQualityBuildUpSourceRevision||'').trim();
+              const currentQualityRepair=item.robloxQualityBuildUpRequired===true
+                &&(!qualityRepairSourceRevision||qualityRepairSourceRevision===String(item.robloxSourceCommit||'').trim());
+              if(currentQualityRepair||item.robloxStudioLocalPlayRepairRequired===true)continue;
               process.stdout.write([item.gameId,row.cycleId].join('\t')+'\n');
             }
           }
@@ -804,7 +807,10 @@ jobs:
               &&item.robloxF9ReleaseRegressionPassed===true
               &&String(item.robloxSourceCommit||'')===String(delta.sourceRevision||'')
               &&String(item.robloxBuildArtifactIdentity||'')===String(delta.artifactIdentity||'')
-              &&item.robloxQualityBuildUpRequired!==true
+              &&!(item.robloxQualityBuildUpRequired===true&&(
+                !String(item.robloxQualityBuildUpSourceRevision||'').trim()
+                ||String(item.robloxQualityBuildUpSourceRevision||'').trim()===String(item.robloxSourceCommit||'').trim()
+              ))
               &&item.robloxStudioLocalPlayRepairRequired!==true;
             if(exact)ids.add(gameId);
           }
