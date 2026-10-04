@@ -1323,8 +1323,10 @@ test('existing Roblox games receive one Studio asset backfill task until real bi
     assert.equal(duplicate,null);
 
     fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),[
+      'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
       'local STUDIO_ASSET_BINDING_VERSION = 2',
-      'local root = Instance.new("Frame")',
+      'local RobloxCommonUI = require(ReplicatedStorage.Assets.RobloxCommonUI)',
+      'local root = RobloxCommonUI.CreateFrame and RobloxCommonUI.CreateFrame() or Instance.new("Frame")',
       'root:SetAttribute("StudioAssetAtoms", "FRAME_PANEL,BUTTON_PRIMARY")',
       'root.BackgroundColor3 = Color3.fromRGB(20,20,20)'
     ].join('\n'));
