@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g3-5a49dfaf272d",
-  "directiveFingerprint": "5a49dfaf272d4b7e975d18e318c8431a78ec46b53c87534e1be5591c25f65100",
+  "directiveId": "fantasy-survival-build-up-g3-90d5bee797b4",
+  "directiveFingerprint": "90d5bee797b4abf3d294eeb96916ea891e4887a8577d715a47344120da617c85",
   "previousDirectiveFingerprint": "ead34b81d4a33ad464bc93023365e23f48503a15c3faf800a412da9a9e475765",
   "forbiddenRepeatFingerprint": "ead34b81d4a33ad464bc93023365e23f48503a15c3faf800a412da9a9e475765",
   "gameId": "fantasy-survival",
@@ -10,7 +10,7 @@
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
@@ -1427,7 +1427,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 85846,
+        "sourceBytes": 115205,
         "largestFileBytes": 42955,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1864,9 +1864,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2026,9 +2026,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2175,9 +2175,9 @@
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/client/Game.client.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/shared/GameConfig.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "impact": {
@@ -2377,5 +2377,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:38:46.459Z"
+  "generatedAt": "2026-10-04T01:55:28.395Z"
 }
