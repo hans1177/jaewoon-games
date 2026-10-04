@@ -148,11 +148,20 @@ test('Roblox preflight persistence does not hold a global writer job lock and re
   assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
-test('Roblox continuation serializes only the same preflight identity and dispatches exact F0 work independently',()=>{
+test('Roblox continuation dedupes only the exact preflight stage and dispatches exact F0 work independently',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(header,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  assert.match(header,/concurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}\n\s+cancel-in-progress: false/);
+  assert.doesNotMatch(header,/\nconcurrency:\n/);
+  const dedupeStart=workflow.indexOf('\n  preflight-dedupe:\n');
+  const planStart=workflow.indexOf('\n  preflight-plan:\n',dedupeStart);
+  assert.ok(dedupeStart>0&&planStart>dedupeStart);
+  const dedupe=workflow.slice(dedupeStart,planStart);
+  assert.match(dedupe,/runs-on:\s*ubuntu-slim/);
+  assert.match(dedupe,/concurrency:\n\s+group: roblox-shared-preflight-dedupe-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}\n\s+cancel-in-progress: false/);
+  assert.match(dedupe,/ROBLOX_SHARED_PREFLIGHT_DUPLICATE_SKIPPED=/);
+  assert.match(dedupe,/String\(r\.display_title\|\|''\)===title/);
+  assert.match(dedupe,/String\(r\.head_sha\|\|''\)===controlSha/);
   assert.match(workflow,/actions\/workflows\/company-development-roblox-headless-fast-mvp\.yml\/runs\?per_page=100/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/String\(run\.head_sha\|\|''\)!==currentSha/);
@@ -161,12 +170,13 @@ test('Roblox continuation serializes only the same preflight identity and dispat
   assert.doesNotMatch(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:BATCH/);
 });
 
-test('shared preflight continuation locks only the exact game and revision identity',()=>{
+test('shared preflight continuation keeps exact game and revision identity without a workflow-wide lock',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(workflow,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/workflow_dispatch:[\s\S]*game_id:/);
-  assert.match(header,/concurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}\n\s+cancel-in-progress: false/);
+  assert.doesNotMatch(header,/\nconcurrency:\n/);
+  assert.match(workflow,/group: roblox-shared-preflight-dedupe-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}/);
   assert.match(workflow,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)continue/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
@@ -175,17 +185,21 @@ test('shared preflight continuation locks only the exact game and revision ident
 });
 
 
-test('continuation workflow and planner collapse duplicate same-game dispatches without cross-game locking',()=>{
+test('continuation workflow collapses duplicate same-stage dispatches without cross-game workflow locking',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
-  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}\n\s+cancel-in-progress: false/);
-  const preflightPlanAt=workflow.indexOf('\n  preflight-plan:\n');
+  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:\n/);
+  const dedupeAt=workflow.indexOf('\n  preflight-dedupe:\n');
+  const preflightPlanAt=workflow.indexOf('\n  preflight-plan:\n',dedupeAt);
   const preflightWorkerAt=workflow.indexOf('\n  preflight-worker:\n',preflightPlanAt);
-  assert.ok(preflightPlanAt>0&&preflightWorkerAt>preflightPlanAt);
+  assert.ok(dedupeAt>0&&preflightPlanAt>dedupeAt&&preflightWorkerAt>preflightPlanAt);
+  const dedupe=workflow.slice(dedupeAt,preflightPlanAt);
   const preflightPlan=workflow.slice(preflightPlanAt,preflightWorkerAt);
+  assert.match(dedupe,/\n\s+concurrency:\n\s+group: roblox-shared-preflight-dedupe-/);
+  assert.match(preflightPlan,/needs:\s*preflight-dedupe/);
+  assert.match(preflightPlan,/if: needs\.preflight-dedupe\.outputs\.run == 'true'/);
   assert.doesNotMatch(preflightPlan,/\n\s+concurrency:/);
-  assert.match(workflow.slice(0,jobsAt),/group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}/);
 });
 
 test('continuation control jobs use slim runners while model preflight stays on full game capacity',()=>{
