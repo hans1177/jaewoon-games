@@ -1327,9 +1327,13 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.applicationMode,'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING');
   assert.ok(third.evidence.includes('studio-quality-asset-source-parity:REQUIRED'));
   assert.ok(third.evidence.includes('studio-quality-library-floor-projection:v1'));
+  assert.ok(third.evidence.includes('studio-quality-internal-asset-executable-source-binding:REQUIRED'));
+  assert.ok(third.evidence.includes('studio-quality-config-attribute-marker-only-asset-use:FORBIDDEN'));
   assert.match(third.goal,/소스 구성 성장:/);
   assert.match(third.goal,/현재 게임 소스에 동일 활용이 이미 실제 구현·검증되어 있으면 해당 아이디어는 PASS/);
-  assert.match(third.goal,/미구현 READY 활용만 선택한다/);
+  assert.match(third.goal,/기존 책임 실행 소스에서 실제 생성·호출·바인딩되어 플레이 표현에 쓰이는 경우만 인정한다/);
+  assert.match(third.goal,/GameConfig\/상수\/목록\/주석\/Attribute\/manifest에 ID만 기록하거나 StudioAssetAtoms 같은 마커만 남긴 것은 실제 소비가 아니며 PASS 금지/);
+  assert.match(third.goal,/이미 실행 바인딩된 활용은 건너뛰고 미구현 READY 활용만 선택한다/);
   assert.match(third.goal,/자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면/);
   assert.match(third.goal,/같은 QA\/체크 재통과만 반복/);
   assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
