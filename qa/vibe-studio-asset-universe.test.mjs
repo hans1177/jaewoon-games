@@ -4175,7 +4175,7 @@ test('repository asset sync detects real search eligibility consumption and bott
 
     const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
     const sync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
-    assert.equal(sync.version,2);
+    assert.equal(sync.version,3);
     assert.equal(sync.totalAssetRows,2);
     assert.equal(sync.repositoryPathPresentCount,1);
     assert.equal(sync.missingRepositoryPathCount,1);
@@ -4186,6 +4186,14 @@ test('repository asset sync detects real search eligibility consumption and bott
     assert.equal(sync.sourceConsumerBindingCount,1);
     assert.deepEqual(sync.sourceConsumerGameIds,['demo']);
     assert.equal(sync.sourceConsumptionCoveragePct,100);
+    assert.equal(sync.sourceScanStrategy,'SINGLE_PASS_ASSET_ID_TOKEN_SET');
+    assert.equal(sync.perFileAssetIdLoopEliminated,true);
+    assert.equal(sync.sourceScanComplexity,'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)');
+    assert.equal(sync.sourceFilesScanned,1);
+    assert.ok(sync.sourceBytesScanned>0);
+    assert.ok(sync.sourceTokenCandidatesScanned>0);
+    assert.equal(sync.sourceExactAssetIdTokenHits,1);
+    assert.equal(sync.naiveAssetIdFileComparisonUpperBound,2);
     assert.equal(sync.bottleneckState,'HEALTHY_WITH_STALE_PATH_REVIEW');
     assert.ok(sync.bottleneckActions.includes('REVIEW_MISSING_REPOSITORY_ASSET_PATHS'));
     assert.ok(sync.bottleneckActions.includes('CONTINUE_AUTOMATIC_LIBRARY_CONSUMPTION'));
@@ -4244,7 +4252,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
   const repositorySync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
   console.log('[ASSET_LIBRARY_CONSUMPTION]',JSON.stringify(repositorySync));
-  assert.equal(repositorySync.version,2);
+  assert.equal(repositorySync.version,3);
   assert.ok(repositorySync.totalAssetRows>0);
   assert.ok(repositorySync.repositoryPathPresentCount>0);
   assert.ok(repositorySync.automaticSearchEligibleCount>0);
@@ -4252,6 +4260,13 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.ok(repositorySync.sourceConsumerAssetCount>0);
   assert.ok(repositorySync.sourceConsumerBindingCount>=repositorySync.sourceConsumerAssetCount);
   assert.ok(repositorySync.sourceConsumerGameIds.length>0);
+  assert.equal(repositorySync.sourceScanStrategy,'SINGLE_PASS_ASSET_ID_TOKEN_SET');
+  assert.equal(repositorySync.perFileAssetIdLoopEliminated,true);
+  assert.equal(repositorySync.sourceScanComplexity,'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)');
+  assert.ok(repositorySync.sourceFilesScanned>0);
+  assert.ok(repositorySync.sourceBytesScanned>0);
+  assert.ok(repositorySync.sourceTokenCandidatesScanned>0);
+  assert.ok(repositorySync.naiveAssetIdFileComparisonUpperBound>=repositorySync.sourceFilesScanned);
   assert.notEqual(repositorySync.bottleneckState,'SEARCH_BLOCKED');
   assert.notEqual(repositorySync.bottleneckState,'CONSUMPTION_EVIDENCE_MISSING');
   assert.equal(repositorySync.sourceConsumptionDoesNotPromoteProductionVerification,true);
