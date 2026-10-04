@@ -1,7 +1,7 @@
 {
-  "version": 4,
+  "version": 5,
   "packId": "roblox-common-world-props-v1",
-  "title": "Roblox 회사 공용 월드·하우징·정착지 소품 24종 v3",
+  "title": "Roblox 회사 공용 월드·하우징·정착지 소품 38종 v5",
   "platform": "ROBLOX",
   "family": "PROP",
   "subfamily": "WORLD_PROP_PACK",
@@ -228,6 +228,146 @@
       "familyRootId": "WORLD_DECOR",
       "propKind": "STATUE",
       "interactionRole": "INSPECT"
+    },
+    {
+      "assetId": "WOOD_CART",
+      "name": "나무 수레",
+      "subfamily": "CART",
+      "worldRole": "SETTLEMENT_TRANSPORT_VISUAL",
+      "familyRootId": "WORLD_SETTLEMENT_PROP",
+      "propKind": "CART",
+      "interactionRole": "PUSH_OR_INSPECT",
+      "silhouette": "TWO_WHEEL_CART"
+    },
+    {
+      "assetId": "WOOD_CRATE",
+      "name": "나무 상자",
+      "subfamily": "CRATE",
+      "worldRole": "CONTAINER_VISUAL",
+      "familyRootId": "WORLD_CONTAINER",
+      "propKind": "CRATE",
+      "interactionRole": "OPEN_OR_CARRY",
+      "silhouette": "REINFORCED_CRATE"
+    },
+    {
+      "assetId": "TREASURE_CHEST",
+      "name": "보관 상자",
+      "subfamily": "CHEST",
+      "worldRole": "CONTAINER_VISUAL",
+      "familyRootId": "WORLD_CONTAINER",
+      "propKind": "CHEST",
+      "interactionRole": "OPEN_OR_INSPECT",
+      "silhouette": "LIDDED_CHEST"
+    },
+    {
+      "assetId": "STREET_LANTERN",
+      "name": "거리 조명",
+      "subfamily": "LIGHT_SOURCE",
+      "worldRole": "SETTLEMENT_LIGHTING",
+      "familyRootId": "WORLD_LIGHT",
+      "propKind": "STREET_LANTERN",
+      "interactionRole": "TOGGLE_OR_INSPECT",
+      "silhouette": "POST_LANTERN"
+    },
+    {
+      "assetId": "LAUNDRY_LINE",
+      "name": "빨랫줄",
+      "subfamily": "LIFE_PROP",
+      "worldRole": "SETTLEMENT_LIFE",
+      "familyRootId": "WORLD_SETTLEMENT_PROP",
+      "propKind": "LAUNDRY",
+      "interactionRole": "INSPECT",
+      "silhouette": "TWO_POST_LAUNDRY"
+    },
+    {
+      "assetId": "SETTLEMENT_FLAG",
+      "name": "정착지 깃발",
+      "subfamily": "FLAG",
+      "worldRole": "SETTLEMENT_IDENTITY",
+      "familyRootId": "WORLD_SETTLEMENT_PROP",
+      "propKind": "FLAG",
+      "interactionRole": "INSPECT",
+      "silhouette": "TALL_FLAG_POLE"
+    },
+    {
+      "assetId": "CANVAS_TENT",
+      "name": "천막",
+      "subfamily": "TENT",
+      "worldRole": "SHELTER_VISUAL",
+      "familyRootId": "WORLD_SETTLEMENT_PROP",
+      "propKind": "TENT",
+      "interactionRole": "ENTER_OR_INSPECT",
+      "silhouette": "RIDGE_TENT"
+    },
+    {
+      "assetId": "FIREWOOD_STACK",
+      "name": "장작 더미",
+      "subfamily": "FIREWOOD",
+      "worldRole": "LIFE_RESOURCE_DRESSING",
+      "familyRootId": "WORLD_SETTLEMENT_PROP",
+      "propKind": "FIREWOOD",
+      "interactionRole": "GATHER_OR_INSPECT",
+      "silhouette": "STACKED_LOGS"
+    },
+    {
+      "assetId": "FARM_TOOL_RACK",
+      "name": "농기구 걸이",
+      "subfamily": "FARM_TOOL",
+      "worldRole": "FARMING_DECOR",
+      "familyRootId": "WORLD_FARM_PROP",
+      "propKind": "FARM_TOOL_RACK",
+      "interactionRole": "USE_OR_INSPECT",
+      "silhouette": "RACK_LONG_TOOLS"
+    },
+    {
+      "assetId": "RUIN_DEBRIS",
+      "name": "폐허 잔해",
+      "subfamily": "RUIN_DEBRIS",
+      "worldRole": "RUIN_DRESSING",
+      "familyRootId": "WORLD_RUIN_PROP",
+      "propKind": "RUIN_DEBRIS",
+      "interactionRole": "INSPECT_OR_CLIMB",
+      "silhouette": "BROKEN_STONE_CLUSTER"
+    },
+    {
+      "assetId": "CONSTRUCTION_SCAFFOLD",
+      "name": "건축 발판",
+      "subfamily": "CONSTRUCTION_TRACE",
+      "worldRole": "BUILD_DRESSING",
+      "familyRootId": "WORLD_BUILD_PROP",
+      "propKind": "SCAFFOLD",
+      "interactionRole": "CLIMB_OR_INSPECT",
+      "silhouette": "TIMBER_SCAFFOLD"
+    },
+    {
+      "assetId": "LORE_STONE",
+      "name": "기록 석판",
+      "subfamily": "LORE_COLLECTIBLE",
+      "worldRole": "LORE_PROP",
+      "familyRootId": "WORLD_LORE_PROP",
+      "propKind": "LORE_STONE",
+      "interactionRole": "READ_OR_INSPECT",
+      "silhouette": "CARVED_STONE_SLAB"
+    },
+    {
+      "assetId": "RESOURCE_ROCK_NODE",
+      "name": "암석 자원 표현",
+      "subfamily": "RESOURCE_NODE",
+      "worldRole": "RESOURCE_VISUAL",
+      "familyRootId": "WORLD_RESOURCE_PROP",
+      "propKind": "RESOURCE_ROCK",
+      "interactionRole": "HARVEST_OR_INSPECT",
+      "silhouette": "ROCK_NODE_CLUSTER"
+    },
+    {
+      "assetId": "RESOURCE_WOOD_NODE",
+      "name": "목재 자원 표현",
+      "subfamily": "RESOURCE_NODE",
+      "worldRole": "RESOURCE_VISUAL",
+      "familyRootId": "WORLD_RESOURCE_PROP",
+      "propKind": "RESOURCE_WOOD",
+      "interactionRole": "HARVEST_OR_INSPECT",
+      "silhouette": "STUMP_LOG_NODE"
     }
   ],
   "systemDepthContract": {
@@ -279,24 +419,29 @@
       "INTERACTIVE_SWITCH",
       "DOOR_CONTROL",
       "QUEST_PROP",
-      "DECORATION"
+      "DECORATION",
+      "CART",
+      "CRATE",
+      "CHEST",
+      "LIFE_PROP",
+      "FLAG",
+      "TENT",
+      "FIREWOOD",
+      "FARM_TOOL",
+      "RUIN_DEBRIS",
+      "CONSTRUCTION_TRACE",
+      "LORE_COLLECTIBLE",
+      "RESOURCE_NODE"
     ],
     "missingComponentCandidates": [
-      "CONTAINER",
-      "CHEST",
-      "CRATE",
-      "FURNITURE",
-      "MARKET",
-      "LORE_COLLECTIBLE",
       "DESTRUCTIBLE",
-      "RESOURCE_NODE",
       "COLLISION_PROXY",
       "LOD"
     ],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
     "gameplayAuthority": false,
-    "currentAssetCount": 24
+    "currentAssetCount": 38
   },
   "housingSettlementContract": {
     "referenceSystems": [
@@ -316,7 +461,14 @@
       "LIGHTING",
       "CONTROL",
       "QUEST_PROP",
-      "DECORATION"
+      "DECORATION",
+      "SETTLEMENT_LIFE",
+      "WAYFINDING",
+      "SHELTER_VISUAL",
+      "CONSTRUCTION_DRESSING",
+      "RUIN_DRESSING",
+      "RESOURCE_PRESENTATION",
+      "LORE_PRESENTATION"
     ],
     "gameplayAuthority": false,
     "storageAuthority": false,
@@ -339,7 +491,7 @@
     "deploymentExcluded": true
   },
   "interactionPresentationContract": {
-    "version": 1,
+    "version": 2,
     "actions": [
       "INSPECT",
       "READ",
@@ -358,7 +510,13 @@
       "PLACE",
       "VAULT",
       "DRAW_WATER",
-      "USE_CONTROL"
+      "USE_CONTROL",
+      "CARRY",
+      "PUSH",
+      "CLIMB",
+      "ENTER",
+      "USE_TOOL",
+      "GATHER"
     ],
     "states": [
       "AVAILABLE",
@@ -382,6 +540,8 @@
     "craftingAuthority": false,
     "farmingAuthority": false,
     "respawnAuthority": false,
-    "economyAuthority": false
+    "economyAuthority": false,
+    "propInteractionRoleCount": 38,
+    "metadataOnly": true
   }
 }
