@@ -51,6 +51,7 @@ local function rootFor(iconId, options)
   local root = Instance.new("Frame")
   root.Name = options.name or ("Icon_" .. iconId)
   root.Size = options.size or UDim2.fromOffset(32, 32)
+  root.BackgroundColor3 = options.backgroundColor or Color3.fromRGB(31, 36, 43)
   root.BackgroundTransparency = 1
   root.BorderSizePixel = 0
   tag(root, iconId)
