@@ -109,7 +109,7 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
     ?uniq([...(task.contextFiles||[]),'company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json'])
     :uniq(task.contextFiles);
   return{
-    priority:sharedInfrastructure||blastRadius.startsWith('shared-worker-contract')||blastRadius.startsWith('portfolio')?'critical':'high',
+    priority:sharedInfrastructure||blastRadius.startsWith('shared-worker-contract')||blastRadius.startsWith('portfolio')||blastRadius.startsWith('flow-stage')?'critical':'high',
     sourceQueue,sourceTaskId:clean(task.id),gameId:clean(task.gameId),responsibleFiles,contextFiles,
     goal:sharedInfrastructure?'Repair the shared System AI worker infrastructure contract for the repeated failure signature, then rerun the exact failed worker stage without expanding writable scope.':clean(task.goal),
     relatedTaskIds,
