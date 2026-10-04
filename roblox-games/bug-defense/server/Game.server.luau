@@ -87,6 +87,33 @@ local function recordAction(player, scopeId, learningPattern, scoreDelta, progre
   end
 end
 
+
+-- 기본 멀티 동기화
+local function multiplayerSnapshot(changedPlayer)
+  local participants = {}
+  for _, participant in ipairs(Players:GetPlayers()) do
+    table.insert(participants, {
+      UserId = participant.UserId,
+      Name = participant.Name,
+      Level = readNumber(participant, "Level", 1),
+      Wave = readNumber(participant, "Wave", 1),
+      BaseHealth = readNumber(participant, "BaseHealth", 100),
+      SessionActive = participant:GetAttribute("SessionActive") == true,
+    })
+  end
+  return {
+    Version = 1,
+    ParticipantCount = #participants,
+    ChangedUserId = changedPlayer and changedPlayer.UserId or 0,
+    Participants = participants,
+    ServerTime = os.time(),
+  }
+end
+
+local function broadcastMultiplayerSync(changedPlayer)
+  remote:FireAllClients("MULTIPLAYER_SYNC", multiplayerSnapshot(changedPlayer))
+end
+
 -- 월드
 local function makeWorldPart(parent, name, size, position, color, material)
   local part = parent:FindFirstChild(name)
@@ -656,6 +683,9 @@ local function bindPlayer(player)
   if readNumber(player, "BaseHealth", 100) <= 0 then setNumber(player, "BaseHealth", 100) end
   getSession(player)
   restorePredatorTowers(player)
+  task.defer(function()
+    if player.Parent == Players then broadcastMultiplayerSync(player) end
+  end)
 end
 
 Players.PlayerAdded:Connect(bindPlayer)
@@ -670,6 +700,7 @@ for _, player in ipairs(Players:GetPlayers()) do
     end
   end)
 end
+task.defer(function() broadcastMultiplayerSync(nil) end)
 
 remote.OnServerEvent:Connect(function(player, actionId)
   if typeof(actionId) ~= "string" then return end
@@ -681,6 +712,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  broadcastMultiplayerSync(player)
 end)
 
 Players.PlayerRemoving:Connect(function(player)
@@ -692,6 +724,7 @@ Players.PlayerRemoving:Connect(function(player)
   end
   sessions[player] = nil
   lastAction[player] = nil
+  task.defer(function() broadcastMultiplayerSync(nil) end)
 end)
 
 
