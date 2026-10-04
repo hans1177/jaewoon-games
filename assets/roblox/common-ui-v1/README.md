@@ -16,6 +16,25 @@
 
 총 32종.
 
+## 공용 벡터 아이콘
+
+외부 이미지 ID 없이 `RobloxCommonIcons.luau`에서 생성한다.
+
+- CHAT
+- AI_SPARK
+- INVENTORY
+- CHARACTER
+- EQUIPMENT
+- MINIMAP
+- QUEST
+- PARTY
+- CRAFT
+- SHOP
+- NOTIFICATION
+- SETTINGS
+
+색상과 배경색을 게임 테마에 맞게 바꿀 수 있고, 아이콘 자체는 게임 권한을 소유하지 않는다.
+
 ## AI 대화 기준
 
 대화 도우미는 단일 아이콘으로 끝내지 않는다.
