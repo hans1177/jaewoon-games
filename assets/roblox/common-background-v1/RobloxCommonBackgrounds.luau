@@ -34,7 +34,7 @@ end
 local function silhouette(parent,name,y,height,color,offset,seed)
   local layer=Instance.new("Frame")
   layer.Name=name
-  layer.Position=UDim2.new(0,offset or 0,y,0)
+  layer.Position=UDim2.new(offset or 0,0,y,0)
   layer.Size=UDim2.new(1.08,0,height,0)
   layer.BackgroundColor3=color
   layer.BackgroundTransparency=0
