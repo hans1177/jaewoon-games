@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g6-7f767d08a3e0",
-  "directiveFingerprint": "7f767d08a3e0934176fc513194fe0b3d6459af83e10e7629606acc17dd032475",
-  "previousDirectiveFingerprint": "46f125c32ed0db88563114ebf7351c6a03a6a7e11291541f8cf88870df43015b",
-  "forbiddenRepeatFingerprint": "46f125c32ed0db88563114ebf7351c6a03a6a7e11291541f8cf88870df43015b",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g7-6c400909bf33",
+  "directiveFingerprint": "6c400909bf33226a773126c0da4d5c8e398fbfc6cea814c500f91fe762835d42",
+  "previousDirectiveFingerprint": "7f767d08a3e0934176fc513194fe0b3d6459af83e10e7629606acc17dd032475",
+  "forbiddenRepeatFingerprint": "7f767d08a3e0934176fc513194fe0b3d6459af83e10e7629606acc17dd032475",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "c8e28873dd80839490cfc2790b77a30395e7eeda65533eac7df2e40484575c36",
+  "sourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
   "designFingerprint": "4f25e622432ac76ed9c051cab2997576c674b80354f8f44a579d880e70b1d43c",
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
@@ -250,9 +250,9 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "0b5b4b2cd21453f2161ccf640f763fd5d48364d9cc5773ede9b4a678bf722d98",
-    "currentSourceTreeFingerprint": "c8e28873dd80839490cfc2790b77a30395e7eeda65533eac7df2e40484575c36",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "c8e28873dd80839490cfc2790b77a30395e7eeda65533eac7df2e40484575c36",
+    "currentSourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1455,8 +1455,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1466,7 +1466,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1475,6 +1475,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -1508,18 +1509,13 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 210,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
-      },
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 66,
-        "gapDomains": []
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1552,6 +1548,11 @@
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 12,
+        "gapDomains": []
+      },
+      {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": -94,
         "gapDomains": []
       }
     ],
@@ -2255,7 +2256,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c8e28873dd80839490cfc2790b77a30395e7eeda65533eac7df2e40484575c36",
+      "sourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2302,7 +2303,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2375,5 +2376,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:04:41.647Z"
+  "generatedAt": "2026-10-04T15:12:11.275Z"
 }
