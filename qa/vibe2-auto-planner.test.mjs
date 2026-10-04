@@ -1291,7 +1291,7 @@ test('build-up asset utilization floor evaluates every library family and keeps 
   assert.ok(expectation.assetLibraryReadyIdeaCount>20);
   assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='LOW_SCORE_COMPATIBLE_USE_WITH_QUALITY_DEBT'&&row.state==='READY'));
   assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='FAMILY_AUDIO_COVERAGE'&&row.state==='ROLE_CONTRACT_ONLY'));
-  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='VARIATION_AUDIO'&&row.axes.includes('MOBILE_BUDGET')));
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='VARIATION_AUDIO'&&row.state==='ROLE_CONTRACT_ONLY'&&row.axes.includes('MOBILE_BUDGET')));
   assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='BUILDING_GRAMMAR_REUSE'));
   assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='MOTION_DIRECTOR_STATE_BLEND'));
   assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='CROSS_PACK_COMPATIBLE_RECOMBINATION'));
