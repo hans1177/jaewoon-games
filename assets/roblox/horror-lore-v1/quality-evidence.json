@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-horror-lore-v1",
   "gameId": "horror-escape-room",
   "staticAuthoringChecklist": {
@@ -30,5 +30,71 @@
   "gameplayAuthority": false,
   "originalAssetsImmutable": true,
   "externalAssetDependency": false,
-  "sourceAssetCount": 10
+  "sourceAssetCount": 10,
+  "sourceAudit": {
+    "type": "PACK_LEVEL_STATIC_3D_SOURCE_AUTHORING_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scopeFamilies": [
+      "PROP"
+    ],
+    "scoreIsPackBaselineNotPerAssetRuntimeProof": true,
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "FORM_STRUCTURE": 86,
+      "MATERIAL_SURFACE": 87,
+      "COLOR_LIGHTING": 85,
+      "STYLE_COHERENCE": 92,
+      "DETAIL_FINISH": 88,
+      "READABILITY_SCALE": 89,
+      "MODULAR_REUSE": 76,
+      "VARIATION_BREADTH": 88,
+      "PERFORMANCE_LOD": 91,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 86
+    },
+    "expectedScore": 875.9,
+    "expectedGrade": "HIGH_QUALITY",
+    "auditPass": false,
+    "hardGateFailures": [
+      "MODULAR_REUSE:76<84_PROP"
+    ],
+    "evidenceBasis": {
+      "sourceAssetCount": 10,
+      "objSourceCount": 10,
+      "totalPackBytes": 123688,
+      "mapContexts": [
+        "SCHOOL",
+        "HOSPITAL",
+        "THEME_PARK"
+      ],
+      "gameplayAuthority": false,
+      "sourceFiles": [
+        "assets/roblox/horror-lore-v1/catalog.json",
+        "assets/roblox/horror-lore-v1/quality-evidence.json",
+        "assets/roblox/horror-lore-v1/preview.svg"
+      ]
+    },
+    "limitations": [
+      "PACK_IS_GAME_SPECIFIC_LORE_NOT_GENERAL_MODULAR_PROP_BASE",
+      "ACTUAL_MAP_CAMERA_READABILITY_UNVERIFIED",
+      "INTERACTION_BINDING_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "lowScoreDoesNotBlockInternalUse": true,
+    "newAuthoringMayFillVerifiedGaps": true,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
