@@ -2546,6 +2546,264 @@ function RobloxCommonUI.CreateAiCompanionAutonomyPanel(options)
   return root,parts
 end
 
+
+-- 탑승/이동 상호작용 시스템 깊이 v8
+function RobloxCommonUI.CreateMountInteractionPrompt(options)
+  options=options or {}
+  local root,key,title,subtitle=RobloxCommonUI.CreateNpcInteractionPrompt({
+    name=options.name or "MountInteractionPrompt",
+    keyText=options.keyText or "E",
+    title=options.title or "탑승",
+    subtitle=options.subtitle or "좌석과 상태를 확인해",
+    size=options.size or UDim2.fromOffset(300,64),
+    theme=options.theme,
+    interactionId=options.interactionId
+  })
+  tag(root,"MOUNT_INTERACTION_PROMPT")
+  root:SetAttribute("PresentationRole","MOUNT_INTERACTION_PROMPT")
+  root:SetAttribute("OwnsMountAuthority",false)
+  root:SetAttribute("OwnsSeatAuthority",false)
+  return root,key,title,subtitle
+end
+
+function RobloxCommonUI.CreateMountStatusHud(options)
+  local root,parts=deepSystemPanel(options,"MOUNT_STATUS_HUD","MOUNT_STATUS_HUD","탑승 상태",{
+    "탈것 / 차량","속도 상태","체력 / 내구 상태","기력 / 연료","지형 / 경로"
+  })
+  root.Size=options and options.size or UDim2.fromOffset(360,230)
+  root:SetAttribute("OwnsMovementAuthority",false)
+  root:SetAttribute("OwnsPhysicsAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMountStaminaMeter(options)
+  options=options or {}
+  local root=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "MountStaminaMeter",
+    label=options.label or "탈것 기력",
+    value=options.value or 0,
+    size=options.size or UDim2.fromOffset(300,42),
+    theme=options.theme
+  })
+  tag(root,"MOUNT_STAMINA_METER")
+  root:SetAttribute("OwnsStaminaAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateRideSeatSelector(options)
+  local root,parts=deepSystemPanel(options,"RIDE_SEAT_SELECTOR","RIDE_SEAT_SELECTOR","좌석 선택",{
+    "운전/조종","동승석","후방 좌석","화물 좌석","잠긴 좌석"
+  })
+  root:SetAttribute("OwnsSeatAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreatePassengerList(options)
+  local root,parts=deepSystemPanel(options,"PASSENGER_LIST","PASSENGER_LIST","동승자",{
+    "운전자","동승자 1","동승자 2","빈 좌석","연결 상태"
+  })
+  root:SetAttribute("OwnsPartyAuthority",false)
+  root:SetAttribute("OwnsSeatAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateBoardingProgress(options)
+  options=options or {}
+  local root=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "BoardingProgress",
+    label=options.label or "탑승 중",
+    value=options.value or 0,
+    size=options.size or UDim2.fromOffset(280,42),
+    theme=options.theme
+  })
+  tag(root,"BOARDING_PROGRESS")
+  root:SetAttribute("OwnsBoardingAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateDisembarkPrompt(options)
+  options=options or {}
+  local root=RobloxCommonUI.CreateInputHint({
+    name=options.name or "DisembarkPrompt",
+    text=options.text or "내리기",
+    glyph=options.glyph or "↓",
+    mode=options.mode or "AUTO",
+    size=options.size or UDim2.fromOffset(220,40),
+    theme=options.theme
+  })
+  tag(root,"DISEMBARK_PROMPT")
+  root:SetAttribute("OwnsDisembarkAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateSeatSwitchPanel(options)
+  local root,parts=deepSystemPanel(options,"SEAT_SWITCH_PANEL","SEAT_SWITCH_PANEL","좌석 전환",{
+    "현재 좌석","앞 좌석","옆 좌석","뒤 좌석","잠긴 좌석"
+  })
+  root:SetAttribute("OwnsSeatAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMountCommandWheel(options)
+  options=options or {}
+  local root,buttons=RobloxCommonUI.CreateRadialMenu({
+    name=options.name or "MountCommandWheel",
+    actions=options.actions or {"따라와","대기","이리와","멀어져","짐 확인","장비"},
+    centerText=options.centerText or "탈것 명령",
+    size=options.size,
+    theme=options.theme
+  })
+  tag(root,"MOUNT_COMMAND_WHEEL")
+  root:SetAttribute("OwnsMountAiAuthority",false)
+  root:SetAttribute("OwnsCommandAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateMountInventoryPanel(options)
+  local root,parts=deepSystemPanel(options,"MOUNT_INVENTORY_PANEL","MOUNT_INVENTORY_PANEL","탈것 보관",{
+    "화물 슬롯","무게 / 용량","아이템 전달","잠금 상태","소유 권한"
+  })
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsCargoAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMountEquipmentPanel(options)
+  local root,parts=deepSystemPanel(options,"MOUNT_EQUIPMENT_PANEL","MOUNT_EQUIPMENT_PANEL","탈것 장비",{
+    "안장","고삐","가방","조명","보호 장비"
+  })
+  root:SetAttribute("OwnsEquipAuthority",false)
+  root:SetAttribute("OwnsMountStatsAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateVehicleDamageStatus(options)
+  local root,parts=deepSystemPanel(options,"VEHICLE_DAMAGE_STATUS","VEHICLE_DAMAGE_STATUS","차량 상태",{
+    "프레임","바퀴/추진","좌석","화물부","외형 손상"
+  })
+  root:SetAttribute("OwnsDamageAuthority",false)
+  root:SetAttribute("OwnsRepairAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateFuelEnergyMeter(options)
+  options=options or {}
+  local root=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "FuelEnergyMeter",
+    label=options.label or "연료 / 에너지",
+    value=options.value or 0,
+    size=options.size or UDim2.fromOffset(300,42),
+    theme=options.theme
+  })
+  tag(root,"FUEL_ENERGY_METER")
+  root:SetAttribute("OwnsFuelAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateCargoPanel(options)
+  local root,parts=deepSystemPanel(options,"CARGO_PANEL","CARGO_PANEL","화물",{
+    "적재량","최대 용량","무게","잠금","빠른 이동"
+  })
+  root:SetAttribute("OwnsCargoAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateTravelRoutePanel(options)
+  local root,parts=deepSystemPanel(options,"TRAVEL_ROUTE_PANEL","TRAVEL_ROUTE_PANEL","이동 경로",{
+    "출발지","목적지","경유지","예상 경로","위험/차단 구간"
+  })
+  root:SetAttribute("OwnsPathfindingAuthority",false)
+  root:SetAttribute("OwnsTravelAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateDestinationCard(options)
+  local root,parts=deepSystemPanel(options,"DESTINATION_CARD","DESTINATION_CARD",options and options.title or "목적지",{
+    "발견 상태","거리","지역 유형","위험 정보","이동 조건"
+  })
+  root.Size=options and options.size or UDim2.fromOffset(330,230)
+  root:SetAttribute("OwnsDestinationUnlockAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateTravelProgressHud(options)
+  options=options or {}
+  local root=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "TravelProgressHud",
+    label=options.label or "이동 중",
+    value=options.value or 0,
+    size=options.size or UDim2.fromOffset(340,42),
+    theme=options.theme
+  })
+  tag(root,"TRAVEL_PROGRESS_HUD")
+  root:SetAttribute("OwnsTravelProgressAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateMountRecallPanel(options)
+  local root,parts=deepSystemPanel(options,"MOUNT_RECALL_PANEL","MOUNT_RECALL_PANEL","탈것 호출",{
+    "호출 가능","현재 거리","도착 상태","차단 이유","호출 취소"
+  })
+  root:SetAttribute("OwnsRecallAuthority",false)
+  root:SetAttribute("OwnsMountAiAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMountWhistleState(options)
+  options=options or {}
+  local root=RobloxCommonUI.CreateInputHint({
+    name=options.name or "MountWhistleState",
+    text=options.text or "탈것 호출",
+    glyph=options.glyph or "♪",
+    mode=options.mode or "AUTO",
+    size=options.size or UDim2.fromOffset(230,40),
+    theme=options.theme
+  })
+  tag(root,"MOUNT_WHISTLE_STATE")
+  root:SetAttribute("OwnsRecallAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateTerrainAccessWarning(options)
+  local root,parts=deepSystemPanel(options,"TERRAIN_ACCESS_WARNING","TERRAIN_ACCESS_WARNING","이동 조건",{
+    "통과 가능","험지","차단","특수 장비 필요","다른 경로 추천"
+  })
+  root.Size=options and options.size or UDim2.fromOffset(320,220)
+  root:SetAttribute("OwnsTerrainTraversalAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateVehicleControlHints(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "VehicleControlHints"
+  root.Size=options.size or UDim2.fromOffset(420,48)
+  root.BackgroundTransparency=1
+  tag(root,"VEHICLE_CONTROL_HINTS")
+  commonList(root,true,8)
+  local hints=options.hints or {"가속","감속","회전","내리기"}
+  local built={}
+  for i,label in ipairs(hints) do
+    local hint=RobloxCommonUI.CreateInputHint({text=tostring(label),glyph=tostring(i),mode=options.mode or "AUTO",size=UDim2.fromOffset(94,40),theme=theme})
+    hint.LayoutOrder=i
+    hint.Parent=root
+    built[i]=hint
+  end
+  root:SetAttribute("OwnsInputAuthority",false)
+  root:SetAttribute("OwnsVehicleControlAuthority",false)
+  return root,built
+end
+
+function RobloxCommonUI.CreateMountSpeedState(options)
+  local root,parts=deepSystemPanel(options,"MOUNT_SPEED_STATE","MOUNT_SPEED_STATE","이동 상태",{
+    "정지","걷기","달리기","전력 이동","제한 상태"
+  })
+  root.Size=options and options.size or UDim2.fromOffset(280,210)
+  root:SetAttribute("OwnsSpeedAuthority",false)
+  return root,parts
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -2812,13 +3070,57 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateCompanionEquipmentSummary(options)
   elseif id == "AI_COMPANION_AUTONOMY_PANEL" then
     return RobloxCommonUI.CreateAiCompanionAutonomyPanel(options)
+  elseif id == "MOUNT_INTERACTION_PROMPT" then
+    return RobloxCommonUI.CreateMountInteractionPrompt(options)
+  elseif id == "MOUNT_STATUS_HUD" then
+    return RobloxCommonUI.CreateMountStatusHud(options)
+  elseif id == "MOUNT_STAMINA_METER" then
+    return RobloxCommonUI.CreateMountStaminaMeter(options)
+  elseif id == "RIDE_SEAT_SELECTOR" then
+    return RobloxCommonUI.CreateRideSeatSelector(options)
+  elseif id == "PASSENGER_LIST" then
+    return RobloxCommonUI.CreatePassengerList(options)
+  elseif id == "BOARDING_PROGRESS" then
+    return RobloxCommonUI.CreateBoardingProgress(options)
+  elseif id == "DISEMBARK_PROMPT" then
+    return RobloxCommonUI.CreateDisembarkPrompt(options)
+  elseif id == "SEAT_SWITCH_PANEL" then
+    return RobloxCommonUI.CreateSeatSwitchPanel(options)
+  elseif id == "MOUNT_COMMAND_WHEEL" then
+    return RobloxCommonUI.CreateMountCommandWheel(options)
+  elseif id == "MOUNT_INVENTORY_PANEL" then
+    return RobloxCommonUI.CreateMountInventoryPanel(options)
+  elseif id == "MOUNT_EQUIPMENT_PANEL" then
+    return RobloxCommonUI.CreateMountEquipmentPanel(options)
+  elseif id == "VEHICLE_DAMAGE_STATUS" then
+    return RobloxCommonUI.CreateVehicleDamageStatus(options)
+  elseif id == "FUEL_ENERGY_METER" then
+    return RobloxCommonUI.CreateFuelEnergyMeter(options)
+  elseif id == "CARGO_PANEL" then
+    return RobloxCommonUI.CreateCargoPanel(options)
+  elseif id == "TRAVEL_ROUTE_PANEL" then
+    return RobloxCommonUI.CreateTravelRoutePanel(options)
+  elseif id == "DESTINATION_CARD" then
+    return RobloxCommonUI.CreateDestinationCard(options)
+  elseif id == "TRAVEL_PROGRESS_HUD" then
+    return RobloxCommonUI.CreateTravelProgressHud(options)
+  elseif id == "MOUNT_RECALL_PANEL" then
+    return RobloxCommonUI.CreateMountRecallPanel(options)
+  elseif id == "MOUNT_WHISTLE_STATE" then
+    return RobloxCommonUI.CreateMountWhistleState(options)
+  elseif id == "TERRAIN_ACCESS_WARNING" then
+    return RobloxCommonUI.CreateTerrainAccessWarning(options)
+  elseif id == "VEHICLE_CONTROL_HINTS" then
+    return RobloxCommonUI.CreateVehicleControlHints(options)
+  elseif id == "MOUNT_SPEED_STATE" then
+    return RobloxCommonUI.CreateMountSpeedState(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 7,
+    version = 8,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -2854,13 +3156,20 @@ function RobloxCommonUI.Audit()
       "COMPANION_REVIVE_RESCUE_PANEL", "COMPANION_INVENTORY_HANDOFF", "COMPANION_GIFT_PANEL", "COMPANION_RELATIONSHIP_DETAIL",
       "NPC_MEMORY_SUMMARY", "NPC_TOPIC_BROWSER", "NPC_CONTEXT_REACTION", "NPC_SCHEDULE_AVAILABILITY",
       "NPC_SERVICE_MENU", "NPC_QUEST_HANDOFF", "NPC_RECRUIT_DISMISS_PANEL", "NPC_RUMOR_KNOWLEDGE_PANEL",
-      "NPC_CAMP_ACTIVITY_PANEL", "PARTY_TACTICS_PANEL", "COMPANION_EQUIPMENT_SUMMARY", "AI_COMPANION_AUTONOMY_PANEL"
+      "NPC_CAMP_ACTIVITY_PANEL", "PARTY_TACTICS_PANEL", "COMPANION_EQUIPMENT_SUMMARY", "AI_COMPANION_AUTONOMY_PANEL",
+      "MOUNT_INTERACTION_PROMPT", "MOUNT_STATUS_HUD", "MOUNT_STAMINA_METER", "RIDE_SEAT_SELECTOR",
+      "PASSENGER_LIST", "BOARDING_PROGRESS", "DISEMBARK_PROMPT", "SEAT_SWITCH_PANEL",
+      "MOUNT_COMMAND_WHEEL", "MOUNT_INVENTORY_PANEL", "MOUNT_EQUIPMENT_PANEL", "VEHICLE_DAMAGE_STATUS",
+      "FUEL_ENERGY_METER", "CARGO_PANEL", "TRAVEL_ROUTE_PANEL", "DESTINATION_CARD",
+      "TRAVEL_PROGRESS_HUD", "MOUNT_RECALL_PANEL", "MOUNT_WHISTLE_STATE", "TERRAIN_ACCESS_WARNING",
+      "VEHICLE_CONTROL_HINTS", "MOUNT_SPEED_STATE"
     }),
-    atomCount = 132,
+    atomCount = 154,
     fullScreenSurfaceCount = 17,
-    deepSystemComponentCount = 78,
+    deepSystemComponentCount = 100,
     housingSandboxComponentCount = 24,
     aiNpcInteractionComponentCount = 24,
+    mountTravelComponentCount = 22,
     stateSurfaceCount = 4,
     companyCommonBase = true,
     themeAdaptationRequiredPerGame = true,
