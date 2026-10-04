@@ -126,6 +126,25 @@ function expectationMetric(spec={},cycle=1,fallback={}){
   const max=rawMax==null?null:Number(rawMax);
   return Number.isFinite(max)&&max>0?Math.min(max,value):value;
 }
+const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE=new Map();
+function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_PATH){
+  const assetLibraryPath=clean(relativePath)||COMPANY_ASSET_LIBRARY_PATH;
+  const file=path.resolve(repoRoot,assetLibraryPath);
+  if(ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.has(file))return ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.get(file);
+  const assetLibrary=readJson(file,null);
+  const assets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
+  const families=[...new Set(assets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
+  const snapshot=Object.freeze({
+    present:Boolean(assetLibrary&&((Number(assetLibrary?.version)||0)>0||assets.length)),
+    path:assetLibraryPath,
+    version:Number(assetLibrary?.version||0),
+    assetCount:assets.length,
+    families:Object.freeze(families),
+    familyCount:families.length
+  });
+  ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,snapshot);
+  return snapshot;
+}
 export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle=1,phase='BUILD_UP',focusPillar=''}={}){
   const level=Math.max(1,Math.floor(Number(cycle)||1));
   const document=readJson(path.join(repoRoot,AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH),{});
@@ -149,13 +168,9 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
   const activeSourceCompositionDimensions=sourceCompositionDimensions.slice(0,Math.min(sourceCompositionDimensions.length,minimumActiveSourceCompositionDimensions));
   const sourceCompositionDepthLevel=expectationMetric(growth?.sourceCompositionDepthLevel,level,fallbackGrowth.sourceCompositionDepthLevel);
   const sourceParity=policy?.assetLibrarySourceParity||DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.assetLibrarySourceParity;
-  const assetLibraryPath=clean(sourceParity?.libraryPath)||COMPANY_ASSET_LIBRARY_PATH;
-  const assetLibrary=readJson(path.join(repoRoot,assetLibraryPath),null);
-  const assetLibraryAssets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
-  const assetLibraryFamilies=[...new Set(assetLibraryAssets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
-  const assetLibraryPresent=Boolean(assetLibrary&&((Number(assetLibrary?.version)||0)>0||assetLibraryAssets.length));
+  const assetLibrarySnapshot=assetLibrarySourceSnapshot(repoRoot,sourceParity?.libraryPath);
   const baseMinimumConnectedImprovements=expectationMetric(growth?.connectedImprovements,level,fallbackGrowth.connectedImprovements);
-  const sourceCompositionConnectedFloor=assetLibraryPresent&&clean(sourceParity?.status||'ACTIVE').toUpperCase()==='ACTIVE'
+  const sourceCompositionConnectedFloor=assetLibrarySnapshot.present&&clean(sourceParity?.status||'ACTIVE').toUpperCase()==='ACTIVE'
     ?minimumActiveSourceCompositionDimensions
     :0;
   const minimumConnectedImprovements=Math.max(baseMinimumConnectedImprovements,sourceCompositionConnectedFloor);
@@ -180,13 +195,13 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     minimumActiveSourceCompositionDimensions,
     activeSourceCompositionDimensions:Object.freeze([...activeSourceCompositionDimensions]),
     sourceCompositionDepthUnbounded:true,
-    assetLibraryPresent,
-    assetLibraryPath,
-    assetLibraryVersion:Number(assetLibrary?.version||0),
-    assetLibraryAssetCount:assetLibraryAssets.length,
-    assetLibraryFamilyCount:assetLibraryFamilies.length,
-    assetLibraryFamilies:Object.freeze([...assetLibraryFamilies]),
-    assetLibrarySourceParityRequired:assetLibraryPresent&&sourceParity?.sourceMustKeepPaceWithApplicableAssetCapability!==false,
+    assetLibraryPresent:assetLibrarySnapshot.present,
+    assetLibraryPath:assetLibrarySnapshot.path,
+    assetLibraryVersion:assetLibrarySnapshot.version,
+    assetLibraryAssetCount:assetLibrarySnapshot.assetCount,
+    assetLibraryFamilyCount:assetLibrarySnapshot.familyCount,
+    assetLibraryFamilies:assetLibrarySnapshot.families,
+    assetLibrarySourceParityRequired:assetLibrarySnapshot.present&&sourceParity?.sourceMustKeepPaceWithApplicableAssetCapability!==false,
     assetOnlySwapCountsAsEvolution:sourceParity?.assetOnlySwapCountsAsEvolution===true,
     sourceCompositionApplicabilityRule:sourceParity?.applicableOnly===false?'ALL_DIMENSIONS_REQUIRED':'APPLICABLE_OR_REASONED_NOT_APPLICABLE',
     qualitativeDetailDepthUnbounded:true,
