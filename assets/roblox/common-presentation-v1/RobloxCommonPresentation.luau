@@ -96,13 +96,75 @@ function Presentation.CreateIntro(options)
   return root,parts
 end
 
+
+function Presentation.CreateInputSkipHint(options)
+  options=options or {}
+  local root=Instance.new("Frame")
+  root.Name=options.name or "InputSkipHint"
+  root.Size=options.size or UDim2.fromOffset(280,42)
+  root.BackgroundColor3=options.backgroundColor or Color3.fromRGB(26,31,37)
+  root.BackgroundTransparency=0.12
+  root.BorderSizePixel=0
+  tag(root,"INPUT_SKIP_HINT")
+  corner(root,10)
+  local textValue=tostring(options.text or "길게 눌러 건너뛰기")
+  local hint=label(root,"Hint",textValue,UDim2.new(1,-24,1,0),UDim2.fromOffset(12,0),13,true,Color3.fromRGB(232,238,243))
+  hint.TextXAlignment=Enum.TextXAlignment.Center
+  root:SetAttribute("OwnsSkipAuthority",false)
+  root:SetAttribute("InputMode",tostring(options.inputMode or "AUTO"))
+  root:SetAttribute("TouchKeyboardGamepadHintOnly",true)
+  return root,hint
+end
+
+function Presentation.CreateReducedMotionIntro(options)
+  options=options or {}
+  local root,parts=Presentation.CreateIntro({
+    name=options.name or "ReducedMotionIntro",
+    genre=options.genre,
+    logoText=options.logoText,
+    statusText=options.statusText or "",
+    subtitle=options.subtitle or "",
+    mode="SIMPLE_FADE",
+    intensity=math.min(0.18,math.clamp(tonumber(options.intensity) or 0.12,0,1)),
+    duration=math.clamp(tonumber(options.duration) or 1.0,0.6,2.0),
+    accentColor=options.accentColor
+  })
+  tag(root,"ACCESSIBILITY_REDUCED_MOTION")
+  root:SetAttribute("ReducedMotion",true)
+  root:SetAttribute("CameraMotionRequested",false)
+  root:SetAttribute("ParticleMotionRequested",false)
+  return root,parts
+end
+
+function Presentation.CreateFailureRecoveryState(options)
+  options=options or {}
+  local root,parts=Presentation.CreateLoadingScreen({
+    name=options.name or "FailureRecoveryState",
+    genre=options.genre,
+    logoText=options.logoText,
+    statusText=options.statusText or "복구 가능한 상태",
+    tipText=options.tipText or "다시 시도하거나 안전한 화면으로 돌아갈 수 있어.",
+    progress=0,
+    accentColor=options.accentColor or Color3.fromRGB(218,126,92)
+  })
+  tag(root,"FAILURE_RECOVERY_STATE")
+  parts.track.Visible=false
+  parts.spinner.Visible=false
+  root:SetAttribute("OwnsRetryAuthority",false)
+  root:SetAttribute("OwnsRecoveryAuthority",false)
+  root:SetAttribute("FailureCauseOwnedByGameCode",true)
+  return root,parts
+end
+
 function Presentation.Audit()
   return table.freeze({
-    version=1,packId="roblox-common-presentation-v1",
+    version=2,packId="roblox-common-presentation-v1",
     loadingElements=table.freeze({"BRAND_BACKGROUND","LOGO","SPINNER","PROGRESS_BAR","TIP","STATUS_TEXT"}),
     introModes=MODES,
     genreBackgrounds=table.freeze({"SURVIVAL","RPG","DEFENSE","CASUAL","PUZZLE","HORROR","STRATEGY"}),
     gameSpecificVariationFields=table.freeze({"LOGO","COLOR","BACKGROUND","COPY","INTENSITY","DURATION"}),
+    accessibilityElements=table.freeze({"INPUT_SKIP_HINT","ACCESSIBILITY_REDUCED_MOTION","FAILURE_RECOVERY_STATE"}),
+    presentationComponentCount=14,
     cameraAuthority=false,gameplayAuthority=false,productionVerified=false
   })
 end
