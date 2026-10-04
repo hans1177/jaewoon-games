@@ -1,5 +1,5 @@
 {
-  "version": 100,
+  "version": 101,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -18,6 +18,18 @@
     "lookupBeforeNativeAssetChoice": true,
     "existingRepositoryInventoryBeforeExternal": true,
     "externalGapFillBeforeNewAuthoring": true,
+    "newNativeAuthoringAllowedAfterVerifiedGap": true,
+    "newVolumeCreationNotGloballyBlocked": true,
+    "genericReusableAssetDoesNotCloseIdentityStyleQualityOrDiversityGap": true,
+    "verifiedNewAuthoringGapTypes": [
+      "MISSING_ROLE_OR_SYSTEM_DEPTH",
+      "IDENTITY_OR_SILHOUETTE_GAP",
+      "STYLE_OR_THEME_GAP_NOT_SAFELY_ADAPTABLE",
+      "QUALITY_GAP_NOT_CLOSED_BY_SAFE_ADAPTATION",
+      "DIVERSITY_GAP_OR_EXCESSIVE_REPETITION",
+      "HERO_BOSS_LANDMARK_SIGNATURE_NEEDS",
+      "PLATFORM_NATIVE_AUTHORING_REQUIREMENT"
+    ],
     "rawExternalAssetNotVerifiedCompanyAsset": true,
     "nativeRuntimeVerificationBeforePromotion": true,
     "studioMotionTarget": "STUDIO_GRADE_GAME_MOTION",
@@ -67362,6 +67374,26 @@
     "perDomainIdeaBudgetPerCycle": 24,
     "volumeBeforeQuality": true,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
+    "newAuthoringPolicy": {
+      "globallyBlocked": false,
+      "requiresVerifiedGap": true,
+      "reuseAdaptRecombineRemainPreferred": true,
+      "existingAssetAvailabilityAloneDoesNotCloseGap": true,
+      "allowWhen": [
+        "MISSING_REQUIRED_ROLE_OR_SYSTEM_DEPTH",
+        "EXISTING_ASSETS_CANNOT_PRESERVE_REQUIRED_IDENTITY_OR_SILHOUETTE",
+        "STYLE_OR_THEME_ADAPTATION_WOULD_DEGRADE_IDENTITY_OR_QUALITY",
+        "SAFE_ADAPTATION_DOES_NOT_REACH_CURRENT_QUALITY_TARGET",
+        "REPETITION_OR_DIVERSITY_DEBT_REMAINS_AFTER_RECOMBINATION",
+        "HERO_BOSS_LANDMARK_OR_SIGNATURE_ASSET_NEEDS_DISTINCT_AUTHORING",
+        "PLATFORM_NATIVE_VARIANT_REQUIRES_REAUTHORING"
+      ],
+      "mayRunDuringVolumeUp": true,
+      "mayRunDuringQualityUpWhenGapIsVerified": true,
+      "newAssetStillRequiresNormalLicenseProvenanceQaAndRuntimePromotionRules": true,
+      "productionPromotionAutomatic": false,
+      "gameplayBalanceSaveProgressionEconomyNetworkAuthorityUnchanged": true
+    },
     "autoRegistrySync": true,
     "autoPackCountSync": true,
     "autoAtomItemRowSync": true,
@@ -67968,7 +68000,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 100,
+    "lastCatalogSynchronizedVersion": 101,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -75854,7 +75886,8 @@
         "DERIVE_VARIANT",
         "RECOMBINE_EXISTING",
         "LICENSE_VERIFIED_FREE_SOURCE_ADAPT_ON_DEMAND",
-        "NEW_AUTHORING_ONLY_IF_PRIOR_OPTIONS_FAIL",
+        "VERIFY_ROLE_IDENTITY_STYLE_QUALITY_DIVERSITY_GAP",
+        "NEW_AUTHORING_WHEN_VERIFIED_GAP_REMAINS_AFTER_REASONABLE_REUSE_ADAPT_OR_RECOMBINE",
         "RUN_EXISTING_ASSET_QA_AND_IDEMPOTENCY",
         "PERSIST_REGISTRY_IF_CHANGED",
         "REPEAT_UNTIL_RECOMMENDED_VOLUME_AND_REQUIRED_ROLES_PASS",
@@ -75868,6 +75901,7 @@
       "blockedActionPolicy": "QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION",
       "ambiguousLicensePolicy": "REJECT_SOURCE_AND_CONTINUE_NEXT_VERIFIED_CANDIDATE",
       "missingFreeSourcePolicy": "CONTINUE_RESOLUTION_ORDER_TO_NEW_AUTHORING",
+      "newAuthoringPolicy": "NOT_GLOBALLY_BLOCKED_REQUIRES_VERIFIED_ROLE_IDENTITY_STYLE_QUALITY_DIVERSITY_OR_PLATFORM_GAP",
       "runtimeEvidenceMissingPolicy": "KEEP_PRODUCTION_UNVERIFIED_AND_CONTINUE_INTERNAL_QUALITY_WORK",
       "failureRetryPolicy": "REBUILD_FROM_LATEST_REGISTRY_AND_RETRY_SAFE_ASSET_SCOPE",
       "volumeExitCondition": "RECOMMENDED_VOLUME_AND_REQUIRED_ROLE_GAPS_CLEAR",
@@ -78320,7 +78354,7 @@
       "lastChangeFingerprint": "f16813e1",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 100
+      "synchronizedRegistryVersion": 101
     },
     "studioVariationAxes": {
       "BUILDING": [
