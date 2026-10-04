@@ -9025,14 +9025,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T06:22:02.504Z",
+      "updatedAt": "2026-10-04T06:25:35.510Z",
       "robloxSourceCommit": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
       "robloxSourceBootstrapPassedAt": "2026-10-04T05:51:00.000Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -9041,17 +9041,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
       "robloxBuildArtifactIdentity": "sha256:d68053696c970f93c7e8de840d91bc3eacbae09692844a3ae4e452c730d498d6",
-      "robloxBuildPassedAt": "2026-10-04T06:19:13.589Z",
+      "robloxBuildPassedAt": "2026-10-04T06:25:35.510Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-04T06:22:02.504Z",
+      "robloxBuildPreflightPassedAt": "2026-10-04T06:25:35.510Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "line-defense",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-04T06:21:22.710Z",
+        "checkedAt": "2026-10-04T06:25:33.920Z",
         "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
         "artifactIdentity": "sha256:d68053696c970f93c7e8de840d91bc3eacbae09692844a3ae4e452c730d498d6",
         "secondaryOwnerFocus": false,
@@ -9095,11 +9095,533 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
-      "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-04T06:25:35.510Z",
+      "robloxFoundationF0Evidence": {
+        "version": 4,
+        "gameId": "line-defense",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-04T06:25:34.720Z",
+        "sourcePath": "roblox-games/line-defense",
+        "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+        "artifactIdentity": "sha256:d68053696c970f93c7e8de840d91bc3eacbae09692844a3ae4e452c730d498d6",
+        "rebuiltArtifactIdentity": "sha256:d68053696c970f93c7e8de840d91bc3eacbae09692844a3ae4e452c730d498d6",
+        "artifactRunId": 37181062928,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": true,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": true,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "line-defense",
+          "pass": true,
+          "blockers": [],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "GATHERING",
+            "WAVE",
+            "INVENTORY",
+            "PROGRESSION",
+            "QUEST",
+            "BOSS",
+            "DEFENSE",
+            "SAVE",
+            "MULTIPLAYER",
+            "MOBILE_UI"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": true,
+            "SESSION_FLOW": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "COMBAT": true,
+            "ENEMY_AI": true,
+            "GATHERING": true,
+            "WAVE": true,
+            "INVENTORY": true,
+            "PROGRESSION": true,
+            "QUEST": true,
+            "BOSS": true,
+            "DEFENSE": true,
+            "SAVE": true,
+            "MULTIPLAYER": true,
+            "MOBILE_UI": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "step": "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "step": "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WAVE",
+                "INVENTORY",
+                "PROGRESSION",
+                "SAVE"
+              ],
+              "pass": true
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "골목길 시너지 배치 시스템",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "name": "실시간 재화 순환 엔진",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "GATHERING"
+              ],
+              "pass": true
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 3,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 18
+          },
+          "studioQualitySheet": {
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "PLAYABLE",
+            "Combat": "PLAYABLE",
+            "AI": "PLAYABLE",
+            "Progression": "PLAYABLE",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 5,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 5,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "QUEST_TO_PROGRESSION",
+                  "pass": true
+                },
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": true
+                }
+              ],
+              "pass": true
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 3,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 18
+            },
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": true,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "ab3220e38989669731c0c0f80e80fea0216a43e3963e984fc5e7aedbc39987d8",
+          "antiSkeletonPassed": true,
+          "designGenre": "Strategy",
+          "sourceGenre": "Strategy",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "PLAYABLE",
+          "Combat": "PLAYABLE",
+          "AI": "PLAYABLE",
+          "Progression": "PLAYABLE",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": true,
+          "f0SourceIntegrity": true
+        },
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
+      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 4,
+        "gameId": "line-defense",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-04T06:25:34.720Z",
+        "sourcePath": "roblox-games/line-defense",
+        "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+        "artifactIdentity": "sha256:d68053696c970f93c7e8de840d91bc3eacbae09692844a3ae4e452c730d498d6",
+        "rebuiltArtifactIdentity": "sha256:d68053696c970f93c7e8de840d91bc3eacbae09692844a3ae4e452c730d498d6",
+        "artifactRunId": 37181062928,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": true,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": true,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "line-defense",
+          "pass": true,
+          "blockers": [],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "GATHERING",
+            "WAVE",
+            "INVENTORY",
+            "PROGRESSION",
+            "QUEST",
+            "BOSS",
+            "DEFENSE",
+            "SAVE",
+            "MULTIPLAYER",
+            "MOBILE_UI"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": true,
+            "SESSION_FLOW": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "COMBAT": true,
+            "ENEMY_AI": true,
+            "GATHERING": true,
+            "WAVE": true,
+            "INVENTORY": true,
+            "PROGRESSION": true,
+            "QUEST": true,
+            "BOSS": true,
+            "DEFENSE": true,
+            "SAVE": true,
+            "MULTIPLAYER": true,
+            "MOBILE_UI": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "step": "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "step": "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WAVE",
+                "INVENTORY",
+                "PROGRESSION",
+                "SAVE"
+              ],
+              "pass": true
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "골목길 시너지 배치 시스템",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "name": "실시간 재화 순환 엔진",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "GATHERING"
+              ],
+              "pass": true
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 3,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 18
+          },
+          "studioQualitySheet": {
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "PLAYABLE",
+            "Combat": "PLAYABLE",
+            "AI": "PLAYABLE",
+            "Progression": "PLAYABLE",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 5,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 5,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "QUEST_TO_PROGRESSION",
+                  "pass": true
+                },
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": true
+                }
+              ],
+              "pass": true
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 3,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 18
+            },
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": true,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "ab3220e38989669731c0c0f80e80fea0216a43e3963e984fc5e7aedbc39987d8",
+          "antiSkeletonPassed": true,
+          "designGenre": "Strategy",
+          "sourceGenre": "Strategy",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "PLAYABLE",
+          "Combat": "PLAYABLE",
+          "AI": "PLAYABLE",
+          "Progression": "PLAYABLE",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": true,
+          "f0SourceIntegrity": true
+        },
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -9131,11 +9653,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
-      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
+      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-f0-source-preflight-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -9148,7 +9670,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-line-defense-37149677034",
       "unitySourceCommit": "4c6172b71055f76cba6c9198015d184b44027c9f",
@@ -56442,7 +56964,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T06:24:19.155Z",
+  "updatedAt": "2026-10-04T06:25:35.510Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
