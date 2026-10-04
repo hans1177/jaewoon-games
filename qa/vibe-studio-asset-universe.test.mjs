@@ -2892,7 +2892,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,60);
+  assert.equal(registry.version,61);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -2984,7 +2984,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,60);
+  assert.equal(registry.version,61);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3169,7 +3169,7 @@ test('company asset library exposes all-stage composition as an asset contract o
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
-  assert.equal(registry.version,60);
+  assert.equal(registry.version,61);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -3208,9 +3208,20 @@ test('latest action survival rogue seed ideas fill environment item prop charact
   for(const key of ['environmentBackgrounds','items','props','characters','menus','ambientAudio','coupling']){
     assert.ok(Array.isArray(ideas[key])&&ideas[key].length>=6,key);
   }
-  assert.ok(ideas.menus.includes('WEATHER_WARNING'));
+  assert.equal(ideas.sourceGameFacts.gameName,'잃어버린 별의 메아리');
+  assert.ok(ideas.sourceGameFacts.coreLoop.includes('ECHO_SHARD_PICKUP'));
+  assert.ok(ideas.sourceGameFacts.coreLoop.includes('REALTIME_BUILD_SELECTION'));
+  assert.ok(ideas.menus.includes('ECHO_SELECTION'));
+  assert.ok(ideas.menus.includes('WAVE_THREAT_HUD'));
+  assert.ok(ideas.menus.includes('BOSS_WARNING'));
+  assert.ok(ideas.menus.includes('ONE_HAND_PORTRAIT_ACTION_HUD'));
+  assert.ok(ideas.items.includes('ECHO_SHARD_WORLD_MODEL'));
   assert.ok(ideas.props.includes('WEATHER_STATION'));
+  assert.ok(ideas.props.includes('WAVE_WARNING_BEACON'));
+  assert.ok(ideas.ambientAudio.includes('ECHO_RESONANCE'));
   assert.ok(ideas.ambientAudio.includes('GENERATOR_HUM'));
+  assert.ok(ideas.coupling.includes('ECHO_SHARD_DROP>WORLD_MODEL>PICKUP_VFX>PICKUP_AUDIO_ROLE>HUD_FEEDBACK'));
   assert.equal(ideas.gameplayAuthority,false);
+  assert.equal(ideas.balanceAuthority,false);
   assert.equal(registry.ambientSoundscapeContract.actualAudioAssetCountFromThisContract,0);
 });
