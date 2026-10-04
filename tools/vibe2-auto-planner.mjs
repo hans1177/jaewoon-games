@@ -61,6 +61,7 @@ function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?ca
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
+const COMPANY_ASSET_LIBRARY_PATH='company-asset-library.json';
 const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
   status:'ACTIVE',
   growth:Object.freeze({
@@ -70,7 +71,9 @@ const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
     crossSystemConnections:Object.freeze({base:1,stepEveryCycles:2,max:4}),
     activeDetailDimensions:Object.freeze({base:2,stepEveryCycles:1,max:10}),
     playerFacingProofs:Object.freeze({base:1,stepEveryCycles:3,max:4}),
-    connectedContentBundles:Object.freeze({base:0,stepEveryCycles:2,max:3})
+    connectedContentBundles:Object.freeze({base:0,stepEveryCycles:2,max:3}),
+    sourceCompositionDepthLevel:Object.freeze({base:1,stepEveryCycles:1,max:null}),
+    activeSourceCompositionDimensions:Object.freeze({base:2,stepEveryCycles:1,max:12})
   }),
   detailDimensions:Object.freeze([
     'CORE_INTERACTION_RESPONSE',
@@ -84,6 +87,29 @@ const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
     'PRESENTATION_READABILITY_AND_FEEDBACK',
     'PERFORMANCE_AND_RUNTIME_STABILITY'
   ]),
+  sourceCompositionDimensions:Object.freeze([
+    'CORE_LOOP_ORCHESTRATION',
+    'WORLD_STATE_AND_EVENT_CAUSALITY',
+    'ENCOUNTER_BEHAVIOR_AND_COUNTERPLAY',
+    'CONTENT_GRAPH_AND_PROGRESSION_NETWORK',
+    'CINEMATIC_CUTSCENE_AND_EVENT_BINDING',
+    'INTRO_LOADING_AND_SESSION_CONTINUITY',
+    'MENU_HUB_AND_META_LOOP_INTEGRATION',
+    'NPC_CHARACTER_REACTIVITY',
+    'QUEST_STORY_AND_DISCOVERY_CHAINING',
+    'MID_LATE_ENDGAME_AND_REPLAY_STRUCTURE',
+    'PRESENTATION_AUDIO_VFX_MOTION_TIMING',
+    'PERFORMANCE_STREAMING_SAVE_AND_NETWORK_RESILIENCE'
+  ]),
+  assetLibrarySourceParity:Object.freeze({
+    status:'ACTIVE',
+    libraryPath:COMPANY_ASSET_LIBRARY_PATH,
+    target:'HIGH_END_STUDIO_ASSET_UNIVERSE',
+    sourceMustKeepPaceWithApplicableAssetCapability:true,
+    applicableOnly:true,
+    assetOnlySwapCountsAsEvolution:false,
+    actualGameplayOrPresentationBindingRequired:true
+  }),
   tiers:Object.freeze([
     Object.freeze({minCycle:1,id:'FOUNDATION_COMPLETENESS',comparativeBaselineRequired:false,existingContentDeepeningRequired:false,coherentContentExpansionRequired:false,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['CLOSE_THE_HIGHEST_VALUE_PLAYER_FACING_COMPLETENESS_GAP','CONNECT_INPUT_STATE_CHANGE_FEEDBACK_AND_NEXT_CHOICE','PRESERVE_EXISTING_GAME_RULE_SAVE_BALANCE_AND_AUTHORITY'])}),
     Object.freeze({minCycle:2,id:'SYSTEM_DEPTH',comparativeBaselineRequired:true,existingContentDeepeningRequired:true,coherentContentExpansionRequired:false,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['DEEPEN_AT_LEAST_ONE_PREVIOUSLY_VERIFIED_SYSTEM_INSTEAD_OF_REPEATING_EQUIVALENT_WORK','ADD_ROLE_BEHAVIOR_FEEDBACK_OR_EXCEPTION_DEPTH','SHOW_MEASURABLE_OR_VISIBLE_IMPROVEMENT_AGAINST_THE_PREVIOUS_VERIFIED_BASELINE'])}),
@@ -117,6 +143,22 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
   const activeDetailDimensions=detailDimensions.slice(0,Math.min(detailDimensions.length,minimumActiveDetailDimensions));
   const minimumPlayerFacingProofs=expectationMetric(growth?.playerFacingProofs,level,fallbackGrowth.playerFacingProofs);
   const minimumConnectedContentBundles=expectationMetric(growth?.connectedContentBundles,level,fallbackGrowth.connectedContentBundles);
+  const sourceCompositionDimensions=(Array.isArray(policy?.sourceCompositionDimensions)&&policy.sourceCompositionDimensions.length?policy.sourceCompositionDimensions:DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.sourceCompositionDimensions)
+    .map(clean).filter(Boolean);
+  const minimumActiveSourceCompositionDimensions=expectationMetric(growth?.activeSourceCompositionDimensions,level,fallbackGrowth.activeSourceCompositionDimensions);
+  const activeSourceCompositionDimensions=sourceCompositionDimensions.slice(0,Math.min(sourceCompositionDimensions.length,minimumActiveSourceCompositionDimensions));
+  const sourceCompositionDepthLevel=expectationMetric(growth?.sourceCompositionDepthLevel,level,fallbackGrowth.sourceCompositionDepthLevel);
+  const sourceParity=policy?.assetLibrarySourceParity||DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.assetLibrarySourceParity;
+  const assetLibraryPath=clean(sourceParity?.libraryPath)||COMPANY_ASSET_LIBRARY_PATH;
+  const assetLibrary=readJson(path.join(repoRoot,assetLibraryPath),null);
+  const assetLibraryAssets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
+  const assetLibraryFamilies=[...new Set(assetLibraryAssets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
+  const assetLibraryPresent=Boolean(assetLibrary&&((Number(assetLibrary?.version)||0)>0||assetLibraryAssets.length));
+  const baseMinimumConnectedImprovements=expectationMetric(growth?.connectedImprovements,level,fallbackGrowth.connectedImprovements);
+  const sourceCompositionConnectedFloor=assetLibraryPresent&&clean(sourceParity?.status||'ACTIVE').toUpperCase()==='ACTIVE'
+    ?minimumActiveSourceCompositionDimensions
+    :0;
+  const minimumConnectedImprovements=Math.max(baseMinimumConnectedImprovements,sourceCompositionConnectedFloor);
   const repair=clean(phase).toUpperCase()==='REPAIR';
   return Object.freeze({
     version:1,
@@ -127,13 +169,26 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     phase:clean(phase).toUpperCase()||'BUILD_UP',
     focusPillar:clean(focusPillar).toUpperCase()||'GENERAL',
     detailDepthLevel:expectationMetric(growth?.detailDepthLevel,level,fallbackGrowth.detailDepthLevel),
-    minimumConnectedImprovements:expectationMetric(growth?.connectedImprovements,level,fallbackGrowth.connectedImprovements),
+    minimumConnectedImprovements,
     minimumMeaningfulDistinctAxes:expectationMetric(growth?.meaningfulDistinctAxes,level,fallbackGrowth.meaningfulDistinctAxes),
     minimumCrossSystemConnections:expectationMetric(growth?.crossSystemConnections,level,fallbackGrowth.crossSystemConnections),
     minimumActiveDetailDimensions,
     activeDetailDimensions:Object.freeze([...activeDetailDimensions]),
     minimumPlayerFacingProofs,
     minimumConnectedContentBundles,
+    sourceCompositionDepthLevel,
+    minimumActiveSourceCompositionDimensions,
+    activeSourceCompositionDimensions:Object.freeze([...activeSourceCompositionDimensions]),
+    sourceCompositionDepthUnbounded:true,
+    assetLibraryPresent,
+    assetLibraryPath,
+    assetLibraryVersion:Number(assetLibrary?.version||0),
+    assetLibraryAssetCount:assetLibraryAssets.length,
+    assetLibraryFamilyCount:assetLibraryFamilies.length,
+    assetLibraryFamilies:Object.freeze([...assetLibraryFamilies]),
+    assetLibrarySourceParityRequired:assetLibraryPresent&&sourceParity?.sourceMustKeepPaceWithApplicableAssetCapability!==false,
+    assetOnlySwapCountsAsEvolution:sourceParity?.assetOnlySwapCountsAsEvolution===true,
+    sourceCompositionApplicabilityRule:sourceParity?.applicableOnly===false?'ALL_DIMENSIONS_REQUIRED':'APPLICABLE_OR_REASONED_NOT_APPLICABLE',
     qualitativeDetailDepthUnbounded:true,
     comparativeBaselineRequired:tier?.comparativeBaselineRequired===true,
     existingContentDeepeningRequired:tier?.existingContentDeepeningRequired===true,
@@ -166,6 +221,7 @@ function buildUpIterationExpectationPrompt(expectation={}){
 이 반복의 품질 기준은 이전 verified baseline보다 낮아질 수 없다. 실패 수리는 같은 기대치 레벨을 유지하고, 성공한 반복만 다음 기대치를 올린다. 새 workflow/stage/queue/worker를 만들지 말고 기존 BUILD_UP 책임 작업 안에서 충족한다. 내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다. Studio/실런타임 증거는 기존 canonical 단계가 원래 요구하는 경우에만 별도로 사용한다.
 최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
+소스 구성 성장: depth=${expectation.sourceCompositionDepthLevel}; 최소 ${(expectation.activeSourceCompositionDimensions||[]).length}/${expectation.minimumActiveSourceCompositionDimensions}개 축을 실제 책임 소스에서 연결한다. 활성 축=${(expectation.activeSourceCompositionDimensions||[]).join(' | ')||'CORE_LOOP_ORCHESTRATION'}. 내부 자산 라이브러리=${expectation.assetLibraryPresent?`v${expectation.assetLibraryVersion}, assets=${expectation.assetLibraryAssetCount}, families=${expectation.assetLibraryFamilyCount}`:'NOT_OBSERVED'}. 적용 가능한 고급 자산·UI·모션·VFX·컷신·인트로·로딩·메뉴 표현이 생기면 실제 전투/AI/월드 상태/퀘스트/보상/세션 전환/중후반 콘텐츠 흐름과 소스에서 연결한다. 자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면 source evolution으로 계산하지 않는다. 모든 축 활성화 이후에도 sourceCompositionDepth는 계속 상승하며, 비적용 축은 이유가 있어야 한다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
 }
@@ -2681,6 +2737,14 @@ ${expectationInstruction}
     'studio-quality-active-detail-dimensions:'+iterationExpectation.activeDetailDimensions.join(','),
     'studio-quality-min-player-facing-proofs:'+String(iterationExpectation.minimumPlayerFacingProofs),
     'studio-quality-min-connected-content-bundles:'+String(iterationExpectation.minimumConnectedContentBundles),
+    'studio-quality-source-composition-depth:'+String(iterationExpectation.sourceCompositionDepthLevel),
+    'studio-quality-min-active-source-composition-dimensions:'+String(iterationExpectation.minimumActiveSourceCompositionDimensions),
+    'studio-quality-active-source-composition-dimensions:'+iterationExpectation.activeSourceCompositionDimensions.join(','),
+    'studio-quality-source-composition-depth:UNBOUNDED',
+    'studio-quality-asset-library-version:'+String(iterationExpectation.assetLibraryVersion),
+    'studio-quality-asset-library-family-count:'+String(iterationExpectation.assetLibraryFamilyCount),
+    'studio-quality-asset-source-parity:'+(iterationExpectation.assetLibrarySourceParityRequired?'REQUIRED':'NOT_OBSERVED'),
+    'studio-quality-asset-only-source-growth:ZERO',
     'studio-quality-qualitative-detail-depth:UNBOUNDED',
     'studio-quality-queue-amplification:FORBIDDEN',
     'studio-quality-studio-required:NO',
@@ -2740,6 +2804,20 @@ ${expectationInstruction}
     requiredActiveDetailDimensions:{min:iterationExpectation.minimumActiveDetailDimensions,dimensions:[...iterationExpectation.activeDetailDimensions]},
     requiredPlayerFacingProofs:{min:iterationExpectation.minimumPlayerFacingProofs,max:null},
     requiredConnectedContentBundles:{min:iterationExpectation.minimumConnectedContentBundles,max:null},
+    sourceCompositionContractVersion:1,
+    sourceCompositionDepthLevel:iterationExpectation.sourceCompositionDepthLevel,
+    requiredActiveSourceCompositionDimensions:{min:iterationExpectation.minimumActiveSourceCompositionDimensions,dimensions:[...iterationExpectation.activeSourceCompositionDimensions]},
+    assetLibrarySourceParity:{
+      required:iterationExpectation.assetLibrarySourceParityRequired,
+      libraryPath:iterationExpectation.assetLibraryPath,
+      libraryVersion:iterationExpectation.assetLibraryVersion,
+      assetCount:iterationExpectation.assetLibraryAssetCount,
+      familyCount:iterationExpectation.assetLibraryFamilyCount,
+      families:[...iterationExpectation.assetLibraryFamilies],
+      applicabilityRule:iterationExpectation.sourceCompositionApplicabilityRule,
+      assetOnlySwapCountsAsEvolution:iterationExpectation.assetOnlySwapCountsAsEvolution,
+      actualGameplayOrPresentationBindingRequired:true
+    },
     existingHolisticBackfillRequired,
     existingHolisticBackfillVersion:project?.existing===true?1:null,
     existingHolisticBackfillFocus:existingHolisticBackfillRequired?focusPillar:null,
