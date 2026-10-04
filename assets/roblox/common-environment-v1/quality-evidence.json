@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-environment-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -16,7 +16,10 @@
     "roleCount": 8,
     "recipeCount": 80,
     "setDressingRecipesPerBiome": 6,
-    "detailTiers": 3
+    "detailTiers": 3,
+    "terrainCompositionCount": 12,
+    "environmentRoleCount": 12,
+    "interactionPresentationRoles": 10
   },
   "qualityAxes": {
     "IDENTITY_SILHOUETTE": 94,
@@ -34,5 +37,11 @@
   },
   "productionVerified": false,
   "verifiedCompanyReusable": false,
-  "runtimeVerificationState": "PENDING_STUDIO"
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "backgroundComposition": {
+    "foregroundMidgroundBackground": true,
+    "villageCluster": true,
+    "poiCue": true,
+    "collisionNavigationSpawnAuthorityFalse": true
+  }
 }
