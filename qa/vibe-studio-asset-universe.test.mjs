@@ -420,6 +420,53 @@ test('building reference image expands into detailed task-local building volume 
   assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
 });
 
+test('one mixed reference image can seed multiple internal asset domains without copying the scene',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const sourceId='qa-mixed-harbor-reference';
+  const imageRef='conversation://qa-mixed-harbor-reference.png';
+  const sourceHash='1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'reference-mixed-scene-volume-test',
+      goal:'항구 사진 보고 건물 소품 환경 내부자산 아이디어 제작',
+      imageToAsset:true,
+      referenceImages:[{
+        sourceId,
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef,
+        sourceHash,
+        domains:['BUILDING','WORLD_PROP','ENVIRONMENT'],
+        purpose:'ASSET_CREATION',
+        observation:{
+          sourceId,imageRef,sourceHash,
+          SILHOUETTE:'pier warehouse lighthouse crates and layered coast horizon',
+          PROPORTIONS:'low warehouse long pier tall lighthouse small cargo props',
+          MATERIAL_REGIONS:'wood stone rope cloth metal water vegetation',
+          PALETTE:'weathered timber pale stone deep water muted sail accents',
+          CONSTRUCTION_DETAILS:'dock posts rope knots warehouse beams crate handles seawall joints',
+          STYLE_LANGUAGE:'stylized maritime trade settlement',
+          IDENTITY_ANCHORS:'lighthouse harbor crane market flags',
+          UNSEEN_REGIONS:'creative proposal required',
+          MOTION_DESIGN:'creative proposal required'
+        },
+        verifiedAgainstSource:true
+      }]
+    },
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  const domains=new Set(plan.imageAssetCreation.ideaWorklist.map(row=>row.domain));
+  assert.ok(domains.has('BUILDING'));
+  assert.ok(domains.has('WORLD_PROP'));
+  assert.ok(domains.has('ENVIRONMENT'));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.directCopyForbidden===true));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.some(row=>row.domain==='WORLD_PROP'&&row.freeSourceAvailable===true));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.some(row=>row.domain==='ENVIRONMENT'&&row.freeSourceAvailable===true));
+  assert.equal(plan.imageAssetCreation.ideaWorklistPersistenceForbidden,true);
+  assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
+});
+
 test('survival wildlife catalog includes forest animals with distinct visual profiles',()=>{
   for(const species of ['BEAR','BOAR','DEER','ELK','MOOSE','BISON','WOLF','COYOTE','FOX','RABBIT','RACCOON','SQUIRREL','BEAVER','BADGER','MOUNTAIN_GOAT','TURKEY','CROW']){
     assert.ok(SURVIVAL_WILDLIFE_SPECIES.includes(species),species);
