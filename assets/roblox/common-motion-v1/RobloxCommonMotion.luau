@@ -370,7 +370,6 @@ function RobloxCommonMotion.CreateSequence(atomId)
 	sequence.Name = "JG_Common_" .. id
 	sequence.Loop = row.looped
 	sequence.Priority = row.priority
-	sequence.AuthoredHipHeight = 1.35
 
 	sequence:SetAttribute("StudioAssetId", id)
 	sequence:SetAttribute("StudioAssetPack", "roblox-common-motion-v1")
