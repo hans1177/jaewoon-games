@@ -72,7 +72,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-final-review-revalidation.yml/runs?per_page=100")"
+          payload=''
+          if ! payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-final-review-revalidation.yml/runs?per_page=100" 2>/tmp/roblox-f9-dedupe-api.err)"; then
+            if [ -n "$GAME_ID" ]; then
+              echo "ROBLOX_F9_CONTROL_SHA=$CURRENT_CONTROL_SHA"
+              echo "ROBLOX_F9_ACTIVE_WINNER=API_UNAVAILABLE"
+              echo 'run=true' >> "$GITHUB_OUTPUT"
+              echo "ROBLOX_F9_DEDUPE_API_UNAVAILABLE_EXACT=$GAME_ID:$GITHUB_RUN_ID"
+              exit 0
+            fi
+            cat /tmp/roblox-f9-dedupe-api.err >&2 || true
+            echo "ROBLOX_F9_DEDUPE_API_UNAVAILABLE_SCAN=$GITHUB_RUN_ID"
+            exit 1
+          fi
           winner="$(printf '%s' "$payload" | GAME_ID="$GAME_ID" node -e "
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
               const j=JSON.parse(s);
