@@ -501,10 +501,15 @@ test('upload rejects a superseded source, artifact or revoked quality/F9 evidenc
     {robloxSourceCommit:'b'.repeat(40)},
     {robloxBuildArtifactIdentity:'sha256:new'},
     {robloxQualityBuildUpRequired:true},
+    {robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision},
     {robloxStudioLocalPlayRepairRequired:true},
     {robloxF9ReleaseRegressionPassed:false},
     {robloxF9ReleaseRegressionEvidence:{sourceRevision:'old',artifactIdentity}}
   ]) assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,...change}}),/ROBLOX_PUBLISH_/);
+  assert.equal(assertRobloxLatestPublishCandidate({
+    ...candidate,
+    item:{...item,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'b'.repeat(40)}
+  }),true);
   const upload=workflow.slice(workflow.indexOf('      - name: Publish exact package'),workflow.indexOf('      - name:',workflow.indexOf('      - name: Publish exact package')+15));
   assert.ok(upload.indexOf('while true; do')<upload.indexOf('git fetch --no-tags --depth=1 origin main'));
   assert.ok(upload.indexOf('assertRobloxLatestPublishCandidate({')<upload.indexOf('await publishRobloxPlace('));
@@ -515,5 +520,6 @@ test('F9 dispatch does not launch obsolete or currently failed publication candi
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   const dispatch=finalReview.slice(finalReview.indexOf('      - name: Dispatch exact F9-verified artifact'));
   assert.match(dispatch,/row\.sourceRevision!==item\.robloxSourceCommit\|\|row\.artifactIdentity!==item\.robloxBuildArtifactIdentity/);
-  assert.match(dispatch,/item\.robloxQualityBuildUpRequired===true\|\|item\.robloxStudioLocalPlayRepairRequired===true/);
+  assert.match(dispatch,/qualityRepairSourceRevision===String\(item\.robloxSourceCommit\|\|''\)\.trim\(\)/);
+  assert.match(dispatch,/currentQualityRepair\|\|item\.robloxStudioLocalPlayRepairRequired===true/);
 });
