@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -40529,7 +40529,7 @@
     "compositionContract": "company-asset-library.json#internalAssetCompositionContract"
   },
   "internalAssetRoutineReview": {
-    "version": 1,
+    "version": 2,
     "mode": "EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER",
     "scheduleCreated": false,
     "workflowCreated": false,
@@ -40558,7 +40558,9 @@
       "NEW_GAME_ASSET_REQUIREMENT_NOT_COVERED",
       "BEFORE_GAME_ASSET_BINDING",
       "AFTER_RUNTIME_ASSET_FAILURE",
-      "BEFORE_COMPANY_REUSABLE_PROMOTION"
+      "BEFORE_COMPANY_REUSABLE_PROMOTION",
+      "COMPANY_COMMON_SEED_SET_CHANGED",
+      "COMPANY_COMMON_SEED_CONTENT_CHANGED"
     ],
     "preBindingChecks": [
       "SEARCH_EXISTING_GAME_ASSETS",
@@ -40567,7 +40569,8 @@
       "GENRE_SYSTEM_EXPECTATION_COMPARE",
       "REMOVE_DUPLICATE_AUTHORING_CANDIDATES",
       "CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY",
-      "PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING"
+      "PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING",
+      "BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN"
     ],
     "postBindingChecks": [
       "RECORD_SOURCE_FILES",
@@ -40586,7 +40589,9 @@
       "KEEP_ONLY_REAL_COMPANY_WIDE_GAPS",
       "UPDATE_PRIORITY_GAPS",
       "UPDATE_CATALOG_AND_LIBRARY",
-      "UPDATE_ASSET_QA"
+      "UPDATE_ASSET_QA",
+      "REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND",
+      "VOLUME_UP_BEFORE_QUALITY_UP"
     ],
     "completionEvidence": [
       "CATALOG_UPDATED",
@@ -40606,7 +40611,10 @@
     "createsScheduler": false,
     "createsWorkflow": false,
     "consumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
-    "allInternalAssetsComposableAcrossExistingStages": true
+    "allInternalAssetsComposableAcrossExistingStages": true,
+    "seedIdeationContractRef": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "createsQueue": false,
+    "createsPipeline": false
   },
   "internalAssetCompositionContract": {
     "version": 1,
@@ -40931,5 +40939,103 @@
     "balanceAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false
+  },
+  "companyCommonSeedAssetIdeation": {
+    "version": 1,
+    "status": "ACTIVE_MACHINE_READABLE_INTERNAL_ASSET_IDEATION",
+    "scope": "ALL_COMPANY_COMMON_SEEDS",
+    "sourcePattern": "artbook-submissions/seed-*/current.json",
+    "currentSeedCount": 10,
+    "currentSeedIds": [
+      "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "seed-casual-realm-weaver",
+      "seed-idle-growth-rpg-crystal-bloom",
+      "seed-puzzle-chromatic-cascade",
+      "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "seed-roblox-simulator-tycoon-i-adopt-me",
+      "seed-roblox-story-rpg-adventur-blox-fruits",
+      "seed-roblox-survival-horror-es-doors",
+      "seed-single-defense-strat-celestial-bastion",
+      "seed-story-complete-rpg-chronicles-of-eldoria"
+    ],
+    "planBuilder": "assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan",
+    "axesContract": "assets/vibe-studio-asset-universe.js#COMPANY_COMMON_SEED_ASSET_IDEA_AXES",
+    "recipeContract": "assets/vibe-studio-asset-universe.js#COMPANY_COMMON_SEED_ASSET_IDEA_RECIPES",
+    "crossGenreKitContract": "assets/vibe-studio-asset-universe.js#COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS",
+    "classificationAxes": [
+      "GAMEPLAY_SIGNAL",
+      "WORLD_THEME",
+      "STATE_VARIANT",
+      "ASSET_DOMAIN"
+    ],
+    "supportedAssetDomains": [
+      "UI",
+      "ITEM",
+      "WEAPON",
+      "CHARACTER_GEAR",
+      "SKILL",
+      "VFX",
+      "MOTION",
+      "MATERIAL",
+      "ENVIRONMENT",
+      "BUILDING",
+      "WORLD_PROP",
+      "CREATURE",
+      "FOLIAGE",
+      "PRESENTATION",
+      "AUDIO"
+    ],
+    "currentCrossGenreKitIds": [
+      "ECLIPSE_MARKET_BLACKOUT",
+      "FLOODED_RUIN_RESEARCH_RUN",
+      "AURORA_HARVEST_FESTIVAL",
+      "SANDSTORM_CONVOY_DEFENSE",
+      "CRYSTAL_FACTORY_OVERLOAD",
+      "WHITE_NIGHT_BOSS_MIGRATION",
+      "FOG_TOWN_MEMORY_CASE",
+      "COLOR_RIFT_PUZZLE_EVENT",
+      "RAINED_IN_HOME_DAY",
+      "ECLIPSE_PILGRIMAGE",
+      "INDUSTRIAL_FREEZE_FAILURE",
+      "RUINED_COAST_SIGNAL_RESCUE"
+    ],
+    "rules": {
+      "volumeBeforeQuality": true,
+      "reuseAdaptRecombineBeforeNewAuthoring": true,
+      "crossFamilyCompositionRequired": true,
+      "newSeedAutomaticallyEligibleForClassification": true,
+      "seedSpecificGameplayCopyForbidden": true,
+      "sourceSeedGameplayBalanceAuthorityForbidden": true,
+      "actualAudioAssetMustNotBeClaimedWithoutVerifiedAsset": true,
+      "preparedIdeaMayNotClaimProductionVerified": true,
+      "runtimeVerificationRequiredBeforeProductionPromotion": true
+    },
+    "execution": {
+      "mode": "EVENT_DRIVEN_EXISTING_INTERNAL_ASSET_REVIEW",
+      "triggers": [
+        "COMPANY_COMMON_SEED_SET_CHANGED",
+        "COMPANY_COMMON_SEED_CONTENT_CHANGED",
+        "NEW_GAME_ASSET_REQUIREMENT_NOT_COVERED",
+        "COMMON_PACK_VERSION_CHANGED"
+      ],
+      "schedulerCreated": false,
+      "workflowCreated": false,
+      "queueCreated": false,
+      "pipelineCreated": false,
+      "wrapperCreated": false,
+      "shadowSystemCreated": false
+    },
+    "authority": {
+      "internalAssetScopeOnly": true,
+      "flowAuthority": false,
+      "workflowAuthority": false,
+      "queueAuthority": false,
+      "schedulerAuthority": false,
+      "deploymentAuthority": false,
+      "gameplayAuthority": false,
+      "balanceAuthority": false,
+      "saveAuthority": false,
+      "networkAuthority": false
+    }
   }
 }
