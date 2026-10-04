@@ -1334,3 +1334,88 @@ test('survival core world pack is registered for automatic atom binding without 
     assert.equal(row.bindingHint.preserveGameplayBalanceSaveAndNetworkAuthority,true);
   }
 });
+
+
+test('survival combat parts pack matches current modular StudioAssets atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','survival-combat-parts-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const config=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
+  const mtl=fs.readFileSync(path.join(packDir,'survival-combat-parts.mtl'),'utf8');
+  const materials=new Set(mtl.split(/\r?\n/).filter(line=>line.startsWith('newmtl ')).map(line=>line.slice(7).trim()));
+  const expected=[
+    ['WEAPON','BLADE_LONG','blade_long',40,30],
+    ['WEAPON','GUARD_CROSS','guard_cross',180,120],
+    ['WEAPON','GRIP_LONG','grip_long',300,200],
+    ['CHARACTER','TORSO_CLOTH','torso_cloth',220,180],
+    ['CHARACTER','SHOULDER_LIGHT','shoulder_light',240,190],
+    ['CHARACTER','BACK_CAPE','back_cape',200,140],
+    ['CREATURE','HEAD_CANINE','head_canine',700,600],
+    ['CREATURE','JAW_LONG','jaw_long',500,380],
+    ['CREATURE','CLAW','claw',500,380],
+  ];
+  assert.equal(catalog.assets.length,9);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(catalog.authoringQualityTarget,100);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  for(const [family,atomId,fileId,minVertices,minFaces] of expected){
+    assert.ok(config.includes(atomId),atomId+':config');
+    const source=fs.readFileSync(path.join(packDir,fileId+'.obj'),'utf8');
+    const lines=source.split(/\r?\n/);
+    const vertices=lines.filter(line=>line.startsWith('v ')).length;
+    const faces=lines.filter(line=>line.startsWith('f ')).length;
+    const groups=lines.filter(line=>line.startsWith('g ')).length;
+    const used=[...new Set(lines.filter(line=>line.startsWith('usemtl ')).map(line=>line.slice(7).trim()))];
+    assert.ok(vertices>=minVertices,fileId+':vertices='+vertices);
+    assert.ok(faces>=minFaces,fileId+':faces='+faces);
+    assert.ok(groups>=5,fileId+':semantic-groups');
+    assert.equal(used.filter(mat=>!materials.has(mat)).length,0,fileId+':materials');
+    const row=catalog.assets.find(asset=>asset.atomId===atomId);
+    assert.ok(row,atomId+':catalog');
+    assert.equal(row.family,family,atomId+':family');
+    assert.equal(row.source,fileId+'.obj',atomId+':source');
+    assert.equal(row.vertices,vertices,atomId+':catalog-vertices');
+    assert.equal(row.faces,faces,atomId+':catalog-faces');
+  }
+});
+
+test('survival combat parts are registered for module-level automatic replacement without false verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-survival-combat-parts-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.qualityTarget,100);
+  assert.equal(pack.modularReplacement,true);
+  const expected=[
+    ['WEAPON','BLADE_LONG','blade_long'],
+    ['WEAPON','GUARD_CROSS','guard_cross'],
+    ['WEAPON','GRIP_LONG','grip_long'],
+    ['CHARACTER','TORSO_CLOTH','torso_cloth'],
+    ['CHARACTER','SHOULDER_LIGHT','shoulder_light'],
+    ['CHARACTER','BACK_CAPE','back_cape'],
+    ['CREATURE','HEAD_CANINE','head_canine'],
+    ['CREATURE','JAW_LONG','jaw_long'],
+    ['CREATURE','CLAW','claw']
+  ];
+  for(const [family,atomId,fileId] of expected){
+    const row=registry.assets.find(asset=>asset.id==='roblox-survival-'+fileId);
+    assert.ok(row,atomId);
+    assert.equal(row.status,'REPO_ASSET');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.modularReplacement,true);
+    assert.equal(row.bindingHint.gameId,'survival');
+    assert.equal(row.bindingHint.family,family);
+    assert.equal(row.bindingHint.atomId,atomId);
+    assert.equal(row.bindingHint.replaceOnlyMatchingModule,true);
+    assert.equal(row.bindingHint.preserveGameplayDamageMovementSaveAndNetworkAuthority,true);
+  }
+});
