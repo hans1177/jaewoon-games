@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-survival-combat-parts-v1",
   "gameId": "survival",
   "staticAuthoringChecklist": {
@@ -29,5 +29,89 @@
   "runtimeVerificationState": "PENDING_STUDIO",
   "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
   "gameplayAuthority": false,
-  "externalAssetDependency": false
+  "externalAssetDependency": false,
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG",
+      "STYLE_COHERENCE"
+    ],
+    "hardGateFailures": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 86,
+      "FORM_STRUCTURE": 84,
+      "MATERIAL_SURFACE": 82,
+      "COLOR_LIGHTING": 80,
+      "STYLE_COHERENCE": 84,
+      "DETAIL_FINISH": 82,
+      "READABILITY_SCALE": 86,
+      "MOTION_RIG": 66,
+      "FEEDBACK_STATES": 76,
+      "UI_UX_SYSTEM": 72,
+      "MODULAR_REUSE": 94,
+      "VARIATION_BREADTH": 82,
+      "PERFORMANCE_LOD": 92,
+      "ACCESSIBILITY_INPUT": 72,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 86
+    },
+    "expectedScore": 829,
+    "expectedGrade": "DEVELOPMENT_READY",
+    "evidenceBasis": {
+      "familyScope": [
+        "WEAPON",
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "sourceAssetCount": 9,
+      "roleCount": 9,
+      "vertexRange": [
+        52,
+        754
+      ],
+      "faceRange": [
+        36,
+        650
+      ],
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/catalog.json",
+        "assets/roblox/survival-combat-parts-v1/survival-combat-parts.mtl",
+        "assets/roblox/survival-combat-parts-v1/preview.svg"
+      ],
+      "modularReplacementGranularity": true,
+      "alignmentHints": true,
+      "mobileGeometryBudget": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "NATIVE_RIG_AND_DEFORMATION_UNVERIFIED",
+      "GRIP_AND_ATTACHMENT_CONTACT_RUNTIME_UNVERIFIED",
+      "MATERIAL_VARIATION_DEPTH_LIMITED",
+      "DAMAGE_WEAR_AND_RARITY_VARIANTS_INCOMPLETE",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
