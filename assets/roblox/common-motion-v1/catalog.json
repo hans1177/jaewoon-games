@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -102,6 +102,51 @@
       "duration": 1.65,
       "source": "RobloxCommonMotion.luau",
       "productionVerified": false
+    },
+    {
+      "atomId": "BLOCK_RAISE",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.24,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "BLOCK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "BLOCK_HOLD",
+      "priority": "Action2",
+      "looped": true,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "BLOCK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PARRY_PERFECT",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.32,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "PARRY",
+      "productionVerified": false
+    },
+    {
+      "atomId": "GUARD_BREAK",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.7,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "GUARD_BREAK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "COUNTER_READY",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.42,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "COUNTER_READY",
+      "productionVerified": false
     }
   ],
   "systemDepthContract": {
@@ -156,21 +201,21 @@
       "JUMP_START",
       "LAND",
       "HIT_FRONT",
-      "DEATH_FRONT"
+      "DEATH_FRONT",
+      "BLOCK_RAISE",
+      "BLOCK_HOLD",
+      "PARRY_PERFECT",
+      "GUARD_BREAK",
+      "COUNTER_READY"
     ],
-    "currentAssetCount": 11,
+    "currentAssetCount": 16,
     "missingComponentCandidates": [
-      "IDLE",
       "SPRINT",
-      "TURN",
-      "JUMP",
       "CROUCH",
       "CLIMB",
       "SWIM",
       "DODGE",
       "ROLL",
-      "BLOCK",
-      "PARRY",
       "LIGHT_ATTACK",
       "HEAVY_ATTACK",
       "RANGED_ATTACK",
@@ -186,7 +231,6 @@
       "HIT_BACK",
       "DOWNED",
       "REVIVE",
-      "DEATH",
       "EMOTE",
       "BLEND",
       "MOTION_LOD"
@@ -207,5 +251,30 @@
     "schedulerExcluded": true,
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "parryPresentationContract": {
+    "version": 1,
+    "referenceRule": "PRECISION_BLOCK_PARRY_FEEDBACK_COMMON_PRINCIPLES_ONLY_NO_TIMING_OR_DAMAGE_COPY",
+    "states": [
+      "BLOCK_RAISE",
+      "BLOCK_HOLD",
+      "PARRY_PERFECT",
+      "GUARD_BREAK",
+      "COUNTER_READY"
+    ],
+    "expectedPresentation": [
+      "ATTACK_TELEGRAPH",
+      "GUARD_POSE",
+      "PERFECT_CONTACT_POSE",
+      "IMPACT_RECOIL",
+      "COUNTER_WINDOW_CUE",
+      "GUARD_BREAK_RECOVERY"
+    ],
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "stunAuthority": false,
+    "staminaAuthority": false,
+    "counterDamageAuthority": false,
+    "networkAuthority": false
   }
 }
