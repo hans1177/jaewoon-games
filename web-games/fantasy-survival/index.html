@@ -36,9 +36,9 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=61,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
-const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
-const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
+const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=61,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const NEW_REGION_TARGET_AREA=36000*14400/5; // 기존 특수지역 설계 기준 면적 · 확장분은 일반 마력숲
+const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 기존 수정 지대 크기 유지
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const JUNGLE_REGION={x:18000,y:0,w:7200,h:3840}; // 기존 밀림의 0.4배
 const SWAMP_REGION={x:25200,y:0,w:3600,h:3840}; // 밀림 오른쪽 늪지대
@@ -230,7 +230,7 @@ const recipes=[
 {id:'fear-bear-armor',name:'공포 곰 중갑',where:'junglebench',cost:{fearBearHide:7,fearBearClaw:2,monopolyIngot:8},desc:'4티어 · 최대 체력 +290 · 피해 25% 감소 · 공격 시 30% 확률 체력 200 회복',kind:'armor',maxHp:290,reduce:.25,healOnAttack:.30,healAmount:200},
 {id:'fear-bear-hunter-armor',name:'공포 곰 사냥갑',where:'junglebench',cost:{fearBearHide:6,fearBearClaw:4,monopolyIngot:7,flowerLeather:3},desc:'4티어 · 최대 체력 +250 · 공격력 +25 · 공격 시 30% 확률 체력 200 회복',kind:'armor',maxHp:250,reduce:.20,bonusDamage:25,healOnAttack:.30,healAmount:200},
 {id:'jungle-bench',name:'독점석 제작대',where:'goldbench',cost:{monopolyIngot:5,goldIngot:3,wood:2,flowerLeather:4},desc:'밀림과 설원 장비를 제작하는 상위 제작대',kind:'structure'},
-{id:'portal',name:'포탈',where:'junglebench',cost:{goldIngot:15,ironIngot:15,monopolyIngot:10,wood:15,stone:10},desc:'2개 이상 설치 후 두 번 누르면 순간이동 · 3개 이상이면 목적지 선택',kind:'structure'},
+{id:'portal',name:'포탈',where:'hand',unlockAfter:'jungle-bench',cost:{goldIngot:15,ironIngot:15,monopolyIngot:10,wood:15,stone:10},desc:'독점석 제작대를 만든 뒤 맨손 제작 · 2개 이상 설치 후 두 번 누르면 순간이동 · 3개 이상이면 목적지 선택',kind:'structure'},
 {id:'cooked-bird-meat',name:'구운 꿩고기',where:'smelt',cost:{},desc:'세계수 꿩고기를 구운 음식 · 밥 +55',kind:'consumable',hunger:55},
 {id:'cooked-crystal-goat-meat',name:'구운 수정염소고기',where:'smelt',cost:{},desc:'수정염소고기를 구운 음식 · 밥 +65',kind:'consumable',hunger:65},
 {id:'yeti-horn-maul',name:'예티 뿔 대검',where:'junglebench',cost:{yetiHorn:2,yetiHide:2,monopolyIngot:8,goldIngot:5},desc:'공격력 340 · 설원 5티어 무기',kind:'weapon',power:340,range:104,cooldown:1000},
@@ -1290,8 +1290,10 @@ function placeBlueprintAt(x,y){
  if(multiplayer.connected&&multiIsHost())multiplayer.worldAt=0;
  checkAchievementProgress(true);showNotice(r.name+' 배치 완료');updateHud();saveGame(false);return true
 }
+function portalHandUnlocked(){return!!state.jungleBench||!!state.knownItems?.['jungle-bench']}
 function craftItem(id){
  const r=item(id);if(!r)return
+ if(r.id==='portal'&&!portalHandUnlocked()){showNotice('독점석 제작대를 먼저 만들어야 포탈을 맨손으로 만들 수 있어');return}
  if(state.area==='underwater'&&r.kind==='structure'){showNotice('물속에서는 건축할 수 없어');return}
  if(r.where==='bench'&&!nearBench()){showNotice('제작대 가까이 가야 해');return}
  if(r.where==='ironbench'&&!nearIronBench()){showNotice('철 제작대 가까이 가야 해');return}
@@ -1335,9 +1337,9 @@ function tabState(){
 function renderCraft(){
  tabState();const mode=state.craftMode;
  if(!craftStationBuilt(mode)){state.craftMode='hand';tabState();ui.sheetBody.innerHTML='<div class="info"><b>제작대가 아직 없어</b><br>먼저 해당 제작대를 만들어 설치해야 제작 목록이 열려.</div>';return}
- const list=recipes.filter(r=>r.where===mode).sort((a,b)=>Number(b.id==='portal')-Number(a.id==='portal')||Number(b.kind==='ammo')-Number(a.kind==='ammo'));
+ const list=recipes.filter(r=>r.where===mode&&(r.id!=='portal'||portalHandUnlocked())).sort((a,b)=>Number(b.id==='portal')-Number(a.id==='portal')||Number(b.kind==='ammo')-Number(a.kind==='ammo'));
  const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='junglebench'?'jungle-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
- let head=mode==='hand'?'맨손 제작 · 어디서든 제작 가능':mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='goldbench'?(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearJungleBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
+ let head=mode==='hand'?(portalHandUnlocked()?'맨손 제작 · 어디서든 제작 가능 · 포탈 해금됨':'맨손 제작 · 어디서든 제작 가능'):mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='goldbench'?(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearJungleBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
  const arrowRecipes=list.filter(r=>r.kind==='ammo');
  let html='<div class="info"><b>'+head+'</b><br>모든 제작법과 필요 재료가 처음부터 공개돼.</div>'+(arrowRecipes.length?'<div class="info"><b>화살 제작법</b><br>'+arrowRecipes.map(r=>r.name+' · '+costText(r.cost)).join('<br>')+'</div>':'')+'<div class="grid">';
  for(const r of list){
