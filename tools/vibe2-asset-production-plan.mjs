@@ -700,6 +700,73 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     })
   };
 
+  const managementBottlenecks=[];
+  if(repositoryAssetSync.missingRepositoryPathCount>0)managementBottlenecks.push({
+    id:'MISSING_REPOSITORY_PATHS',
+    severity:'HIGH',
+    count:repositoryAssetSync.missingRepositoryPathCount,
+    action:'REPAIR_ASSET_PATH_METADATA_OR_MATERIALIZE_SOURCE'
+  });
+  if(repositoryAssetSync.automaticSearchEligibleCount===0&&repositoryAssetSync.totalAssetRows>0)managementBottlenecks.push({
+    id:'NO_AUTOMATIC_SEARCH_ELIGIBLE_ASSETS',
+    severity:'CRITICAL',
+    count:repositoryAssetSync.totalAssetRows,
+    action:'REPAIR_SEARCH_ELIGIBILITY_METADATA'
+  });
+  if(repositoryAssetSync.sourceConsumerAssetCount===0&&repositoryAssetSync.automaticSearchEligibleCount>0)managementBottlenecks.push({
+    id:'NO_DETECTED_SOURCE_CONSUMPTION',
+    severity:'HIGH',
+    count:repositoryAssetSync.automaticSearchEligibleCount,
+    action:'BIND_SEARCHABLE_LIBRARY_ASSETS_IN_EXISTING_GAME_RESPONSIBILITIES'
+  });
+  if((libraryPlan.volumeHealth?.totalDeficit||0)>0)managementBottlenecks.push({
+    id:'VOLUME_DEFICIT',
+    severity:'MEDIUM',
+    count:Number(libraryPlan.volumeHealth.totalDeficit||0),
+    action:'CONSUME_PRIORITY_VOLUME_WORKLIST'
+  });
+  if((libraryPlan.qualityHealth?.unscoredAssetCount||0)>0)managementBottlenecks.push({
+    id:'QUALITY_EVIDENCE_GAP',
+    severity:'MEDIUM',
+    count:Number(libraryPlan.qualityHealth.unscoredAssetCount||0),
+    action:'AUDIT_EXISTING_ASSETS_WITH_CURRENT_INTERNAL_1000_CONTRACT'
+  });
+  if((libraryPlan.qualityHealth?.below880Count||0)>0)managementBottlenecks.push({
+    id:'QUALITY_BELOW_INTERNAL_PASS',
+    severity:'MEDIUM',
+    count:Number(libraryPlan.qualityHealth.below880Count||0),
+    action:'IMPROVE_WEAKEST_INTERNAL_AUDIT_AXIS'
+  });
+  const assetManagementHealth={
+    version:1,
+    status:managementBottlenecks.some(row=>row.severity==='CRITICAL')?'CRITICAL_REPAIR_REQUIRED':
+      managementBottlenecks.some(row=>row.severity==='HIGH')?'BOTTLENECK_REPAIR_REQUIRED':
+      libraryPlan.volumeReady?'QUALITY_MANAGEMENT':'VOLUME_MANAGEMENT',
+    volume:libraryPlan.volumeHealth,
+    quality:libraryPlan.qualityHealth,
+    searchAndConsumption:{
+      totalAssetRows:repositoryAssetSync.totalAssetRows,
+      repositoryPathPresentCount:repositoryAssetSync.repositoryPathPresentCount,
+      missingRepositoryPathCount:repositoryAssetSync.missingRepositoryPathCount,
+      automaticSearchEligibleCount:repositoryAssetSync.automaticSearchEligibleCount,
+      automaticSearchEligiblePercent:repositoryAssetSync.totalAssetRows>0
+        ?Math.round((repositoryAssetSync.automaticSearchEligibleCount/repositoryAssetSync.totalAssetRows)*1000)/10:0,
+      sourceConsumerAssetCount:repositoryAssetSync.sourceConsumerAssetCount,
+      sourceConsumerBindingCount:repositoryAssetSync.sourceConsumerBindingCount,
+      sourceConsumerGameCount:(repositoryAssetSync.sourceConsumerGameIds||[]).length,
+      sourceConsumerGameIds:repositoryAssetSync.sourceConsumerGameIds,
+      sourceConsumptionEvidenceMode:repositoryAssetSync.sourceConsumptionEvidenceMode,
+      sourceConsumptionDoesNotPromoteProductionVerification:true
+    },
+    bottlenecks:managementBottlenecks,
+    highestPriorityBottleneck:managementBottlenecks[0]||null,
+    nextAction:libraryPlan.autonomousNextAction,
+    continueWithoutHuman:true,
+    continueWithoutChatgpt:true,
+    existingAssetDevelopmentLaneOnly:true,
+    newWorkflowSchedulerQueuePipelineForbidden:true
+  };
+
   next.internalAssetLibraryAutomation={
     ...(next.internalAssetLibraryAutomation||{}),
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
@@ -714,6 +781,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     volumeReady:libraryPlan.volumeReady,
     volumeBlockingDomains:libraryPlan.volumeBlockingDomains,
     uiBlockingSubsystems:libraryPlan.uiBlockingSubsystems,
+    volumeHealth:libraryPlan.volumeHealth,
+    qualityHealth:libraryPlan.qualityHealth,
+    assetManagementHealth,
     nextVolumeActions:libraryPlan.nextVolumeActions,
     persistentWorklistField:libraryPlan.persistentWorklistField,
     volumeActionConsumption:libraryPlan.volumeActionConsumption,
@@ -2156,6 +2226,9 @@ export function buildVibeAssetProductionPlan({
     qualityTarget:Number(executionLibraryPlan.qualityTarget||libraryAutomation.qualityTarget||1000),
     volumeBlockingDomains:freezeList((executionLibraryPlan.volumeBlockingDomains||[]).map(row=>row?.domain).filter(Boolean)),
     uiBlockingSubsystems:freezeList((executionLibraryPlan.uiBlockingSubsystems||[]).map(row=>row?.subsystem).filter(Boolean)),
+    volumeHealth:freeze({...libraryAutomation.volumeHealth,...executionLibraryPlan.volumeHealth}),
+    qualityHealth:freeze({...libraryAutomation.qualityHealth,...executionLibraryPlan.qualityHealth}),
+    assetManagementHealth:freeze({...libraryAutomation.assetManagementHealth}),
     referenceBreadthProfiles:freezeList(Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES)),
     progressionComplexityProfiles:freezeList(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES)),
     nextVolumeActions:freezeList(activeNextVolumeActions),
@@ -2503,6 +2576,28 @@ export function buildVibeAssetProductionPlan({
   });
   const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput,{task,requestedConcept})));
   const effectiveMissingTypes=freezeList(decisions.filter(row=>row.required!==false&&row.applyFirst?.enabled!==true).map(row=>row.type));
+  const persistedSearchConsumption=companyRegistry?.internalAssetLibraryAutomation?.repositoryAssetSync||{};
+  const libraryConsumptionHealth=freeze({
+    version:1,
+    requestedTypeCount:decisions.length,
+    readyBindingTypeCount:decisions.filter(row=>row.applyFirst?.enabled===true).length,
+    unresolvedBindingTypeCount:effectiveMissingTypes.length,
+    readyBindingPercent:decisions.length?Math.round((decisions.filter(row=>row.applyFirst?.enabled===true).length/decisions.length)*1000)/10:100,
+    reuseCandidateCount:decisions.reduce((sum,row)=>sum+(row.reuseCandidates?.length||0),0),
+    companyCandidateCount:decisions.reduce((sum,row)=>sum+(row.companyCandidates?.length||0),0),
+    repositoryCandidateCount:decisions.reduce((sum,row)=>sum+(row.repositoryCandidates?.length||0),0),
+    sameGameCandidateCount:decisions.reduce((sum,row)=>sum+(row.sameGameCandidates?.length||0),0),
+    closestCompatibleFallbackCount:decisions.reduce((sum,row)=>sum+(row.approximateLibraryCandidates?.length||0),0),
+    preferredCandidateIds:freezeList(decisions.map(row=>row.applyFirst?.preferredCandidateId).filter(Boolean)),
+    detectedSourceConsumerAssetCount:Number(persistedSearchConsumption.sourceConsumerAssetCount||0),
+    detectedSourceConsumerBindingCount:Number(persistedSearchConsumption.sourceConsumerBindingCount||0),
+    detectedSourceConsumerGameCount:(persistedSearchConsumption.sourceConsumerGameIds||[]).length,
+    detectedSourceConsumerGameIds:freezeList(persistedSearchConsumption.sourceConsumerGameIds||[]),
+    sourceConsumptionIsRuntimeVerification:false,
+    actualRuntimeVerificationStillRequired:true,
+    blankAssetForbidden:true,
+    qualityScoreBlocksInitialLibraryUse:false
+  });
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
@@ -2790,6 +2885,7 @@ export function buildVibeAssetProductionPlan({
     selectorMissingTypes:freezeList(selector.missingTypes||[]),
     missingTypes:effectiveMissingTypes,
     decisions,
+    libraryConsumptionHealth,
     applyFirstSummary:freeze({
       enabled:decisions.some(row=>row.applyFirst?.enabled),
       candidateCount:decisions.reduce((sum,row)=>sum+(row.applyFirst?.candidates?.length||0),0),
