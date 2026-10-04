@@ -9,15 +9,15 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "targetPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/daechung-rpg",
         "UNITY": "unity-games/daechung-rpg"
@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-04T11:32:40.482Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "472244f5503fb1453169b37b8456812d805d02bd",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2659,9 +2659,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/horror-escape-room",
         "UNITY": "unity-games/horror-escape-room"
@@ -2738,7 +2738,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "894471019841dc9a92d9b2c7dced238b0d80de70",
       "robloxSourceBootstrapPassedAt": "2026-10-03T14:46:35.672Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T11:30:46.001Z",
@@ -3453,9 +3453,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/amusement-tycoon",
         "UNITY": "unity-games/amusement-tycoon"
@@ -3508,7 +3508,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "7e88e20b8fcf51592a978919b7d9e68b39945743",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:21:40.386Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4500,9 +4500,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/bug-defense",
         "UNITY": "unity-games/bug-defense"
@@ -4555,7 +4555,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "9af61be761c423faee2970b5ea529a6b03dcaec7",
       "robloxSourceBootstrapPassedAt": "2026-10-04T09:34:12.374Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T11:30:46.001Z",
@@ -4947,9 +4947,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/line-defense",
         "UNITY": "unity-games/line-defense"
@@ -5002,7 +5002,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "9af61be761c423faee2970b5ea529a6b03dcaec7",
       "robloxSourceBootstrapPassedAt": "2026-10-04T09:31:59.656Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T11:30:46.001Z",
@@ -5456,9 +5456,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/village-dungeons",
         "UNITY": "unity-games/village-dungeons"
@@ -5504,14 +5504,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "351fa64bca2d454aa04f7971407fc19ea08cab2f",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -11909,9 +11909,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/cozy-island",
         "UNITY": "unity-games/cozy-island"
@@ -11957,8 +11957,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11988,7 +11988,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "af4758478a227efe9638b70babf66676fca95842",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -14157,9 +14157,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/fantasy-survival",
         "UNITY": "unity-games/fantasy-survival"
@@ -14205,14 +14205,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "d09388d2fc2c93ebef29ead3aee5170a8041bacf",
       "robloxSourceBootstrapPassedAt": "2026-10-04T10:33:43.102Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -18854,9 +18854,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/monster-adventure",
         "UNITY": "unity-games/monster-adventure"
@@ -18909,7 +18909,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "894471019841dc9a92d9b2c7dced238b0d80de70",
       "robloxSourceBootstrapPassedAt": "2026-10-03T14:46:35.672Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T11:30:46.001Z",
@@ -23045,9 +23045,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "UNITY": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
@@ -23093,14 +23093,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "5f05a4dfe411f317e30da3cf94f1befcf8b68ce3",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -27231,9 +27231,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-casual-realm-weaver",
         "UNITY": "unity-games/seed-casual-realm-weaver"
@@ -27286,7 +27286,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "2bb1f964bc3f7e1bb2d9e86dd926166d4e4d6dde",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -31535,9 +31535,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
         "UNITY": "unity-games/seed-idle-growth-rpg-crystal-bloom"
@@ -31590,7 +31590,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "2bb1f964bc3f7e1bb2d9e86dd926166d4e4d6dde",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -36055,9 +36055,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-puzzle-chromatic-cascade",
         "UNITY": "unity-games/seed-puzzle-chromatic-cascade"
@@ -36103,14 +36103,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "9239f8fd56c20690022416abbfa0a772e5b98429",
       "robloxSourceBootstrapPassedAt": "2026-10-04T10:33:43.102Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -38803,9 +38803,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
         "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
@@ -38858,7 +38858,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "9af61be761c423faee2970b5ea529a6b03dcaec7",
       "robloxSourceBootstrapPassedAt": "2026-10-04T10:28:13.701Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T11:30:46.001Z",
@@ -42241,9 +42241,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
@@ -42296,7 +42296,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "2bb1f964bc3f7e1bb2d9e86dd926166d4e4d6dde",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:30:46.001Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -46581,9 +46581,9 @@
         "ROBLOX",
         "UNITY"
       ],
-      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "bidirectionalAutoPair": true,
-      "requestEitherStartsBoth": false,
+      "requestEitherStartsBoth": true,
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/survival",
         "UNITY": "unity-games/survival"
@@ -46636,7 +46636,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:31:45.278Z",
+      "updatedAt": "2026-10-04T11:32:49.226Z",
       "robloxSourceCommit": "894471019841dc9a92d9b2c7dced238b0d80de70",
       "robloxSourceBootstrapPassedAt": "2026-10-03T14:46:35.672Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T11:30:46.001Z",
@@ -52767,7 +52767,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T11:32:42.162Z",
+  "updatedAt": "2026-10-04T11:32:49.226Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
