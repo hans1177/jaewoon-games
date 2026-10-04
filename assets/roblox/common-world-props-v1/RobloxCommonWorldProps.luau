@@ -298,6 +298,47 @@ local INTERACTION_ROLE_BY_ID = table.freeze({
 	RESOURCE_WOOD_NODE="HARVEST_OR_INSPECT",
 })
 
+local SOUND_ROLE_BY_ID = table.freeze({
+	SIGNPOST="SIGN_RATTLE",
+	WOOD_FENCE="WOOD_CREAK",
+	WALL_TORCH="TORCH_BURN",
+	WOOD_BARREL="WOOD_CONTAINER",
+	BENCH="WOOD_CREAK",
+	TABLE="WOOD_TAP",
+	MARKET_STALL="CLOTH_FLAP_MARKET",
+	STONE_WELL="ROPE_BUCKET",
+	BED_SINGLE="FABRIC_BED",
+	WARDROBE="WOOD_DOOR",
+	SHELF="WOOD_STORAGE",
+	WORKBENCH="TOOL_WORK",
+	CRAFT_TABLE="TOOL_WORK",
+	COOKING_HEARTH="FIRE_COOK",
+	STORAGE_CABINET="WOOD_DOOR",
+	PLANTER_BOX="SOIL_PLANT",
+	CROP_PLOT="SOIL_FARM",
+	ANIMAL_TROUGH="ANIMAL_YARD",
+	FLOOR_LAMP="LAMP_HUM_OR_FLAME",
+	WALL_SWITCH="SWITCH_CLICK",
+	LEVER_CONTROL="LEVER_CLUNK",
+	NOTICE_BOARD="PAPER_FLUTTER",
+	RUG="FABRIC_STEP",
+	DECOR_STATUE="STONE_TOUCH",
+	WOOD_CART="CART_WHEEL",
+	WOOD_CRATE="WOOD_CONTAINER",
+	TREASURE_CHEST="WOOD_CONTAINER",
+	STREET_LANTERN="LAMP_HUM_OR_FLAME",
+	LAUNDRY_LINE="CLOTH_FLAP",
+	SETTLEMENT_FLAG="CLOTH_FLAP",
+	CANVAS_TENT="CLOTH_FLAP",
+	FIREWOOD_STACK="WOOD_STACK",
+	FARM_TOOL_RACK="TOOL_RATTLE",
+	RUIN_DEBRIS="STONE_RATTLE",
+	CONSTRUCTION_SCAFFOLD="WOOD_CREAK",
+	LORE_STONE="STONE_TOUCH",
+	RESOURCE_ROCK_NODE="ROCK_HIT",
+	RESOURCE_WOOD_NODE="WOOD_HIT",
+})
+
 local function makePart(name, size, color, material, shape)
 	local part = Instance.new("Part")
 	part.Name = name
@@ -699,6 +740,8 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("StudioAssetWorldRole", row.worldRole)
 	model:SetAttribute("StudioAssetSilhouette", row.silhouette)
 	model:SetAttribute("InteractionPresentationRole", row.interactionRole or INTERACTION_ROLE_BY_ID[row.id] or "INSPECT")
+	model:SetAttribute("InteractionSoundRole", row.interactionSoundRole or SOUND_ROLE_BY_ID[row.id] or "PROP_INTERACTION_GENERIC")
+	model:SetAttribute("OwnsAudioPlaybackAuthority", false)
 	model:SetAttribute("OwnsInteractionAuthority", false)
 	model:SetAttribute("OwnsStorageAuthority", false)
 	model:SetAttribute("OwnsCraftingAuthority", false)
