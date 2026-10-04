@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-motion-v1/RobloxCommonMotion.luau
--- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 16종
+-- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 33종
 -- 원칙: 관절 포즈만 소유한다. Humanoid 이동속도/위치/루트모션/데미지/게임플레이 권한은 소유하지 않는다.
 
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
@@ -23,6 +23,23 @@ local MOTION = table.freeze({
 	PARRY_PERFECT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.32, mode = "PARRY"}),
 	GUARD_BREAK = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.70, mode = "GUARD_BREAK"}),
 	COUNTER_READY = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.42, mode = "COUNTER_READY"}),
+	SPRINT = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.48, mode = "LOCOMOTION", stride = 1.28, lift = 0.40, lean = 0.18}),
+	CROUCH_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.40, mode = "CROUCH"}),
+	DODGE_LEFT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.46, mode = "DODGE", direction = -1}),
+	DODGE_RIGHT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.46, mode = "DODGE", direction = 1}),
+	ROLL_FORWARD = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.62, mode = "ROLL"}),
+	CLIMB_LOOP = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.10, mode = "CLIMB"}),
+	SWIM_FORWARD = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.20, mode = "SWIM"}),
+	INTERACT_USE = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.55, mode = "INTERACT"}),
+	GATHER_SWING = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.74, mode = "GATHER"}),
+	CRAFT_LOOP = table.freeze({looped = true, priority = Enum.AnimationPriority.Action, duration = 1.25, mode = "CRAFT"}),
+	CARRY_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Action, duration = 1.60, mode = "CARRY"}),
+	EQUIP_DRAW = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.52, mode = "EQUIP"}),
+	UNEQUIP_STOW = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.52, mode = "UNEQUIP"}),
+	USE_CONSUMABLE = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.78, mode = "CONSUMABLE"}),
+	DOWNED_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Action3, duration = 1.50, mode = "DOWNED"}),
+	REVIVE_HELP = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 1.05, mode = "REVIVE"}),
+	EMOTE_WAVE = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 1.20, mode = "EMOTE"}),
 })
 
 local HIERARCHY = table.freeze({
@@ -440,6 +457,196 @@ local function makeCounterReady(sequence,row)
 	},"Close")
 end
 
+
+local function makeCrouch(sequence,row)
+	for i=0,4 do
+		local t=row.duration*i/4
+		local sway=math.sin(i*math.pi/2)
+		addFrame(sequence,t,{
+			LowerTorso=angles(14+sway*1.2,0,sway*1.0),UpperTorso=angles(-8-sway*0.8,0,-sway*0.7),
+			Head=angles(-4+sway*0.4,0,0),
+			LeftUpperLeg=angles(-38,0,-5),RightUpperLeg=angles(-38,0,5),
+			LeftLowerLeg=angles(62,0,0),RightLowerLeg=angles(62,0,0),
+			LeftUpperArm=angles(-10,0,-8),RightUpperArm=angles(-10,0,8),
+		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+	end
+end
+
+local function makeDodge(sequence,row)
+	local d=row.direction or 1
+	addFrame(sequence,0,{LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0)},"Ready")
+	addFrame(sequence,row.duration*0.30,{
+		LowerTorso=angles(8,-d*8,d*18),UpperTorso=angles(-5,d*10,-d*20),Head=angles(-2,d*12,-d*7),
+		LeftUpperArm=angles(-18,-d*10,-22),RightUpperArm=angles(-18,d*10,22),
+		LeftUpperLeg=angles(d<0 and -22 or 12,0,-6),RightUpperLeg=angles(d>0 and -22 or 12,0,6),
+	},"Commit")
+	addFrame(sequence,row.duration*0.68,{
+		LowerTorso=angles(4,-d*5,d*9),UpperTorso=angles(-2,d*7,-d*10),
+		LeftUpperLeg=angles(6,0,-2),RightUpperLeg=angles(6,0,2),
+	},"Slide")
+	addFrame(sequence,row.duration,{LowerTorso=angles(-1,0,0),UpperTorso=angles(1,0,0)},"Recover")
+end
+
+local function makeRoll(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(12,0,0),UpperTorso=angles(-8,0,0),
+		LeftUpperLeg=angles(-24,0,-3),RightUpperLeg=angles(-24,0,3),
+		LeftLowerLeg=angles(48,0,0),RightLowerLeg=angles(48,0,0),
+	},"Compress")
+	addFrame(sequence,row.duration*0.32,{
+		LowerTorso=angles(52,0,0),UpperTorso=angles(38,0,0),Head=angles(28,0,0),
+		LeftUpperArm=angles(42,0,-20),RightUpperArm=angles(42,0,20),
+	},"Tuck")
+	addFrame(sequence,row.duration*0.65,{
+		LowerTorso=angles(78,0,0),UpperTorso=angles(70,0,0),Head=angles(45,0,0),
+		LeftUpperLeg=angles(-42,0,-4),RightUpperLeg=angles(-42,0,4),
+		LeftLowerLeg=angles(72,0,0),RightLowerLeg=angles(72,0,0),
+	},"Roll")
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(-3,0,0),UpperTorso=angles(2,0,0),
+		LeftUpperLeg=angles(8,0,-2),RightUpperLeg=angles(8,0,2),
+	},"Recover")
+end
+
+local function makeClimb(sequence,row)
+	for i=0,6 do
+		local t=row.duration*i/6
+		local phase=math.pi*2*i/6
+		local a=math.sin(phase)
+		addFrame(sequence,t,{
+			LowerTorso=angles(-6,0,a*2),UpperTorso=angles(9,0,-a*2),Head=angles(-3,0,a),
+			LeftUpperArm=angles(-95+a*32,0,-8),LeftLowerArm=angles(-28-math.max(0,a)*32,0,0),
+			RightUpperArm=angles(-95-a*32,0,8),RightLowerArm=angles(-28-math.max(0,-a)*32,0,0),
+			LeftUpperLeg=angles(18-a*28,0,-3),LeftLowerLeg=angles(38+math.max(0,-a)*26,0,0),
+			RightUpperLeg=angles(18+a*28,0,3),RightLowerLeg=angles(38+math.max(0,a)*26,0,0),
+		},i==0 and "LoopStart" or i==6 and "LoopEnd" or nil)
+	end
+end
+
+local function makeSwim(sequence,row)
+	for i=0,6 do
+		local t=row.duration*i/6
+		local phase=math.pi*2*i/6
+		local a=math.sin(phase)
+		addFrame(sequence,t,{
+			LowerTorso=angles(-12,a*2,a*3),UpperTorso=angles(8,-a*3,-a*4),Head=angles(-5,a*2,0),
+			LeftUpperArm=angles(-55+a*48,-18,-12),LeftLowerArm=angles(-25-a*22,0,-6),
+			RightUpperArm=angles(-55-a*48,18,12),RightLowerArm=angles(-25+a*22,0,6),
+			LeftUpperLeg=angles(a*18,0,-2),RightUpperLeg=angles(-a*18,0,2),
+			LeftLowerLeg=angles(math.max(0,-a)*22,0,0),RightLowerLeg=angles(math.max(0,a)*22,0,0),
+		},i==0 and "LoopStart" or i==6 and "LoopEnd" or nil)
+	end
+end
+
+local function makeInteract(sequence,row)
+	addFrame(sequence,0,{},"Ready")
+	addFrame(sequence,row.duration*0.45,{
+		UpperTorso=angles(3,-8,0),Head=angles(-2,-10,0),
+		RightUpperArm=angles(-52,22,18),RightLowerArm=angles(-38,0,6),RightHand=angles(-8,0,-3),
+	},"Reach")
+	addFrame(sequence,row.duration,{UpperTorso=angles(1,0,0),RightUpperArm=angles(-6,3,5)},"Return")
+end
+
+local function makeGather(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(-5,-8,0),UpperTorso=angles(8,12,0),
+		RightUpperArm=angles(-78,18,32),RightLowerArm=angles(-35,0,12),
+	},"Windup")
+	addFrame(sequence,row.duration*0.42,{
+		LowerTorso=angles(8,14,4),UpperTorso=angles(-8,-18,-6),
+		RightUpperArm=angles(42,-26,18),RightLowerArm=angles(-12,0,8),
+		LeftUpperArm=angles(-18,0,-10),
+	},"Contact")
+	addFrame(sequence,row.duration,{LowerTorso=angles(-1,0,0),UpperTorso=angles(1,0,0)},"Recover")
+end
+
+local function makeCraft(sequence,row)
+	for i=0,4 do
+		local t=row.duration*i/4
+		local a=math.sin(i*math.pi)
+		addFrame(sequence,t,{
+			UpperTorso=angles(6,a*5,0),Head=angles(4,-a*4,0),
+			LeftUpperArm=angles(-48+a*12,-10,-14),LeftLowerArm=angles(-58-a*18,0,-8),
+			RightUpperArm=angles(-48-a*12,10,14),RightLowerArm=angles(-58+a*18,0,8),
+		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+	end
+end
+
+local function makeCarry(sequence,row)
+	for i=0,4 do
+		local t=row.duration*i/4
+		local breathe=math.sin(i*math.pi/2)
+		addFrame(sequence,t,{
+			LowerTorso=angles(4+breathe*0.5,0,0),UpperTorso=angles(-2-breathe*0.5,0,0),
+			LeftUpperArm=angles(-55,-12,-18),LeftLowerArm=angles(-78,0,-8),
+			RightUpperArm=angles(-55,12,18),RightLowerArm=angles(-78,0,8),
+		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+	end
+end
+
+local function makeEquip(sequence,row)
+	addFrame(sequence,0,{RightUpperArm=angles(-6,3,5)},"Start")
+	addFrame(sequence,row.duration*0.48,{
+		UpperTorso=angles(2,-8,0),RightUpperArm=angles(-72,18,24),RightLowerArm=angles(-58,0,10),
+	},"Draw")
+	addFrame(sequence,row.duration,{
+		UpperTorso=angles(0,0,0),RightUpperArm=angles(-18,8,10),RightLowerArm=angles(-20,0,5),
+	},"Ready")
+end
+
+local function makeUnequip(sequence,row)
+	addFrame(sequence,0,{RightUpperArm=angles(-18,8,10),RightLowerArm=angles(-20,0,5)},"Ready")
+	addFrame(sequence,row.duration*0.52,{
+		UpperTorso=angles(2,-8,0),RightUpperArm=angles(-72,18,24),RightLowerArm=angles(-58,0,10),
+	},"Stow")
+	addFrame(sequence,row.duration,{RightUpperArm=angles(-6,3,5)},"End")
+end
+
+local function makeConsumable(sequence,row)
+	addFrame(sequence,0,{},"Ready")
+	addFrame(sequence,row.duration*0.42,{
+		Head=angles(-8,-4,0),RightUpperArm=angles(-92,14,24),RightLowerArm=angles(-105,0,12),RightHand=angles(-14,0,0),
+	},"Use")
+	addFrame(sequence,row.duration*0.72,{
+		Head=angles(4,0,0),RightUpperArm=angles(-45,8,14),RightLowerArm=angles(-60,0,7),
+	},"Finish")
+	addFrame(sequence,row.duration,{},"Recover")
+end
+
+local function makeDowned(sequence,row)
+	for i=0,4 do
+		local t=row.duration*i/4
+		local breathe=math.sin(i*math.pi/2)
+		addFrame(sequence,t,{
+			LowerTorso=angles(58,0,4),UpperTorso=angles(48+breathe*1.2,0,-5),Head=angles(32+breathe*0.8,0,6),
+			LeftUpperArm=angles(42,0,-32),RightUpperArm=angles(38,0,30),
+			LeftUpperLeg=angles(-28,0,-5),RightUpperLeg=angles(-16,0,7),
+			LeftLowerLeg=angles(46,0,0),RightLowerLeg=angles(30,0,0),
+		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+	end
+end
+
+local function makeRevive(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(10,0,0),UpperTorso=angles(-6,0,0),
+		LeftUpperLeg=angles(-34,0,-4),RightUpperLeg=angles(-12,0,4),LeftLowerLeg=angles(62,0,0),RightLowerLeg=angles(28,0,0),
+	},"Kneel")
+	addFrame(sequence,row.duration*0.50,{
+		UpperTorso=angles(12,-8,0),Head=angles(8,-8,0),
+		LeftUpperArm=angles(-62,-12,-18),LeftLowerArm=angles(-72,0,-8),
+		RightUpperArm=angles(-62,12,18),RightLowerArm=angles(-72,0,8),
+	},"Assist")
+	addFrame(sequence,row.duration,{LowerTorso=angles(2,0,0),UpperTorso=angles(0,0,0)},"Release")
+end
+
+local function makeEmote(sequence,row)
+	addFrame(sequence,0,{},"Ready")
+	addFrame(sequence,row.duration*0.28,{RightUpperArm=angles(-125,8,28),RightLowerArm=angles(-18,0,12),RightHand=angles(0,0,-12)},"Raise")
+	addFrame(sequence,row.duration*0.52,{RightUpperArm=angles(-132,-12,18),RightLowerArm=angles(-22,0,18)},"WaveLeft")
+	addFrame(sequence,row.duration*0.76,{RightUpperArm=angles(-132,18,32),RightLowerArm=angles(-22,0,4)},"WaveRight")
+	addFrame(sequence,row.duration,{},"Return")
+end
+
 local BUILDERS = table.freeze({
 	IDLE = makeIdle,
 	LOCOMOTION = makeLocomotion,
@@ -455,6 +662,21 @@ local BUILDERS = table.freeze({
 	PARRY = makeParry,
 	GUARD_BREAK = makeGuardBreak,
 	COUNTER_READY = makeCounterReady,
+	CROUCH = makeCrouch,
+	DODGE = makeDodge,
+	ROLL = makeRoll,
+	CLIMB = makeClimb,
+	SWIM = makeSwim,
+	INTERACT = makeInteract,
+	GATHER = makeGather,
+	CRAFT = makeCraft,
+	CARRY = makeCarry,
+	EQUIP = makeEquip,
+	UNEQUIP = makeUnequip,
+	CONSUMABLE = makeConsumable,
+	DOWNED = makeDowned,
+	REVIVE = makeRevive,
+	EMOTE = makeEmote,
 })
 
 local function resolve(atomId)
@@ -533,11 +755,11 @@ function RobloxCommonMotion.Audit()
 	end
 	table.sort(ids)
 	return table.freeze({
-		version = 2,
+		version = 3,
 		packId = "roblox-common-motion-v1",
 		atoms = table.freeze(ids),
 		atomCount = #ids,
-		expectedAtomCount = 16,
+		expectedAtomCount = 33,
 		companyCommonBase = true,
 		compatibleRig = "R15",
 		keyframeSequenceSource = true,
