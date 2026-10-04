@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-skill-v1",
   "family": "SKILL",
   "platform": "ROBLOX",
@@ -64,6 +64,24 @@
       "source": "RobloxCommonSkillPresentation.luau",
       "factory": "AttachTargetMarker",
       "role": "TARGET_MARK_PRESENTATION"
+    },
+    {
+      "atomId": "TELEGRAPH_LINE",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateTelegraphLine",
+      "role": "LINE_TELEGRAPH_PRESENTATION"
+    },
+    {
+      "atomId": "CHANNEL_RING",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachChannelRing",
+      "role": "CHANNEL_STATE_PRESENTATION"
+    },
+    {
+      "atomId": "BEAM_LINK",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateBeamLink",
+      "role": "LINK_VISUAL_PRESENTATION"
     }
   ]
 }
