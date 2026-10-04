@@ -171,6 +171,92 @@ export const COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS=Object.freeze({
   mixAuthority:false
 });
 
+export const INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT=Object.freeze({
+  version:1,
+  status:'ACTIVE_STUDIO_AUDIO_BREADTH',
+  target:'LAYERED_REACTIVE_WORLD_AND_MUSIC_AUDIO_LIBRARY',
+  roleTargetMin:180,
+  actualVerifiedAudioFileCountSeparateFromRoleCoverage:true,
+  music:Object.freeze({
+    roles:Object.freeze([
+      'TITLE_MENU','SAFE_HOME','EXPLORATION_CALM','EXPLORATION_TENSION','REGION_THEME','CITY_THEME','VILLAGE_THEME',
+      'WILDERNESS_THEME','DUNGEON_TENSION','CAVE_THEME','SEA_TRAVEL','STEALTH','DANGER','COMBAT_ENTER',
+      'COMBAT_LAYER_LOW','COMBAT_LAYER_MID','COMBAT_LAYER_HIGH','BOSS_INTRO','BOSS_PHASE_LOW','BOSS_PHASE_HIGH',
+      'BOSS_FINAL_PHASE','VICTORY','DEFEAT','DISCOVERY','STORY_REVEAL','FACTION_THEME','ERA_THEME','FESTIVAL_EVENT',
+      'WEATHER_LAYER','NIGHT_LAYER','ECLIPSE_OR_ANOMALY_LAYER'
+    ]),
+    transitionAxes:Object.freeze(['LOCATION','THREAT','COMBAT_INTENSITY','BOSS_PHASE','DISCOVERY','TIME_OF_DAY','WEATHER','FACTION','STORY_STATE','SAFE_DANGER_STATE']),
+    requirements:Object.freeze(['LOOP_SEAM_OR_CLEAN_ENDING','STEM_OR_LAYER_COMPATIBILITY_WHEN_APPLICABLE','NO_ABRUPT_UNMOTIVATED_RESTART','DUCKING_PRIORITY','MOBILE_BUDGET_VARIANT'])
+  }),
+  ambience:Object.freeze({
+    layers:Object.freeze(['BED','NEAR_LOOP','MID_LOOP','DISTANT_LOOP','SCATTER','ONE_SHOT','INTERACTION_SOURCE','INTERIOR_ROOM_TONE']),
+    roles:Object.freeze([
+      'WIND_LIGHT','WIND_SOFT','WIND_GUST','WIND_GALE','WIND_COLD','WIND_SAND',
+      'RAIN_LIGHT','RAIN_HEAVY','THUNDER_NEAR','THUNDER_FAR','SNOW_HUSH','BLIZZARD_WIND',
+      'FOREST_LEAF_RUSTLE','GRASS_WIND','REED_RUSTLE','WATER_STREAM','WATER_RIVER','SURF_NEAR','SURF_DISTANT',
+      'CAVE_AIR','WATER_DRIP','STONE_ECHO','CITY_CROWD','VILLAGE_ACTIVITY','MARKET_CROWD','DISTANT_VOICE',
+      'MACHINE_HUM','GENERATOR_LOAD','TOOL_WORK','CART_WHEEL','STRUCTURE_CREAK','STRUCTURE_RATTLE',
+      'SIGN_RATTLE','CHAIN_CREAK','CLOTH_FLAP','TORCH_BURN','FIREPLACE','RADIO_STATIC'
+    ])
+  }),
+  creatureVocals:Object.freeze({
+    roles:Object.freeze([
+      'WOLF_HOWL_NEAR','WOLF_HOWL_DISTANT','WOLF_GROWL','WOLF_ATTACK',
+      'COYOTE_HOWL_NEAR','COYOTE_HOWL_DISTANT','BEAR_GROWL','BEAR_ROAR','BOAR_GRUNT','BOAR_CHARGE',
+      'DEER_CALL','ELK_BUGLE','MOOSE_CALL','BISON_BELLOW','FOX_BARK','RABBIT_DISTRESS',
+      'BIRD_DAY','DISTANT_BIRD','DISTANT_CROW','GULL','OWL_NIGHT','BAT_SCATTER',
+      'FROG','INSECT_DAY','INSECT_TWILIGHT','NIGHT_INSECT','INSECT_SWARM',
+      'MONSTER_IDLE','MONSTER_ALERT','MONSTER_ATTACK','MONSTER_HIT','MONSTER_DEATH',
+      'BOSS_VOCAL_INTRO','BOSS_VOCAL_PHASE','BOSS_VOCAL_DEATH'
+    ]),
+    contextAxes:Object.freeze(['SPECIES','STATE','THREAT','DISTANCE','REGION','TIME_OF_DAY','WEATHER','PACK_OR_SOLO']),
+    repeatPolicy:'VARIATION_SET_WITH_COOLDOWN_AND_DEDUPE'
+  }),
+  gameplaySfx:Object.freeze({
+    roles:Object.freeze([
+      'FOOTSTEP_SURFACE','LANDING_SURFACE','SWIM_SPLASH','CLIMB_CONTACT',
+      'WEAPON_SWING_LIGHT','WEAPON_SWING_HEAVY','WEAPON_HIT_FLESH','WEAPON_HIT_ARMOR','WEAPON_HIT_STONE','WEAPON_HIT_WOOD',
+      'BLOCK','PARRY','GUARD_BREAK','CRITICAL_HIT','PROJECTILE_RELEASE','PROJECTILE_FLYBY','PROJECTILE_IMPACT',
+      'SKILL_PREPARE','SKILL_CAST','SKILL_TRAVEL','SKILL_IMPACT','SKILL_LOOP','SKILL_END',
+      'ITEM_PICKUP','ITEM_DROP','LOOT_COMMON','LOOT_RARE','LOOT_LEGENDARY',
+      'CRAFT_START','CRAFT_LOOP','CRAFT_COMPLETE','UPGRADE','REPAIR','DISMANTLE',
+      'DOOR_OPEN','DOOR_CLOSE','CHEST_OPEN','SWITCH','LEVER','BREAK_DESTRUCTION'
+    ])
+  }),
+  ui:Object.freeze({
+    roles:Object.freeze(['UI_HOVER','UI_CONFIRM','UI_CANCEL','UI_ERROR','UI_WARNING','UI_REWARD','UI_TAB','UI_PAGE','UI_NOTIFICATION','UI_QUEST_UPDATE','UI_LEVEL_UP','UI_PURCHASE','UI_FAIL','UI_SUCCESS'])
+  }),
+  spatialMix:Object.freeze({
+    distanceBands:Object.freeze(['NEAR','MID','FAR','DISTANT']),
+    environmentContexts:Object.freeze(['OPEN_AIR','FOREST_DENSE','CAVE','SMALL_INTERIOR','LARGE_INTERIOR','CITY_STREET','UNDERWATER']),
+    requirements:Object.freeze([
+      'DISTANCE_FALLOFF','OCCLUSION_FILTER_ROLE','REVERB_ZONE_ROLE','INTERIOR_EXTERIOR_BLEND',
+      'PRIORITY_DUCKING','SIMULTANEOUS_EVENT_LIMIT','REPEATER_DEDUPE','RANDOMIZED_VARIATION_SET','MOBILE_VOICE_BUDGET'
+    ])
+  }),
+  variation:Object.freeze({
+    minimumRepeaterVariantsRecommended:4,
+    heroOrHighFrequencyVariantsRecommended:8,
+    singleLoopOnlyForbidden:true,
+    exactRepeatBurstForbidden:true,
+    pitchVolumeVariationMaySupplementButNotReplaceDistinctSourceVariation:true,
+    timeWeatherRegionVariantsAllowed:true
+  }),
+  quality:Object.freeze({
+    continual:true,
+    oneAndDoneForbidden:true,
+    weakestAxisFirst:true,
+    axes:Object.freeze([
+      'TIMBRE_IDENTITY','TRANSIENT_BODY_TAIL','LOOP_OR_ENDING','VARIATION_BREADTH','SPATIAL_RESPONSE',
+      'MIX_PRIORITY','EVENT_SYNC','WORLD_STYLE_COHERENCE','REACTIVE_MUSIC_TRANSITION','MOBILE_BUDGET','PROVENANCE'
+    ])
+  }),
+  productionVerifiedAutomatic:false,
+  actualAudioFileRequiredBeforeClaimingPlaybackAsset:true,
+  gameplayAuthority:false,
+  mixRuntimeAuthority:false
+});
+
 export const SEED_ACTION_SURVIVAL_ROGUE_INTERNAL_ASSET_IDEAS=Object.freeze({
   seedId:'seed-action-survival-rogu-echoes-of-the-lost-star',
   sourceGameFacts:Object.freeze({
@@ -702,11 +788,15 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS=Object.freeze({
     ])
   }),
   AUDIO:Object.freeze({
-    minimumDepth:4,
+    minimumDepth:6,
     required:Object.freeze([
-      'UI_CONFIRM','UI_CANCEL','UI_ERROR','UI_REWARD','FOOTSTEP','WEAPON_SWING','WEAPON_HIT','BLOCK_PARRY','CREATURE_VOCAL',
-      'SKILL_CAST','SKILL_IMPACT','ITEM_PICKUP','LOOT_RARITY','CRAFT','UPGRADE','ENVIRONMENT_LOOP','WEATHER','BUILDING',
-      'BOSS','DIALOGUE_UI','MUSIC_TRANSITION','VARIATION_SET','MOBILE_BUDGET_VARIANT'
+      'UI_CONFIRM','UI_CANCEL','UI_ERROR','UI_REWARD','UI_WARNING','UI_NOTIFICATION',
+      'FOOTSTEP','LANDING_SURFACE','WEAPON_SWING','WEAPON_HIT','BLOCK_PARRY','CREATURE_VOCAL','CREATURE_HOWL','CREATURE_DISTANCE_CALL',
+      'SKILL_CAST','SKILL_IMPACT','PROJECTILE','ITEM_PICKUP','LOOT_RARITY','CRAFT','UPGRADE','REPAIR','DESTRUCTION',
+      'ENVIRONMENT_BED','ENVIRONMENT_NEAR','ENVIRONMENT_DISTANT','ENVIRONMENT_SCATTER','WEATHER','WATER','WIND','BUILDING','MACHINE',
+      'INTERIOR_EXTERIOR','OCCLUSION_ROLE','REVERB_ZONE_ROLE','DISTANCE_BAND','BOSS','DIALOGUE_UI',
+      'MUSIC_MENU','MUSIC_EXPLORATION','MUSIC_TENSION','MUSIC_COMBAT_LAYER','MUSIC_BOSS_PHASE','MUSIC_DISCOVERY','MUSIC_REGION',
+      'MUSIC_TIME_WEATHER_LAYER','MUSIC_TRANSITION','VARIATION_SET','REPEATER_DEDUPE','MOBILE_BUDGET_VARIANT'
     ])
   }),
   FOLIAGE:Object.freeze({
@@ -1194,7 +1284,7 @@ export const INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES=Object.freeze({
   }),
   GOTY_MOTION_MUSIC_RESPONSIVITY:Object.freeze({
     version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
-    domainTargetMin:Object.freeze({MOTION:200,AUDIO:120,PRESENTATION:100}),
+    domainTargetMin:Object.freeze({MOTION:200,AUDIO:180,PRESENTATION:100}),
     reusableMotionCategoryTargets:Object.freeze({LOCOMOTION:32,TRAVERSAL:20,COMBAT:64,WEAPON_COMBAT:44,SKILL:24,DEFENSE:20,REACTION:24,SURVIVAL_CRAFTING:24,INTERACTION_UTILITY:20,PAIR:8,ACTING:12,DEATH:8}),
     contextualMotionSystems:Object.freeze(['CONTEXT_SELECTOR','VARIATION_MEMORY','TRANSITION_DIRECTOR','CONTACT_QA','PROCEDURAL_CONTACT_CORRECTION','REACTION_MATCHER','PAIR_MOTION','EMOTION_INTENT','MOTION_LOD','CREATURE_BODY_PLAN_SIGNATURE']),
     reactiveMusicRoles:Object.freeze(['EXPLORATION_CALM','EXPLORATION_TENSION','COMBAT_ENTER','COMBAT_LAYER_LOW','COMBAT_LAYER_HIGH','BOSS_PHASE','VICTORY','DEFEAT','DISCOVERY','CITY','WILDERNESS','DUNGEON','SEA_TRAVEL','STEALTH','DANGER','FACTION_THEME_ROLE','ERA_THEME_ROLE','WEATHER_LAYER','NIGHT_LAYER','SAFE_HOME']),
@@ -1407,10 +1497,18 @@ export const COMMON_LIBRARY_AUTOMATED_IDEA_POOLS=Object.freeze({
     'ONE_HAND_LOADING_VARIANT','LOW_END_DEVICE_LOADING_VARIANT'
   ]),
   AUDIO:Object.freeze([
+    'BGM_TITLE_MENU_SET','BGM_SAFE_HOME_SET','BGM_EXPLORATION_CALM_TENSION_SET','BGM_REGION_THEME_FAMILY',
+    'BGM_COMBAT_LOW_MID_HIGH_STEMS','BGM_BOSS_PHASE_STEMS','BGM_VICTORY_DEFEAT_SET','BGM_DISCOVERY_STORY_REVEAL_SET',
+    'BGM_FACTION_ERA_THEME_FAMILY','BGM_TIME_WEATHER_LAYER_SET','BGM_DUNGEON_STEALTH_DANGER_SET',
     'WIND_STRENGTH_LAYERS','RAIN_DISTANCE_LAYERS','THUNDER_NEAR_FAR','SNOW_MUFFLED_AMBIENCE','INSECT_TIME_OF_DAY_LAYERS',
-    'WILDLIFE_DISTANCE_CALLS','WATER_STREAM_COAST_LAYERS','MACHINE_LOAD_STATES','STRUCTURE_CREAK_STRESS',
-    'TOOL_WORK_VARIATIONS','FOOTSTEP_SURFACE_ROLES','LOOT_RARITY_ROLES','BOSS_WARNING_ROLES','UI_CONFIRM_CANCEL_ERROR_REWARD',
-    'INTERIOR_EXTERIOR_TRANSITION','MOBILE_MIX_PRIORITY_VARIANTS'
+    'WOLF_HOWL_NEAR_DISTANT_SET','COYOTE_HOWL_NEAR_DISTANT_SET','BEAR_ROAR_GROWL_SET','WILDLIFE_DISTANCE_CALLS',
+    'BIRD_CROW_OWL_TIME_OF_DAY_SET','FROG_BAT_INSECT_SCATTER_SET','MONSTER_IDLE_ALERT_ATTACK_HIT_DEATH_SET','BOSS_VOCAL_PHASE_SET',
+    'WATER_STREAM_COAST_LAYERS','CAVE_AIR_DRIP_ECHO_SET','CITY_VILLAGE_MARKET_CROWD_SET',
+    'MACHINE_LOAD_STATES','STRUCTURE_CREAK_STRESS','TOOL_WORK_VARIATIONS','FOOTSTEP_SURFACE_ROLES',
+    'WEAPON_CONTACT_MATERIAL_SET','PROJECTILE_RELEASE_FLYBY_IMPACT_SET','SKILL_PREPARE_CAST_TRAVEL_IMPACT_SET',
+    'LOOT_RARITY_ROLES','CRAFT_REPAIR_UPGRADE_DISMANTLE_SET','DOOR_CHEST_SWITCH_LEVER_SET',
+    'BOSS_WARNING_ROLES','UI_FULL_FEEDBACK_SET','INTERIOR_EXTERIOR_TRANSITION','OCCLUSION_REVERB_ZONE_ROLES',
+    'NEAR_MID_FAR_DISTANCE_BANDS','REPEATER_VARIATION_AND_DEDUPE','MOBILE_MIX_PRIORITY_VARIANTS'
   ]),
   UI:Object.freeze([
     'INVENTORY_DEPTH_EXPANSION','MENU_NAVIGATION_DEPTH_EXPANSION','COMBAT_HUD_DEPTH_EXPANSION','HOUSING_SANDBOX_DEPTH_EXPANSION',
@@ -1433,7 +1531,18 @@ export const INTERNAL_ASSET_REFERENCE_IDEA_POOLS=Object.freeze({
   CREATURE:Object.freeze(['CANINE_WILDLIFE_FAMILY','FELINE_WILDLIFE_FAMILY','URSINE_WILDLIFE_FAMILY','BOAR_WILDLIFE_FAMILY','DEER_HOOFED_WILDLIFE_FAMILY','SMALL_PREY_WILDLIFE_FAMILY','GROUND_BIRD_WILDLIFE_FAMILY','FLYING_BIRD_WILDLIFE_FAMILY','REPTILE_WILDLIFE_FAMILY','AQUATIC_FISH_FAMILY','SHARK_PREDATOR_FAMILY','CEPHALOPOD_FAMILY','CRABLIKE_FAMILY','INSECT_SWARM_FAMILY','ARACHNID_VARIANT_FAMILY','HUMANOID_FACTION_FAMILY','UNDEAD_FAMILY','GOLEM_CONSTRUCT_FAMILY','GIANT_COLOSSUS_FAMILY','APEX_PREDATOR_FAMILY','PREY_PREDATOR_ECOLOGY_PAIR','PACK_BEHAVIOR_PRESENTATION','AMBUSH_BEHAVIOR_PRESENTATION','TERRITORIAL_BEHAVIOR_PRESENTATION','NORMAL_ALPHA_ELITE_CHAMPION_FAMILY','MINIBOSS_WORLD_BOSS_SIGNATURE','REGION_CLIMATE_SURFACE_VARIANTS','AGE_SIZE_PROPORTION_VARIANTS','DAMAGE_SCAR_WEAR_VARIANTS','CREATURE_LOD_FAMILY']),
   FOLIAGE:Object.freeze(['BAMBOO_SPECIES_FAMILY','TEA_FIELD_FOLIAGE','RICE_FIELD_FOLIAGE','COASTAL_PINE_FAMILY','MOUNTAIN_HERB_FAMILY','MEDICINAL_PLANT_FAMILY','POISON_PLANT_FAMILY','ORCHARD_TREE_FAMILY','RIVER_REED_FAMILY','TEMPLE_GARDEN_FAMILY','WAR_DAMAGED_FOLIAGE','SEASONAL_CIVILIZATION_VARIANTS']),
   PRESENTATION:Object.freeze(['INVASION_WARNING_SEQUENCE','PORT_DISCOVERY_SEQUENCE','SHIP_DEPARTURE_SEQUENCE','TRADE_SUCCESS_SEQUENCE','ERA_TRANSITION_SEQUENCE','CITY_GROWTH_SEQUENCE','WAR_DECLARATION_SEQUENCE','DIPLOMACY_RESOLUTION_SEQUENCE','TECH_UNLOCK_SEQUENCE','TERRITORY_CHANGE_SEQUENCE','FACTION_RANK_UP_SEQUENCE','DOJO_MASTERY_SEQUENCE','SECT_INITIATION_SEQUENCE','SECRET_ART_DISCOVERY_SEQUENCE','WORLD_EVENT_BANNER_FAMILY','EXPLORATION_LANDMARK_REVEAL','RARE_ENCOUNTER_REVEAL','TOURNAMENT_INTRO_RESULT','STORY_BRANCH_CONSEQUENCE','PROGRESSION_MILESTONE_SEQUENCE','BOSS_PHASE_SEQUENCE','FESTIVAL_EVENT_SEQUENCE','SHIPWRECK_EVENT_SEQUENCE','CIVILIZATION_CRISIS_SEQUENCE']),
-  AUDIO:Object.freeze(['UI_CONFIRM_CANCEL_ERROR_REWARD_ROLES','FOOTSTEP_SURFACE_ROLE_FAMILY','WEAPON_SWING_HIT_BLOCK_PARRY_ROLES','CREATURE_VOCAL_ROLE_FAMILY','SKILL_CAST_IMPACT_ROLE_FAMILY','ITEM_PICKUP_ROLE_FAMILY','CRAFT_UPGRADE_ROLE_FAMILY','BUILDING_CONSTRUCTION_DAMAGE_ROLES','PORT_HARBOR_AMBIENCE_ROLES','SAIL_ROPE_WOOD_SHIP_ROLES','MARKET_CITY_CROWD_ROLES','NAVAL_COMBAT_WARNING_ROLES','DIPLOMACY_CIVILIZATION_EVENT_ROLES','ERA_TECH_UNLOCK_ROLES','EXPLORATION_DISCOVERY_MUSIC_ROLES','COMBAT_INTENSITY_MUSIC_LAYERS','BOSS_PHASE_MUSIC_LAYERS','TIME_WEATHER_MUSIC_LAYERS','FACTION_THEME_ROLE_FAMILY','SAFE_HOME_MUSIC_ROLE','DUNGEON_TENSION_MUSIC_ROLE','SEA_TRAVEL_MUSIC_ROLE','VARIATION_SET_CONTRACTS','MOBILE_AUDIO_BUDGET_VARIANTS']),
+  AUDIO:Object.freeze([
+    'UI_CONFIRM_CANCEL_ERROR_REWARD_ROLES','FOOTSTEP_SURFACE_ROLE_FAMILY','WEAPON_SWING_HIT_BLOCK_PARRY_ROLES',
+    'CREATURE_VOCAL_ROLE_FAMILY','CANINE_HOWL_DISTANCE_ROLE_FAMILY','WILDLIFE_TIME_STATE_CALL_FAMILY',
+    'SKILL_CAST_IMPACT_ROLE_FAMILY','PROJECTILE_AUDIO_ROLE_FAMILY','ITEM_PICKUP_ROLE_FAMILY','CRAFT_UPGRADE_ROLE_FAMILY',
+    'BUILDING_CONSTRUCTION_DAMAGE_ROLES','PORT_HARBOR_AMBIENCE_ROLES','SAIL_ROPE_WOOD_SHIP_ROLES','MARKET_CITY_CROWD_ROLES',
+    'CAVE_WATER_WIND_AMBIENCE_ROLES','INTERIOR_EXTERIOR_ROOMTONE_ROLES','OCCLUSION_REVERB_DISTANCE_ROLE_FAMILY',
+    'NAVAL_COMBAT_WARNING_ROLES','DIPLOMACY_CIVILIZATION_EVENT_ROLES','ERA_TECH_UNLOCK_ROLES',
+    'TITLE_MENU_MUSIC_ROLE','EXPLORATION_DISCOVERY_MUSIC_ROLES','COMBAT_INTENSITY_MUSIC_LAYERS','BOSS_PHASE_MUSIC_LAYERS',
+    'TIME_WEATHER_MUSIC_LAYERS','FACTION_THEME_ROLE_FAMILY','SAFE_HOME_MUSIC_ROLE','DUNGEON_TENSION_MUSIC_ROLE',
+    'STEALTH_DANGER_MUSIC_ROLE','VICTORY_DEFEAT_MUSIC_ROLE','SEA_TRAVEL_MUSIC_ROLE',
+    'VARIATION_SET_CONTRACTS','REPEATER_DEDUPE_CONTRACTS','MOBILE_AUDIO_BUDGET_VARIANTS'
+  ]),
   UI:Object.freeze(['ECONOMY_TRADE_DEPTH_EXPANSION','WORLD_STRATEGY_DIPLOMACY_DEPTH_EXPANSION','FLEET_NAVIGATION_DEPTH_EXPANSION','CONQUEST_DEFENSE_DEPTH_EXPANSION','PROGRESSION_GROWTH_DEPTH_EXPANSION','SKILL_BUILD_DEPTH_EXPANSION','PROFESSION_CRAFTING_DEPTH_EXPANSION','FACTION_STORY_DEPTH_EXPANSION','EXPLORATION_EVENT_DEPTH_EXPANSION'])
 });
 
@@ -1461,8 +1570,26 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
   networkAuthority:false
 });
 
+export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
+  BUILDING:Object.freeze(['FUNCTION_ROLE','INTERIOR_EXTERIOR','MATERIAL_TIER','REGION_CLIMATE','DAMAGE_REPAIR_DECAY','OWNERSHIP_FACTION','CONSTRUCTION_STATE','LOD']),
+  CREATURE:Object.freeze(['BODY_PLAN','AGE_SIZE','REGION_CLIMATE','NORMAL_ALPHA_ELITE_BOSS','SURFACE_MATERIAL','DAMAGE_SCAR_WEAR','MOTION_IDENTITY','SEASON_EVENT','LOD']),
+  MOTION:Object.freeze(['INTENT','WEIGHT','SPEED','START_STOP_TURN','WEAPON_STANCE','REACTION_DIRECTION_STRENGTH','FATIGUE_INJURY','EMOTION_ACTING','CONTACT','LOD']),
+  UI:Object.freeze(['DEFAULT_HOVER_PRESSED_DISABLED','EMPTY_LOADING_ERROR_SUCCESS','TOUCH_GAMEPAD_KEYBOARD','COMPACT_STANDARD_EXPANDED','ACCESSIBILITY','INFORMATION_DENSITY','CONTEXT_STATE']),
+  WORLD_PROP:Object.freeze(['FUNCTION_ROLE','INTERACTION_STATE','REGION_CLIMATE','WEAR_DAMAGE','OWNERSHIP_FACTION','SET_DRESSING_CONTEXT','LOD']),
+  ENVIRONMENT:Object.freeze(['BIOME_REGION','FOREGROUND_MIDGROUND_BACKGROUND','WEATHER','TIME_OF_DAY','SEASON','CIVILIZATION_STATE','DAMAGE_RECOVERY','ATMOSPHERE','LOD_STREAMING']),
+  ITEM:Object.freeze(['RARITY','MATERIAL_TIER','WORLD_DROP_INVENTORY_CRAFT','USED_UNUSED_EMPTY','REGION_SOURCE','WEAR_DAMAGE','STACK_PRESENTATION']),
+  SKILL:Object.freeze(['PREPARE_TELEGRAPH_RELEASE_IMPACT_RECOVERY','PROJECTILE_BEAM_AOE_SUMMON','BUFF_DEBUFF_HEAL','ELEMENT_AFFINITY','POWER_TIER','MOBILE_DENSITY']),
+  VFX:Object.freeze(['ANTICIPATION_CONTACT_AFTEREFFECT','INTENSITY_TIER','SHAPE_LANGUAGE','ELEMENT_AFFINITY','WEATHER_ENVIRONMENT','MOBILE_DENSITY','LOD']),
+  PRESENTATION:Object.freeze(['INTRO_TRANSITION_RESULT','DISCOVERY_MILESTONE','SUCCESS_FAILURE_RECOVERY','BOSS_PHASE','WORLD_EVENT','INPUT_SKIP_ACCESSIBILITY','MOBILE_DENSITY']),
+  CHARACTER_GEAR:Object.freeze(['BODY_SLOT','LIGHT_MEDIUM_HEAVY','OCCUPATION_FACTION','REGION_CLIMATE','RANK_RARITY','DAMAGE_WEAR','CEREMONIAL_WORK_COMBAT','LOD']),
+  WEAPON:Object.freeze(['FAMILY_ROLE','ONE_TWO_HAND','RARITY_ORNAMENT','MATERIAL_TIER','DAMAGE_WEAR','REGION_FACTION','EQUIP_WORLD_DROP_ICON','MOTION_VFX_PAIRING','LOD']),
+  AUDIO:Object.freeze(['EVENT_ROLE','MUSIC_STATE','INTENSITY_LAYER','DISTANCE_BAND','SURFACE_MATERIAL','CREATURE_SPECIES_STATE','WEATHER_TIME','REGION_FACTION','INTERIOR_EXTERIOR','OCCLUSION_REVERB','VARIATION_SET','REPEATER_DEDUPE','MOBILE_BUDGET']),
+  FOLIAGE:Object.freeze(['SPECIES','BIOME_REGION','SEASON','WEATHER_WIND','HEALTH_DAMAGE','DENSITY','FOREGROUND_MIDGROUND_BACKGROUND','LOD']),
+  MATERIAL:Object.freeze(['SURFACE_FAMILY','CLEAN_WORN_DAMAGED','DRY_WET_FROZEN_CORRODED','REGION_CLIMATE','RARITY_ENERGY','LIGHT_RESPONSE','LOD_COST'])
+});
+
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:9,
+  version:11,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1489,6 +1616,12 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'CONTINUE_NORMAL_SAFE_ASSET_WORK_WITHOUT_HUMAN_OR_CHATGPT_PRESENCE',
     'QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION',
     'ENTER_QUALITY_UP_1000_IMMEDIATELY_AFTER_RECOMMENDED_VOLUME',
+    'RESCAN_LIBRARY_TYPE_ROLE_AND_QUALITY_METADATA_EVERY_CYCLE',
+    'REINDEX_INTERNAL_REUSE_DONORS_FROM_CURRENT_QUALITY',
+    'REBUILD_WORKLIST_AFTER_LIBRARY_FRESHNESS_CHANGE',
+    'REVIEW_SEMANTIC_DUPLICATE_GROUPS_WITHOUT_AUTOMATIC_DELETION',
+    'REBUILD_AUDIO_BGM_AMBIENCE_VOCAL_SFX_BREADTH',
+    'REAUDIT_EXISTING_AUDIO_QUALITY_AND_VARIATION',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
   ]),
   countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1593,7 +1726,20 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     qualityEntryAction:'QUALITY_UP_1000',
     qualitySelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
     qualityTarget:1000,
-    postQualityTargetAction:'HOLD_RECOMMENDED_VOLUME_AND_REOPEN_ONLY_FOR_NEW_VERIFIED_GAP_OR_QUALITY_REGRESSION',
+    postQualityTargetAction:'KEEP_REAUDITING_EXISTING_ASSETS_AND_REOPEN_ON_NEW_CRITERIA_BETTER_REFERENCE_OBSERVED_DEFECT_LIBRARY_CHANGE_OR_QUALITY_REGRESSION',
+    continuousExistingAssetQualityEvolution:true,
+    oneAndDoneAssetCompletionForbidden:true,
+    reAuditExistingAssetsEveryMaintenanceCycle:true,
+    quality1000IsCurrentContractCeilingNotPermanentCompletion:true,
+    reopenTriggers:Object.freeze([
+      'NEW_QUALITY_CRITERIA',
+      'NEW_HIGHER_QUALITY_INTERNAL_REFERENCE',
+      'OBSERVED_RUNTIME_OR_VISUAL_DEFECT',
+      'NEW_PLATFORM_OR_LOD_REQUIREMENT',
+      'NEW_STYLE_EXPRESSION_REQUIREMENT',
+      'LIBRARY_TYPE_ROLE_OR_QUALITY_CHANGE',
+      'QUALITY_REGRESSION'
+    ]),
     terminalStateForbidden:true,
     internalQualityDoesNotPromoteProduction:true,
     rawReferencePersistenceForbidden:true,
@@ -1603,6 +1749,37 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     newPipelineRequired:false,
     newWrapperRequired:false,
     newShadowSystemRequired:false
+  }),
+  autonomousMaintenanceContract:Object.freeze({
+    version:1,
+    status:'ACTIVE_SELF_MAINTAINING_LIBRARY',
+    trigger:'EVERY_EXISTING_ASSET_DEVELOPMENT_PLANNING_EXECUTION',
+    ownerPresenceRequired:false,
+    humanPresenceRequired:false,
+    chatgptPresenceRequired:false,
+    operations:Object.freeze([
+      'RESCAN_CURRENT_CATALOGS_AND_REGISTRY',
+      'REBUILD_INVENTORY_TYPE_ROLE_QUALITY_FINGERPRINTS',
+      'DETECT_NEW_OR_REMOVED_TYPE_ROLE_METADATA',
+      'REINDEX_HIGHEST_QUALITY_INTERNAL_REUSE_DONORS',
+      'REBUILD_VOLUME_AND_QUALITY_PRIORITY_FROM_CURRENT_LIBRARY',
+      'MARK_STALE_CATALOG_ROWS_REVIEW_ONLY',
+      'BUILD_SEMANTIC_DUPLICATE_REVIEW_GROUPS',
+      'PERSIST_CANONICAL_REGISTRY_ONLY_WHEN_CHANGED',
+      'CONTINUE_NEXT_SAFE_ASSET_ACTION'
+    ]),
+    currentLibraryAlwaysWins:true,
+    qualityUpdatesReorderReuseDonors:true,
+    newTypeOrRoleReopensRelevantIdeation:true,
+    qualityRegressionReopensQualityWork:true,
+    existingAssetsReauditedContinuously:true,
+    quality1000StillReauditedAgainstCurrentContract:true,
+    strongerReferenceOrNewCriterionMayReopenExistingAsset:true,
+    staleRowsNeverAutoDeleted:true,
+    semanticDuplicatesReviewOnly:true,
+    originalAssetsPreserved:true,
+    maintenanceMayNotPromoteProductionVerified:true,
+    maintenanceMayNotCreateNewWorkflowSchedulerQueuePipelineWrapperOrShadow:true
   }),
   reuseAdaptRecombineBeforeNewAuthoring:true,
   deleteExistingAssetAutomatically:false,
@@ -1617,6 +1794,130 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   wrapperCreated:false,
   shadowSystemCreated:false
 });
+
+function stableAssetMaintenanceHash(value=''){
+  let hash=2166136261;
+  for(const ch of String(value??'')){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
+  return (hash>>>0).toString(16).padStart(8,'0');
+}
+const INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS=Object.freeze([
+  'role','roles','usageRole','usageRoles','systemRole','systemRoles','itemRole','toolRole','gearRole','creatureRole',
+  'environmentRole','environmentRoles','buildingRole','worldRole','interactionRole','presentationRoles','motionRole',
+  'combatRole','ecologyRole','skillFamily','subfamily','type'
+]);
+function internalAssetMaintenanceRoleTokens(asset={}){
+  const out=[];
+  for(const field of INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS){
+    const value=asset?.[field];
+    for(const entry of (Array.isArray(value)?value:[value])){
+      const token=upper(entry).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+      if(token)out.push(token);
+    }
+  }
+  return uniq(out).sort();
+}
+function internalAssetMaintenanceQuality(asset={}){
+  const declared=Number(asset?.internalAuditScore);
+  if(Number.isFinite(declared))return Math.round(clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10;
+  const audit=scoreInternalAssetAudit1000({asset});
+  return audit?.measuredAxisCount>0?Number(audit.score):null;
+}
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null}={}){
+  const rows=(assets||[]).map(asset=>{
+    const family=upper(asset?.family||asset?.category);
+    const roles=internalAssetMaintenanceRoleTokens(asset);
+    const quality=internalAssetMaintenanceQuality(asset);
+    return Object.freeze({
+      id:text(asset?.id||asset?.assetId||asset?.atomId),
+      packId:text(asset?.packId),
+      family,
+      subfamily:upper(asset?.subfamily||asset?.type),
+      roles:Object.freeze(roles),
+      quality,
+      qualityGrade:text(asset?.internalAuditGrade)||null,
+      catalogState:upper(asset?.catalogState),
+      catalogActive:asset?.catalogActive!==false,
+      status:upper(asset?.status),
+      productionVerified:asset?.productionVerified===true,
+      runtimeVerificationState:upper(asset?.runtimeVerificationState)
+    });
+  }).filter(row=>row.id).sort((a,b)=>a.id.localeCompare(b.id));
+  const typeRoleTokens=new Set();
+  for(const row of rows){
+    if(row.family)typeRoleTokens.add('FAMILY:'+row.family);
+    if(row.packId)typeRoleTokens.add('PACK:'+row.packId);
+    if(row.subfamily)typeRoleTokens.add('SUBFAMILY:'+row.family+':'+row.subfamily);
+    for(const role of row.roles)typeRoleTokens.add('ROLE:'+row.family+':'+role);
+  }
+  for(const id of uiAtomIds||[])typeRoleTokens.add('UI_ATOM:'+upper(id));
+  for(const id of audioRoleIds||[])typeRoleTokens.add('AUDIO_ROLE:'+upper(id));
+  const sortedTypeRoleTokens=[...typeRoleTokens].sort();
+  const inventoryFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows));
+  const typeRoleFingerprint=stableAssetMaintenanceHash(JSON.stringify(sortedTypeRoleTokens));
+  const qualityRows=rows.filter(row=>row.quality!==null).map(row=>({id:row.id,quality:row.quality,grade:row.qualityGrade,family:row.family,packId:row.packId})).sort((a,b)=>a.id.localeCompare(b.id));
+  const qualityFingerprint=stableAssetMaintenanceHash(JSON.stringify(qualityRows));
+  const staleRowIds=rows.filter(row=>row.catalogActive===false||row.catalogState==='STALE_CATALOG_ROW_REVIEW').map(row=>row.id);
+  const semanticGroups=new Map();
+  for(const row of rows){
+    const primaryRole=row.roles[0]||'';
+    const key=[row.family,row.subfamily,primaryRole].join('|');
+    if(!row.family||!row.subfamily||!primaryRole)continue;
+    const group=semanticGroups.get(key)||[];
+    group.push(row.id);semanticGroups.set(key,group);
+  }
+  const semanticDuplicateReviewGroups=[...semanticGroups.entries()]
+    .filter(([,ids])=>ids.length>1)
+    .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
+    .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
+    .slice(0,48);
+  const donorCandidates=qualityRows
+    .slice()
+    .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
+    .slice(0,64)
+    .map(row=>Object.freeze({...row}));
+  const prior=previous&&typeof previous==='object'?previous:{};
+  const priorReady=Boolean(text(prior.inventoryFingerprint));
+  const priorTokens=new Set(Array.isArray(prior.typeRoleTokens)?prior.typeRoleTokens:[]);
+  const currentTokens=new Set(sortedTypeRoleTokens);
+  const newTypeRoleTokens=priorReady?sortedTypeRoleTokens.filter(token=>!priorTokens.has(token)):[];
+  const removedTypeRoleTokens=priorReady?[...priorTokens].filter(token=>!currentTokens.has(token)).sort():[];
+  const refreshReasons=[];
+  if(!priorReady)refreshReasons.push('MAINTENANCE_BASELINE_INITIALIZED');
+  else{
+    if(prior.inventoryFingerprint!==inventoryFingerprint)refreshReasons.push('INVENTORY_CHANGED');
+    if(prior.typeRoleFingerprint!==typeRoleFingerprint)refreshReasons.push('TYPE_OR_ROLE_CHANGED');
+    if(prior.qualityFingerprint!==qualityFingerprint)refreshReasons.push('QUALITY_METADATA_CHANGED');
+  }
+  if(staleRowIds.length)refreshReasons.push('STALE_ROWS_PRESENT');
+  if(semanticDuplicateReviewGroups.length)refreshReasons.push('SEMANTIC_DUPLICATE_REVIEW_AVAILABLE');
+  return Object.freeze({
+    version:1,
+    status:'SELF_MAINTENANCE_READY',
+    inventoryFingerprint,
+    typeRoleFingerprint,
+    qualityFingerprint,
+    assetCount:rows.length,
+    packCount:new Set(rows.map(row=>row.packId).filter(Boolean)).size,
+    familyCount:new Set(rows.map(row=>row.family).filter(Boolean)).size,
+    typeRoleTokenCount:sortedTypeRoleTokens.length,
+    scoredAssetCount:qualityRows.length,
+    typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
+    newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,192)),
+    removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,192)),
+    staleRowIds:Object.freeze(staleRowIds.slice(0,192)),
+    semanticDuplicateReviewGroups:Object.freeze(semanticDuplicateReviewGroups),
+    qualityDonorCandidates:Object.freeze(donorCandidates),
+    refreshRequired:refreshReasons.length>0,
+    refreshReasons:Object.freeze(refreshReasons),
+    currentLibraryAlwaysWins:true,
+    automaticDeletion:false,
+    duplicateReviewOnly:true,
+    qualityUpdateMayReorderDonors:true,
+    newTypeOrRoleMayReopenIdeation:true,
+    continueWithoutHuman:true,
+    continueWithoutChatgpt:true
+  });
+}
 
 function looseVolumeState(count,band={}){
   const value=Math.max(0,Number(count)||0);
@@ -1685,13 +1986,14 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null}={}){
   const depth=auditCommonLibrarySystemDepth({assets});
   const seedIdeas=seedPlan?.ideas||[];
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
   const audioRoles=uniq(audioRoleIds).map(upper);
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
+  const maintenance=buildInternalAssetMaintenanceSnapshot({assets,uiAtomIds,audioRoleIds,previous:previousMaintenance});
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -1723,6 +2025,26 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const freeSourceIdsForDomain=domain=>{
     const allowed=freeSourceCategoriesByDomain[upper(domain)]||[];
     return eligibleFreeSources.filter(source=>source.categories.some(category=>allowed.includes(category))).map(source=>source.id);
+  };
+  const internalReuseCandidatesForAction=(domain,role='')=>{
+    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    return (assets||[])
+      .filter(asset=>commonDepthDomainMatch(upper(domain),asset))
+      .map(asset=>{
+        const roles=internalAssetMaintenanceRoleTokens(asset);
+        const quality=internalAssetMaintenanceQuality(asset);
+        const roleMatch=requested&&roles.includes(requested)?1:0;
+        return{
+          id:text(asset?.id||asset?.assetId||asset?.atomId),
+          packId:text(asset?.packId)||null,
+          family:upper(asset?.family||asset?.category)||null,
+          roleMatch,
+          quality,
+          grade:text(asset?.internalAuditGrade)||null
+        };
+      })
+      .filter(row=>row.id)
+      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id));
   };
   const normalizeIdentity=value=>upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   const existingIdentityTokens=new Set();
@@ -1913,9 +2235,21 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
     const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
+    const allInternalReuseCandidates=internalReuseCandidatesForAction(row.domain,row.role);
+    const internalReuseCandidatePreview=allInternalReuseCandidates.slice(0,4).map(candidate=>Object.freeze({
+      id:candidate.id,quality:candidate.quality,grade:candidate.grade
+    }));
     return Object.freeze({
       ...row,
       freeSourceAvailable,
+      internalReuseCandidateCount:allInternalReuseCandidates.length,
+      internalReuseCandidatePreview:Object.freeze(internalReuseCandidatePreview),
+      internalReusePreviewLimit:4,
+      allCompatibleInternalAssetsRemainEligible:true,
+      internalReusePreviewIsNotEligibilityCap:true,
+      studioVariationAxes:Object.freeze([...(INTERNAL_ASSET_STUDIO_VARIATION_AXES[row.domain]||[])]),
+      libraryFreshnessFingerprint:maintenance.inventoryFingerprint,
+      qualityFreshnessFingerprint:maintenance.qualityFingerprint,
       freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
       freeSourceAcquisitionMode:freeSourceAvailable?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_AVAILABLE',
       bulkPrefetchAllowed:false,
@@ -1965,6 +2299,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
     nextVolumeActions:Object.freeze(nextVolumeActions),
     autonomousOperatingContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract,
+    autonomousMaintenanceContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousMaintenanceContract,
+    maintenance,
+    studioVariationAxes:INTERNAL_ASSET_STUDIO_VARIATION_AXES,
     autonomousNextAction,
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
@@ -1992,8 +2329,14 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       selection:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpSelection,
       workingBandMin:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,
       target:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,
+      continuousExistingAssetQualityEvolution:true,
+      oneAndDoneAssetCompletionForbidden:true,
+      reAuditEveryMaintenanceCycle:true,
+      quality1000IsCurrentContractCeilingNotPermanentCompletion:true,
+      reopenTriggers:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract.reopenTriggers,
       productionRuntimeVerificationSeparate:true
     }),
+    audioStudioBreadth:INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT,
     audioRoleContractCount:audioRoles.length,
     actualVerifiedAudioAssetCount,
     audioRoleVolumeSeparateFromVerifiedFileCount:true,
