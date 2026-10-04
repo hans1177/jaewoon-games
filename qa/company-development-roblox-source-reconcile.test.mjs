@@ -824,11 +824,15 @@ test('runtime reconciliation preserves downstream evidence for unchanged game by
   assert.doesNotMatch(block,/robloxF9ReleaseRegressionPassed:false/);
 });
 
-test('source reconciliation derives verified learning from the same design profile as the sweep',()=>{
+test('source reconciliation and sweep derive verified learning from the same build profile',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
   assert.match(source,/robloxBuildProfileFromBaseline/);
   assert.match(source,/const learningProfile=baseline\?robloxBuildProfileFromBaseline\(baseline\):null/);
   assert.match(source,/verifiedExternalLearningRefreshState\(\{root,playbooks,gameId:item\.gameId,profile:learningProfile\}\)/);
+  assert.match(sweep,/robloxBuildProfileFromBaseline/);
+  assert.match(sweep,/const designProfile=designContext\?\.record\?robloxBuildProfileFromBaseline\(designContext\.record\):null/);
+  assert.doesNotMatch(sweep,/robloxDesignProfileFromBaseline/);
 });
 
 test('verified learning sweep supports exact per-game scope',()=>{
