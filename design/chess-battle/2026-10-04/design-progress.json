@@ -9,21 +9,21 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-10-04T11:40:47.810Z",
+  "lastSuccessfulModelCallAt": "2026-10-04T11:54:12.342Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 12,
-      "successes": 2,
-      "failures": 10,
+      "calls": 15,
+      "successes": 3,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 31041,
-      "lastMs": 3160,
+      "totalMs": 39437,
+      "lastMs": 3111,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T11:52:04.721Z"
+      "updatedAt": "2026-10-04T11:54:15.455Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-04T11:19:27.624Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 10,
+      "calls": 12,
       "successes": 0,
-      "failures": 10,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 88063,
-      "lastMs": 6673,
+      "totalMs": 98412,
+      "lastMs": 6112,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T11:52:08.234Z"
+      "updatedAt": "2026-10-04T11:54:18.456Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
-      "timeouts": 4,
+      "failures": 5,
+      "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 480014,
-      "lastMs": 120002,
+      "totalMs": 600021,
+      "lastMs": 120007,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T11:42:53.542Z"
+      "updatedAt": "2026-10-04T11:54:08.243Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T11:52:08.235Z"
+  "updatedAt": "2026-10-04T11:54:18.457Z"
 }
