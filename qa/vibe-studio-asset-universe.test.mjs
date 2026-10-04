@@ -2385,3 +2385,70 @@ test('generic character gear requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-character-helmet');
 });
+
+
+test('company-common materials v3 preserves old atoms and expands to eleven',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-materials-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonMaterials.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.atoms.length,11);
+  for(const atomId of atoms){
+    assert.ok(source.includes(atomId),atomId);
+    assert.ok(catalog.atoms.some(row=>row.atomId===atomId),atomId+':catalog');
+  }
+
+  const materialRefs=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
+  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement']);
+  assert.equal(materialRefs.length>0,true);
+  assert.equal(materialRefs.every(value=>allowed.has(value)),true);
+
+  assert.ok(source.includes('atomCount = 11'));
+  assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
+  assert.equal(/\.(CanCollide|CanTouch|CanQuery)\s*=/.test(source),false);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+});
+
+test('company-common material v3 registry exposes eleven unverified reusable atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
+  assert.ok(pack);
+  assert.equal(pack.assetCount,11);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
+  for(const atomId of added){
+    const id='roblox-common-material-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'MATERIAL');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
+    assert.equal(row.bindingHint.preservePhysicalCollisionTouchQueryGameplaySaveAndNetworkAuthority,true);
+  }
+});
+
+test('generic material requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-glass',family:'MATERIAL',subfamily:'GLASS',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['GLASS']};
+  const gameOnly={id:'game-only-glass',family:'MATERIAL',subfamily:'GLASS',platform:'ROBLOX',status:'REPO_ASSET',tags:['GLASS']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'MATERIAL',subfamily:'GLASS',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-glass');
+});
