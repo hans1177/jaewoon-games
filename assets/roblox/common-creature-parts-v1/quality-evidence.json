@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-creature-parts-v1",
-  "recordedAt": "2026-10-04",
+  "recordedAt": "2026-10-05",
   "productionVerified": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "rigBindingState": "AUTHORING_REQUIRED",
@@ -109,5 +109,116 @@
       "NATIVE_RUNTIME_VERIFICATION_PENDING"
     ],
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityDebtPlan": {
+    "version": 1,
+    "status": "ACTIVE_SOURCE_QUALITY_REPAIR_TARGETS",
+    "currentScore": 837.8,
+    "currentGrade": "DEVELOPMENT_READY",
+    "nextTargets": [
+      880,
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scoreInflationForbidden": true,
+    "planDoesNotChangeCurrentAuditScore": true,
+    "weakestAxes": [
+      {
+        "axis": "MOTION_RIG",
+        "score": 58,
+        "targetMinimum": 84,
+        "priority": 1
+      },
+      {
+        "axis": "FEEDBACK_STATES",
+        "score": 72,
+        "targetMinimum": 82,
+        "priority": 2
+      },
+      {
+        "axis": "DETAIL_FINISH",
+        "score": 80,
+        "targetMinimum": 82,
+        "priority": 3
+      },
+      {
+        "axis": "MATERIAL_SURFACE",
+        "score": 82,
+        "targetMinimum": 84,
+        "priority": 4
+      },
+      {
+        "axis": "PERFORMANCE_LOD",
+        "score": 82,
+        "targetMinimum": 84,
+        "priority": 5
+      }
+    ],
+    "hardGateRepairTargets": [
+      "IDENTITY_SILHOUETTE_90_PLUS",
+      "DETAIL_FINISH_82_PLUS",
+      "MOTION_RIG_84_PLUS"
+    ],
+    "authoringTargets": [
+      "RIG_PROFILE_AUTHORING",
+      "LOCOMOTION_SET_AUTHORING",
+      "ATTACK_SET_AUTHORING",
+      "HIT_DEATH_SET_AUTHORING",
+      "BOSS_SIGNATURE_AUTHORING",
+      "SURFACE_VARIANT_AUTHORING",
+      "LOD_AUTHORING",
+      "AMORPHOUS_BODY_PLAN_AUTHORING",
+      "TORSO_VARIANT_AUTHORING"
+    ],
+    "verificationRequiredAfterAuthoring": [
+      "RECALCULATE_SOURCE_AUDIT",
+      "VERIFY_RIG_AND_CLIP_STRUCTURE",
+      "VERIFY_GAME_CAMERA_SILHOUETTE",
+      "VERIFY_MOBILE_LOD_BUDGET",
+      "KEEP_RUNTIME_VERIFICATION_SEPARATE"
+    ],
+    "productionPassCannotBeClaimedFromPlan": true
+  },
+  "volumeExpansionPlan": {
+    "version": 1,
+    "status": "GAP_DRIVEN_VOLUME_EXPANSION_OPEN",
+    "currentAssetCount": 24,
+    "recommendedTargetMin": 180,
+    "noHardVolumeCap": true,
+    "newAuthoringAllowed": true,
+    "qualityDebtDoesNotBlockVolumeExpansion": true,
+    "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+    "reuseFirstButNotExclusive": true,
+    "resolutionOrder": [
+      "REUSE_EXISTING",
+      "DERIVE_VARIANT",
+      "RECOMBINE_EXISTING",
+      "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+      "NEW_AUTHORING"
+    ],
+    "newAuthoringTriggers": [
+      "MISSING_BODY_PLAN_OR_ROLE",
+      "MISSING_RIG_PROFILE",
+      "MISSING_MOTION_SET",
+      "MISSING_BOSS_SIGNATURE",
+      "MISSING_SURFACE_VARIANT",
+      "MISSING_LOD_VARIANT",
+      "EXISTING_ASSET_CANNOT_MEET_REQUIRED_IDENTITY_OR_ROLE_AFTER_SAFE_ADAPTATION"
+    ],
+    "exactDuplicateAuthoringSuppressed": true,
+    "roleAndFamilyDiversityPreferred": true,
+    "existingAssetLineagePreserved": true,
+    "sourceRightsAndPlatformCompatibilityRequired": true,
+    "productionPromotionStillRequiresRuntimeVerification": true,
+    "gameplayAuthority": false,
+    "aiAuthority": false,
+    "healthDamageAuthority": false,
+    "spawnAuthority": false,
+    "lootAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false,
+    "createsNewPipelineWorkflowQueueOrScheduler": false
   }
 }
