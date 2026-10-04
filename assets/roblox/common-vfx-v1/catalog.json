@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-vfx-v1",
   "family": "VFX",
   "platform": "ROBLOX",
@@ -29,6 +29,36 @@
       "source": "RobloxCommonVFX.luau",
       "factory": "CreateShapeBurst",
       "role": "BURST_FEEDBACK"
+    },
+    {
+      "atomId": "DANGER_TELEGRAPH",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateDangerTelegraph",
+      "role": "DANGER_WARNING"
+    },
+    {
+      "atomId": "HEAL_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateHealBurst",
+      "role": "HEALING_FEEDBACK"
+    },
+    {
+      "atomId": "PICKUP_SPARKLE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreatePickupSparkle",
+      "role": "PICKUP_FEEDBACK"
+    },
+    {
+      "atomId": "LEVEL_UP_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateLevelUpBurst",
+      "role": "LEVEL_UP_FEEDBACK"
+    },
+    {
+      "atomId": "SHIELD_HIT",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateShieldHit",
+      "role": "DEFENSE_FEEDBACK"
     }
   ]
 }
