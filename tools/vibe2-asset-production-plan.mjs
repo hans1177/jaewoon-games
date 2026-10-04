@@ -1728,15 +1728,18 @@ function qualityDnaForType(type=''){
 
 function assetApplyFirstCandidate(asset={},target='',binding={}){
   const platform=clean(target).toLowerCase();
+  const requestedType=clean(binding?.type).toLowerCase();
+  const actorType=['character','enemy','boss'].includes(requestedType);
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const internalRepositoryReady=asset.companyInternalSearchable===true&&asset.downloaded!==false&&hasNativeReference;
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true||internalRepositoryReady);
-  const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
+  const actorMotionAdaptationRequired=actorType&&asset.adaptationBaseOnly===true&&asset.productionVerified!==true;
+  const approximateAdaptationRequired=asset.approximateLibraryFallback===true;
+  const internalRepositoryReady=asset.companyInternalSearchable===true&&asset.downloaded!==false&&hasNativeReference&&!actorMotionAdaptationRequired&&!approximateAdaptationRequired;
+  const nativeReady=Boolean(asset.productionVerified===true||(!actorMotionAdaptationRequired&&!approximateAdaptationRequired&&(sameGame||variant?.path||internalRepositoryReady)));
+  const adaptable=Boolean(!nativeReady&&hasNativeReference&&(actorMotionAdaptationRequired||approximateAdaptationRequired||asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
-  const requestedType=clean(binding?.type).toLowerCase();
   const roleTokens=unique([requestedType,...(binding?.targetStates||[]).map(clean)]).map(value=>value.toLowerCase()).filter(Boolean);
   const tags=(asset.tags||[]).map(value=>clean(value).toLowerCase());
   const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
@@ -1773,11 +1776,17 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
     approximateLibraryFallback:asset.approximateLibraryFallback===true,
+    actorMotionAdaptationRequired,
     blankAssetForbidden:true,
     libraryBindingRequiredBeforeAuthoring:true,
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
-    adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
+    adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?unique([
+      actorMotionAdaptationRequired?'MOTION_SOURCE_BINDING':'',
+      actorMotionAdaptationRequired?'RIG_RETARGET':'',
+      approximateAdaptationRequired?'ROLE_STYLE_ADAPTATION':'',
+      'MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION'
+    ]):[]),
     qualityPassRequiredBeforeKeep:false,
     qualityScoreBlocksInitialUse:false,
     internalAuditScoreBlocksInitialUse:false,
