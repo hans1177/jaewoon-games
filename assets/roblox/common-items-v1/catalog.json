@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-items-v1",
   "family": "PROP",
   "platform": "ROBLOX",
@@ -396,9 +396,297 @@
         "VIEWPORT_ICON",
         "EQUIPPED_VISUAL_WHEN_APPLICABLE"
       ]
+    },
+    {
+      "assetId": "GRAPPLING_KIT",
+      "name": "갈고리 로프 키트",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_GRAPPLING",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "TRAVERSAL_GRAPPLE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "FIELD_SCANNER",
+      "name": "휴대 스캐너",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SCANNER",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "SCAN_INSPECT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "BINOCULARS",
+      "name": "쌍안경",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_OPTIC",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "OBSERVE_ZOOM",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "COMPASS_TOOL",
+      "name": "탐험 나침반",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_COMPASS",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "NAVIGATION",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "CHALK_MARKER_KIT",
+      "name": "표식 키트",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_MARKER",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "WORLD_MARKER",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "CLIMBING_PITON_SET",
+      "name": "등반 피톤 세트",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_CLIMB",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "CLIMB_ANCHOR",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "FISHING_ROD",
+      "name": "낚싯대",
+      "subfamily": "UTILITY_TOOL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_FISHING",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "FISHING",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "SHOVEL_TOOL",
+      "name": "삽",
+      "subfamily": "UTILITY_TOOL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SHOVEL",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "DIG",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "WATERING_CAN",
+      "name": "물뿌리개",
+      "subfamily": "UTILITY_TOOL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_WATERING",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "WATER_PLANTS",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "FIELD_CAMERA",
+      "name": "휴대 카메라",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_CAMERA",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_RARE",
+      "interactionFamily": "PHOTO_RECORD",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "SIGNAL_MIRROR",
+      "name": "신호 거울",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SIGNAL_MIRROR",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "SIGNAL_REFLECT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "ROPE_COIL",
+      "name": "로프 묶음",
+      "subfamily": "UTILITY_MATERIAL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_ROPE",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "ROPE_ATTACH",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "REPAIR_MULTITOOL",
+      "name": "수리 멀티툴",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_REPAIR",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "REPAIR",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "PORTABLE_BEACON",
+      "name": "휴대 비콘",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_BEACON",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "WAYPOINT_SIGNAL",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "SPECIMEN_JAR",
+      "name": "표본병",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SPECIMEN",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "SPECIMEN_COLLECT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "CAMP_KIT",
+      "name": "휴대 캠프 키트",
+      "subfamily": "UTILITY_GADGET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_CAMP",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_RARE",
+      "interactionFamily": "CAMP_DEPLOY",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 아이템 24종 v2",
+  "title": "Roblox 회사 공용 아이템 40종 v3",
   "systemDepthContract": {
     "inventoryCategories": [
       "CONSUMABLE",
@@ -442,7 +730,14 @@
       "SHOP",
       "STASH",
       "CODEX",
-      "QUICK_SLOT"
+      "QUICK_SLOT",
+      "WORLD_INTERACTION",
+      "EXPLORATION",
+      "TRAVERSAL",
+      "FARMING",
+      "FISHING",
+      "PHOTO_RECORD",
+      "CAMP"
     ],
     "gameplayAuthority": false
   },
@@ -458,5 +753,48 @@
     "schedulerExcluded": true,
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "utilityGadgetContract": {
+    "version": 1,
+    "families": [
+      "TRAVERSAL_GRAPPLE",
+      "SCAN_INSPECT",
+      "OBSERVE_ZOOM",
+      "NAVIGATION",
+      "WORLD_MARKER",
+      "CLIMB_ANCHOR",
+      "FISHING",
+      "DIG",
+      "WATER_PLANTS",
+      "PHOTO_RECORD",
+      "SIGNAL_REFLECT",
+      "ROPE_ATTACH",
+      "REPAIR",
+      "WAYPOINT_SIGNAL",
+      "SPECIMEN_COLLECT",
+      "CAMP_DEPLOY"
+    ],
+    "linkedUi": [
+      "WORLD_PROP_INTERACTION_PROMPT",
+      "WORLD_PROP_ACTION_WHEEL",
+      "INTERACTION_PROGRESS",
+      "READ_INSPECT_PANEL"
+    ],
+    "linkedMotion": [
+      "INTERACT_USE",
+      "GATHER_SWING",
+      "CARRY_IDLE",
+      "EQUIP_DRAW",
+      "UNEQUIP_STOW"
+    ],
+    "gameplayAuthority": false,
+    "traversalAuthority": false,
+    "scanningAuthority": false,
+    "navigationAuthority": false,
+    "fishingAuthority": false,
+    "farmingAuthority": false,
+    "repairAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
