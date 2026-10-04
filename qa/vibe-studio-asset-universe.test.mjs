@@ -17,6 +17,7 @@ import {
   COMMON_ENVIRONMENT_BIOME_EXPECTATIONS,
   COMMON_ENVIRONMENT_ROLE_EXPECTATIONS,
   COMMON_PRESENTATION_EXPECTATIONS,
+  COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS,
   INTERNAL_ASSET_MINIMUM_COVERAGE,
   INTERNAL_ASSET_REUSE_POLICY,
   INTERNAL_ASSET_ADAPTATION_AXES,
@@ -1544,8 +1545,8 @@ test('company-common item pack shares one source across world drop and viewport'
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN'];
-  assert.equal(catalog.items.length,8);
+  const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN','MANA_POTION','ANTIDOTE','STAMINA_TONIC','UPGRADE_SHARD','TREASURE_GEM','SILVER_INGOT','CLOTH_ROLL','HERB_BUNDLE','COOKED_MEAT','QUEST_SCROLL','LORE_BOOK','COIN_POUCH','ARROW_BUNDLE','THROWING_BOMB','LOCKPICK_SET','SIGNAL_LANTERN'];
+  assert.equal(catalog.items.length,24);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -1559,6 +1560,8 @@ test('company-common item pack shares one source across world drop and viewport'
   assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
   assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(catalog.sameAssetDnaAcrossWorldDropEquipAndUi,true);
+  assert.ok(catalog.systemDepthContract.inventoryCategories.includes('QUEST'));
+  assert.ok(catalog.systemDepthContract.linkedSystems.includes('STASH'));
   assert.equal(quality.staticAuthoringChecklist.score,100);
   assert.equal(quality.quality120.claimedRuntimeScore,null);
   assert.equal(quality.productionVerified,false);
@@ -1577,6 +1580,9 @@ test('company-common item registry exposes cross-game reusable item and resource
   assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.assetCount,24);
+  assert.ok(pack.inventoryCategories.includes('THROWABLE'));
+  assert.ok(pack.inventoryCategories.includes('LORE'));
 
   const expected=[
     ['HEALING_POTION','ITEM','CONSUMABLE'],
@@ -1587,6 +1593,13 @@ test('company-common item registry exposes cross-game reusable item and resource
     ['STONE_CHUNK','RESOURCE','RESOURCE'],
     ['RELIC_KEY','ITEM','KEY_ITEM'],
     ['LANTERN','ITEM','UTILITY']
+    ['MANA_POTION','ITEM','CONSUMABLE'],
+    ['UPGRADE_SHARD','UPGRADE_MATERIAL','UPGRADE_MATERIAL'],
+    ['COOKED_MEAT','FOOD','FOOD'],
+    ['QUEST_SCROLL','QUEST_ITEM','QUEST_ITEM'],
+    ['LORE_BOOK','LORE','LORE'],
+    ['ARROW_BUNDLE','AMMUNITION','AMMUNITION'],
+    ['THROWING_BOMB','THROWABLE','THROWABLE'],
   ];
   for(const [assetId,subfamily,itemRole] of expected){
     const id='roblox-common-item-'+assetId.toLowerCase().replaceAll('_','-');
@@ -2403,7 +2416,7 @@ test('generic character gear requirement can choose company-common base',()=>{
 });
 
 
-test('company-common UI v4 preserves prior atoms and expands reusable interaction surfaces',()=>{
+test('company-common UI v5 preserves prior atoms and expands reusable interaction surfaces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-ui-v1');
@@ -2413,8 +2426,8 @@ test('company-common UI v4 preserves prior atoms and expands reusable interactio
 
   const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
   const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,54);
+  assert.equal(catalog.version,5);
+  assert.equal(catalog.atoms.length,84);
   for(const id of [...oldIds,...newIds]){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2428,7 +2441,7 @@ test('company-common UI v4 preserves prior atoms and expands reusable interactio
   assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
-  assert.ok(source.includes('atomCount = 54'));
+  assert.ok(source.includes('atomCount = 84'));
   for(const id of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','INVENTORY_GRID','CHARACTER_SHEET','MINIMAP','HOTBAR']){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2691,7 +2704,7 @@ test('studio-independent 1000-point internal asset audit uses strict score and h
   assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('dialogue/helper'));
 });
 
-test('common Roblox UI v4 preserves AI dialogue NPC interaction core game screens and vector icons',()=>{
+test('common Roblox UI v5 preserves AI dialogue NPC interaction core game screens and vector icons',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
@@ -2699,8 +2712,8 @@ test('common Roblox UI v4 preserves AI dialogue NPC interaction core game screen
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const icons=fs.readFileSync(path.join(root,'RobloxCommonIcons.luau'),'utf8');
 
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,54);
+  assert.equal(catalog.version,5);
+  assert.equal(catalog.atoms.length,84);
   assert.equal(catalog.vectorIconCount,12);
   assert.equal(catalog.internalAudit.studioRequired,false);
   assert.equal(catalog.internalAudit.passScore,880);
@@ -2727,7 +2740,7 @@ test('common Roblox UI v4 preserves AI dialogue NPC interaction core game screen
   assert.equal(evidence.sourceAudit.studioRequired,false);
   assert.equal(evidence.sourceAudit.passScore,880);
   assert.equal(evidence.sourceAudit.targetGrade,'MASTERPIECE');
-  assert.equal(evidence.sourceAssetCount,54);
+  assert.equal(evidence.sourceAssetCount,84);
   assert.equal(evidence.productionVerified,false);
   assert.equal(evidence.verifiedCompanyReusable,false);
 });
@@ -2828,16 +2841,16 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
 });
 
 
-test('common UI v4 expands full-screen navigation search states and input switching without gameplay authority',()=>{
+test('common UI v5 expands full-screen navigation search states and input switching without gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
 
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,54);
-  assert.equal(evidence.sourceAssetCount,54);
+  assert.equal(catalog.version,5);
+  assert.equal(catalog.atoms.length,84);
+  assert.equal(evidence.sourceAssetCount,84);
   for(const atom of [
     'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_PANEL',
     'SEARCH_FIELD','FILTER_BAR','SORT_CONTROL','INVENTORY_FULL_SCREEN','EQUIPMENT_FULL_SCREEN',
@@ -2938,4 +2951,88 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   assert.ok(loadout.selections[0].machineTags.includes('FOREST'));
   assert.equal(loadout.selections[0].usageContract.developmentStageAutoDiscovery,true);
   assert.equal(loadout.selections[0].companyCommonBase,true);
+});
+
+
+test('common UI v5 adds deep item inventory equipment crafting trade and codex components',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const deep=[
+    'ITEM_DETAIL_PANEL','ITEM_COMPARE_PANEL','ITEM_CONTEXT_MENU','STACK_SPLIT_DIALOG','MULTI_SELECT_BAR','ITEM_STATE_BADGES',
+    'INVENTORY_CONTAINER_PANEL','INVENTORY_WEIGHT_METER','INVENTORY_CAPACITY_METER','STASH_SCREEN','LOOT_WINDOW','LOOT_FEED',
+    'QUICK_SLOT_BAR','RADIAL_MENU','LOADOUT_PRESET_PANEL','EQUIPMENT_COMPARE_PANEL','SET_BONUS_PANEL','SOCKET_ENCHANT_PANEL',
+    'UPGRADE_PANEL','REPAIR_PANEL','DISMANTLE_PANEL','CRAFTING_TREE','RECIPE_DETAIL_PANEL','MATERIAL_TRACKER',
+    'BUY_SELL_PANEL','BUYBACK_PANEL','CODEX_SCREEN','COLLECTION_PROGRESS','RECENT_ITEMS_PANEL','ITEM_SOURCE_USAGE_PANEL'
+  ];
+  assert.equal(catalog.version,5);
+  assert.equal(catalog.atoms.length,84);
+  assert.equal(catalog.deepSystemContract.componentCount,30);
+  assert.equal(evidence.deepSystemComponentCount,30);
+  for(const atom of deep){
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.match(source,new RegExp('"' + atom + '"'));
+  }
+  for(const surface of ['ITEM_DETAIL','ITEM_COMPARE','ITEM_ACTIONS','INVENTORY_DEEP','STASH','LOOT','QUICKSLOT','RADIAL_ACTION','LOADOUT','EQUIPMENT_DEEP','UPGRADE','REPAIR','DISMANTLE','CRAFTING_DEEP','TRADE','CODEX','RECENT_ITEMS']){
+    assert.ok(catalog.surfaces.includes(surface),surface);
+  }
+  assert.match(source,/OwnsItemAuthority",false/);
+  assert.match(source,/OwnsSaveAuthority",false/);
+  assert.match(source,/OwnsRemoteAuthority",false/);
+  assert.equal(catalog.deepSystemContract.gameplayAuthority,false);
+  assert.equal(catalog.deepSystemContract.saveAuthority,false);
+  assert.equal(catalog.deepSystemContract.networkAuthority,false);
+});
+
+test('company library system depth audit covers every common asset domain without becoming a usage gate',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const audit=registry.commonLibrarySystemDepthAudit;
+  assert.equal(registry.version,52);
+  assert.equal(audit.status,'STARTED');
+  assert.equal(audit.scoreIsUsageGate,false);
+  assert.equal(audit.existingAssetsRemainUsable,true);
+  assert.equal(audit.rows.length,15);
+  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    assert.ok(audit.rows.some(row=>row.domain===domain),domain);
+  }
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,84);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,24);
+  for(const id of ['roblox-common-item-quest-scroll','roblox-common-item-lore-book','roblox-common-item-arrow-bundle','roblox-common-ui-stash-screen','roblox-common-ui-radial-menu','roblox-common-ui-codex-screen']){
+    assert.ok(registry.assets.some(row=>row.id===id),id);
+  }
+});
+
+test('all existing common pack catalogs expose system depth contracts for gap-directed iteration',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const paths=[
+    'assets/roblox/common-tools-v1/catalog.json',
+    'assets/roblox/common-character-gear-v1/catalog.json',
+    'assets/roblox/common-skill-v1/catalog.json',
+    'assets/roblox/common-vfx-v1/catalog.json',
+    'assets/roblox/common-motion-v1/catalog.json',
+    'assets/roblox/common-materials-v1/catalog.json',
+    'assets/roblox/common-environment-v1/catalog.json',
+    'assets/roblox/common-building-v1/catalog.json',
+    'assets/roblox/common-world-props-v1/catalog.json',
+    'assets/roblox/common-creature-parts-v1/catalog.json',
+    'assets/roblox/common-foliage-v1/catalog.json',
+    'assets/roblox/common-presentation-v1/catalog.json'
+  ];
+  for(const relative of paths){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
+    assert.ok(catalog.systemDepthContract,relative);
+    assert.equal(catalog.systemDepthContract.referenceLevel,'GOTY_COMMON_PRINCIPLES_NOT_COPY',relative);
+    assert.equal(catalog.systemDepthContract.qualityScoreIsNotUsageGate,true,relative);
+    assert.equal(catalog.systemDepthContract.existingAssetsRemainUsable,true,relative);
+    assert.equal(catalog.systemDepthContract.gameplayAuthority,false,relative);
+    assert.ok(catalog.systemDepthContract.requiredComponents.length>0,relative);
+  }
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.UI.required.includes('STASH'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.WEAPON.required.includes('CROSSBOW'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.MOTION.required.includes('REVIVE'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required.includes('LOOT_RARITY'));
 });
