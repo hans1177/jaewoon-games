@@ -511,7 +511,8 @@
     "finalDevelopmentLockStatusMustBeLoaded": true,
     "mutationDeploymentStateChangeForbiddenUntilSyncPass": true,
     "priorConversationOrMemoryCannotOverrideCentralPolicy": true,
-    "staleContextFailsClosedBeforeMutation": true
+    "staleContextFailsClosedBeforeMutation": true,
+    "fixedAutonomousDevelopmentOperatingContractMustBeLoaded": true
   },
   "longHorizonTopology": {
     "version": 2,
@@ -6759,5 +6760,80 @@
     "exactDuplicateStageCoalescing": true,
     "sharedStateWriteOptimisticRetry": true,
     "nextBuildUpAfterF9Required": true
+  },
+  "fixedAutonomousDevelopmentOperatingTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract",
+    "structureFixed": true,
+    "normalOperatingLoop": [
+      "BUILD_UP",
+      "F0",
+      "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "F1_TO_F8_RUNTIME_AND_QA",
+      "F9",
+      "RELEASE_CLASSIFICATION",
+      "IMMEDIATE_NEXT_BUILD_UP"
+    ],
+    "vibeRunsPerGamePerpetually": true,
+    "ownerAndChatgptNotInNormalCycleCriticalPath": true,
+    "ownerFeedbackEntry": "DIRECT_GAME_SOURCE_CHANGE_REQUEST_WHEN_DESIRED",
+    "feedbackReturn": "EXISTING_PER_GAME_BUILD_UP_LOOP",
+    "futureTopologyWork": "DETAIL_CHAIN_OPTIMIZATION_ONLY",
+    "detailChainScopes": [
+      "BUILD_UP_SUBSTEP_DEPENDENCY_AND_HANDOFF",
+      "INTERNAL_ASSET_SELECTION_AND_GAME_SOURCE_BINDING",
+      "F0_TO_PRIVATE_RUNTIME_CANDIDATE_HANDOFF",
+      "F1_TO_F8_RUNTIME_QA_FAN_IN",
+      "F9_TO_NEXT_BUILD_UP_HANDOFF",
+      "EXACT_DUPLICATE_GAME_STAGE_COALESCING",
+      "GAME_STAGE_LOCAL_REPAIR_AND_RETRY",
+      "ATOMIC_SHARED_STATE_WRITE_CONFLICT_RETRY"
+    ],
+    "crossGameParallel": true,
+    "sameGameIndependentParallelWhenSafe": true,
+    "failureScope": "GAME_STAGE_LOCAL_REPAIR_RETRY",
+    "internalAssetUseStaysInsideExistingBuildUp": true,
+    "newPipelineWrapperOrShadowTopology": false,
+    "bottleneckManagementOwner": "VIBE2_VIBE3_EXISTING_SYSTEM_AI",
+    "ownerAndChatgptNotBottleneckManagersInNormalOperation": true,
+    "bottleneckManagementUsesExistingComponentsOnly": true,
+    "bottleneckComponents": {
+      "sensor": "tools/company-system-ai-bottleneck-sensor.mjs",
+      "worker": "tools/company-system-ai-worker.mjs",
+      "queueControl": "tools/vibe2-queue-control.mjs",
+      "recoveryQueue": "tools/company-recovery-queue.mjs"
+    },
+    "automaticBottleneckLifecycle": [
+      "OBSERVE_QUEUE_STAGE_AND_RUNNER_STATE",
+      "CLASSIFY_CAUSAL_BOTTLENECK",
+      "COALESCE_EXACT_DUPLICATES",
+      "REPAIR_EXACT_GAME_STAGE_OR_SHARED_CAUSE",
+      "RETRY_FROM_FIRST_INVALIDATED_STAGE",
+      "KEEP_UNRELATED_GAMES_RUNNING",
+      "VERIFY_EFFECT_AND_CONTINUE_LOOP"
+    ],
+    "lockedSequenceUnchangedByBottleneckManagement": true,
+    "wholeGameSerializationMayNotBeIntroducedForBottleneckManagement": true,
+    "vibeOwnsAllNormalProcessManagement": true,
+    "chatgptNormalOperationsOwner": false,
+    "chatgptFocus": [
+      "VIBE_SYSTEM_CAPABILITY_EVOLUTION",
+      "OWNER_REQUESTED_DIRECT_GAME_SOURCE_EVOLUTION"
+    ],
+    "sourceGrowthExecutionOwner": "VIBE2_VIBE3",
+    "sourceGrowthPath": [
+      "BUILD_UP_DETECT_IMPLEMENTATION_GAP",
+      "BIND_EXISTING_RESPONSIBLE_GAME_SOURCE",
+      "DIRECT_SOURCE_GROWTH_MODIFY_OR_ADD_REQUIRED_CODE",
+      "INCREMENTAL_QA",
+      "F0_EXACT_SOURCE_BIND",
+      "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "F1_TO_F8_RUNTIME_QA",
+      "F9_EXACT_REVIEW",
+      "IMMEDIATE_NEXT_BUILD_UP"
+    ],
+    "sourceMutationRequiredWhenImplementationGapExists": true,
+    "evaluationOnlyCompletionForbiddenWhenMutationRequired": true,
+    "wrapperOverrideShadowGrowthForbidden": true
   }
 }

@@ -200,6 +200,7 @@ export function compileCentralArchitectureProjection(policy={}){
   const systemAi=policy?.aiExecutionEfficiency?.systemAiBottleneckResilience||{};
   const security=lifecycle?.securityImmuneSystem||{};
   const primaryAi=lifecycle?.primaryAiOrchestration||{};
+  const fixedOperating=policy?.fixedAutonomousDevelopmentOperatingContract||{};
   if(projectionCfg.required===true){
     if(clean(sync.mode)!=='COMPILE_AT_EXECUTION_NO_MANUAL_MIRROR_REQUIRED')errors.push('ARCHITECTURE_PROJECTION_MODE');
     if(sync.centralPolicyIsOnlyMutablePolicySource!==true)errors.push('ARCHITECTURE_POLICY_AUTHORITY');
@@ -230,6 +231,25 @@ export function compileCentralArchitectureProjection(policy={}){
         &&shared?.newSessionPreflight?.noDeploymentBeforeSyncPass===true
         &&shared?.newSessionPreflight?.noRuntimeStateMutationBeforeSyncPass===true,
       priorConversationOrMemoryCannotOverrideCentralPolicy:shared?.newSessionPreflight?.priorConversationOrMemoryCannotOverrideCentralPolicy===true
+    },
+    fixedAutonomousDevelopmentOperating:{
+      version:Number(fixedOperating?.version)||0,
+      status:clean(fixedOperating?.status)||null,
+      normalOperatingLoop:Array.isArray(fixedOperating?.normalOperatingLoop)?fixedOperating.normalOperatingLoop.map(clean).filter(Boolean):[],
+      perpetualPerGameCycle:fixedOperating?.perpetualPerGameCycle===true,
+      vibeOwnsNormalCycleOperation:fixedOperating?.vibeOwnsNormalCycleOperation===true,
+      ownerPresenceRequiredForNormalCycle:fixedOperating?.ownerPresenceRequiredForNormalCycle===true,
+      chatgptPresenceRequiredForNormalCycle:fixedOperating?.chatgptPresenceRequiredForNormalCycle===true,
+      futureSystemWorkScope:clean(fixedOperating?.futureSystemWorkScope)||null,
+      bottleneckManagementOwner:clean(fixedOperating?.autonomousBottleneckManagement?.owner)||null,
+      autonomousBottleneckManagement:fixedOperating?.autonomousBottleneckManagement?.required===true
+        &&fixedOperating?.autonomousBottleneckManagement?.ownerPresenceRequired===false
+        &&fixedOperating?.autonomousBottleneckManagement?.chatgptPresenceRequired===false,
+      vibeOwnsAllNormalProcessManagement:fixedOperating?.responsibilitySplit?.vibe?.allNormalProcessManagementOwner===true,
+      chatgptNormalOperationsOwner:fixedOperating?.responsibilitySplit?.chatgpt?.normalOperationsOwner===true,
+      sourceGrowthIntegrityRequired:fixedOperating?.sourceGrowthIntegrity?.realSourceDiffRequiredWhenBuildUpDecisionRequiresImplementation===true
+        &&fixedOperating?.sourceGrowthIntegrity?.evaluationOnlyCompletionForbiddenWhenSourceMutationRequired===true,
+      startupSyncRequired:fixedOperating?.startupSync?.requiredForChatGPTAndWorkers===true
     },
     implementationOwnership:{
       gameImplementationOwner:primaryAi?.gameImplementationOwner||null,
@@ -299,6 +319,7 @@ export function validateSharedWorkerContext({
   if(contract?.mismatchAction!=='BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE')fail('MISMATCH_ACTION');
   const newSession=contract?.newSessionPreflight||{};
   const canonicalReadOrder=[policyFile,logMapFile,architectureFile,securityPolicyFile];
+  const fixedOperating=policy?.fixedAutonomousDevelopmentOperatingContract||{};
   if(Number(contract?.version||0)>=6){
     if(newSession?.required!==true)fail('NEW_SESSION_PREFLIGHT_REQUIRED');
     const applies=new Set((Array.isArray(newSession?.appliesTo)?newSession.appliesTo:[]).map(clean));
@@ -312,7 +333,40 @@ export function validateSharedWorkerContext({
     if(clean(newSession?.staleOrMissingContextAction)!=='FAIL_CLOSED_NO_MUTATION')fail('NEW_SESSION_FAIL_CLOSED');
     if(clean(newSession?.validator)!=='tools/company-shared-context.mjs')fail('NEW_SESSION_VALIDATOR_BINDING');
     if(newSession?.resyncAfterCentralDocumentChange!==true)fail('NEW_SESSION_CENTRAL_DOC_RESYNC');
+    if(newSession?.fixedAutonomousDevelopmentOperatingContractMustBeRead!==true)fail('NEW_SESSION_FIXED_OPERATING_CONTRACT_REQUIRED');
+    if(!sameList(newSession?.requiredOperatingContractPaths,['fixedAutonomousDevelopmentOperatingContract','finalDevelopmentLock']))fail('NEW_SESSION_REQUIRED_OPERATING_CONTRACT_PATHS');
   }
+
+  const expectedFixedLoop=['BUILD_UP','F0','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1_TO_F8_RUNTIME_AND_QA','F9','RELEASE_CLASSIFICATION','IMMEDIATE_NEXT_BUILD_UP'];
+  if(Number(fixedOperating?.version||0)!==1||clean(fixedOperating?.status)!=='FIXED_CURRENT_SYSTEM')fail('FIXED_OPERATING_CONTRACT_REQUIRED');
+  if(clean(fixedOperating?.systemStructure)!=='EXISTING_CANONICAL_PIPELINE_ONLY')fail('FIXED_OPERATING_STRUCTURE');
+  if(!sameList(fixedOperating?.normalOperatingLoop,expectedFixedLoop))fail('FIXED_OPERATING_LOOP');
+  if(fixedOperating?.sequenceMeaningUsesFinalDevelopmentLockV2!==true||fixedOperating?.perpetualPerGameCycle!==true)fail('FIXED_OPERATING_LOCKED_LOOP');
+  if(fixedOperating?.vibeOwnsNormalCycleOperation!==true||fixedOperating?.ownerPresenceRequiredForNormalCycle!==false||fixedOperating?.chatgptPresenceRequiredForNormalCycle!==false||fixedOperating?.normalCycleManualApprovalRequired!==false)fail('FIXED_OPERATING_AUTONOMY');
+  if(clean(fixedOperating?.futureSystemWorkScope)!=='DETAIL_CHAIN_OPTIMIZATION_ONLY'||fixedOperating?.macroSystemStructureChangeInNormalDevelopment!==false)fail('FIXED_OPERATING_DETAIL_CHAIN_ONLY');
+  if(fixedOperating?.distinctGamesRemainParallel!==true||fixedOperating?.sameGameIndependentWorkParallelWhenSafe!==true)fail('FIXED_OPERATING_PARALLELISM');
+  if(clean(fixedOperating?.failureIsolation)!=='GAME_AND_STAGE_LOCAL_REPAIR_RETRY')fail('FIXED_OPERATING_FAILURE_ISOLATION');
+  const bottleneck=fixedOperating?.autonomousBottleneckManagement||{};
+  if(bottleneck?.required!==true||clean(bottleneck?.owner)!=='VIBE2_VIBE3_EXISTING_SYSTEM_AI')fail('FIXED_OPERATING_BOTTLENECK_OWNER');
+  if(bottleneck?.ownerPresenceRequired!==false||bottleneck?.chatgptPresenceRequired!==false||bottleneck?.continuousDuringNormalOperation!==true)fail('FIXED_OPERATING_BOTTLENECK_AUTONOMY');
+  if(clean(bottleneck?.mode)!=='DETECT_CLASSIFY_REPAIR_RETRY_REBALANCE_WITHIN_EXISTING_AUTHORITY')fail('FIXED_OPERATING_BOTTLENECK_MODE');
+  if(clean(bottleneck?.existingComponents?.sensor)!=='tools/company-system-ai-bottleneck-sensor.mjs'||clean(bottleneck?.existingComponents?.worker)!=='tools/company-system-ai-worker.mjs'||clean(bottleneck?.existingComponents?.queueControl)!=='tools/vibe2-queue-control.mjs'||clean(bottleneck?.existingComponents?.recoveryQueue)!=='tools/company-recovery-queue.mjs')fail('FIXED_OPERATING_BOTTLENECK_COMPONENTS');
+  if(bottleneck?.unrelatedGamesMustContinue!==true||bottleneck?.queueAndRunnerPressureMayNotCreateWholeGameSerialization!==true)fail('FIXED_OPERATING_BOTTLENECK_ISOLATION');
+  if(bottleneck?.mayNotChangeLockedF0F9Sequence!==true||bottleneck?.mayNotExpandWritableAuthority!==true||bottleneck?.mayNotBypassSecurityQaRuntimeOrReleaseGates!==true||bottleneck?.newPipelineWorkflowWrapperOrShadowManagerForbidden!==true)fail('FIXED_OPERATING_BOTTLENECK_BOUNDARY');
+  const split=fixedOperating?.responsibilitySplit||{};
+  if(split?.vibe?.normalOperationsOwner!==true||split?.vibe?.allNormalProcessManagementOwner!==true||split?.vibe?.bottleneckManagementOwner!==true||split?.vibe?.buildUpThroughF9LifecycleOwner!==true||split?.vibe?.sourceGrowthExecutionOwner!==true)fail('FIXED_OPERATING_VIBE_FULL_PROCESS_OWNER');
+  if(split?.vibe?.ownerOrChatgptPresenceRequired!==false)fail('FIXED_OPERATING_VIBE_INDEPENDENCE');
+  if(split?.chatgpt?.normalOperationsOwner!==false||split?.chatgpt?.normalBottleneckManager!==false||split?.chatgpt?.normalCycleApprovalDependency!==false)fail('FIXED_OPERATING_CHATGPT_NON_OPERATIONAL');
+  if(split?.owner?.normalOperationsOwner!==false||split?.owner?.normalBottleneckManager!==false||split?.owner?.normalCycleApprovalDependency!==false)fail('FIXED_OPERATING_OWNER_NON_OPERATIONAL');
+  const growth=fixedOperating?.sourceGrowthIntegrity||{};
+  if(growth?.buildUpGapMustBindExistingResponsibleGameSource!==true||growth?.realSourceDiffRequiredWhenBuildUpDecisionRequiresImplementation!==true||growth?.evaluationOnlyCompletionForbiddenWhenSourceMutationRequired!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_REQUIRED');
+  if(growth?.directResponsibleFunctionOrCompleteBlockEditPreferred!==true||growth?.wrapperOverrideShadowPatchForbidden!==true||growth?.unnecessaryNewFileOrParallelStructureForbidden!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_STRUCTURE');
+  if(growth?.sourceRevisionMustPropagateIntoF0CandidateEvidence!==true||growth?.exactBuildUpSourceRevisionMustBeVerifiedThroughRuntimeChain!==true||growth?.f9SuccessMustReturnToImmediateNextBuildUp!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_FLOW');
+  if(growth?.failureRoutesToExactGameStageRepairRetry!==true||growth?.sourceGrowthDoesNotChangeLockedF0F9Order!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_REPAIR');
+  const fixedSync=fixedOperating?.startupSync||{};
+  if(fixedSync?.requiredForChatGPTAndWorkers!==true||fixedSync?.latestMainFirst!==true||fixedSync?.documentHashesRequired!==true||fixedSync?.finalDevelopmentLockV2Required!==true)fail('FIXED_OPERATING_STARTUP_SYNC');
+  if(!sameList(fixedSync?.canonicalReadOrder,canonicalReadOrder))fail('FIXED_OPERATING_READ_ORDER');
+  if(fixedSync?.beforeMutationDeploymentOrRuntimeStateChange!==true||fixedSync?.priorConversationOrMemoryMayOverride!==false||fixedSync?.resyncAfterCentralDocumentChange!==true)fail('FIXED_OPERATING_SYNC_BOUNDARY');
 
   const launchers=Array.isArray(contract?.workerLauncherWorkflows)?contract.workerLauncherWorkflows.map(clean).filter(Boolean):[];
   if(!launchers.length)fail('WORKER_LAUNCHERS_REQUIRED');
@@ -353,7 +407,22 @@ export function validateSharedWorkerContext({
     if(securityPolicy?.workerSynchronization?.newChatAndWorkerPreflightRequired!==true||securityPolicy?.workerSynchronization?.latestMainCanonicalSetRequired!==true)fail('SECURITY_NEW_SESSION_PREFLIGHT_REQUIRED');
     if(securityPolicy?.workerSynchronization?.finalDevelopmentLockStatusMustBeLoaded!==true||securityPolicy?.workerSynchronization?.mutationBeforeSharedContextPassForbidden!==true)fail('SECURITY_PREMUTATION_SYNC_REQUIRED');
     if(securityPolicy?.workerSynchronization?.priorConversationOrMemoryCannotOverrideCentralPolicy!==true)fail('SECURITY_MEMORY_OVERRIDE_FORBIDDEN');
+    if(logMap?.workerContextLogContract?.fixedAutonomousDevelopmentOperatingContractRequired!==true)fail('LOG_FIXED_OPERATING_CONTRACT_REQUIRED');
+    if(architecture?.workerSynchronization?.fixedAutonomousDevelopmentOperatingContractMustBeLoaded!==true)fail('ARCHITECTURE_FIXED_OPERATING_CONTRACT_REQUIRED');
+    if(securityPolicy?.workerSynchronization?.fixedAutonomousDevelopmentOperatingContractMustBeLoaded!==true)fail('SECURITY_FIXED_OPERATING_CONTRACT_REQUIRED');
   }
+  const fixedContractPath='company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract';
+  if(clean(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.centralContract)!==fixedContractPath)fail('LOG_FIXED_OPERATING_CONTRACT_BINDING');
+  if(clean(architecture?.fixedAutonomousDevelopmentOperatingTopology?.centralContract)!==fixedContractPath)fail('ARCHITECTURE_FIXED_OPERATING_CONTRACT_BINDING');
+  if(clean(securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.centralContract)!==fixedContractPath)fail('SECURITY_FIXED_OPERATING_CONTRACT_BINDING');
+  if(architecture?.fixedAutonomousDevelopmentOperatingTopology?.ownerAndChatgptNotInNormalCycleCriticalPath!==true)fail('ARCHITECTURE_FIXED_OPERATING_NONBLOCKING');
+  if(securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.normalCycleMayContinueWithoutOwnerOrChatgptPresence!==true)fail('SECURITY_FIXED_OPERATING_NONBLOCKING');
+  if(clean(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.autonomousBottleneckManagementOwner)!=='VIBE2_VIBE3_EXISTING_SYSTEM_AI'||logMap?.fixedAutonomousDevelopmentOperatingEvidence?.ownerOrChatgptBottleneckPresenceRequired!==false)fail('LOG_FIXED_OPERATING_BOTTLENECK_OWNER');
+  if(clean(architecture?.fixedAutonomousDevelopmentOperatingTopology?.bottleneckManagementOwner)!=='VIBE2_VIBE3_EXISTING_SYSTEM_AI'||architecture?.fixedAutonomousDevelopmentOperatingTopology?.ownerAndChatgptNotBottleneckManagersInNormalOperation!==true)fail('ARCHITECTURE_FIXED_OPERATING_BOTTLENECK_OWNER');
+  if(securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.vibeMayManageNormalOperationalBottlenecksAutonomously!==true||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.ownerAndChatgptAbsenceDoesNotBlockNonSecurityBottleneckRepair!==true)fail('SECURITY_FIXED_OPERATING_BOTTLENECK_OWNER');
+  if(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.vibeOwnsAllNormalProcessManagement!==true||logMap?.fixedAutonomousDevelopmentOperatingEvidence?.chatgptNormalOperationsOwner!==false||logMap?.fixedAutonomousDevelopmentOperatingEvidence?.sourceGrowthIntegrityEvidenceRequired!==true)fail('LOG_FIXED_OPERATING_RESPONSIBILITY_SPLIT');
+  if(architecture?.fixedAutonomousDevelopmentOperatingTopology?.vibeOwnsAllNormalProcessManagement!==true||architecture?.fixedAutonomousDevelopmentOperatingTopology?.chatgptNormalOperationsOwner!==false||clean(architecture?.fixedAutonomousDevelopmentOperatingTopology?.sourceGrowthExecutionOwner)!=='VIBE2_VIBE3')fail('ARCHITECTURE_FIXED_OPERATING_RESPONSIBILITY_SPLIT');
+  if(securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.vibeNormalProcessManagementOwner!==true||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.chatgptNormalOperationsOwner!==false||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.evaluationOnlyCompletionMayNotFakeRequiredSourceMutation!==true)fail('SECURITY_FIXED_OPERATING_RESPONSIBILITY_SPLIT');
   if(clean(securityPolicy?.sourceOfTruth)!==policyFile)fail('SECURITY_SOURCE_OF_TRUTH');
   if(securityPolicy?.centralRoadmapBinding?.documentIsCode!==true)fail('SECURITY_DOCUMENT_CODE');
   if(clean(securityPolicy?.centralRoadmapBinding?.sharedContextValidator)!=='tools/company-shared-context.mjs')fail('SECURITY_VALIDATOR_BINDING');
