@@ -3538,6 +3538,11 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,true);
   assert.equal(plan.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.ok(['VOLUME_UP','QUALITY_UP_1000'].includes(plan.focusPhase));
+  if(plan.focusPhase==='VOLUME_UP'){
+    assert.ok(plan.nextVolumeActions.length>0);
+    assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
+    assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
+  }
 
   for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
     const row=plan.domains.find(item=>item.domain===domain);
