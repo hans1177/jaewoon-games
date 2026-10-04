@@ -960,7 +960,20 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
     BUSH:Object.freeze(['BUSH_ROUND']),
     FERN:Object.freeze(['FERN_CLUSTER']),
     FLOWER:Object.freeze(['WILDFLOWER_PATCH']),
-    STUMP:Object.freeze(['TREE_STUMP'])
+    STUMP:Object.freeze(['TREE_STUMP']),
+    FALLEN_LOG:Object.freeze(['FALLEN_LOG']),
+    PINE_TREE:Object.freeze(['PINE_TREE']),
+    DEAD_TREE:Object.freeze(['DEAD_TREE']),
+    BROADLEAF_TREE:Object.freeze(['BROADLEAF_TREE']),
+    VINE:Object.freeze(['VINE_CLUSTER','VINE']),
+    REED:Object.freeze(['REED_PATCH','REED']),
+    MOSS:Object.freeze(['MOSS_PATCH','MOSS']),
+    MUSHROOM:Object.freeze(['MUSHROOM_CLUSTER','MUSHROOM']),
+    ROOT:Object.freeze(['ROOT_CLUSTER','ROOT']),
+    BIOME_VARIANT:Object.freeze(['BIOME_VARIANT','BIOME_SHRUB_VARIANT','AUTUMN_TREE_VARIANT']),
+    SEASON_VARIANT:Object.freeze(['SEASON_VARIANT','AUTUMN_TREE_VARIANT']),
+    WIND_VARIANT:Object.freeze(['WIND_VARIANT','WIND_BENT_TREE']),
+    LOD:Object.freeze(['LOD','LOD_FOLIAGE_PROXY'])
   }),
   PRESENTATION:Object.freeze({
     BRAND_BACKGROUND:Object.freeze(['LOADING_SCREEN','PRESENTATION']),
