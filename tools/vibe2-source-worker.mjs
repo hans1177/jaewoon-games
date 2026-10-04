@@ -2197,6 +2197,56 @@ export function evaluateInternalAssetSourceBinding({order={},candidate={},source
   });
 }
 
+
+function audioNativeBindingPattern(target=''){
+  const engine=clean(target).toLowerCase();
+  if(engine==='roblox')return /(?:Instance\.new\s*\(\s*["']Sound["']|\bSoundService\b|\bSoundId\s*=|rbxassetid:\/\/[1-9][0-9]*)/i;
+  if(engine==='unity')return /(?:\bAudioSource\b|\bAudioClip\b|\bAudioMixer\b|Resources\.Load\s*<\s*AudioClip\s*>)/i;
+  if(engine==='web')return /(?:\bnew\s+Audio\s*\(|\bAudioContext\b|\bwebkitAudioContext\b|createBufferSource\s*\(|<audio\b|\.(?:src|currentSrc)\s*=\s*["'][^"']+\.(?:ogg|mp3|wav|flac|m4a|aac|opus))/i;
+  return /(?:\bAudioSource\b|\bAudioClip\b|\bAudioContext\b|Instance\.new\s*\(\s*["']Sound["']|\bSoundId\s*=|audio_player_device)/i;
+}
+function audioNativeMutationPattern(target=''){
+  const engine=clean(target).toLowerCase();
+  if(engine==='roblox')return /(?:\bSoundId\s*=|Instance\.new\s*\(\s*["']Sound["']|:[A-Za-z]*(?:Play|Stop|Pause|Resume)\s*\(|\b(?:Volume|PlaybackSpeed|Looped|RollOffMaxDistance|RollOffMinDistance|TimePosition)\s*=|TweenService[\s\S]{0,500}\bVolume\s*=)/i;
+  if(engine==='unity')return /(?:\bAudioSource\b[\s\S]{0,500}\.(?:clip|volume|pitch|loop)\s*=|\.(?:Play|Stop|Pause|UnPause)\s*\(|\bAudioMixer\b[\s\S]{0,500}SetFloat\s*\()/i;
+  if(engine==='web')return /(?:\bnew\s+Audio\s*\(|\.(?:src|volume|playbackRate|loop)\s*=|\.(?:play|pause)\s*\(|createBufferSource\s*\(|createGain\s*\(|\.connect\s*\(|\.start\s*\()/i;
+  return /(?:\bSoundId\s*=|\bAudioSource\b|\bAudioContext\b|\.(?:Play|Stop|Pause|play|pause)\s*\(|\b(?:Volume|volume|PlaybackSpeed|playbackRate)\s*=)/i;
+}
+export function evaluateAudioPresentationSourceBinding({order={},candidate={},sourceRoot=''}={}){
+  const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+  const required=order?.presentationQuality?.required===true&&presentationPass==='AUDIO_FEEL';
+  if(!required)return Object.freeze({required:false,pass:true,reason:'NOT_REQUIRED',existingBinding:false,newBinding:false,audioMutation:false});
+  const target=clean(order?.target).toLowerCase();
+  let currentText='';
+  if(sourceRoot&&fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory()){
+    currentText=listContextFiles(sourceRoot,target,[]).map(row=>{
+      try{return fs.readFileSync(row.full,'utf8');}catch{return'';}
+    }).join('\n');
+  }
+  const changedText=[
+    ...(candidate?.edits||[]).map(row=>String(row?.replace??'')),
+    ...(candidate?.newFiles||[]).map(row=>String(row?.content??'')),
+    ...(candidate?.replaceFiles||[]).map(row=>String(row?.content??''))
+  ].join('\n');
+  const currentExecutable=executableAssetBindingText(currentText);
+  const changedExecutable=executableAssetBindingText(changedText);
+  const bindingPattern=audioNativeBindingPattern(target);
+  const existingBinding=bindingPattern.test(currentExecutable);
+  const newBinding=bindingPattern.test(changedExecutable);
+  const audioMutation=audioNativeMutationPattern(target).test(changedExecutable);
+  const pass=audioMutation&&(existingBinding||newBinding);
+  return Object.freeze({
+    required:true,
+    pass,
+    reason:!audioMutation?'AUDIO_FEEL_SOURCE_MUTATION_MISSING':!(existingBinding||newBinding)?'AUDIO_NATIVE_SOURCE_BINDING_MISSING':newBinding?'AUDIO_NATIVE_BINDING_AND_MUTATION_PRESENT':'EXISTING_AUDIO_BINDING_REUSED_WITH_MUTATION',
+    existingBinding,
+    newBinding,
+    audioMutation,
+    runtimeVerificationRequired:true,
+    studioRequired:false
+  });
+}
+
 function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
   const selectedFamilies=new Set([
@@ -3060,6 +3110,8 @@ export function generationFailureClass(error){
   if(/ROBLOX_SOURCE_STRUCTURAL_CONTINUITY/i.test(message))return'ROBLOX_STRUCTURAL_CONTINUITY';
   if(/DIAGNOSTIC_POSTCONDITION_MISSING/i.test(message))return'DIAGNOSTIC_POSTCONDITION';
   if(/ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)/i.test(message))return'ROBLOX_STUDIO_ASSET_APPLICATION';
+  if(/INTERNAL_ASSET_SOURCE_BINDING_REQUIRED/i.test(message))return'INTERNAL_ASSET_SOURCE_BINDING';
+  if(/AUDIO_SOURCE_BINDING_REQUIRED/i.test(message))return'AUDIO_SOURCE_BINDING';
   if(/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(message))return'ROBLOX_VISUAL_DOMAINS';
   if(/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(message))return'ROBLOX_VISUAL_MOTION';
   if(/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(message))return'PRESENTATION_PATCH_DELTA';
@@ -3074,11 +3126,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','GENERATED_ASSET_BINDING','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','INTERNAL_ASSET_SOURCE_BINDING','AUDIO_SOURCE_BINDING','GENERATED_ASSET_BINDING','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|INTERNAL_ASSET_SOURCE_BINDING_REQUIRED|AUDIO_SOURCE_BINDING_REQUIRED|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -4803,6 +4855,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(graphicsReplacementReport.required&&!graphicsReplacementReport.pass)throw new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:'+graphicsReplacementReport.reason);
     const internalAssetSourceBinding=evaluateInternalAssetSourceBinding({order,candidate,sourceRoot});
     if(internalAssetSourceBinding.required&&!internalAssetSourceBinding.pass)throw new Error('INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:'+internalAssetSourceBinding.reason+':MISSING='+(internalAssetSourceBinding.missingAssetIds||[]).join(','));
+    const audioSourceBinding=evaluateAudioPresentationSourceBinding({order,candidate,sourceRoot});
+    if(audioSourceBinding.required&&!audioSourceBinding.pass)throw new Error('AUDIO_SOURCE_BINDING_REQUIRED:'+audioSourceBinding.reason);
     const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
     let studioAssetQualityAxes=null;
     if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
@@ -4851,7 +4905,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,internalAssetSourceBinding,studioQualityDelta,studioAssetQualityAxes};
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,internalAssetSourceBinding,audioSourceBinding,studioQualityDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
