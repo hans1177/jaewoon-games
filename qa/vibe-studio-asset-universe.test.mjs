@@ -2674,7 +2674,8 @@ test('studio-independent 1000-point internal asset audit uses strict score and h
   assert.ok(hardFail.score>=880);
   assert.equal(hardFail.pass,false);
   assert.ok(hardFail.blockers.some(row=>row.startsWith('HARD_GATE:UI_UX_SYSTEM:')));
-  assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('AI/NPC interaction'));
+  assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('NPC interaction'));
+  assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('dialogue/helper'));
 });
 
 test('common Roblox UI v3 covers AI dialogue NPC interaction core game screens and vector icons',()=>{
