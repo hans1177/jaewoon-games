@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "packId": "roblox-common-skill-v1",
+  "family": "SKILL",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+  "themeAdaptationRequiredPerGame": true,
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "dependencyPackIds": [
+    "roblox-common-vfx-v1"
+  ],
+  "gameplayAuthority": false,
+  "atoms": [
+    {
+      "atomId": "CAST_HAND",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachCastHand",
+      "role": "CAST_ORIGIN_PRESENTATION"
+    },
+    {
+      "atomId": "TELEGRAPH_CIRCLE",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateTelegraphCircle",
+      "role": "AREA_TELEGRAPH_PRESENTATION"
+    },
+    {
+      "atomId": "IMPACT_SMALL",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateImpactSmall",
+      "role": "SMALL_IMPACT_PRESENTATION",
+      "reuses": "roblox-common-vfx-impact-flash"
+    }
+  ]
+}
