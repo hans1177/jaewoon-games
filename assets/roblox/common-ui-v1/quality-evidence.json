@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "packId": "roblox-common-ui-v1",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "nativeRobloxComponents": 15,
+      "themeAdaptableAcrossGames": 15,
+      "sharedVisualLanguage": 10,
+      "touchMinimumSizing": 15,
+      "healthReadabilityStates": 10,
+      "panelDepthAndBorderHierarchy": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "automaticBindingCompatibility": 10,
+      "gameplayAuthorityIsolation": 5
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "Common source-authoring target only. Each consumer game still requires style adaptation and runtime verification."
+  },
+  "companyCommonBase": true,
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayAuthority": false,
+  "sourceAssetCount": 3
+}
