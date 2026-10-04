@@ -204,7 +204,7 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.ok(jobsAt>0);
   assert.doesNotMatch(director.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(director,/supervise:[\s\S]*?concurrency:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
-  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
   assert.doesNotMatch(director,/game-primary-gate:\n\s+needs: runner-drain/);
   assert.match(director,/game-primary-gate:[\s\S]*runs-on: ubuntu-slim/);
   assert.match(director,/supervise:\n\s+needs: \[runner-drain, game-primary-gate\]/);
@@ -294,7 +294,7 @@ test('homepage completion does not redundantly wake the full central Director',(
   assert.equal(logMap.directorHomepageWakeDecouplingEvidence?.homepageInternalDirectorSupervisionExpected,true);
 });
 
-test('runner drain uses separate fixed 24.04 capacity without moving gate or heavy game work',()=>{
+test('runner drain rebalances to lightweight slim control capacity without moving heavy game work',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
@@ -303,11 +303,15 @@ test('runner drain uses separate fixed 24.04 capacity without moving gate or hea
   assert.match(director,/game-primary-gate:[\s\S]*?runs-on: ubuntu-slim/);
   assert.match(director,/supervise:[\s\S]*?runs-on: ubuntu-slim/);
   assert.equal(roadmap.changeRecord?.directorDrainRunnerIsolation20260927?.runnerDrainRunner,'ubuntu-24.04');
-  assert.equal(architecture.runnerQueueDrainTopology?.runner,'ubuntu-24.04');
-  assert.equal(architecture.controlPlaneOperationalRunnerIsolation?.director?.runnerDrain,'ubuntu-24.04');
-  assert.equal(logMap.controlPlaneGameRunnerEvictionEvidence?.expectedRunnerLabels?.directorDrain,'ubuntu-24.04');
-  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.directorDrain,'ubuntu-24.04');
+  assert.equal(roadmap.changeRecord?.directorDrainRunnerRebalance20261004?.previousRunner,'ubuntu-24.04');
+  assert.equal(roadmap.changeRecord?.directorDrainRunnerRebalance20261004?.runnerDrainRunner,'ubuntu-slim');
+  assert.equal(architecture.runnerQueueDrainTopology?.runner,'ubuntu-slim');
+  assert.equal(architecture.controlPlaneOperationalRunnerIsolation?.director?.runnerDrain,'ubuntu-slim');
+  assert.equal(architecture.directorDrainRunnerRebalance?.runnerDrain,'ubuntu-slim');
+  assert.equal(logMap.controlPlaneGameRunnerEvictionEvidence?.expectedRunnerLabels?.directorDrain,'ubuntu-slim');
+  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.directorDrain,'ubuntu-slim');
   assert.equal(logMap.directorDrainRunnerIsolationEvidence?.expectedRunnerLabel,'ubuntu-24.04');
+  assert.equal(logMap.directorDrainRunnerRebalanceEvidence?.expectedRunnerLabel,'ubuntu-slim');
 });
 
 test('runner drain keeps active same-game work but prefers the newest queued native runtime',()=>{
@@ -355,7 +359,7 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.ok(jobsAt>0);
   assert.doesNotMatch(director.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3/);
-  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
   assert.doesNotMatch(director,/for page in \$\(seq 1 20\); do/);
   assert.match(director,/local paginate="\$\{2:-false\}"/);
   assert.match(director,/page_query="\$\{query\}&page=\$\{page\}"/);

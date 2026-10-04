@@ -1,5 +1,5 @@
 {
-  "version": 525,
+  "version": 526,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -8065,6 +8065,38 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "directorDrainRunnerRebalance20261004": {
+      "id": "DIRECTOR_DRAIN_RUNNER_REBALANCE_2026-10-04",
+      "authority": "OWNER_DIRECTIVE_2026-10-04",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_EXISTING_RUNNER_DRAIN_EXECUTABLE_WHEN_FIXED_UBUNTU_24_04_CAPACITY_IS_BACKLOGGED_BY_ROUTING_ONLY_LIGHTWEIGHT_QUEUE_EVICTION_TO_AVAILABLE_SLIM_CONTROL_CAPACITY",
+      "observedEvidence": {
+        "queuedWorkflowRuns": 93,
+        "inProgressWorkflowRuns": 8,
+        "directorRerunRunId": 37168523140,
+        "runnerDrainJobId": 111341661559,
+        "runnerDrainPreviousRunner": "ubuntu-24.04",
+        "runnerDrainObservedStatus": "queued",
+        "gamePrimaryGateJobId": 111341662072,
+        "gamePrimaryGateRunner": "ubuntu-slim",
+        "gamePrimaryGateObservedConclusion": "success"
+      },
+      "previousRunner": "ubuntu-24.04",
+      "runnerDrainRunner": "ubuntu-slim",
+      "gamePrimaryGateRunner": "ubuntu-slim",
+      "superviseRunner": "ubuntu-slim",
+      "heavyGameExecutionRunner": "ubuntu-latest",
+      "drainLogicChanged": false,
+      "cancellationSemanticsChanged": false,
+      "activeGameCancellationForbidden": true,
+      "independentGameCancellationForbidden": true,
+      "sharedStateWriterCancellationChurnForbidden": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "finalDevelopmentLockChanged": false,
+      "newSchedulerCreated": false,
+      "newQueueCreated": false,
+      "canonicalPipelineUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {

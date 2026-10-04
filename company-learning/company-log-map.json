@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1876,7 +1876,7 @@
     "vibe24hSchedulerActiveRunPreserved": true
   },
   "controlPlaneGameRunnerEvictionEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "expectedRunnerLabels": {
       "companyStatusSync": "ubuntu-slim",
@@ -1884,7 +1884,7 @@
       "designPromotionSync": "ubuntu-slim",
       "platformExposureSync": "ubuntu-slim",
       "recoveryFast": "ubuntu-slim",
-      "directorDrain": "ubuntu-24.04",
+      "directorDrain": "ubuntu-slim",
       "directorGate": "ubuntu-slim",
       "directorSupervise": "ubuntu-slim"
     },
@@ -1921,7 +1921,7 @@
     "independentPlatformLaneMayProceedWhenSiblingAlreadyActive": true
   },
   "gameControlRunnerPoolEvidence": {
-    "version": 3,
+    "version": 4,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "expectedRunnerLabels": {
       "robloxIngress": "ubuntu-24.04",
@@ -1934,7 +1934,7 @@
       "centralNativePlan": "ubuntu-slim",
       "vibe2Reserve": "ubuntu-slim",
       "vibe2FanIn": "ubuntu-24.04-arm",
-      "directorDrain": "ubuntu-24.04",
+      "directorDrain": "ubuntu-slim",
       "robloxExactIngress": "ubuntu-24.04",
       "robloxBatchIngress": "ubuntu-24.04"
     },
@@ -2896,5 +2896,30 @@
       "streamingEnabled"
     ],
     "unverifiedStateCannotBeLoggedAsPass": true
+  },
+  "directorDrainRunnerRebalanceEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorDrainRunnerRebalance20261004",
+    "workflow": ".github/workflows/director-supervisor.yml",
+    "job": "runner-drain",
+    "previousRunnerLabel": "ubuntu-24.04",
+    "expectedRunnerLabel": "ubuntu-slim",
+    "observedQueuedWorkflowRuns": 93,
+    "observedInProgressWorkflowRuns": 8,
+    "observedDirectorRerunRunId": 37168523140,
+    "observedRunnerDrainJobId": 111341661559,
+    "observedRunnerDrainStatus": "queued",
+    "observedSlimGateJobId": 111341662072,
+    "observedSlimGateConclusion": "success",
+    "cancellationSemanticsChanged": false,
+    "independentGameCancellationForbidden": true,
+    "activeGameCancellationForbidden": true,
+    "expectedMarkers": [
+      "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT",
+      "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
+      "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
+    ],
+    "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
   }
 }

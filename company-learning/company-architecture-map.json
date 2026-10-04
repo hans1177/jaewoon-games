@@ -1,5 +1,5 @@
 {
-  "version": 310,
+  "version": 311,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5475,10 +5475,10 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 7,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
+    "version": 8,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorDrainRunnerRebalance20261004",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
-    "runner": "ubuntu-24.04",
+    "runner": "ubuntu-slim",
     "executesBeforeGamePrimaryGate": false,
     "cancellable": [
       "SUPERSEDED_CONTROL_PLANE",
@@ -5530,10 +5530,11 @@
     "staleCentralPushRequiresCurrentHeadReplacement": true,
     "staleNativeBatchPushRequiresCurrentHeadCentralReplacement": true,
     "vibe24hSchedulerSameTitleDedupe": true,
-    "vibe24hSchedulerInProgressWinner": "ACTIVE_RUN_PRESERVED"
+    "vibe24hSchedulerInProgressWinner": "ACTIVE_RUN_PRESERVED",
+    "previousRunner": "ubuntu-24.04"
   },
   "controlPlaneOperationalRunnerIsolation": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.controlPlaneGameRunnerEviction20260926",
     "slimWorkflows": [
       ".github/workflows/company-status-sync.yml",
@@ -5543,9 +5544,10 @@
       ".github/workflows/vibe2-recovery-fast.yml"
     ],
     "director": {
-      "runnerDrain": "ubuntu-24.04",
+      "runnerDrain": "ubuntu-slim",
       "gamePrimaryGate": "ubuntu-slim",
-      "supervise": "ubuntu-slim"
+      "supervise": "ubuntu-slim",
+      "previousRunnerDrain": "ubuntu-24.04"
     },
     "ubuntuLatestReservedForHeavyGameWork": true,
     "gameParallelismReduced": false
@@ -6696,5 +6698,19 @@
     "topology": "EXISTING_CANONICAL_PIPELINE_ONLY",
     "gameSourceLanesRemainParallel": true,
     "newPipelineWorkerQueueForbidden": true
+  },
+  "directorDrainRunnerRebalance": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorDrainRunnerRebalance20261004",
+    "previousRunner": "ubuntu-24.04",
+    "runnerDrain": "ubuntu-slim",
+    "gamePrimaryGate": "ubuntu-slim",
+    "supervise": "ubuntu-slim",
+    "heavyGameExecution": "ubuntu-latest",
+    "drainLogicChanged": false,
+    "cancellationSemanticsChanged": false,
+    "activeGameCancellationForbidden": true,
+    "independentGameCancellationForbidden": true,
+    "finalDevelopmentLockChanged": false
   }
 }
