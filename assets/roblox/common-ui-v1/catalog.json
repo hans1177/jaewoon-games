@@ -535,5 +535,51 @@
       "gameplayAuthority": false
     },
     "adaptationBeforeRejectionPreferred": true
-  }
+  },
+  "graphicsPresentationContractVersion": 1,
+  "graphicsReferencePolicy": "ABSTRACT_GOTY_PRINCIPLES_ONLY_NO_DIRECT_COPY",
+  "graphicsPresentationStandardsRef": "assets/vibe-studio-asset-universe.js#GRAPHICS_FAMILY_PRESENTATION_STANDARD",
+  "graphicsIterationPolicy": {
+    "studioRequiredForInternalUse": false,
+    "passIsTerminal": false,
+    "existingAndCommonAssetFirst": true,
+    "adaptBeforeReject": true,
+    "preserveStrongAxes": true,
+    "improveWeakestPresentationAxisFirst": true,
+    "targetProgression": [
+      880,
+      920,
+      950,
+      980,
+      1000
+    ]
+  },
+  "presentationIntegrationRoles": [
+    "INFORMATION_HIERARCHY",
+    "TOUCH_KEYBOARD_GAMEPAD",
+    "MENU_FULL_SCREENS",
+    "LOADING_INTRO",
+    "CUTSCENE_SUBTITLES",
+    "REDUCED_MOTION"
+  ],
+  "referencePrinciples": [
+    "SUBJECT_BACKGROUND_SEPARATION",
+    "MATERIAL_LIGHTING_DEPTH",
+    "MOTION_OR_CINEMATIC_READABILITY",
+    "ACCESSIBILITY_PRESERVES_PRESENTATION_QUALITY",
+    "DENSE_DETAIL_WITH_CLEAR_HIERARCHY"
+  ],
+  "companionPacks": [
+    "roblox-common-presentation-v1",
+    "roblox-common-background-v1"
+  ],
+  "menuStylePresetSupport": [
+    "CINEMATIC_DARK",
+    "FANTASY_CARVED",
+    "SCI_FI_GLASS",
+    "HORROR_MUTED",
+    "COZY_SOFT",
+    "ARCADE_BOLD",
+    "MINIMAL_LIGHT"
+  ]
 }
