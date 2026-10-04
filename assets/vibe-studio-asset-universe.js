@@ -1424,39 +1424,62 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
   const row=normalizeRegistryAsset(asset);
   const concept=gameDna?.concept||createConceptProfile({styleFamily:row.styleFamily||'STYLIZED_FANTASY'});
   const conceptQa=evaluateConceptCompatibility({asset,concept});
-  const platform=upper(gameDna?.platform||gameDna?.PLATFORM_VARIANT||asset.platformVariant||asset.platform);
   const targetPlatform=upper(gameDna?.targetPlatform||gameDna?.platform);
+  const platformCompatible=!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE';
   const companyCommonBase=asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE';
+  const quality120=scoreStudioAssetQuality120({asset,evidence:usage.qualityEvidence||usage.quality120||{}});
+  const internalAudit=scoreInternalAssetAudit1000({asset,evidence:usage.internalAuditEvidence||usage.internalAudit||{}});
+  const declaredInternal=Number(
+    usage.internalAuditScore!==undefined?usage.internalAuditScore:
+    asset?.internalAuditScore!==undefined?asset.internalAuditScore:
+    Number.NaN
+  );
+  const internalAuditScore=Number.isFinite(declaredInternal)
+    ?clamp(declaredInternal,0,INTERNAL_ASSET_AUDIT_MAX)
+    :internalAudit.measuredAxisCount>0?internalAudit.score:0;
+  const internalAuditGrade=internalAssetAuditGrade(internalAuditScore);
+
   let score=assetSourceTier(row)*20;
   if(conceptQa.pass)score+=25; else score-=45;
+  if(platformCompatible)score+=15; else score-=60;
   if(companyCommonBase&&conceptQa.pass)score+=6;
-  if(targetPlatform&&(!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE'))score+=15;
   if(usage.runtimePass===true)score+=20;
   score+=Math.min(20,Math.max(0,Number(usage.gameConsumerCount)||0)*4);
   score+=Math.min(10,Math.max(0,Number(usage.usageCount)||0));
   if(usage.runtimeFailure===true||Number(usage.verifiedFailureCount)>0)score-=Math.min(60,20+Number(usage.verifiedFailureCount||0)*10);
   if(usage.identityFailure===true||usage.styleFailure===true||usage.navigationFailure===true)score-=25;
   if(usage.mobileBudgetFailure===true)score-=20;
-  const quality120=scoreStudioAssetQuality120({asset,evidence:usage.qualityEvidence||usage.quality120||{}});
   score+=Math.round(quality120.score/12);
+  score+=Math.round(internalAuditScore/50);
+
   return Object.freeze({
     id:row.id,
     score:Math.round(score),
     sourceTier:assetSourceTier(row),
     verified:row.verified,
     conceptPass:conceptQa.pass,
-    platformCompatible:!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE',
+    platformCompatible,
     quality120,
+    internalAudit,
+    internalAuditScore,
+    internalAuditGrade,
+    internalAuditPass:internalAudit.pass===true,
+    internalAuditStudioRequired:false,
     companyCommonBase,
     commonBasePreferenceApplied:companyCommonBase&&conceptQa.pass,
     qualityScoreBlocksBinding:false,
+    internalAuditScoreBlocksBinding:false,
     lowQualityMayBindWhenNoBetterSafeCompatibleAsset:true,
-    rejected:Boolean(!conceptQa.pass||usage.lockedOut===true),
+    lowInternalAuditScoreMayBind:true,
+    higherCompatibleInternalAuditScorePreferred:true,
+    rejected:Boolean(!conceptQa.pass||!platformCompatible||usage.lockedOut===true),
     reasons:Object.freeze([
       row.verified?'VERIFIED_RUNTIME_OR_COMPANY':'UNVERIFIED_OR_PREPARED',
       conceptQa.pass?'CONCEPT_COMPATIBLE':'CONCEPT_MISMATCH',
+      platformCompatible?'PLATFORM_COMPATIBLE':'PLATFORM_MISMATCH',
       companyCommonBase&&conceptQa.pass?'COMPANY_COMMON_BASE_REUSE_PREFERRED_WHEN_EQUIVALENT':'',
-      quality120.score<100?'QUALITY_DEBT_KEEP_IMPROVING':'QUALITY_COMMERCIAL_TARGET_REACHED',
+      internalAuditScore<INTERNAL_ASSET_AUDIT_PASS?'INTERNAL_QUALITY_DEBT_USE_ALLOWED_KEEP_IMPROVING':'INTERNAL_AUDIT_TARGET_REACHED',
+      quality120.score<100?'LEGACY_QUALITY_DEBT_KEEP_IMPROVING':'LEGACY_QUALITY_COMMERCIAL_TARGET_REACHED',
       usage.runtimeFailure===true?'VERIFIED_RUNTIME_FAILURE':''
     ].filter(Boolean))
   });
@@ -1467,12 +1490,26 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
   const selections=[];
   for(const requirement of requirements||[]){
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
+    const lockedAssetId=text(requirement.lockedAssetId||requirement.manualAssetId||requirement.gameLockedAssetId);
+    const currentAssetId=text(requirement.currentAssetId);
     const candidates=normalized
       .filter(({row})=>row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily)))
       .map(({asset,row})=>({asset,row,score:scoreStudioAssetCandidate({asset,gameDna,usage:usageByAsset[row.id]||{}})}))
       .filter(x=>!x.score.rejected)
-      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.quality120.score-a.score.quality120.score||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
-    const picked=candidates[0]||null;
+      .sort((a,b)=>
+        b.score.internalAuditScore-a.score.internalAuditScore||
+        b.score.sourceTier-a.score.sourceTier||
+        b.score.quality120.score-a.score.quality120.score||
+        b.score.score-a.score.score||
+        a.row.id.localeCompare(b.row.id)
+      );
+    const lockedPicked=lockedAssetId?candidates.find(row=>row.row.id===lockedAssetId)||null:null;
+    const picked=lockedPicked||candidates[0]||null;
+    const current=currentAssetId?candidates.find(row=>row.row.id===currentAssetId)||null:null;
+    const replacementRecommended=Boolean(
+      picked&&current&&picked.row.id!==current.row.id&&
+      Number(picked.score.internalAuditScore)>Number(current.score.internalAuditScore)
+    );
     selections.push(Object.freeze({
       family,subfamily,required:requirement.required!==false,
       assetId:picked?.row.id||null,
@@ -1481,8 +1518,18 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       verified:picked?.row.verified===true,
       quality120:picked?.score.quality120?.score??null,
       qualityGrade:picked?.score.quality120?.grade??null,
-      lowQualityFallback:Boolean(picked&&Number(picked.score.quality120?.score||0)<100),
+      internalAuditScore:picked?.score.internalAuditScore??null,
+      internalAuditGrade:picked?.score.internalAuditGrade??null,
+      internalAuditPass:picked?.score.internalAuditPass===true,
+      internalAuditStudioRequired:false,
+      lowQualityFallback:Boolean(picked&&Number(picked.score.internalAuditScore||0)<INTERNAL_ASSET_AUDIT_PASS),
       qualityScoreBlocksBinding:false,
+      internalAuditScoreBlocksBinding:false,
+      lockedAssetId:lockedAssetId||null,
+      lockedChoiceApplied:Boolean(lockedPicked),
+      currentAssetId:currentAssetId||null,
+      replacementRecommended,
+      replacementReason:replacementRecommended?'HIGHER_COMPATIBLE_INTERNAL_AUDIT_SCORE':null,
       unresolved:!picked
     }));
   }
@@ -1491,9 +1538,16 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
     complete:selections.every(row=>!row.required||!row.unresolved),
     lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
+    lowQualityBindingAllowed:true,
     lowQualityBindingAllowedWhenNoBetterSafeCompatibleAsset:true,
+    internalAuditScoreIsNotBindingGate:true,
     qualityScoreIsNotBindingGate:true,
+    higherCompatibleInternalAuditScoreAutoPreferred:true,
+    automaticReplacementStudioRequired:false,
+    automaticReplacementNativeRuntimeRequired:false,
+    compatibilityBeforeReplacementRequired:true,
     manualOrLockedChoiceWins:true,
+    priorAssetHistoryPreserved:true,
     gameplayAuthority:false
   });
 }
