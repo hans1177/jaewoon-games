@@ -1865,7 +1865,71 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
-export function buildInternalAssetSourceUsageContract(order={}){
+const INTERNAL_AUDIO_SOURCE_EXTENSIONS=Object.freeze(new Set(['.mp3','.mpga','.wav','.ogg','.flac','.m4a','.aac']));
+function internalAudioMagicMatches(buffer=Buffer.alloc(0),ext=''){
+  const e=clean(ext).toLowerCase();
+  if(buffer.length<4)return false;
+  if(e==='.wav')return buffer.length>=12&&buffer.subarray(0,4).toString('ascii')==='RIFF'&&buffer.subarray(8,12).toString('ascii')==='WAVE';
+  if(e==='.ogg')return buffer.subarray(0,4).toString('ascii')==='OggS';
+  if(e==='.flac')return buffer.subarray(0,4).toString('ascii')==='fLaC';
+  if(e==='.m4a')return buffer.length>=12&&buffer.subarray(4,8).toString('ascii')==='ftyp';
+  if(e==='.aac')return buffer[0]===0xff&&(buffer[1]&0xf0)===0xf0;
+  if(e==='.mp3'||e==='.mpga')return buffer.subarray(0,3).toString('ascii')==='ID3'||(buffer[0]===0xff&&(buffer[1]&0xe0)===0xe0);
+  return false;
+}
+function internalAudioUsageRole(relative=''){
+  const value=posix(relative).toLowerCase();
+  if(/(?:^|\/)(?:music|bgm)(?:\/|$)|theme|waltz|score|soundtrack|music/.test(value))return'MUSIC';
+  if(/ambient|ambience|wind|rain|storm|forest|night|cave|water|bird|insect|crow|frog|gull|machine|hum|surf|drip|rattle|creak/.test(value))return'AMBIENCE';
+  if(/sfx|hit|impact|attack|footstep|step|pickup|open|close|craft|click|confirm|cancel|error|door|weapon|ui[-_]/.test(value))return'SFX';
+  return'GENERAL_AUDIO';
+}
+export function discoverInternalAudioSources(repoRoot=process.cwd()){
+  const root=path.resolve(repoRoot,'assets');
+  if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())return Object.freeze([]);
+  const stack=[root],rows=[];
+  while(stack.length){
+    const current=stack.pop();
+    let entries=[];
+    try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+      if(['node_modules','.git','tmp','temp'].includes(entry.name.toLowerCase()))continue;
+      const absolute=path.join(current,entry.name);
+      if(entry.isDirectory()){stack.push(absolute);continue;}
+      if(!entry.isFile())continue;
+      const ext=path.extname(entry.name).toLowerCase();
+      if(!INTERNAL_AUDIO_SOURCE_EXTENSIONS.has(ext))continue;
+      let stat=null,head=Buffer.alloc(0);
+      try{
+        stat=fs.statSync(absolute);
+        if(!stat.isFile()||stat.size<4096)continue;
+        const fd=fs.openSync(absolute,'r');
+        try{
+          head=Buffer.alloc(Math.min(32,stat.size));
+          fs.readSync(fd,head,0,head.length,0);
+        }finally{fs.closeSync(fd);}
+      }catch{continue;}
+      if(!internalAudioMagicMatches(head,ext))continue;
+      const relative=posix(path.relative(repoRoot,absolute));
+      let sha256=null;
+      try{sha256=crypto.createHash('sha256').update(fs.readFileSync(absolute)).digest('hex');}catch{}
+      if(!sha256)continue;
+      rows.push(Object.freeze({
+        path:relative,
+        bytes:stat.size,
+        format:ext.slice(1).toUpperCase(),
+        usageRole:internalAudioUsageRole(relative),
+        sourceSha256:sha256,
+        sourceReady:true,
+        runtimeVerified:false,
+        productionVerified:false
+      }));
+    }
+  }
+  return Object.freeze(rows.sort((a,b)=>a.path.localeCompare(b.path)));
+}
+
+export function buildInternalAssetSourceUsageContract(order={},{repoRoot=process.cwd()}={}){
   const target=clean(order?.target).toLowerCase();
   const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
   const assetProduction=order?.assetProduction||{};
@@ -1903,11 +1967,27 @@ export function buildInternalAssetSourceUsageContract(order={}){
   const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
   const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const binaryAudioSources=discoverInternalAudioSources(repoRoot).map(row=>Object.freeze({
+    ...row,
+    runtimeBindingState:target==='roblox'?'UPLOAD_BINDING_REQUIRED':target==='unity'?'IMPORT_BINDING_REQUIRED':target==='web'?'STATIC_FILE_BINDING_REQUIRED':'PLATFORM_BINDING_REQUIRED'
+  }));
+  const audioSourceInventory=Object.freeze({
+    actualBinarySourceCount:binaryAudioSources.length,
+    musicSourceCount:binaryAudioSources.filter(row=>row.usageRole==='MUSIC').length,
+    ambienceSourceCount:binaryAudioSources.filter(row=>row.usageRole==='AMBIENCE').length,
+    sfxSourceCount:binaryAudioSources.filter(row=>row.usageRole==='SFX').length,
+    generalSourceCount:binaryAudioSources.filter(row=>row.usageRole==='GENERAL_AUDIO').length,
+    runtimeReadyCount:0,
+    sourceReadyRuntimeBindingRequired:binaryAudioSources.length>0,
+    roleContractCount:Number(assetProduction?.internalLibraryEvolution?.audioRoleContractCount||assetProduction?.companyGraphicsLibrary?.audioRoleContractCount||0)||0,
+    actualRuntimePlaybackMustNotBeInferredFromSourceFile:true
+  });
   const payload={
-    version:3,target,gameId,libraryVersion,
+    version:4,target,gameId,libraryVersion,
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
-    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
+    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier})),
+    binaryAudioSources:binaryAudioSources.map(row=>({path:row.path,bytes:row.bytes,format:row.format,usageRole:row.usageRole,sourceSha256:row.sourceSha256,runtimeBindingState:row.runtimeBindingState}))
   };
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
   const usageMatrix=Object.freeze([
@@ -1948,7 +2028,12 @@ export function buildInternalAssetSourceUsageContract(order={}){
     Object.freeze({signal:'HUD_SYSTEM_COMPOSITION',families:Object.freeze(['UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'compose existing UI atoms by actual game systems and states, not genre labels alone; RPG/survival/defense are suggestions only and current source capabilities win'}),
     Object.freeze({signal:'COMMON_UI_FACTORY_REUSE',families:Object.freeze(['UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'when the corresponding system exists, prefer RobloxCommonUI CreateInventory*/CreateEquipment*/CreateQuest*/CreateShop*/CreateMap*/CreateParty*/CreateCrafting*/CreateDialogue*/CreateNpc*/CreateCharacter*/CreateSettings*/CreateSearch*/CreateFilter*/CreateSort* factories before authoring per-game duplicate UI'}),
     Object.freeze({signal:'CAMERA_LANGUAGE_EVENT',families:Object.freeze([]),optional:Object.freeze(['CAMERA_PRESENTATION','MOTION','VFX','UI']),rule:'consume NORMAL_COMBAT/HEAVY_HIT/BOSS_INTRO/DISCOVERY/LEVEL_UP/DEATH camera events for FOV/shake/zoom/focus presentation within existing camera ownership'}),
-    Object.freeze({signal:'SPATIAL_SOUNDSCAPE_ZONE',families:Object.freeze(['AUDIO','ENVIRONMENT','PROP']),optional:Object.freeze(['BUILDING']),rule:'blend BED/NEAR/DISTANT/SCATTER/ONE_SHOT/INTERACTION_SOURCE layers from existing biome/zone/interior state instead of one global loop'}),
+    Object.freeze({signal:'SPATIAL_SOUNDSCAPE_ZONE',families:Object.freeze(['AUDIO','ENVIRONMENT','PROP']),optional:Object.freeze(['BUILDING']),rule:'blend BED/NEAR/DISTANT/SCATTER/ONE_SHOT/INTERACTION_SOURCE layers from existing biome/zone/interior state instead of one global loop; only roles backed by compatible runtime-bindable audio may play'}),
+    Object.freeze({signal:'REGION_OR_HUB_MUSIC_THEME_STATE',families:Object.freeze(['AUDIO']),optional:Object.freeze(['ENVIRONMENT','UI']),rule:'consume existing region/hub/dungeon/menu state to choose a compatible MUSIC source; one music file does not satisfy ambience, hit or UI SFX roles and music selection may not change progression or region authority'}),
+    Object.freeze({signal:'COMBAT_MUSIC_INTENSITY_STATE',families:Object.freeze(['AUDIO']),optional:Object.freeze(['VFX','UI','CAMERA_PRESENTATION']),rule:'consume existing calm/combat/boss/threat intensity state for compatible music start/stop/crossfade or layer decisions only when current runtime bindings support them; never infer combat state from audio'}),
+    Object.freeze({signal:'INTERIOR_EXTERIOR_AUDIO_BLEND',families:Object.freeze(['AUDIO','ENVIRONMENT']),optional:Object.freeze(['BUILDING','PROP']),rule:'consume existing interior/exterior and zone transitions for compatible ambience/music attenuation, occlusion-role or crossfade presentation; missing ambient files remain an asset gap rather than reusing unrelated music'}),
+    Object.freeze({signal:'UI_RESULT_MILESTONE_AUDIO_STATE',families:Object.freeze(['AUDIO','UI']),optional:Object.freeze(['VFX']),rule:'consume existing confirm/cancel/error/reward/level-up/result events only when a compatible SFX source or native audio binding exists; do not repurpose BGM as generic UI SFX'}),
+    Object.freeze({signal:'BOSS_MUSIC_PHASE_STATE',families:Object.freeze(['AUDIO']),optional:Object.freeze(['VFX','UI','CAMERA_PRESENTATION']),rule:'consume existing boss intro/phase/enrage/death state for compatible music transitions without changing phase timing; a single general music source may be used only when its role/style is compatible and must not pretend to be multiple authored stems'}),
     Object.freeze({signal:'MULTIPLAYER_PRESENTATION_REPLICATION',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER','WEAPON']),rule:'server replicates authoritative state only; clients consume that state for local presentation and may not create a second gameplay authority path'}),
     Object.freeze({signal:'SPAWN_ENTRY_RESPAWN',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION','ENVIRONMENT']),rule:'compose spawn/entry/respawn feedback from existing session state without changing spawn location, invulnerability or respawn rules'}),
     Object.freeze({signal:'DEATH_DOWNED_REVIVE',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume authoritative death/downed/revive states for readable presentation while health, timers and revive eligibility stay gameplay-owned'}),
@@ -2031,6 +2116,8 @@ export function buildInternalAssetSourceUsageContract(order={}){
     exactFamilies,
     flowSelections:Object.freeze(flowSelections),
     sourceCandidates:Object.freeze(dedupedSources),
+    binaryAudioSources:Object.freeze(binaryAudioSources),
+    audioSourceInventory,
     synchronization:Object.freeze({
       mode:'INCREMENTAL_SELECTION_FINGERPRINT',
       fullLibraryReplicationForbidden:true,
@@ -2189,20 +2276,30 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
 }
 
 function internalAssetSourceUsageGuidance(order={}){
-  const contract=buildInternalAssetSourceUsageContract(order);
-  if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
+  const contract=order?.internalAssetSourceUsageContract||buildInternalAssetSourceUsageContract(order);
+  if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length&&!contract.binaryAudioSources?.length)return'';
   const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
   const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
   const sourceRows=contract.sourceCandidates
     .filter(row=>row.sourceFiles.length||row.path)
     .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
     .join('; ');
+  const audioRows=(contract.binaryAudioSources||[]).map(row=>row.path+'#'+row.usageRole+'#'+row.runtimeBindingState+'#sha256:'+row.sourceSha256.slice(0,12)).join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
+    'Actual internal audio source binaries: '+(audioRows||'NONE'),
+    'Audio source inventory: '+JSON.stringify(contract.audioSourceInventory||{}),
+    'Audio source truth: repository binary existence means SOURCE_READY only. It does NOT mean runtime uploaded, production verified, or playable on the target platform.',
+    contract.target==='roblox'
+      ?'Roblox audio rule: a repository MP3/WAV/OGG/M4A cannot be invented as SoundId. Use it only when the current selected metadata/source already supplies an exact uploaded Roblox audio asset id/binding. Otherwise preserve the binary as SOURCE_READY and report UPLOAD_BINDING_REQUIRED; do not fabricate rbxassetid:// values.'
+      :contract.target==='unity'
+        ?'Unity audio rule: repository audio is SOURCE_READY but must enter through the existing Unity import/project asset path before AudioSource binding. The text source worker may reference the required source but may not fake/copy binary bytes.'
+        :'Web audio rule: repository audio is SOURCE_READY but must be reachable through the existing static serving/bundle path before playback. Do not claim runtime playback merely from file existence.',
+    'Audio role fit is strict: MUSIC does not satisfy AMBIENCE or SFX; AMBIENCE does not satisfy HIT/UI/INTERACTION SFX. If the matching role is absent, keep that role as an asset gap instead of substituting an unrelated file.',
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
     'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
@@ -4579,7 +4676,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
     :null;
   if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
-  const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order);
+  const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order,{repoRoot:cwd});
+  order.internalAssetSourceUsageContract=assetSourceUsageContract;
   let context=unityBootstrapContext
     ||(!sourceRootExists&&bootstrap
       ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
