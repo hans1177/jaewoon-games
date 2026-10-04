@@ -2814,6 +2814,6 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
     assert.equal(result.usable,false);
     assert.ok(result.hardBlockers.length>=1);
   }
-  const merelyLow=evaluateInternalAssetReuse({...base,license:'project-original'},gameDna,{family:'PROP',subfamily:'INTERACTIVE'});
+  const merelyLow=evaluateInternalAssetReuse({asset:{...base,license:'project-original'},gameDna,requirement:{family:'PROP',subfamily:'INTERACTIVE'}});
   assert.equal(merelyLow.usable,true);
 });
