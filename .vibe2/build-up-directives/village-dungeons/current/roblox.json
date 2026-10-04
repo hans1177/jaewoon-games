@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g3-6e8a01f8d0cf",
-  "directiveFingerprint": "6e8a01f8d0cf8a1ddf2471b5b9465858373aaf7672c9d8370748713ed949049c",
-  "previousDirectiveFingerprint": "afcb55075b1212ade702e20ab405cd40c4abd1ab0a9680d490002b3699964546",
-  "forbiddenRepeatFingerprint": "afcb55075b1212ade702e20ab405cd40c4abd1ab0a9680d490002b3699964546",
+  "directiveId": "village-dungeons-build-up-g2-afcb55075b12",
+  "directiveFingerprint": "afcb55075b1212ade702e20ab405cd40c4abd1ab0a9680d490002b3699964546",
+  "previousDirectiveFingerprint": "caf7d14c841841cbeb87b49072a6770909ae8413c7deadd170705eebd745c417",
+  "forbiddenRepeatFingerprint": "caf7d14c841841cbeb87b49072a6770909ae8413c7deadd170705eebd745c417",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 3,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "6728366c908faf7a58b2bc84a0c764299f4fec25419a46b5814ec5585052a18a",
+  "sourceTreeFingerprint": "4c0f2c690540ef6f2ae2d2bea92941f65754a698b8418784213a47a17989354e",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -268,9 +268,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "4c0f2c690540ef6f2ae2d2bea92941f65754a698b8418784213a47a17989354e",
-    "currentSourceTreeFingerprint": "6728366c908faf7a58b2bc84a0c764299f4fec25419a46b5814ec5585052a18a",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "d7e238f269e62eba560155cb6a47b3d3da9489beba0535fc698f1dfe9094c9f7",
+    "currentSourceTreeFingerprint": "4c0f2c690540ef6f2ae2d2bea92941f65754a698b8418784213a47a17989354e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -431,29 +431,10 @@
         }
       ]
     },
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
     "blockers": [
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-      "MISSING_GAMEPLAY_CAPABILITY:CRAFTING",
-      "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-      "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:3",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:4",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
+      "roblox-runtime-foundation-awaiting-observation"
     ],
     "runtimeObserved": true,
     "runtimePassed": false,
@@ -1610,7 +1591,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1622,7 +1603,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 84418,
+        "sourceBytes": 113871,
         "largestFileBytes": 44002,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1655,21 +1636,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=REGRESSION; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
@@ -1707,7 +1687,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 176,
+        "score": 194,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -2059,9 +2039,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/village-dungeons/shared/GameConfig.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2221,9 +2201,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/village-dungeons/shared/GameConfig.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/client/Game.client.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceAnchors": [
@@ -2328,138 +2308,19 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
-  "developmentImpact": {
-    "version": 1,
-    "platform": "ROBLOX",
-    "categories": [
-      "GRAPHICS",
-      "MAP",
-      "UI",
-      "GAMEPLAY",
-      "SAVE"
-    ],
-    "requiredQa": [
-      "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "ROBLOX_LUAU_COMPILE",
-      "MAP_PROTECTED_ANCHOR_QA",
-      "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA",
-      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
-    ],
-    "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
-    ],
-    "securityRelevant": true,
-    "openCloudWorldChecks": [
-      "SERVER_BOOT",
-      "FINITE_WORLD_BOUNDS",
-      "SPAWN_IN_PLAYABLE_BOUNDS",
-      "LANDMARK_AND_OBJECTIVE_COUNTS",
-      "WORLD_GEOMETRY",
-      "TERRAIN_BINDING",
-      "LIGHTING_ATMOSPHERE",
-      "STREAMING_CONFIGURATION"
-    ]
-  },
-  "preMutationDryRun": {
-    "version": 1,
-    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
-    "gameId": "village-dungeons",
-    "platform": "ROBLOX",
-    "plannedFiles": [
-      "roblox-games/village-dungeons/shared/GameConfig.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/default.project.json"
-    ],
-    "impact": {
-      "version": 1,
-      "platform": "ROBLOX",
-      "categories": [
-        "GRAPHICS",
-        "MAP",
-        "UI",
-        "GAMEPLAY",
-        "SAVE"
-      ],
-      "requiredQa": [
-        "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "ROBLOX_LUAU_COMPILE",
-        "MAP_PROTECTED_ANCHOR_QA",
-        "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
-        "VISUAL_BINDING_QA",
-        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
-      ],
-      "conditionalQa": [
-        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
-      ],
-      "securityRelevant": true,
-      "openCloudWorldChecks": [
-        "SERVER_BOOT",
-        "FINITE_WORLD_BOUNDS",
-        "SPAWN_IN_PLAYABLE_BOUNDS",
-        "LANDMARK_AND_OBJECTIVE_COUNTS",
-        "WORLD_GEOMETRY",
-        "TERRAIN_BINDING",
-        "LIGHTING_ATMOSPHERE",
-        "STREAMING_CONFIGURATION"
-      ]
-    },
-    "protectedSemantics": [
-      "CORE_RULES",
-      "BALANCE",
-      "PROGRESSION",
-      "SAVE_MEANING",
-      "ECONOMY",
-      "NETWORK_AUTHORITY"
-    ],
-    "requiredQa": [
-      "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "ROBLOX_LUAU_COMPILE",
-      "MAP_PROTECTED_ANCHOR_QA",
-      "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA",
-      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
-    ],
-    "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
-    ],
-    "openCloudWorldChecks": [
-      "SERVER_BOOT",
-      "FINITE_WORLD_BOUNDS",
-      "SPAWN_IN_PLAYABLE_BOUNDS",
-      "LANDMARK_AND_OBJECTIVE_COUNTS",
-      "WORLD_GEOMETRY",
-      "TERRAIN_BINDING",
-      "LIGHTING_ATMOSPHERE",
-      "STREAMING_CONFIGURATION"
-    ],
-    "sourceMutationPerformed": false,
-    "newWorkflowOrQueueRequired": false,
-    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
-  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "reason": "current source Studio product-quality failure",
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "6728366c908faf7a58b2bc84a0c764299f4fec25419a46b5814ec5585052a18a",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "4c0f2c690540ef6f2ae2d2bea92941f65754a698b8418784213a47a17989354e",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2471,7 +2332,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2502,7 +2363,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2574,5 +2435,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:24:58.117Z"
+  "generatedAt": "2026-10-03T09:54:20.499Z"
 }
