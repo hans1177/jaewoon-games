@@ -231,5 +231,30 @@
     "reducedMotionVariant": true,
     "cameraShakeScalable": true,
     "touchKeyboardGamepadPrompts": true
-  }
+  },
+  "stylePresets": [
+    "CINEMATIC_DARK",
+    "FANTASY_CARVED",
+    "SCI_FI_GLASS",
+    "HORROR_MUTED",
+    "COZY_SOFT",
+    "ARCADE_BOLD",
+    "MINIMAL_LIGHT"
+  ],
+  "styleSystem": {
+    "structureStableAcrossThemes": true,
+    "styleMayChange": [
+      "PALETTE",
+      "PANEL_DEPTH",
+      "CORNER",
+      "BORDER",
+      "TYPOGRAPHY_DIRECTION",
+      "ACCENT",
+      "BACKGROUND"
+    ],
+    "informationHierarchyMustRemain": true,
+    "inputTargetsMustRemain": true,
+    "directExternalMenuCopyForbidden": true
+  },
+  "graphicsPresentationContractVersion": 1
 }
