@@ -125,17 +125,17 @@
       "updatedAt": "2026-10-04T17:22:41.764Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 18,
+      "calls": 19,
       "successes": 0,
-      "failures": 18,
-      "timeouts": 9,
+      "failures": 19,
+      "timeouts": 10,
       "jsonFailures": 9,
-      "totalMs": 1827061,
-      "lastMs": 45055,
-      "lastError": "schema required missing: root.systemInterconnections",
-      "updatedAt": "2026-10-04T17:22:29.832Z"
+      "totalMs": 1947068,
+      "lastMs": 120007,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T17:24:41.773Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T17:22:41.764Z"
+  "updatedAt": "2026-10-04T17:24:41.773Z"
 }
