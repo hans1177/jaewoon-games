@@ -1167,9 +1167,21 @@ test('build-up iteration expectation rises with verified cycles without adding p
         crossSystemConnections:{base:1,stepEveryCycles:2,max:4},
         activeDetailDimensions:{base:2,stepEveryCycles:1,max:10},
         playerFacingProofs:{base:1,stepEveryCycles:3,max:4},
-        connectedContentBundles:{base:0,stepEveryCycles:2,max:3}
-      }
+        connectedContentBundles:{base:0,stepEveryCycles:2,max:3},
+        sourceCompositionDepthLevel:{base:1,stepEveryCycles:1,max:null},
+        activeSourceCompositionDimensions:{base:2,stepEveryCycles:1,max:12}
+      },
+      sourceCompositionDimensions:[
+        'CORE_LOOP_ORCHESTRATION','WORLD_STATE_AND_EVENT_CAUSALITY','ENCOUNTER_BEHAVIOR_AND_COUNTERPLAY','CONTENT_GRAPH_AND_PROGRESSION_NETWORK',
+        'CINEMATIC_CUTSCENE_AND_EVENT_BINDING','INTRO_LOADING_AND_SESSION_CONTINUITY','MENU_HUB_AND_META_LOOP_INTEGRATION','NPC_CHARACTER_REACTIVITY',
+        'QUEST_STORY_AND_DISCOVERY_CHAINING','MID_LATE_ENDGAME_AND_REPLAY_STRUCTURE','PRESENTATION_AUDIO_VFX_MOTION_TIMING','PERFORMANCE_STREAMING_SAVE_AND_NETWORK_RESILIENCE'
+      ],
+      assetLibrarySourceParity:{status:'ACTIVE',libraryPath:'company-asset-library.json',sourceMustKeepPaceWithApplicableAssetCapability:true,applicableOnly:true,assetOnlySwapCountsAsEvolution:false}
     }
+  },null,2),'utf8');
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+    version:50,
+    assets:['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'].map((family,index)=>({id:`asset-${index}`,family}))
   },null,2),'utf8');
   const first=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN'});
   const third=resolveBuildUpIterationExpectation({repoRoot:root,cycle:3,phase:'BUILD_UP',focusPillar:'PROGRESSION'});
@@ -1187,6 +1199,16 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.ok(sixth.activeDetailDimensions.length>first.activeDetailDimensions.length);
   assert.ok(sixth.minimumPlayerFacingProofs>first.minimumPlayerFacingProofs);
   assert.ok(sixth.minimumConnectedContentBundles>first.minimumConnectedContentBundles);
+  assert.ok(sixth.sourceCompositionDepthLevel>third.sourceCompositionDepthLevel);
+  assert.ok(sixth.activeSourceCompositionDimensions.length>first.activeSourceCompositionDimensions.length);
+  assert.equal(sixth.minimumActiveSourceCompositionDimensions,7);
+  assert.ok(sixth.minimumConnectedImprovements>=sixth.minimumActiveSourceCompositionDimensions);
+  assert.equal(sixth.assetLibraryPresent,true);
+  assert.equal(sixth.assetLibraryVersion,50);
+  assert.equal(sixth.assetLibraryFamilyCount,11);
+  assert.equal(sixth.assetLibrarySourceParityRequired,true);
+  assert.equal(sixth.assetOnlySwapCountsAsEvolution,false);
+  assert.equal(sixth.sourceCompositionDepthUnbounded,true);
   assert.equal(sixth.qualitativeDetailDepthUnbounded,true);
   assert.equal(sixth.queueAmplificationForbidden,true);
   assert.equal(sixth.newWorkflowForbidden,true);
@@ -1204,6 +1226,9 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas><script>function attack(){} function quest(){} function reward(){}</script></body></html>\n','utf8');
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:50,assets:[
+    {id:'ui',family:'UI'},{id:'motion',family:'MOTION'},{id:'environment',family:'ENVIRONMENT'},{id:'vfx',family:'VFX'}
+  ]},null,2),'utf8');
   writeStudioDesign(root,gameId);
   const project={gameId,name:'Build Up Expectation Integration',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
   const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
@@ -1227,6 +1252,12 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.equal(third.studioQualityEvolution.requiredActiveDetailDimensions.min,third.studioQualityEvolution.qualityExpectation.minimumActiveDetailDimensions);
   assert.equal(third.studioQualityEvolution.requiredPlayerFacingProofs.min,third.studioQualityEvolution.qualityExpectation.minimumPlayerFacingProofs);
   assert.equal(third.studioQualityEvolution.requiredConnectedContentBundles.min,third.studioQualityEvolution.qualityExpectation.minimumConnectedContentBundles);
+  assert.equal(third.studioQualityEvolution.requiredActiveSourceCompositionDimensions.min,third.studioQualityEvolution.qualityExpectation.minimumActiveSourceCompositionDimensions);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.required,true);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.libraryVersion,50);
+  assert.ok(third.evidence.includes('studio-quality-asset-source-parity:REQUIRED'));
+  assert.match(third.goal,/소스 구성 성장:/);
+  assert.match(third.goal,/자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면/);
   assert.match(third.goal,/같은 QA\/체크 재통과만 반복/);
   assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
   assert.ok(third.evidence.includes('studio-quality-studio-required:NO'));
