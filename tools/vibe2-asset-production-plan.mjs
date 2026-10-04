@@ -481,7 +481,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
-    externalSources:next.externalSources||[]
+    externalSources:next.externalSources||[],
+    previousMaintenance:original?.internalAssetLibraryAutomation?.maintenance||null
   });
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
@@ -571,6 +572,15 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     ideaDeduplication:libraryPlan.ideaDeduplication,
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     autonomousOperatingContract:libraryPlan.autonomousOperatingContract,
+    autonomousMaintenanceContract:libraryPlan.autonomousMaintenanceContract,
+    maintenance:{
+      ...libraryPlan.maintenance,
+      catalogFingerprint:fingerprint,
+      catalogChanged:Boolean(original?.internalAssetLibraryAutomation?.maintenance?.catalogFingerprint)
+        &&original.internalAssetLibraryAutomation.maintenance.catalogFingerprint!==fingerprint,
+      synchronizedRegistryVersion:Number(original?.version||0)
+    },
+    studioVariationAxes:libraryPlan.studioVariationAxes,
     autonomousNextAction:libraryPlan.autonomousNextAction,
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
@@ -655,7 +665,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const changed=beforeComparable!==afterComparable;
   if(changed){
     next.version=Math.max(0,Number(original.version)||0)+1;
-    if(next.internalAssetLibraryAutomation)next.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion=next.version;
+    if(next.internalAssetLibraryAutomation){
+      next.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion=next.version;
+      if(next.internalAssetLibraryAutomation.maintenance){
+        next.internalAssetLibraryAutomation.maintenance.synchronizedRegistryVersion=next.version;
+      }
+    }
   }
   let persisted=false,persistError=null;
   if(persist&&changed){
@@ -673,6 +688,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     persisted,
     persistError,
     catalogFingerprint:fingerprint,
+    maintenance:next.internalAssetLibraryAutomation?.maintenance||null,
     discoveredCatalogCount:catalogs.length,
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
     seedCount:seedPlan.seedCount,
@@ -1960,6 +1976,9 @@ export function buildVibeAssetProductionPlan({
       productionRuntimeVerificationSeparate:true
     }),
     autonomousOperatingContract:freeze({...libraryAutomation.autonomousOperatingContract,...executionLibraryPlan.autonomousOperatingContract}),
+    autonomousMaintenanceContract:freeze({...libraryAutomation.autonomousMaintenanceContract,...executionLibraryPlan.autonomousMaintenanceContract}),
+    maintenance:freeze({...libraryAutomation.maintenance,...executionLibraryPlan.maintenance}),
+    studioVariationAxes:freeze({...libraryAutomation.studioVariationAxes,...executionLibraryPlan.studioVariationAxes}),
     autonomousNextAction:freeze({...libraryAutomation.autonomousNextAction,...executionLibraryPlan.autonomousNextAction}),
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
