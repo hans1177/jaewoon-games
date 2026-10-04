@@ -2088,3 +2088,103 @@ test('generic foliage requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-foliage-grass');
 });
+
+
+test('company-common building pack provides eight non-duplicate reusable modules',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-building-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonBuilding.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['FLOOR_TILE','WALL_WINDOW','WALL_CORNER','PILLAR_STONE','STAIRS_STRAIGHT','ARCHWAY','ROOF_FLAT','RAILING'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  assert.deepEqual(catalog.complementsExistingCommonSubfamilies,['FOUNDATION_RECT','WALL_SOLID','DOOR_SINGLE','ROOF_GABLE']);
+  assert.ok(source.includes('function RobloxCommonBuilding.Create(id, options)'));
+  assert.ok(source.includes('function RobloxCommonBuilding.CreateViewport(id, options)'));
+  assert.ok(source.includes('local styledRow = rowWithPalette(row, options.palette)'));
+  assert.ok(source.includes('CompanyCommonBase", true'));
+  assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
+  assert.equal(catalog.family,'BUILDING');
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bBuildCost\s*=/,/\bDurability\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common building registry preserves collision construction save and network authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-building-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.family,'BUILDING');
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.gameplayAuthority,false);
+
+  const expected=[
+    ['FLOOR_TILE','FLOOR_TILE','FLOOR'],
+    ['WALL_WINDOW','WALL_WINDOW','WALL_OPENING'],
+    ['WALL_CORNER','WALL_CORNER','WALL_CORNER'],
+    ['PILLAR_STONE','PILLAR','STRUCTURAL_VISUAL'],
+    ['STAIRS_STRAIGHT','STAIRS','VERTICAL_LINK_VISUAL'],
+    ['ARCHWAY','ARCHWAY','PASSAGE_VISUAL'],
+    ['ROOF_FLAT','ROOF_FLAT','ROOF'],
+    ['RAILING','RAILING','EDGE_VISUAL']
+  ];
+  for(const [assetId,subfamily,buildingRole] of expected){
+    const id='roblox-common-building-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'BUILDING');
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.buildingRole,buildingRole);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveCollisionBuildCostDurabilityCraftingSaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
+
+test('generic building requirement can choose company-common base',()=>{
+  const registryAsset={
+    id:'common-wall-window',
+    family:'BUILDING',
+    subfamily:'WALL_WINDOW',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    companyCommonBase:true,
+    reuseScope:'COMPANY_ROBLOX_COMMON_BASE',
+    tags:['WALL_OPENING']
+  };
+  const gameOnly={
+    id:'game-only-wall-window',
+    family:'BUILDING',
+    subfamily:'WALL_WINDOW',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    tags:['WALL_OPENING']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'BUILDING',subfamily:'WALL_WINDOW',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-wall-window');
+});
