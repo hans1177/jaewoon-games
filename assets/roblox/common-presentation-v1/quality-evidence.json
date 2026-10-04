@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "packId": "roblox-common-presentation-v1",
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "axes": {
+      "IDENTITY_SILHOUETTE": 96,
+      "FORM_STRUCTURE": 95,
+      "MATERIAL_SURFACE": 91,
+      "COLOR_LIGHTING": 96,
+      "STYLE_COHERENCE": 97,
+      "DETAIL_FINISH": 95,
+      "READABILITY_SCALE": 98,
+      "MOTION_RIG": 94,
+      "FEEDBACK_STATES": 97,
+      "UI_UX_SYSTEM": 97,
+      "MODULAR_REUSE": 99,
+      "VARIATION_BREADTH": 94,
+      "PERFORMANCE_LOD": 96,
+      "ACCESSIBILITY_INPUT": 97,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 99
+    }
+  },
+  "checks": {
+    "loadingProgressNeverFaked": true,
+    "loadingStatusOwnedByConsumer": true,
+    "introCannotOwnGameStart": true,
+    "simplePresetAvailable": true,
+    "reducedMotionCompatible": true,
+    "externalImageDependencyNotRequired": true,
+    "brandThemeAdaptable": true,
+    "backgroundPackComposable": true,
+    "mobileSafe": true
+  },
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO"
+}
