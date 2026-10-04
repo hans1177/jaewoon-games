@@ -2912,7 +2912,7 @@ test('common presentation v1 provides reusable loading and five short intro mode
 });
 
 test('Vibe loadout returns machine-readable discovery and use contract from existing canonical asset selector',()=>{
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,3);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,4);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.enabled,true);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.newPipelineCreated,false);
   const asset={
@@ -2930,7 +2930,10 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   });
   assert.equal(loadout.complete,true);
   assert.equal(loadout.machineReadableDiscovery,true);
-  assert.equal(loadout.selectionContractVersion,3);
+  assert.equal(loadout.selectionContractVersion,4);
+  assert.equal(loadout.genreRestrictionApplied,false);
+  assert.equal(loadout.crossGenreReuseAllowed,true);
+  assert.equal(loadout.genreUsedForEligibility,false);
   assert.equal(loadout.newPipelineCreated,false);
   assert.equal(loadout.selections[0].assetId,'common-forest-kit');
   assert.equal(loadout.selections[0].packId,'roblox-common-environment-v1');
