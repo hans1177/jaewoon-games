@@ -760,11 +760,17 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     count:repositoryAssetSync.totalAssetRows,
     action:'REPAIR_SEARCH_ELIGIBILITY_METADATA'
   });
-  if(repositoryAssetSync.sourceConsumerAssetCount===0&&repositoryAssetSync.automaticSearchEligibleCount>0)managementBottlenecks.push({
-    id:'NO_DETECTED_SOURCE_CONSUMPTION',
+  if(repositoryAssetSync.sourceConsumerAssetCount===0&&repositoryAssetSync.libraryModuleConsumerPathCount===0&&repositoryAssetSync.automaticSearchEligibleCount>0)managementBottlenecks.push({
+    id:'NO_DETECTED_SOURCE_OR_MODULE_CONSUMPTION',
     severity:'HIGH',
     count:repositoryAssetSync.automaticSearchEligibleCount,
     action:'BIND_SEARCHABLE_LIBRARY_ASSETS_IN_EXISTING_GAME_RESPONSIBILITIES'
+  });
+  else if(repositoryAssetSync.sourceConsumerAssetCount===0&&repositoryAssetSync.libraryModuleConsumerPathCount>0)managementBottlenecks.push({
+    id:'MODULE_CONSUMPTION_WITHOUT_EXACT_ASSET_MARKERS',
+    severity:'MEDIUM',
+    count:repositoryAssetSync.libraryModuleConsumerPathCount,
+    action:'IMPROVE_EXACT_ASSET_ID_BINDING_EVIDENCE_WHERE_PRACTICAL'
   });
   if((libraryPlan.volumeHealth?.totalDeficit||0)>0)managementBottlenecks.push({
     id:'VOLUME_DEFICIT',
@@ -802,6 +808,14 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       sourceConsumerBindingCount:repositoryAssetSync.sourceConsumerBindingCount,
       sourceConsumerGameCount:(repositoryAssetSync.sourceConsumerGameIds||[]).length,
       sourceConsumerGameIds:repositoryAssetSync.sourceConsumerGameIds,
+      libraryModuleConsumerPathCount:repositoryAssetSync.libraryModuleConsumerPathCount,
+      libraryModuleConsumerBindingCount:repositoryAssetSync.libraryModuleConsumerBindingCount,
+      libraryModuleConsumerGameCount:(repositoryAssetSync.libraryModuleConsumerGameIds||[]).length,
+      libraryModuleConsumerGameIds:repositoryAssetSync.libraryModuleConsumerGameIds,
+      uniqueRepositoryPathCount:repositoryAssetSync.uniqueRepositoryPathCount,
+      sourceFilesScanned:repositoryAssetSync.sourceFilesScanned,
+      sourceBytesScanned:repositoryAssetSync.sourceBytesScanned,
+      assetIdMatcherMode:repositoryAssetSync.assetIdMatcherMode,
       sourceConsumptionEvidenceMode:repositoryAssetSync.sourceConsumptionEvidenceMode,
       sourceConsumptionDoesNotPromoteProductionVerification:true
     },
@@ -2640,6 +2654,10 @@ export function buildVibeAssetProductionPlan({
     detectedSourceConsumerBindingCount:Number(persistedSearchConsumption.sourceConsumerBindingCount||0),
     detectedSourceConsumerGameCount:(persistedSearchConsumption.sourceConsumerGameIds||[]).length,
     detectedSourceConsumerGameIds:freezeList(persistedSearchConsumption.sourceConsumerGameIds||[]),
+    libraryModuleConsumerPathCount:Number(persistedSearchConsumption.libraryModuleConsumerPathCount||0),
+    libraryModuleConsumerBindingCount:Number(persistedSearchConsumption.libraryModuleConsumerBindingCount||0),
+    libraryModuleConsumerGameCount:(persistedSearchConsumption.libraryModuleConsumerGameIds||[]).length,
+    libraryModuleConsumerGameIds:freezeList(persistedSearchConsumption.libraryModuleConsumerGameIds||[]),
     sourceConsumptionIsRuntimeVerification:false,
     actualRuntimeVerificationStillRequired:true,
     blankAssetForbidden:true,
