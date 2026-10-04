@@ -62,12 +62,12 @@
     "protectedReferenceQualityMayBeMatchedButAssetsMustBeOriginalOrLicensed": true,
     "animalPrimitiveOnlyFinalAssetForbidden": true,
     "animalRootOnlyMotionForbidden": true,
-    "internalAssetStandardDocument": "assets/ASSET-STANDARD.md",
     "internalAssetRoutineReview": true,
     "crossPackSystemDepthAuditRequired": true,
     "genreMatrixComparisonRequired": true,
     "duplicateCommonAssetAuthoringAvoidanceRequired": true,
-    "noScheduledAssetReviewWorkflowCreated": true
+    "noScheduledAssetReviewWorkflowCreated": true,
+    "internalAssetDocumentationMode": "MACHINE_READABLE_ONLY"
   },
   "platformPacks": [
     {
@@ -27455,7 +27455,6 @@
   "internalAssetStandard": {
     "version": 1,
     "status": "ACTIVE_INTERNAL_ASSET_STANDARD",
-    "humanDocument": "assets/ASSET-STANDARD.md",
     "machineSources": [
       "company-asset-library.json",
       "assets/vibe-studio-asset-universe.js",
@@ -27473,7 +27472,8 @@
     "wrapperPipelineAllowed": false,
     "gameplayAuthority": false,
     "saveAuthority": false,
-    "networkAuthority": false
+    "networkAuthority": false,
+    "documentationMode": "MACHINE_READABLE_ONLY"
   },
   "internalAssetRoutineReview": {
     "version": 1,
