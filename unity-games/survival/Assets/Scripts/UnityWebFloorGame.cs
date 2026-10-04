@@ -63,6 +63,12 @@ public sealed class JaewoonNativeMotionActor : MonoBehaviour
         {
             reported = true;
             string reason = MotionFailureReason();
+            string fields = " fps=" + fpsEma.ToString("F1") + " human=" + animator.isHuman + " ikSamples=" + ikSamples + " slide=" + footSlideMax.ToString("F4") + " slideSamples=" + footSlideSamples + " contacts=" + contactCount + " hits=" + hitReactionCount;
+            Debug.Log("JAEWOON_UNITY_WEB_QA " + (string.IsNullOrEmpty(reason) ? "PASS" : "FAIL reason=" + reason) + fields);
+        }
+        {
+            reported = true;
+            string reason = MotionFailureReason();
             string fields = " fps=" + fpsEma.ToString("F1") +
                             " human=" + animator.isHuman +
                             " ikSamples=" + ikSamples +
@@ -268,6 +274,11 @@ public sealed class UnityWebFloorGame : MonoBehaviour
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
             player.transform.position=p;
         }
+        {
+            var p=player.transform.position;
+            p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
+            player.transform.position=p;
+        }
 
         if (Input.GetKeyDown(KeyCode.Alpha1)) StartGameplay();
         if (Input.GetKeyDown(KeyCode.Space)) PerformAction(false);
@@ -285,6 +296,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void PerformAction(bool mobile)
     {
         if(!started) StartGameplay();
+        Debug.Log("JAEWOON_UNITY_WEB_QA START game=" + GameId + " region=field mode=" + Mode + " status=PASS");
         actions++;
         progress += Mathf.Max(1,level);
         resource += 1 + (actions % 3);
