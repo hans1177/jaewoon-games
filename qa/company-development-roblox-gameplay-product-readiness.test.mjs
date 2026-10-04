@@ -456,5 +456,5 @@ test('verified learning sweep derives genre and play mode from each actual GameC
   assert.match(sweep,/configSource/);
   assert.match(sweep,/fallbackProfile/);
   assert.match(sweep,/latestVerifiedDesign/);
-  assert.match(sweep,/robloxDesignProfileFromBaseline/);
+  assert.match(sweep,/robloxBuildProfileFromBaseline/);
 });
