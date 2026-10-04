@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "packId": "roblox-common-ui-v1",
+  "family": "UI",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+  "themeAdaptationRequiredPerGame": true,
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayAuthority": false,
+  "atoms": [
+    {
+      "atomId": "FRAME_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePanel",
+      "role": "COMMON_READABLE_PANEL"
+    },
+    {
+      "atomId": "BUTTON_PRIMARY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePrimaryButton",
+      "role": "PRIMARY_TOUCH_ACTION"
+    },
+    {
+      "atomId": "BAR_HEALTH",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateHealthBar",
+      "role": "HEALTH_STATUS_READOUT"
+    }
+  ]
+}
