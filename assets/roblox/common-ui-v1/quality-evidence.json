@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "packId": "roblox-common-ui-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -125,16 +125,52 @@
   "internalAuditDoesNotRequireStudio": true,
   "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 169,
+  "sourceAssetCount": 204,
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
-    "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit."
+    "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit.",
+    "checks": {
+      "twoHundredFourReusableCurrentAtoms": true,
+      "inventoryAndMenuDepthExpanded": true,
+      "equipmentCraftTradeQuestDepthExpanded": true,
+      "combatHudDepthExpanded": true,
+      "housingFarmingDepthExpanded": true,
+      "accessibilityRecoveryDepthExpanded": true,
+      "looseVolumeAutomationBound": true,
+      "gameplayAuthorityFalse": true
+    }
   },
   "fullScreenSurfaceCount": 15,
-  "deepSystemComponentCount": 115,
+  "deepSystemComponentCount": 150,
   "housingSandboxComponentCount": 24,
   "parryPresentationComponentCount": 5,
-  "worldInteractionComponentCount": 10
+  "worldInteractionComponentCount": 10,
+  "subsystemDepthExpansionCount": 35,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 169,
+    "currentCount": 204,
+    "addedCount": 35,
+    "focus": [
+      "INVENTORY_ITEM_MANAGEMENT",
+      "MENU_NAVIGATION",
+      "EQUIPMENT_LOADOUT",
+      "CRAFTING_UPGRADE",
+      "SHOP_TRADE",
+      "QUEST_CODEX",
+      "NPC_RELATIONSHIP",
+      "PARTY_COMPANION",
+      "MOUNT_TRAVEL",
+      "COMBAT_HUD",
+      "HOUSING_SANDBOX",
+      "FARMING_SETTLEMENT",
+      "ACCESSIBILITY_INPUT",
+      "LOADING_ERROR_STATE",
+      "MOBILE_ONE_HAND"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  }
 }
