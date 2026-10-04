@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "packId": "roblox-common-motion-v1",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "exactCurrentMotionAtoms": 15,
+      "actualKeyframeSequenceSource": 15,
+      "r15HierarchyCoverage": 10,
+      "locomotionPhaseSeparation": 10,
+      "startStopTurnTransitions": 10,
+      "jumpLandReaction": 10,
+      "hitDeathReaction": 10,
+      "animatorPreviewPath": 10,
+      "noGameplayRootMotionAuthority": 10
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "100 is source-authoring target. Persistent uploaded animation IDs, real rig playback, foot contact, blend quality, mobile runtime and production verification remain unverified."
+  },
+  "companyCommonBase": true,
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayMovementAuthority": false,
+  "rootMotionOwned": false,
+  "sourceAssetCount": 11
+}
