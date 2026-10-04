@@ -2082,9 +2082,16 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
 });
 
 export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
-  version:3,
+  version:4,
   lowScoreUseAllowed:true,
   scoreIsNotUsageGate:true,
+  blankAssetForbidden:true,
+  noAssetSlotForbidden:true,
+  closestCompatibleLibraryFallbackRequired:true,
+  lowScoreLibraryBindingRequiredWhenSafe:true,
+  qualityScoreOnlyPostBindingDebtPriority:true,
+  internalAuditScoreOnlyPostBindingDebtPriority:true,
+  productionVerificationSeparateFromInitialUse:true,
   studioRequiredForUse:false,
   studioRequiredForAudit:false,
   studioRequiredForReplacement:false,
@@ -2107,6 +2114,9 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
     inspectCompanyLibraryBeforeNewAuthoring:true,
     inspectExistingGameAssetsBeforeNewAuthoring:true,
     preferExistingAndCompanyCommonAssets:true,
+    exactRoleThenClosestCompatibleLibraryAsset:true,
+    blankOrPrimitiveFallbackForbidden:true,
+    qualityScoreCannotSuppressSafeLibraryCandidate:true,
     metadataSources:Object.freeze([
       'company-asset-library.json',
       'assets/vibe-studio-asset-universe.js',
@@ -2142,6 +2152,9 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
     higherCompatibleEffectiveQualityPreferred:true,
     currentAssetMayRemainUntilAdaptationReady:true,
     noEmptySlotDuringReplacement:true,
+    noEmptySlotDuringInitialBinding:true,
+    closestCompatibleLibraryAssetBeforeNewAuthoring:true,
+    scoreCannotDelayInitialBinding:true,
     manualOrGameLockWins:true,
     studioNotRequired:true
   })
