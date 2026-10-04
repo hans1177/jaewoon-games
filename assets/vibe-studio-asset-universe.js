@@ -2468,10 +2468,18 @@ export function createStudioAssetUniversePlan({
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
+  const combinedById=new Map();
+  for(const asset of [...assets,...repositoryAssets]){
+    const id=text(asset?.id);
+    if(!id)continue;
+    const existing=combinedById.get(id);
+    combinedById.set(id,existing?{...asset,...existing}:asset);
+  }
+  const combinedAssets=[...combinedById.values()];
   const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle});
   const verified=assets.filter(asset=>normalizeRegistryAsset(asset).verified);
   const quality120=buildStudioAssetQuality120Program({
-    assets:[...assets,...repositoryAssets],
+    assets:combinedAssets,
     qualityEvidenceByAsset,
     heroAssetIds,
     familyOutputsByAsset
@@ -2483,14 +2491,32 @@ export function createStudioAssetUniversePlan({
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
   const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
-  const loadout=buildStudioAssetLoadout({requirements:inferredRequirements,assets,gameDna:{...visualDna,targetPlatform:upper(platform)},usageByAsset});
+  const effectiveRequirements=inferredRequirements.map(requirement=>{
+    if(text(requirement.currentAssetId))return requirement;
+    const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
+    const current=combinedAssets.find(asset=>{
+      const row=normalizeRegistryAsset(asset);
+      const currentConsumer=asset?.sameGameExistingRoblox===true||(asset?.consumerGameIds||[]).map(text).includes(text(gameId));
+      return currentConsumer&&row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily));
+    });
+    return current?{...requirement,currentAssetId:text(current.id)}:requirement;
+  });
+  const loadout=buildStudioAssetLoadout({
+    requirements:effectiveRequirements,
+    assets:combinedAssets,
+    gameDna:{...visualDna,targetPlatform:upper(platform)},
+    usageByAsset
+  });
   const futureDemand=buildFutureAssetDemandForecast({gameDemands:futureGameDemands,coverageReport:coverage});
   const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
   const baseMaterialRotation=buildBaseMaterialRotationPlan({families:baseMaterialFamilies,usageByAtom:baseMaterialUsageByAtom});
   const testbed=createStudioTestbedPlan({assetIds:loadout.selections.map(row=>row.assetId).filter(Boolean),platform,mobile:true});
   return Object.freeze({
-    version:3,
+    version:4,
     target:STUDIO_ASSET_UNIVERSE_TARGET,
+    internalAssetReusePolicy:INTERNAL_ASSET_REUSE_POLICY,
+    internalAssetMinimumCoverage:INTERNAL_ASSET_MINIMUM_COVERAGE,
+    internalAssetCandidateCount:combinedAssets.length,
     platform:upper(platform),
     concept:conceptProfile,
     conceptAxes:CONCEPT_AXES,
@@ -2498,7 +2524,7 @@ export function createStudioAssetUniversePlan({
     styleBible:resolvedBible,
     customization:customizationContract?.enabled===true?createAssetCustomizationPlan({
       assets:[...repositoryAssets,...assets],
-      recipes:customizationRecipes.length?customizationRecipes:uniq(inferredRequirements.map(row=>upper(row.family))).filter(family=>ASSET_CUSTOMIZATION_AXES[family]).map(family=>({family,baseAssetId:loadout.selections.find(row=>row.family===family)?.assetId})),
+      recipes:customizationRecipes.length?customizationRecipes:uniq(effectiveRequirements.map(row=>upper(row.family))).filter(family=>ASSET_CUSTOMIZATION_AXES[family]).map(family=>({family,baseAssetId:loadout.selections.find(row=>row.family===family)?.assetId})),
       styleBible:resolvedBible,contract:customizationContract,platform
     }):null,
     conceptCoherence,
