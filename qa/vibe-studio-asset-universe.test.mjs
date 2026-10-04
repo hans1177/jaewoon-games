@@ -1553,7 +1553,7 @@ test('company-common item pack shares one source across world drop and viewport'
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
   const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN','MANA_POTION','ANTIDOTE','STAMINA_TONIC','UPGRADE_SHARD','TREASURE_GEM','SILVER_INGOT','CLOTH_ROLL','HERB_BUNDLE','COOKED_MEAT','QUEST_SCROLL','LORE_BOOK','COIN_POUCH','ARROW_BUNDLE','THROWING_BOMB','LOCKPICK_SET','SIGNAL_LANTERN'];
-  assert.equal(catalog.items.length,24);
+  assert.equal(catalog.items.length,40);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -1587,7 +1587,7 @@ test('company-common item registry exposes cross-game reusable item and resource
   assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.assetCount,24);
+  assert.equal(pack.assetCount,40);
   assert.ok(pack.inventoryCategories.includes('THROWABLE'));
   assert.ok(pack.inventoryCategories.includes('LORE'));
 
@@ -1961,6 +1961,32 @@ test('company-common world prop registry mirrors thirty-eight prop interaction a
   }
 });
 
+
+test('expanded common item tool creature and VFX registry mirrors current catalogs',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const checks=[
+    ['assets/roblox/common-items-v1/catalog.json','roblox-common-items-v1','items','roblox-common-item-',40],
+    ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
+    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
+    ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',8],
+  ];
+  for(const [relative,packId,key,prefix,count] of checks){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
+    const rows=catalog[key];
+    assert.equal(rows.length,count,relative);
+    for(const row of rows){
+      const atom=row.assetId||row.atomId;
+      const id=prefix+atom.toLowerCase().replaceAll('_','-');
+      assert.ok(registry.assets.some(asset=>asset.id===id),id);
+    }
+    const pack=registry.assets.find(asset=>asset.id===packId);
+    assert.ok(pack,packId);
+    assert.equal(pack.productionVerified,false,packId);
+  }
+});
+
 test('generic world prop requirement can choose company-common base',()=>{
   const registryAsset={
     id:'common-signpost',
@@ -2190,7 +2216,7 @@ test('generic building requirement can choose company-common base',()=>{
 });
 
 
-test('company-common tool pack provides eight reusable weapon and tool visuals',()=>{
+test('company-common tool pack provides twenty reusable weapon and tool visuals',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-tools-v1');
@@ -2199,7 +2225,7 @@ test('company-common tool pack provides eight reusable weapon and tool visuals',
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
   const ids=['SWORD','SPEAR','AXE','HAMMER','PICKAXE','BOW','STAFF','SHIELD'];
-  assert.equal(catalog.items.length,8);
+  assert.equal(catalog.items.length,20);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2445,7 +2471,7 @@ test('generic inventory UI requirement can choose company-common base',()=>{
 });
 
 
-test('company-common creature parts pack provides eight reusable visual modules',()=>{
+test('company-common creature parts pack provides twenty-four reusable visual modules',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-creature-parts-v1');
@@ -2454,7 +2480,7 @@ test('company-common creature parts pack provides eight reusable visual modules'
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
   const ids=['BIPED_TORSO','QUADRUPED_TORSO','INSECT_THORAX','WING_PAIR','TAIL_LONG','HORN_PAIR','SHELL_BACK','TENTACLE_CLUSTER'];
-  assert.equal(catalog.items.length,8);
+  assert.equal(catalog.items.length,24);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2535,7 +2561,7 @@ test('generic creature torso requirement can choose company-common base',()=>{
   assert.equal(loadout.selections[0].assetId,'common-biped-torso');
 });
 
-test('company-common materials v3 preserves old atoms and expands to eleven',()=>{
+test('company-common materials v4 preserves old atoms and expands to eleven',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-materials-v1');
@@ -2544,7 +2570,7 @@ test('company-common materials v3 preserves old atoms and expands to eleven',()=
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
   const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
-  assert.equal(catalog.version,3);
+  assert.equal(catalog.version,4);
   assert.equal(catalog.atoms.length,11);
   for(const atomId of atoms){
     assert.ok(source.includes(atomId),atomId);
@@ -2565,7 +2591,7 @@ test('company-common materials v3 preserves old atoms and expands to eleven',()=
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
 });
 
-test('company-common material v3 registry exposes eleven unverified reusable atoms',()=>{
+test('company-common material v4 registry exposes eleven unverified reusable atoms',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
@@ -2892,7 +2918,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,61);
+  assert.equal(registry.version,62);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -2984,7 +3010,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,61);
+  assert.equal(registry.version,62);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3169,7 +3195,7 @@ test('company asset library exposes all-stage composition as an asset contract o
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
-  assert.equal(registry.version,61);
+  assert.equal(registry.version,62);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
