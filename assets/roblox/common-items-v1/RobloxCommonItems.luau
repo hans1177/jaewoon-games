@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-items-v1/RobloxCommonItems.luau
--- 역할: Roblox 공용 내부 아이템 비주얼 8종과 동일 모델 기반 Viewport UI 아이콘 생성
+-- 역할: Roblox 공용 내부 아이템 비주얼 24종과 동일 모델 기반 Viewport UI 아이콘 생성
 -- 원칙: 순수 표현 자산만 제공한다. 데미지/회복량/가격/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonItems = {}
@@ -141,6 +141,88 @@ local Catalog = table.freeze({
 			glow = c(255, 195, 95),
 			dark = c(31, 33, 34),
 		}),
+	}),
+
+	-- 고급 인벤토리/루팅/제작 공통 역할 확장
+	MANA_POTION = table.freeze({
+		id="MANA_POTION", name="마력 포션", familyRootId="POTION_BOTTLE", family="PROP", subfamily="ITEM", itemRole="CONSUMABLE",
+		inventoryCategory="CONSUMABLE", stackProfile="STACKABLE_SMALL", rarityBand="COMMON_TO_RARE", silhouette="ROUND_BOTTLE_SHOULDER_CORK", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({glass=c(190,218,226), liquid=c(72,126,222), dark=c(40,44,65), accent=c(126,177,255), label=c(221,226,239)}),
+	}),
+	ANTIDOTE = table.freeze({
+		id="ANTIDOTE", name="해독제", familyRootId="POTION_BOTTLE", family="PROP", subfamily="ITEM", itemRole="CONSUMABLE",
+		inventoryCategory="CONSUMABLE", stackProfile="STACKABLE_SMALL", rarityBand="COMMON_TO_RARE", silhouette="ROUND_BOTTLE_SHOULDER_CORK", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({glass=c(196,221,205), liquid=c(76,170,105), dark=c(42,61,47), accent=c(158,216,128), label=c(229,231,201)}),
+	}),
+	STAMINA_TONIC = table.freeze({
+		id="STAMINA_TONIC", name="활력 영약", familyRootId="POTION_BOTTLE", family="PROP", subfamily="ITEM", itemRole="CONSUMABLE",
+		inventoryCategory="CONSUMABLE", stackProfile="STACKABLE_SMALL", rarityBand="COMMON_TO_EPIC", silhouette="ROUND_BOTTLE_SHOULDER_CORK", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({glass=c(224,216,186), liquid=c(225,157,63), dark=c(72,49,35), accent=c(255,211,109), label=c(238,226,192)}),
+	}),
+	UPGRADE_SHARD = table.freeze({
+		id="UPGRADE_SHARD", name="강화 파편", familyRootId="CRYSTAL_CLUSTER", family="PROP", subfamily="UPGRADE_MATERIAL", itemRole="UPGRADE_MATERIAL",
+		inventoryCategory="MATERIAL", stackProfile="STACKABLE_LARGE", rarityBand="UNCOMMON_TO_LEGENDARY", silhouette="ASYMMETRIC_FACETED_CLUSTER", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({core=c(179,123,255), mid=c(205,161,255), glow=c(235,207,255), base=c(66,49,80)}),
+	}),
+	TREASURE_GEM = table.freeze({
+		id="TREASURE_GEM", name="보석", familyRootId="CRYSTAL_CLUSTER", family="PROP", subfamily="TREASURE", itemRole="TREASURE",
+		inventoryCategory="TREASURE", stackProfile="STACKABLE_SMALL", rarityBand="RARE_TO_LEGENDARY", silhouette="FACETED_TREASURE_CLUSTER", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({core=c(50,190,170), mid=c(95,230,207), glow=c(184,255,238), base=c(41,70,68)}),
+	}),
+	SILVER_INGOT = table.freeze({
+		id="SILVER_INGOT", name="은괴", familyRootId="METAL_INGOT", family="PROP", subfamily="RESOURCE", itemRole="RESOURCE",
+		inventoryCategory="MATERIAL", stackProfile="STACKABLE_LARGE", rarityBand="COMMON_TO_RARE", silhouette="TAPERED_STACKED_INGOT", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({metal=c(155,166,178), edge=c(222,230,238), dark=c(79,87,97)}),
+	}),
+	CLOTH_ROLL = table.freeze({
+		id="CLOTH_ROLL", name="천 두루마리", familyRootId="CRAFT_ROLL", family="PROP", subfamily="CRAFT_MATERIAL", itemRole="CRAFT_MATERIAL",
+		inventoryCategory="MATERIAL", stackProfile="STACKABLE_MEDIUM", rarityBand="COMMON_TO_RARE", silhouette="ROLLED_FABRIC_BAND", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({cloth=c(138,126,112), light=c(186,173,153), band=c(83,68,57)}),
+	}),
+	HERB_BUNDLE = table.freeze({
+		id="HERB_BUNDLE", name="약초 묶음", familyRootId="HERB_CLUSTER", family="PROP", subfamily="INGREDIENT", itemRole="INGREDIENT",
+		inventoryCategory="INGREDIENT", stackProfile="STACKABLE_LARGE", rarityBand="COMMON_TO_RARE", silhouette="LEAF_STEM_BUNDLE", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({stem=c(75,105,55), leaf=c(83,139,73), light=c(129,173,94), band=c(128,98,63)}),
+	}),
+	COOKED_MEAT = table.freeze({
+		id="COOKED_MEAT", name="구운 고기", familyRootId="FOOD_PORTION", family="PROP", subfamily="FOOD", itemRole="FOOD",
+		inventoryCategory="FOOD", stackProfile="STACKABLE_SMALL", rarityBand="COMMON_TO_RARE", silhouette="COOKED_PORTION_BONE", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({meat=c(143,74,52), crust=c(89,54,42), fat=c(211,166,119), bone=c(208,194,165)}),
+	}),
+	QUEST_SCROLL = table.freeze({
+		id="QUEST_SCROLL", name="의뢰 두루마리", familyRootId="DOCUMENT_SCROLL", family="PROP", subfamily="QUEST_ITEM", itemRole="QUEST_ITEM",
+		inventoryCategory="QUEST", stackProfile="UNIQUE_OR_STACKABLE", rarityBand="QUEST", silhouette="ROLLED_PARCHMENT_SEAL", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({paper=c(218,201,161), edge=c(166,137,96), seal=c(142,45,49), cord=c(106,76,48)}),
+	}),
+	LORE_BOOK = table.freeze({
+		id="LORE_BOOK", name="기록서", familyRootId="LORE_BOOK", family="PROP", subfamily="LORE", itemRole="LORE",
+		inventoryCategory="LORE", stackProfile="UNIQUE", rarityBand="COMMON_TO_UNIQUE", silhouette="HARD_COVER_BOOK_CLASP", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({cover=c(72,59,49), spine=c(104,77,54), page=c(218,207,179), clasp=c(166,135,68)}),
+	}),
+	COIN_POUCH = table.freeze({
+		id="COIN_POUCH", name="동전 주머니", familyRootId="POUCH", family="PROP", subfamily="CURRENCY_CONTAINER", itemRole="CURRENCY_CONTAINER",
+		inventoryCategory="CURRENCY", stackProfile="CONTAINER", rarityBand="COMMON", silhouette="TIED_SOFT_POUCH", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({cloth=c(116,83,58), light=c(159,117,78), cord=c(75,56,43), coin=c(210,164,62)}),
+	}),
+	ARROW_BUNDLE = table.freeze({
+		id="ARROW_BUNDLE", name="화살 묶음", familyRootId="AMMO_BUNDLE", family="PROP", subfamily="AMMUNITION", itemRole="AMMUNITION",
+		inventoryCategory="AMMO", stackProfile="STACKABLE_LARGE", rarityBand="COMMON_TO_RARE", silhouette="SHAFT_FLETCH_BUNDLE", cameraRole="HANDHELD_MEDIUM",
+		palette=table.freeze({shaft=c(112,79,52), metal=c(151,157,158), feather=c(178,169,145), band=c(82,59,45)}),
+	}),
+	THROWING_BOMB = table.freeze({
+		id="THROWING_BOMB", name="투척 폭탄", familyRootId="THROWABLE_BOMB", family="PROP", subfamily="THROWABLE", itemRole="THROWABLE",
+		inventoryCategory="THROWABLE", stackProfile="STACKABLE_SMALL", rarityBand="UNCOMMON_TO_EPIC", silhouette="ROUND_BOMB_FUSE_CAGE", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({shell=c(68,72,73), edge=c(128,132,130), fuse=c(111,83,54), accent=c(185,93,50)}),
+	}),
+	LOCKPICK_SET = table.freeze({
+		id="LOCKPICK_SET", name="자물쇠 도구", familyRootId="RELIC_KEY", family="PROP", subfamily="UTILITY", itemRole="UTILITY",
+		inventoryCategory="UTILITY", stackProfile="STACKABLE_SMALL", rarityBand="COMMON_TO_RARE", silhouette="RING_PICK_TOOL_SET", cameraRole="HANDHELD_SMALL",
+		palette=table.freeze({metal=c(128,132,133), edge=c(194,199,200), dark=c(62,60,58), gem=c(102,126,118)}),
+	}),
+	SIGNAL_LANTERN = table.freeze({
+		id="SIGNAL_LANTERN", name="신호 랜턴", familyRootId="HAND_LANTERN", family="PROP", subfamily="UTILITY", itemRole="UTILITY",
+		inventoryCategory="UTILITY", stackProfile="UNIQUE", rarityBand="UNCOMMON_TO_RARE", silhouette="CAGED_GLASS_LANTERN_HANDLE", cameraRole="HANDHELD_MEDIUM",
+		palette=table.freeze({metal=c(67,70,72), edge=c(145,148,146), glass=c(198,223,230), glow=c(106,200,255), dark=c(31,35,39)}),
 	}),
 })
 
@@ -363,6 +445,79 @@ local function addLantern(model, root, row, level)
 	end
 end
 
+
+local function addRoll(model, root, row, level)
+	local p=row.palette
+	local body=weld(root,makePart("Roll",Vector3.new(1.25,2.15,1.25),p.cloth,Enum.Material.Fabric,"CYLINDER"),CFrame.Angles(0,0,math.rad(90)))
+	weld(root,makePart("Band",Vector3.new(1.38,0.25,1.38),p.band,Enum.Material.Fabric,"CYLINDER"),CFrame.Angles(0,0,math.rad(90)))
+	if detail(level,2) then weld(root,makePart("Inner",Vector3.new(0.70,2.18,0.70),p.light,Enum.Material.Fabric,"CYLINDER"),CFrame.Angles(0,0,math.rad(90))) end
+end
+
+local function addHerb(model, root, row, level)
+	local p=row.palette
+	for i=-2,2 do
+		local stem=weld(root,makePart("Stem"..i,Vector3.new(0.10,1.90,0.10),p.stem,Enum.Material.Grass,"CYLINDER"),CFrame.new(i*0.18,0.15,0)*CFrame.Angles(0,0,math.rad(i*6)))
+		if detail(level,2) then
+			weld(root,makePart("Leaf"..i,Vector3.new(0.48,0.18,0.72),i%2==0 and p.light or p.leaf,Enum.Material.Grass),CFrame.new(i*0.18,0.50,-0.18)*CFrame.Angles(0,math.rad(i*18),math.rad(25)))
+		end
+	end
+	weld(root,makePart("Tie",Vector3.new(1.10,0.22,0.55),p.band,Enum.Material.Fabric),CFrame.new(0,-0.45,0))
+end
+
+local function addFood(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Meat",Vector3.new(1.65,0.95,1.10),p.meat,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(0,0.10,0))
+	weld(root,makePart("Bone",Vector3.new(0.32,1.85,0.32),p.bone,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(0.80,-0.10,0)*CFrame.Angles(0,0,math.rad(70)))
+	if detail(level,2) then weld(root,makePart("Crust",Vector3.new(1.35,0.18,0.86),p.crust,Enum.Material.SmoothPlastic),CFrame.new(-0.10,-0.35,-0.32)) end
+	if detail(level,3) then weld(root,makePart("Fat",Vector3.new(0.62,0.18,0.42),p.fat,Enum.Material.SmoothPlastic),CFrame.new(-0.25,0.48,-0.18)) end
+end
+
+local function addScroll(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Paper",Vector3.new(2.15,0.72,1.02),p.paper,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.Angles(0,0,math.rad(90)))
+	for _,x in ipairs({-0.86,0.86}) do weld(root,makePart("Edge"..x,Vector3.new(0.18,0.92,1.12),p.edge,Enum.Material.Wood,"CYLINDER"),CFrame.new(x,0,0)*CFrame.Angles(0,0,math.rad(90))) end
+	weld(root,makePart("Cord",Vector3.new(0.22,0.92,1.14),p.cord,Enum.Material.Fabric,"CYLINDER"),CFrame.Angles(0,0,math.rad(90)))
+	if detail(level,2) then weld(root,makePart("Seal",Vector3.new(0.42,0.18,0.42),p.seal,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(0,-0.52,0)*CFrame.Angles(math.rad(90),0,0)) end
+end
+
+local function addBook(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Pages",Vector3.new(1.75,0.48,2.35),p.page,Enum.Material.SmoothPlastic),CFrame.new(0,0,0))
+	weld(root,makePart("CoverTop",Vector3.new(1.95,0.16,2.55),p.cover,Enum.Material.Fabric),CFrame.new(0,0.34,0))
+	weld(root,makePart("CoverBottom",Vector3.new(1.95,0.16,2.55),p.cover,Enum.Material.Fabric),CFrame.new(0,-0.34,0))
+	weld(root,makePart("Spine",Vector3.new(0.22,0.82,2.58),p.spine,Enum.Material.Fabric),CFrame.new(-0.96,0,0))
+	if detail(level,2) then weld(root,makePart("Clasp",Vector3.new(0.30,0.20,0.82),p.clasp,Enum.Material.Metal),CFrame.new(0.98,0,-0.25)) end
+end
+
+local function addPouch(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Bag",Vector3.new(1.55,1.35,1.20),p.cloth,Enum.Material.Fabric,"BALL"),CFrame.new(0,-0.05,0))
+	weld(root,makePart("Neck",Vector3.new(0.85,0.45,0.85),p.light,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0,0.72,0))
+	weld(root,makePart("Cord",Vector3.new(1.02,0.16,1.02),p.cord,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0,0.64,0))
+	if detail(level,2) then
+		for i=-1,1 do weld(root,makePart("Coin"..i,Vector3.new(0.34,0.12,0.34),p.coin,Enum.Material.Metal,"CYLINDER"),CFrame.new(i*0.30,0.96,0)*CFrame.Angles(math.rad(90),0,0)) end
+	end
+end
+
+local function addAmmo(model, root, row, level)
+	local p=row.palette
+	for i=-2,2 do
+		local x=i*0.20
+		weld(root,makePart("Shaft"..i,Vector3.new(0.10,2.70,0.10),p.shaft,Enum.Material.Wood,"CYLINDER"),CFrame.new(x,0,0))
+		weld(root,makePart("Head"..i,Vector3.new(0.20,0.38,0.20),p.metal,Enum.Material.Metal),CFrame.new(x,1.54,0))
+		if detail(level,2) then weld(root,makePart("Fletch"..i,Vector3.new(0.30,0.42,0.08),p.feather,Enum.Material.Fabric),CFrame.new(x,-1.40,0)) end
+	end
+	weld(root,makePart("Band",Vector3.new(1.25,0.22,0.55),p.band,Enum.Material.Fabric),CFrame.new(0,-0.35,0))
+end
+
+local function addBomb(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Shell",Vector3.new(1.55,1.55,1.55),p.shell,Enum.Material.Metal,"BALL"),CFrame.new(0,0,0))
+	weld(root,makePart("Collar",Vector3.new(0.62,0.30,0.62),p.edge,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0.78,0))
+	weld(root,makePart("Fuse",Vector3.new(0.14,1.10,0.14),p.fuse,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0.18,1.25,0)*CFrame.Angles(0,0,math.rad(-18)))
+	if detail(level,2) then weld(root,makePart("WarningBand",Vector3.new(1.62,0.20,1.62),p.accent,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(0,0.12,0)) end
+end
+
 local BUILDERS = table.freeze({
 	HEALING_POTION = addBottle,
 	MANA_CRYSTAL = addCrystal,
@@ -372,6 +527,22 @@ local BUILDERS = table.freeze({
 	STONE_CHUNK = addStone,
 	RELIC_KEY = addKey,
 	LANTERN = addLantern,
+	MANA_POTION = addBottle,
+	ANTIDOTE = addBottle,
+	STAMINA_TONIC = addBottle,
+	UPGRADE_SHARD = addCrystal,
+	TREASURE_GEM = addCrystal,
+	SILVER_INGOT = addIngot,
+	CLOTH_ROLL = addRoll,
+	HERB_BUNDLE = addHerb,
+	COOKED_MEAT = addFood,
+	QUEST_SCROLL = addScroll,
+	LORE_BOOK = addBook,
+	COIN_POUCH = addPouch,
+	ARROW_BUNDLE = addAmmo,
+	THROWING_BOMB = addBomb,
+	LOCKPICK_SET = addKey,
+	SIGNAL_LANTERN = addLantern,
 })
 
 local function applyModelMetadata(model, row, quality)
@@ -380,6 +551,9 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("StudioAssetItemRole", row.itemRole)
 	model:SetAttribute("StudioAssetSilhouette", row.silhouette)
 	model:SetAttribute("StudioAssetCameraRole", row.cameraRole)
+	model:SetAttribute("InventoryCategory", row.inventoryCategory or row.itemRole)
+	model:SetAttribute("StackProfile", row.stackProfile or "GAME_DEFINED")
+	model:SetAttribute("RarityBand", row.rarityBand or "GAME_DEFINED")
 	model:SetAttribute("StudioAssetQualityLevel", quality)
 	model:SetAttribute("StudioAssetQualityTarget", 120)
 	model:SetAttribute("RuntimeVerificationState", "PENDING_STUDIO")
@@ -395,6 +569,9 @@ function RobloxCommonItems.List()
 			family = row.family,
 			subfamily = row.subfamily,
 			itemRole = row.itemRole,
+			inventoryCategory = row.inventoryCategory or row.itemRole,
+			stackProfile = row.stackProfile or "GAME_DEFINED",
+			rarityBand = row.rarityBand or "GAME_DEFINED",
 			silhouette = row.silhouette,
 			productionVerified = false,
 		}))
@@ -506,11 +683,11 @@ function RobloxCommonItems.Audit()
 		end
 	end
 	return table.freeze({
-		version = 1,
+		version = 2,
 		packId = "roblox-common-items-v1",
 		itemCount = #rows,
-		expectedItemCount = 8,
-		pass = #rows == 8 and #missing == 0,
+		expectedItemCount = 24,
+		pass = #rows == 24 and #missing == 0,
 		missing = table.freeze(missing),
 		companyCommonBase = true,
 		compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
