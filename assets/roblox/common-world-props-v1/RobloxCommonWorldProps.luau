@@ -134,6 +134,71 @@ local Catalog = table.freeze({
 			water = c(69, 139, 171),
 		}),
 	}),
+
+	BED_SINGLE = table.freeze({
+		id="BED_SINGLE",name="침대",familyRootId="WORLD_FURNITURE",family="PROP",subfamily="BED",worldRole="HOUSING_BED",propKind="BED",
+		silhouette="BED_FRAME_MATTRESS_PILLOW",palette=table.freeze({wood=c(93,66,47),woodLight=c(139,101,67),cloth=c(154,139,120),clothLight=c(218,207,185),metal=c(115,113,106),accent=c(103,118,132)}),
+	}),
+	WARDROBE = table.freeze({
+		id="WARDROBE",name="옷장",familyRootId="WORLD_FURNITURE",family="PROP",subfamily="WARDROBE",worldRole="HOUSING_STORAGE",propKind="WARDROBE",
+		silhouette="TALL_DOUBLE_DOOR_CABINET",palette=table.freeze({wood=c(94,67,47),woodLight=c(135,96,62),cloth=c(126,112,91),clothLight=c(190,173,143),metal=c(148,119,68),accent=c(73,58,49)}),
+	}),
+	SHELF = table.freeze({
+		id="SHELF",name="선반",familyRootId="WORLD_FURNITURE",family="PROP",subfamily="SHELF",worldRole="DISPLAY_STORAGE",propKind="SHELF",
+		silhouette="OPEN_THREE_TIER_SHELF",palette=table.freeze({wood=c(101,72,49),woodLight=c(148,107,67),cloth=c(120,111,92),clothLight=c(185,169,139),metal=c(115,111,103),accent=c(77,60,48)}),
+	}),
+	WORKBENCH = table.freeze({
+		id="WORKBENCH",name="작업대",familyRootId="WORLD_CRAFT_STATION",family="PROP",subfamily="WORKBENCH",worldRole="CRAFT_STATION",propKind="WORKBENCH",
+		silhouette="HEAVY_BENCH_TOOL_BACKBOARD",palette=table.freeze({wood=c(101,70,46),woodLight=c(153,111,69),cloth=c(128,116,95),clothLight=c(191,175,144),metal=c(101,106,108),accent=c(169,126,62)}),
+	}),
+	CRAFT_TABLE = table.freeze({
+		id="CRAFT_TABLE",name="제작 테이블",familyRootId="WORLD_CRAFT_STATION",family="PROP",subfamily="CRAFT_STATION",worldRole="CRAFT_STATION",propKind="CRAFT_TABLE",
+		silhouette="CRAFT_SURFACE_TOOL_RACK",palette=table.freeze({wood=c(106,74,48),woodLight=c(158,115,73),cloth=c(131,117,93),clothLight=c(193,176,144),metal=c(109,114,115),accent=c(175,131,65)}),
+	}),
+	COOKING_HEARTH = table.freeze({
+		id="COOKING_HEARTH",name="화덕",familyRootId="WORLD_COOKING",family="PROP",subfamily="COOKING",worldRole="COOKING_STATION",propKind="HEARTH",
+		silhouette="STONE_HEARTH_POT_FIRE",palette=table.freeze({wood=c(91,66,48),woodLight=c(132,95,63),cloth=c(127,111,91),clothLight=c(188,170,139),metal=c(89,93,95),accent=c(234,129,55)}),
+	}),
+	STORAGE_CABINET = table.freeze({
+		id="STORAGE_CABINET",name="수납장",familyRootId="WORLD_STORAGE",family="PROP",subfamily="STORAGE",worldRole="STORAGE",propKind="CABINET",
+		silhouette="LOW_DOUBLE_DOOR_STORAGE",palette=table.freeze({wood=c(97,70,49),woodLight=c(146,103,67),cloth=c(121,108,88),clothLight=c(185,166,134),metal=c(140,115,68),accent=c(75,59,48)}),
+	}),
+	PLANTER_BOX = table.freeze({
+		id="PLANTER_BOX",name="화분 상자",familyRootId="WORLD_GARDEN",family="PROP",subfamily="PLANTER",worldRole="FARMING_DECOR",propKind="PLANTER",
+		silhouette="RECT_PLANTER_SOIL_PLANTS",palette=table.freeze({wood=c(99,71,48),woodLight=c(145,104,66),cloth=c(94,84,67),clothLight=c(158,142,109),metal=c(92,94,91),accent=c(82,133,69)}),
+	}),
+	CROP_PLOT = table.freeze({
+		id="CROP_PLOT",name="재배 구획",familyRootId="WORLD_GARDEN",family="PROP",subfamily="CROP_PLOT",worldRole="FARMING_PLOT_VISUAL",propKind="CROP_PLOT",
+		silhouette="RAISED_SOIL_PLOT_BORDER",palette=table.freeze({wood=c(92,66,46),woodLight=c(137,98,62),cloth=c(92,74,58),clothLight=c(146,118,88),metal=c(92,91,84),accent=c(77,123,64)}),
+	}),
+	ANIMAL_TROUGH = table.freeze({
+		id="ANIMAL_TROUGH",name="먹이통",familyRootId="WORLD_ANIMAL_HOME",family="PROP",subfamily="ANIMAL_TROUGH",worldRole="ANIMAL_HOUSING_VISUAL",propKind="TROUGH",
+		silhouette="LONG_TROUGH_LEGS",palette=table.freeze({wood=c(95,69,49),woodLight=c(144,105,68),cloth=c(119,107,88),clothLight=c(176,158,127),metal=c(104,105,101),accent=c(129,106,72)}),
+	}),
+	FLOOR_LAMP = table.freeze({
+		id="FLOOR_LAMP",name="스탠드 조명",familyRootId="WORLD_LIGHT",family="PROP",subfamily="LIGHT_SOURCE",worldRole="HOUSING_LIGHT",propKind="FLOOR_LAMP",
+		silhouette="TALL_STAND_LANTERN",palette=table.freeze({wood=c(87,64,48),woodLight=c(128,94,61),cloth=c(136,121,100),clothLight=c(205,190,158),metal=c(75,78,79),accent=c(255,194,96)}),
+	}),
+	WALL_SWITCH = table.freeze({
+		id="WALL_SWITCH",name="벽 스위치",familyRootId="WORLD_CONTROL",family="PROP",subfamily="INTERACTIVE_SWITCH",worldRole="INTERACTION_CONTROL_VISUAL",propKind="SWITCH",
+		silhouette="PLATE_LEVER_SWITCH",palette=table.freeze({wood=c(84,69,56),woodLight=c(126,104,80),cloth=c(112,102,88),clothLight=c(167,151,126),metal=c(109,113,114),accent=c(184,137,64)}),
+	}),
+	LEVER_CONTROL = table.freeze({
+		id="LEVER_CONTROL",name="레버",familyRootId="WORLD_CONTROL",family="PROP",subfamily="DOOR_CONTROL",worldRole="INTERACTION_CONTROL_VISUAL",propKind="LEVER",
+		silhouette="BASE_LONG_LEVER_GRIP",palette=table.freeze({wood=c(90,65,47),woodLight=c(135,98,64),cloth=c(117,104,87),clothLight=c(176,158,128),metal=c(98,104,106),accent=c(171,126,62)}),
+	}),
+	NOTICE_BOARD = table.freeze({
+		id="NOTICE_BOARD",name="게시판",familyRootId="WORLD_QUEST_PROP",family="PROP",subfamily="QUEST_PROP",worldRole="QUEST_DISPLAY",propKind="NOTICE",
+		silhouette="BOARD_POST_NOTICES",palette=table.freeze({wood=c(101,72,48),woodLight=c(149,107,67),cloth=c(207,192,157),clothLight=c(233,221,190),metal=c(111,109,101),accent=c(147,57,55)}),
+	}),
+	RUG = table.freeze({
+		id="RUG",name="러그",familyRootId="WORLD_DECOR",family="PROP",subfamily="DECORATION",worldRole="HOUSING_DECOR",propKind="RUG",
+		silhouette="FLAT_PATTERNED_RUG",palette=table.freeze({wood=c(91,68,54),woodLight=c(132,99,75),cloth=c(112,70,67),clothLight=c(174,118,101),metal=c(108,101,92),accent=c(201,160,92)}),
+	}),
+	DECOR_STATUE = table.freeze({
+		id="DECOR_STATUE",name="장식 조각상",familyRootId="WORLD_DECOR",family="PROP",subfamily="DECORATION",worldRole="HOUSING_DECOR",propKind="STATUE",
+		silhouette="PEDESTAL_ABSTRACT_STATUE",palette=table.freeze({wood=c(101,97,88),woodLight=c(146,141,128),cloth=c(118,111,97),clothLight=c(178,168,146),metal=c(101,105,106),accent=c(167,135,76)}),
+	}),
 })
 
 local function makePart(name, size, color, material, shape)
@@ -346,6 +411,84 @@ local function addStoneWell(model, root, row, level)
 	end
 end
 
+
+local function addHousingProp(model,root,row,level)
+	local p=row.palette
+	local kind=row.propKind
+	if kind=="BED" then
+		weld(root,makePart("Frame",Vector3.new(3.0,0.46,5.4),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,0.55,0))
+		weld(root,makePart("Mattress",Vector3.new(2.72,0.55,4.85),p.cloth,Enum.Material.Fabric),CFrame.new(0,1.02,0))
+		weld(root,makePart("Pillow",Vector3.new(2.10,0.42,1.00),p.clothLight,Enum.Material.Fabric),CFrame.new(0,1.40,1.65))
+		if detail(level,2) then weld(root,makePart("Headboard",Vector3.new(3.0,2.2,0.34),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,1.55,2.55)) end
+	elseif kind=="WARDROBE" or kind=="CABINET" then
+		local tall=kind=="WARDROBE"
+		local h=tall and 5.0 or 3.0
+		weld(root,makePart("Body",Vector3.new(3.4,h,1.65),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,h/2,0))
+		for _,x in ipairs({-0.82,0.82}) do
+			weld(root,makePart("Door"..x,Vector3.new(1.48,h-0.36,0.16),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(x,h/2,-0.90))
+			if detail(level,2) then weld(root,makePart("Handle"..x,Vector3.new(0.18,0.34,0.18),p.metal,Enum.Material.Metal,"BALL"),CFrame.new(x+(x<0 and 0.55 or -0.55),h/2,-1.05)) end
+		end
+	elseif kind=="SHELF" then
+		for _,y in ipairs({0.35,1.85,3.35}) do weld(root,makePart("Shelf"..y,Vector3.new(3.5,0.25,1.2),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,y,0)) end
+		for _,x in ipairs({-1.55,1.55}) do weld(root,makePart("Post"..x,Vector3.new(0.24,3.75,1.05),p.wood,Enum.Material.WoodPlanks),CFrame.new(x,1.85,0)) end
+	elseif kind=="WORKBENCH" or kind=="CRAFT_TABLE" then
+		weld(root,makePart("Top",Vector3.new(4.2,0.38,2.2),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,2.05,0))
+		for _,x in ipairs({-1.65,1.65}) do weld(root,makePart("Leg"..x,Vector3.new(0.38,2.0,1.55),p.wood,Enum.Material.WoodPlanks),CFrame.new(x,1.0,0)) end
+		if detail(level,2) then
+			weld(root,makePart("ToolRack",Vector3.new(3.4,1.55,0.18),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,3.15,0.88))
+			for i=-1,1 do weld(root,makePart("Tool"..i,Vector3.new(0.16,0.95,0.14),p.metal,Enum.Material.Metal),CFrame.new(i*0.75,3.15,0.72)*CFrame.Angles(0,0,math.rad(i*12))) end
+		end
+	elseif kind=="HEARTH" then
+		for i=0,7 do
+			local a=math.rad(i*45)
+			weld(root,makePart("Stone"..i,Vector3.new(0.82,0.54,0.58),i%2==0 and p.metal or p.cloth,Enum.Material.Slate),CFrame.new(math.cos(a)*1.25,0.35,math.sin(a)*1.25)*CFrame.Angles(0,-a,0))
+		end
+		local fire=weld(root,makePart("Fire",Vector3.new(1.25,1.05,1.25),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(0,0.88,0));fire.Transparency=0.08
+		if detail(level,2) then weld(root,makePart("Pot",Vector3.new(1.45,1.05,1.45),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,1.75,0)*CFrame.Angles(0,0,math.rad(90))) end
+	elseif kind=="PLANTER" or kind=="CROP_PLOT" then
+		local size=kind=="CROP_PLOT" and Vector3.new(5.2,0.65,4.0) or Vector3.new(3.4,1.0,1.6)
+		weld(root,makePart("Box",size,p.wood,Enum.Material.WoodPlanks),CFrame.new(0,size.Y/2,0))
+		weld(root,makePart("Soil",Vector3.new(size.X-0.35,0.18,size.Z-0.35),p.cloth,Enum.Material.Ground),CFrame.new(0,size.Y+0.03,0))
+		if detail(level,2) then
+			for i=-2,2 do
+				weld(root,makePart("Plant"..i,Vector3.new(0.22,0.75,0.22),p.accent,Enum.Material.Grass,"CYLINDER"),CFrame.new(i*(size.X-1)/5,size.Y+0.45,0))
+			end
+		end
+	elseif kind=="TROUGH" then
+		weld(root,makePart("Basin",Vector3.new(4.1,1.15,1.55),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,1.0,0))
+		weld(root,makePart("Inset",Vector3.new(3.65,0.55,1.1),p.cloth,Enum.Material.Ground),CFrame.new(0,1.45,0))
+		for _,x in ipairs({-1.55,1.55}) do weld(root,makePart("Leg"..x,Vector3.new(0.35,0.85,1.25),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(x,0.42,0)) end
+	elseif kind=="FLOOR_LAMP" then
+		weld(root,makePart("Base",Vector3.new(1.0,0.22,1.0),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0.11,0))
+		weld(root,makePart("Stand",Vector3.new(0.18,3.9,0.18),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,2.0,0))
+		local glow=weld(root,makePart("Glow",Vector3.new(1.15,1.35,1.15),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(0,4.15,0));glow.Transparency=0.12
+		if detail(level,2) then
+			local light=Instance.new("PointLight");light.Name="VisualGlow";light.Color=p.accent;light.Brightness=1.0;light.Range=9;light.Shadows=false;light.Parent=glow
+		end
+	elseif kind=="SWITCH" or kind=="LEVER" then
+		weld(root,makePart("Plate",Vector3.new(1.35,1.65,0.24),p.metal,Enum.Material.Metal),CFrame.new(0,0.82,0))
+		local h=kind=="LEVER" and 1.55 or 0.85
+		weld(root,makePart("Handle",Vector3.new(0.20,h,0.20),p.accent,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0.95,-0.28)*CFrame.Angles(math.rad(-28),0,0))
+		if detail(level,2) then weld(root,makePart("Grip",Vector3.new(0.38,0.38,0.38),p.woodLight,Enum.Material.Wood,"BALL"),CFrame.new(0,1.48,-0.62)) end
+	elseif kind=="NOTICE" then
+		for _,x in ipairs({-1.85,1.85}) do weld(root,makePart("Post"..x,Vector3.new(0.26,3.8,0.26),p.wood,Enum.Material.WoodPlanks),CFrame.new(x,1.9,0)) end
+		weld(root,makePart("Board",Vector3.new(4.2,2.6,0.28),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,3.15,0))
+		if detail(level,2) then
+			for i=-1,1 do weld(root,makePart("Notice"..i,Vector3.new(0.95,0.72,0.05),p.cloth,Enum.Material.SmoothPlastic),CFrame.new(i*1.15,3.2,-0.18)*CFrame.Angles(0,0,math.rad(i*4))) end
+		end
+	elseif kind=="RUG" then
+		weld(root,makePart("Rug",Vector3.new(4.6,0.12,3.1),p.cloth,Enum.Material.Fabric),CFrame.new(0,0.06,0))
+		if detail(level,2) then
+			weld(root,makePart("PatternA",Vector3.new(3.7,0.04,0.22),p.accent,Enum.Material.Fabric),CFrame.new(0,0.13,0))
+			weld(root,makePart("PatternB",Vector3.new(0.22,0.04,2.5),p.clothLight,Enum.Material.Fabric),CFrame.new(0,0.13,0))
+		end
+	elseif kind=="STATUE" then
+		weld(root,makePart("Pedestal",Vector3.new(1.65,1.15,1.65),p.wood,Enum.Material.Slate),CFrame.new(0,0.58,0))
+		weld(root,makePart("Body",Vector3.new(1.05,2.4,0.95),p.woodLight,Enum.Material.Slate),CFrame.new(0,2.15,0))
+		weld(root,makePart("Head",Vector3.new(0.85,0.85,0.85),p.accent,Enum.Material.Slate,"BALL"),CFrame.new(0,3.65,0))
+	end
+end
+
 local BUILDERS = table.freeze({
 	SIGNPOST = addSignpost,
 	WOOD_FENCE = addFence,
@@ -355,6 +498,22 @@ local BUILDERS = table.freeze({
 	TABLE = addTable,
 	MARKET_STALL = addMarketStall,
 	STONE_WELL = addStoneWell,
+	BED_SINGLE = addHousingProp,
+	WARDROBE = addHousingProp,
+	SHELF = addHousingProp,
+	WORKBENCH = addHousingProp,
+	CRAFT_TABLE = addHousingProp,
+	COOKING_HEARTH = addHousingProp,
+	STORAGE_CABINET = addHousingProp,
+	PLANTER_BOX = addHousingProp,
+	CROP_PLOT = addHousingProp,
+	ANIMAL_TROUGH = addHousingProp,
+	FLOOR_LAMP = addHousingProp,
+	WALL_SWITCH = addHousingProp,
+	LEVER_CONTROL = addHousingProp,
+	NOTICE_BOARD = addHousingProp,
+	RUG = addHousingProp,
+	DECOR_STATUE = addHousingProp,
 })
 
 local function applyModelMetadata(model, row, quality)
@@ -362,6 +521,8 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("StudioAssetSubfamily", row.subfamily)
 	model:SetAttribute("StudioAssetWorldRole", row.worldRole)
 	model:SetAttribute("StudioAssetSilhouette", row.silhouette)
+	model:SetAttribute("HousingOrSettlementRole", row.worldRole or "SET_DRESSING")
+	model:SetAttribute("HousingPropKind", row.propKind or "GENERAL")
 	model:SetAttribute("StudioAssetQualityLevel", quality)
 	model:SetAttribute("StudioAssetQualityTarget", 100)
 	model:SetAttribute("RuntimeVerificationState", "PENDING_STUDIO")
