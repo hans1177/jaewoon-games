@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g2-0b1b6a44e085",
-  "directiveFingerprint": "0b1b6a44e08537c47069daded3368a51d582caf9a315f9f7ff62cb311d447374",
-  "previousDirectiveFingerprint": "3a8f05c4738f09a7cb0ba5e8ab2faf64fb3d62f0fc97cb864aa90ba166802b45",
-  "forbiddenRepeatFingerprint": "3a8f05c4738f09a7cb0ba5e8ab2faf64fb3d62f0fc97cb864aa90ba166802b45",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g3-815868f36a12",
+  "directiveFingerprint": "815868f36a12f202fef5cd0df9621a7640cb383404392a686fd70d5df31d03a4",
+  "previousDirectiveFingerprint": "0b1b6a44e08537c47069daded3368a51d582caf9a315f9f7ff62cb311d447374",
+  "forbiddenRepeatFingerprint": "0b1b6a44e08537c47069daded3368a51d582caf9a315f9f7ff62cb311d447374",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "3533cabe0954ccc653d454b35c86c7828adfe84e44b701c09773d4cbb99ee52c",
+  "sourceTreeFingerprint": "4bbe2837482b1e6702e5b2e6f406601ebc6134a3aec0c2bde4fd81a4a2ace085",
   "designFingerprint": "f82191ecfbaafd23f36b80b618d3a6262e90d6bf333e105b4a488bcbb0ac84eb",
   "gameIdentityAndNonNegotiables": {
     "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
@@ -250,145 +250,19 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "9292f3bc2602a07e643b05c4727aa34a5cd3e25920ed6f1fd8243636d1be3899",
-    "currentSourceTreeFingerprint": "3533cabe0954ccc653d454b35c86c7828adfe84e44b701c09773d4cbb99ee52c",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "3533cabe0954ccc653d454b35c86c7828adfe84e44b701c09773d4cbb99ee52c",
+    "currentSourceTreeFingerprint": "4bbe2837482b1e6702e5b2e6f406601ebc6134a3aec0c2bde4fd81a4a2ace085",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": {
-      "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
-      "artifactIdentity": "sha256:315f57a0f13bf64482fb0b95bd938800b6135b38009d0c56820c187fb0cee0b1",
-      "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37163628653,
-      "testedAt": "2026-10-04T00:49:07.073Z",
-      "repairSurfaces": [
-        "CORE_GAMEPLAY",
-        "WORLD_MAP",
-        "COMBAT_FEEL",
-        "PROGRESSION_CONTENT"
-      ],
-      "qualityFailureDetails": [
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P0",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        },
-        {
-          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-          "priority": "P1",
-          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-          "observed": "{\"version\":1,\"gameId\":\"seed-action-survival-rogu-echoes-of-the-lost-star\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY\",\"MISSING_GAMEPLAY_CAPABILITY:COMBAT\",\"MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI\",\"MISSING_GAMEPLAY_CAPABILITY:WAVE\",\"MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:BOSS\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"EQUIPMENT\",\"PROGRESSION\",\"BOSS\",\"SAVE\",\"MOBILE_UI\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"CONTENT_ENTITY\":false,\"COMBAT\":false,\"ENEMY_AI\":false,\"WAVE\":false,\"EQUIPMENT\":false,\"PROGRESSION\":false,\"BOSS\":false,\"SAVE\":true,\"MOBILE_UI\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"실시간 전투를 통해 적의 물결을 돌파하며 생존하고, 적 처치 시 드롭되는 메아리 파편을 수집합니다.\",\"capabilities\":[\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\"],\"pass\":false},{\"index\":1,\"step\":\"수집한 파편을 사용하여 실시간으로 무기, 스킬, 능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다.\",\"capabilities\":[\"COMBAT\",\"EQUIPMENT\",\"PROGRESSION\"],\"pass\":false},{\"index\":2,\"step\":\"강화된 빌드를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다.\",\"capabilities\":[\"SESSION_FLOW\",\"CONTENT_ENTITY\",\"COMBAT\",\"ENEMY_AI\",\"WAVE\",\"PROGRESSION\",\"BOSS\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"메아리 공명 시스템\",\"capabilities\":[\"COMBAT\"],\"pass\":false},{\"index\":1,\"name\":\"엔트로피 미터\",\"capabilities\":[\"WORLD\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"MISSING\",\"World\":\"MISSING\",\"Combat\":\"MISSING\",\"AI\":\"MISSING\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":true,\"signalCount\":0,\"pass\":false},\"combatFeel\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[{\"id\":\"EQUIPMENT_TO_COMBAT\",\"pass\":false},{\"id\":\"WORLD_TO_CONTENT\",\"pass\":false}],\"pass\":false},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"AI_STATE_DEPTH\",\"COMBAT_FEEL_CHAIN\",\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\",\"SYSTEM_CONNECTION_CHAIN\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"9969a2740c6cf6c246188dd2d4f147683ae8d2ee1685bb86ad8fa1ba5adaf283\",\"antiSkeletonPassed\":false,\"designGenre\":\"Survival\",\"sourceGenre\":\"Survival\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
-        }
-      ]
-    },
+    "studioQualityFailure": null,
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1553,7 +1427,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 109914,
+        "sourceBytes": 80541,
         "largestFileBytes": 43648,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1586,20 +1460,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
@@ -1637,7 +1512,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 192,
+        "score": 174,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -1989,9 +1864,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
       "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
       "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2151,9 +2026,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
       "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
       "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json"
     ],
     "sourceAnchors": [
@@ -2258,15 +2133,134 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "ROBLOX",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+    "platform": "ROBLOX",
+    "plannedFiles": [
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "ROBLOX",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3533cabe0954ccc653d454b35c86c7828adfe84e44b701c09773d4cbb99ee52c",
+      "sourceTreeFingerprint": "4bbe2837482b1e6702e5b2e6f406601ebc6134a3aec0c2bde4fd81a4a2ace085",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2281,8 +2275,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2313,7 +2307,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2386,5 +2380,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:41:08.145Z"
+  "generatedAt": "2026-10-04T01:01:27.737Z"
 }
