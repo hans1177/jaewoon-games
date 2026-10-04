@@ -4339,6 +4339,12 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.libraryModuleConsumerPathCount>=1);
     assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.uniqueRepositoryPathCount>=2);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks));
+    const severityRank={CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1};
+    const managementBottlenecks=first.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks;
+    for(let index=1;index<managementBottlenecks.length;index++){
+      assert.ok((severityRank[managementBottlenecks[index-1].severity]||0)>=(severityRank[managementBottlenecks[index].severity]||0));
+    }
+    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.highestPriorityBottleneck,managementBottlenecks[0]||null);
     assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.continueWithoutHuman,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.continueWithoutChatgpt,true);
 
@@ -4413,6 +4419,13 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.volume.totalTarget,result.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget);
   assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.quality.target,1000);
   assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.sourceConsumptionDoesNotPromoteProductionVerification,true);
+  const canonicalBottlenecks=result.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks;
+  const canonicalSeverityRank={CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1};
+  for(let index=1;index<canonicalBottlenecks.length;index++){
+    assert.ok((canonicalSeverityRank[canonicalBottlenecks[index-1].severity]||0)>=(canonicalSeverityRank[canonicalBottlenecks[index].severity]||0));
+  }
+  assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.highestPriorityBottleneck,canonicalBottlenecks[0]||null);
+  if(canonicalBottlenecks.some(row=>row.severity==='MEDIUM'))assert.notEqual(result.registry.internalAssetLibraryAutomation.assetManagementHealth.highestPriorityBottleneck?.severity,'LOW');
   assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.moduleMatcherMode,'COMPILED_BOUNDARY_EXACT_MODULE_TOKEN_REGEX');
   assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.moduleMatcherTokenCount>0);
   console.log('ASSET_MANAGEMENT_HEALTH '+JSON.stringify({
