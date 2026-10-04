@@ -1339,10 +1339,50 @@ function looseVolumeState(count,band={}){
   return'SOFT_DEDUP_REVIEW_ONLY';
 }
 
+const COMMON_LIBRARY_PACK_ID_BY_DOMAIN=Object.freeze({
+  UI:'roblox-common-ui-v1',
+  ITEM:'roblox-common-items-v1',
+  WEAPON:'roblox-common-tools-v1',
+  CHARACTER_GEAR:'roblox-common-character-gear-v1',
+  SKILL:'roblox-common-skill-v1',
+  VFX:'roblox-common-vfx-v1',
+  MOTION:'roblox-common-motion-v1',
+  MATERIAL:'roblox-common-materials-v1',
+  ENVIRONMENT:'roblox-common-environment-v1',
+  BUILDING:'roblox-common-building-v1',
+  WORLD_PROP:'roblox-common-world-props-v1',
+  CREATURE:'roblox-common-creature-parts-v1',
+  FOLIAGE:'roblox-common-foliage-v1',
+  PRESENTATION:'roblox-common-presentation-v1'
+});
+
+function commonLibraryPackCount(domain,assets=[]){
+  const packId=COMMON_LIBRARY_PACK_ID_BY_DOMAIN[domain];
+  const pack=packId?(assets||[]).find(asset=>asset?.id===packId):null;
+  if(!pack)return null;
+  if(domain==='UI')return Number(pack.componentCount??pack.assetCount??pack.registryAtomCount)||0;
+  if(domain==='ITEM')return Number(pack.assetCount??pack.itemCount)||0;
+  if(domain==='WEAPON'||domain==='CHARACTER_GEAR'||domain==='BUILDING'||domain==='WORLD_PROP'||domain==='CREATURE'||domain==='FOLIAGE')return Number(pack.itemCount??pack.assetCount)||0;
+  if(domain==='SKILL'||domain==='VFX'||domain==='MATERIAL')return Number(pack.assetCount??pack.itemCount)||0;
+  if(domain==='MOTION')return Number(pack.motionCount??pack.assetCount)||0;
+  if(domain==='ENVIRONMENT')return Number(pack.terrainCompositionCount??pack.sceneCompositionCount??pack.recipeCount??pack.environmentStateCount)||0;
+  if(domain==='PRESENTATION'){
+    const direct=Number(pack.presentationComponentCount);
+    if(Number.isFinite(direct)&&direct>0)return direct;
+    const loading=Array.isArray(pack.loadingElements)?pack.loadingElements.length:0;
+    const intro=Array.isArray(pack.introModes)?pack.introModes.length:0;
+    return loading+intro;
+  }
+  return null;
+}
+
 function commonLibraryIdentityCount(domain,assets=[]){
+  const packCount=commonLibraryPackCount(domain,assets);
+  if(packCount!=null&&packCount>0)return packCount;
   const candidates=(assets||[]).filter(asset=>commonDepthDomainMatch(domain,asset));
   return candidates.filter(asset=>{
     if(asset?.id===asset?.packId)return false;
+    if(asset?.catalogActive===false)return false;
     if(asset?.atomId||asset?.assetId)return true;
     const sub=upper(asset?.subfamily);
     return sub&&!sub.endsWith('_PACK')&&!sub.endsWith('_KIT');
