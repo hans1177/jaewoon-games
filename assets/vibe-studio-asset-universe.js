@@ -1090,6 +1090,137 @@ export const COMMON_LIBRARY_LOOSE_VOLUME_BANDS=Object.freeze({
   AUDIO:Object.freeze({minimum:23,targetMin:48,targetMax:120,softReviewAt:180,measurement:'ROLE_OR_VERIFIED_ASSET_NOT_AUDIO_FILE_CLAIM'})
 });
 
+
+export const INTERNAL_PROGRESSION_COMPLEXITY_PROFILES=Object.freeze({
+  VERY_SIMPLE:Object.freeze({
+    id:'VERY_SIMPLE',depth:1,
+    presentation:Object.freeze(['LEVEL','XP_OR_PROGRESS','MAX_HP_OR_PRIMARY_STAT','ATTACK_OR_PRIMARY_POWER','NEXT_UNLOCK']),
+    menuDepthTarget:1,choiceDensity:'LOW',branching:'NONE_OR_SINGLE_CHOICE',
+    suitableSignals:Object.freeze(['CASUAL','ARCADE','SHORT_SESSION','SIMPLE_SURVIVAL']),
+    gameplayAuthority:false
+  }),
+  SURVIVAL_SIMPLE:Object.freeze({
+    id:'SURVIVAL_SIMPLE',depth:2,
+    presentation:Object.freeze(['LEVEL_OR_MILESTONE','PERK_OR_MUTATION','EQUIPMENT_TIER','CRAFTING_TIER','REGION_OR_RESOURCE_MILESTONE','OPTIONAL_SMALL_BRANCH']),
+    menuDepthTarget:2,choiceDensity:'MEDIUM',branching:'SMALL_PERK_OR_LOADOUT_BRANCHES',
+    suitableSignals:Object.freeze(['SURVIVAL','CRAFTING','BASE_BUILDING','EXPLORATION','MUTATION','PERK']),
+    gameplayAuthority:false
+  }),
+  DEEP_RPG:Object.freeze({
+    id:'DEEP_RPG',depth:3,
+    presentation:Object.freeze(['ATTRIBUTE','PROFICIENCY','CLASS_OR_ROLE','SUBCLASS_OR_SPECIALIZATION','ACTIVE_SKILL','PASSIVE','RESOURCE','CONDITION','EQUIPMENT_BUILD','FACTION_REPUTATION','COMPANION_RELATION','CRAFTING_SPECIALIZATION','MULTI_BRANCH_PROGRESSION']),
+    menuDepthTarget:3,choiceDensity:'HIGH',branching:'MULTI_AXIS_INTERCONNECTED',
+    suitableSignals:Object.freeze(['RPG','TABLETOP','PARTY','CLASS','SUBCLASS','D20','PROFICIENCY','COMPANION','DEEP_BUILD']),
+    gameplayAuthority:false
+  })
+});
+
+export function selectInternalProgressionComplexityProfile({requested='AUTO',signals=[]}={}){
+  const explicit=upper(requested);
+  if(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES[explicit])return INTERNAL_PROGRESSION_COMPLEXITY_PROFILES[explicit];
+  const textSignals=uniq(signals).map(upper).join(' ');
+  if(/RPG|TABLETOP|D20|CLASS|SUBCLASS|PROFICIENCY|COMPANION|DEEP_BUILD/.test(textSignals))return INTERNAL_PROGRESSION_COMPLEXITY_PROFILES.DEEP_RPG;
+  if(/SURVIVAL|CRAFT|BUILDING|EXPLORATION|MUTATION|PERK|RESOURCE/.test(textSignals))return INTERNAL_PROGRESSION_COMPLEXITY_PROFILES.SURVIVAL_SIMPLE;
+  return INTERNAL_PROGRESSION_COMPLEXITY_PROFILES.VERY_SIMPLE;
+}
+
+export const INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES=Object.freeze({
+  SURVIVAL_HOUSING_CONQUEST:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    domainTargetMin:Object.freeze({BUILDING:120,WORLD_PROP:140,CREATURE:160,MOTION:160,UI:280,ITEM:96,ENVIRONMENT:100,AUDIO:80,PRESENTATION:40}),
+    housing:Object.freeze({
+      moduleFamilyTarget:40,themeTarget:16,roomKitTarget:16,
+      requiredRoles:Object.freeze(['FOUNDATION_SQUARE','FOUNDATION_TRIANGLE','FLOOR','HALF_WALL','WALL_SOLID','WALL_WINDOW','WALL_CORNER','DOOR_FRAME','DOOR','WINDOW_FRAME','WINDOW','CEILING','ROOF_FLAT','ROOF_SLOPE','ROOF_CORNER','PILLAR','STAIR','RAMP','LADDER','RAILING','FENCE','GATE','BALCONY','ARCHWAY','INTERIOR_KIT','SIGNAGE','PROP_SOCKET','DEFENSE_WALL','WATCHTOWER','TRAP_SOCKET','SIEGE_DAMAGE_PRESENTATION']),
+      stateVariants:Object.freeze(['MATERIAL_TIER','PLACEMENT_PREVIEW','VALID_INVALID','DAMAGE','REPAIR','DESTRUCTION','OWNERSHIP','DECAY_OR_UPKEEP','LOD']),
+      invasionPresentationRoles:Object.freeze(['INVASION_WARNING','ATTACK_DIRECTION','WAVE_FORECAST','FORTIFICATION_STATUS','SIEGE_DAMAGE','BREACH_WARNING','DEFENSE_RESULT'])
+    }),
+    creatureEcology:Object.freeze({
+      bodyPlanTarget:36,speciesTarget:60,animalSpeciesTarget:30,hostileSpeciesTarget:40,ecologyRoleTarget:14,
+      encounterRanks:Object.freeze(['NORMAL','ALPHA','ELITE','CHAMPION','MINIBOSS','WORLD_BOSS']),
+      requiredPresentation:Object.freeze(['SPECIES_SILHOUETTE','REGION_VARIANT','AGE_OR_SIZE_VARIANT','THREAT_OR_PREY_ROLE','LOCOMOTION_SET','ATTACK_OR_FLEE_SET','HIT_STAGGER_DEATH','HABITAT_COMPOSITION','LOD'])
+    })
+  }),
+  MARITIME_TRADE_ECONOMY:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    domainTargetMin:Object.freeze({BUILDING:100,WORLD_PROP:120,ITEM:120,UI:300,ENVIRONMENT:110,MOTION:140,AUDIO:96,PRESENTATION:48}),
+    tradeItemCategoryTarget:18,vesselClassTarget:10,portBuildingRoleTarget:20,
+    tradeItemCategories:Object.freeze(['FOOD','SPICE','TEXTILE','WOOD','ORE','METAL','WEAPON','CERAMIC','GEM','ART','MEDICINE','LIVESTOCK','CRAFT_GOOD','LUXURY','BOOK_KNOWLEDGE','RELIGIOUS_GOOD','MILITARY_SUPPLY','SHIP_MATERIAL']),
+    portBuildingRoles:Object.freeze(['PIER','DOCK','WAREHOUSE','MARKET','SHIPYARD','CUSTOMS','TRADING_POST','HARBOR_OFFICE','LIGHTHOUSE','TAVERN','GUILD_HALL','FORT','HARBOR_WALL','DRY_DOCK','FISHERY','NAVAL_YARD','MERCHANT_HOUSE','AUCTION_HOUSE','SUPPLY_DEPOT','CART_YARD']),
+    requiredUiRoles:Object.freeze(['PORT_MARKET','LOCAL_PRICE','REGIONAL_PRICE_COMPARE','SUPPLY_DEMAND','TAX_TARIFF','CARGO_HOLD','LOAD_UNLOAD','TRADE_ROUTE','TRADE_HISTORY','CONTRACT_ORDER','INVESTMENT_PREVIEW','CREW','FLEET','SHIP_STATUS','WIND_DIRECTION','SEA_RISK','PORT_ENTRY','SHIP_UPGRADE'])
+  }),
+  CIVILIZATION_WORLD_EXPRESSION:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    domainTargetMin:Object.freeze({BUILDING:110,WORLD_PROP:120,ITEM:100,UI:320,ENVIRONMENT:120,MOTION:140,AUDIO:96,PRESENTATION:64}),
+    worldMapLayerTarget:12,civilizationIdentityTarget:16,eraPresentationTarget:8,
+    worldMapLayers:Object.freeze(['TERRITORY','BORDER','CITY_INFLUENCE','TRADE_ROUTE','RESOURCE','DANGER','WAR_FRONT','CULTURE','RELIGION','CLIMATE','DIPLOMACY','DISCOVERY']),
+    requiredUiRoles:Object.freeze(['WORLD_MAP','TERRITORY_LAYER','DIPLOMACY_STATUS','CIVILIZATION_TRAITS','CITY_DETAIL','POPULATION_STATE','HAPPINESS_ORDER','CULTURE_RELIGION','TECH_TREE','ERA_PROGRESS','RESOURCE_FLOW','WORLD_EVENT_LOG','WAR_PEACE_ALLIANCE','POWER_COMPARE','MAP_FILTER','INFLUENCE_HEGEMONY'])
+  }),
+  RPG_RULES_CRAFTING_SKILL_STORY:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    progressionComplexity:Object.freeze(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES)),
+    domainTargetMin:Object.freeze({ITEM:140,WEAPON:80,CHARACTER_GEAR:96,SKILL:180,VFX:120,MOTION:200,UI:340,AUDIO:110,PRESENTATION:100,CREATURE:180}),
+    tabletopRulePresentation:Object.freeze({requiredUiRoles:Object.freeze(['ABILITY_SCORE','D20_CHECK','PROFICIENCY','ADVANTAGE_DISADVANTAGE','ACTION_ECONOMY','CONDITION','REST','LEVEL_GROWTH','SPELL_OR_SKILL_RESOURCE','EQUIPMENT_REQUIREMENT','EXPLORATION_CHECK','SOCIAL_CHECK']),rulesEngineAuthority:false}),
+    professionCrafting:Object.freeze({professionTarget:16,recipeFamilyTarget:80,recipeAxes:Object.freeze(['BASE_RECIPE','QUALITY','MATERIAL_SUBSTITUTION','SPECIALIZATION','TOOL_STATION','ORDER_CONTRACT','BATCH','RARE_PROC','REGIONAL_RECIPE','UPGRADE_RECIPE'])}),
+    skillLibrary:Object.freeze({familyTarget:24,skillPresentationTarget:180,axes:Object.freeze(['BASIC','CORE','DEFENSIVE','MOBILITY','CONTROL','SUMMON','AURA','DOT','BURST','CHANNEL','TRANSFORM','COMBO','COUNTER','ULTIMATE','PASSIVE','KEYSTONE','RESOURCE_CONVERTER','STATUS_SYNERGY']),buildAxes:Object.freeze(['ACTIVE','PASSIVE','MODIFIER','VARIANT','GEAR_SYNERGY','STATUS_SYNERGY','RESOURCE_SYNERGY'])}),
+    careerMiniGameGrowth:Object.freeze({careerTarget:16,minigameFamilyTarget:20,careerFamilies:Object.freeze(['WARRIOR','RULER','OFFICER','MERCHANT','CRAFTSMAN','PHYSICIAN','SCHOLAR','SPY','SCOUT','PIRATE_OR_NAVAL','CULTURE','DIPLOMAT','MONK_OR_PRIEST','HUNTER','FARMER','ARTISAN'])})
+  }),
+  SAMURAI_DYNASTY_WUXIA_STORY:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,namedCharacterSectTechniqueCopyForbidden:true,
+    domainTargetMin:Object.freeze({BUILDING:120,WORLD_PROP:140,ITEM:140,WEAPON:80,CHARACTER_GEAR:96,SKILL:180,VFX:120,MOTION:200,UI:340,AUDIO:110,PRESENTATION:100,CREATURE:180}),
+    samuraiSystems:Object.freeze({
+      requiredPresentation:Object.freeze(['CLAN','LORD_VASSAL','LOYALTY','HONOR_REPUTATION','OFFICE_RANK','FIEF_TERRITORY','RETINUE','SUCCESSION','PLEDGE_STATE','ALLIANCE','BETRAYAL_RISK','DUEL','DOJO','SWORD_SCHOOL','BATTLE_COUNCIL','TACTIC','SIEGE','RECRUIT_TALENT']),
+      combatStyles:Object.freeze(['KATANA','DUAL_BLADE','SPEAR','POLEARM','BOW','UNARMED','DRAW_STYLE_ABSTRACT','HEAVY_BLADE'])
+    }),
+    wuxiaSystems:Object.freeze({
+      requiredPresentation:Object.freeze(['SECT_FACTION','MASTER_DISCIPLE','FAVOR_DEBT','GRUDGE','REPUTATION','RUMOR','INNER_SKILL','OUTER_SKILL','LIGHTNESS_SKILL','WEAPON_ART','MERIDIAN_PROGRESS','MANUAL_DISCOVERY','SECRET_ENCOUNTER','DUEL_CHALLENGE','ALLIANCE_RIVALRY','MULTI_BRANCH_STORY','MORAL_CHOICE','TRAVEL_EVENT']),
+      skillCategories:Object.freeze(['SWORD','SABER','SPEAR','STAFF','FIST','PALM','FINGER','GRAPPLE','THROWING','INNER_POWER','LIGHTNESS','BODY_HARDENING','HEALING','POISON','ACUPOINT_OR_STATUS','COUNTER','FORMATION','SECRET_ART']),
+      storyAxes:Object.freeze(['MASTER_DISCIPLE','RIVAL','ROMANCE_OPTIONAL','FACTION_CONFLICT','REVENGE','DEBT_OF_GRATITUDE','SECRET_MANUAL','IDENTITY_SECRET','TOURNAMENT','WAR','ESCORT','INVESTIGATION','TREASURE','HERMIT_ENCOUNTER','MORAL_BRANCH','ENDING_BRANCH'])
+    })
+  }),
+  EXPLORATION_EVENT_WORLD:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    domainTargetMin:Object.freeze({ENVIRONMENT:140,WORLD_PROP:160,CREATURE:180,ITEM:140,UI:340,MOTION:200,AUDIO:110,PRESENTATION:100,SKILL:180}),
+    explorationAxes:Object.freeze(['DISCOVERY','LANDMARK','HIDDEN_PATH','RUIN','CAVE','DUNGEON','UNDERWATER','MOUNTAIN','FOREST','DESERT','SWAMP','SNOW','OCEAN','CITY','VILLAGE','BORDERLAND']),
+    eventFamilies:Object.freeze(['RUMOR','AMBUSH','RESCUE','ESCORT','TREASURE','PUZZLE','WEATHER_HAZARD','NATURAL_DISASTER','RARE_CREATURE','WORLD_BOSS','FACTION_ENCOUNTER','MERCHANT_CARAVAN','SHIPWRECK','PIRATE_ATTACK','LOST_TRAVELER','HERMIT','SECRET_MANUAL','RESOURCE_RUSH','INVASION','FESTIVAL','TOURNAMENT','DIPLOMATIC_INCIDENT','EPIDEMIC','FAMINE','REBELLION','WAR_FRONT_CHANGE','ANCIENT_MECHANISM','MORAL_CHOICE','CHAIN_EVENT']),
+    chain:Object.freeze(['DISCOVER_SIGNAL','INVESTIGATE','RISK_OR_CHOICE','RESOLVE','REWARD_OR_COST','WORLD_REACTION','FOLLOWUP_HOOK']),
+    contextAxes:Object.freeze(['TIME_OF_DAY','WEATHER','BIOME','REGION','FACTION','REPUTATION','LEVEL_OR_POWER','PARTY_STATE','WORLD_STATE','SEASON','TRADE_STATE','WAR_STATE'])
+  }),
+  MULTI_AXIS_PROGRESSION_GROWTH:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    domainTargetMin:Object.freeze({ITEM:140,WEAPON:80,CHARACTER_GEAR:96,SKILL:180,VFX:120,MOTION:200,UI:340,AUDIO:110,PRESENTATION:100,BUILDING:120,WORLD_PROP:160,CREATURE:180,ENVIRONMENT:140}),
+    growthAxes:Object.freeze(['CHARACTER_LEVEL','ATTRIBUTE','CLASS_OR_ROLE','PROFESSION','WEAPON_MASTERY','SKILL_MASTERY','CRAFTING_SPECIALIZATION','EQUIPMENT_TIER','BUILD_SYNERGY','FACTION_REPUTATION','CLAN_OR_SECT_RANK','MASTER_DISCIPLE_RELATION','SETTLEMENT_OR_FIEF','CITY_OR_CIVILIZATION','TRADE_REPUTATION','FLEET','EXPLORATION_KNOWLEDGE','CODEX_DISCOVERY','COMPANION_RELATION','STORY_BRANCH','WORLD_INFLUENCE','ERA_OR_TECH']),
+    complexityProfiles:INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,
+    rule:'GAME_SELECTS_ONLY_APPLICABLE_COMPLEXITY_AND_AXES'
+  }),
+  GOTY_MOTION_MUSIC_RESPONSIVITY:Object.freeze({
+    version:1,status:'ACTIVE_MACHINE_REFERENCE',protectedExpressionCopyForbidden:true,
+    domainTargetMin:Object.freeze({MOTION:200,AUDIO:120,PRESENTATION:100}),
+    reusableMotionCategoryTargets:Object.freeze({LOCOMOTION:32,TRAVERSAL:20,COMBAT:64,WEAPON_COMBAT:44,SKILL:24,DEFENSE:20,REACTION:24,SURVIVAL_CRAFTING:24,INTERACTION_UTILITY:20,PAIR:8,ACTING:12,DEATH:8}),
+    contextualMotionSystems:Object.freeze(['CONTEXT_SELECTOR','VARIATION_MEMORY','TRANSITION_DIRECTOR','CONTACT_QA','PROCEDURAL_CONTACT_CORRECTION','REACTION_MATCHER','PAIR_MOTION','EMOTION_INTENT','MOTION_LOD','CREATURE_BODY_PLAN_SIGNATURE']),
+    reactiveMusicRoles:Object.freeze(['EXPLORATION_CALM','EXPLORATION_TENSION','COMBAT_ENTER','COMBAT_LAYER_LOW','COMBAT_LAYER_HIGH','BOSS_PHASE','VICTORY','DEFEAT','DISCOVERY','CITY','WILDERNESS','DUNGEON','SEA_TRAVEL','STEALTH','DANGER','FACTION_THEME_ROLE','ERA_THEME_ROLE','WEATHER_LAYER','NIGHT_LAYER','SAFE_HOME']),
+    musicTransitionAxes:Object.freeze(['LOCATION','THREAT','COMBAT_INTENSITY','BOSS_PHASE','DISCOVERY','TIME_OF_DAY','WEATHER','FACTION','STORY_STATE'])
+  })
+});
+
+function internalReferenceBreadthTarget(domain=''){
+  const key=upper(domain);let targetMin=0;const profileIds=[];
+  for(const [profileId,profile] of Object.entries(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES)){
+    const value=Math.max(0,Number(profile?.domainTargetMin?.[key])||0);
+    if(value>0){targetMin=Math.max(targetMin,value);profileIds.push(profileId);}
+  }
+  return Object.freeze({targetMin,profileIds:Object.freeze(profileIds)});
+}
+
+function verifiedAudioFileCount(assets=[]){
+  const fileRe=/\.(?:wav|ogg|mp3|flac|m4a|aac)$/i;
+  return (assets||[]).filter(asset=>{
+    if(!commonDepthDomainMatch('AUDIO',asset))return false;
+    const verified=asset?.productionVerified===true||asset?.verifiedCompanyReusable===true||upper(asset?.runtimeVerificationState)==='VERIFIED_RUNTIME';
+    if(!verified)return false;
+    return [asset?.path,...(asset?.sourceFiles||[])].map(text).filter(Boolean).some(file=>fileRe.test(file));
+  }).length;
+}
+
 export const COMMON_UI_SUBSYSTEM_VOLUME_BANDS=Object.freeze({
   INVENTORY_ITEM_MANAGEMENT:Object.freeze({targetMin:32,targetMax:72,softReviewAt:110,keywords:Object.freeze(['INVENTORY','ITEM_','STASH','LOOT','QUICK_SLOT','RADIAL','RECENT_ITEMS','SOURCE_USAGE'])}),
   MENU_NAVIGATION:Object.freeze({targetMin:30,targetMax:72,softReviewAt:110,keywords:Object.freeze(['MENU','NAVIGATION','TOP_BAR','SIDE_NAVIGATION','PAUSE','SETTINGS','SEARCH','FILTER','SORT','FULL_SCREEN','CONFIRM_DIALOG'])}),
@@ -1105,7 +1236,16 @@ export const COMMON_UI_SUBSYSTEM_VOLUME_BANDS=Object.freeze({
   FARMING_SETTLEMENT:Object.freeze({targetMin:18,targetMax:44,softReviewAt:70,keywords:Object.freeze(['FARM','ANIMAL','PROCESSING','SETTLEMENT','CROP','HARVEST'])}),
   ACCESSIBILITY_INPUT:Object.freeze({targetMin:14,targetMax:36,softReviewAt:60,keywords:Object.freeze(['ACCESSIBILITY','INPUT','FOCUS','TOUCH','GAMEPAD','REDUCED_MOTION','SUBTITLE'])}),
   LOADING_ERROR_STATE:Object.freeze({targetMin:16,targetMax:40,softReviewAt:64,keywords:Object.freeze(['LOADING','ERROR','FAILURE','EMPTY','DISABLED','LOCKED','NEW_STATE','STATE_BADGES'])}),
-  MOBILE_ONE_HAND:Object.freeze({targetMin:12,targetMax:32,softReviewAt:52,keywords:Object.freeze(['QUICK_SLOT','RADIAL','HOTBAR','INTERACTION_PROMPT','ACTION_BAR','ONE_HAND','TOUCH'])})
+  MOBILE_ONE_HAND:Object.freeze({targetMin:12,targetMax:32,softReviewAt:52,keywords:Object.freeze(['QUICK_SLOT','RADIAL','HOTBAR','INTERACTION_PROMPT','ACTION_BAR','ONE_HAND','TOUCH'])}),
+  ECONOMY_TRADE:Object.freeze({targetMin:20,targetMax:48,softReviewAt:76,keywords:Object.freeze(['MARKET','TRADE','PRICE','SUPPLY','DEMAND','TAX','TARIFF','CARGO','CONTRACT','INVESTMENT','VENDOR'])}),
+  WORLD_STRATEGY_DIPLOMACY:Object.freeze({targetMin:24,targetMax:56,softReviewAt:88,keywords:Object.freeze(['WORLD_MAP','TERRITORY','DIPLOMACY','CIVILIZATION','ERA','TECH','INFLUENCE','WAR','PEACE','CULTURE','RELIGION'])}),
+  FLEET_NAVIGATION:Object.freeze({targetMin:18,targetMax:44,softReviewAt:70,keywords:Object.freeze(['FLEET','SHIP','SAIL','SEA','PORT','CREW','WIND','CARGO','NAVIGATION'])}),
+  CONQUEST_DEFENSE:Object.freeze({targetMin:16,targetMax:40,softReviewAt:64,keywords:Object.freeze(['INVASION','SIEGE','DEFENSE','BREACH','FORTIFICATION','RAID_WARNING','WAVE_FORECAST'])}),
+  PROGRESSION_GROWTH:Object.freeze({targetMin:24,targetMax:60,softReviewAt:92,keywords:Object.freeze(['LEVEL','ATTRIBUTE','MASTERY','PROGRESSION','GROWTH','REPUTATION','RANK','SPECIALIZATION','TECH_TREE'])}),
+  SKILL_BUILD_LIBRARY:Object.freeze({targetMin:24,targetMax:64,softReviewAt:96,keywords:Object.freeze(['SKILL','ABILITY','PASSIVE','KEYSTONE','BUILD','COMBO','RUNE','MODIFIER'])}),
+  PROFESSION_CRAFTING:Object.freeze({targetMin:20,targetMax:48,softReviewAt:76,keywords:Object.freeze(['PROFESSION','RECIPE','CRAFTING_ORDER','SPECIALIZATION','MATERIAL_QUALITY','WORK_ORDER'])}),
+  FACTION_STORY_RELATION:Object.freeze({targetMin:24,targetMax:60,softReviewAt:92,keywords:Object.freeze(['FACTION','CLAN','SECT','LOYALTY','HONOR','REPUTATION','MASTER','DISCIPLE','RUMOR','STORY_BRANCH'])}),
+  EXPLORATION_EVENTS:Object.freeze({targetMin:24,targetMax:60,softReviewAt:92,keywords:Object.freeze(['DISCOVERY','EXPLORATION','EVENT','RUMOR','LANDMARK','HIDDEN','RUIN','TREASURE','WORLD_EVENT','ENCOUNTER'])})
 });
 
 
@@ -1183,7 +1323,16 @@ export const COMMON_UI_SUBSYSTEM_IDEA_POOLS=Object.freeze({
     'THUMB_REACH_ACTION_ARC','CONTEXT_ACTION_STACK','ONE_HAND_RADIAL_QUICKSLOT','BOTTOM_SHEET_DETAIL','EDGE_SAFE_BOSS_WARNING',
     'PORTRAIT_COMBAT_COMPACT','LANDSCAPE_PARITY_LAYOUT','TOUCH_HOLD_CONFIRM','SWIPE_TAB_SYSTEM_SWITCH','LARGE_TARGET_DANGER_ACTION',
     'THUMB_OCCLUSION_SAFE_TOOLTIP'
-  ])
+  ]),
+  ECONOMY_TRADE:Object.freeze(['PORT_MARKET_OVERVIEW','LOCAL_PRICE_TREND','REGIONAL_PRICE_COMPARE','SUPPLY_DEMAND_BALANCE','TAX_TARIFF_BREAKDOWN','CARGO_HOLD_MANIFEST','LOAD_UNLOAD_QUEUE','TRADE_ROUTE_BOOKMARK','TRADE_HISTORY_LEDGER','CONTRACT_ORDER_BOARD','INVESTMENT_RETURN_PREVIEW','PERISHABLE_CARGO_WARNING','ILLEGAL_GOOD_RISK_BADGE','CULTURAL_DEMAND_HINT','BULK_TRADE_CONFIRM']),
+  WORLD_STRATEGY_DIPLOMACY:Object.freeze(['WORLD_MAP_LAYER_SWITCHER','TERRITORY_BORDER_OVERLAY','CITY_INFLUENCE_HEATMAP','DIPLOMACY_RELATION_MATRIX','CIVILIZATION_TRAIT_PANEL','CITY_POPULATION_STATE','HAPPINESS_ORDER_BREAKDOWN','CULTURE_RELIGION_LAYER','TECH_TREE_BRANCH_COMPARE','ERA_PROGRESS_TIMELINE','RESOURCE_FLOW_NETWORK','WORLD_EVENT_LOG','WAR_PEACE_ALLIANCE_STATE','POWER_COMPARE_OVERVIEW','HEGEMONY_INFLUENCE_TRACKER']),
+  FLEET_NAVIGATION:Object.freeze(['FLEET_COMPOSITION_PANEL','SHIP_STATUS_CARD','CREW_MORALE_PANEL','PROVISION_WATER_STATE','CARGO_WEIGHT_BALANCE','WIND_DIRECTION_GAUGE','SAIL_EFFICIENCY_HINT','SEA_RISK_OVERLAY','PORT_ENTRY_PANEL','ANCHOR_DOCK_STATE','SHIP_UPGRADE_COMPARE','DAMAGE_REPAIR_SECTION','NAVIGATION_ROUTE_PLANNER','PIRATE_THREAT_WARNING','CONVOY_FORMATION_PREVIEW']),
+  CONQUEST_DEFENSE:Object.freeze(['INVASION_WARNING_BANNER','ATTACK_DIRECTION_COMPASS','DEFENSE_WAVE_FORECAST','FORTIFICATION_STATUS_PANEL','BREACH_WARNING','SIEGE_DAMAGE_SUMMARY','DEFENSE_ASSIGNMENT_OVERVIEW','TRAP_DEFENSE_STATUS','WATCHTOWER_ALERT','BASE_DEFENSE_READINESS','INVASION_RESULT_SUMMARY','LOOT_LOSS_REPORT','REPAIR_PRIORITY_AFTER_SIEGE','ENEMY_FORCE_COMPOSITION','DEFENSE_ROUTE_OVERLAY']),
+  PROGRESSION_GROWTH:Object.freeze(['MULTI_AXIS_GROWTH_OVERVIEW','LEVEL_ATTRIBUTE_DELTA','CLASS_ROLE_MILESTONE','PROFESSION_MASTERY','WEAPON_MASTERY','SKILL_MASTERY','CRAFT_SPECIALIZATION','EQUIPMENT_BUILD_COMPARE','FACTION_REPUTATION','CLAN_SECT_RANK','SETTLEMENT_FIEF_GROWTH','CITY_CIVILIZATION_GROWTH','TRADE_REPUTATION','FLEET_GROWTH','EXPLORATION_KNOWLEDGE','COMPANION_RELATION_GROWTH','STORY_BRANCH_PROGRESS','WORLD_INFLUENCE','ERA_TECH_PROGRESS','NEXT_MEANINGFUL_UNLOCK']),
+  SKILL_BUILD_LIBRARY:Object.freeze(['SKILL_TREE_OVERVIEW','ACTIVE_PASSIVE_SPLIT','SKILL_VARIANT_COMPARE','RESOURCE_SYNERGY_HINT','STATUS_SYNERGY_HINT','GEAR_SKILL_SYNERGY','COMBO_ROUTE_PREVIEW','DEFENSIVE_SKILL_LOADOUT','MOBILITY_SKILL_LOADOUT','SUMMON_CONTROL_PANEL','AURA_STACK_SUMMARY','DOT_STACK_TIMELINE','ULTIMATE_RESOURCE_STATE','KEYSTONE_IMPACT_PREVIEW','BUILD_PRESET_COMPARE']),
+  PROFESSION_CRAFTING:Object.freeze(['PROFESSION_OVERVIEW','RECIPE_BOOK_DEEP','SPECIALIZATION_TREE','CRAFTING_ORDER_BOARD','MATERIAL_QUALITY_COMPARE','RESULT_QUALITY_PREVIEW','WORK_ORDER_HISTORY','DISCOVERY_RECIPE_FEED','TOOL_STATION_REQUIREMENT','REGIONAL_RECIPE_FILTER','BATCH_CRAFT_COST','RARE_PROC_EXPLANATION']),
+  FACTION_STORY_RELATION:Object.freeze(['FACTION_RELATION_MATRIX','CLAN_HIERARCHY_PANEL','LOYALTY_HONOR_STATUS','OFFICE_RANK_PROGRESS','FIEF_TERRITORY_SUMMARY','MASTER_DISCIPLE_GRAPH','FAVOR_DEBT_LEDGER','GRUDGE_RELATION_TRACKER','RUMOR_NETWORK','STORY_BRANCH_HISTORY','DUEL_CHALLENGE_CONTEXT','ALLIANCE_BETRAYAL_RISK']),
+  EXPLORATION_EVENTS:Object.freeze(['DISCOVERY_SIGNAL_CARD','LANDMARK_REVEAL_PANEL','HIDDEN_PATH_HINT','RUMOR_TO_LOCATION_LINK','EVENT_CHOICE_PANEL','WORLD_REACTION_SUMMARY','RARE_ENCOUNTER_WARNING','WEATHER_HAZARD_ROUTE','SHIPWRECK_EVENT_CARD','SECRET_ENCOUNTER_PANEL','TREASURE_CLUE_CHAIN','PUZZLE_DISCOVERY_LOG','REGION_EVENT_FEED','FOLLOWUP_HOOK_TRACKER','EXPLORATION_COMPLETION_MAP'])
 });
 
 export const COMMON_LIBRARY_AUTOMATED_IDEA_POOLS=Object.freeze({
@@ -1294,7 +1443,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:1,
+  version:2,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1308,6 +1457,8 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'REBUILD_LOOSE_VOLUME_PLAN',
     'REBUILD_UI_SUBSYSTEM_DEPTH',
     'REBUILD_COMPANY_SEED_DEMAND',
+    'REBUILD_REFERENCE_BREADTH_PROFILE_GAPS',
+    'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
   ]),
   countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1317,6 +1468,9 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   perDomainIdeaBudgetPerCycle:24,
   preferDistinctRoleStateGenreCombination:true,
   volumeBeforeQuality:true,
+  qualityUpStartsOnlyAfterRecommendedVolume:true,
+  qualityTargetInternalAuditScore:1000,
+  focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   reuseAdaptRecombineBeforeNewAuthoring:true,
   deleteExistingAssetAutomatically:false,
   productionPromotionAutomatically:false,
@@ -1397,19 +1551,28 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[]}={}){
   const depth=auditCommonLibrarySystemDepth({assets});
   const seedIdeas=seedPlan?.ideas||[];
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
+  const audioRoles=uniq(audioRoleIds).map(upper);
+  const audioRoleTokens=new Set(audioRoles);
+  const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const domains=[];
 
   for(const [domain,band] of Object.entries(COMMON_LIBRARY_LOOSE_VOLUME_BANDS)){
-    const currentCount=commonLibraryIdentityCount(domain,assets);
+    const referenceBreadth=internalReferenceBreadthTarget(domain);
+    const targetMin=Math.max(Number(band.targetMin||0),Number(referenceBreadth.targetMin||0));
+    const targetMax=Math.max(Number(band.targetMax||0),Math.ceil(targetMin*1.6));
+    const softReviewAt=Math.max(Number(band.softReviewAt||0),Math.ceil(targetMax*1.5));
+    const currentCount=domain==='AUDIO'&&audioRoles.length?audioRoles.length:commonLibraryIdentityCount(domain,assets);
     const depthRow=depthByDomain.get(domain);
-    const missing=[...(depthRow?.missing||[])];
+    const missing=domain==='AUDIO'&&audioRoles.length
+      ?(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required||[]).filter(role=>!audioRoleTokens.has(upper(role)))
+      :[...(depthRow?.missing||[])];
     const ideaBudget=Math.min(
       INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.perDomainIdeaBudgetPerCycle,
-      Math.max(4,Number(band.targetMin||0)-currentCount,missing.length)
+      Math.max(4,targetMin-currentCount,missing.length)
     );
     const candidates=[];
     for(const required of missing){
@@ -1436,7 +1599,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     }
     const domainPool=COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[];
     for(const ideaId of domainPool){
-      if(candidates.length>=ideaBudget||currentCount+candidates.length>=Number(band.targetMin||0))break;
+      if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
       if(!candidates.some(row=>row.ideaId===ideaId)){
         candidates.push(Object.freeze({
           ideaId,
@@ -1448,7 +1611,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       }
     }
     let slot=1;
-    while(candidates.length<ideaBudget&&currentCount+candidates.length<Number(band.targetMin||0)){
+    while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin){
       candidates.push(Object.freeze({
         ideaId:[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_'),
         source:'LOOSE_VOLUME_TARGET',
@@ -1462,11 +1625,17 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       domain,
       currentCount,
       minimum:band.minimum,
-      targetMin:band.targetMin,
-      targetMax:band.targetMax,
-      softReviewAt:band.softReviewAt,
+      targetMin,
+      targetMax,
+      baseTargetMin:band.targetMin,
+      referenceTargetMin:referenceBreadth.targetMin,
+      referenceProfileIds:referenceBreadth.profileIds,
+      softReviewAt,
       hardMaximum:null,
-      state:looseVolumeState(currentCount,band),
+      state:looseVolumeState(currentCount,{...band,targetMin,targetMax,softReviewAt}),
+      measurement:domain==='AUDIO'?'ROLE_CONTRACT_COUNT_NOT_VERIFIED_AUDIO_FILE_COUNT':'CATALOG_IDENTITY_COUNT',
+      actualVerifiedAudioAssetCount:domain==='AUDIO'?actualVerifiedAudioAssetCount:null,
+      roleContractCount:domain==='AUDIO'?audioRoles.length:null,
       missingDepthRoles:Object.freeze(missing),
       suggestedIdeas:Object.freeze(candidates),
       suggestedIdeaCount:candidates.length,
@@ -1505,17 +1674,36 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     return db-da||a.subsystem.localeCompare(b.subsystem);
   });
 
+  const sortedDomains=domains.sort((a,b)=>{
+    const da=Math.max(0,a.targetMin-a.currentCount),db=Math.max(0,b.targetMin-b.currentCount);
+    return db-da||a.domain.localeCompare(b.domain);
+  });
+  const volumeBlockingDomains=sortedDomains
+    .filter(row=>row.currentCount<row.targetMin||row.missingDepthRoles.length>0)
+    .map(row=>Object.freeze({domain:row.domain,currentCount:row.currentCount,targetMin:row.targetMin,missingDepthRoles:Object.freeze([...row.missingDepthRoles])}));
+  const uiBlockingSubsystems=uiSubsystems
+    .filter(row=>row.currentCount<row.targetMin)
+    .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
+  const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   return Object.freeze({
-    version:1,
+    version:2,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
-    domains:Object.freeze(domains.sort((a,b)=>{
-      const da=Math.max(0,a.targetMin-a.currentCount),db=Math.max(0,b.targetMin-b.currentCount);
-      return db-da||a.domain.localeCompare(b.domain);
-    })),
+    domains:Object.freeze(sortedDomains),
     uiSubsystems:Object.freeze(uiSubsystems),
     uiCompositionGraph:COMMON_UI_SYSTEM_COMPOSITION_GRAPH,
+    referenceBreadthProfiles:INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,
+    progressionComplexityProfiles:INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,
+    focusPhase:volumeReady?'QUALITY_UP_1000':'VOLUME_UP',
+    qualityTarget:INTERNAL_ASSET_AUDIT_MAX,
+    volumeReady,
+    volumeBlockingDomains:Object.freeze(volumeBlockingDomains),
+    uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
+    audioRoleContractCount:audioRoles.length,
+    actualVerifiedAudioAssetCount,
+    audioRoleVolumeSeparateFromVerifiedFileCount:true,
     volumeBeforeQuality:true,
+    qualityUpStartsOnlyAfterRecommendedVolume:true,
     overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
     overSoftLimitBlocksUse:false,
     automaticDeletion:false,

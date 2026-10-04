@@ -1,5 +1,5 @@
 {
-  "version": 72,
+  "version": 73,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -54510,7 +54510,7 @@
       {
         "domain": "AUDIO",
         "packId": null,
-        "currentCount": 0,
+        "currentCount": 65,
         "requiredComponentCount": 23,
         "priorityGaps": [
           "UI_CONFIRM",
@@ -55517,7 +55517,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -55545,56 +55545,192 @@
     "actualAudioAssetClaimRequiresVerifiedAudioFile": true,
     "domainPlan": [
       {
-        "domain": "AUDIO",
-        "currentCount": 0,
-        "minimum": 23,
-        "targetMin": 48,
-        "targetMax": 120,
-        "softReviewAt": 180,
+        "domain": "SKILL",
+        "currentCount": 20,
+        "minimum": 20,
+        "targetMin": 180,
+        "targetMax": 288,
+        "baseTargetMin": 40,
+        "referenceTargetMin": 180,
+        "referenceProfileIds": [
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 432,
         "hardMaximum": null,
-        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
       },
       {
         "domain": "CREATURE",
         "currentCount": 24,
         "minimum": 28,
-        "targetMin": 64,
-        "targetMax": 160,
-        "softReviewAt": 240,
+        "targetMin": 180,
+        "targetMax": 288,
+        "baseTargetMin": 64,
+        "referenceTargetMin": 180,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 432,
         "hardMaximum": null,
         "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "ENVIRONMENT",
-        "currentCount": 24,
-        "minimum": 40,
-        "targetMin": 64,
-        "targetMax": 140,
-        "softReviewAt": 220,
+        "domain": "MOTION",
+        "currentCount": 61,
+        "minimum": 52,
+        "targetMin": 200,
+        "targetMax": 320,
+        "baseTargetMin": 80,
+        "referenceTargetMin": 200,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH",
+          "GOTY_MOTION_MUSIC_RESPONSIVITY"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 480,
         "hardMaximum": null,
-        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "UI",
+        "currentCount": 204,
+        "minimum": 115,
+        "targetMin": 340,
+        "targetMax": 544,
+        "baseTargetMin": 200,
+        "referenceTargetMin": 340,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 816,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
       },
       {
         "domain": "WORLD_PROP",
         "currentCount": 38,
         "minimum": 32,
-        "targetMin": 64,
-        "targetMax": 160,
-        "softReviewAt": 240,
+        "targetMin": 160,
+        "targetMax": 256,
+        "baseTargetMin": 64,
+        "referenceTargetMin": 160,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 384,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "ENVIRONMENT",
+        "currentCount": 24,
+        "minimum": 40,
+        "targetMin": 140,
+        "targetMax": 224,
+        "baseTargetMin": 64,
+        "referenceTargetMin": 140,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 336,
+        "hardMaximum": null,
+        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "BUILDING",
+        "currentCount": 20,
+        "minimum": 21,
+        "targetMin": 120,
+        "targetMax": 192,
+        "baseTargetMin": 40,
+        "referenceTargetMin": 120,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 288,
+        "hardMaximum": null,
+        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
         "overSoftLimitBlocksUse": false
       },
       {
         "domain": "ITEM",
         "currentCount": 40,
         "minimum": 40,
-        "targetMin": 64,
-        "targetMax": 120,
-        "softReviewAt": 180,
+        "targetMin": 140,
+        "targetMax": 224,
+        "baseTargetMin": 64,
+        "referenceTargetMin": 140,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 336,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
@@ -55603,41 +55739,44 @@
         "domain": "VFX",
         "currentCount": 27,
         "minimum": 22,
-        "targetMin": 48,
-        "targetMax": 120,
-        "softReviewAt": 180,
+        "targetMin": 120,
+        "targetMax": 192,
+        "baseTargetMin": 48,
+        "referenceTargetMin": 120,
+        "referenceProfileIds": [
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 288,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "BUILDING",
-        "currentCount": 20,
-        "minimum": 21,
-        "targetMin": 40,
-        "targetMax": 90,
-        "softReviewAt": 140,
-        "hardMaximum": null,
-        "state": "SYSTEM_DEPTH_VOLUME_REQUIRED",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "SKILL",
-        "currentCount": 20,
-        "minimum": 20,
-        "targetMin": 40,
-        "targetMax": 96,
-        "softReviewAt": 150,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "MOTION",
-        "currentCount": 61,
-        "minimum": 52,
-        "targetMin": 80,
+        "domain": "PRESENTATION",
+        "currentCount": 14,
+        "minimum": 14,
+        "targetMin": 100,
         "targetMax": 160,
+        "baseTargetMin": 24,
+        "referenceTargetMin": 100,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH",
+          "GOTY_MOTION_MUSIC_RESPONSIVITY"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
         "softReviewAt": 240,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
@@ -55647,9 +55786,66 @@
         "domain": "CHARACTER_GEAR",
         "currentCount": 18,
         "minimum": 18,
-        "targetMin": 36,
-        "targetMax": 72,
-        "softReviewAt": 120,
+        "targetMin": 96,
+        "targetMax": 154,
+        "baseTargetMin": 36,
+        "referenceTargetMin": 96,
+        "referenceProfileIds": [
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 231,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "WEAPON",
+        "currentCount": 20,
+        "minimum": 20,
+        "targetMin": 80,
+        "targetMax": 128,
+        "baseTargetMin": 36,
+        "referenceTargetMin": 80,
+        "referenceProfileIds": [
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "MULTI_AXIS_PROGRESSION_GROWTH"
+        ],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
+        "softReviewAt": 192,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "domain": "AUDIO",
+        "currentCount": 65,
+        "minimum": 23,
+        "targetMin": 120,
+        "targetMax": 192,
+        "baseTargetMin": 48,
+        "referenceTargetMin": 120,
+        "referenceProfileIds": [
+          "SURVIVAL_HOUSING_CONQUEST",
+          "MARITIME_TRADE_ECONOMY",
+          "CIVILIZATION_WORLD_EXPRESSION",
+          "RPG_RULES_CRAFTING_SKILL_STORY",
+          "SAMURAI_DYNASTY_WUXIA_STORY",
+          "EXPLORATION_EVENT_WORLD",
+          "MULTI_AXIS_PROGRESSION_GROWTH",
+          "GOTY_MOTION_MUSIC_RESPONSIVITY"
+        ],
+        "measurement": "ROLE_CONTRACT_COUNT_NOT_VERIFIED_AUDIO_FILE_COUNT",
+        "actualVerifiedAudioAssetCount": 0,
+        "roleContractCount": 65,
+        "softReviewAt": 288,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
@@ -55660,18 +55856,13 @@
         "minimum": 18,
         "targetMin": 36,
         "targetMax": 96,
+        "baseTargetMin": 36,
+        "referenceTargetMin": 0,
+        "referenceProfileIds": [],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
         "softReviewAt": 150,
-        "hardMaximum": null,
-        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
-        "overSoftLimitBlocksUse": false
-      },
-      {
-        "domain": "WEAPON",
-        "currentCount": 20,
-        "minimum": 20,
-        "targetMin": 36,
-        "targetMax": 72,
-        "softReviewAt": 120,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
@@ -55682,41 +55873,105 @@
         "minimum": 25,
         "targetMin": 40,
         "targetMax": 80,
+        "baseTargetMin": 40,
+        "referenceTargetMin": 0,
+        "referenceProfileIds": [],
+        "measurement": "CATALOG_IDENTITY_COUNT",
+        "actualVerifiedAudioAssetCount": null,
+        "roleContractCount": null,
         "softReviewAt": 128,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      }
+    ],
+    "uiSubsystemPlan": [
+      {
+        "subsystem": "EXPLORATION_EVENTS",
+        "currentCount": 1,
+        "targetMin": 24,
+        "targetMax": 60,
+        "softReviewAt": 92,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "PRESENTATION",
-        "currentCount": 14,
-        "minimum": 14,
+        "subsystem": "FACTION_STORY_RELATION",
+        "currentCount": 1,
         "targetMin": 24,
         "targetMax": 60,
+        "softReviewAt": 92,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "PROGRESSION_GROWTH",
+        "currentCount": 1,
+        "targetMin": 24,
+        "targetMax": 60,
+        "softReviewAt": 92,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "ECONOMY_TRADE",
+        "currentCount": 3,
+        "targetMin": 20,
+        "targetMax": 48,
+        "softReviewAt": 76,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "PROFESSION_CRAFTING",
+        "currentCount": 3,
+        "targetMin": 20,
+        "targetMax": 48,
+        "softReviewAt": 76,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "SKILL_BUILD_LIBRARY",
+        "currentCount": 8,
+        "targetMin": 24,
+        "targetMax": 64,
         "softReviewAt": 96,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
       },
       {
-        "domain": "UI",
-        "currentCount": 204,
-        "minimum": 115,
-        "targetMin": 200,
-        "targetMax": 360,
-        "softReviewAt": 520,
+        "subsystem": "CONQUEST_DEFENSE",
+        "currentCount": 1,
+        "targetMin": 16,
+        "targetMax": 40,
+        "softReviewAt": 64,
         "hardMaximum": null,
-        "state": "HEALTHY_VOLUME",
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
-      }
-    ],
-    "uiSubsystemPlan": [
+      },
       {
         "subsystem": "FARMING_SETTLEMENT",
         "currentCount": 6,
         "targetMin": 18,
         "targetMax": 44,
         "softReviewAt": 70,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
+        "subsystem": "WORLD_STRATEGY_DIPLOMACY",
+        "currentCount": 12,
+        "targetMin": 24,
+        "targetMax": 56,
+        "softReviewAt": 88,
         "hardMaximum": null,
         "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
         "overSoftLimitBlocksUse": false
@@ -55822,6 +56077,16 @@
         "overSoftLimitBlocksUse": false
       },
       {
+        "subsystem": "FLEET_NAVIGATION",
+        "currentCount": 13,
+        "targetMin": 18,
+        "targetMax": 44,
+        "softReviewAt": 70,
+        "hardMaximum": null,
+        "state": "EXPAND_TOWARD_RECOMMENDED_RANGE",
+        "overSoftLimitBlocksUse": false
+      },
+      {
         "subsystem": "NPC_RELATIONSHIP",
         "currentCount": 19,
         "targetMin": 24,
@@ -55872,6 +56137,301 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 72
+    "lastCatalogSynchronizedVersion": 73,
+    "focusPhase": "VOLUME_UP",
+    "qualityTarget": 1000,
+    "volumeReady": false,
+    "volumeBlockingDomains": [
+      {
+        "domain": "SKILL",
+        "currentCount": 20,
+        "targetMin": 180,
+        "missingDepthRoles": []
+      },
+      {
+        "domain": "CREATURE",
+        "currentCount": 24,
+        "targetMin": 180,
+        "missingDepthRoles": [
+          "AMORPHOUS",
+          "TORSO_VARIANT",
+          "SURFACE_VARIANT",
+          "BOSS_SIGNATURE",
+          "RIG_PROFILE",
+          "LOCOMOTION_SET",
+          "ATTACK_SET",
+          "HIT_DEATH_SET",
+          "HABITAT_COMPOSITION",
+          "LOD"
+        ]
+      },
+      {
+        "domain": "MOTION",
+        "currentCount": 61,
+        "targetMin": 200,
+        "missingDepthRoles": [
+          "IDLE"
+        ]
+      },
+      {
+        "domain": "UI",
+        "currentCount": 204,
+        "targetMin": 340,
+        "missingDepthRoles": []
+      },
+      {
+        "domain": "WORLD_PROP",
+        "currentCount": 38,
+        "targetMin": 160,
+        "missingDepthRoles": [
+          "DESTRUCTIBLE",
+          "INTERACTION_ROLE",
+          "INTERACTION_STATE",
+          "COLLISION_PROXY",
+          "LOD"
+        ]
+      },
+      {
+        "domain": "ENVIRONMENT",
+        "currentCount": 24,
+        "targetMin": 140,
+        "missingDepthRoles": [
+          "WEATHER",
+          "STREAMING_LOD",
+          "INTERIOR_EXTERIOR_TRANSITION"
+        ]
+      },
+      {
+        "domain": "BUILDING",
+        "currentCount": 20,
+        "targetMin": 120,
+        "missingDepthRoles": [
+          "INTERIOR_KIT",
+          "SIGNAGE",
+          "PROP_SOCKET",
+          "DAMAGE_STATE",
+          "DESTRUCTION_VARIANT",
+          "COLLISION_NAV_PROXY",
+          "MATERIAL_VARIANT",
+          "LOD"
+        ]
+      },
+      {
+        "domain": "ITEM",
+        "currentCount": 40,
+        "targetMin": 140,
+        "missingDepthRoles": []
+      },
+      {
+        "domain": "VFX",
+        "currentCount": 27,
+        "targetMin": 120,
+        "missingDepthRoles": []
+      },
+      {
+        "domain": "PRESENTATION",
+        "currentCount": 14,
+        "targetMin": 100,
+        "missingDepthRoles": [
+          "INPUT_SKIP_HINT",
+          "ACCESSIBILITY_REDUCED_MOTION",
+          "FAILURE_RECOVERY_STATE"
+        ]
+      },
+      {
+        "domain": "CHARACTER_GEAR",
+        "currentCount": 18,
+        "targetMin": 96,
+        "missingDepthRoles": []
+      },
+      {
+        "domain": "WEAPON",
+        "currentCount": 20,
+        "targetMin": 80,
+        "missingDepthRoles": [
+          "UPGRADE_STAGE_VISUAL",
+          "DAMAGE_WEAR_VARIANT",
+          "RARITY_ORNAMENT_VARIANT"
+        ]
+      },
+      {
+        "domain": "AUDIO",
+        "currentCount": 65,
+        "targetMin": 120,
+        "missingDepthRoles": [
+          "UI_CONFIRM",
+          "UI_CANCEL",
+          "UI_ERROR",
+          "UI_REWARD",
+          "FOOTSTEP",
+          "WEAPON_SWING",
+          "WEAPON_HIT",
+          "BLOCK_PARRY",
+          "CREATURE_VOCAL",
+          "SKILL_CAST",
+          "SKILL_IMPACT",
+          "ITEM_PICKUP",
+          "LOOT_RARITY",
+          "CRAFT",
+          "UPGRADE",
+          "ENVIRONMENT_LOOP",
+          "WEATHER",
+          "BUILDING",
+          "BOSS",
+          "DIALOGUE_UI",
+          "MUSIC_TRANSITION",
+          "VARIATION_SET",
+          "MOBILE_BUDGET_VARIANT"
+        ]
+      },
+      {
+        "domain": "FOLIAGE",
+        "currentCount": 18,
+        "targetMin": 36,
+        "missingDepthRoles": []
+      },
+      {
+        "domain": "MATERIAL",
+        "currentCount": 25,
+        "targetMin": 40,
+        "missingDepthRoles": []
+      }
+    ],
+    "uiBlockingSubsystems": [
+      {
+        "subsystem": "EXPLORATION_EVENTS",
+        "currentCount": 1,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "FACTION_STORY_RELATION",
+        "currentCount": 1,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "PROGRESSION_GROWTH",
+        "currentCount": 1,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "ECONOMY_TRADE",
+        "currentCount": 3,
+        "targetMin": 20
+      },
+      {
+        "subsystem": "PROFESSION_CRAFTING",
+        "currentCount": 3,
+        "targetMin": 20
+      },
+      {
+        "subsystem": "SKILL_BUILD_LIBRARY",
+        "currentCount": 8,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "CONQUEST_DEFENSE",
+        "currentCount": 1,
+        "targetMin": 16
+      },
+      {
+        "subsystem": "FARMING_SETTLEMENT",
+        "currentCount": 6,
+        "targetMin": 18
+      },
+      {
+        "subsystem": "WORLD_STRATEGY_DIPLOMACY",
+        "currentCount": 12,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "currentCount": 4,
+        "targetMin": 14
+      },
+      {
+        "subsystem": "EQUIPMENT_LOADOUT",
+        "currentCount": 9,
+        "targetMin": 18
+      },
+      {
+        "subsystem": "HOUSING_SANDBOX",
+        "currentCount": 15,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "LOADING_ERROR_STATE",
+        "currentCount": 7,
+        "targetMin": 16
+      },
+      {
+        "subsystem": "SHOP_TRADE",
+        "currentCount": 6,
+        "targetMin": 14
+      },
+      {
+        "subsystem": "CRAFTING_UPGRADE",
+        "currentCount": 11,
+        "targetMin": 18
+      },
+      {
+        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
+        "currentCount": 25,
+        "targetMin": 32
+      },
+      {
+        "subsystem": "PARTY_COMPANION",
+        "currentCount": 17,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "QUEST_CODEX",
+        "currentCount": 9,
+        "targetMin": 16
+      },
+      {
+        "subsystem": "MENU_NAVIGATION",
+        "currentCount": 24,
+        "targetMin": 30
+      },
+      {
+        "subsystem": "FLEET_NAVIGATION",
+        "currentCount": 13,
+        "targetMin": 18
+      },
+      {
+        "subsystem": "NPC_RELATIONSHIP",
+        "currentCount": 19,
+        "targetMin": 24
+      },
+      {
+        "subsystem": "COMBAT_HUD",
+        "currentCount": 14,
+        "targetMin": 18
+      },
+      {
+        "subsystem": "MOUNT_TRAVEL",
+        "currentCount": 16,
+        "targetMin": 18
+      }
+    ],
+    "referenceBreadthProfiles": [
+      "SURVIVAL_HOUSING_CONQUEST",
+      "MARITIME_TRADE_ECONOMY",
+      "CIVILIZATION_WORLD_EXPRESSION",
+      "RPG_RULES_CRAFTING_SKILL_STORY",
+      "SAMURAI_DYNASTY_WUXIA_STORY",
+      "EXPLORATION_EVENT_WORLD",
+      "MULTI_AXIS_PROGRESSION_GROWTH",
+      "GOTY_MOTION_MUSIC_RESPONSIVITY"
+    ],
+    "progressionComplexityProfiles": [
+      "VERY_SIMPLE",
+      "SURVIVAL_SIMPLE",
+      "DEEP_RPG"
+    ],
+    "audioRoleContractCount": 65,
+    "actualVerifiedAudioAssetCount": 0,
+    "audioRoleVolumeSeparateFromVerifiedFileCount": true,
+    "qualityUpStartsOnlyAfterRecommendedVolume": true
   }
 }

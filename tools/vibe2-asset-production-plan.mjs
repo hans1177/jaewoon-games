@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 
@@ -436,6 +436,29 @@ function catalogFingerprint(catalogs=[]){
   })))).digest('hex');
 }
 
+function collectCommonCatalogAudioRoles(catalogRows=[]){
+  const roles=new Set();
+  const add=value=>{
+    if(Array.isArray(value)){for(const item of value)add(item);return;}
+    if(typeof value==='string'&&clean(value))roles.add(clean(value).toUpperCase());
+  };
+  const walk=value=>{
+    if(Array.isArray(value)){for(const item of value)walk(item);return;}
+    if(!value||typeof value!=='object')return;
+    for(const [key,child] of Object.entries(value)){
+      if(/(?:audio|sound).*role|role.*(?:audio|sound)/i.test(key))add(child);
+      if(child&&typeof child==='object')walk(child);
+    }
+  };
+  for(const row of catalogRows||[]){
+    const catalog=row?.catalog||row||{};
+    for(const group of Object.values(catalog?.ambientSoundscapeContract?.sourceGroups||{}))add(group);
+    for(const group of Object.values(catalog?.ambientSoundscapeContract?.biomeSoundscapes||{}))add(group);
+    walk(catalog);
+  }
+  return [...roles].sort();
+}
+
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
@@ -451,10 +474,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const seeds=companySeedRows(repoRoot);
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
   const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
+  const audioRoleIds=collectCommonCatalogAudioRoles(catalogs);
   const libraryPlan=buildInternalAssetLibraryAutomationPlan({
     assets:next.assets,
     seedPlan,
-    uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId)
+    uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
+    audioRoleIds
   });
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
@@ -502,30 +527,43 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       return{
         ...prior,
         domain:row.domain,
-        currentCount:row.domain==='AUDIO'?Number(prior.currentCount||0):Number(volume.currentCount||row.candidateCount||0),
+        currentCount:Number(volume.currentCount||row.candidateCount||0),
         requiredComponentCount:row.requiredCount,
-        priorityGaps:[...row.missing],
-        state:row.missing.length?'GAP_FILL_REQUIRED':'BASE_COVERAGE_COMPLETE'
+        priorityGaps:row.domain==='AUDIO'?[...(volume.missingDepthRoles||[])]:[...row.missing],
+        state:(row.domain==='AUDIO'?(volume.missingDepthRoles||[]):row.missing).length?'GAP_FILL_REQUIRED':'BASE_COVERAGE_COMPLETE'
       };
     })
   };
 
   next.internalAssetLibraryAutomation={
     ...(next.internalAssetLibraryAutomation||{}),
-    version:1,
+    version:2,
     contract:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT',
     catalogDiscovery:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.catalogDiscovery,
     countPolicy:libraryPlan.countPolicy,
     hardMaximum:null,
     overSoftLimitAction:libraryPlan.overSoftLimitAction,
     overSoftLimitBlocksUse:false,
+    focusPhase:libraryPlan.focusPhase,
+    qualityTarget:libraryPlan.qualityTarget,
+    volumeReady:libraryPlan.volumeReady,
+    volumeBlockingDomains:libraryPlan.volumeBlockingDomains,
+    uiBlockingSubsystems:libraryPlan.uiBlockingSubsystems,
+    referenceBreadthProfiles:Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES),
+    progressionComplexityProfiles:Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES),
+    audioRoleContractCount:libraryPlan.audioRoleContractCount,
+    actualVerifiedAudioAssetCount:libraryPlan.actualVerifiedAudioAssetCount,
+    audioRoleVolumeSeparateFromVerifiedFileCount:true,
     volumeBeforeQuality:true,
+    qualityUpStartsOnlyAfterRecommendedVolume:true,
     autoRegistrySync:true,
     autoDelete:false,
     productionPromotionAutomatic:false,
     runtimeVerificationRequired:true,
     domainPlan:libraryPlan.domains.map(row=>({
       domain:row.domain,currentCount:row.currentCount,minimum:row.minimum,targetMin:row.targetMin,targetMax:row.targetMax,
+      baseTargetMin:row.baseTargetMin,referenceTargetMin:row.referenceTargetMin,referenceProfileIds:row.referenceProfileIds,
+      measurement:row.measurement,actualVerifiedAudioAssetCount:row.actualVerifiedAudioAssetCount,roleContractCount:row.roleContractCount,
       softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,overSoftLimitBlocksUse:false
     })),
     uiSubsystemPlan:libraryPlan.uiSubsystems.map(row=>({
@@ -1635,6 +1673,8 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
+  const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
+  const internalLibraryEvolution=freeze({phase:clean(libraryAutomation.focusPhase)||'VOLUME_UP',volumeReady:libraryAutomation.volumeReady===true,qualityTarget:Number(libraryAutomation.qualityTarget||1000),volumeBlockingDomains:freezeList((libraryAutomation.volumeBlockingDomains||[]).map(row=>row?.domain).filter(Boolean)),uiBlockingSubsystems:freezeList((libraryAutomation.uiBlockingSubsystems||[]).map(row=>row?.subsystem).filter(Boolean)),referenceBreadthProfiles:freezeList(libraryAutomation.referenceBreadthProfiles||[]),progressionComplexityProfiles:freezeList(libraryAutomation.progressionComplexityProfiles||[]),audioRoleContractCount:Number(libraryAutomation.audioRoleContractCount||0),actualVerifiedAudioAssetCount:Number(libraryAutomation.actualVerifiedAudioAssetCount||0),audioRoleVolumeSeparateFromVerifiedFileCount:libraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount===true,existingAssetDevelopmentLaneOnly:true,newWorkflow:false,newScheduler:false,newQueue:false,newPipeline:false});
   const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
   const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
@@ -2069,6 +2109,7 @@ export function buildVibeAssetProductionPlan({
     presetId:clean(selector.prototypePreset?.id)||null,
     productionProfile:selector.production||null,
     commercialDistillation,
+    internalLibraryEvolution,
     flowAssetRequirements,
     flowAssetLoadout:freeze({
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
@@ -2556,6 +2597,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 기존 GRAPHICS_PRODUCTION/asset-development 책임 경로에서 부족 도메인과 UI 서브시스템을 먼저 확장하고, QUALITY_UP_1000에서는 기존 자산의 최약 축을 보강해 내부 감사 1000점을 목표로 한다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',

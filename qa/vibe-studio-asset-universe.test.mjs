@@ -28,6 +28,9 @@ import {
   COMMON_UI_SUBSYSTEM_IDEA_POOLS,
   COMMON_LIBRARY_AUTOMATED_IDEA_POOLS,
   INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,
+  INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,
+  INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,
+  selectInternalProgressionComplexityProfile,
   buildInternalAssetLibraryAutomationPlan,
   createCompanySeedAssetIdeationPlan,
   COMMON_PRESENTATION_EXPECTATIONS,
@@ -3531,6 +3534,10 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(plan.automaticDeletion,false);
   assert.equal(plan.productionPromotionAutomatic,false);
   assert.equal(plan.runtimeVerificationRequired,true);
+  assert.equal(plan.qualityTarget,1000);
+  assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,true);
+  assert.equal(plan.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.ok(['VOLUME_UP','QUALITY_UP_1000'].includes(plan.focusPhase));
 
   for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
     const row=plan.domains.find(item=>item.domain===domain);
@@ -3560,6 +3567,28 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.HOUSING_SANDBOX.includes('STRUCTURAL_SUPPORT_OVERLAY'));
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.ENVIRONMENT.includes('COSMIC_ANOMALY_HORIZON'));
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
+});
+
+test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,2);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
+
+  assert.deepEqual(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES),['VERY_SIMPLE','SURVIVAL_SIMPLE','DEEP_RPG']);
+  assert.equal(selectInternalProgressionComplexityProfile({requested:'VERY_SIMPLE'}).id,'VERY_SIMPLE');
+  assert.equal(selectInternalProgressionComplexityProfile({signals:['survival','crafting','perk']}).id,'SURVIVAL_SIMPLE');
+  assert.equal(selectInternalProgressionComplexityProfile({signals:['rpg','d20','class','companion']}).id,'DEEP_RPG');
+
+  for(const id of ['SURVIVAL_HOUSING_CONQUEST','MARITIME_TRADE_ECONOMY','CIVILIZATION_WORLD_EXPRESSION','RPG_RULES_CRAFTING_SKILL_STORY','SAMURAI_DYNASTY_WUXIA_STORY','EXPLORATION_EVENT_WORLD','MULTI_AXIS_PROGRESSION_GROWTH','GOTY_MOTION_MUSIC_RESPONSIVITY']){
+    assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES[id],id);
+    assert.equal(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES[id].protectedExpressionCopyForbidden,true,id);
+  }
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.SURVIVAL_HOUSING_CONQUEST.creatureEcology.speciesTarget>=60);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.MARITIME_TRADE_ECONOMY.tradeItemCategoryTarget>=18);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.RPG_RULES_CRAFTING_SKILL_STORY.skillLibrary.skillPresentationTarget>=180);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.SAMURAI_DYNASTY_WUXIA_STORY.wuxiaSystems.skillCategories.length>=18);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.EXPLORATION_EVENT_WORLD.eventFamilies.length>=24);
+  assert.equal(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.GOTY_MOTION_MUSIC_RESPONSIVITY.domainTargetMin.MOTION,200);
 });
 
 test('catalog-driven company asset registry synchronization is persistent only when requested and idempotent',()=>{
