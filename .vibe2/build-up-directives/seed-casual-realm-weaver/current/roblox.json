@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g8-e9f97bdd86d3",
-  "directiveFingerprint": "e9f97bdd86d34b964e7f4c24b3ee9c20dcbfa582f9a4f56912890acb0a39d833",
-  "previousDirectiveFingerprint": "d7591f31a971ed257cf4c2053a7974fe4082e12710cd77179e9b911e36074f06",
-  "forbiddenRepeatFingerprint": "d7591f31a971ed257cf4c2053a7974fe4082e12710cd77179e9b911e36074f06",
+  "directiveId": "seed-casual-realm-weaver-build-up-g9-3814cf0a1909",
+  "directiveFingerprint": "3814cf0a19093cf18be32ebd90dd148d1cc688ca025261530c4d9247681902e7",
+  "previousDirectiveFingerprint": "e9f97bdd86d34b964e7f4c24b3ee9c20dcbfa582f9a4f56912890acb0a39d833",
+  "forbiddenRepeatFingerprint": "e9f97bdd86d34b964e7f4c24b3ee9c20dcbfa582f9a4f56912890acb0a39d833",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "080af59e47449a2b61ebdf7b64fa7c89e5e1bcdf3c6519d3425055646d3bd17c",
+  "sourceTreeFingerprint": "7d4f1fd9b0f31c5932110928d4228cbbb6f119d6827b7f582299111000780dce",
   "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
@@ -267,9 +267,9 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "a0a9b840b972c1a57b257ef342df87260d3cc699f301d72151f58e946780a9e3",
-    "currentSourceTreeFingerprint": "080af59e47449a2b61ebdf7b64fa7c89e5e1bcdf3c6519d3425055646d3bd17c",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "080af59e47449a2b61ebdf7b64fa7c89e5e1bcdf3c6519d3425055646d3bd17c",
+    "currentSourceTreeFingerprint": "7d4f1fd9b0f31c5932110928d4228cbbb6f119d6827b7f582299111000780dce",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1473,8 +1473,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1484,7 +1484,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1494,6 +1494,7 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1528,7 +1529,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2275,7 +2276,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "080af59e47449a2b61ebdf7b64fa7c89e5e1bcdf3c6519d3425055646d3bd17c",
+      "sourceTreeFingerprint": "7d4f1fd9b0f31c5932110928d4228cbbb6f119d6827b7f582299111000780dce",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2322,7 +2323,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2396,5 +2397,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:48:37.152Z"
+  "generatedAt": "2026-10-04T15:56:40.806Z"
 }

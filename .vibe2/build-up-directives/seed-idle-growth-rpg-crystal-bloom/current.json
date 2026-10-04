@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g8-e75837728985",
-  "directiveFingerprint": "e75837728985e5183ca2cdd2836eeee946614ed68594079bc14e1a0e8be3d7e9",
-  "previousDirectiveFingerprint": "6a160e97de1275299c0d15b232880a6d9fa630b1971aee04c18ecf89701a10eb",
-  "forbiddenRepeatFingerprint": "6a160e97de1275299c0d15b232880a6d9fa630b1971aee04c18ecf89701a10eb",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g9-e67abc597eac",
+  "directiveFingerprint": "e67abc597eac21fcc3f22f5d92dea30c7a9854c1d9ab6459bdeaab3af683999d",
+  "previousDirectiveFingerprint": "e75837728985e5183ca2cdd2836eeee946614ed68594079bc14e1a0e8be3d7e9",
+  "forbiddenRepeatFingerprint": "e75837728985e5183ca2cdd2836eeee946614ed68594079bc14e1a0e8be3d7e9",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
+  "sourceTreeFingerprint": "a62f8a9de8f05ca29cc65210694a1913ea894688c428d9c28f7aba3ea459137a",
   "designFingerprint": "ef35a29bbdc82e258294cf850dba5b5e5b90ae0c4b91c74ed85f48a7f1a8a708",
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
@@ -258,9 +258,9 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "1051a9bbed6f93666f74a3d298bef24c8daf63a9b53fc1e3ef6e60b1187ec328",
-    "currentSourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
+    "currentSourceTreeFingerprint": "a62f8a9de8f05ca29cc65210694a1913ea894688c428d9c28f7aba3ea459137a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1467,9 +1467,9 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1479,7 +1479,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 0
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1490,7 +1490,8 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1501,7 +1502,7 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 1,
+      "distinctCovered": 2,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
@@ -1509,30 +1510,18 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 84,
-        "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
-        ]
-      },
       {
         "theme": "PRESENTATION_WORLD_COHESION",
         "score": 68,
@@ -1541,6 +1530,16 @@
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
+        ]
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 66,
+        "gapDomains": [
+          "INVENTORY",
+          "INVENTORY_USABILITY",
+          "EQUIPMENT_LOADOUT",
+          "SYSTEM_CONNECTION"
         ]
       },
       {
@@ -1574,13 +1573,13 @@
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -2273,7 +2272,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
+      "sourceTreeFingerprint": "a62f8a9de8f05ca29cc65210694a1913ea894688c428d9c28f7aba3ea459137a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2320,7 +2319,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2393,5 +2392,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:48:37.176Z"
+  "generatedAt": "2026-10-04T15:56:40.834Z"
 }
