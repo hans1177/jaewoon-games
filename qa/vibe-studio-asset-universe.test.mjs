@@ -2997,7 +2997,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,56);
+  assert.equal(registry.version,57);
   assert.equal(audit.status,'STARTED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3099,7 +3099,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,56);
+  assert.equal(registry.version,57);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3233,4 +3233,71 @@ test('all common asset catalogs bind the machine-readable internal asset standar
     assert.equal(catalog.internalAssetStandard.deploymentExcluded,true,relative);
     assert.equal(catalog.internalAssetStandard.companyLibrary,'company-asset-library.json',relative);
   }
+});
+
+
+test('all internal assets may be composed from every existing flow stage without giving assets flow authority',()=>{
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.stageSpecificCombinationAllowed,true);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.crossFamilyCompositionAllowed,true);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.flowOwnership,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.flowMutationAllowed,false);
+
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.stageSpecificCombinationAllowed,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.crossFamilyCompositionAllowed,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.compositionDoesNotGrantGameplaySaveNetworkOrFlowAuthority,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.hardBlockersStillApply,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.newFlowOrPipelineCreated,false);
+
+  const asset={
+    id:'stage-composable-prop',
+    family:'PROP',
+    subfamily:'INTERACTIVE',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    license:'project-original',
+    sourceFiles:['assets/example.luau'],
+    tags:['INTERACTIVE']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'PROP',subfamily:'INTERACTIVE',required:true}],
+    assets:[asset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.complete,true);
+  assert.equal(loadout.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(loadout.allSelectedAssetsComposableAcrossExistingFlowStages,true);
+  assert.equal(loadout.stageSpecificCombinationAllowed,true);
+  assert.equal(loadout.crossFamilyCompositionAllowed,true);
+  assert.equal(loadout.flowOwnership,false);
+  assert.equal(loadout.flowMutationAllowed,false);
+  assert.equal(loadout.selections[0].consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(loadout.selections[0].composableAcrossExistingFlowStages,true);
+  assert.equal(loadout.selections[0].stageSpecificCombinationAllowed,true);
+  assert.equal(loadout.selections[0].flowOwnership,false);
+});
+
+test('company asset library exposes all-stage composition as an asset contract only',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const contract=registry.internalAssetCompositionContract;
+  assert.equal(registry.version,57);
+  assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
+  assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(contract.stageSpecificCombinationAllowed,true);
+  assert.equal(contract.crossFamilyCompositionAllowed,true);
+  assert.equal(contract.modifiesFlow,false);
+  assert.equal(contract.modifiesWorkflow,false);
+  assert.equal(contract.modifiesQueue,false);
+  assert.equal(contract.modifiesScheduler,false);
+  assert.equal(contract.modifiesDeployment,false);
+  assert.equal(contract.createsPipeline,false);
+  assert.equal(contract.createsWrapper,false);
+  assert.equal(contract.createsShadowSystem,false);
+  assert.equal(registry.internalAssetStandard.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(registry.internalAssetRoutineReview.allInternalAssetsComposableAcrossExistingStages,true);
 });
