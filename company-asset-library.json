@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 67,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -9513,9 +9513,9 @@
         "assets/roblox/common-foliage-v1/quality-evidence.json"
       ],
       "id": "roblox-common-foliage-v1",
-      "title": "Roblox 회사 공용 초목/자연 환경 8종 v1",
+      "title": "Roblox 회사 공용 초목/자연 환경 18종 v3",
       "subfamily": "FOLIAGE_PACK",
-      "itemCount": 8,
+      "itemCount": 18,
       "sameAssetDnaAcrossWorldAndUi": true,
       "tags": [
         "COMPANY_COMMON_BASE",
@@ -9523,24 +9523,18 @@
         "PALETTE_ADAPTABLE",
         "ENVIRONMENT",
         "FOLIAGE",
-        "CURRENT_GAME_NEEDS"
+        "CURRENT_GAME_NEEDS",
+        "CROSS_GENRE_VOLUME_UP",
+        "BIOME_SEASON_WIND_LOD_VARIANTS"
       ],
       "systemDepthAudit": {
         "domain": "FOLIAGE",
-        "currentCount": 8,
+        "currentCount": 18,
         "requiredComponentCount": 18,
-        "priorityGaps": [
-          "BROADLEAF_TREE",
-          "VINE",
-          "REED",
-          "MOSS",
-          "MUSHROOM",
-          "ROOT",
-          "SEASON_VARIANT",
-          "WIND_VARIANT"
-        ],
-        "state": "GAP_FILL_REQUIRED"
-      }
+        "priorityGaps": [],
+        "state": "BASE_COVERAGE_COMPLETE"
+      },
+      "seedCompositionContractRef": "assets/roblox/common-foliage-v1/catalog.json#seedCompositionContract"
     },
     {
       "category": "ENVIRONMENT",
@@ -9603,10 +9597,12 @@
         "subfamily": "GRASS",
         "environmentRole": "GROUND_COVER",
         "familyRootId": "FOLIAGE_GRASS",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -9669,10 +9665,12 @@
         "subfamily": "BUSH",
         "environmentRole": "MIDGROUND_FOLIAGE",
         "familyRootId": "FOLIAGE_BUSH",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -9735,10 +9733,12 @@
         "subfamily": "FERN",
         "environmentRole": "UNDERSTORY",
         "familyRootId": "FOLIAGE_FERN",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -9801,10 +9801,12 @@
         "subfamily": "FLOWER",
         "environmentRole": "GROUND_ACCENT",
         "familyRootId": "FOLIAGE_FLOWER",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -9867,10 +9869,12 @@
         "subfamily": "STUMP",
         "environmentRole": "NATURAL_PROP",
         "familyRootId": "FOLIAGE_STUMP",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -9924,8 +9928,7 @@
         "ENVIRONMENT",
         "FOLIAGE",
         "FALLEN_LOG",
-        "NATURAL_PROP",
-        "FALLEN_LOG"
+        "NATURAL_PROP"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -9933,10 +9936,12 @@
         "subfamily": "FALLEN_LOG",
         "environmentRole": "NATURAL_PROP",
         "familyRootId": "FOLIAGE_FALLEN_LOG",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -9990,8 +9995,7 @@
         "ENVIRONMENT",
         "FOLIAGE",
         "PINE_TREE",
-        "CANOPY_TREE",
-        "PINE_TREE"
+        "CANOPY_TREE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -9999,10 +10003,12 @@
         "subfamily": "PINE_TREE",
         "environmentRole": "CANOPY_TREE",
         "familyRootId": "FOLIAGE_PINE_TREE",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "ENVIRONMENT",
@@ -10056,8 +10062,7 @@
         "ENVIRONMENT",
         "FOLIAGE",
         "DEAD_TREE",
-        "SILHOUETTE_TREE",
-        "DEAD_TREE"
+        "SILHOUETTE_TREE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -10065,10 +10070,12 @@
         "subfamily": "DEAD_TREE",
         "environmentRole": "SILHOUETTE_TREE",
         "familyRootId": "FOLIAGE_DEAD_TREE",
+        "systemRoles": [],
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
-      }
+      },
+      "systemRoles": []
     },
     {
       "category": "BUILDING",
@@ -39585,6 +39592,724 @@
         "DAMAGE_WEAR_VARIANT",
         "TRANSMOG_BASE"
       ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-broadleaf-tree",
+      "title": "활엽수",
+      "subfamily": "BROADLEAF_TREE",
+      "assetId": "BROADLEAF_TREE",
+      "environmentRole": "CANOPY_TREE",
+      "familyRootId": "FOLIAGE_BROADLEAF",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "BROADLEAF_TREE",
+        "CANOPY_TREE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "BROADLEAF_TREE",
+        "environmentRole": "CANOPY_TREE",
+        "familyRootId": "FOLIAGE_BROADLEAF",
+        "systemRoles": [
+          "BROADLEAF_TREE"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "BROADLEAF_TREE"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-vine-cluster",
+      "title": "덩굴 군락",
+      "subfamily": "VINE",
+      "assetId": "VINE_CLUSTER",
+      "environmentRole": "CLIMBING_FOLIAGE",
+      "familyRootId": "FOLIAGE_VINE",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "VINE",
+        "CLIMBING_FOLIAGE",
+        "VINE_CLUSTER"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "VINE",
+        "environmentRole": "CLIMBING_FOLIAGE",
+        "familyRootId": "FOLIAGE_VINE",
+        "systemRoles": [
+          "VINE"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "VINE"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-reed-patch",
+      "title": "갈대 군락",
+      "subfamily": "REED",
+      "assetId": "REED_PATCH",
+      "environmentRole": "WETLAND_EDGE",
+      "familyRootId": "FOLIAGE_REED",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "REED",
+        "WETLAND_EDGE",
+        "REED_PATCH"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "REED",
+        "environmentRole": "WETLAND_EDGE",
+        "familyRootId": "FOLIAGE_REED",
+        "systemRoles": [
+          "REED"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "REED"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-moss-patch",
+      "title": "이끼 군락",
+      "subfamily": "MOSS",
+      "assetId": "MOSS_PATCH",
+      "environmentRole": "GROUND_SURFACE",
+      "familyRootId": "FOLIAGE_MOSS",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "MOSS",
+        "GROUND_SURFACE",
+        "MOSS_PATCH"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "MOSS",
+        "environmentRole": "GROUND_SURFACE",
+        "familyRootId": "FOLIAGE_MOSS",
+        "systemRoles": [
+          "MOSS"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "MOSS"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-mushroom-cluster",
+      "title": "버섯 군락",
+      "subfamily": "MUSHROOM",
+      "assetId": "MUSHROOM_CLUSTER",
+      "environmentRole": "FOREST_FLOOR",
+      "familyRootId": "FOLIAGE_MUSHROOM",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "MUSHROOM",
+        "FOREST_FLOOR",
+        "MUSHROOM_CLUSTER"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "MUSHROOM",
+        "environmentRole": "FOREST_FLOOR",
+        "familyRootId": "FOLIAGE_MUSHROOM",
+        "systemRoles": [
+          "MUSHROOM"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "MUSHROOM"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-root-cluster",
+      "title": "노출 뿌리 군락",
+      "subfamily": "ROOT",
+      "assetId": "ROOT_CLUSTER",
+      "environmentRole": "ROOT_STRUCTURE",
+      "familyRootId": "FOLIAGE_ROOT",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "ROOT",
+        "ROOT_STRUCTURE",
+        "ROOT_CLUSTER"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "ROOT",
+        "environmentRole": "ROOT_STRUCTURE",
+        "familyRootId": "FOLIAGE_ROOT",
+        "systemRoles": [
+          "ROOT"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "ROOT"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-autumn-tree-variant",
+      "title": "가을 활엽수 변형",
+      "subfamily": "SEASON_VARIANT",
+      "assetId": "AUTUMN_TREE_VARIANT",
+      "environmentRole": "SEASON_VARIANT",
+      "familyRootId": "FOLIAGE_SEASON_TREE",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "SEASON_VARIANT",
+        "AUTUMN_TREE_VARIANT",
+        "BIOME_VARIANT"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "SEASON_VARIANT",
+        "environmentRole": "SEASON_VARIANT",
+        "familyRootId": "FOLIAGE_SEASON_TREE",
+        "systemRoles": [
+          "SEASON_VARIANT",
+          "BIOME_VARIANT"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "SEASON_VARIANT",
+        "BIOME_VARIANT"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-wind-bent-tree",
+      "title": "바람에 휜 나무",
+      "subfamily": "WIND_VARIANT",
+      "assetId": "WIND_BENT_TREE",
+      "environmentRole": "WIND_VARIANT",
+      "familyRootId": "FOLIAGE_WIND_TREE",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "WIND_VARIANT",
+        "WIND_BENT_TREE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "WIND_VARIANT",
+        "environmentRole": "WIND_VARIANT",
+        "familyRootId": "FOLIAGE_WIND_TREE",
+        "systemRoles": [
+          "WIND_VARIANT"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "WIND_VARIANT"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-biome-shrub-variant",
+      "title": "바이옴 관목 변형",
+      "subfamily": "BIOME_VARIANT",
+      "assetId": "BIOME_SHRUB_VARIANT",
+      "environmentRole": "BIOME_VARIANT",
+      "familyRootId": "FOLIAGE_BIOME_SHRUB",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "BIOME_VARIANT",
+        "BIOME_SHRUB_VARIANT"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "BIOME_VARIANT",
+        "environmentRole": "BIOME_VARIANT",
+        "familyRootId": "FOLIAGE_BIOME_SHRUB",
+        "systemRoles": [
+          "BIOME_VARIANT"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "BIOME_VARIANT"
+      ]
+    },
+    {
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "cozy-island",
+        "island-village"
+      ],
+      "packId": "roblox-common-foliage-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+      "previewPath": "/assets/roblox/common-foliage-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-foliage-lod-foliage-proxy",
+      "title": "원거리 식생 프록시",
+      "subfamily": "LOD",
+      "assetId": "LOD_FOLIAGE_PROXY",
+      "environmentRole": "LOD",
+      "familyRootId": "FOLIAGE_LOD",
+      "sameAssetDnaAcrossWorldAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "ENVIRONMENT",
+        "FOLIAGE",
+        "LOD",
+        "LOD_FOLIAGE_PROXY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "ENVIRONMENT",
+        "subfamily": "LOD",
+        "environmentRole": "LOD",
+        "familyRootId": "FOLIAGE_LOD",
+        "systemRoles": [
+          "LOD"
+        ],
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority": true
+      },
+      "systemRoles": [
+        "LOD"
+      ]
     }
   ],
   "research": [
@@ -43940,19 +44665,10 @@
       {
         "domain": "FOLIAGE",
         "packId": "roblox-common-foliage-v1",
-        "currentCount": 8,
+        "currentCount": 18,
         "requiredComponentCount": 18,
-        "priorityGaps": [
-          "BROADLEAF_TREE",
-          "VINE",
-          "REED",
-          "MOSS",
-          "MUSHROOM",
-          "ROOT",
-          "SEASON_VARIANT",
-          "WIND_VARIANT"
-        ],
-        "state": "GAP_FILL_REQUIRED"
+        "priorityGaps": [],
+        "state": "BASE_COVERAGE_COMPLETE"
       },
       {
         "domain": "PRESENTATION",
@@ -44000,14 +44716,15 @@
     "crossPackCoverageRequired": true,
     "perPackGapMayBeResolvedByOtherCompanyCommonPack": true,
     "latestVolumeUp": {
-      "version": 3,
+      "version": 4,
       "vfxCount": 27,
       "materialCount": 25,
       "source": "COMPANY_COMMON_SEED_ASSET_IDEATION",
       "volumeBeforeQuality": true,
       "productionVerificationUnchanged": true,
       "skillCount": 20,
-      "characterGearCount": 18
+      "characterGearCount": 18,
+      "foliageCount": 18
     }
   },
   "commonGenreSystemExpectations": {
