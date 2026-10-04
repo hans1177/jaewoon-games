@@ -109,6 +109,26 @@ function initGitRepo(tmp){
   execFileSync('git',['commit','-m','fixture'],{cwd:tmp,stdio:'ignore'});
 }
 
+test('new SINGLE Roblox sources still include basic multiplayer runtime support',()=>{
+  const singleBaseline={content:{...baseline.content,multiplayerMode:'SINGLE'}};
+  const compiled=compileRobloxSource({
+    gameId,
+    gameName:'Pocket Foundry',
+    baseline:singleBaseline,
+    artbook:{},
+    playbooks:verifiedPlaybooks,
+    assetLibrary:companyAssetLibrary
+  });
+  assert.match(compiled.result.sharedConfig,/BasicMultiplayerSupport = true/);
+  assert.match(compiled.result.sharedConfig,/PlayMode = "SINGLE"/);
+  assert.match(compiled.result.serverCode,/Players:GetPlayers\s*\(\)/);
+  assert.match(compiled.result.serverCode,/ParticipantCount/);
+  assert.match(compiled.result.serverCode,/FireAllClients\("MULTIPLAYER_SYNC"/);
+  assert.match(compiled.result.serverCode,/broadcastMultiplayerSync/);
+  assert.match(compiled.result.clientCode,/OnClientEvent:Connect/);
+  assert.match(compiled.result.clientCode,/MULTIPLAYER_SYNC/);
+});
+
 test('minimum-design Roblox SOURCE_BIND items are eligible for source reconciliation',()=>{
   assert.equal(eligibleForRobloxSourceReconciliation(staleItem()),true);
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
