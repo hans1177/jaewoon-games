@@ -36,6 +36,8 @@ export const GAME_SEED_POLICY = Object.freeze({
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
   gameplaySketchRequired: true,
+  advancedGameplaySketchVersion: 2,
+  advancedGameplaySketchRequiredForNewSeeds: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
   marketEvidenceHardPassFailGate: false
@@ -88,6 +90,36 @@ function validateGameplaySketch(sketch,errors){
   if(!isNonEmptyString(sketch.worldModel))errors.push('GAMEPLAY_SKETCH.worldModel is required');
   const requirements=[['actors',2],['interactionChains',1],['stateMachine',5],['firstPlayableCycle',6],['expansionPlan',3],['longGoalScenario',3],['validationRisks',2]];
   for(const [field,min] of requirements)if(!Array.isArray(sketch[field])||uniq(sketch[field]).length<min)errors.push(`GAMEPLAY_SKETCH.${field} requires at least ${min} meaningful items`);
+  const version=Math.max(1,Number(sketch.version||1));
+  if(version<2)return;
+  if(!isNonEmptyString(sketch.playerPromise))errors.push('GAMEPLAY_SKETCH.playerPromise is required for version 2+');
+  const advanced=[['funDrivers',3],['balanceRules',4],['progressionLayers',3],['completionCriteria',4],['codingGrowthHooks',4]];
+  for(const [field,min] of advanced)if(!Array.isArray(sketch[field])||uniq(sketch[field]).length<min)errors.push(`GAMEPLAY_SKETCH.${field} requires at least ${min} meaningful items for version 2+`);
+  const pacing=sketch.pacingPlan;
+  if(!pacing||typeof pacing!=='object'||Array.isArray(pacing))errors.push('GAMEPLAY_SKETCH.pacingPlan is required for version 2+');
+  else for(const field of ['first5Minutes','minutes5To15','minutes15To25','minutes25To30','midLateGame','replayMotivation'])if(!isNonEmptyString(pacing[field]))errors.push(`GAMEPLAY_SKETCH.pacingPlan.${field} is required for version 2+`);
+  const flow=sketch.flowArchitecture;
+  if(!flow||typeof flow!=='object'||Array.isArray(flow))errors.push('GAMEPLAY_SKETCH.flowArchitecture is required for version 2+');
+  else{
+    if(!Array.isArray(flow.flowDNA)||uniq(flow.flowDNA).length<2)errors.push('GAMEPLAY_SKETCH.flowArchitecture.flowDNA requires at least 2 flow archetypes');
+    if(!Array.isArray(flow.phaseArc)||flow.phaseArc.length<3)errors.push('GAMEPLAY_SKETCH.flowArchitecture.phaseArc requires EARLY/MID/LATE structure');
+    const quality=flow.qualityGrowthContract;
+    if(!quality||typeof quality!=='object'||Array.isArray(quality))errors.push('GAMEPLAY_SKETCH.flowArchitecture.qualityGrowthContract is required');
+    else{
+      if(!Array.isArray(quality.funDrivers)||uniq(quality.funDrivers).length<3)errors.push('GAMEPLAY_SKETCH.flowArchitecture.qualityGrowthContract.funDrivers requires at least 3 items');
+      if(!Array.isArray(quality.balanceRules)||uniq(quality.balanceRules).length<4)errors.push('GAMEPLAY_SKETCH.flowArchitecture.qualityGrowthContract.balanceRules requires at least 4 items');
+      if(!Array.isArray(quality.expansionRules)||uniq(quality.expansionRules).length<4)errors.push('GAMEPLAY_SKETCH.flowArchitecture.qualityGrowthContract.expansionRules requires at least 4 items');
+      if(!Array.isArray(quality.completionCriteria)||uniq(quality.completionCriteria).length<4)errors.push('GAMEPLAY_SKETCH.flowArchitecture.qualityGrowthContract.completionCriteria requires at least 4 items');
+      if(quality.codingGrowthContract?.dataDrivenExtensionPreferred!==true)errors.push('GAMEPLAY_SKETCH.flowArchitecture.qualityGrowthContract.codingGrowthContract.dataDrivenExtensionPreferred must be true');
+    }
+    const assetRequirements=Array.isArray(flow.assetFlow?.requirements)?flow.assetFlow.requirements:[];
+    if(assetRequirements.length<3)errors.push('GAMEPLAY_SKETCH.flowArchitecture.assetFlow.requirements requires at least 3 visual-role requirements');
+    for(const row of assetRequirements){
+      if(row?.assetIdPinned===true||isNonEmptyString(row?.assetId))errors.push('GAMEPLAY_SKETCH flow asset requirements may not pin internal asset ids');
+      if(row?.gameplayAuthority===true||row?.balanceAuthority===true||row?.saveAuthority===true||row?.networkingAuthority===true)errors.push('GAMEPLAY_SKETCH flow asset requirements may not own gameplay/balance/save/network authority');
+      if(row?.resolution&&String(row.resolution)!=='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME')errors.push('GAMEPLAY_SKETCH flow asset requirement resolution must use latest compatible internal asset at execution time');
+    }
+  }
 }
 
 function validateMarketNumericClaims(summary, errors) {

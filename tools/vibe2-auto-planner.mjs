@@ -2665,7 +2665,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     signatureSystems:designSystems,
     progressionDirection:clean(designContent?.progressionDirection)
   };
-  const flowBaseline=designContext?{content:designContent}:{content:{}};
+  const flowBaseline=designContext?{...designContext.record,content:designContent}:{content:{}};
   const flowArchitecture=designContext?buildGameFlowArchitecture({
     gameId:project.gameId,
     genre:project.genre||project.category||project.gameCategory||'',
