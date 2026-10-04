@@ -250,8 +250,10 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=PINNED_FIRST_ATTEMPT/);
   assert.match(reserve,/VIBE2_RESERVE_RUNTIME_SNAPSHOT=REUSED_RETRY/);
   const snapshotBranch=reserve.indexOf('if [ "$state_attempt" -eq 1 ] || [ ! -s /tmp/vibe2-company-runtime-queue.json ]; then');
-  const planner=reserve.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
-  assert.ok(snapshotBranch>=0&&planner>snapshotBranch);
+  const productionReserve=reserve.indexOf('VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE');
+  assert.ok(snapshotBranch>=0&&productionReserve>snapshotBranch);
+  assert.doesNotMatch(reserve,/node \/tmp\/vibe2-main\/tools\/vibe2-auto-planner\.mjs/);
+  assert.doesNotMatch(reserve,/node \/tmp\/vibe2-main\/tools\/vibe2-post-release-focus\.mjs/);
 });
 
 test('24H pre-plan priority dispatch block stays valid Bash',()=>{
@@ -308,10 +310,16 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
   assert.doesNotMatch(core,/robloxLeaderTaskId|runner-pressure-wave-leader-free-slot-refill|VIBE2_ASSET_NEURON_PRESSURE_BYPASS/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
+  const reserveGlobalPlanStart=core.indexOf("if [[ \"$VIBE2_EXECUTION_LANE\" == 'game-primary' || \"$VIBE2_EXECUTION_LANE\" == 'asset-development' || \"$VIBE2_EXECUTION_LANE\" == 'recovery-fast' ]]");
+  const reserveGlobalPlanEnd=core.indexOf('echo "VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind"',reserveGlobalPlanStart);
+  assert.ok(reserveGlobalPlanStart>=0&&reserveGlobalPlanEnd>reserveGlobalPlanStart);
+  const productionReserveBlock=core.slice(reserveGlobalPlanStart,reserveGlobalPlanEnd);
+  assert.doesNotMatch(productionReserveBlock,/vibe2-auto-planner\.mjs/);
+  assert.doesNotMatch(productionReserveBlock,/vibe2-post-release-focus\.mjs/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
-  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_FAST_PATH=ELIGIBLE_NO_GLOBAL_QUEUE_MUTATION/);
-  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_GLOBAL_REPLAN=SKIPPED_NO_GLOBAL_QUEUE_MUTATION/);
-  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_QUEUE_AUTHORITY=LATEST_CANONICAL_VIBE_QUEUE/);
+  assert.match(core,/VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE/);
+  const productionReserveSkip=core.match(/if \[\[ "\$VIBE2_EXECUTION_LANE" == 'game-primary'[\s\S]{0,900}?VIBE2_GAME_PRIMARY_RESERVE_PLANNER_AUTHORITY=VIBE2_24H_PLAN_AND_EXISTING_CANONICAL_QUEUE/);
+  assert.ok(productionReserveSkip);
   assert.doesNotMatch(core,/for state_attempt in 1 2 3 4 5/);
   assert.doesNotMatch(core,/VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=\$state_attempt\/5/);
   assert.doesNotMatch(core,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN/);
