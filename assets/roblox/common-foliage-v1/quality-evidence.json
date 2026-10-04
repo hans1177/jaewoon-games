@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-foliage-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -47,5 +47,70 @@
     ],
     "productionVerified": false,
     "runtimeVerificationRequired": true
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "STYLE_COHERENCE",
+      "DETAIL_FINISH",
+      "READABILITY_SCALE",
+      "MODULAR_REUSE",
+      "PERFORMANCE_LOD"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 89,
+      "FORM_STRUCTURE": 88,
+      "MATERIAL_SURFACE": 84,
+      "COLOR_LIGHTING": 90,
+      "STYLE_COHERENCE": 88,
+      "DETAIL_FINISH": 84,
+      "READABILITY_SCALE": 88,
+      "MOTION_RIG": 78,
+      "FEEDBACK_STATES": 80,
+      "MODULAR_REUSE": 94,
+      "VARIATION_BREADTH": 94,
+      "PERFORMANCE_LOD": 88,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 92
+    },
+    "expectedScore": 882,
+    "expectedGrade": "COMMERCIAL_READY",
+    "evidenceBasis": {
+      "sourceFiles": [
+        "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
+        "assets/roblox/common-foliage-v1/catalog.json",
+        "assets/roblox/common-foliage-v1/quality-evidence.json"
+      ],
+      "sourceAssetCount": 18,
+      "sourceLineCount": 656,
+      "sourceFunctionCount": 31,
+      "nativeInstanceConstructionCount": 7,
+      "materialReferenceCount": 48,
+      "attributeBindingCount": 19,
+      "biomeSeasonWindLodVariants": true,
+      "threeDetailTiers": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "WIND_PRESENTATION_IS_SOURCE_AUTHORED_NOT_RUNTIME_PROVEN",
+      "DENSE_BIOME_MOBILE_COST_UNVERIFIED",
+      "HARVEST_INTERACTION_FIT_REQUIRES_GAME_BINDING",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
   }
 }
