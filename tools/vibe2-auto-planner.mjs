@@ -2433,6 +2433,20 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
+function buildUpDirectiveWithAssetRequirements(directive={},taskInput={}){
+  const requirements=(Array.isArray(taskInput?.assetRequirements)?taskInput.assetRequirements:[])
+    .filter(row=>row&&typeof row==='object'&&clean(row.family))
+    .map(row=>JSON.parse(JSON.stringify(row)));
+  if(!requirements.length)return directive;
+  return{
+    ...directive,
+    assetRequirementsVersion:1,
+    assetRequirements:requirements,
+    assetRequirementResolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    assetRequirementHandoff:'EXISTING_BUILD_UP_DIRECTIVE'
+  };
+}
+
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
@@ -2494,14 +2508,14 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   );
   if(activeDirectiveMatchesCurrentSource){
     const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
-    const directive={
+    const directive=buildUpDirectiveWithAssetRequirements({
       ...activeDirectiveTask.buildUpDirective,
       playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,
         studioQualityFailure:platformLane==='roblox'?project.queueRobloxQualityBuildUpEvidence||null:null,
         ...(repairRequired?{runtimeObserved:true,runtimePassed:false}:{} )},
       ...(repairRequired?{nextActionDecision:{action:'CAUSAL_REPAIR',reason:'current source Studio product-quality failure requires source repair before another observation'},
         effectivenessMeasurement:{...activeDirectiveTask.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason:'current source Studio product-quality failure',runtimeObserved:true}}}:{} )
-    };
+    },taskInput);
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -2535,6 +2549,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-generation:'+directive.generation,
         'build-up-focus:'+directive.primaryFocus,
         'build-up-source-tree:'+directive.sourceTreeFingerprint,
+        ...(directive.assetRequirements?.length?['studio-quality-flow-asset-requirements-handoff:BUILD_UP_DIRECTIVE']:[]),
         'build-up-platform-common-goal:YES',
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
@@ -2608,7 +2623,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
     };
   }
-  const directive=buildGameSpecificBuildUpDirective({
+  const directive=buildUpDirectiveWithAssetRequirements(buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
     platform:buildUpPlatformToken(project,platformLane),
@@ -2623,7 +2638,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
     requestedFocus:sourceSafeNoDesign?requestedFocus:'',
     safeDesignlessMode:sourceSafeNoDesign
-  });
+  }),taskInput);
   return{
     ...taskInput,
     goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -3107,6 +3122,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
+      ...(directive.assetRequirements?.length?['studio-quality-flow-asset-requirements-handoff:BUILD_UP_DIRECTIVE']:[]),
       'build-up-platform-common-goal:YES',
       ...(presentationFocus?[
         'asset-production-parallel:v1',
