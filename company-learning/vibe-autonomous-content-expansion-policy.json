@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -569,6 +569,130 @@
       "ECONOMY",
       "NETWORK_AUTHORITY",
       "APPROVED_GAME_RULES"
+    ]
+  },
+  "progressiveGrowthExpectation": {
+    "version": 1,
+    "status": "ACTIVE",
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "studioRequired": false,
+    "studioEvidenceRole": "OPTIONAL_SUPPORTING_EVIDENCE_ONLY",
+    "purpose": "MAKE_EACH_VERIFIED_BUILD_UP_ITERATION_PRODUCE_A_CLEARLY_LARGER_OR_DEEPER_GAME_INSTEAD_OF_REPEATING_THE_SAME_CHECKS",
+    "rules": {
+      "repeatedSameCheckPassGrowthPoints": 0,
+      "markerOnlyChangeGrowthPoints": 0,
+      "documentationOnlyChangeGrowthPoints": 0,
+      "nameColorOrStatOnlyCloneGrowthPoints": 0,
+      "sourceAndPlayerEffectRequired": true,
+      "previousVerifiedBaselineMustBeBeaten": true,
+      "accumulatedGrowthMustRemainVisible": true,
+      "noRegressionOfPreviouslyVerifiedGrowth": true,
+      "existingGameRulesSaveBalanceAndAuthorityPreserved": true
+    },
+    "growthPointModel": {
+      "CONNECTED_CONTENT_BUNDLE": 5,
+      "EXISTING_SYSTEM_DEEPENED": 3,
+      "NEW_MEANINGFUL_PLAYER_DECISION": 3,
+      "CROSS_SYSTEM_CONNECTION": 3,
+      "MID_LATE_OR_ENDGAME_EXTENSION": 4,
+      "REPLAYABILITY_VARIATION": 3,
+      "DISTINCT_ENEMY_BOSS_ITEM_QUEST_ROLE": 2,
+      "PRESENTATION_OR_FEEDBACK_UPGRADE": 2,
+      "USABILITY_OR_DISCOVERABILITY_UPGRADE": 2,
+      "VERIFIED_QUALITY_GAP_CLOSED": 2
+    },
+    "tiers": [
+      {
+        "id": "FOUNDATION_GROWTH",
+        "minCycle": 1,
+        "maxCycle": 2,
+        "minimumGrowthPoints": 6,
+        "minimumConnectedImprovements": 3,
+        "minimumDistinctImprovementAxes": 2,
+        "minimumConnectedContentBundles": 0,
+        "expectations": [
+          "CLOSE_MISSING_OR_SHALLOW_CORE_FLOW",
+          "DEEPEN_AT_LEAST_ONE_EXISTING_PLAYER_FACING_SYSTEM",
+          "MAKE_INPUT_STATE_FEEDBACK_AND_NEXT_CHOICE_CLEARER"
+        ]
+      },
+      {
+        "id": "SYSTEM_DEPTH_GROWTH",
+        "minCycle": 3,
+        "maxCycle": 4,
+        "minimumGrowthPoints": 9,
+        "minimumConnectedImprovements": 4,
+        "minimumDistinctImprovementAxes": 3,
+        "minimumConnectedContentBundles": 1,
+        "expectations": [
+          "ADD_OR_DEEPEN_A_CONNECTED_CONTENT_BUNDLE",
+          "ADD_MEANINGFUL_ROLE_BEHAVIOR_OR_DECISION_VARIATION",
+          "CONNECT_AT_LEAST_ONE_PREVIOUSLY_SEPARATE_SYSTEM"
+        ]
+      },
+      {
+        "id": "CONTENT_NETWORK_GROWTH",
+        "minCycle": 5,
+        "maxCycle": 7,
+        "minimumGrowthPoints": 13,
+        "minimumConnectedImprovements": 5,
+        "minimumDistinctImprovementAxes": 4,
+        "minimumConnectedContentBundles": 1,
+        "expectations": [
+          "EXPAND_CONTENT_WITH_CAUSAL_WORLD_AND_PROGRESSION_CONNECTIONS",
+          "EXTEND_MID_OR_LATE_GAME_DEPTH",
+          "INCREASE_PLAYER_DECISION_DIVERSITY_OR_REPLAYABILITY"
+        ]
+      },
+      {
+        "id": "ADVANCED_EXPANSION_GROWTH",
+        "minCycle": 8,
+        "maxCycle": 12,
+        "minimumGrowthPoints": 18,
+        "minimumConnectedImprovements": 6,
+        "minimumDistinctImprovementAxes": 5,
+        "minimumConnectedContentBundles": 2,
+        "expectations": [
+          "DELIVER_MULTISURFACE_CONTENT_EXPANSION",
+          "DEEPEN_EXISTING_AND_ADD_NEW_CONTENT_IN_THE_SAME_ITERATION",
+          "EXTEND_ENDGAME_OR_LONG_TERM_REPLAYABILITY",
+          "RAISE_PRESENTATION_FEEDBACK_AND_DISCOVERABILITY_WITH_GAMEPLAY_DEPTH"
+        ]
+      },
+      {
+        "id": "PERPETUAL_MASTERY_GROWTH",
+        "minCycle": 13,
+        "maxCycle": null,
+        "minimumGrowthPoints": 24,
+        "minimumConnectedImprovements": 7,
+        "minimumDistinctImprovementAxes": 5,
+        "minimumConnectedContentBundles": 2,
+        "repeatEscalation": {
+          "everyAdditionalCycles": 3,
+          "growthPointsPlus": 2,
+          "connectedImprovementsPlusEvery": 6,
+          "connectedImprovementsPlus": 1,
+          "contentBundlesPlusEvery": 9,
+          "contentBundlesPlus": 1
+        },
+        "expectations": [
+          "BEAT_THE_PREVIOUS_VERIFIED_GAME_BASELINE_NOT_JUST_THE_PREVIOUS_CHECKLIST",
+          "EXPAND_UNDERDEVELOPED_CONTENT_NETWORKS",
+          "ADD_NEW_DECISION_SPACES_WITHOUT_CLONING_EXISTING_CONTENT",
+          "KEEP_MID_LATE_ENDGAME_AND_REPLAYABILITY_GROWING",
+          "REVISIT_OLD_CONTENT_SO_NEW_CONTENT_MAKES_EXISTING_CONTENT_MORE_MEANINGFUL"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      "REAL_SOURCE_DELTA",
+      "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_DELTA",
+      "PREVIOUS_VERIFIED_BASELINE_COMPARISON",
+      "GROWTH_POINT_BREAKDOWN",
+      "CONNECTED_IMPROVEMENT_COUNT",
+      "DISTINCT_IMPROVEMENT_AXES",
+      "CONTENT_BUNDLE_COUNT_WHEN_REQUIRED",
+      "RELEVANT_EXISTING_QA"
     ]
   }
 }
