@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-building-v1",
   "title": "Roblox 회사 공용 건축 모듈 8종 v1",
   "platform": "ROBLOX",
@@ -84,5 +84,63 @@
       "buildingRole": "EDGE_VISUAL",
       "familyRootId": "BUILDING_RAILING"
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "FOUNDATION",
+      "FLOOR",
+      "WALL_SOLID",
+      "WALL_WINDOW",
+      "WALL_CORNER",
+      "DOOR",
+      "WINDOW",
+      "ROOF",
+      "STAIR",
+      "RAILING",
+      "PILLAR",
+      "ARCHWAY",
+      "INTERIOR_KIT",
+      "EXTERIOR_TRIM",
+      "SIGNAGE",
+      "PROP_SOCKET",
+      "DAMAGE_STATE",
+      "DESTRUCTION_VARIANT",
+      "COLLISION_NAV_PROXY",
+      "MATERIAL_VARIANT",
+      "LOD"
+    ],
+    "currentDeclaredComponents": [
+      "FLOOR_TILE",
+      "WALL_WINDOW",
+      "WALL_CORNER",
+      "PILLAR",
+      "STAIRS",
+      "ARCHWAY",
+      "ROOF_FLAT",
+      "RAILING"
+    ],
+    "currentAssetCount": 8,
+    "missingComponentCandidates": [
+      "FOUNDATION",
+      "FLOOR",
+      "WALL_SOLID",
+      "DOOR",
+      "WINDOW",
+      "ROOF",
+      "STAIR",
+      "INTERIOR_KIT",
+      "EXTERIOR_TRIM",
+      "SIGNAGE",
+      "PROP_SOCKET",
+      "DAMAGE_STATE",
+      "DESTRUCTION_VARIANT",
+      "COLLISION_NAV_PROXY",
+      "MATERIAL_VARIANT",
+      "LOD"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
