@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "purpose": "DISTILLED_REFERENCE_PRINCIPLES_NOT_COPY_TARGETS",
+  "copyingForbidden": true,
+  "sources": [
+    {
+      "name": "God of War Ragnarök accessibility",
+      "principleIds": [
+        "ACCESSIBILITY_PRESETS",
+        "CHANGED_SETTING_INDICATOR",
+        "TEXT_ICON_SCALE",
+        "CONTROLLER_REMAP",
+        "REDUCED_MOTION",
+        "HIGH_CONTRAST"
+      ],
+      "note": "Use flexibility/readability/accessibility principles only; do not reproduce art/layout."
+    },
+    {
+      "name": "Baldur's Gate 3 controller UI updates",
+      "principleIds": [
+        "RADIAL_ACTION_DENSITY_CONTROL",
+        "CONTEXTUAL_SHORTCUT_PROMPTS",
+        "DETAILED_ERROR_REASON",
+        "INPUT_MODE_SWITCH_RESILIENCE",
+        "SORTING_AND_CHARACTER_SHEET_CLARITY"
+      ],
+      "note": "Use information architecture and controller feedback lessons only."
+    },
+    {
+      "name": "Award-winning console/PC menu patterns",
+      "principleIds": [
+        "PERSISTENT_CORE_CONTEXT",
+        "FOCUSED_DETAIL_PANE",
+        "PROGRESSIVE_DISCLOSURE",
+        "CONSISTENT_INPUT_LEGEND",
+        "FAST_RETURN_TO_PLAY"
+      ],
+      "note": "Generic distilled patterns; no protected screen replication."
+    }
+  ],
+  "companyApplication": {
+    "styleSystem": "GAME_STYLE_LOCK_PLUS_REUSABLE_LAYOUT_GRAMMAR",
+    "menuDepth": "KEEP_HIGH_FREQUENCY_TASKS_SHALLOW",
+    "detail": "SHOW_SUMMARY_FIRST_DETAIL_ON_DEMAND",
+    "controller": "VISIBLE_FOCUS_AND_CONTEXT_ACTION_HINTS",
+    "mobile": "TOUCH_TARGETS_AND_BOTTOM_REACHABILITY",
+    "accessibility": "PRESETS_SCALING_CONTRAST_MOTION_REDUCTION"
+  }
+}
