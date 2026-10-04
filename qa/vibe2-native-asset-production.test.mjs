@@ -6,11 +6,149 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
+  const order={
+    gameId:'demo',
+    target:'roblox',
+    assetProduction:{
+      baseMaterialLoadout:{
+        libraryVersion:76,
+        universalAssetFirst:{required:true},
+        families:{
+          WEAPON:['BLADE_LONG','GRIP_LONG'],
+          MOTION:['ATTACK_LIGHT_1','HIT_FRONT'],
+          VFX:['IMPACT_FLASH'],
+          AUDIO:['ATTACK_SWING_LIGHT'],
+          UI:['FRAME_PANEL']
+        }
+      },
+      flowAssetLoadout:{
+        selections:[
+          {requirementId:'weapon-primary',assetId:'common-sword',family:'WEAPON',role:'MELEE_WEAPON',sourceFiles:['assets/roblox/common-tools-v1/RobloxCommonTools.luau']}
+        ]
+      },
+      decisions:[
+        {type:'item',applyFirst:{candidates:[
+          {id:'common-sword',family:'WEAPON',role:'MELEE_WEAPON',sourceFiles:['assets/roblox/common-tools-v1/RobloxCommonTools.luau']}
+        ]}}
+      ]
+    }
+  };
+  const a=buildInternalAssetSourceUsageContract(order);
+  const b=buildInternalAssetSourceUsageContract({...order,assetProduction:{...order.assetProduction,baseMaterialLoadout:{
+    ...order.assetProduction.baseMaterialLoadout,
+    families:{
+      UI:['FRAME_PANEL'],
+      AUDIO:['ATTACK_SWING_LIGHT'],
+      VFX:['IMPACT_FLASH'],
+      MOTION:['HIT_FRONT','ATTACK_LIGHT_1'],
+      WEAPON:['GRIP_LONG','BLADE_LONG']
+    }
+  }}});
+  assert.equal(a.fingerprint,b.fingerprint);
+  assert.equal(a.eligibility.genreRestrictionApplied,false);
+  assert.equal(a.eligibility.crossGenreReuseAllowed,true);
+  assert.equal(a.eligibility.qualityScoreIsUsageGate,false);
+  assert.equal(a.eligibility.lowScoreCompatibleAssetUseAllowed,true);
+  assert.equal(a.eligibility.safeCompatibleFallbackPreferredOverBlank,true);
+  assert.equal(a.eligibility.safeCompatibleFallbackPreferredOverPrimitivePlaceholder,true);
+  assert.equal(a.eligibility.qualityMayNotOverrideRoleMismatch,true);
+  assert.equal(a.eligibility.lowerScoreExactFitMayWin,true);
+  assert.equal(a.applicationCoverage.noArtificialAssetCountCap,true);
+  assert.equal(a.applicationCoverage.noArtificialFamilyUseCap,true);
+  assert.equal(a.applicationCoverage.noArtificialGameplaySignalCoverageCap,true);
+  assert.equal(a.applicationCoverage.noArtificialCombinationCap,true);
+  assert.equal(a.applicationCoverage.contextBudgetIsNotUsageCap,true);
+  assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
+  assert.equal(a.synchronization.selectedSubsetOnly,true);
+  assert.equal(a.synchronization.changedFamilyRebindOnly,true);
+  assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
+  assert.equal(a.version,3);
+  assert.ok(a.usageMatrix.length>=72);
+  assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
+  for(const signal of [
+    'SKILL_PRESENTATION_GRAMMAR','INTERACTION_ACTION_GRAMMAR','COMMON_UI_FACTORY_REUSE',
+    'ENEMY_REGION_VARIANT','THREAT_TIER_COMMON_ELITE_BOSS','NPC_PROFESSION_ROLE','NPC_EMOTION_RELATION_STATE',
+    'BUILDING_ROLE','BUILDING_INTERIOR_FUNCTION','TOOL_TARGET_PAIR_PRESENTATION','ITEM_RARITY_OR_REWARD_TIER',
+    'CONTEXTUAL_ACTION_UI','SPATIAL_SOUNDSCAPE_ZONE','MULTIPLAYER_PRESENTATION_REPLICATION',
+    'WORLD_DENSITY_AND_IMPORTANCE','EQUIPMENT_SOCKET_AND_STANCE_SYNC',
+    'WAVE_ROUND_PHASE_STATE','SHOP_TRADE_PURCHASE_STATE','CRAFTING_RECIPE_QUEUE_STATE',
+    'PUZZLE_INTERACTION_STATE','DEFENSE_PLACEMENT_WAVE_STATE','TYCOON_PRODUCTION_SERVICE_STATE',
+    'STEALTH_DETECTION_STATE','PROJECTILE_FLIGHT_IMPACT_STATE','COMPANION_PET_COMMAND_STATE',
+    'SEASON_WORLD_EVENT_STATE','TRAVERSAL_MODE_STATE','MACHINE_POWER_OPERATION_STATE',
+    'DOOR_GATE_LOCK_STATE','SAFE_DANGER_ZONE_STATE','CHECKPOINT_SAVE_FEEDBACK_STATE',
+    'TELEPORT_PORTAL_TRANSITION_STATE','SOCIAL_EMOTE_INTERACTION_STATE','GENERIC_EXISTING_STATE_OR_EVENT'
+  ])assert.ok(a.usageMatrix.some(row=>row.signal===signal),signal);
+  assert.match(a.usageMatrix.find(row=>row.signal==='HIT_DIRECTION_AND_STRENGTH').rule,/CRITICAL/);
+  assert.match(a.usageMatrix.find(row=>row.signal==='SKILL_PRESENTATION_GRAMMAR').rule,/PROJECTILE\/BEAM\/AOE\/SUMMON\/BUFF\/DEBUFF\/HEAL\/TELEPORT\/TRANSFORM\/ULTIMATE/);
+  assert.match(a.usageMatrix.find(row=>row.signal==='DAY_NIGHT_LIGHTING_ACTIVITY').rule,/AURORA/);
+  assert.match(a.usageMatrix.find(row=>row.signal==='NPC_EMOTION_RELATION_STATE').rule,/ALERT.*CONFIDENT/);
+  assert.match(a.usageMatrix.find(row=>row.signal==='EQUIPMENT_SOCKET_AND_STANCE_SYNC').rule,/equippedWeaponId/);
+  assert.match(a.usageMatrix.find(row=>row.signal==='INTERACTION_ACTION_GRAMMAR').rule,/OPEN\/CLOSE\/GATHER\/MINE\/CHOP\/DIG\/CRAFT\/SIT\/PUSH\/PULL\/CARRY\/REVIVE\/MOUNT/);
+  assert.equal(a.synchronization.selectedCommonSourceApiDiscovery,true);
+  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesOnly,true);
+  assert.equal(a.commonSourceReuse.existingFactoryBeforeNewImplementation,true);
+  assert.equal(a.repetitionControl.simpleRandomVariantSelectionForbidden,true);
+  assert.equal(a.repetitionControl.usageHistoryAndLineageMustBePreserved,true);
+  assert.deepEqual(a.sourceConsumptionSequence,[
+    'INSPECT_CURRENT_SYSTEM_STATE_EVENT_ATTRIBUTE_TAG_ROLE',
+    'SEARCH_SELECTED_INTERNAL_ASSET_EXACT_FAMILY_ROLE',
+    'READ_SELECTED_COMMON_SCRIPT_OR_FACTORY_API',
+    'COMPOSE_COMPATIBLE_MULTI_FAMILY_PRESENTATION',
+    'ADAPT_TO_EXISTING_GAME_STYLE',
+    'BIND_DIRECTLY_IN_EXISTING_RESPONSIBLE_FUNCTION',
+    'AUTHOR_ONLY_REMAINING_PRESENTATION_GAP'
+  ]);
+  assert.equal(a.adaptiveSignalRouting.enabled,true);
+  assert.equal(a.adaptiveSignalRouting.explicitMatrixIsFloorNotCeiling,true);
+  assert.equal(a.adaptiveSignalRouting.inspectExistingSourceEventsAndStateNames,true);
+  assert.equal(a.adaptiveSignalRouting.unknownEventMayNotCreateGameplaySystem,true);
+  assert.equal(a.adaptiveSignalRouting.unknownEventMayNotInventAssetIdFactoryRoleOrState,true);
+  assert.equal(a.adaptiveSignalRouting.selectedApplicableFamiliesIntersectionRequired,true);
+  assert.deepEqual(a.sourceCandidates[0].sourceFiles,['assets/roblox/common-tools-v1/RobloxCommonTools.luau']);
+});
+
+test('Vibe source loads only selected internal asset API context with hard bounds',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/sourceApiContextOnlyForSelectedAssets:true/);
+  assert.match(source,/fullLibraryReplicationForbidden:true/);
+  assert.match(source,/fullCatalogPromptInjectionForbidden:true/);
+  assert.match(source,/apiContextBatchSize:4/);
+  assert.match(source,/apiContextMaxBytes:18000/);
+  assert.match(source,/apiContextPerFileMaxBytes:4500/);
+  assert.match(source,/apiContextRotationByBuildUpGeneration:true/);
+  assert.match(source,/allSelectedApiSourcesRemainEligibleAcrossCycles:true/);
+  assert.match(source,/const start=\(\(generation-1\)\*batchSize\)%allSelectedPaths\.length/);
+  assert.match(source,/internalAssetApiContextEligibleSourceCount:allSelectedPaths\.length/);
+  assert.match(source,/internalAssetApiContext:true/);
+  assert.match(source,/editable:false/);
+  assert.match(source,/Do not invent an asset ID, pack, factory, source file, or role/);
+  assert.match(source,/Genre NEVER removes an otherwise compatible internal asset from eligibility/);
+  assert.match(source,/high-quality wrong-role asset must lose/i);
+  assert.match(source,/Internal quality score is NOT a usage gate/);
+  assert.match(source,/leaving a blank\/default\/primitive presentation/);
+  assert.match(source,/NO artificial asset-count, family-count, gameplay-signal, or combination cap/);
+  assert.match(source,/Context\/API batching is only synchronization optimization and MUST NOT become a usage cap/);
+  assert.match(source,/rotates by BUILD_UP generation/i);
+  assert.match(source,/every selected compatible source remains eligible for later cycles/i);
+  assert.match(source,/explicit signal matrix is a FLOOR, not a ceiling/i);
+  assert.match(source,/Unknown source events may use the generic presentation fallback/i);
+  assert.match(source,/never perform full-library resync/i);
+  assert.match(source,/assets\/roblox\/common-ui-v1\/RobloxCommonUI\.luau/);
+  assert.match(source,/assets\/roblox\/common-vfx-v1\/RobloxCommonVFX\.luau/);
+  assert.match(source,/assets\/roblox\/common-motion-v1\/RobloxCommonMotion\.luau/);
+  assert.match(source,/assets\/roblox\/common-environment-v1\/RobloxCommonEnvironment\.luau/);
+  assert.match(source,/assets\/vibe-motion-director\.js/);
+  assert.match(source,/selected-family common API candidates include RobloxCommonUI/);
+  assert.match(source,/simple random asset swapping is forbidden/);
+  assert.match(source,/matching RobloxCommonUI Create\* factory first/);
+});
 
 test('persisted DCC asset binding does not depend on duplicate presentation metadata',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'dcc-binding-candidate-'));
@@ -791,6 +929,9 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.match(built.result.sharedConfig,/FRAME_PANEL/);
   assert.match(built.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(built.result.clientCode,/Config\.StudioAssets/);
+  assert.match(built.result.clientCode,/local studioAssetFamilies = Config\.StudioAssets and Config\.StudioAssets\.Families or \{\}/);
+  assert.match(built.result.clientCode,/local function studioAssetFamily\(family\)/);
+  assert.match(built.result.clientCode,/hasStudioAtom\("UI", "FRAME_PANEL"\)/);
   assert.match(built.result.clientCode,/StudioHealthTrack/);
   assert.match(built.result.clientCode,/Instance\.new\("Frame"\)/);
 });

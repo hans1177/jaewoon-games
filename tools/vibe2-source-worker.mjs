@@ -1865,6 +1865,364 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
+export function buildInternalAssetSourceUsageContract(order={}){
+  const target=clean(order?.target).toLowerCase();
+  const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
+  const assetProduction=order?.assetProduction||{};
+  const loadout=assetProduction?.baseMaterialLoadout||{};
+  const flowLoadout=assetProduction?.flowAssetLoadout||{};
+  const familyEntries=Object.entries(loadout?.families||{})
+    .map(([family,atoms])=>[clean(family).toUpperCase(),unique((atoms||[]).map(clean).filter(Boolean)).sort()])
+    .filter(([family,atoms])=>family&&atoms.length)
+    .sort(([a],[b])=>a.localeCompare(b));
+  const exactFamilies=Object.freeze(Object.fromEntries(familyEntries));
+  const flowSelections=(flowLoadout?.selections||[]).map(row=>Object.freeze({
+    requirementId:clean(row?.requirementId||row?.id)||null,
+    assetId:clean(row?.assetId||row?.selectedAssetId||row?.id)||null,
+    family:clean(row?.family||row?.category).toUpperCase()||null,
+    role:clean(row?.role||row?.systemRole||row?.requirementRole)||null,
+    applicationMode:clean(row?.applicationMode||row?.mode)||null,
+    sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).slice(0,8))
+  })).filter(row=>row.assetId||row.requirementId);
+  const sourceCandidates=[];
+  for(const decision of assetProduction?.decisions||[]){
+    for(const row of [...(decision?.applyFirst?.candidates||[]),...(decision?.reuseCandidates||[])]){
+      const id=clean(row?.id||row?.assetId);
+      if(!id)continue;
+      sourceCandidates.push(Object.freeze({
+        assetId:id,
+        type:clean(decision?.type)||null,
+        family:clean(row?.family||row?.category).toUpperCase()||null,
+        role:clean(row?.role||row?.systemRole)||null,
+        sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).slice(0,8)),
+        path:posix(row?.path)||null,
+        sourceTier:clean(row?.sourceTier)||null
+      }));
+    }
+  }
+  const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
+    .sort((a,b)=>a.assetId.localeCompare(b.assetId));
+  const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const payload={
+    version:3,target,gameId,libraryVersion,
+    exactFamilies,
+    flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
+    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
+  };
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+  const usageMatrix=Object.freeze([
+    Object.freeze({signal:'ATTACK_OR_COMBO',families:Object.freeze(['WEAPON','MOTION','VFX','AUDIO']),optional:Object.freeze(['CAMERA_PRESENTATION','UI']),rule:'gameplay code owns hit, damage, cooldown and combo legality; assets express anticipation/contact/recoil/recovery'}),
+    Object.freeze({signal:'HIT_BLOCK_PARRY_CRITICAL',families:Object.freeze(['MOTION','VFX','AUDIO']),optional:Object.freeze(['UI','CAMERA_PRESENTATION']),rule:'consume direction/strength/result emitted by gameplay; never calculate the result in the asset layer'}),
+    Object.freeze({signal:'HIT_DIRECTION_AND_STRENGTH',families:Object.freeze(['MOTION','VFX','AUDIO']),optional:Object.freeze(['CAMERA_PRESENTATION']),rule:'map FRONT/BACK/LEFT/RIGHT plus LIGHT/HEAVY/CRITICAL to compatible reactions while authoritative damage and critical calculation remain gameplay-owned'}),
+    Object.freeze({signal:'SKILL_CAST_RELEASE_IMPACT',families:Object.freeze(['SKILL','MOTION','VFX','AUDIO']),optional:Object.freeze(['UI','CAMERA_PRESENTATION']),rule:'bind prepare/charge/release/impact presentation to existing skill events and approved timing markers'}),
+    Object.freeze({signal:'SKILL_PRESENTATION_GRAMMAR',families:Object.freeze(['SKILL','MOTION','VFX','AUDIO']),optional:Object.freeze(['UI','CAMERA_PRESENTATION','CHARACTER','CREATURE','ENVIRONMENT']),rule:'map existing PROJECTILE/BEAM/AOE/SUMMON/BUFF/DEBUFF/HEAL/TELEPORT/TRANSFORM/ULTIMATE semantics to compatible presentation bundles; skill effect, target, duration, power and authority remain gameplay-owned'}),
+    Object.freeze({signal:'STATUS_EFFECT_STATE',families:Object.freeze(['VFX','MATERIAL','UI','AUDIO']),optional:Object.freeze(['MOTION']),rule:'consume POISON/BURN/FREEZE/SHOCK/STUN/BUFF/DEBUFF states without owning duration, stacks or gameplay modifiers'}),
+    Object.freeze({signal:'EQUIP_UNEQUIP_LOADOUT',families:Object.freeze(['WEAPON','CHARACTER','MOTION','UI']),optional:Object.freeze(['VFX','AUDIO']),rule:'inventory/equipment remains authoritative; assets update attachment, pose, presentation and readable equipped state'}),
+    Object.freeze({signal:'EQUIPMENT_SOCKET_AND_STANCE_SYNC',families:Object.freeze(['WEAPON','CHARACTER','MOTION']),optional:Object.freeze(['UI']),rule:'consume equippedWeaponId and existing equipment state to bind compatible hand/back/socket plus locomotion/attack presentation; inventory and equipment ownership remain authoritative'}),
+    Object.freeze({signal:'ITEM_RARITY_OR_REWARD_TIER',families:Object.freeze(['MATERIAL','VFX','AUDIO','UI']),optional:Object.freeze(['PROP']),rule:'consume rarity/reward tier only for world glow, silhouette emphasis, pickup feedback and UI treatment; never change drop chance or item power'}),
+    Object.freeze({signal:'ENEMY_ROLE_ARCHETYPE',families:Object.freeze(['CREATURE','CHARACTER','MOTION','VFX']),optional:Object.freeze(['AUDIO','UI']),rule:'map TANK/RANGED/ASSASSIN/SWARM/SUPPORT/BOSS role to body-plan-compatible silhouette, locomotion, idle, hit reaction, attack telegraph, VFX and audio without changing AI decisions'}),
+    Object.freeze({signal:'ENEMY_REGION_VARIANT',families:Object.freeze(['CREATURE','CHARACTER','MATERIAL','VFX','MOTION']),optional:Object.freeze(['AUDIO','PROP']),rule:'derive SNOW/SWAMP/DESERT/VOLCANIC/CAVE/COAST presentation variants from one gameplay archetype; stats and AI remain unchanged unless gameplay already provides them'}),
+    Object.freeze({signal:'THREAT_TIER_COMMON_ELITE_BOSS',families:Object.freeze(['CHARACTER','CREATURE','MATERIAL','MOTION','VFX']),optional:Object.freeze(['AUDIO','UI','CAMERA_PRESENTATION']),rule:'visually escalate COMMON/ELITE/BOSS through silhouette, detail, aura, acting and death presentation while preserving the existing authoritative tier rules'}),
+    Object.freeze({signal:'NPC_CREATURE_STATE',families:Object.freeze(['CHARACTER','CREATURE','MOTION']),optional:Object.freeze(['VFX','AUDIO','UI']),rule:'AI owns intent and target choice; assets consume CALM/ALERT/SEARCH/FEAR/ANGER/INJURED and body-plan state'}),
+    Object.freeze({signal:'NPC_PROFESSION_ROLE',families:Object.freeze(['CHARACTER','PROP','MOTION','UI']),optional:Object.freeze(['AUDIO','BUILDING']),rule:'map MERCHANT/GUARD/FARMER/BLACKSMITH/QUEST_GIVER/COMPANION to compatible clothing, carried props, idle/interact motion and prompt presentation'}),
+    Object.freeze({signal:'NPC_EMOTION_RELATION_STATE',families:Object.freeze(['CHARACTER','MOTION','UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'consume CALM/ALERT/FEAR/ANGER/TIRED/HAPPY/CONFIDENT/INJURED/TRUSTED/HOSTILE for posture, gaze, secondary motion, expression-adjacent presentation and dialogue surface only'}),
+    Object.freeze({signal:'BOSS_PHASE_OR_SIGNATURE_EVENT',families:Object.freeze(['CHARACTER','CREATURE','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION','ENVIRONMENT']),rule:'boss logic owns phase and mechanics; each existing phase transition may automatically compose a coherent acting+VFX+audio+UI+camera/environment presentation bundle without changing timing, stats or authority'}),
+    Object.freeze({signal:'BOSS_INTRO_ENRAGE_DEATH',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION','ENVIRONMENT','MATERIAL']),rule:'compose intro/threat/enrage/final-death presentation around existing boss state transitions without delaying or changing authoritative combat state'}),
+    Object.freeze({signal:'BIOME_PACKAGE',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','MATERIAL','AUDIO']),optional:Object.freeze(['VFX','MOTION','UI']),rule:'treat FOREST/SNOW/DESERT/SWAMP/CAVE/COAST/VILLAGE/CITY/RUINS/DUNGEON as coherent terrain+prop+background+soundscape packages rather than one-asset swaps'}),
+    Object.freeze({signal:'BIOME_WEATHER_TIME_CELESTIAL',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','MATERIAL','AUDIO','VFX']),optional:Object.freeze(['UI','MOTION']),rule:'world systems own weather/time; presentation consumes state for sky, depth, surface response, wind motion and soundscape'}),
+    Object.freeze({signal:'DAY_NIGHT_LIGHTING_ACTIVITY',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','MATERIAL','AUDIO']),optional:Object.freeze(['MOTION','VFX','UI']),rule:'consume DAWN/DAY/SUNSET/NIGHT/WHITE_NIGHT/ECLIPSE/AURORA for lighting, prop lights, windows, ambience, background, NPC/animal idle and secondary motion without changing schedules unless gameplay already owns them'}),
+    Object.freeze({signal:'BUILDING_ROLE',families:Object.freeze(['BUILDING','PROP','MATERIAL','UI']),optional:Object.freeze(['AUDIO','VFX','ENVIRONMENT']),rule:'map SHOP/BLACKSMITH/HOUSE/TAVERN/TEMPLE/OUTPOST/HOSPITAL/WORKSHOP roles to compatible modular parts, set dressing and presentation surfaces'}),
+    Object.freeze({signal:'BUILDING_INTERIOR_FUNCTION',families:Object.freeze(['PROP','UI','AUDIO','VFX','MATERIAL']),optional:Object.freeze(['BUILDING','MOTION']),rule:'bind existing shop/crafting/healing/rest/trade functions to shop display+price UI, forge spark+tool audio, hospital heal presentation, tavern rest presentation, shelves/counters and role ambience without creating those gameplay functions'}),
+    Object.freeze({signal:'INTERIOR_EXTERIOR_TRANSITION',families:Object.freeze(['ENVIRONMENT','BUILDING','AUDIO','MATERIAL']),optional:Object.freeze(['VFX','UI']),rule:'blend lighting, ambience, occlusion-role presentation and surface language when gameplay moves between indoor/outdoor spaces'}),
+    Object.freeze({signal:'INTERACTION_GATHER_CRAFT_OPEN_USE',families:Object.freeze(['PROP','BUILDING','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER']),rule:'interaction system owns availability/reward; asset scripts express hand/tool/object/contact feedback'}),
+    Object.freeze({signal:'INTERACTION_ACTION_GRAMMAR',families:Object.freeze(['PROP','BUILDING','MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER','WEAPON']),rule:'map existing OPEN/CLOSE/GATHER/MINE/CHOP/DIG/CRAFT/SIT/PUSH/PULL/CARRY/REVIVE/MOUNT actions to actor+tool+target presentation while eligibility, rewards and movement authority remain gameplay-owned'}),
+    Object.freeze({signal:'TOOL_TARGET_PAIR_PRESENTATION',families:Object.freeze(['WEAPON','PROP','MOTION','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','UI']),rule:'compose actor+tool+target reactions for axe/tree, pickaxe/ore, hammer/workbench, rod/water and similar existing interactions while result logic stays gameplay-owned'}),
+    Object.freeze({signal:'CONTEXTUAL_ACTION_UI',families:Object.freeze(['UI']),optional:Object.freeze(['PROP','BUILDING','CHARACTER']),rule:'bind TALK/OPEN/GATHER/CRAFT/TRADE/REVIVE/INSPECT prompts to existing proximity or interaction eligibility instead of duplicating eligibility logic'}),
+    Object.freeze({signal:'QUEST_REWARD_LEVEL_DISCOVERY',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['CAMERA_PRESENTATION','ENVIRONMENT']),rule:'progression owns completion and rewards; presentation exposes next action, discovery and reward feedback'}),
+    Object.freeze({signal:'DISCOVERY_POI_LANDMARK',families:Object.freeze(['ENVIRONMENT','PROP','UI','AUDIO']),optional:Object.freeze(['VFX','CAMERA_PRESENTATION']),rule:'consume existing discovery/POI events for landmark emphasis, reveal feedback, map/UI cues and ambient transition without granting progression'}),
+    Object.freeze({signal:'STORY_CUTSCENE_DIALOGUE_BEAT',families:Object.freeze(['CHARACTER','MOTION','UI','AUDIO']),optional:Object.freeze(['CAMERA_PRESENTATION','ENVIRONMENT','VFX']),rule:'compose dialogue/acting/camera/presentation around existing story beats; narrative state and branching remain game-owned'}),
+    Object.freeze({signal:'DAMAGE_WEAR_DESTRUCTION_STATE',families:Object.freeze(['MATERIAL','PROP','BUILDING','VFX','AUDIO']),optional:Object.freeze(['MOTION']),rule:'health/durability owns thresholds; assets consume NORMAL/DAMAGED/CRITICAL/DESTROYED presentation state'}),
+    Object.freeze({signal:'RESOURCE_OBJECT_STATE',families:Object.freeze(['PROP','MATERIAL','VFX','AUDIO']),optional:Object.freeze(['UI','MOTION']),rule:'consume FULL/DEPLETED/REGROWING/LOCKED resource state for visible depletion and feedback without changing yield, respawn or ownership'}),
+    Object.freeze({signal:'WORLD_OBJECT_AMBIENCE',families:Object.freeze(['PROP','MOTION','AUDIO','VFX']),optional:Object.freeze(['MATERIAL']),rule:'make foliage, cloth, signs, lamps, chains, machines and environmental props respond to wind/time/weather/interaction through presentation-only motion and sound'}),
+    Object.freeze({signal:'WORLD_DENSITY_AND_IMPORTANCE',families:Object.freeze(['ENVIRONMENT','BUILDING','PROP']),optional:Object.freeze(['MATERIAL','AUDIO','VFX']),rule:'use HERO_LANDMARK/SETTLEMENT/ROAD/WILDERNESS importance to vary set-dressing density and background depth; never random-fill without role and spacing rationale'}),
+    Object.freeze({signal:'HUD_SYSTEM_COMPOSITION',families:Object.freeze(['UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'compose existing UI atoms by actual game systems and states, not genre labels alone; RPG/survival/defense are suggestions only and current source capabilities win'}),
+    Object.freeze({signal:'COMMON_UI_FACTORY_REUSE',families:Object.freeze(['UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'when the corresponding system exists, prefer RobloxCommonUI CreateInventory*/CreateEquipment*/CreateQuest*/CreateShop*/CreateMap*/CreateParty*/CreateCrafting*/CreateDialogue*/CreateNpc*/CreateCharacter*/CreateSettings*/CreateSearch*/CreateFilter*/CreateSort* factories before authoring per-game duplicate UI'}),
+    Object.freeze({signal:'CAMERA_LANGUAGE_EVENT',families:Object.freeze([]),optional:Object.freeze(['CAMERA_PRESENTATION','MOTION','VFX','UI']),rule:'consume NORMAL_COMBAT/HEAVY_HIT/BOSS_INTRO/DISCOVERY/LEVEL_UP/DEATH camera events for FOV/shake/zoom/focus presentation within existing camera ownership'}),
+    Object.freeze({signal:'SPATIAL_SOUNDSCAPE_ZONE',families:Object.freeze(['AUDIO','ENVIRONMENT','PROP']),optional:Object.freeze(['BUILDING']),rule:'blend BED/NEAR/DISTANT/SCATTER/ONE_SHOT/INTERACTION_SOURCE layers from existing biome/zone/interior state instead of one global loop'}),
+    Object.freeze({signal:'MULTIPLAYER_PRESENTATION_REPLICATION',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CHARACTER','WEAPON']),rule:'server replicates authoritative state only; clients consume that state for local presentation and may not create a second gameplay authority path'}),
+    Object.freeze({signal:'SPAWN_ENTRY_RESPAWN',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION','ENVIRONMENT']),rule:'compose spawn/entry/respawn feedback from existing session state without changing spawn location, invulnerability or respawn rules'}),
+    Object.freeze({signal:'DEATH_DOWNED_REVIVE',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume authoritative death/downed/revive states for readable presentation while health, timers and revive eligibility stay gameplay-owned'}),
+    Object.freeze({signal:'PARTY_COOP_TEAM_STATE',families:Object.freeze(['UI','CHARACTER','MOTION']),optional:Object.freeze(['VFX','AUDIO']),rule:'bind party member state, downed state, follow/assist cues and readable team identity to existing replicated party data'}),
+    Object.freeze({signal:'MOUNT_VEHICLE_TRAVERSAL_STATE',families:Object.freeze(['CHARACTER','PROP','MOTION','AUDIO']),optional:Object.freeze(['VFX','UI']),rule:'consume mount/dismount/drive/ride state for attachment and traversal presentation without changing movement authority'}),
+    Object.freeze({signal:'PLAYER_CONDITION_FATIGUE_INJURY_ALERT',families:Object.freeze(['CHARACTER','MOTION','UI','AUDIO']),optional:Object.freeze(['VFX']),rule:'consume existing fatigue/injury/alert state for breathing, posture, locomotion variation and UI feedback without modifying stats'}),
+    Object.freeze({signal:'ELEMENT_DAMAGE_OR_WORLD_AFFINITY',families:Object.freeze(['MATERIAL','VFX','AUDIO']),optional:Object.freeze(['MOTION','ENVIRONMENT']),rule:'use FIRE/ICE/POISON/SHOCK/VOID or game-defined affinity only when gameplay already emits that semantic state; presentation must not invent resistances or damage'}),
+    Object.freeze({signal:'ACCESSIBILITY_PRESENTATION_MODE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['MATERIAL']),rule:'consume existing accessibility settings for contrast, reduced motion, cue redundancy and audio/visual alternatives without altering gameplay difficulty'}),
+    Object.freeze({signal:'WAVE_ROUND_PHASE_STATE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT','CAMERA_PRESENTATION','MOTION']),rule:'consume existing wave/round/phase state for countdown, escalation, transition and pressure presentation; spawn schedule and difficulty remain gameplay-owned'}),
+    Object.freeze({signal:'OBJECTIVE_PROGRESS_STATE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT','PROP']),rule:'bind objective start/progress/complete/fail state to trackers, world cues and feedback without changing completion logic'}),
+    Object.freeze({signal:'SHOP_TRADE_PURCHASE_STATE',families:Object.freeze(['UI','PROP','AUDIO']),optional:Object.freeze(['VFX','CHARACTER','BUILDING']),rule:'consume authoritative price/stock/ownership state for item cards, counters, merchant presentation and purchase feedback without changing economy'}),
+    Object.freeze({signal:'CRAFTING_RECIPE_QUEUE_STATE',families:Object.freeze(['UI','PROP','MOTION','AUDIO']),optional:Object.freeze(['VFX','BUILDING']),rule:'consume recipe availability/progress/queue/result state for bench, tool, motion and feedback; material consumption and recipe rules stay gameplay-owned'}),
+    Object.freeze({signal:'INVENTORY_CAPACITY_ITEM_ACQUISITION',families:Object.freeze(['UI','PROP','AUDIO']),optional:Object.freeze(['VFX','MOTION']),rule:'consume add/remove/full/selected/equipped inventory state for slots, pickup/readout and transition presentation without owning inventory data'}),
+    Object.freeze({signal:'LOOT_CONTAINER_STATE',families:Object.freeze(['PROP','MOTION','VFX','AUDIO']),optional:Object.freeze(['UI','MATERIAL']),rule:'bind CLOSED/AVAILABLE/OPENED/EMPTY/LOCKED container state to lid, latch, glow, sound and UI while loot tables remain gameplay-owned'}),
+    Object.freeze({signal:'PUZZLE_INTERACTION_STATE',families:Object.freeze(['UI','PROP','VFX','AUDIO']),optional:Object.freeze(['ENVIRONMENT','MOTION']),rule:'consume selection/valid/invalid/solved/reset puzzle state for readable tile/object/UI feedback without solving or scoring authority'}),
+    Object.freeze({signal:'DEFENSE_PLACEMENT_WAVE_STATE',families:Object.freeze(['UI','PROP','BUILDING','VFX']),optional:Object.freeze(['AUDIO','MATERIAL']),rule:'consume placement validity, tower/base state and wave state for ghost previews, range/readability and damage presentation; placement legality and combat remain authoritative elsewhere'}),
+    Object.freeze({signal:'TYCOON_PRODUCTION_SERVICE_STATE',families:Object.freeze(['BUILDING','PROP','UI','AUDIO']),optional:Object.freeze(['VFX','MOTION']),rule:'consume IDLE/BUSY/QUEUE/FULL/UPGRADED/BROKEN service or production state for facility animation and UI without changing revenue, capacity or timers'}),
+    Object.freeze({signal:'STEALTH_DETECTION_STATE',families:Object.freeze(['MOTION','UI','VFX','AUDIO']),optional:Object.freeze(['CHARACTER','ENVIRONMENT']),rule:'consume HIDDEN/SUSPICIOUS/ALERT/SEARCH/DETECTED state for posture, indicators, pulses and sound without changing detection calculation'}),
+    Object.freeze({signal:'PROJECTILE_FLIGHT_IMPACT_STATE',families:Object.freeze(['WEAPON','SKILL','VFX','AUDIO']),optional:Object.freeze(['MOTION','CAMERA_PRESENTATION']),rule:'consume projectile spawned/flight/impact/despawn semantics for trail, projectile presentation and impact feedback without owning hit tests or damage'}),
+    Object.freeze({signal:'COMBO_CHAIN_MOMENTUM_STATE',families:Object.freeze(['MOTION','VFX','AUDIO','UI']),optional:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume authoritative combo count/window/result for escalating presentation only; combo legality and reward stay gameplay-owned'}),
+    Object.freeze({signal:'COOLDOWN_CHARGE_READY_STATE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['SKILL','MOTION']),rule:'consume cooldown/charge/ready values for radial, pulse, glow and sound readiness feedback without modifying timing'}),
+    Object.freeze({signal:'SCORE_STREAK_MILESTONE_STATE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['CAMERA_PRESENTATION']),rule:'consume score/streak/milestone events for emphasis and reward presentation without changing score arithmetic'}),
+    Object.freeze({signal:'COMPANION_PET_COMMAND_STATE',families:Object.freeze(['CHARACTER','CREATURE','MOTION','UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'consume FOLLOW/STAY/ASSIST/RETURN/INJURED/HAPPY or existing command state for readable companion presentation; companion AI stays authoritative'}),
+    Object.freeze({signal:'FACTION_TEAM_IDENTITY_STATE',families:Object.freeze(['CHARACTER','MATERIAL','UI']),optional:Object.freeze(['PROP','VFX']),rule:'consume existing faction/team identity for compatible insignia, palette accents, UI and prop markings without changing alliances or targeting'}),
+    Object.freeze({signal:'SEASON_WORLD_EVENT_STATE',families:Object.freeze(['ENVIRONMENT','PROP','MATERIAL','AUDIO']),optional:Object.freeze(['VFX','UI','BUILDING']),rule:'consume existing season/event state for dressing, surface, ambient and UI variation without inventing event rewards or schedules'}),
+    Object.freeze({signal:'TRAVERSAL_MODE_STATE',families:Object.freeze(['MOTION','CHARACTER','AUDIO']),optional:Object.freeze(['VFX','UI','ENVIRONMENT']),rule:'consume SWIM/CLIMB/CRAWL/SLIDE/ZIPLINE/GLIDE or game-defined traversal state for body/contact presentation while movement physics remain gameplay-owned'}),
+    Object.freeze({signal:'MACHINE_POWER_OPERATION_STATE',families:Object.freeze(['PROP','MOTION','AUDIO','VFX']),optional:Object.freeze(['MATERIAL','UI','BUILDING']),rule:'consume OFF/STARTING/ACTIVE/OVERLOAD/BROKEN states for lights, moving parts, sound and smoke without changing machine production or power rules'}),
+    Object.freeze({signal:'DOOR_GATE_LOCK_STATE',families:Object.freeze(['BUILDING','PROP','MOTION','AUDIO']),optional:Object.freeze(['UI','VFX']),rule:'consume OPEN/CLOSED/LOCKED/UNLOCKED/BLOCKED states for hinges, latches, sound and prompts; access rules stay gameplay-owned'}),
+    Object.freeze({signal:'SAFE_DANGER_ZONE_STATE',families:Object.freeze(['ENVIRONMENT','UI','AUDIO']),optional:Object.freeze(['VFX','MATERIAL']),rule:'consume existing SAFE/CONTESTED/DANGER/HAZARD zone state for readable ambience and warning presentation without changing damage or permissions'}),
+    Object.freeze({signal:'CHECKPOINT_SAVE_FEEDBACK_STATE',families:Object.freeze(['UI','VFX','AUDIO']),optional:Object.freeze(['PROP','ENVIRONMENT']),rule:'consume existing checkpoint/save success or failure events only for presentation; never write save state from the asset layer'}),
+    Object.freeze({signal:'TELEPORT_PORTAL_TRANSITION_STATE',families:Object.freeze(['VFX','AUDIO','MOTION']),optional:Object.freeze(['ENVIRONMENT','UI','CAMERA_PRESENTATION']),rule:'consume existing teleport/portal begin-arrive state for transition presentation while destination and authority remain gameplay-owned'}),
+    Object.freeze({signal:'SOCIAL_EMOTE_INTERACTION_STATE',families:Object.freeze(['CHARACTER','MOTION','UI']),optional:Object.freeze(['AUDIO','VFX']),rule:'consume approved emote/social interaction state for gesture and feedback without changing relationship or party state'}),
+    Object.freeze({signal:'MOBILE_PERFORMANCE_LOD',families:Object.freeze(['ENVIRONMENT','PROP','VFX','MOTION','UI']),optional:Object.freeze(['AUDIO']),rule:'reduce density, secondary motion and expensive presentation only; preserve gameplay state, silhouette and essential feedback'}),
+    Object.freeze({signal:'GENERIC_EXISTING_STATE_OR_EVENT',families:Object.freeze(['UI','VFX','AUDIO','MOTION']),optional:Object.freeze(['CHARACTER','CREATURE','WEAPON','SKILL','ENVIRONMENT','BUILDING','PROP','MATERIAL','CAMERA_PRESENTATION']),rule:'for any new existing source event not named above, infer presentation families from the event/state owner and semantics, intersect with actually selected/applicable families, and bind conservatively without inventing gameplay or asset IDs'})
+  ]);
+  const adaptiveSignalRouting=Object.freeze({
+    enabled:true,
+    explicitMatrixIsFloorNotCeiling:true,
+    inspectExistingSourceEventsAndStateNames:true,
+    inspectExistingResponsibleFunctions:true,
+    inferOnlyFromCurrentSourceAndSelectedAssetMetadata:true,
+    unknownEventMayUseGenericPresentationFallback:true,
+    unknownEventMayNotCreateGameplaySystem:true,
+    unknownEventMayNotInventAssetIdFactoryRoleOrState:true,
+    sourceOwnerAuthorityAlwaysWins:true,
+    selectedApplicableFamiliesIntersectionRequired:true,
+    compositionPreference:Object.freeze([
+      'EXACT_ROLE_SINGLE_FAMILY_WHEN_ONLY_ONE_IS_RELEVANT',
+      'COHERENT_MULTI_FAMILY_BUNDLE_WHEN_EVENT_HAS_MULTIPLE_PRESENTATION_CHANNELS',
+      'REUSE_EXISTING_COMMON_SCRIPT_FACTORY',
+      'ADAPT_EXISTING_BINDING',
+      'AUTHOR_ONLY_REMAINING_GAP'
+    ]),
+    semanticHints:Object.freeze({
+      attack:Object.freeze(['WEAPON','MOTION','VFX','AUDIO']),
+      hit:Object.freeze(['MOTION','VFX','AUDIO']),
+      skill:Object.freeze(['SKILL','MOTION','VFX','AUDIO']),
+      equip:Object.freeze(['WEAPON','CHARACTER','MOTION','UI']),
+      npc:Object.freeze(['CHARACTER','MOTION','UI']),
+      boss:Object.freeze(['CREATURE','CHARACTER','MOTION','VFX','AUDIO','UI']),
+      weather:Object.freeze(['ENVIRONMENT','MATERIAL','AUDIO','VFX','PROP']),
+      biome:Object.freeze(['ENVIRONMENT','BUILDING','PROP','MATERIAL','AUDIO']),
+      interact:Object.freeze(['PROP','BUILDING','MOTION','VFX','AUDIO','UI']),
+      quest:Object.freeze(['UI','VFX','AUDIO']),
+      damage:Object.freeze(['MATERIAL','VFX','AUDIO']),
+      rarity:Object.freeze(['MATERIAL','VFX','AUDIO','UI']),
+      building:Object.freeze(['BUILDING','PROP','MATERIAL','UI']),
+      discovery:Object.freeze(['ENVIRONMENT','PROP','UI','AUDIO']),
+      party:Object.freeze(['UI','CHARACTER','MOTION']),
+      story:Object.freeze(['CHARACTER','MOTION','UI','AUDIO']),
+      performance:Object.freeze(['ENVIRONMENT','PROP','VFX','MOTION','UI'])
+    })
+  });
+  return Object.freeze({
+    version:3,
+    target:target||null,
+    gameId:gameId||null,
+    libraryVersion,
+    fingerprint,
+    exactFamilies,
+    flowSelections:Object.freeze(flowSelections),
+    sourceCandidates:Object.freeze(dedupedSources),
+    synchronization:Object.freeze({
+      mode:'INCREMENTAL_SELECTION_FINGERPRINT',
+      fullLibraryReplicationForbidden:true,
+      fullCatalogPromptInjectionForbidden:true,
+      selectedSubsetOnly:true,
+      unchangedFingerprintReusePreferred:true,
+      changedFamilyRebindOnly:true,
+      sourceApiContextOnlyForSelectedAssets:true,
+      selectedCommonSourceApiDiscovery:true,
+      selectedCommonSourcesDerivedFromSelectedFamiliesOnly:true,
+      selectedCommonSourceApiContextReadOnly:true,
+      apiContextBatchSize:4,
+      apiContextMaxBytes:18000,
+      apiContextPerFileMaxBytes:4500,
+      apiContextRotationByBuildUpGeneration:true,
+      allSelectedApiSourcesRemainEligibleAcrossCycles:true
+    }),
+    eligibility:Object.freeze({
+      genreRestrictionApplied:false,
+      crossGenreReuseAllowed:true,
+      genreUsedAsStylePreferenceOnly:true,
+      hardOrder:Object.freeze([
+        'SAFETY_LICENSE_AND_PLATFORM_COMPATIBILITY',
+        'EXISTING_GAME_SYSTEM_AND_STATE_APPLICABILITY',
+        'EXACT_FAMILY_ROLE_AND_BODY_PLAN_MATCH',
+        'RESPONSIBLE_SOURCE_AND_FACTORY_API_COMPATIBILITY',
+        'GAME_IDENTITY_AND_STYLE_ADAPTABILITY',
+        'INTEGRATION_COST_AND_EXISTING_BINDING_REUSE',
+        'EFFECTIVE_QUALITY_AFTER_ADAPTATION',
+        'DIVERSITY_AND_REPETITION_DEBT_TIEBREAK'
+      ]),
+      qualityScoreIsUsageGate:false,
+      lowScoreCompatibleAssetUseAllowed:true,
+      safeCompatibleFallbackPreferredOverBlank:true,
+      safeCompatibleFallbackPreferredOverPrimitivePlaceholder:true,
+      lowScoreUseKeepsQualityDebtOpen:true,
+      qualityMayNotOverrideRoleMismatch:true,
+      highScoreWrongRoleMustLose:true,
+      lowerScoreExactFitMayWin:true,
+      noMinimumScoreForSafeCompatibleUse:true,
+      adaptBeforeRejectPreferred:true
+    }),
+    sourceConsumptionSequence:Object.freeze([
+      'INSPECT_CURRENT_SYSTEM_STATE_EVENT_ATTRIBUTE_TAG_ROLE',
+      'SEARCH_SELECTED_INTERNAL_ASSET_EXACT_FAMILY_ROLE',
+      'READ_SELECTED_COMMON_SCRIPT_OR_FACTORY_API',
+      'COMPOSE_COMPATIBLE_MULTI_FAMILY_PRESENTATION',
+      'ADAPT_TO_EXISTING_GAME_STYLE',
+      'BIND_DIRECTLY_IN_EXISTING_RESPONSIBLE_FUNCTION',
+      'AUTHOR_ONLY_REMAINING_PRESENTATION_GAP'
+    ]),
+    commonSourceReuse:Object.freeze({
+      enabled:true,
+      selectedFamilyOnly:true,
+      targetNativeOnly:true,
+      readOnlyApiContext:true,
+      existingFactoryBeforeNewImplementation:true,
+      forkOrPerGameCopyForbidden:true
+    }),
+    repetitionControl:Object.freeze({
+      exactRoleMustRemainStable:true,
+      simpleRandomVariantSelectionForbidden:true,
+      compatibleVariantRecombineAllowed:true,
+      styleAdaptationAllowed:true,
+      variantSelectionMustUseExistingStateAndContext:true,
+      usageHistoryAndLineageMustBePreserved:true,
+      avoidExactAtomBundleRepetitionWhenCompatibleAlternativeExists:true,
+      neverSacrificeFitForNovelty:true
+    }),
+    adaptiveSignalRouting,
+    applicationCoverage:Object.freeze({
+      noArtificialAssetCountCap:true,
+      noArtificialFamilyUseCap:true,
+      noArtificialGameplaySignalCoverageCap:true,
+      noArtificialCombinationCap:true,
+      allApplicableExistingSystemsEligible:true,
+      allApplicableSelectedAssetsEligible:true,
+      continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
+      contextBudgetIsNotUsageCap:true,
+      apiContextBatchingAllowedForSynchronizationEfficiency:true,
+      independentResponsibleFilesMayApplyInParallel:true,
+      exactResponsibleFileConflictStillSerializes:true,
+      hardBlockersOnly:Object.freeze(['SECURITY','LICENSE','CORRUPT_SOURCE','PLATFORM_INCOMPATIBLE','EXPLICIT_INTERNAL_USE_FORBIDDEN'])
+    }),
+    usageMatrix
+  });
+}
+
+function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
+  if(!context||!Array.isArray(context.files)||!contract)return context;
+  const selectedFamilies=new Set([
+    ...Object.keys(contract.exactFamilies||{}),
+    ...(contract.flowSelections||[]).map(row=>row?.family),
+    ...(contract.sourceCandidates||[]).map(row=>row?.family)
+  ].map(value=>clean(value).toUpperCase()).filter(Boolean));
+  const selectedCommonSourcePaths=[];
+  if(clean(contract.target).toLowerCase()==='roblox'){
+    const commonSourceByFamily={
+      CHARACTER:['assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'],
+      CREATURE:['assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau'],
+      BUILDING:['assets/roblox/common-building-v1/RobloxCommonBuilding.luau'],
+      ENVIRONMENT:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau','assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau'],
+      WEAPON:['assets/roblox/common-tools-v1/RobloxCommonTools.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau'],
+      SKILL:['assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau'],
+      MATERIAL:['assets/roblox/common-materials-v1/RobloxCommonMaterials.luau'],
+      VFX:['assets/roblox/common-vfx-v1/RobloxCommonVFX.luau'],
+      UI:['assets/roblox/common-ui-v1/RobloxCommonUI.luau','assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau'],
+      MOTION:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','assets/vibe-motion-director.js'],
+      PROP:['assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau']
+    };
+    for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
+  }
+  const allSelectedPaths=unique([
+    ...selectedCommonSourcePaths,
+    ...(contract.flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
+    ...(contract.sourceCandidates||[]).flatMap(row=>row?.sourceFiles||[]),
+    ...(contract.sourceCandidates||[]).map(row=>row?.path)
+  ].map(posix).filter(file=>
+    file
+    &&!path.isAbsolute(file)
+    &&!file.split('/').includes('..')
+    &&/^assets\//.test(file)
+    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
+  )).sort();
+  if(!allSelectedPaths.length)return context;
+  const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
+  const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
+  const start=((generation-1)*batchSize)%allSelectedPaths.length;
+  const selectedPaths=[];
+  for(let i=0;i<Math.min(batchSize,allSelectedPaths.length);i++)selectedPaths.push(allSelectedPaths[(start+i)%allSelectedPaths.length]);
+  const existing=new Set(context.files.map(row=>posix(row?.path)));
+  const apiFiles=[];
+  let remaining=Math.max(4500,Number(contract?.synchronization?.apiContextMaxBytes||18000));
+  for(const relative of selectedPaths){
+    if(existing.has(relative)||remaining<=0)continue;
+    const absolute=path.resolve(cwd,relative);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
+    const raw=fs.readFileSync(absolute,'utf8');
+    const excerpt=boundedPromptText(raw,Math.min(Number(contract?.synchronization?.apiContextPerFileMaxBytes||4500),remaining));
+    const bytes=Buffer.byteLength(excerpt,'utf8');
+    remaining-=bytes;
+    apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
+  }
+  if(!apiFiles.length)return context;
+  return{
+    ...context,
+    files:[...context.files,...apiFiles],
+    bytes:Number(context.bytes||0)+apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
+    internalAssetApiContextFiles:apiFiles.map(row=>row.path),
+    internalAssetApiContextBytes:apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
+    internalAssetApiContextBounded:true,
+    internalAssetApiContextGeneration:generation,
+    internalAssetApiContextEligibleSourceCount:allSelectedPaths.length,
+    internalAssetApiContextRotationStart:start
+  };
+}
+
+function internalAssetSourceUsageGuidance(order={}){
+  const contract=buildInternalAssetSourceUsageContract(order);
+  if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
+  const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
+  const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
+  const sourceRows=contract.sourceCandidates
+    .filter(row=>row.sourceFiles.length||row.path)
+    .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
+    .join('; ');
+  return [
+    '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
+    'Exact selected family IDs only: '+(exactRows||'NONE'),
+    'Exact flow selections: '+(flowRows||'NONE'),
+    'Selected source/API references: '+(sourceRows||'NONE'),
+    'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
+    'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
+    'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
+    'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
+    'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
+    'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
+    'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
+    'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
+    ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
+    'The explicit signal matrix is a FLOOR, not a ceiling. Scan current responsible source for additional existing events/state names and use adaptiveSignalRouting semantic hints only to choose presentation families that are both selected and applicable. Unknown source events may use the generic presentation fallback, but may not create a new gameplay system, asset ID, factory, role, state, or authority.',
+    'Reuse existing common asset scripts/factories when the selected source/API reference is available. Call them from the current responsible game code or bind their returned native objects there; do not fork/copy a common script into each game.',
+    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. They are read-only bounded implementation context and rotate across BUILD_UP cycles; prefer the existing API before new per-game presentation code.',
+    'When an existing Inventory/Equipment/Quest/Shop/Map/Party/Crafting/Dialogue/NPC/Character/Settings/Search/Filter/Sort system needs UI, inspect the matching RobloxCommonUI Create* factory first and connect it to the existing responsible state instead of rebuilding the screen.',
+    'Variant diversity must preserve exact role/body-plan and use existing state/context plus usage history/lineage; simple random asset swapping is forbidden. Prefer compatible variants, recombination and style adaptation without sacrificing fit.',
+    'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
+    '[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'
+  ].join('\n');
+}
+
 function universalAssetWorkerGuidance(order={}) {
   const target=clean(order?.target).toLowerCase();
   if(!['roblox','unity','web'].includes(target))return'';
@@ -1884,7 +2242,7 @@ function universalAssetWorkerGuidance(order={}) {
     'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
     'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
     'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
-    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
+    target==='roblox'?'Roblox source link: selected internal assets are already exposed through the existing shared Config.StudioAssets.Families table. Read the needed family directly from that table in the current responsible Luau source and use those selected atoms while authoring the existing Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator ownership. Do not edit company-asset-library.json or create a second asset pipeline. Use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } as trace evidence only; metadata never replaces actual native source use.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
     'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
     'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
   ].filter(Boolean).join('\n');
@@ -2406,6 +2764,7 @@ learningContract.block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
+internalAssetSourceUsageGuidance(order),
 gameContextCapsuleGuidance(order,exploration,responsibleFiles),
 preSubmitSelfReviewGuidance(order),
 studioAssetQualityCoreGuidance(order),
@@ -4220,7 +4579,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
     :null;
   if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
-  const context=unityBootstrapContext
+  const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order);
+  let context=unityBootstrapContext
     ||(!sourceRootExists&&bootstrap
       ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
       :(focusedContext||{
@@ -4237,6 +4597,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       exactSourceWindows:false,
       fullFileFallback:focusedWebRepair
     }));
+  context=attachSelectedInternalAssetApiContext(context,{cwd,contract:assetSourceUsageContract,order});
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
   const verifiedExternalLearningContract=buildVerifiedExternalLearningPromptContract(order);
@@ -4540,6 +4901,26 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedExternalLearningDeterministicCoveragePct:Number(generation.deterministicVerifiedExternalLearningCoveragePct||0),
     verifiedExternalLearningDeterministicContractConsumed:generation.deterministicVerifiedExternalLearningContractConsumed===true,
     deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
+    internalAssetSourceUsageFingerprint:assetSourceUsageContract.fingerprint,
+    internalAssetSourceUsageLibraryVersion:assetSourceUsageContract.libraryVersion,
+    internalAssetSourceUsageSelectedFamilies:Object.keys(assetSourceUsageContract.exactFamilies||{}),
+    internalAssetSourceUsageSyncMode:assetSourceUsageContract.synchronization.mode,
+    internalAssetGenreRestrictionApplied:false,
+    internalAssetQualityMayNotOverrideRoleMismatch:true,
+    internalAssetQualityScoreIsUsageGate:false,
+    internalAssetLowScoreCompatibleUseAllowed:true,
+    internalAssetSafeFallbackPreferredOverBlank:true,
+    internalAssetApplicationNoArtificialCap:true,
+    internalAssetContextBudgetIsNotUsageCap:true,
+    internalAssetExplicitUsageSignalCount:Number(assetSourceUsageContract.usageMatrix?.length||0),
+    internalAssetAdaptiveSignalRouting:assetSourceUsageContract.adaptiveSignalRouting?.enabled===true,
+    internalAssetExplicitMatrixIsFloorNotCeiling:assetSourceUsageContract.adaptiveSignalRouting?.explicitMatrixIsFloorNotCeiling===true,
+    internalAssetApiContextFiles:Object.freeze([...(context.internalAssetApiContextFiles||[])]),
+    internalAssetApiContextBytes:Number(context.internalAssetApiContextBytes||0),
+    internalAssetApiContextBounded:context.internalAssetApiContextBounded===true,
+    internalAssetApiContextGeneration:Number(context.internalAssetApiContextGeneration||0),
+    internalAssetApiContextEligibleSourceCount:Number(context.internalAssetApiContextEligibleSourceCount||0),
+    internalAssetApiContextRotationStart:Number(context.internalAssetApiContextRotationStart||0),
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',
@@ -4642,6 +5023,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     designEvidence:waitingDesignEvidence(),
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
+    internalAssetSourceUsage:assetSourceUsageContract,
     imageAssetObservation,
     runtimeVisualObservation,
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
