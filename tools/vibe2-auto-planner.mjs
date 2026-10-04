@@ -128,6 +128,166 @@ function expectationMetric(spec={},cycle=1,fallback={}){
   return Number.isFinite(max)&&max>0?Math.min(max,value):value;
 }
 const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE=new Map();
+function assetLibraryUtilizationFloor(assetLibrary={},assets=[],families=[]){
+  const universal=assetLibrary?.universalVibeUpgradeAssetContract||{};
+  const usage=assetLibrary?.internalAssetUsagePolicy||{};
+  const composition=assetLibrary?.internalAssetCompositionContract||{};
+  const rules=assetLibrary?.rules||{};
+  const automation=assetLibrary?.internalAssetLibraryAutomation||{};
+  const ambient=assetLibrary?.ambientSoundscapeContract||{};
+  const environment=assetLibrary?.environmentStateContract||{};
+  const variationAxes=automation?.studioVariationAxes&&typeof automation.studioVariationAxes==='object'?automation.studioVariationAxes:{};
+  const familyCounts=Object.freeze(Object.fromEntries(families.map(family=>[
+    family,
+    assets.filter(row=>clean(row?.family||row?.category).toUpperCase()===family).length
+  ])));
+  const universalFamilies=[...(Array.isArray(universal?.families)?universal.families:[])]
+    .map(value=>clean(value).toUpperCase()).filter(Boolean);
+  const evaluatedFamilies=[...new Set([...universalFamilies,...families,'AUDIO'])].sort();
+  const actualAudioAssetCount=Math.max(
+    0,
+    Number(automation?.actualVerifiedAudioAssetCount||0)||0,
+    Number(ambient?.actualAudioAssetCountFromThisContract||0)||0
+  );
+  const audioRoleContractCount=Math.max(
+    0,
+    Number(automation?.audioRoleContractCount||0)||0,
+    Object.values(ambient?.sourceGroups||{}).reduce((sum,row)=>sum+(Array.isArray(row)?row.length:0),0)
+  );
+  const lowScoreUseAllowed=usage?.lowScoreAssetUseAllowed===true&&usage?.internalAuditScoreIsUsageGate===false;
+  const scored=assets.map(row=>Number(row?.internalAuditScore)).filter(Number.isFinite);
+  const qualityDebtCandidateCount=scored.filter(score=>score<1000).length;
+  const familyState=family=>{
+    const key=clean(family).toUpperCase();
+    if(key==='AUDIO')return actualAudioAssetCount>0?'READY':audioRoleContractCount>0?'ROLE_CONTRACT_ONLY':'UNAVAILABLE';
+    return Number(familyCounts[key]||0)>0?'READY':'UNAVAILABLE';
+  };
+  const familyPurpose=Object.freeze({
+    CHARACTER:'플레이어/NPC 실루엣·직업·세력·장비·감정·부상 상태 표현',
+    CREATURE:'종·체형·지역·일반/정예/보스·행동·피격/사망 정체성 표현',
+    BUILDING:'건물 역할·내외부·모듈·재질·파손/수리·지역/기후 표현',
+    ENVIRONMENT:'바이옴·전경/중경/배경·랜드마크·날씨·시간·계절·분위기·LOD',
+    WEAPON:'무기 계열·손잡이/소켓·재질·마모·세력·장착/드랍/아이콘·모션/VFX 연결',
+    SKILL:'예고→시전→방출→충돌→회복, 투사체/빔/AOE/소환/버프/디버프/힐 표현',
+    MATERIAL:'표면군·깨끗/마모/파손·건조/젖음/동결/부식·빛 반응·희귀도/에너지 표현',
+    AUDIO:'BGM/강도·거리·지역·날씨/시간·실내외·오클루전/리버브·variation·모바일 예산',
+    VFX:'예고/접촉/후효과·강도·형상 언어·속성·환경 반응·모바일 밀도/LOD',
+    UI:'HUD/메뉴/인벤토리/장비/퀘스트/상점/지도/파티/제작/대화/상태·입력·접근성',
+    MOTION:'시작/정지/회전·속도/무게·무기 자세·방향/강도 반응·피로/부상·연기·접촉',
+    PROP:'자원/도구/가구/장식/상호작용물·상태·지역·마모·세력·set dressing·LOD'
+  });
+  const idea=(id,state,familiesUsed,purpose,kind='BUNDLE',axes=[])=>Object.freeze({
+    id,state,kind,
+    families:Object.freeze(familiesUsed),
+    axes:Object.freeze(axes),
+    purpose,
+    applyRule:'APPLY_IF_EXISTING_GAME_SYSTEM_OR_SOURCE_SIGNAL_IS_APPLICABLE',
+    existingImplementationRule:'PASS_AND_SELECT_NEXT_MISSING_IDEA',
+    noQualityScoreGate:true
+  });
+  const familyIdeas=evaluatedFamilies.map(family=>idea(
+    'FAMILY_'+family+'_COVERAGE',
+    familyState(family),
+    [family],
+    familyPurpose[family]||'현재 게임의 해당 family 책임을 찾아 안전·권리·플랫폼·역할 호환 자산을 실제 표현에 연결',
+    'FAMILY'
+  ));
+  const variationIdeas=Object.entries(variationAxes).map(([domain,axes])=>idea(
+    'VARIATION_'+clean(domain).toUpperCase(),
+    'READY',
+    [],
+    clean(domain)+' 자산을 현재 게임 상태에 맞춰 variation 축으로 재사용·적응·재조합',
+    'VARIATION',
+    (Array.isArray(axes)?axes:[]).map(clean).filter(Boolean)
+  ));
+  const bundleState=required=>{
+    const missing=required.filter(family=>family!=='AUDIO'&&familyState(family)!=='READY');
+    if(missing.length)return'UNAVAILABLE';
+    if(required.includes('AUDIO')&&familyState('AUDIO')!=='READY')return familyState('AUDIO')==='ROLE_CONTRACT_ONLY'?'ROLE_CONTRACT_ONLY':'UNAVAILABLE';
+    return'READY';
+  };
+  const bundle=(id,required,purpose)=>idea(id,bundleState(required),required,purpose);
+  const bundleIdeas=[
+    bundle('WORLD_DEPTH_LANDMARK_SET_DRESSING',['ENVIRONMENT','BUILDING','PROP','MATERIAL'],'전경·중경·배경, 랜드마크, 건물 기능, set dressing, 접합 재질을 동선과 중요도에 맞춰 계층화'),
+    bundle('WEATHER_TIME_SURFACE_WIND_RESPONSE',['ENVIRONMENT','MATERIAL','VFX','MOTION','AUDIO'],'날씨·시간·계절 상태에 하늘/배경 깊이·젖음/동결·식생/천 움직임·환경음을 함께 반응'),
+    bundle('INTERIOR_EXTERIOR_FUNCTIONAL_SPACE',['BUILDING','PROP','MATERIAL','UI','AUDIO'],'상점/제작/휴식/치유/거점 내외부를 가구·카운터·조명·표면·UI·공간음으로 역할 구분'),
+    bundle('WORLD_DAMAGE_DECAY_RECOVERY',['BUILDING','PROP','MATERIAL','VFX'],'정상→마모→파손→수리 상태를 구조·표면·파편/효과로 연결하되 내구도 규칙은 게임 소스가 유지'),
+    bundle('LANDMARK_ROUTE_DISCOVERY_FEEDBACK',['ENVIRONMENT','PROP','UI','VFX','AUDIO'],'탐험 경로·POI·랜드마크 발견을 실루엣·표식·지도/UI·발견 피드백으로 연결'),
+    bundle('SAFE_DANGER_ZONE_READABILITY',['ENVIRONMENT','MATERIAL','UI','VFX','AUDIO'],'안전/위험/오염/경계 구역을 배경·표면·경고 UI·분위기 효과로 읽히게 하되 위험 판정은 유지'),
+    bundle('CHARACTER_ROLE_GEAR_MOTION_IDENTITY',['CHARACTER','MOTION','MATERIAL','UI'],'직업/역할/랭크/장비/상태에 맞는 실루엣·복장·재질·자세·상태 UI를 한 묶음으로 연결'),
+    bundle('NPC_PROFESSION_FACTION_RELATIONSHIP',['CHARACTER','PROP','MOTION','UI'],'상인/경비/농부/대장장이/퀘스트 NPC 등 역할과 세력·관계 상태를 장비/소품/연기/UI로 차별화'),
+    bundle('CREATURE_REGION_THREAT_VARIATION',['CREATURE','MOTION','MATERIAL','VFX','AUDIO'],'종/체형은 유지하면서 지역·기후·일반/정예/보스·부상 상태를 스킨/모션/VFX/울음으로 변주'),
+    bundle('BOSS_PHASE_SIGNATURE_STACK',['CREATURE','CHARACTER','MOTION','VFX','UI','AUDIO'],'보스 인트로·단계 전환·격노·최종 사망에 전용 연기/VFX/UI/음악·효과 계층을 결합'),
+    bundle('WEAPON_STANCE_SOCKET_CONTACT',['WEAPON','CHARACTER','MOTION','VFX','AUDIO'],'장착 위치·한손/양손·자세·공격 예고/접촉/회복·무기별 충돌 피드백을 동기화'),
+    bundle('HIT_BLOCK_PARRY_CRITICAL_REACTION',['MOTION','VFX','AUDIO','UI'],'피격 방향/강도·막기·패링·치명타 결과를 반응 모션/VFX/SFX/UI 중첩으로 표현'),
+    bundle('SKILL_CAST_RELEASE_IMPACT_GRAMMAR',['SKILL','MOTION','VFX','AUDIO','UI'],'스킬의 준비/차지/방출/이동/충돌/지속/회복을 타입별 표현 문법으로 묶고 쿨다운/판정은 보존'),
+    bundle('STATUS_EFFECT_REDUNDANT_CUES',['VFX','MATERIAL','UI','AUDIO','MOTION'],'독/화상/동결/감전/기절/버프/디버프를 색 하나가 아니라 표면·효과·UI·음향·모션으로 중복 가독화'),
+    bundle('TOOL_TARGET_INTERACTION_PAIRING',['WEAPON','PROP','MOTION','VFX','AUDIO','UI'],'도끼-나무/곡괭이-광물/망치-제작대/낚싯대-물 같은 도구-대상 상호작용을 접촉 중심으로 연결'),
+    bundle('ITEM_WORLD_INVENTORY_CRAFT_STATES',['PROP','MATERIAL','UI','VFX'],'같은 아이템을 월드 드랍/인벤토리/장착/제작/소모 상태에 맞춰 형태·재질·아이콘·강조를 일관되게 연결'),
+    bundle('RESOURCE_DEPLETION_REGROW_STATE',['PROP','MATERIAL','VFX','AUDIO'],'자원 노드의 가득참/채집 중/고갈/재생 상태를 형태·표면·파편·소리로 표시'),
+    bundle('LOOT_CONTAINER_LOCK_OPEN_EMPTY',['PROP','MOTION','VFX','AUDIO','UI'],'상자/보관함의 잠김/열림/비어있음/보상 상태를 뚜껑·잠금장치·효과·소리·UI로 일치'),
+    bundle('CRAFT_SHOP_INVENTORY_PRESENTATION',['UI','PROP','BUILDING','MOTION','AUDIO'],'제작/상점/인벤토리의 실제 상태와 공용 UI·작업대/카운터·도구 동작·피드백을 연결'),
+    bundle('QUEST_DISCOVERY_REWARD_MILESTONE',['UI','VFX','AUDIO','ENVIRONMENT'],'퀘스트 시작/진행/완료·발견·레벨업·보상 순간을 HUD/월드 큐/VFX/음향으로 단계화'),
+    bundle('MOTION_TRANSITION_CONTACT_POLISH',['MOTION','CHARACTER','CREATURE'],'idle↔walk↔run, 시작/정지/회전, 공격/피격/사망, 손-도구·발-지면 접촉 전환을 상태별로 보강'),
+    bundle('TRAVERSAL_MODE_PRESENTATION',['MOTION','CHARACTER','AUDIO','VFX','ENVIRONMENT'],'수영/등반/기어가기/슬라이드/집라인/글라이드 등 기존 이동 모드에 접촉·환경·음향 피드백 연결'),
+    bundle('MOBILE_TOUCH_ACCESSIBILITY_DENSITY',['UI','VFX','MOTION'],'터치 우선 조작, 한손 배치, 입력 힌트, 색각/감광/감소 모션, 화면 밀도와 효과 밀도를 모바일 예산에 맞춰 조정'),
+    bundle('MULTIPLAYER_REPLICATED_PRESENTATION',['CHARACTER','MOTION','VFX','UI','AUDIO'],'서버가 복제한 권위 상태를 클라이언트 표현에만 사용해 팀/피격/스킬/부활/상태를 동기화'),
+    bundle('AMBIENT_SPATIAL_SOUNDSCAPE',['AUDIO','ENVIRONMENT','PROP','BUILDING'],'BED+NEAR_LOOP+DISTANT_LOOP+SCATTER+ONE_SHOT+INTERACTION_SOURCE를 지역·거리·시간·날씨·실내외에 조합'),
+    bundle('AUDIO_COMBAT_BOSS_INTENSITY',['AUDIO','MOTION','VFX'],'탐험 calm/tension→전투 low/high→보스 phase→승리/패배를 상태 기반 레이어와 변형 세트로 연결'),
+    bundle('AUDIO_CREATURE_MACHINE_WORLD_VARIATION',['AUDIO','CREATURE','PROP'],'야생동물/곤충/새/하울링·기계 hum/overload/failure·문/체인/간판 등을 거리/variation/repeater dedupe로 운용'),
+    bundle('MOBILE_LOD_STREAMING_BUDGET',['ENVIRONMENT','BUILDING','PROP','VFX','MOTION','UI'],'게임플레이 핵심 실루엣·피드백은 보존하고 배경 깊이/소품/보조 모션/VFX/UI 밀도를 LOD·모바일 예산으로 조절')
+  ];
+  const capabilityIdeas=[
+    rules?.buildingGrammar===true?idea('BUILDING_GRAMMAR_REUSE','READY',['BUILDING','PROP'],'공용 building grammar로 벽/문/창/지붕/계단/난간 조합을 역할·지역·손상 상태에 맞게 재구성','CAPABILITY'):null,
+    rules?.biomeDna===true?idea('BIOME_DNA_COHESION','READY',['ENVIRONMENT','PROP','MATERIAL'],'biome DNA를 지형/식생/소품/재질/배경 깊이에 공통 적용해 팩 혼합 느낌을 줄임','CAPABILITY'):null,
+    rules?.variantRecipeSystem===true?idea('VARIANT_RECIPE_DERIVATION','READY',[],'기존 원형을 색상만 바꾸지 말고 역할·지역·상태·재질·마모·LOD 축으로 파생','CAPABILITY'):null,
+    rules?.identityBudgetByImportance===true?idea('IDENTITY_BUDGET_BY_IMPORTANCE','READY',[],'Hero/중요 상호작용/일반/배경 중요도에 따라 실루엣·디테일·모션·VFX 예산을 차등 배분','CAPABILITY'):null,
+    rules?.usageWeightedVariation===true?idea('USAGE_WEIGHTED_VARIATION','READY',[],'반복 노출이 많은 자산일수록 variation 폭을 넓히고 드문 자산은 핵심 정체성에 집중','CAPABILITY'):null,
+    assetLibrary?.motionDirector?idea('MOTION_DIRECTOR_STATE_BLEND','READY',['MOTION'],'공용 모션 디렉터의 호환 그래프·블렌드·속도 동기화·접촉 보정을 기존 상태 머신에 재사용','CAPABILITY'):null,
+    assetLibrary?.characterNpcCustomization?idea('CHARACTER_NPC_SHARED_CUSTOMIZATION','READY',['CHARACTER'],'플레이어/NPC 공용 체형·얼굴·헤어·의상·액세서리·표정·보행 풀을 역할 편향으로 조합','CAPABILITY'):null,
+    assetLibrary?.duelCombatMotion?idea('DUEL_COMBAT_MOTION_LANGUAGE','READY',['MOTION','WEAPON'],'결투형 무기/맨손 자세·공격/방어/패링/피격 흐름을 현재 전투 규칙에 맞춰 재사용','CAPABILITY'):null,
+    assetLibrary?.survivalWildlifePack?idea('SURVIVAL_WILDLIFE_PRESENTATION','READY',['CREATURE','MOTION'],'야생동물 종별 보행/질주/경계/공격/피격/사망과 지역 스킨을 생존 게임 생태 표현에 활용','CAPABILITY'):null,
+    assetLibrary?.baseMaterialLibrary?idea('BASE_MATERIAL_STATE_COMPOSITION','READY',['MATERIAL'],'공용 표면 원자를 건조/젖음/동결/부식/마모/파손/빛 반응 상태로 조합','CAPABILITY'):null,
+    rules?.crossAssetCompatibilityGraph===true?idea('CROSS_PACK_COMPATIBLE_RECOMBINATION','READY',[],'호환 그래프를 사용해 서로 다른 팩의 파츠·재질·모션을 역할/스타일 호환 범위에서 재조합','CAPABILITY'):null
+  ].filter(Boolean);
+  const lowScoreIdea=idea(
+    'LOW_SCORE_COMPATIBLE_USE_WITH_QUALITY_DEBT',
+    lowScoreUseAllowed?'READY':'POLICY_NOT_ACTIVE',
+    evaluatedFamilies,
+    '점수 낮은 자산도 안전·라이선스·플랫폼·역할 호환이면 빈 슬롯/primitive 대신 사용한다. 고득점 wrong-role보다 저득점 exact-role을 우선하고, 현재 사용을 유지한 채 약한 축을 품질부채로 개선하거나 충분히 나은 호환 후보가 준비된 뒤 교체한다.',
+    'QUALITY_POLICY'
+  );
+  const ideas=[...familyIdeas,...variationIdeas,...bundleIdeas,...capabilityIdeas,lowScoreIdea]
+    .filter(row=>row.state!=='UNAVAILABLE');
+  return Object.freeze({
+    version:1,
+    mode:'ALL_CURRENT_LIBRARY_CAPABILITIES_NO_FIXED_IDEA_CAP',
+    usagePolicyVersion:Number(usage?.version||0),
+    usagePolicySource:'company-asset-library.json#internalAssetUsagePolicy',
+    usageRequiredForEveryGame:universal?.status==='ACTIVE_EXECUTABLE_CONTRACT'&&rules?.vibeUpgradeUniversalAssetFirstRequired===true,
+    allFamiliesEvaluated:universal?.selection==='ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE'||rules?.allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade===true,
+    applicableFamiliesRequireActualSourceBinding:rules?.applicableAssetFamiliesRequireActualSourceBinding===true,
+    lowScoreUseAllowed,
+    internalAuditScoreIsUsageGate:usage?.internalAuditScoreIsUsageGate===true,
+    qualityDebtCandidateCount,
+    scoredAssetCount:scored.length,
+    qualityMin:scored.length?Math.min(...scored):null,
+    qualityMax:scored.length?Math.max(...scored):null,
+    evaluatedFamilies:Object.freeze(evaluatedFamilies),
+    familyCounts,
+    variationAxes:Object.freeze(Object.fromEntries(Object.entries(variationAxes).map(([key,value])=>[key,Object.freeze([...(Array.isArray(value)?value:[])].map(clean).filter(Boolean))]))),
+    ideas:Object.freeze(ideas),
+    readyIdeaCount:ideas.filter(row=>row.state==='READY').length,
+    roleContractOnlyIdeaCount:ideas.filter(row=>row.state==='ROLE_CONTRACT_ONLY').length,
+    actualAudioAssetCount,
+    audioRoleContractCount,
+    environmentStateCount:Math.max(Number(environment?.stateCount||0)||0,Array.isArray(environment?.states)?environment.states.length:0),
+    consumerStageAccess:clean(composition?.consumerStageAccess)||null,
+    existingImplementationRule:'IF_ACTUAL_SOURCE_BINDING_AND_BEHAVIOR_ALREADY_EXISTS_PASS_THAT_IDEA_AND_SELECT_NEXT_MISSING_ONE',
+    primitiveOnlyForbidden:universal?.primitiveOnlyPassForbidden===true||rules?.primitiveOnlyVisualUpgradeForbidden===true,
+    markerOnlyForbidden:universal?.markerOnlyPassForbidden===true||rules?.assetConfigMarkerOnlyCannotPass===true
+  });
+}
 function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_PATH){
   const assetLibraryPath=clean(relativePath)||COMPANY_ASSET_LIBRARY_PATH;
   const file=path.resolve(repoRoot,assetLibraryPath);
@@ -138,13 +298,15 @@ function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_
   const assetLibrary=readJson(file,null);
   const assets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
   const families=[...new Set(assets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
+  const utilization=assetLibraryUtilizationFloor(assetLibrary||{},assets,families);
   const snapshot=Object.freeze({
     present:Boolean(assetLibrary&&((Number(assetLibrary?.version)||0)>0||assets.length)),
     path:assetLibraryPath,
     version:Number(assetLibrary?.version||0),
     assetCount:assets.length,
     families:Object.freeze(families),
-    familyCount:families.length
+    familyCount:families.length,
+    utilization
   });
   ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,Object.freeze({mtimeMs:stat?.mtimeMs??null,size:stat?.size??0,snapshot}));
   return snapshot;
@@ -205,6 +367,31 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     assetLibraryAssetCount:assetLibrarySnapshot.assetCount,
     assetLibraryFamilyCount:assetLibrarySnapshot.familyCount,
     assetLibraryFamilies:assetLibrarySnapshot.families,
+    assetLibraryUtilizationMode:assetLibrarySnapshot.utilization.mode,
+    assetLibraryUsagePolicyVersion:assetLibrarySnapshot.utilization.usagePolicyVersion,
+    assetLibraryUsagePolicySource:assetLibrarySnapshot.utilization.usagePolicySource,
+    assetLibraryUsageRequiredForEveryGame:assetLibrarySnapshot.utilization.usageRequiredForEveryGame,
+    assetLibraryAllFamiliesEvaluated:assetLibrarySnapshot.utilization.allFamiliesEvaluated,
+    assetLibraryApplicableFamiliesRequireActualSourceBinding:assetLibrarySnapshot.utilization.applicableFamiliesRequireActualSourceBinding,
+    assetLibraryLowScoreUseAllowed:assetLibrarySnapshot.utilization.lowScoreUseAllowed,
+    assetLibraryInternalAuditScoreIsUsageGate:assetLibrarySnapshot.utilization.internalAuditScoreIsUsageGate,
+    assetLibraryQualityDebtCandidateCount:assetLibrarySnapshot.utilization.qualityDebtCandidateCount,
+    assetLibraryScoredAssetCount:assetLibrarySnapshot.utilization.scoredAssetCount,
+    assetLibraryQualityMin:assetLibrarySnapshot.utilization.qualityMin,
+    assetLibraryQualityMax:assetLibrarySnapshot.utilization.qualityMax,
+    assetLibraryEvaluatedFamilies:assetLibrarySnapshot.utilization.evaluatedFamilies,
+    assetLibraryFamilyCounts:assetLibrarySnapshot.utilization.familyCounts,
+    assetLibraryVariationAxes:assetLibrarySnapshot.utilization.variationAxes,
+    assetLibraryUtilizationIdeas:assetLibrarySnapshot.utilization.ideas,
+    assetLibraryReadyIdeaCount:assetLibrarySnapshot.utilization.readyIdeaCount,
+    assetLibraryRoleContractOnlyIdeaCount:assetLibrarySnapshot.utilization.roleContractOnlyIdeaCount,
+    assetLibraryActualAudioAssetCount:assetLibrarySnapshot.utilization.actualAudioAssetCount,
+    assetLibraryAudioRoleContractCount:assetLibrarySnapshot.utilization.audioRoleContractCount,
+    assetLibraryEnvironmentStateCount:assetLibrarySnapshot.utilization.environmentStateCount,
+    assetLibraryConsumerStageAccess:assetLibrarySnapshot.utilization.consumerStageAccess,
+    assetLibraryExistingImplementationRule:assetLibrarySnapshot.utilization.existingImplementationRule,
+    assetLibraryPrimitiveOnlyForbidden:assetLibrarySnapshot.utilization.primitiveOnlyForbidden,
+    assetLibraryMarkerOnlyForbidden:assetLibrarySnapshot.utilization.markerOnlyForbidden,
     assetLibrarySourceParityRequired:assetLibrarySnapshot.present&&sourceParity?.sourceMustKeepPaceWithApplicableAssetCapability!==false,
     assetOnlySwapCountsAsEvolution:sourceParity?.assetOnlySwapCountsAsEvolution===true,
     sourceCompositionApplicabilityRule:sourceParity?.applicableOnly===false?'ALL_DIMENSIONS_REQUIRED':'APPLICABLE_OR_REASONED_NOT_APPLICABLE',
@@ -241,6 +428,9 @@ function buildUpIterationExpectationPrompt(expectation={}){
 최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
 소스 구성 성장: depth=${expectation.sourceCompositionDepthLevel}; 최소 ${(expectation.activeSourceCompositionDimensions||[]).length}/${expectation.minimumActiveSourceCompositionDimensions}개 축을 실제 책임 소스에서 연결한다. 활성 축=${(expectation.activeSourceCompositionDimensions||[]).join(' | ')||'CORE_LOOP_ORCHESTRATION'}. 내부 자산 라이브러리=${expectation.assetLibraryPresent?`v${expectation.assetLibraryVersion}, assets=${expectation.assetLibraryAssetCount}, families=${expectation.assetLibraryFamilyCount}`:'NOT_OBSERVED'}. 적용 가능한 고급 자산·UI·모션·VFX·컷신·인트로·로딩·메뉴 표현이 생기면 실제 전투/AI/월드 상태/퀘스트/보상/세션 전환/중후반 콘텐츠 흐름과 소스에서 연결한다. 자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면 source evolution으로 계산하지 않는다. 모든 축 활성화 이후에도 sourceCompositionDepth는 계속 상승하며, 비적용 축은 이유가 있어야 한다.
+자산 최대활용 플로어: mode=${expectation.assetLibraryUtilizationMode}; policy=${expectation.assetLibraryUsagePolicySource}; 모든 family 평가=${expectation.assetLibraryAllFamiliesEvaluated?'YES':'POLICY_NOT_OBSERVED'}; 실제 소스 바인딩 필요=${expectation.assetLibraryApplicableFamiliesRequireActualSourceBinding?'YES':'POLICY_NOT_OBSERVED'}; consumer stages=${expectation.assetLibraryConsumerStageAccess||'CURRENT_EXISTING_STAGE_ONLY'}. family 상태=${(expectation.assetLibraryEvaluatedFamilies||[]).map(f=>f+':'+(f==='AUDIO'?(expectation.assetLibraryActualAudioAssetCount>0?expectation.assetLibraryActualAudioAssetCount:'ROLE_CONTRACT_ONLY'):(expectation.assetLibraryFamilyCounts?.[f]||0))).join(' | ')||'NONE'}.
+저점수 사용 규칙: lowScoreUseAllowed=${expectation.assetLibraryLowScoreUseAllowed?'YES':'NO'}; internalAuditScoreIsUsageGate=${expectation.assetLibraryInternalAuditScoreIsUsageGate?'YES':'NO'}; qualityDebtCandidates=${expectation.assetLibraryQualityDebtCandidateCount}. 점수 낮은 안전 자산도 라이선스·플랫폼·역할이 맞으면 빈 슬롯/primitive 대신 반드시 활용 아이디어에 포함한다. 고득점 wrong-role보다 저득점 exact-role을 우선하고, 현재 자산 사용을 유지하면서 약한 축을 개선하거나 충분히 나은 호환 후보가 준비된 뒤 교체한다. 낮은 점수만으로 NOT_APPLICABLE 처리하지 않는다.
+활용 아이디어: ${(expectation.assetLibraryUtilizationIdeas||[]).map(row=>row.id+'['+row.state+']'+(row.families?.length?' '+row.families.join('+'):'')+':'+row.purpose+(row.axes?.length?' axes='+row.axes.join('/'):'')).join(' | ')||'NONE'}. 이 목록은 현재 라이브러리 family·variation axes·공용 capability에서 매 실행 다시 만든다. 고정 개수 상한을 두지 않는다. 현재 게임 소스에 해당 아이디어의 실제 바인딩과 동작이 이미 구현돼 있으면 그 아이디어는 PASS하고 중복 구현하지 말고 다음 미구현 적용 아이디어로 넘어간다. ROLE_CONTRACT_ONLY는 실제 검증 자산 파일이 생기기 전까지 실제 재생/표시 자산이 있다고 주장하지 않는다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
 }
