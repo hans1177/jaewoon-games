@@ -507,6 +507,60 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
   PROP:Object.freeze(['PALETTE','MATERIAL','PROPORTION','DETAIL_PARTS','WEATHERING','INTERACTION_STATE','ICON_PRESENTATION'])
 });
 
+
+export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
+  version:1,
+  scope:'INTERNAL_ASSETS_ONLY',
+  humanDocument:'assets/ASSET-STANDARD.md',
+  mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
+  flowMutationAllowed:false,
+  workflowMutationAllowed:false,
+  queueMutationAllowed:false,
+  schedulerMutationAllowed:false,
+  deploymentMutationAllowed:false,
+  newPipelineCreated:false,
+  triggers:Object.freeze([
+    'INTERNAL_ASSET_ADDED',
+    'INTERNAL_ASSET_CHANGED',
+    'COMMON_PACK_VERSION_CHANGED',
+    'GENRE_EXPECTATION_CHANGED',
+    'NEW_GAME_ASSET_REQUIREMENT_NOT_COVERED',
+    'BEFORE_GAME_ASSET_BINDING',
+    'AFTER_RUNTIME_ASSET_FAILURE',
+    'BEFORE_COMPANY_REUSABLE_PROMOTION'
+  ]),
+  preBinding:Object.freeze([
+    'SEARCH_EXISTING_GAME_ASSETS',
+    'SEARCH_COMPANY_COMMON_ASSETS',
+    'CROSS_PACK_SYSTEM_DEPTH_AUDIT',
+    'GENRE_SYSTEM_EXPECTATION_COMPARE',
+    'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
+    'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
+    'PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING'
+  ]),
+  packRevision:Object.freeze([
+    'PACK_LOCAL_GAP_AUDIT',
+    'COMPANY_CROSS_PACK_GAP_AUDIT',
+    'REMOVE_GAPS_ALREADY_COVERED_BY_OTHER_COMMON_PACKS',
+    'KEEP_ONLY_REAL_COMPANY_WIDE_GAPS',
+    'UPDATE_PRIORITY_GAPS',
+    'UPDATE_CATALOG_AND_LIBRARY',
+    'UPDATE_ASSET_QA'
+  ]),
+  completionEvidence:Object.freeze([
+    'CATALOG_UPDATED',
+    'COMPANY_LIBRARY_UPDATED',
+    'MACHINE_METADATA_UPDATED',
+    'ASSET_QA_PASS',
+    'REGRESSION_PASS',
+    'LATEST_MAIN_FRESHNESS_VERIFIED',
+    'MAIN_MERGED'
+  ]),
+  internalScoreIsUsageGate:false,
+  existingAssetsRemainUsable:true,
+  productionPromotionRequiresRuntimeEvidence:true
+});
+
 export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
   version:3,
   lowScoreUseAllowed:true,
