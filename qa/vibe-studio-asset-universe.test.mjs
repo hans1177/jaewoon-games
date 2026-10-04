@@ -1893,3 +1893,99 @@ test('company-common motion registry supports cross-game R15 reuse without false
     assert.equal(row.productionVerified,false);
   }
 });
+
+
+test('company-common world prop pack provides eight reusable visual props',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-world-props-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonWorldProps.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['SIGNPOST','WOOD_FENCE','WALL_TORCH','WOOD_BARREL','BENCH','TABLE','MARKET_STALL','STONE_WELL'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  assert.ok(source.includes('function RobloxCommonWorldProps.Create(id, options)'));
+  assert.ok(source.includes('function RobloxCommonWorldProps.CreateViewport(id, options)'));
+  assert.ok(source.includes('local styledRow = rowWithPalette(row, options.palette)'));
+  assert.ok(source.includes('CompanyCommonBase", true'));
+  assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.companyCommonBase,true);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bPrice\s*=/,/\bReward\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common world prop registry preserves gameplay authority and current-game reuse targets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-world-props-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.gameplayAuthority,false);
+
+  const expected=[
+    ['SIGNPOST','SIGNPOST','WAYFINDING'],
+    ['WOOD_FENCE','FENCE','BOUNDARY'],
+    ['WALL_TORCH','TORCH','LIGHTING_PROP'],
+    ['WOOD_BARREL','BARREL','SET_DRESSING'],
+    ['BENCH','BENCH','SEATING_PROP'],
+    ['TABLE','TABLE','SURFACE_PROP'],
+    ['MARKET_STALL','MARKET_STALL','VENDOR_PROP'],
+    ['STONE_WELL','WELL','LANDMARK_PROP']
+  ];
+  for(const [assetId,subfamily,worldRole] of expected){
+    const id='roblox-common-world-prop-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.worldRole,worldRole);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority,true);
+  }
+});
+
+test('generic world prop requirement can choose company-common base',()=>{
+  const registryAsset={
+    id:'common-signpost',
+    family:'PROP',
+    subfamily:'SIGNPOST',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    companyCommonBase:true,
+    reuseScope:'COMPANY_ROBLOX_COMMON_BASE',
+    tags:['WAYFINDING']
+  };
+  const gameOnly={
+    id:'game-only-signpost',
+    family:'PROP',
+    subfamily:'SIGNPOST',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    tags:['WAYFINDING']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'PROP',subfamily:'SIGNPOST',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-signpost');
+});
