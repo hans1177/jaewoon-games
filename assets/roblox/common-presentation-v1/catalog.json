@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-presentation-v1",
   "family": "UI",
   "subfamily": "PRESENTATION",
@@ -62,5 +62,45 @@
     "TIP",
     "STATE_TEXT",
     "REUSABLE"
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "BRAND_BACKGROUND",
+      "LOGO",
+      "SPINNER",
+      "PROGRESS_BAR",
+      "TIP",
+      "STATUS_TEXT",
+      "SIMPLE_FADE",
+      "LOGO_REVEAL",
+      "PARTICLE_LIGHT",
+      "WORLD_PAN",
+      "MINIMAL_CINEMATIC",
+      "INPUT_SKIP_HINT",
+      "ACCESSIBILITY_REDUCED_MOTION",
+      "FAILURE_RECOVERY_STATE"
+    ],
+    "currentDeclaredComponents": [
+      "BRAND_BACKGROUND",
+      "LOGO",
+      "SPINNER",
+      "PROGRESS_BAR",
+      "TIP",
+      "STATUS_TEXT",
+      "SIMPLE_FADE",
+      "LOGO_REVEAL",
+      "PARTICLE_LIGHT",
+      "WORLD_PAN",
+      "MINIMAL_CINEMATIC"
+    ],
+    "missingComponentCandidates": [
+      "INPUT_SKIP_HINT",
+      "ACCESSIBILITY_REDUCED_MOTION",
+      "FAILURE_RECOVERY_STATE"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
