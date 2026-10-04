@@ -283,7 +283,19 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
 
   const reuseBonus=(asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE')?18:0;
   const versatilityBonus=Math.min(40,adaptationAxes.length*4);
-  const effectiveQuality=Math.round(clamp(baseQuality-adaptationPenalty+reuseBonus+versatilityBonus,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10;
+  const usageConfidenceBonus=(usage.runtimePass===true?20:0)
+    +Math.min(20,Math.max(0,Number(usage.gameConsumerCount)||0)*4)
+    +Math.min(10,Math.max(0,Number(usage.usageCount)||0));
+  const observedFailurePenalty=(usage.runtimeFailure===true?160:0)
+    +Math.min(120,Math.max(0,Number(usage.verifiedFailureCount)||0)*30)
+    +(usage.identityFailure===true?90:0)
+    +(usage.styleFailure===true?90:0)
+    +(usage.navigationFailure===true?90:0)
+    +(usage.mobileBudgetFailure===true?70:0);
+  const effectiveQuality=Math.round(clamp(
+    baseQuality-adaptationPenalty-observedFailurePenalty+reuseBonus+versatilityBonus+usageConfidenceBonus,
+    0,INTERNAL_ASSET_AUDIT_MAX
+  )*10)/10;
   const usable=hardBlockers.length===0&&familyCompatible&&(roleCompatible||canRecombine);
   const directBindingReady=usable&&platformCompatible&&conceptQa.pass&&roleCompatible;
   const adaptationReady=usable&&!directBindingReady&&mode!=='KEEP_CURRENT_AND_ITERATE';
@@ -308,6 +320,8 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     roleCompatible,
     adaptationAxes:freezeList(adaptationAxes),
     adaptationPenalty,
+    observedFailurePenalty,
+    usageConfidenceBonus,
     adaptationReasons:freezeList(adaptationReasons),
     hardBlockers:freezeList(hardBlockers),
     lowScoreUseAllowed:true,
@@ -322,7 +336,7 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
     asset,
     reuse:evaluateInternalAssetReuse({asset,gameDna,requirement,usage:usageByAsset[text(asset?.id)]||{}})
   })).filter(row=>row.reuse.usable&&!row.reuse.hardBlockers.length)
-    .sort((a,b)=>b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality||text(a.asset?.id).localeCompare(text(b.asset?.id)));
+    .sort((a,b)=>b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality||assetSourceTier(normalizeRegistryAsset(b.asset))-assetSourceTier(normalizeRegistryAsset(a.asset))||text(a.asset?.id).localeCompare(text(b.asset?.id)));
   const locked=lockedAssetId?rows.find(row=>text(row.asset?.id)===lockedAssetId)||null:null;
   const best=locked||rows[0]||null;
   const current=currentAsset?evaluateInternalAssetReuse({
