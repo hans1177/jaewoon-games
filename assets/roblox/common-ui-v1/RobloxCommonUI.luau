@@ -1509,6 +1509,371 @@ function RobloxCommonUI.CreateHotbar(options)
   return root, holder, slots
 end
 
+
+-- 전체 메뉴/내비게이션/상태 화면
+-- 이 블록은 기존 공통 UI 모듈 안에서만 동작하며 게임 규칙/저장/Remote/구매 권한을 소유하지 않는다.
+local function surfaceShell(options, atomId, role)
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local root = Instance.new("Frame")
+  root.Name = options.name or role
+  root.Size = options.size or UDim2.fromScale(1, 1)
+  root.BackgroundColor3 = theme.PanelInset
+  root.BackgroundTransparency = tonumber(options.backgroundTransparency) or 0.04
+  root.BorderSizePixel = 0
+  root.ClipsDescendants = true
+  tag(root, atomId)
+
+  local chrome = Instance.new("Frame")
+  chrome.Name = "Chrome"
+  chrome.Position = UDim2.fromOffset(10, 10)
+  chrome.Size = UDim2.new(1, -20, 1, -20)
+  chrome.BackgroundColor3 = theme.Panel
+  chrome.BorderSizePixel = 0
+  chrome.Parent = root
+  corner(chrome, theme.Corner)
+  stroke(chrome, theme.Border, 1.5, 0.08)
+  gradient(chrome, theme.PanelRaised, theme.Panel, 90)
+
+  local header = Instance.new("Frame")
+  header.Name = "Header"
+  header.Position = UDim2.fromOffset(16, 12)
+  header.Size = UDim2.new(1, -32, 0, 64)
+  header.BackgroundTransparency = 1
+  header.Parent = chrome
+
+  local title = commonText(header, "Title", options.title or role, UDim2.fromOffset(0,0), UDim2.new(1,-8,0,34), theme.Text, tonumber(options.titleSize) or 24, true)
+  local subtitle = commonText(header, "Subtitle", options.subtitle or "", UDim2.fromOffset(0,32), UDim2.new(1,-8,0,24), theme.MutedText, 13, false)
+
+  local body = Instance.new("Frame")
+  body.Name = "Body"
+  body.Position = UDim2.fromOffset(16, 82)
+  body.Size = UDim2.new(1, -32, 1, -98)
+  body.BackgroundTransparency = 1
+  body.Parent = chrome
+
+  root:SetAttribute("PresentationRole", role)
+  root:SetAttribute("NavigationDepth", tonumber(options.navigationDepth) or 1)
+  root:SetAttribute("TransitionStyle", tostring(options.transitionStyle or "SIMPLE_FADE"))
+  root:SetAttribute("InputModes", "TOUCH|KEYBOARD_MOUSE|GAMEPAD")
+  root:SetAttribute("OwnsGameplayAuthority", false)
+  root:SetAttribute("OwnsSaveAuthority", false)
+  root:SetAttribute("OwnsRemoteAuthority", false)
+  return root, body, header, title, subtitle
+end
+
+local function stateCard(options, atomId, role, defaultTitle, defaultBody, accentKey)
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local root, inner = RobloxCommonUI.CreatePanel({
+    name=options.name or role,
+    size=options.size or UDim2.fromOffset(420, 220),
+    theme=theme
+  })
+  tag(root, atomId)
+  local accent = theme[accentKey or "Accent"] or theme.Accent
+  local badge = Instance.new("Frame")
+  badge.Name = "StateMark"
+  badge.Position = UDim2.fromOffset(18, 18)
+  badge.Size = UDim2.fromOffset(10, 54)
+  badge.BackgroundColor3 = accent
+  badge.BorderSizePixel = 0
+  badge.Parent = inner
+  corner(badge, 5)
+  commonText(inner, "Title", options.title or defaultTitle, UDim2.fromOffset(42, 16), UDim2.new(1,-58,0,34), theme.Text, 22, true)
+  commonText(inner, "Body", options.body or defaultBody, UDim2.fromOffset(42, 52), UDim2.new(1,-58,0,62), theme.MutedText, 14, false)
+  local action = RobloxCommonUI.CreatePrimaryButton({name="StateAction", text=options.actionText or "확인", size=UDim2.fromOffset(150,48), theme=theme})
+  action.Position = UDim2.new(0,42,1,-66)
+  action.Parent = inner
+  root:SetAttribute("PresentationRole", role)
+  root:SetAttribute("OwnsRecoveryAuthority", false)
+  root:SetAttribute("OwnsUnlockAuthority", false)
+  return root, action
+end
+
+function RobloxCommonUI.CreateMainMenu(options)
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local root, body = surfaceShell(options, "MAIN_MENU", "MAIN_MENU")
+  local hero = Instance.new("Frame")
+  hero.Name = "Hero"
+  hero.Size = UDim2.new(0.58,-8,1,0)
+  hero.BackgroundColor3 = theme.PanelInset
+  hero.BackgroundTransparency = 0.20
+  hero.BorderSizePixel = 0
+  hero.Parent = body
+  corner(hero, theme.Corner)
+  stroke(hero, theme.Border, 1.2, 0.25)
+  commonText(hero,"Logo",options.logoText or options.gameTitle or "JAEWOON GAMES",UDim2.fromOffset(22,22),UDim2.new(1,-44,0,52),theme.Text,32,true)
+  commonText(hero,"Tagline",options.tagline or "계속하기 · 새 게임 · 설정",UDim2.fromOffset(22,78),UDim2.new(1,-44,0,48),theme.MutedText,15,false)
+
+  local actions = Instance.new("Frame")
+  actions.Name = "Actions"
+  actions.Position = UDim2.new(0.60,8,0,0)
+  actions.Size = UDim2.new(0.40,-8,1,0)
+  actions.BackgroundTransparency = 1
+  actions.Parent = body
+  commonList(actions,false,10)
+  local labels = options.actions or {"계속하기","새 게임","게임 선택","설정","종료"}
+  local buttons = {}
+  for i,label in ipairs(labels) do
+    local button = RobloxCommonUI.CreatePrimaryButton({name="MenuAction"..i,text=tostring(label),size=UDim2.new(1,0,0,52),theme=theme})
+    button.LayoutOrder=i
+    button.Parent=actions
+    buttons[i]=button
+  end
+  root:SetAttribute("InformationHierarchy","BRAND>PRIMARY_ACTIONS>SECONDARY_STATUS")
+  return root, buttons
+end
+
+function RobloxCommonUI.CreateTopBar(options)
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local root = Instance.new("Frame")
+  root.Name = options.name or "TopBar"
+  root.Size = options.size or UDim2.new(1,0,0,64)
+  root.BackgroundColor3 = theme.Panel
+  root.BorderSizePixel = 0
+  tag(root,"TOP_BAR")
+  stroke(root,theme.Border,1,0.22)
+  local title = commonText(root,"Title",options.title or "현재 화면",UDim2.fromOffset(16,0),UDim2.new(0.42,-16,1,0),theme.Text,17,true)
+  local path = commonText(root,"Path",options.pathText or "",UDim2.new(0.42,8,0,0),UDim2.new(0.32,-8,1,0),theme.MutedText,12,false)
+  local status = commonText(root,"Status",options.statusText or "",UDim2.new(0.74,8,0,0),UDim2.new(0.26,-24,1,0),theme.Accent,12,true)
+  status.TextXAlignment=Enum.TextXAlignment.Right
+  root:SetAttribute("PresentationRole","TOP_BAR")
+  root:SetAttribute("OwnsNavigationAuthority",false)
+  return root,{title=title,path=path,status=status}
+end
+
+function RobloxCommonUI.CreateSideNavigation(options)
+  options = options or {}
+  local theme = cloneTheme(options.theme)
+  local root = Instance.new("Frame")
+  root.Name = options.name or "SideNavigation"
+  root.Size = options.size or UDim2.fromOffset(220,520)
+  root.BackgroundColor3 = theme.Panel
+  root.BorderSizePixel = 0
+  tag(root,"SIDE_NAVIGATION")
+  corner(root,theme.Corner)
+  stroke(root,theme.Border,1.2,0.14)
+  local holder=Instance.new("Frame")
+  holder.Name="Items"; holder.Position=UDim2.fromOffset(10,10); holder.Size=UDim2.new(1,-20,1,-20); holder.BackgroundTransparency=1; holder.Parent=root
+  commonList(holder,false,8)
+  local items=options.items or {"요약","인벤토리","장비","캐릭터","지도","퀘스트","제작","상점","설정"}
+  local buttons={}
+  for i,label in ipairs(items) do
+    local button=RobloxCommonUI.CreateTabButton({name="Nav"..i,text=tostring(label),selected=i==(tonumber(options.selectedIndex) or 1),size=UDim2.new(1,0,0,48),theme=theme})
+    button.LayoutOrder=i; button.Parent=holder; button:SetAttribute("NavigationIndex",i); buttons[i]=button
+  end
+  root:SetAttribute("PresentationRole","SIDE_NAVIGATION")
+  root:SetAttribute("OwnsNavigationAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreatePauseMenu(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"PAUSE_MENU","PAUSE_MENU")
+  local actions=Instance.new("Frame")
+  actions.Name="PauseActions"; actions.Size=UDim2.fromOffset(320,340); actions.AnchorPoint=Vector2.new(0.5,0.5); actions.Position=UDim2.fromScale(0.5,0.5); actions.BackgroundTransparency=1; actions.Parent=body
+  commonList(actions,false,10)
+  local labels=options.actions or {"계속","설정","조작법","메인 메뉴"}
+  local buttons={}
+  for i,label in ipairs(labels) do local b=RobloxCommonUI.CreatePrimaryButton({text=label,size=UDim2.new(1,0,0,54),theme=theme}); b.LayoutOrder=i;b.Parent=actions;buttons[i]=b end
+  root:SetAttribute("OwnsPauseAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateSettingsPanel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"SETTINGS_PANEL","SETTINGS_PANEL")
+  local categories=options.categories or {"게임","그래픽","오디오","조작","접근성"}
+  local nav=RobloxCommonUI.CreateSideNavigation({name="SettingsCategories",items=categories,selectedIndex=options.selectedIndex or 1,size=UDim2.new(0.28,-8,1,0),theme=theme})
+  nav.Parent=body
+  local content=Instance.new("Frame"); content.Name="SettingsContent"; content.Position=UDim2.new(0.28,8,0,0); content.Size=UDim2.new(0.72,-8,1,0); content.BackgroundColor3=theme.PanelInset; content.BorderSizePixel=0; content.Parent=body; corner(content,theme.Corner)
+  local rows=options.rows or {"화면","텍스트 크기","UI 크기","카메라 흔들림","색상 보조","입력 방식"}
+  local list=Instance.new("Frame");list.Name="Rows";list.Position=UDim2.fromOffset(14,14);list.Size=UDim2.new(1,-28,1,-28);list.BackgroundTransparency=1;list.Parent=content;commonList(list,false,8)
+  for i,label in ipairs(rows) do
+    local row=Instance.new("Frame");row.Name="Setting"..i;row.Size=UDim2.new(1,0,0,54);row.BackgroundColor3=theme.Panel;row.BorderSizePixel=0;row.LayoutOrder=i;row.Parent=list;corner(row,10)
+    commonText(row,"Label",label,UDim2.fromOffset(12,0),UDim2.new(0.62,-12,1,0),theme.Text,14,i==1)
+    local value=commonText(row,"Value","조정",UDim2.new(0.62,0,0,0),UDim2.new(0.38,-12,1,0),theme.Accent,13,true);value.TextXAlignment=Enum.TextXAlignment.Right
+  end
+  root:SetAttribute("OwnsSettingsPersistence",false)
+  return root,content
+end
+
+function RobloxCommonUI.CreateSearchField(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local box=Instance.new("TextBox")
+  box.Name=options.name or "SearchField";box.Size=options.size or UDim2.fromOffset(260,48);box.BackgroundColor3=theme.PanelInset;box.BorderSizePixel=0;box.ClearTextOnFocus=false;box.PlaceholderText=options.placeholder or "검색";box.Text=tostring(options.text or "");box.TextColor3=theme.Text;box.PlaceholderColor3=theme.MutedText;box.TextSize=14;box.Font=Enum.Font.Gotham;box.TextXAlignment=Enum.TextXAlignment.Left;box.Selectable=true
+  tag(box,"SEARCH_FIELD");corner(box,10);stroke(box,theme.Border,1.2,0.16);sizeConstraint(box,160,48)
+  local pad=Instance.new("UIPadding");pad.PaddingLeft=UDim.new(0,14);pad.PaddingRight=UDim.new(0,14);pad.Parent=box
+  box:SetAttribute("PresentationRole","SEARCH_FIELD");box:SetAttribute("OwnsSearchData",false)
+  return box
+end
+
+function RobloxCommonUI.CreateFilterBar(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "FilterBar";root.Size=options.size or UDim2.new(1,0,0,48);root.BackgroundTransparency=1;tag(root,"FILTER_BAR")
+  local layout=commonList(root,true,8);layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
+  local filters=options.filters or {"전체","추천","새 항목","사용 가능","잠김"}
+  local buttons={}
+  for i,label in ipairs(filters) do local b=RobloxCommonUI.CreateTabButton({text=tostring(label),selected=i==(options.selectedIndex or 1),size=UDim2.fromOffset(math.max(76,string.len(tostring(label))*10+34),44),theme=theme});b.LayoutOrder=i;b.Parent=root;b:SetAttribute("FilterIndex",i);buttons[i]=b end
+  root:SetAttribute("OwnsFilterAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateSortControl(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local button=RobloxCommonUI.CreatePrimaryButton({name=options.name or "SortControl",text=options.text or "정렬: 추천순",size=options.size or UDim2.fromOffset(160,48),theme=theme})
+  tag(button,"SORT_CONTROL");button:SetAttribute("PresentationRole","SORT_CONTROL");button:SetAttribute("OwnsSortAuthority",false)
+  return button
+end
+
+function RobloxCommonUI.CreateInventoryFullScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"INVENTORY_FULL_SCREEN","INVENTORY_FULL_SCREEN")
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme});search.Parent=body
+  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Parent=body
+  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
+  local grid=RobloxCommonUI.CreateInventoryGrid({name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,size=UDim2.new(1,0,1,-116),theme=theme});grid.Position=UDim2.fromOffset(0,116);grid.Parent=body
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  return root,{search=search,sort=sort,filters=filters,grid=grid}
+end
+
+function RobloxCommonUI.CreateEquipmentFullScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"EQUIPMENT_FULL_SCREEN","EQUIPMENT_FULL_SCREEN")
+  local sheet=RobloxCommonUI.CreateCharacterSheet({name="CharacterSummary",size=UDim2.new(0.46,-8,1,0),theme=theme});sheet.Parent=body
+  local slots=Instance.new("Frame");slots.Name="EquipmentSlots";slots.Position=UDim2.new(0.46,8,0,0);slots.Size=UDim2.new(0.54,-8,1,0);slots.BackgroundTransparency=1;slots.Parent=body
+  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-6,0,110);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=slots
+  local names=options.slots or {"무기","보조","머리","몸","장갑","신발","장신구","특수"}
+  local built={}
+  for i,label in ipairs(names) do local slot=RobloxCommonUI.CreateEquipmentSlot({name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme});slot.LayoutOrder=i;slot.Parent=slots;built[i]=slot end
+  root:SetAttribute("OwnsEquipAuthority",false)
+  return root,{sheet=sheet,slots=built}
+end
+
+function RobloxCommonUI.CreateCharacterDetailScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"CHARACTER_DETAIL_SCREEN","CHARACTER_DETAIL_SCREEN")
+  local sheet=RobloxCommonUI.CreateCharacterSheet({name="CharacterDetail",size=UDim2.new(0.58,-8,1,0),theme=theme,displayName=options.displayName})
+  sheet.Parent=body
+  local details=Instance.new("Frame");details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0);details.Size=UDim2.new(0.42,-8,1,0);details.BackgroundColor3=theme.PanelInset;details.BorderSizePixel=0;details.Parent=body;corner(details,theme.Corner)
+  local rows=options.detailRows or {"상태","역할","장비 요약","효과","진행도","최근 획득"}
+  for i,label in ipairs(rows) do commonText(details,"Row"..i,label,UDim2.fromOffset(16,12+(i-1)*44),UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1) end
+  root:SetAttribute("OwnsCharacterStats",false)
+  return root,{sheet=sheet,details=details}
+end
+
+function RobloxCommonUI.CreateMapFullScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"MAP_FULL_SCREEN","MAP_FULL_SCREEN")
+  local map=Instance.new("Frame");map.Name="MapCanvas";map.Size=UDim2.new(0.76,-8,1,0);map.BackgroundColor3=theme.Map;map.BorderSizePixel=0;map.Parent=body;corner(map,theme.Corner);stroke(map,theme.MapGrid,1,0.28)
+  local legend=Instance.new("Frame");legend.Name="Legend";legend.Position=UDim2.new(0.76,8,0,0);legend.Size=UDim2.new(0.24,-8,1,0);legend.BackgroundColor3=theme.PanelInset;legend.BorderSizePixel=0;legend.Parent=body;corner(legend,theme.Corner)
+  local entries=options.legend or {"플레이어","목표","파티","위험","관심 지점","미발견"}
+  for i,label in ipairs(entries) do commonText(legend,"Legend"..i,"• "..label,UDim2.fromOffset(14,12+(i-1)*38),UDim2.new(1,-28,0,32),i==2 and theme.Accent or theme.Text,13,i==2) end
+  root:SetAttribute("OwnsWorldMapAuthority",false)
+  return root,{map=map,legend=legend}
+end
+
+function RobloxCommonUI.CreateQuestLog(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"QUEST_LOG","QUEST_LOG")
+  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"진행중","완료","실패","전체"},size=UDim2.new(1,0,0,48),theme=theme});filters.Parent=body
+  local list=Instance.new("ScrollingFrame");list.Name="QuestList";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body;commonList(list,false,8)
+  local cards={}
+  for i=1,(tonumber(options.previewCount) or 4) do local c=RobloxCommonUI.CreateQuestCard({name="Quest"..i,title="퀘스트 "..i,description="목표와 진행 상태",size=UDim2.new(1,-8,0,92),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  root:SetAttribute("OwnsQuestAuthority",false)
+  return root,{filters=filters,cards=cards}
+end
+
+function RobloxCommonUI.CreateCraftingFullScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"CRAFTING_FULL_SCREEN","CRAFTING_FULL_SCREEN")
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.45,0,0,48),theme=theme,placeholder="제작법 검색"});search.Parent=body
+  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"전체","제작 가능","무기","방어구","도구","기타"},size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
+  local list=Instance.new("ScrollingFrame");list.Name="Recipes";list.Position=UDim2.fromOffset(0,116);list.Size=UDim2.new(1,0,1,-116);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body;commonList(list,false,8)
+  local cards={}
+  for i=1,(tonumber(options.previewCount) or 4) do local c=RobloxCommonUI.CreateCraftingRecipeCard({name="Recipe"..i,title="제작 항목 "..i,size=UDim2.new(1,-8,0,96),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  root:SetAttribute("OwnsCraftAuthority",false)
+  return root,{search=search,filters=filters,cards=cards}
+end
+
+function RobloxCommonUI.CreateShopFullScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"SHOP_FULL_SCREEN","SHOP_FULL_SCREEN")
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme,placeholder="상품 검색"});search.Parent=body
+  local sort=RobloxCommonUI.CreateSortControl({text="정렬: 추천순",theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Parent=body
+  local list=Instance.new("ScrollingFrame");list.Name="Products";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body
+  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-7,0,120);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=list
+  local cards={}
+  for i=1,(tonumber(options.previewCount) or 6) do local c=RobloxCommonUI.CreateShopItemCard({name="Product"..i,title="상품 "..i,size=UDim2.new(1,0,1,0),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  root:SetAttribute("OwnsPurchaseAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  return root,{search=search,sort=sort,cards=cards}
+end
+
+function RobloxCommonUI.CreateConfirmDialog(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateModal({name=options.name or "ConfirmDialog",title=options.title or "확인",body=options.body or "이 작업을 진행할까?",size=options.size or UDim2.fromOffset(430,240),theme=theme})
+  tag(root,"CONFIRM_DIALOG")
+  local actions=Instance.new("Frame");actions.Name="Actions";actions.AnchorPoint=Vector2.new(1,1);actions.Position=UDim2.new(1,-18,1,-18);actions.Size=UDim2.fromOffset(300,50);actions.BackgroundTransparency=1;actions.Parent=root;local l=commonList(actions,true,8);l.HorizontalAlignment=Enum.HorizontalAlignment.Right
+  local cancel=RobloxCommonUI.CreateTabButton({text=options.cancelText or "취소",size=UDim2.fromOffset(136,48),theme=theme});cancel.Parent=actions
+  local confirm=RobloxCommonUI.CreatePrimaryButton({text=options.confirmText or "확인",size=UDim2.fromOffset(150,48),theme=theme});confirm.Parent=actions
+  root:SetAttribute("PresentationRole","CONFIRM_DIALOG");root:SetAttribute("OwnsConfirmedAction",false)
+  return root,{cancel=cancel,confirm=confirm}
+end
+
+function RobloxCommonUI.CreatePopupPanel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({name=options.name or "PopupPanel",size=options.size or UDim2.fromOffset(420,260),theme=theme})
+  tag(root,"POPUP_PANEL")
+  commonText(inner,"Title",options.title or "알림",UDim2.fromOffset(14,10),UDim2.new(1,-28,0,34),theme.Text,20,true)
+  commonText(inner,"Body",options.body or "",UDim2.fromOffset(14,50),UDim2.new(1,-28,1,-64),theme.MutedText,14,false)
+  root:SetAttribute("PresentationRole","POPUP_PANEL");root:SetAttribute("OwnsModalAuthority",false)
+  return root
+end
+
+function RobloxCommonUI.CreateLoadingState(options)
+  return stateCard(options,"LOADING_STATE","LOADING_STATE","불러오는 중","데이터와 자산을 준비하고 있어.","Accent")
+end
+
+function RobloxCommonUI.CreateEmptyState(options)
+  return stateCard(options,"EMPTY_STATE","EMPTY_STATE","아직 항목이 없어","조건을 바꾸거나 새로운 항목을 추가해.","MutedText")
+end
+
+function RobloxCommonUI.CreateFailureState(options)
+  return stateCard(options,"FAILURE_STATE","FAILURE_STATE","불러오지 못했어","연결 또는 데이터 상태를 확인하고 다시 시도해.","Danger")
+end
+
+function RobloxCommonUI.CreateLockedState(options)
+  return stateCard(options,"LOCKED_STATE","LOCKED_STATE","잠겨 있어","필요 조건을 확인하면 이용할 수 있어.","Warning")
+end
+
+function RobloxCommonUI.CreateInputHint(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "InputHint";root.Size=options.size or UDim2.fromOffset(260,40);root.BackgroundColor3=theme.PanelInset;root.BackgroundTransparency=0.10;root.BorderSizePixel=0;tag(root,"INPUT_HINT");corner(root,10);stroke(root,theme.Border,1,0.26)
+  local mode=tostring(options.mode or "AUTO")
+  local label=commonText(root,"Hint",(options.glyph or "●").."  "..tostring(options.text or "선택"),UDim2.fromOffset(12,0),UDim2.new(1,-24,1,0),theme.Text,12,true)
+  root:SetAttribute("PresentationRole","INPUT_HINT");root:SetAttribute("InputMode",mode);root:SetAttribute("SupportsAutomaticInputModeSwap",true);root:SetAttribute("OwnsInputAuthority",false)
+  return root,label
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -1575,32 +1940,85 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateStatusEffectChip(options)
   elseif id == "HOTBAR" then
     return RobloxCommonUI.CreateHotbar(options)
+  elseif id == "MAIN_MENU" then
+    return RobloxCommonUI.CreateMainMenu(options)
+  elseif id == "TOP_BAR" then
+    return RobloxCommonUI.CreateTopBar(options)
+  elseif id == "SIDE_NAVIGATION" then
+    return RobloxCommonUI.CreateSideNavigation(options)
+  elseif id == "PAUSE_MENU" then
+    return RobloxCommonUI.CreatePauseMenu(options)
+  elseif id == "SETTINGS_PANEL" then
+    return RobloxCommonUI.CreateSettingsPanel(options)
+  elseif id == "SEARCH_FIELD" then
+    return RobloxCommonUI.CreateSearchField(options)
+  elseif id == "FILTER_BAR" then
+    return RobloxCommonUI.CreateFilterBar(options)
+  elseif id == "SORT_CONTROL" then
+    return RobloxCommonUI.CreateSortControl(options)
+  elseif id == "INVENTORY_FULL_SCREEN" then
+    return RobloxCommonUI.CreateInventoryFullScreen(options)
+  elseif id == "EQUIPMENT_FULL_SCREEN" then
+    return RobloxCommonUI.CreateEquipmentFullScreen(options)
+  elseif id == "CHARACTER_DETAIL_SCREEN" then
+    return RobloxCommonUI.CreateCharacterDetailScreen(options)
+  elseif id == "MAP_FULL_SCREEN" then
+    return RobloxCommonUI.CreateMapFullScreen(options)
+  elseif id == "QUEST_LOG" then
+    return RobloxCommonUI.CreateQuestLog(options)
+  elseif id == "CRAFTING_FULL_SCREEN" then
+    return RobloxCommonUI.CreateCraftingFullScreen(options)
+  elseif id == "SHOP_FULL_SCREEN" then
+    return RobloxCommonUI.CreateShopFullScreen(options)
+  elseif id == "CONFIRM_DIALOG" then
+    return RobloxCommonUI.CreateConfirmDialog(options)
+  elseif id == "POPUP_PANEL" then
+    return RobloxCommonUI.CreatePopupPanel(options)
+  elseif id == "LOADING_STATE" then
+    return RobloxCommonUI.CreateLoadingState(options)
+  elseif id == "EMPTY_STATE" then
+    return RobloxCommonUI.CreateEmptyState(options)
+  elseif id == "FAILURE_STATE" then
+    return RobloxCommonUI.CreateFailureState(options)
+  elseif id == "LOCKED_STATE" then
+    return RobloxCommonUI.CreateLockedState(options)
+  elseif id == "INPUT_HINT" then
+    return RobloxCommonUI.CreateInputHint(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 3,
+    version = 4,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
-      "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH",
-      "INVENTORY_SLOT", "TOOLTIP", "MODAL", "TAB_BUTTON",
-      "QUEST_CARD", "CURRENCY_CHIP", "BAR_PROGRESS", "MOBILE_ACTION_BUTTON",
-      "ICON_BUTTON", "DIALOGUE_ASSISTANT_BUTTON", "DIALOGUE_PANEL", "DIALOGUE_CHOICE",
-      "DIALOGUE_INPUT", "TYPING_INDICATOR", "DIALOGUE_HISTORY",
-      "NPC_INTERACTION_PROMPT", "NPC_INTERACTION_MENU", "NPC_RELATIONSHIP_CARD",
-      "INVENTORY_GRID", "EQUIPMENT_SLOT", "CHARACTER_SHEET", "MINIMAP", "QUEST_TRACKER",
-      "PARTY_MEMBER_CARD", "CRAFTING_RECIPE_CARD", "SHOP_ITEM_CARD",
-      "NOTIFICATION_TOAST", "STATUS_EFFECT_CHIP", "HOTBAR"
+      "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
+      "TOOLTIP", "MODAL", "TAB_BUTTON", "QUEST_CARD",
+      "CURRENCY_CHIP", "BAR_PROGRESS", "MOBILE_ACTION_BUTTON", "ICON_BUTTON",
+      "DIALOGUE_ASSISTANT_BUTTON", "DIALOGUE_PANEL", "DIALOGUE_CHOICE", "DIALOGUE_INPUT",
+      "TYPING_INDICATOR", "DIALOGUE_HISTORY", "NPC_INTERACTION_PROMPT", "NPC_INTERACTION_MENU",
+      "NPC_RELATIONSHIP_CARD", "INVENTORY_GRID", "EQUIPMENT_SLOT", "CHARACTER_SHEET",
+      "MINIMAP", "QUEST_TRACKER", "PARTY_MEMBER_CARD", "CRAFTING_RECIPE_CARD",
+      "SHOP_ITEM_CARD", "NOTIFICATION_TOAST", "STATUS_EFFECT_CHIP", "HOTBAR",
+      "MAIN_MENU", "TOP_BAR", "SIDE_NAVIGATION", "PAUSE_MENU",
+      "SETTINGS_PANEL", "SEARCH_FIELD", "FILTER_BAR", "SORT_CONTROL",
+      "INVENTORY_FULL_SCREEN", "EQUIPMENT_FULL_SCREEN", "CHARACTER_DETAIL_SCREEN", "MAP_FULL_SCREEN",
+      "QUEST_LOG", "CRAFTING_FULL_SCREEN", "SHOP_FULL_SCREEN", "CONFIRM_DIALOG",
+      "POPUP_PANEL", "LOADING_STATE", "EMPTY_STATE", "FAILURE_STATE",
+      "LOCKED_STATE", "INPUT_HINT"
     }),
-    atomCount = 32,
+    atomCount = 54,
+    fullScreenSurfaceCount = 15,
+    stateSurfaceCount = 4,
     companyCommonBase = true,
     themeAdaptationRequiredPerGame = true,
     gameplayAuthority = false,
     productionVerified = false,
     runtimeVerificationRequired = true,
     touchMinimumHeight = DEFAULT_THEME.TouchHeight,
+    inputModes = table.freeze({"TOUCH","KEYBOARD_MOUSE","GAMEPAD"}),
+    transitionPrinciples = table.freeze({"SIMPLE_FADE","FOCUS_PRESERVE","DEPTH_AWARE","BACK_STACK_SAFE"}),
   })
 end
 
