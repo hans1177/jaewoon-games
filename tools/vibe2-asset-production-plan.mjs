@@ -556,6 +556,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     volumeActionConsumption:libraryPlan.volumeActionConsumption,
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
     freeOriginalVolumePolicy:libraryPlan.freeOriginalVolumePolicy,
+    referenceImageIdeaOverlay:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay,
     eligibleFreeSourceCount:libraryPlan.eligibleFreeSourceCount,
     freeSourceCandidateLimitPerAction:libraryPlan.freeSourceCandidateLimitPerAction,
     freeSourceCatalogSufficiencyCount:libraryPlan.freeSourceCatalogSufficiencyCount,
