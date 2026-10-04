@@ -2628,3 +2628,72 @@ test('generic material requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-glass');
 });
+
+
+test('company-common skill v3 preserves old atoms and adds eight reusable presentations',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-skill-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonSkillPresentation.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const atoms=['CAST_HAND','TELEGRAPH_CIRCLE','IMPACT_SMALL','CAST_AURA','PROJECTILE_ORB','AREA_PULSE','TELEGRAPH_FAN','TARGET_MARKER','TELEGRAPH_LINE','CHANNEL_RING','BEAM_LINK'];
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.atoms.length,11);
+  for(const atomId of atoms){
+    const row=catalog.atoms.find(row=>row.atomId===atomId);
+    assert.ok(row,atomId);
+    assert.ok(source.includes('function RobloxCommonSkillPresentation.'+row.factory),row.factory);
+  }
+
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bCooldown\s*=/,/\bHitbox\s*=/,/TakeDamage\(/,/Humanoid\.Health\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/InvokeServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common skill v3 registry exposes eleven unverified reusable atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-skill-v1');
+  assert.ok(pack);
+  assert.equal(pack.assetCount,11);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const atoms=['CAST_HAND','TELEGRAPH_CIRCLE','IMPACT_SMALL','CAST_AURA','PROJECTILE_ORB','AREA_PULSE','TELEGRAPH_FAN','TARGET_MARKER','TELEGRAPH_LINE','CHANNEL_RING','BEAM_LINK'];
+  for(const atomId of atoms){
+    const id='roblox-common-skill-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'SKILL');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
+  }
+
+  for(const atomId of ['CAST_AURA','PROJECTILE_ORB','AREA_PULSE','TELEGRAPH_FAN','TARGET_MARKER','TELEGRAPH_LINE','CHANNEL_RING','BEAM_LINK']){
+    const id='roblox-common-skill-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.equal(row.bindingHint.preserveGameplayDamageRangeCooldownComboMovementTargetSelectionAndNetworkAuthority,true);
+  }
+});
+
+test('generic projectile skill requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-projectile-orb',family:'SKILL',subfamily:'PROJECTILE_ORB',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['PROJECTILE_VISUAL']};
+  const gameOnly={id:'game-only-projectile-orb',family:'SKILL',subfamily:'PROJECTILE_ORB',platform:'ROBLOX',status:'REPO_ASSET',tags:['PROJECTILE_VISUAL']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'SKILL',subfamily:'PROJECTILE_ORB',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-projectile-orb');
+});

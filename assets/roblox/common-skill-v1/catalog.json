@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 3,
   "packId": "roblox-common-skill-v1",
   "family": "SKILL",
   "platform": "ROBLOX",
@@ -33,6 +33,55 @@
       "factory": "CreateImpactSmall",
       "role": "SMALL_IMPACT_PRESENTATION",
       "reuses": "roblox-common-vfx-impact-flash"
+    },
+    {
+      "atomId": "CAST_AURA",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachCastAura",
+      "role": "CAST_AURA_PRESENTATION"
+    },
+    {
+      "atomId": "PROJECTILE_ORB",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateProjectileOrb",
+      "role": "PROJECTILE_VISUAL"
+    },
+    {
+      "atomId": "AREA_PULSE",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateAreaPulse",
+      "role": "AREA_PULSE_PRESENTATION",
+      "reuses": "roblox-common-vfx-shape-burst"
+    },
+    {
+      "atomId": "TELEGRAPH_FAN",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateTelegraphFan",
+      "role": "CONE_TELEGRAPH_PRESENTATION"
+    },
+    {
+      "atomId": "TARGET_MARKER",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachTargetMarker",
+      "role": "TARGET_MARK_PRESENTATION"
+    },
+    {
+      "atomId": "TELEGRAPH_LINE",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateTelegraphLine",
+      "role": "LINE_TELEGRAPH_PRESENTATION"
+    },
+    {
+      "atomId": "CHANNEL_RING",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachChannelRing",
+      "role": "CHANNEL_STATE_PRESENTATION"
+    },
+    {
+      "atomId": "BEAM_LINK",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateBeamLink",
+      "role": "LINK_VISUAL_PRESENTATION"
     }
   ]
 }
