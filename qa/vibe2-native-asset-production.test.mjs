@@ -1705,6 +1705,10 @@ test('flow asset requirements resolve through the latest company library and are
   assert.equal(plan.flowAssetLoadout.resolutionMode,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
   assert.equal(plan.flowAssetLoadout.assetIdPinnedByFlow,false);
   assert.equal(plan.flowAssetLoadout.gameplayAuthority,false);
+  assert.equal(plan.flowAssetLoadout.genreRestrictionApplied,false);
+  assert.equal(plan.flowAssetLoadout.crossGenreReuseAllowed,true);
+  assert.equal(plan.flowAssetLoadout.genreUsedForEligibility,false);
+  assert.ok(plan.flowAssetRequirements.every(row=>row.genreRestriction===false&&row.crossGenreReuseAllowed===true));
   const guidance=assetProductionGuidance(plan);
   assert.match(guidance,/FLOW-DRIVEN ASSET REQUIREMENTS/);
   assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
