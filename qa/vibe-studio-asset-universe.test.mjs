@@ -4139,6 +4139,69 @@ test('catalog-driven company asset registry synchronization is persistent only w
 });
 
 
+test('repository asset sync detects real search eligibility consumption and bottlenecks without false promotion',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-asset-consumption-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets','demo'),{recursive:true});
+    fs.mkdirSync(path.join(root,'web-games','demo'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets','demo','internal-prop.js'),'export const demo=true;\n','utf8');
+    fs.writeFileSync(path.join(root,'web-games','demo','index.html'),'<script>window.assetId="internal-prop-one"</script>\n','utf8');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {
+          id:'internal-prop-one',
+          family:'PROP',
+          category:'PROP',
+          path:'assets/demo/internal-prop.js',
+          license:'CC0',
+          status:'REPO_ASSET',
+          productionVerified:false,
+          verifiedCompanyReusable:false
+        },
+        {
+          id:'missing-prop-one',
+          family:'PROP',
+          category:'PROP',
+          path:'assets/demo/missing.js',
+          license:'CC0',
+          status:'REPO_ASSET',
+          productionVerified:false,
+          verifiedCompanyReusable:false
+        }
+      ],
+      externalSources:[]
+    },null,2)+'\n','utf8');
+
+    const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+    const sync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
+    assert.equal(sync.version,2);
+    assert.equal(sync.totalAssetRows,2);
+    assert.equal(sync.repositoryPathPresentCount,1);
+    assert.equal(sync.missingRepositoryPathCount,1);
+    assert.ok(sync.missingRepositoryAssetIds.includes('missing-prop-one'));
+    assert.equal(sync.automaticSearchEligibleCount,1);
+    assert.equal(sync.searchCoveragePct,50);
+    assert.equal(sync.sourceConsumerAssetCount,1);
+    assert.equal(sync.sourceConsumerBindingCount,1);
+    assert.deepEqual(sync.sourceConsumerGameIds,['demo']);
+    assert.equal(sync.sourceConsumptionCoveragePct,100);
+    assert.equal(sync.bottleneckState,'HEALTHY_WITH_STALE_PATH_REVIEW');
+    assert.ok(sync.bottleneckActions.includes('REVIEW_MISSING_REPOSITORY_ASSET_PATHS'));
+    assert.ok(sync.bottleneckActions.includes('CONTINUE_AUTOMATIC_LIBRARY_CONSUMPTION'));
+    const consumed=result.registry.assets.find(row=>row.id==='internal-prop-one');
+    assert.deepEqual(consumed.detectedSourceConsumerGameIds,['demo']);
+    assert.equal(consumed.sourceConsumptionIsRuntimeVerification,false);
+    assert.equal(consumed.productionVerified,false);
+    const missing=result.registry.assets.find(row=>row.id==='missing-prop-one');
+    assert.equal(missing.repositoryPathState,'MISSING_SOURCE_REVIEW');
+    assert.equal(missing.automaticSearchEligible,false);
+    assert.equal(missing.automaticDeletionForbidden,true);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
 test('canonical company asset registry is dry-run synchronization idempotent',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -4179,5 +4242,18 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.pipelineCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.wrapperCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
+  const repositorySync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
+  console.log('[ASSET_LIBRARY_CONSUMPTION]',JSON.stringify(repositorySync));
+  assert.equal(repositorySync.version,2);
+  assert.ok(repositorySync.totalAssetRows>0);
+  assert.ok(repositorySync.repositoryPathPresentCount>0);
+  assert.ok(repositorySync.automaticSearchEligibleCount>0);
+  assert.ok(repositorySync.searchCoveragePct>0);
+  assert.ok(repositorySync.sourceConsumerAssetCount>0);
+  assert.ok(repositorySync.sourceConsumerBindingCount>=repositorySync.sourceConsumerAssetCount);
+  assert.ok(repositorySync.sourceConsumerGameIds.length>0);
+  assert.notEqual(repositorySync.bottleneckState,'SEARCH_BLOCKED');
+  assert.notEqual(repositorySync.bottleneckState,'CONSUMPTION_EVIDENCE_MISSING');
+  assert.equal(repositorySync.sourceConsumptionDoesNotPromoteProductionVerification,true);
 });
 
