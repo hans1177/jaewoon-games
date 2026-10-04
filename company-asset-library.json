@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -56942,7 +56942,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 87,
+    "lastCatalogSynchronizedVersion": 88,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -57241,18 +57241,15 @@
     "nextVolumeActions": [
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "AUDIO",
-        "ideaId": "AUDIO_UI_CANCEL_BASE",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_AMORPHOUS_BASE",
         "source": "SYSTEM_DEPTH_GAP",
-        "role": "UI_CANCEL",
+        "role": "AMORPHOUS",
         "priority": 300,
-        "targetMin": 120,
-        "currentCount": 65,
+        "targetMin": 180,
+        "currentCount": 24,
         "freeSourceCandidateIds": [
-          "kenney-ui-audio",
-          "kenney-interface-sounds",
-          "kenney-rpg-audio",
-          "kenney-impact-sounds"
+          "quaternius-ultimate-animated-animals"
         ],
         "freeSourceAvailable": true,
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
@@ -57261,9 +57258,15 @@
         "acquireExternalOnlyAfterInternalReuseFailure": true,
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
           "EXPRESSION_INTENSITY",
-          "AUDIO_ENERGY",
-          "ATMOSPHERE_WEIGHT"
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ],
         "worklistOrder": 1,
         "resolutionOrder": [
@@ -57276,18 +57279,15 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "AUDIO",
-        "ideaId": "AUDIO_UI_CONFIRM_BASE",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_BOSS_SIGNATURE_BASE",
         "source": "SYSTEM_DEPTH_GAP",
-        "role": "UI_CONFIRM",
+        "role": "BOSS_SIGNATURE",
         "priority": 300,
-        "targetMin": 120,
-        "currentCount": 65,
+        "targetMin": 180,
+        "currentCount": 24,
         "freeSourceCandidateIds": [
-          "kenney-ui-audio",
-          "kenney-interface-sounds",
-          "kenney-rpg-audio",
-          "kenney-impact-sounds"
+          "quaternius-ultimate-animated-animals"
         ],
         "freeSourceAvailable": true,
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
@@ -57296,9 +57296,15 @@
         "acquireExternalOnlyAfterInternalReuseFailure": true,
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
           "EXPRESSION_INTENSITY",
-          "AUDIO_ENERGY",
-          "ATMOSPHERE_WEIGHT"
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ],
         "worklistOrder": 2,
         "resolutionOrder": [
@@ -57311,18 +57317,15 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "AUDIO",
-        "ideaId": "AUDIO_UI_ERROR_BASE",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_SURFACE_VARIANT_BASE",
         "source": "SYSTEM_DEPTH_GAP",
-        "role": "UI_ERROR",
+        "role": "SURFACE_VARIANT",
         "priority": 300,
-        "targetMin": 120,
-        "currentCount": 65,
+        "targetMin": 180,
+        "currentCount": 24,
         "freeSourceCandidateIds": [
-          "kenney-ui-audio",
-          "kenney-interface-sounds",
-          "kenney-rpg-audio",
-          "kenney-impact-sounds"
+          "quaternius-ultimate-animated-animals"
         ],
         "freeSourceAvailable": true,
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
@@ -57331,9 +57334,15 @@
         "acquireExternalOnlyAfterInternalReuseFailure": true,
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
           "EXPRESSION_INTENSITY",
-          "AUDIO_ENERGY",
-          "ATMOSPHERE_WEIGHT"
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ],
         "worklistOrder": 3,
         "resolutionOrder": [
@@ -57346,18 +57355,55 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "AUDIO",
-        "ideaId": "AUDIO_UI_REWARD_BASE",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_TORSO_VARIANT_BASE",
         "source": "SYSTEM_DEPTH_GAP",
-        "role": "UI_REWARD",
+        "role": "TORSO_VARIANT",
         "priority": 300,
-        "targetMin": 120,
-        "currentCount": 65,
+        "targetMin": 180,
+        "currentCount": 24,
         "freeSourceCandidateIds": [
-          "kenney-ui-audio",
-          "kenney-interface-sounds",
-          "kenney-rpg-audio",
-          "kenney-impact-sounds"
+          "quaternius-ultimate-animated-animals"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 4,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "MOTION_IDLE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "IDLE",
+        "priority": 300,
+        "targetMin": 200,
+        "currentCount": 61,
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
         ],
         "freeSourceAvailable": true,
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
@@ -57367,10 +57413,335 @@
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
           "EXPRESSION_INTENSITY",
-          "AUDIO_ENERGY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 5,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_COLLISION_PROXY_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "COLLISION_PROXY",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 6,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_DESTRUCTIBLE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "DESTRUCTIBLE",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 7,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_INTERACTION_ROLE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERACTION_ROLE",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 8,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_INTERACTION_STATE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERACTION_STATE",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 9,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "SKILL",
+        "ideaId": "CAST_TELEGRAPH_IMPACT_CHAIN",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CAST_TELEGRAPH_TRAVEL_IMPACT",
+        "priority": 262,
+        "targetMin": 180,
+        "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
+        ],
+        "worklistOrder": 10,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "ENVIRONMENT_INTERIOR_EXTERIOR_TRANSITION_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERIOR_EXTERIOR_TRANSITION",
+        "priority": 300,
+        "targetMin": 140,
+        "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 4,
+        "worklistOrder": 11,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "ENVIRONMENT_STREAMING_LOD_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "STREAMING_LOD",
+        "priority": 300,
+        "targetMin": 140,
+        "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 12,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "ANTICIPATION_IMPACT_RECOVERY_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "COMBAT_TIMING_LANGUAGE",
+        "priority": 262,
+        "targetMin": 200,
+        "currentCount": 61,
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 13,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57415,7 +57786,7 @@
           "DAMAGE_WEAR",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 5,
+        "worklistOrder": 14,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57460,7 +57831,7 @@
           "DAMAGE_WEAR",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 6,
+        "worklistOrder": 15,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57505,7 +57876,7 @@
           "DAMAGE_WEAR",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 7,
+        "worklistOrder": 16,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57550,7 +57921,7 @@
           "DAMAGE_WEAR",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 8,
+        "worklistOrder": 17,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57561,15 +57932,15 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "CREATURE",
-        "ideaId": "CREATURE_AMORPHOUS_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "AMORPHOUS",
-        "priority": 300,
-        "targetMin": 180,
-        "currentCount": 24,
+        "domain": "UI",
+        "ideaId": "COMBAT_THREAT_COMBO_HUD",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "THREAT_COMBO_BOSS_READABILITY",
+        "priority": 262,
+        "targetMin": 340,
+        "currentCount": 204,
         "freeSourceCandidateIds": [
-          "quaternius-ultimate-animated-animals"
+          "kenney-ui-pack"
         ],
         "freeSourceAvailable": true,
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
@@ -57578,131 +57949,15 @@
         "acquireExternalOnlyAfterInternalReuseFailure": true,
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
           "SHAPE_TEMPER",
           "EXPRESSION_INTENSITY",
-          "MATERIAL_FINISH",
           "LINE_ENERGY",
           "COLOR_ENERGY",
           "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
+          "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 9,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "CREATURE",
-        "ideaId": "CREATURE_BOSS_SIGNATURE_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "BOSS_SIGNATURE",
-        "priority": 300,
-        "targetMin": 180,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "quaternius-ultimate-animated-animals"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "MATERIAL_FINISH",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 10,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "CREATURE",
-        "ideaId": "CREATURE_SURFACE_VARIANT_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "SURFACE_VARIANT",
-        "priority": 300,
-        "targetMin": 180,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "quaternius-ultimate-animated-animals"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "MATERIAL_FINISH",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 11,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "CREATURE",
-        "ideaId": "CREATURE_TORSO_VARIANT_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "TORSO_VARIANT",
-        "priority": 300,
-        "targetMin": 180,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "quaternius-ultimate-animated-animals"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "MATERIAL_FINISH",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 12,
+        "worklistOrder": 18,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57714,10 +57969,10 @@
       {
         "kind": "DOMAIN_VOLUME",
         "domain": "ENVIRONMENT",
-        "ideaId": "ENVIRONMENT_INTERIOR_EXTERIOR_TRANSITION_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "INTERIOR_EXTERIOR_TRANSITION",
-        "priority": 300,
+        "ideaId": "CLIMATE_SKY_DEPTH_STACK",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "WEATHER_TIME_CELESTIAL_BACKGROUND",
+        "priority": 280,
         "targetMin": 140,
         "currentCount": 24,
         "freeSourceCandidateIds": [
@@ -57745,84 +58000,7 @@
           "DAMAGE_WEAR",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 13,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "ENVIRONMENT",
-        "ideaId": "ENVIRONMENT_STREAMING_LOD_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "STREAMING_LOD",
-        "priority": 300,
-        "targetMin": 140,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "ATMOSPHERE_WEIGHT"
-        ],
-        "worklistOrder": 14,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "MOTION",
-        "ideaId": "MOTION_IDLE_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "IDLE",
-        "priority": 300,
-        "targetMin": 200,
-        "currentCount": 61,
-        "freeSourceCandidateIds": [
-          "kaykit-character-animations-1-1",
-          "quaternius-universal-animation-library",
-          "quaternius-universal-animation-library-2"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 15,
+        "worklistOrder": 19,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57864,7 +58042,7 @@
           "AUDIO_ENERGY",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 16,
+        "worklistOrder": 20,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57906,7 +58084,7 @@
           "AUDIO_ENERGY",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 17,
+        "worklistOrder": 21,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57948,7 +58126,183 @@
           "AUDIO_ENERGY",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 18,
+        "worklistOrder": 22,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "DIALOGUE_ACTING_GESTURE_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "DIALOGUE_REACTION_HANDOFF_CEREMONY",
+        "priority": 238,
+        "targetMin": 200,
+        "currentCount": 61,
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 23,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "CASUAL_ONE_HAND_RUN_HUD",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "ONE_ACTION_SCORE_DISTANCE_RISK",
+        "priority": 238,
+        "targetMin": 340,
+        "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 24,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "COOP_PARTY_MARKER_PING_UI",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "PARTY_MARKER_PING_SHARED_OBJECTIVE",
+        "priority": 232,
+        "targetMin": 340,
+        "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 25,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "BUILD_CARRY_PLACE_MOTION_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CARRY_BUILD_REPAIR_PLACE",
+        "priority": 226,
+        "targetMin": 200,
+        "currentCount": 61,
+        "freeSourceCandidateIds": [
+          "kaykit-character-animations-1-1",
+          "quaternius-universal-animation-library",
+          "quaternius-universal-animation-library-2"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 26,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "DEFENSE_WAVE_COMMAND_KIT",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "WAVE_BASE_RANGE_UPGRADE_BOSS",
+        "priority": 226,
+        "targetMin": 340,
+        "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 27,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -57994,7 +58348,7 @@
           "MOTION_ENERGY",
           "VFX_ENERGY"
         ],
-        "worklistOrder": 19,
+        "worklistOrder": 28,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58040,7 +58394,7 @@
           "MOTION_ENERGY",
           "VFX_ENERGY"
         ],
-        "worklistOrder": 20,
+        "worklistOrder": 29,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58086,368 +58440,231 @@
           "MOTION_ENERGY",
           "VFX_ENERGY"
         ],
-        "worklistOrder": 21,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "WORLD_PROP",
-        "ideaId": "WORLD_PROP_COLLISION_PROXY_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "COLLISION_PROXY",
-        "priority": 300,
-        "targetMin": 160,
-        "currentCount": 38,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 22,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "WORLD_PROP",
-        "ideaId": "WORLD_PROP_DESTRUCTIBLE_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "DESTRUCTIBLE",
-        "priority": 300,
-        "targetMin": 160,
-        "currentCount": 38,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 23,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "WORLD_PROP",
-        "ideaId": "WORLD_PROP_INTERACTION_ROLE_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "INTERACTION_ROLE",
-        "priority": 300,
-        "targetMin": 160,
-        "currentCount": 38,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 24,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "WORLD_PROP",
-        "ideaId": "WORLD_PROP_INTERACTION_STATE_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "INTERACTION_STATE",
-        "priority": 300,
-        "targetMin": 160,
-        "currentCount": 38,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 25,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "ENVIRONMENT",
-        "ideaId": "CLIMATE_SKY_DEPTH_STACK",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "WEATHER_TIME_CELESTIAL_BACKGROUND",
-        "priority": 280,
-        "targetMin": 140,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "ATMOSPHERE_WEIGHT"
-        ],
-        "worklistOrder": 26,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "FOLIAGE",
-        "ideaId": "WIND_AND_SEASON_FOLIAGE_VARIANTS",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "WIND_SEASON_WEATHER_RESPONSE",
-        "priority": 280,
-        "targetMin": 36,
-        "currentCount": 18,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "MOTION_ENERGY",
-          "ATMOSPHERE_WEIGHT"
-        ],
-        "worklistOrder": 27,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "MOTION",
-        "ideaId": "ANTICIPATION_IMPACT_RECOVERY_SET",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "COMBAT_TIMING_LANGUAGE",
-        "priority": 262,
-        "targetMin": 200,
-        "currentCount": 61,
-        "freeSourceCandidateIds": [
-          "kaykit-character-animations-1-1",
-          "quaternius-universal-animation-library",
-          "quaternius-universal-animation-library-2"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 28,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "SKILL",
-        "ideaId": "CAST_TELEGRAPH_IMPACT_CHAIN",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "CAST_TELEGRAPH_TRAVEL_IMPACT",
-        "priority": 262,
-        "targetMin": 180,
-        "currentCount": 20,
-        "freeSourceCandidateIds": [
-          "kaykit-character-animations-1-1",
-          "quaternius-universal-animation-library",
-          "quaternius-universal-animation-library-2"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "MOTION_ENERGY",
-          "VFX_ENERGY"
-        ],
-        "worklistOrder": 29,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "UI",
-        "ideaId": "COMBAT_THREAT_COMBO_HUD",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "THREAT_COMBO_BOSS_READABILITY",
-        "priority": 262,
-        "targetMin": 340,
-        "currentCount": 204,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
         "worklistOrder": 30,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "FIELD_NAVIGATION_SURVIVAL_ITEMS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "REPAIR_SIGNAL_NAVIGATION_RESEARCH",
+        "priority": 256,
+        "targetMin": 140,
+        "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 31,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "QUEST_RELIC_LORE_ITEM_FAMILIES",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "QUEST_RELIC_LORE_KEY_TREASURE",
+        "priority": 256,
+        "targetMin": 140,
+        "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 32,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_CANCEL_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_CANCEL",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 33,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_CONFIRM_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_CONFIRM",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 34,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_ERROR_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_ERROR",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 35,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_REWARD_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_REWARD",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 36,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58480,7 +58697,209 @@
           "DETAIL_DENSITY",
           "VFX_ENERGY"
         ],
-        "worklistOrder": 31,
+        "worklistOrder": 37,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "DEFENSE_LANE_BACKGROUND_PRESSURE",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "LANE_ROUTE_WAVE_PRESSURE",
+        "priority": 226,
+        "targetMin": 140,
+        "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 38,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "CASUAL_COLLECTION_ITEM_FAMILY",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "COLLECTIBLE_REWARD",
+        "priority": 238,
+        "targetMin": 140,
+        "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 39,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "EXPLORATION_TOOL_ITEM_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "COMPASS_CAMERA_SCANNER_MARKER",
+        "priority": 238,
+        "targetMin": 140,
+        "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 40,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "VFX",
+        "ideaId": "CASUAL_PICKUP_STREAK_VFX",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "PICKUP_STREAK_REWARD",
+        "priority": 238,
+        "targetMin": 120,
+        "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
+        ],
+        "worklistOrder": 41,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "PRESENTATION",
+        "ideaId": "CASUAL_FAST_RETRY_PRESENTATION",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "FAIL_RESULT_FAST_RETRY",
+        "priority": 238,
+        "targetMin": 100,
+        "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-ui-pack",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 42,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58526,7 +58945,7 @@
           "MOTION_ENERGY",
           "VFX_ENERGY"
         ],
-        "worklistOrder": 32,
+        "worklistOrder": 43,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58537,38 +58956,29 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "ITEM",
-        "ideaId": "FIELD_NAVIGATION_SURVIVAL_ITEMS",
+        "domain": "VFX",
+        "ideaId": "ASCENSION_GROWTH_VFX",
         "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "REPAIR_SIGNAL_NAVIGATION_RESEARCH",
-        "priority": 256,
-        "targetMin": 140,
-        "currentCount": 40,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "role": "LEVEL_UP_ASCENSION_UPGRADE",
+        "priority": 226,
+        "targetMin": 120,
+        "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
           "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
           "COLOR_ENERGY",
           "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
+          "VFX_ENERGY"
         ],
-        "worklistOrder": 33,
+        "worklistOrder": 44,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58579,38 +58989,29 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "ITEM",
-        "ideaId": "QUEST_RELIC_LORE_ITEM_FAMILIES",
+        "domain": "VFX",
+        "ideaId": "DEFENSE_RANGE_TELEGRAPH_VFX",
         "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "QUEST_RELIC_LORE_KEY_TREASURE",
-        "priority": 256,
-        "targetMin": 140,
-        "currentCount": 40,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "role": "RANGE_TARGET_WAVE_BOSS_TELEGRAPH",
+        "priority": 226,
+        "targetMin": 120,
+        "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
         "acquireExternalOnlyAfterInternalReuseFailure": true,
         "styleExpressionAdaptationRequired": true,
         "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
           "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
           "COLOR_ENERGY",
           "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
+          "VFX_ENERGY"
         ],
-        "worklistOrder": 34,
+        "worklistOrder": 45,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58653,279 +59054,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 35,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "FOLIAGE",
-        "ideaId": "EXPLORATION_FOLIAGE_BIOME_SET",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "BIOME_ROUTE_LANDMARK_DENSITY",
-        "priority": 238,
-        "targetMin": 36,
-        "currentCount": 18,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "MOTION_ENERGY",
-          "ATMOSPHERE_WEIGHT"
-        ],
-        "worklistOrder": 36,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "ITEM",
-        "ideaId": "CASUAL_COLLECTION_ITEM_FAMILY",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "COLLECTIBLE_REWARD",
-        "priority": 238,
-        "targetMin": 140,
-        "currentCount": 40,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 37,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "ITEM",
-        "ideaId": "EXPLORATION_TOOL_ITEM_SET",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "COMPASS_CAMERA_SCANNER_MARKER",
-        "priority": 238,
-        "targetMin": 140,
-        "currentCount": 40,
-        "freeSourceCandidateIds": [
-          "kenney-furniture-kit",
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "kenney-building-kit",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 38,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "MOTION",
-        "ideaId": "DIALOGUE_ACTING_GESTURE_SET",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "DIALOGUE_REACTION_HANDOFF_CEREMONY",
-        "priority": 238,
-        "targetMin": 200,
-        "currentCount": 61,
-        "freeSourceCandidateIds": [
-          "kaykit-character-animations-1-1",
-          "quaternius-universal-animation-library",
-          "quaternius-universal-animation-library-2"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 39,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "PRESENTATION",
-        "ideaId": "CASUAL_FAST_RETRY_PRESENTATION",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "FAIL_RESULT_FAST_RETRY",
-        "priority": 238,
-        "targetMin": 100,
-        "currentCount": 14,
-        "freeSourceCandidateIds": [
-          "kenney-ui-audio",
-          "kenney-ui-pack",
-          "kenney-interface-sounds",
-          "kenney-rpg-audio",
-          "kenney-impact-sounds"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "MOTION_ENERGY",
-          "VFX_ENERGY",
-          "UI_EXPRESSION",
-          "AUDIO_ENERGY",
-          "ATMOSPHERE_WEIGHT"
-        ],
-        "worklistOrder": 40,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "UI",
-        "ideaId": "CASUAL_ONE_HAND_RUN_HUD",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "ONE_ACTION_SCORE_DISTANCE_RISK",
-        "priority": 238,
-        "targetMin": 340,
-        "currentCount": 204,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 41,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "VFX",
-        "ideaId": "CASUAL_PICKUP_STREAK_VFX",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "PICKUP_STREAK_REWARD",
-        "priority": 238,
-        "targetMin": 120,
-        "currentCount": 27,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "VFX_ENERGY"
-        ],
-        "worklistOrder": 42,
+        "worklistOrder": 46,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -58968,84 +59097,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 43,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "MATERIAL",
-        "ideaId": "MACHINE_WEAR_REPAIR_MATERIALS",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "CLEAN_WORN_DIRTY_CORRODED_REPAIRED",
-        "priority": 232,
-        "targetMin": 40,
-        "currentCount": 25,
-        "freeSourceCandidateIds": [
-          "kenney-modular-buildings",
-          "kenney-nature-kit",
-          "quaternius-ultimate-buildings",
-          "quaternius-ultimate-nature",
-          "poly-haven-cc0-library",
-          "quaternius-medieval-village",
-          "quaternius-ultimate-modular-ruins",
-          "kenney-city-kit-roads"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "MATERIAL_FINISH",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR"
-        ],
-        "worklistOrder": 44,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "UI",
-        "ideaId": "COOP_PARTY_MARKER_PING_UI",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "PARTY_MARKER_PING_SHARED_OBJECTIVE",
-        "priority": 232,
-        "targetMin": 340,
-        "currentCount": 204,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 45,
+        "worklistOrder": 47,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59088,7 +59140,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 46,
+        "worklistOrder": 48,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59131,7 +59183,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 47,
+        "worklistOrder": 49,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59142,13 +59194,13 @@
       },
       {
         "kind": "DOMAIN_VOLUME",
-        "domain": "ENVIRONMENT",
-        "ideaId": "DEFENSE_LANE_BACKGROUND_PRESSURE",
+        "domain": "FOLIAGE",
+        "ideaId": "WIND_AND_SEASON_FOLIAGE_VARIANTS",
         "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "LANE_ROUTE_WAVE_PRESSURE",
-        "priority": 226,
-        "targetMin": 140,
-        "currentCount": 24,
+        "role": "WIND_SEASON_WEATHER_RESPONSE",
+        "priority": 280,
+        "targetMin": 36,
+        "currentCount": 18,
         "freeSourceCandidateIds": [
           "kenney-furniture-kit",
           "kenney-modular-buildings",
@@ -59168,13 +59220,97 @@
         "styleExpressionAxisIds": [
           "SURFACE_FEEL",
           "SHAPE_TEMPER",
-          "MATERIAL_FINISH",
           "COLOR_ENERGY",
           "DETAIL_DENSITY",
           "DAMAGE_WEAR",
+          "MOTION_ENERGY",
           "ATMOSPHERE_WEIGHT"
         ],
-        "worklistOrder": 48,
+        "worklistOrder": 50,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "FOLIAGE",
+        "ideaId": "EXPLORATION_FOLIAGE_BIOME_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "BIOME_ROUTE_LANDMARK_DENSITY",
+        "priority": 238,
+        "targetMin": 36,
+        "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "ATMOSPHERE_WEIGHT"
+        ],
+        "worklistOrder": 51,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MATERIAL",
+        "ideaId": "MACHINE_WEAR_REPAIR_MATERIALS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CLEAN_WORN_DIRTY_CORRODED_REPAIRED",
+        "priority": 232,
+        "targetMin": 40,
+        "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village",
+          "quaternius-ultimate-modular-ruins",
+          "kenney-city-kit-roads"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
+        ],
+        "worklistOrder": 52,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59215,7 +59351,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 49,
+        "worklistOrder": 53,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59256,7 +59392,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 50,
+        "worklistOrder": 54,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59297,476 +59433,7 @@
           "DETAIL_DENSITY",
           "DAMAGE_WEAR"
         ],
-        "worklistOrder": 51,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "MOTION",
-        "ideaId": "BUILD_CARRY_PLACE_MOTION_SET",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "CARRY_BUILD_REPAIR_PLACE",
-        "priority": 226,
-        "targetMin": 200,
-        "currentCount": 61,
-        "freeSourceCandidateIds": [
-          "kaykit-character-animations-1-1",
-          "quaternius-universal-animation-library",
-          "quaternius-universal-animation-library-2"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 52,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "UI",
-        "ideaId": "DEFENSE_WAVE_COMMAND_KIT",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "WAVE_BASE_RANGE_UPGRADE_BOSS",
-        "priority": 226,
-        "targetMin": 340,
-        "currentCount": 204,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 53,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "VFX",
-        "ideaId": "ASCENSION_GROWTH_VFX",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "LEVEL_UP_ASCENSION_UPGRADE",
-        "priority": 226,
-        "targetMin": 120,
-        "currentCount": 27,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "VFX_ENERGY"
-        ],
-        "worklistOrder": 54,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "VFX",
-        "ideaId": "DEFENSE_RANGE_TELEGRAPH_VFX",
-        "source": "COMPANY_COMMON_SEED_DEMAND",
-        "role": "RANGE_TARGET_WAVE_BOSS_TELEGRAPH",
-        "priority": 226,
-        "targetMin": 120,
-        "currentCount": 27,
-        "freeSourceCandidateIds": [],
-        "freeSourceAvailable": false,
-        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "VFX_ENERGY"
-        ],
         "worklistOrder": 55,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "ACCESSIBILITY_INPUT",
-        "ideaId": "ACTION_REMAP_CONTEXT",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 14,
-        "currentCount": 4,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 56,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "SKILL_BUILD_LIBRARY",
-        "ideaId": "ACTIVE_PASSIVE_SPLIT",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 24,
-        "currentCount": 8,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 57,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "CONQUEST_DEFENSE",
-        "ideaId": "ATTACK_DIRECTION_COMPASS",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 16,
-        "currentCount": 1,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 58,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "CRAFTING_UPGRADE",
-        "ideaId": "BATCH_CRAFT_PREVIEW",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 18,
-        "currentCount": 11,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 59,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "MENU_NAVIGATION",
-        "ideaId": "BREADCRUMB_BACKSTACK",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 30,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 60,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "SHOP_TRADE",
-        "ideaId": "BULK_PURCHASE_PREVIEW",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 14,
-        "currentCount": 6,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 61,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "SHOP_TRADE",
-        "ideaId": "BUY_SELL_TOGGLE_CONTEXT",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 14,
-        "currentCount": 6,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 62,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
-        "ideaId": "CAPACITY_FORECAST",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 32,
-        "currentCount": 25,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 63,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "WORLD_STRATEGY_DIPLOMACY",
-        "ideaId": "CITY_INFLUENCE_HEATMAP",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 24,
-        "currentCount": 12,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 64,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59803,7 +59470,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 65,
+        "worklistOrder": 56,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -59840,155 +59507,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 66,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "COMBAT_HUD",
-        "ideaId": "COMBO_DECAY_INDICATOR",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 18,
-        "currentCount": 14,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 67,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "PARTY_COMPANION",
-        "ideaId": "COMPANION_ORDER_PRIORITY",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 24,
-        "currentCount": 17,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 68,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "FLEET_NAVIGATION",
-        "ideaId": "CREW_MORALE_PANEL",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 18,
-        "currentCount": 13,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 69,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "CONQUEST_DEFENSE",
-        "ideaId": "DEFENSE_WAVE_FORECAST",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 16,
-        "currentCount": 1,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 70,
+        "worklistOrder": 57,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60025,44 +59544,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 71,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "QUEST_CODEX",
-        "ideaId": "DISCOVERY_TO_CODEX_LINK",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 16,
-        "currentCount": 9,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 72,
+        "worklistOrder": 58,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60099,118 +59581,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 73,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "FLEET_NAVIGATION",
-        "ideaId": "FLEET_COMPOSITION_PANEL",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 18,
-        "currentCount": 13,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 74,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "PARTY_COMPANION",
-        "ideaId": "FORMATION_PREVIEW",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 24,
-        "currentCount": 17,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 75,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "COMBAT_HUD",
-        "ideaId": "GUARD_BREAK_RECOVERY",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 18,
-        "currentCount": 14,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 76,
+        "worklistOrder": 59,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60247,118 +59618,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 77,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "ACCESSIBILITY_INPUT",
-        "ideaId": "HOLD_DURATION_SETTING",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 14,
-        "currentCount": 4,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 78,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "ACCESSIBILITY_INPUT",
-        "ideaId": "INPUT_MODE_LIVE_SWAP",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 14,
-        "currentCount": 4,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 79,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "CONQUEST_DEFENSE",
-        "ideaId": "INVASION_WARNING_BANNER",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 16,
-        "currentCount": 1,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 80,
+        "worklistOrder": 60,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60395,44 +59655,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 81,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "MENU_NAVIGATION",
-        "ideaId": "LAST_LOCATION_RESUME",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 30,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 82,
+        "worklistOrder": 61,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60469,81 +59692,7 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
-        "worklistOrder": 83,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "EQUIPMENT_LOADOUT",
-        "ideaId": "LOADOUT_DIFF_PREVIEW",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 18,
-        "currentCount": 9,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 84,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "ECONOMY_TRADE",
-        "ideaId": "LOCAL_PRICE_TREND",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 20,
-        "currentCount": 3,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 85,
+        "worklistOrder": 62,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60580,6 +59729,857 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
+        "worklistOrder": 63,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PROGRESSION_GROWTH",
+        "ideaId": "MULTI_AXIS_GROWTH_OVERVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 64,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ECONOMY_TRADE",
+        "ideaId": "LOCAL_PRICE_TREND",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 20,
+        "currentCount": 3,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 65,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "SKILL_BUILD_LIBRARY",
+        "ideaId": "ACTIVE_PASSIVE_SPLIT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 8,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 66,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CONQUEST_DEFENSE",
+        "ideaId": "ATTACK_DIRECTION_COMPASS",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 67,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CONQUEST_DEFENSE",
+        "ideaId": "DEFENSE_WAVE_FORECAST",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 68,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CONQUEST_DEFENSE",
+        "ideaId": "INVASION_WARNING_BANNER",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 69,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "WORLD_STRATEGY_DIPLOMACY",
+        "ideaId": "CITY_INFLUENCE_HEATMAP",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 12,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 70,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "ideaId": "ACTION_REMAP_CONTEXT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 4,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 71,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "ideaId": "HOLD_DURATION_SETTING",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 4,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 72,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "ideaId": "INPUT_MODE_LIVE_SWAP",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 4,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 73,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "EQUIPMENT_LOADOUT",
+        "ideaId": "LOADOUT_DIFF_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 9,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 74,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "LOADING_ERROR_STATE",
+        "ideaId": "OFFLINE_CACHE_STATE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 7,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 75,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "LOADING_ERROR_STATE",
+        "ideaId": "PARTIAL_LOAD_CONTINUE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 7,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 76,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "SHOP_TRADE",
+        "ideaId": "BULK_PURCHASE_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 6,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 77,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "SHOP_TRADE",
+        "ideaId": "BUY_SELL_TOGGLE_CONTEXT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 6,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 78,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CRAFTING_UPGRADE",
+        "ideaId": "BATCH_CRAFT_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 11,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 79,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
+        "ideaId": "CAPACITY_FORECAST",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 32,
+        "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 80,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PARTY_COMPANION",
+        "ideaId": "COMPANION_ORDER_PRIORITY",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 17,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 81,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "QUEST_CODEX",
+        "ideaId": "DISCOVERY_TO_CODEX_LINK",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 9,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 82,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PARTY_COMPANION",
+        "ideaId": "FORMATION_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 17,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 83,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "QUEST_CODEX",
+        "ideaId": "OBJECTIVE_PROGRESS_TIMELINE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 9,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 84,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
+        "ideaId": "OVERWEIGHT_RESOLUTION_SHEET",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 32,
+        "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 85,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "MENU_NAVIGATION",
+        "ideaId": "BREADCRUMB_BACKSTACK",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 30,
+        "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 86,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -60592,13 +60592,13 @@
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
         "domain": "UI",
-        "subsystem": "MOUNT_TRAVEL",
-        "ideaId": "MOUNT_CARGO_CAPACITY",
+        "subsystem": "MENU_NAVIGATION",
+        "ideaId": "LAST_LOCATION_RESUME",
         "source": "UI_SUBSYSTEM_IDEA_POOL",
         "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
         "priority": 210,
-        "targetMin": 18,
-        "currentCount": 16,
+        "targetMin": 30,
+        "currentCount": 24,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
         ],
@@ -60629,13 +60629,13 @@
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
         "domain": "UI",
-        "subsystem": "MOUNT_TRAVEL",
-        "ideaId": "MOUNT_CONDITION_HUD",
+        "subsystem": "FLEET_NAVIGATION",
+        "ideaId": "CREW_MORALE_PANEL",
         "source": "UI_SUBSYSTEM_IDEA_POOL",
         "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
         "priority": 210,
         "targetMin": 18,
-        "currentCount": 16,
+        "currentCount": 13,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
         ],
@@ -60666,13 +60666,13 @@
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
         "domain": "UI",
-        "subsystem": "PROGRESSION_GROWTH",
-        "ideaId": "MULTI_AXIS_GROWTH_OVERVIEW",
+        "subsystem": "FLEET_NAVIGATION",
+        "ideaId": "FLEET_COMPOSITION_PANEL",
         "source": "UI_SUBSYSTEM_IDEA_POOL",
         "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
         "priority": 210,
-        "targetMin": 24,
-        "currentCount": 1,
+        "targetMin": 18,
+        "currentCount": 13,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
         ],
@@ -60777,13 +60777,13 @@
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
         "domain": "UI",
-        "subsystem": "QUEST_CODEX",
-        "ideaId": "OBJECTIVE_PROGRESS_TIMELINE",
+        "subsystem": "COMBAT_HUD",
+        "ideaId": "COMBO_DECAY_INDICATOR",
         "source": "UI_SUBSYSTEM_IDEA_POOL",
         "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
         "priority": 210,
-        "targetMin": 16,
-        "currentCount": 9,
+        "targetMin": 18,
+        "currentCount": 14,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
         ],
@@ -60814,13 +60814,13 @@
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
         "domain": "UI",
-        "subsystem": "LOADING_ERROR_STATE",
-        "ideaId": "OFFLINE_CACHE_STATE",
+        "subsystem": "COMBAT_HUD",
+        "ideaId": "GUARD_BREAK_RECOVERY",
         "source": "UI_SUBSYSTEM_IDEA_POOL",
         "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
         "priority": 210,
-        "targetMin": 16,
-        "currentCount": 7,
+        "targetMin": 18,
+        "currentCount": 14,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
         ],
@@ -60840,43 +60840,6 @@
           "MOTION_ENERGY"
         ],
         "worklistOrder": 93,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
-      },
-      {
-        "kind": "UI_SUBSYSTEM_VOLUME",
-        "domain": "UI",
-        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
-        "ideaId": "OVERWEIGHT_RESOLUTION_SHEET",
-        "source": "UI_SUBSYSTEM_IDEA_POOL",
-        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
-        "priority": 210,
-        "targetMin": 32,
-        "currentCount": 25,
-        "freeSourceCandidateIds": [
-          "kenney-ui-pack"
-        ],
-        "freeSourceAvailable": true,
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "UI_EXPRESSION",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 94,
         "resolutionOrder": [
           "REUSE_EXISTING",
           "DERIVE_VARIANT",
@@ -60913,6 +60876,43 @@
           "UI_EXPRESSION",
           "MOTION_ENERGY"
         ],
+        "worklistOrder": 94,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "MOUNT_TRAVEL",
+        "ideaId": "MOUNT_CARGO_CAPACITY",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 16,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
+        ],
         "worklistOrder": 95,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -60925,13 +60925,13 @@
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
         "domain": "UI",
-        "subsystem": "LOADING_ERROR_STATE",
-        "ideaId": "PARTIAL_LOAD_CONTINUE",
+        "subsystem": "MOUNT_TRAVEL",
+        "ideaId": "MOUNT_CONDITION_HUD",
         "source": "UI_SUBSYSTEM_IDEA_POOL",
         "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
         "priority": 210,
-        "targetMin": 16,
-        "currentCount": 7,
+        "targetMin": 18,
+        "currentCount": 16,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
         ],
