@@ -1973,7 +1973,8 @@ test('expanded common item tool creature and VFX registry mirrors current catalo
     ['assets/roblox/common-items-v1/catalog.json','roblox-common-items-v1','items','roblox-common-item-',40],
     ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
     ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
-    ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',8],
+    ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
+    ['assets/roblox/common-materials-v1/catalog.json','roblox-common-materials-v1','atoms','roblox-common-material-',25],
   ];
   for(const [relative,packId,key,prefix,count] of checks){
     const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
@@ -2564,7 +2565,7 @@ test('generic creature torso requirement can choose company-common base',()=>{
   assert.equal(loadout.selections[0].assetId,'common-biped-torso');
 });
 
-test('company-common materials v4 preserves old atoms and expands to eleven',()=>{
+test('company-common materials v5 preserves old atoms and expands to twenty-five',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-materials-v1');
@@ -2572,20 +2573,20 @@ test('company-common materials v4 preserves old atoms and expands to eleven',()=
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,11);
+  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','STYLE_VARIANT'];
+  assert.equal(catalog.version,5);
+  assert.equal(catalog.atoms.length,25);
   for(const atomId of atoms){
     assert.ok(source.includes(atomId),atomId);
     assert.ok(catalog.atoms.some(row=>row.atomId===atomId),atomId+':catalog');
   }
 
   const materialRefs=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
-  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement']);
+  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement','SmoothPlastic','Grass']);
   assert.equal(materialRefs.length>0,true);
   assert.equal(materialRefs.every(value=>allowed.has(value)),true);
 
-  assert.ok(source.includes('atomCount = 11'));
+  assert.ok(source.includes('atomCount = 25'));
   assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
   assert.equal(/\.(CanCollide|CanTouch|CanQuery)\s*=/.test(source),false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
@@ -2594,17 +2595,17 @@ test('company-common materials v4 preserves old atoms and expands to eleven',()=
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
 });
 
-test('company-common material v4 registry exposes eleven unverified reusable atoms',()=>{
+test('company-common material v5 registry exposes twenty-five unverified reusable atoms',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
   assert.ok(pack);
-  assert.equal(pack.assetCount,11);
+  assert.equal(pack.assetCount,25);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
 
-  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
+  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','STYLE_VARIANT'];
   for(const atomId of added){
     const id='roblox-common-material-'+atomId.toLowerCase().replaceAll('_','-');
     const row=registry.assets.find(asset=>asset.id===id);
@@ -2921,7 +2922,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,63);
+  assert.equal(registry.version,64);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3013,7 +3014,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,63);
+  assert.equal(registry.version,64);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3198,7 +3199,7 @@ test('company asset library exposes all-stage composition as an asset contract o
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
-  assert.equal(registry.version,63);
+  assert.equal(registry.version,64);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -3333,4 +3334,53 @@ test('company common seed asset ideation reads all company seed artbooks and pro
   assert.equal(contract.workflowCreated,false);
   assert.equal(contract.queueCreated,false);
   assert.equal(contract.pipelineCreated,false);
+});
+
+
+test('company-common VFX v4 expands reusable cross-genre feedback roles to twenty-seven',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-vfx-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonVFX.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+
+  assert.equal(catalog.version,4);
+  assert.equal(catalog.atoms.length,27);
+  assert.equal(quality.sourceAssetCount,27);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount,27);
+  for(const role of ['CRITICAL','DODGE','HEAL','BUFF','DEBUFF','STATUS','LOOT_COMMON','LOOT_RARE','LOOT_LEGENDARY','UPGRADE','CRAFT','DISMANTLE','QUEST_UPDATE','INTERACTION','ENVIRONMENT','WEATHER','DESTRUCTION','BOSS','MOBILE_DENSITY']){
+    const atom=catalog.atoms.find(row=>row.role===role);
+    assert.ok(atom,role);
+    assert.ok(source.includes(atom.atomId),atom.atomId);
+    const id='roblox-common-vfx-'+atom.atomId.toLowerCase().replaceAll('_','-');
+    const registered=registry.assets.find(row=>row.id===id);
+    assert.ok(registered,id);
+    assert.equal(registered.role,role,id);
+    assert.equal(registered.productionVerified,false,id);
+  }
+  assert.equal(catalog.systemDepthContract.missingComponentCandidates.length,0);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+  for(const forbidden of [/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/TakeDamage\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('material and VFX system depth become complete without claiming runtime production verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const vfx=report.rows.find(row=>row.domain==='VFX');
+  const material=report.rows.find(row=>row.domain==='MATERIAL');
+  assert.ok(vfx);
+  assert.ok(material);
+  assert.equal(vfx.missing.length,0);
+  assert.equal(material.missing.length,0);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1').productionVerified,false);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-materials-v1').productionVerified,false);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.vfxCount,27);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.materialCount,25);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.volumeBeforeQuality,true);
 });
