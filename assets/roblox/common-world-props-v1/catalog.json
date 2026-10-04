@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "packId": "roblox-common-world-props-v1",
+  "title": "Roblox 회사 공용 월드 소품 8종 v1",
+  "platform": "ROBLOX",
+  "family": "PROP",
+  "subfamily": "WORLD_PROP_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "automaticCrossGameReuseAllowed": true,
+  "crossGameReuseRequiresCompatibilityPass": true,
+  "gameplayAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "intendedConsumerGameIds": [
+    "daechung-rpg",
+    "survival",
+    "amusement-tycoon",
+    "horror-escape-room",
+    "monster-adventure"
+  ],
+  "items": [
+    {
+      "assetId": "SIGNPOST",
+      "name": "표지판",
+      "subfamily": "SIGNPOST",
+      "worldRole": "WAYFINDING",
+      "familyRootId": "WORLD_SIGN"
+    },
+    {
+      "assetId": "WOOD_FENCE",
+      "name": "나무 울타리",
+      "subfamily": "FENCE",
+      "worldRole": "BOUNDARY",
+      "familyRootId": "WORLD_FENCE"
+    },
+    {
+      "assetId": "WALL_TORCH",
+      "name": "벽 횃불",
+      "subfamily": "TORCH",
+      "worldRole": "LIGHTING_PROP",
+      "familyRootId": "WORLD_LIGHT"
+    },
+    {
+      "assetId": "WOOD_BARREL",
+      "name": "나무통",
+      "subfamily": "BARREL",
+      "worldRole": "SET_DRESSING",
+      "familyRootId": "WORLD_CONTAINER"
+    },
+    {
+      "assetId": "BENCH",
+      "name": "벤치",
+      "subfamily": "BENCH",
+      "worldRole": "SEATING_PROP",
+      "familyRootId": "WORLD_FURNITURE"
+    },
+    {
+      "assetId": "TABLE",
+      "name": "테이블",
+      "subfamily": "TABLE",
+      "worldRole": "SURFACE_PROP",
+      "familyRootId": "WORLD_FURNITURE"
+    },
+    {
+      "assetId": "MARKET_STALL",
+      "name": "시장 가판대",
+      "subfamily": "MARKET_STALL",
+      "worldRole": "VENDOR_PROP",
+      "familyRootId": "WORLD_STALL"
+    },
+    {
+      "assetId": "STONE_WELL",
+      "name": "돌우물",
+      "subfamily": "WELL",
+      "worldRole": "LANDMARK_PROP",
+      "familyRootId": "WORLD_WELL"
+    }
+  ]
+}
