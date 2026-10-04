@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:5,
+  version:6,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1480,6 +1480,8 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'REBUILD_REFERENCE_BREADTH_PROFILE_GAPS',
     'FILTER_IDEAS_ALREADY_PRESENT_BY_ID_ATOM_OR_ROLE',
     'ATTACH_LICENSE_VERIFIED_FREE_SOURCE_CANDIDATES_TO_WORKLIST',
+    'KEEP_FREE_SOURCE_CANDIDATES_METADATA_ONLY_UNTIL_SELECTED',
+    'ACQUIRE_SELECTED_FREE_SOURCE_ON_DEMAND',
     'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
@@ -1503,8 +1505,18 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
   freeOriginalVolumePolicy:Object.freeze({
     priority:'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING',
-    purpose:'FILL_VOLUME_FASTER_THEN_SPEND_MORE_CYCLES_ON_QUALITY',
+    purpose:'ON_DEMAND_GAP_FILL_WHILE_PRIMARY_WORK_FOCUSES_ON_QUALITY_AND_AUTOMATION_DETAIL',
     allowed:'CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED',
+    sourceCatalogMode:'SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION',
+    bulkPrefetchForbidden:true,
+    speculativeDownloadForbidden:true,
+    automaticAcquisitionMode:'SELECTED_WORKLIST_ACTION_ONLY',
+    acquireOnlyWhen:Object.freeze([
+      'ACTIVE_WORKLIST_ACTION_REQUIRES_SOURCE',
+      'NO_SUITABLE_EXISTING_INTERNAL_ASSET',
+      'NO_ACCEPTABLE_DERIVED_OR_RECOMBINED_INTERNAL_VARIANT'
+    ]),
+    reuseDownloadedSourceAcrossFutureCompatibleActions:true,
     commercialUseRequired:true,
     derivativeModificationRequired:true,
     provenanceRequired:true,
@@ -2771,7 +2783,7 @@ export function createStyleBible(input={}){
 
 // 커마 제작: 모델별로 선언된 범위와 연결점만 사용한다. 이 계획은 실제 편집·검증 결과가 아니다.
 export const ASSET_CUSTOMIZATION_AXES=Object.freeze(Object.fromEntries(Object.entries({
-  CHARACTER:['BODY_ARCHETYPE','BODY_PROPORTION','HEAD_BASE','FACE_MORPH','EYE_SHAPE','EYE_COLOR','HETEROCHROMIA','BROW','SKIN_TONE','SKIN_DETAIL','AGE_PRESENTATION','HAIR_STYLE','HAIR_COLOR','HAIR_HIGHLIGHT','HAIR_GRAYING','FACIAL_HAIR','SCAR','TATTOO_OR_BODY_MARK','MAKEUP','PIERCING','SPECIES_PART','EXPRESSION','GAIT_IDENTITY','CLOTHING','ACCESSORY','SURFACE_WEAR'],
+  CHARACTER:['FACE','BODY_PROPORTION','HAIR','EXPRESSION','CLOTHING','ACCESSORY','SURFACE_WEAR','BODY_ARCHETYPE','HEAD_BASE','FACE_MORPH','EYE_SHAPE','EYE_COLOR','HETEROCHROMIA','BROW','SKIN_TONE','SKIN_DETAIL','AGE_PRESENTATION','HAIR_STYLE','HAIR_COLOR','HAIR_HIGHLIGHT','HAIR_GRAYING','FACIAL_HAIR','SCAR','TATTOO_OR_BODY_MARK','MAKEUP','PIERCING','SPECIES_PART','GAIT_IDENTITY'],
   CREATURE:['BODY_PLAN','HEAD','LIMB_PROPORTION','HORN_TEETH_CLAW','SKIN','SIGNATURE_ORGAN','SURFACE_WEAR'],
   BUILDING:['WALL','DOOR','WINDOW','ROOF','ROOM_LAYOUT','JOINT_DETAIL','LOCAL_DAMAGE','SURFACE_WEAR'],
   ENVIRONMENT:['TERRAIN_PROFILE','ROCK_FORM','TREE_BRANCH','FOLIAGE_DENSITY','GROUND_COVER','WETNESS','LANDMARK'],
@@ -4237,6 +4249,12 @@ export function buildAutonomousAssetGapFillPlan({
     actions.push(Object.freeze({
       family:gap.family,subfamily:gap.subfamily,missingSlots:gap.missingSlots,priorityScore:gap.priorityScore,
       route,sourceIds:Object.freeze(sourceIds),semanticSeeds:Object.freeze(semanticSeeds),
+      acquisitionMode:route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_REQUIRED',
+      bulkPrefetchAllowed:false,
+      speculativeDownloadAllowed:false,
+      acquireOnlyWhenSelected:route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET',
+      adaptAfterAcquisition:route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET',
+      reuseAcquiredSourceWhenCompatible:true,
       preparedState:'PREPARED_SEMANTIC',
       preparedMayClaimVerified:false,
       nativeRuntimeConsumerRequiredBeforePromotion:true
