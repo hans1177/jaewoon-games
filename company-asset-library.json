@@ -1,5 +1,5 @@
 {
-  "version": 83,
+  "version": 84,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -55812,7 +55812,8 @@
       "BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN",
       "REBUILD_UI_SUBSYSTEM_DEPTH",
       "READ_PERSISTED_NEXT_VOLUME_ACTIONS",
-      "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS"
+      "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS",
+      "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS"
     ],
     "postBindingChecks": [
       "RECORD_SOURCE_FILES",
@@ -56286,7 +56287,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 6,
+    "version": 7,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56906,7 +56907,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 83,
+    "lastCatalogSynchronizedVersion": 84,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -60009,7 +60010,19 @@
     "freeSourceCatalogSufficiencyCount": 12,
     "freeSourceCatalogReady": true,
     "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
-    "primaryAttention": "QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL"
+    "primaryAttention": "QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL",
+    "referenceImageIdeaOverlay": {
+      "enabled": true,
+      "priority": "CURRENT_TASK_BEFORE_PERSISTED_GENERIC_VOLUME_ACTIONS",
+      "taskLocalOnly": true,
+      "persistentRegistryStorageForbidden": true,
+      "rawImagePersistentLearningForbidden": true,
+      "sourceBoundObservationRequired": true,
+      "directCopyForbidden": true,
+      "unseenGeometryAndMotionRemainCreativeProposals": true,
+      "productionPromotionAutomatic": false,
+      "producedAssetMayEnterCatalogOnlyAfterNormalAssetQA": true
+    }
   },
   "characterNpcCustomization": {
     "version": 1,
