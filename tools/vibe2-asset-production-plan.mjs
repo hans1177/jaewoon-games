@@ -549,7 +549,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   });
 }
 
-const companyAssetLibraryRegistry=repoRoot=>synchronizeCompanyCommonAssetRegistry({repoRoot,persist:true}).registry;
+const companyAssetLibraryRegistry=repoRoot=>synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT}).registry;
 const inferUniverseFamily=row=>{
   const explicit=clean(row?.family||row?.category).toUpperCase();
   if(explicit)return explicit;
@@ -2650,7 +2650,9 @@ export function assetProductionGuidance(plan={}){
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));
+  const repoRoot=clean(args.root)||process.cwd();
+  const sync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:true});
   const task={gameId:clean(args.game),goal:clean(args.goal),target:clean(args.target)||'web'};
-  const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot:clean(args.root)||process.cwd()});
-  console.log(JSON.stringify(result,null,2));
+  const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot});
+  console.log(JSON.stringify({registrySync:{changed:sync.changed,persisted:sync.persisted,persistError:sync.persistError,discoveredCatalogCount:sync.discoveredCatalogCount,seedCount:sync.seedCount},plan:result},null,2));
 }
