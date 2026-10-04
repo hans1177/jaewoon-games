@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -300,6 +300,69 @@
       "source": "RobloxCommonMotion.luau",
       "motionRole": "EMOTE",
       "productionVerified": false
+    },
+    {
+      "atomId": "LIGHT_ATTACK_1",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.46,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LIGHT_ATTACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "HEAVY_ATTACK_1",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.88,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "HEAVY_ATTACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "RANGED_DRAW_SHOT",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.82,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "RANGED_ATTACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CAST_BURST",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CAST",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CHANNEL_LOOP",
+      "priority": "Action3",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CHANNEL",
+      "productionVerified": false
+    },
+    {
+      "atomId": "HIT_BACK",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.55,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "HIT_BACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "BLEND_NEUTRAL",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.24,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "BLEND",
+      "productionVerified": false
     }
   ],
   "systemDepthContract": {
@@ -376,19 +439,18 @@
       "USE_CONSUMABLE",
       "DOWNED_IDLE",
       "REVIVE_HELP",
-      "EMOTE_WAVE"
-    ],
-    "currentAssetCount": 33,
-    "missingComponentCandidates": [
-      "LIGHT_ATTACK",
-      "HEAVY_ATTACK",
-      "RANGED_ATTACK",
-      "CAST",
-      "CHANNEL",
+      "EMOTE_WAVE",
+      "LIGHT_ATTACK_1",
+      "HEAVY_ATTACK_1",
+      "RANGED_DRAW_SHOT",
+      "CAST_BURST",
+      "CHANNEL_LOOP",
       "HIT_BACK",
-      "BLEND",
+      "BLEND_NEUTRAL",
       "MOTION_LOD"
     ],
+    "currentAssetCount": 40,
+    "missingComponentCandidates": [],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
     "gameplayAuthority": false
@@ -478,10 +540,54 @@
       ],
       "social": [
         "EMOTE_WAVE"
+      ],
+      "combat": [
+        "LIGHT_ATTACK_1",
+        "HEAVY_ATTACK_1",
+        "RANGED_DRAW_SHOT",
+        "BLOCK_RAISE",
+        "BLOCK_HOLD",
+        "PARRY_PERFECT",
+        "GUARD_BREAK",
+        "COUNTER_READY"
+      ],
+      "magic": [
+        "CAST_BURST",
+        "CHANNEL_LOOP"
+      ],
+      "reaction": [
+        "HIT_FRONT",
+        "HIT_BACK",
+        "DOWNED_IDLE",
+        "REVIVE_HELP",
+        "DEATH_FRONT"
+      ],
+      "transition": [
+        "BLEND_NEUTRAL"
       ]
     },
     "rootMotionAuthority": false,
     "gameplayMovementAuthority": false,
     "combatTimingAuthority": false
-  }
+  },
+  "motionLodProfiles": [
+    {
+      "id": "MOTION_LOD_FULL",
+      "cameraUse": "NEAR_GAMEPLAY",
+      "sampleDensity": "FULL",
+      "secondaryMotion": "FULL"
+    },
+    {
+      "id": "MOTION_LOD_MEDIUM",
+      "cameraUse": "MID_DISTANCE",
+      "sampleDensity": "REDUCED",
+      "secondaryMotion": "REDUCED"
+    },
+    {
+      "id": "MOTION_LOD_MINIMAL",
+      "cameraUse": "FAR_BACKGROUND",
+      "sampleDensity": "MINIMAL",
+      "secondaryMotion": "OFF"
+    }
+  ]
 }
