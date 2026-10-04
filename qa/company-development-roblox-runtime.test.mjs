@@ -256,9 +256,23 @@ test('Roblox bootstrap reads the company material library but leaves verificatio
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   assert.match(bootstrap,/company-asset-library\.json/);
   assert.match(bootstrap,/buildRobloxStudioAssetBootstrapPlan/);
+  assert.match(bootstrap,/selectionFingerprint/);
+  assert.match(bootstrap,/VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL/);
+  assert.match(bootstrap,/fullLibraryReplicationForbidden:true/);
+  assert.match(bootstrap,/changedFamiliesOnlyMayRebind:true/);
   assert.match(bootstrap,/studioAssetBindingApplied:built\.studioAssets\.applied===true/);
   assert.match(bootstrap,/studioAssetRuntimeVerified:false/);
   assert.match(bootstrap,/studioAssetPromotionEligible:false/);
+});
+
+test('Roblox source binding exposes every selected internal asset family to existing game code',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/local studioAssetFamilies = studioAssetConfig\.Families or \{\}/);
+  assert.match(bootstrap,/local function studioAssetFamily\(family\)/);
+  assert.match(bootstrap,/local function hasStudioAssetAtom\(familyOrAtom, atom\)/);
+  assert.match(bootstrap,/Config\.StudioAssets and Config\.StudioAssets\.Families or \{\}/);
+  assert.match(bootstrap,/hasStudioAtom\("UI", "FRAME_PANEL"\)/);
+  assert.doesNotMatch(bootstrap,/writeFileSync\([^\n]*company-asset-library\.json/);
 });
 
 test('Roblox source workflow persists Studio selection handoff for downstream runtime verification',()=>{
