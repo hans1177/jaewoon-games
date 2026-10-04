@@ -172,6 +172,120 @@
       "source": "RobloxCommonPresentation.luau",
       "factory": "CreateCutsceneOverlay",
       "role": "CUTSCENE_OVERLAY"
+    },
+    {
+      "atomId": "SETTING_TOGGLE_ROW",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSettingToggleRow",
+      "role": "SETTING_TOGGLE"
+    },
+    {
+      "atomId": "SETTING_SLIDER_ROW",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSettingSliderRow",
+      "role": "SETTING_SLIDER"
+    },
+    {
+      "atomId": "OPTION_STEPPER_ROW",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateOptionStepperRow",
+      "role": "SETTING_STEPPER"
+    },
+    {
+      "atomId": "KEYBIND_ROW",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateKeybindRow",
+      "role": "CONTROL_BINDING_ROW"
+    },
+    {
+      "atomId": "CHANGED_SETTING_BADGE",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateChangedSettingBadge",
+      "role": "SETTING_CHANGED_INDICATOR"
+    },
+    {
+      "atomId": "ACCESSIBILITY_PRESET_CARD",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateAccessibilityPresetCard",
+      "role": "ACCESSIBILITY_PRESET"
+    },
+    {
+      "atomId": "CONTROLLER_REMAP_PANEL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateControllerRemapPanel",
+      "role": "CONTROLLER_VISUALIZATION"
+    },
+    {
+      "atomId": "HUD_CUSTOMIZATION_PANEL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateHudCustomizationPanel",
+      "role": "HUD_CUSTOMIZATION"
+    },
+    {
+      "atomId": "HIGH_CONTRAST_LEGEND",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateHighContrastLegend",
+      "role": "HIGH_CONTRAST_VISUAL_LEGEND"
+    },
+    {
+      "atomId": "SAVE_SLOT_CARD",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateSaveSlotCard",
+      "role": "SAVE_LOAD_SLOT"
+    },
+    {
+      "atomId": "AUTOSAVE_INDICATOR",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateAutosaveIndicator",
+      "role": "AUTOSAVE_STATUS"
+    },
+    {
+      "atomId": "STORY_RECAP_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateStoryRecapScreen",
+      "role": "STORY_SO_FAR"
+    },
+    {
+      "atomId": "TUTORIAL_LIBRARY_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateTutorialLibraryScreen",
+      "role": "TUTORIAL_LIBRARY"
+    },
+    {
+      "atomId": "CONTEXT_REMINDER",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateContextReminder",
+      "role": "RETURNING_PLAYER_REMINDER"
+    },
+    {
+      "atomId": "RADIAL_ACTION_WHEEL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateRadialActionWheel",
+      "role": "RADIAL_MENU"
+    },
+    {
+      "atomId": "COMPARISON_PANEL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateComparisonPanel",
+      "role": "ITEM_EQUIPMENT_COMPARISON"
+    },
+    {
+      "atomId": "REWARD_REVEAL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateRewardReveal",
+      "role": "REWARD_UNLOCK_PRESENTATION"
+    },
+    {
+      "atomId": "DEATH_SCREEN",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreateDeathScreen",
+      "role": "DEATH_RESPAWN_PRESENTATION"
+    },
+    {
+      "atomId": "PHOTO_MODE_SHELL",
+      "source": "RobloxCommonPresentation.luau",
+      "factory": "CreatePhotoModeShell",
+      "role": "PHOTO_MODE"
     }
   ],
   "cinematicSource": "RobloxCommonCinematics.luau",
@@ -256,5 +370,59 @@
     "inputTargetsMustRemain": true,
     "directExternalMenuCopyForbidden": true
   },
-  "graphicsPresentationContractVersion": 1
+  "graphicsPresentationContractVersion": 1,
+  "atomCount": 45,
+  "systemCoverage": {
+    "saveLoad": [
+      "SAVE_SLOT_CARD",
+      "AUTOSAVE_INDICATOR"
+    ],
+    "returningPlayer": [
+      "STORY_RECAP_SCREEN",
+      "CONTEXT_REMINDER"
+    ],
+    "helpKnowledge": [
+      "TUTORIAL_LIBRARY_SCREEN",
+      "CODEX_SCREEN"
+    ],
+    "settings": [
+      "SETTING_TOGGLE_ROW",
+      "SETTING_SLIDER_ROW",
+      "OPTION_STEPPER_ROW",
+      "KEYBIND_ROW",
+      "CHANGED_SETTING_BADGE"
+    ],
+    "accessibility": [
+      "ACCESSIBILITY_PRESET_CARD",
+      "CONTROLLER_REMAP_PANEL",
+      "HUD_CUSTOMIZATION_PANEL",
+      "HIGH_CONTRAST_LEGEND"
+    ],
+    "quickAccess": [
+      "RADIAL_ACTION_WHEEL"
+    ],
+    "inventoryEquipment": [
+      "INVENTORY_SCREEN",
+      "CHARACTER_SCREEN",
+      "COMPARISON_PANEL"
+    ],
+    "rewardFailure": [
+      "REWARD_REVEAL",
+      "DEATH_SCREEN"
+    ],
+    "creative": [
+      "PHOTO_MODE_SHELL"
+    ]
+  },
+  "referenceDerivedPrinciples": [
+    "CUSTOMIZABLE_HUD_VISIBILITY",
+    "STORY_SO_FAR_RETURNING_PLAYER_RECAP",
+    "TUTORIAL_AND_NOTEBOOK_DISCOVERABILITY",
+    "RADIAL_OR_QUICK_SWAP_ACCESS",
+    "CHANGED_SETTING_INDICATOR",
+    "CONTROLLER_REMAP_WITH_CONFLICT_FEEDBACK",
+    "HIGH_CONTRAST_WORLD_LEGEND",
+    "LARGE_TEXT_AND_ICON_SCALING",
+    "PHOTO_MODE_COMPOSITION_CONTROLS"
+  ]
 }
