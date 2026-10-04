@@ -13,17 +13,61 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'
 
 jobs:
+  preflight-dedupe:
+    name: collapse duplicate exact shared preflight dispatches
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    concurrency:
+      group: roblox-shared-preflight-dedupe-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
+      cancel-in-progress: false
+    outputs:
+      run: ${{ steps.guard.outputs.run }}
+    steps:
+      - name: Keep only the oldest active exact game and control revision
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id || '' }}
+          CURRENT_CONTROL_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=100")"
+          winner="$(printf '%s' "$payload" | GAME_ID="$GAME_ID" CURRENT_CONTROL_SHA="$CURRENT_CONTROL_SHA" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);
+              const states=new Set(['queued','pending','in_progress','requested','waiting']);
+              const game=String(process.env.GAME_ID||'').trim();
+              const title='Roblox shared preflight · '+(game||'batch');
+              const controlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
+              const ids=(j.workflow_runs||[])
+                .filter(r=>states.has(String(r.status||'').toLowerCase()))
+                .filter(r=>String(r.display_title||'')===title)
+                .filter(r=>String(r.head_sha||'')===controlSha)
+                .map(r=>Number(r.id)).filter(Number.isFinite).sort((a,b)=>a-b);
+              process.stdout.write(ids.length?String(ids[0]):'');
+            });
+          ")"
+          echo "ROBLOX_SHARED_PREFLIGHT_DEDUPE_CONTROL_SHA=$CURRENT_CONTROL_SHA"
+          echo "ROBLOX_SHARED_PREFLIGHT_DEDUPE_WINNER=${winner:-NONE}"
+          echo "ROBLOX_SHARED_PREFLIGHT_DEDUPE_CURRENT=$GITHUB_RUN_ID"
+          if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_SHARED_PREFLIGHT_DUPLICATE_SKIPPED=${GAME_ID:-BATCH}:$GITHUB_RUN_ID:$winner"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_SHARED_PREFLIGHT_DEDUPE_PASS=${GAME_ID:-BATCH}:$GITHUB_RUN_ID"
+          fi
+
   preflight-plan:
     name: resolve Roblox shared-model preflight work
+    needs: preflight-dedupe
+    if: needs.preflight-dedupe.outputs.run == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
