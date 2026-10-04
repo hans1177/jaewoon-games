@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-vfx-v1/RobloxCommonVFX.luau
--- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 3종
+-- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 8종
 -- 원칙: 시각 표현만 소유한다. 데미지/히트박스/쿨다운/이동/네트워크 권한은 게임 코드가 소유한다.
 
 local TweenService = game:GetService("TweenService")
@@ -210,6 +210,101 @@ function RobloxCommonVFX.CreateShapeBurst(options)
   return folder
 end
 
+
+local function createCombatPulse(atomId,options,profile)
+  options=options or {}
+  local parent=options.parent or workspace
+  local cframe=typeof(options.cframe)=="CFrame" and options.cframe or CFrame.new()
+  local duration=clamp(options.duration or profile.duration,0.08,1.20)
+  local scale=clamp(options.scale or 1,0.25,4)
+  local color=typeof(options.color)=="Color3" and options.color or profile.color
+  local accent=typeof(options.accent)=="Color3" and options.accent or profile.accent
+
+  local folder=Instance.new("Folder")
+  folder.Name="Common"..atomId
+  tag(folder,atomId)
+  folder:SetAttribute("PresentationRole",profile.role)
+  folder:SetAttribute("OwnsParryTimingAuthority",false)
+  folder:SetAttribute("OwnsBlockAuthority",false)
+  folder:SetAttribute("OwnsStunAuthority",false)
+  folder:SetAttribute("OwnsStaminaAuthority",false)
+  folder.Parent=parent
+
+  local ring=visualPart("Ring",Vector3.new(0.10,profile.ringSize,profile.ringSize)*scale,accent,"CYLINDER")
+  ring.CFrame=cframe*CFrame.Angles(0,0,math.rad(90))
+  ring.Transparency=profile.ringTransparency or 0.18
+  ring.Parent=folder
+  tag(ring,atomId)
+  TweenService:Create(ring,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+    Size=Vector3.new(ring.Size.X,ring.Size.Y*profile.expand,ring.Size.Z*profile.expand),
+    Transparency=1,
+  }):Play()
+
+  local core=visualPart("Core",Vector3.new(profile.coreSize,profile.coreSize,profile.coreSize)*scale,color,"BALL")
+  core.CFrame=cframe
+  core.Transparency=profile.coreTransparency or 0.05
+  core.Parent=folder
+  tag(core,atomId)
+  TweenService:Create(core,TweenInfo.new(duration*0.72,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+    Size=core.Size*(profile.coreExpand or 2.2),
+    Transparency=1,
+  }):Play()
+
+  local shardCount=math.floor(clamp(profile.shards or 6,0,12))
+  for i=1,shardCount do
+    local angle=(i-1)*math.pi*2/math.max(1,shardCount)
+    local dir=Vector3.new(math.cos(angle),profile.vertical or 0.08,math.sin(angle)).Unit
+    local shard=visualPart("Shard"..i,Vector3.new(0.10,0.10,profile.shardLength or 0.85)*scale,i%2==0 and accent or color)
+    shard.CFrame=cframe*CFrame.lookAt(Vector3.zero,dir)
+    shard.Parent=folder
+    tag(shard,atomId)
+    local pos=cframe.Position+dir*(profile.distance or 2.8)*scale
+    TweenService:Create(shard,TweenInfo.new(duration,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{
+      CFrame=CFrame.lookAt(pos,pos+dir),
+      Size=Vector3.new(0.04,0.04,0.24)*scale,
+      Transparency=1,
+    }):Play()
+  end
+
+  Debris:AddItem(folder,duration+0.15)
+  return folder
+end
+
+function RobloxCommonVFX.CreateBlockImpact(options)
+  return createCombatPulse("BLOCK_IMPACT",options,{
+    role="BLOCK_CONTACT",duration=0.24,ringSize=1.8,expand=2.0,coreSize=0.42,coreExpand=1.8,shards=4,distance=1.8,shardLength=0.65,
+    color=Color3.fromRGB(210,224,236),accent=Color3.fromRGB(124,162,196)
+  })
+end
+
+function RobloxCommonVFX.CreatePerfectParryFlash(options)
+  return createCombatPulse("PARRY_PERFECT_FLASH",options,{
+    role="PERFECT_PARRY_CONFIRMATION",duration=0.30,ringSize=2.1,expand=3.2,coreSize=0.58,coreExpand=2.8,shards=10,distance=3.6,shardLength=1.05,
+    color=Color3.fromRGB(255,249,214),accent=Color3.fromRGB(123,219,255)
+  })
+end
+
+function RobloxCommonVFX.CreateGuardBreakBurst(options)
+  return createCombatPulse("GUARD_BREAK_BURST",options,{
+    role="GUARD_BREAK_WARNING",duration=0.48,ringSize=2.3,expand=2.5,coreSize=0.70,coreExpand=3.2,shards=8,distance=4.0,vertical=0.22,shardLength=1.20,
+    color=Color3.fromRGB(255,188,119),accent=Color3.fromRGB(235,88,72)
+  })
+end
+
+function RobloxCommonVFX.CreateAttackTelegraphPulse(options)
+  return createCombatPulse("ATTACK_TELEGRAPH_PULSE",options,{
+    role="ATTACK_TELEGRAPH_PRESENTATION",duration=0.52,ringSize=2.4,expand=2.1,coreSize=0.22,coreExpand=1.4,shards=0,distance=0,
+    color=Color3.fromRGB(255,219,161),accent=Color3.fromRGB(242,132,80),ringTransparency=0.30,coreTransparency=0.35
+  })
+end
+
+function RobloxCommonVFX.CreateCounterReadyPulse(options)
+  return createCombatPulse("COUNTER_READY_PULSE",options,{
+    role="COUNTER_WINDOW_PRESENTATION",duration=0.34,ringSize=1.6,expand=2.6,coreSize=0.34,coreExpand=2.0,shards=6,distance=2.5,shardLength=0.72,
+    color=Color3.fromRGB(214,255,219),accent=Color3.fromRGB(94,218,157)
+  })
+end
+
 function RobloxCommonVFX.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "IMPACT_FLASH" then
@@ -219,16 +314,26 @@ function RobloxCommonVFX.Create(atomId, options)
     return RobloxCommonVFX.AttachShortTrail(options.hostPart, options)
   elseif id == "SHAPE_BURST" then
     return RobloxCommonVFX.CreateShapeBurst(options)
+  elseif id == "BLOCK_IMPACT" then
+    return RobloxCommonVFX.CreateBlockImpact(options)
+  elseif id == "PARRY_PERFECT_FLASH" then
+    return RobloxCommonVFX.CreatePerfectParryFlash(options)
+  elseif id == "GUARD_BREAK_BURST" then
+    return RobloxCommonVFX.CreateGuardBreakBurst(options)
+  elseif id == "ATTACK_TELEGRAPH_PULSE" then
+    return RobloxCommonVFX.CreateAttackTelegraphPulse(options)
+  elseif id == "COUNTER_READY_PULSE" then
+    return RobloxCommonVFX.CreateCounterReadyPulse(options)
   end
   error("UNKNOWN_COMMON_VFX_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonVFX.Audit()
   return table.freeze({
-    version = 1,
+    version = 2,
     packId = "roblox-common-vfx-v1",
-    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST"}),
-    atomCount = 3,
+    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "BLOCK_IMPACT", "PARRY_PERFECT_FLASH", "GUARD_BREAK_BURST", "ATTACK_TELEGRAPH_PULSE", "COUNTER_READY_PULSE"}),
+    atomCount = 8,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
