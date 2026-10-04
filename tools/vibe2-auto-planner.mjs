@@ -192,14 +192,17 @@ function assetLibraryUtilizationFloor(assetLibrary={},assets=[],families=[]){
     familyPurpose[family]||'현재 게임의 해당 family 책임을 찾아 안전·권리·플랫폼·역할 호환 자산을 실제 표현에 연결',
     'FAMILY'
   ));
-  const variationIdeas=Object.entries(variationAxes).map(([domain,axes])=>idea(
-    'VARIATION_'+clean(domain).toUpperCase(),
-    'READY',
-    [],
-    clean(domain)+' 자산을 현재 게임 상태에 맞춰 variation 축으로 재사용·적응·재조합',
-    'VARIATION',
-    (Array.isArray(axes)?axes:[]).map(clean).filter(Boolean)
-  ));
+  const variationIdeas=Object.entries(variationAxes).map(([domain,axes])=>{
+    const normalizedDomain=clean(domain).toUpperCase();
+    return idea(
+      'VARIATION_'+normalizedDomain,
+      normalizedDomain==='AUDIO'?familyState('AUDIO'):'READY',
+      normalizedDomain==='AUDIO'?['AUDIO']:[],
+      clean(domain)+' 자산을 현재 게임 상태에 맞춰 variation 축으로 재사용·적응·재조합',
+      'VARIATION',
+      (Array.isArray(axes)?axes:[]).map(clean).filter(Boolean)
+    );
+  });
   const bundleState=required=>{
     const missing=required.filter(family=>family!=='AUDIO'&&familyState(family)!=='READY');
     if(missing.length)return'UNAVAILABLE';
