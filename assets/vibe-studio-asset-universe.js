@@ -145,9 +145,11 @@ export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
     BOSS:12,REWARD:12,UI_FEEDBACK:12,MOBILE_DENSITY_VARIANT:12
   }),
   UI:Object.freeze({
-    ICON:48,FRAME:16,BUTTON:18,HUD:16,INVENTORY:16,EQUIPMENT:12,CHARACTER_SHEET:10,MINIMAP:10,
-    DIALOGUE:16,AI_DIALOGUE_HELPER:10,NPC_INTERACTION:16,QUEST:14,PARTY:10,CRAFTING:12,SHOP:12,
-    NOTIFICATION:12,STATUS_EFFECT:16,HOTBAR:10,TOOLTIP:10,MODAL:10,LOADING_ERROR_EMPTY_STATE:18
+    ICON:64,FRAME:20,BUTTON:24,HUD:18,TOP_BAR:10,NAVIGATION:16,SIDE_NAV:10,PAUSE_MENU:8,SETTINGS:14,
+    SEARCH_FILTER_SORT:18,INVENTORY:20,EQUIPMENT:16,CHARACTER_SHEET:12,MINIMAP:12,FULL_MAP:10,
+    DIALOGUE:18,AI_DIALOGUE_HELPER:12,NPC_INTERACTION:18,QUEST:16,QUEST_JOURNAL:10,PARTY:12,
+    CRAFTING:16,SHOP:16,NOTIFICATION:16,STATUS_EFFECT:18,HOTBAR:12,TOOLTIP:12,MODAL:12,
+    EMPTY_LOADING_ERROR_STATE:24,CONTEXT_ACTION:12
   }),
   MOTION:Object.freeze({
     IDLE:12,LOCOMOTION:36,START_STOP:12,TURN:12,TRAVERSAL:24,COMBAT:72,WEAPON_COMBAT:52,
@@ -1690,6 +1692,75 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={},requirem
   });
 }
 
+
+export function buildCommonAssetQualityIteration({assets=[],usageByAsset={},maxActions=16}={}){
+  const visibleFamilyBonus={UI:120,ENVIRONMENT:115,CHARACTER:105,CREATURE:105,BUILDING:100,WEAPON:95,PROP:90,VFX:85,MOTION:85,MATERIAL:75,AUDIO:70,SKILL:90};
+  const targets=[880,920,950,980,1000];
+  const rows=[];
+  for(const asset of assets||[]){
+    const companyCommon=asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE';
+    if(!companyCommon)continue;
+    const id=text(asset?.id);
+    if(!id)continue;
+    const usage=usageByAsset[id]||{};
+    const audit=scoreInternalAssetAudit1000({asset,evidence:usage.internalAuditEvidence||usage.internalAudit||{}});
+    const declared=Number(
+      usage.internalAuditScore!==undefined?usage.internalAuditScore:
+      asset?.internalAuditScore!==undefined?asset.internalAuditScore:
+      Number.NaN
+    );
+    const score=Number.isFinite(declared)?clamp(declared,0,1000):(audit.measuredAxisCount>0?audit.score:0);
+    const nextTarget=targets.find(value=>value>score)||1000;
+    const axes=Object.entries(audit.axes||{}).map(([axis,value])=>({axis,value:Number(value)||0}))
+      .sort((a,b)=>a.value-b.value||a.axis.localeCompare(b.axis));
+    const weakestAxes=axes.slice(0,4).map(row=>row.axis);
+    const consumerCount=(asset?.consumerGameIds||[]).length+Number(usage.gameConsumerCount||0);
+    const intendedCount=(asset?.intendedConsumerGameIds||[]).length;
+    const family=upper(asset?.family||asset?.category);
+    const priority=Math.round(
+      Math.max(0,1000-score)
+      +(visibleFamilyBonus[family]||60)
+      +consumerCount*18
+      +intendedCount*5
+      +(audit.measuredAxisCount===0?80:0)
+      +(asset?.productionVerified===true?0:15)
+    );
+    rows.push(Object.freeze({
+      assetId:id,
+      family,
+      score,
+      grade:internalAssetAuditGrade(score),
+      nextTarget,
+      priority,
+      weakestAxes:freezeList(weakestAxes),
+      consumerCount,
+      intendedConsumerCount:intendedCount,
+      action:score>=1000?'EXPAND_VARIANTS_AND_DETAIL':'IMPROVE_EXISTING_COMMON_ASSET',
+      commonAssetFirst:true,
+      studioRequired:false,
+      productionVerificationSeparate:true,
+      passIsNotTerminal:true,
+      preserveStrongAxes:true,
+      preferredMethod:weakestAxes.length?'WEAKEST_AXIS_FIRST':'ESTABLISH_INTERNAL_AUDIT_EVIDENCE'
+    }));
+  }
+  rows.sort((a,b)=>b.priority-a.priority||a.score-b.score||a.assetId.localeCompare(b.assetId));
+  const actions=rows.slice(0,Math.max(1,Number(maxActions)||16));
+  return Object.freeze({
+    version:1,
+    mode:'COMMON_ASSET_CONTINUAL_QUALITY_ITERATION',
+    commonAssetFirst:true,
+    studioRequired:false,
+    scoreIsNotUseGate:true,
+    passIsNotTerminal:true,
+    targetSequence:freezeList(targets),
+    newAssetOnlyAfterReuseOrExpansionInsufficient:true,
+    weakestAxisFirst:true,
+    actionCount:actions.length,
+    actions:Object.freeze(actions)
+  });
+}
+
 export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},usageByAsset={}}={}){
   const normalized=(assets||[]).map(asset=>({asset,row:normalizeRegistryAsset(asset)}));
   const selections=[];
@@ -1742,6 +1813,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     }));
   }
   return Object.freeze({
+    qualityIteration:buildCommonAssetQualityIteration({assets,usageByAsset}),
     selections:Object.freeze(selections),
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
     complete:selections.every(row=>!row.required||!row.unresolved),
