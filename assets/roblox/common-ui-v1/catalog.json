@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -640,9 +640,402 @@
         "GAMEPAD",
         "AUTO"
       ]
+    },
+    {
+      "atomId": "ITEM_DETAIL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemDetailPanel",
+      "role": "ITEM_DETAIL_PANEL",
+      "surface": "ITEM_DETAIL",
+      "states": [
+        "DEFAULT",
+        "NEW",
+        "FAVORITE",
+        "LOCKED",
+        "EQUIPPED",
+        "QUEST_BOUND"
+      ]
+    },
+    {
+      "atomId": "ITEM_COMPARE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemComparePanel",
+      "role": "ITEM_COMPARE_PANEL",
+      "surface": "ITEM_COMPARE",
+      "states": [
+        "BETTER",
+        "WORSE",
+        "MIXED",
+        "REQUIREMENT_LOCKED"
+      ]
+    },
+    {
+      "atomId": "ITEM_CONTEXT_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemContextMenu",
+      "role": "ITEM_CONTEXT_MENU",
+      "surface": "ITEM_ACTIONS",
+      "states": [
+        "USE",
+        "EQUIP",
+        "QUICKSLOT",
+        "FAVORITE",
+        "LOCK",
+        "SPLIT",
+        "MOVE",
+        "SELL",
+        "DROP"
+      ]
+    },
+    {
+      "atomId": "STACK_SPLIT_DIALOG",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStackSplitDialog",
+      "role": "STACK_SPLIT_DIALOG",
+      "surface": "ITEM_ACTIONS",
+      "states": [
+        "MIN",
+        "MID",
+        "MAX",
+        "CONFIRM"
+      ]
+    },
+    {
+      "atomId": "MULTI_SELECT_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMultiSelectBar",
+      "role": "MULTI_SELECT_BAR",
+      "surface": "ITEM_ACTIONS",
+      "states": [
+        "NONE",
+        "PARTIAL",
+        "ALL"
+      ]
+    },
+    {
+      "atomId": "ITEM_STATE_BADGES",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemStateBadges",
+      "role": "ITEM_STATE_BADGES",
+      "surface": "ITEM_STATE",
+      "states": [
+        "NEW",
+        "FAVORITE",
+        "LOCKED",
+        "EQUIPPED",
+        "QUEST"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_CONTAINER_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryContainerPanel",
+      "role": "INVENTORY_CONTAINER_PANEL",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "BAG",
+        "POUCH",
+        "QUEST_CONTAINER",
+        "NESTED"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_WEIGHT_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryWeightMeter",
+      "role": "INVENTORY_WEIGHT_METER",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "NORMAL",
+        "HEAVY",
+        "OVER_CAPACITY"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_CAPACITY_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryCapacityMeter",
+      "role": "INVENTORY_CAPACITY_METER",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "AVAILABLE",
+        "NEAR_FULL",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "STASH_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStashScreen",
+      "role": "STASH_SCREEN",
+      "surface": "STASH",
+      "states": [
+        "DEFAULT",
+        "SEARCH",
+        "FILTERED",
+        "TRANSFER",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "LOOT_WINDOW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLootWindow",
+      "role": "LOOT_WINDOW",
+      "surface": "LOOT",
+      "states": [
+        "DEFAULT",
+        "EMPTY",
+        "TAKE_ALL",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "LOOT_FEED",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLootFeed",
+      "role": "LOOT_FEED",
+      "surface": "LOOT",
+      "states": [
+        "COMMON",
+        "RARE",
+        "LEGENDARY",
+        "NEW"
+      ]
+    },
+    {
+      "atomId": "QUICK_SLOT_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateQuickSlotBar",
+      "role": "QUICK_SLOT_BAR",
+      "surface": "QUICKSLOT",
+      "states": [
+        "EMPTY",
+        "BOUND",
+        "SELECTED",
+        "COOLDOWN"
+      ]
+    },
+    {
+      "atomId": "RADIAL_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRadialMenu",
+      "role": "RADIAL_MENU",
+      "surface": "RADIAL_ACTION",
+      "states": [
+        "OPEN",
+        "SELECTED",
+        "DISABLED",
+        "CANCEL"
+      ]
+    },
+    {
+      "atomId": "LOADOUT_PRESET_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLoadoutPresetPanel",
+      "role": "LOADOUT_PRESET_PANEL",
+      "surface": "LOADOUT",
+      "states": [
+        "EMPTY",
+        "SAVED",
+        "ACTIVE",
+        "CONFLICT"
+      ]
+    },
+    {
+      "atomId": "EQUIPMENT_COMPARE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEquipmentComparePanel",
+      "role": "EQUIPMENT_COMPARE_PANEL",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "BETTER",
+        "WORSE",
+        "MIXED",
+        "SET_CHANGE"
+      ]
+    },
+    {
+      "atomId": "SET_BONUS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSetBonusPanel",
+      "role": "SET_BONUS_PANEL",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "INACTIVE",
+        "PARTIAL",
+        "ACTIVE",
+        "MAX"
+      ]
+    },
+    {
+      "atomId": "SOCKET_ENCHANT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSocketEnchantPanel",
+      "role": "SOCKET_ENCHANT_PANEL",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "EMPTY_SOCKET",
+        "FILLED",
+        "LOCKED",
+        "REQUIREMENT"
+      ]
+    },
+    {
+      "atomId": "UPGRADE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateUpgradePanel",
+      "role": "UPGRADE_PANEL",
+      "surface": "UPGRADE",
+      "states": [
+        "AVAILABLE",
+        "MISSING_MATERIAL",
+        "MAX",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "REPAIR_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRepairPanel",
+      "role": "REPAIR_PANEL",
+      "surface": "REPAIR",
+      "states": [
+        "GOOD",
+        "DAMAGED",
+        "BROKEN",
+        "REPAIRABLE"
+      ]
+    },
+    {
+      "atomId": "DISMANTLE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDismantlePanel",
+      "role": "DISMANTLE_PANEL",
+      "surface": "DISMANTLE",
+      "states": [
+        "SELECTED",
+        "PROTECTED",
+        "LOCKED",
+        "MULTI"
+      ]
+    },
+    {
+      "atomId": "CRAFTING_TREE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCraftingTree",
+      "role": "CRAFTING_TREE",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "DISCOVERED",
+        "LOCKED",
+        "AVAILABLE",
+        "COMPLETED"
+      ]
+    },
+    {
+      "atomId": "RECIPE_DETAIL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRecipeDetailPanel",
+      "role": "RECIPE_DETAIL_PANEL",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "CRAFTABLE",
+        "MISSING",
+        "ALTERNATIVE_MATERIAL",
+        "TRACKED"
+      ]
+    },
+    {
+      "atomId": "MATERIAL_TRACKER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMaterialTracker",
+      "role": "MATERIAL_TRACKER",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "INCOMPLETE",
+        "COMPLETE",
+        "PINNED"
+      ]
+    },
+    {
+      "atomId": "BUY_SELL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuySellPanel",
+      "role": "BUY_SELL_PANEL",
+      "surface": "TRADE",
+      "states": [
+        "BUY",
+        "SELL",
+        "CART",
+        "INSUFFICIENT_FUNDS"
+      ]
+    },
+    {
+      "atomId": "BUYBACK_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuybackPanel",
+      "role": "BUYBACK_PANEL",
+      "surface": "TRADE",
+      "states": [
+        "AVAILABLE",
+        "EMPTY",
+        "EXPIRED"
+      ]
+    },
+    {
+      "atomId": "CODEX_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCodexScreen",
+      "role": "CODEX_SCREEN",
+      "surface": "CODEX",
+      "states": [
+        "UNDISCOVERED",
+        "DISCOVERED",
+        "NEW",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "COLLECTION_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCollectionProgress",
+      "role": "COLLECTION_PROGRESS",
+      "surface": "CODEX",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "RECENT_ITEMS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRecentItemsPanel",
+      "role": "RECENT_ITEMS_PANEL",
+      "surface": "RECENT_ITEMS",
+      "states": [
+        "NEW",
+        "VIEWED",
+        "FILTERED"
+      ]
+    },
+    {
+      "atomId": "ITEM_SOURCE_USAGE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemSourceUsagePanel",
+      "role": "ITEM_SOURCE_USAGE_PANEL",
+      "surface": "ITEM_DETAIL",
+      "states": [
+        "SOURCE",
+        "CRAFT_USE",
+        "UPGRADE_USE",
+        "QUEST_USE",
+        "SHOP_USE"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·AI/NPC·전체 메뉴 시스템 v4",
+  "title": "Roblox 회사 공용 UI·AI/NPC·아이템 시스템 84종 v5",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -709,7 +1102,25 @@
     "SHOP_FULL",
     "STATE_FEEDBACK",
     "INPUT_HINT",
-    "SCREEN_TRANSITION"
+    "SCREEN_TRANSITION",
+    "ITEM_DETAIL",
+    "ITEM_COMPARE",
+    "ITEM_ACTIONS",
+    "ITEM_STATE",
+    "INVENTORY_DEEP",
+    "STASH",
+    "LOOT",
+    "QUICKSLOT",
+    "RADIAL_ACTION",
+    "LOADOUT",
+    "EQUIPMENT_DEEP",
+    "UPGRADE",
+    "REPAIR",
+    "DISMANTLE",
+    "CRAFTING_DEEP",
+    "TRADE",
+    "CODEX",
+    "RECENT_ITEMS"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -751,7 +1162,7 @@
   "iconAssetDependency": false,
   "vectorIconCount": 12,
   "continuationContract": {
-    "version": 3,
+    "version": 4,
     "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
     "infrastructureMutationAllowed": false,
     "flowMutationAllowed": false,
@@ -847,7 +1258,8 @@
       "COPY",
       "INTENSITY",
       "DURATION"
-    ]
+    ],
+    "deepSystemComponentCoverageRequired": true
   },
   "navigationContract": {
     "version": 1,
@@ -883,5 +1295,33 @@
     "LOADING_STATE",
     "FAILURE_STATE",
     "LOCKED_STATE"
-  ]
+  ],
+  "deepSystemContract": {
+    "version": 1,
+    "componentCount": 30,
+    "requiredFlows": [
+      "PICKUP>NEW_STATE>DETAIL>USE_OR_EQUIP",
+      "DETAIL>COMPARE>SET_SOCKET_UPGRADE",
+      "INVENTORY>CONTAINER_OR_STASH>TRANSFER",
+      "LOOT>TAKE_OR_TAKE_ALL>RECENT_ITEMS",
+      "ITEM>QUICKSLOT_OR_RADIAL>ACTION",
+      "GEAR>LOADOUT>COMPARE>UPGRADE_OR_REPAIR_OR_DISMANTLE",
+      "CRAFT_TREE>RECIPE_DETAIL>MATERIAL_TRACKING>CRAFT",
+      "SHOP>BUY_OR_SELL>BUYBACK",
+      "DISCOVERY>CODEX>COLLECTION_PROGRESS"
+    ],
+    "requiredItemStates": [
+      "NEW",
+      "FAVORITE",
+      "LOCKED",
+      "EQUIPPED",
+      "QUEST_BOUND",
+      "RECENTLY_ACQUIRED"
+    ],
+    "colorOnlyStateForbidden": true,
+    "touchKeyboardMouseGamepadParity": true,
+    "gameplayAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  }
 }
