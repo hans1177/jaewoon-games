@@ -655,11 +655,19 @@ test('heatmap and autonomous gap fill prioritize real gaps without false promoti
     coverageReport:coverage,
     verifiedAssets:[],
     repositoryAssets:[],
-    externalSources:[{id:'licensed-creature-pack',category:'CREATURE',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE'}],
+    externalSources:[
+      {id:'legacy-creature-pack',category:'CREATURE',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourcePriority:999},
+      {id:'cc0-multi-pack',category:'PROP',categories:['CREATURE','BUILDING'],status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0',volumeAdaptationEligible:true,sourcePriority:10}
+    ],
     signalsByKey:{'CREATURE:SPECIES':{activeGameDemand:true}}
   });
   const creature=fill.actions.find(x=>x.family==='CREATURE');
+  const building=fill.actions.find(x=>x.family==='BUILDING');
   assert.equal(creature.route,'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET');
+  assert.equal(creature.sourceIds[0],'cc0-multi-pack');
+  assert.ok(creature.sourceIds.includes('legacy-creature-pack'));
+  assert.equal(building.route,'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET');
+  assert.equal(building.sourceIds[0],'cc0-multi-pack');
   assert.equal(creature.preparedMayClaimVerified,false);
   assert.equal(creature.nativeRuntimeConsumerRequiredBeforePromotion,true);
   assert.ok(creature.semanticSeeds.length>0);
@@ -788,6 +796,36 @@ test('full studio asset universe plan exposes coverage heatmap and 24h gap fill'
   assert.ok(plan.coverage.missingSlotCount>0);
   assert.ok(plan.heatmap.highestPriorityGap);
   assert.ok(plan.gapFill.actions.length>0);
+});
+
+
+test('company free source registry expands high-priority volume domains without false runtime verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const expected=[
+    'kenney-modular-buildings','kenney-building-kit','quaternius-ultimate-buildings','quaternius-medieval-village',
+    'quaternius-modular-medieval-buildings','quaternius-ultimate-fantasy-rts','kenney-furniture-kit',
+    'quaternius-ultimate-modular-ruins','kenney-ui-pack','kenney-ui-audio','kenney-interface-sounds',
+    'kenney-rpg-audio','kenney-impact-sounds','kenney-nature-kit','quaternius-ultimate-nature',
+    'poly-haven-cc0-library','kenney-city-kit-roads','kenney-city-kit-industrial'
+  ];
+  assert.ok(registry.externalSources.length>=28);
+  for(const id of expected){
+    const row=registry.externalSources.find(source=>source.id===id);
+    assert.ok(row,id);
+    assert.equal(row.license,'CC0',id);
+    assert.equal(row.volumeAdaptationEligible,true,id);
+    assert.equal(row.commercialUseAllowed,true,id);
+    assert.equal(row.derivativesAllowed,true,id);
+    assert.equal(row.promotionRequiresRuntimeConsumer,true,id);
+    assert.notEqual(row.productionVerified,true,id);
+  }
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-modular-buildings').categories.includes('BUILDING'));
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-furniture-kit').categories.includes('PROP'));
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-ui-pack').categories.includes('UI'));
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-rpg-audio').categories.includes('AUDIO'));
+  assert.ok(registry.externalSources.find(row=>row.id==='poly-haven-cc0-library').categories.includes('MATERIAL'));
+  assert.equal(registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
 });
 
 test('natural language concept inference covers full preset families and concept axes',async()=>{
