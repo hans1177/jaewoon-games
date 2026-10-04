@@ -1142,7 +1142,7 @@ function matchedForType(selector={},type='',manifest={},target=''){
     const categoryTypes=COMPANY_CATEGORY_TYPES[clean(asset?.category||asset?.family).toUpperCase()]||[];
     return unique([...explicit,...categoryTypes.map(value=>clean(value).toLowerCase()),clean(asset?.type).toLowerCase()].filter(Boolean));
   };
-  const normalize=(row,adaptationBaseOnly=false)=>{
+  const normalize=(row,adaptationBaseOnly=false,approximateLibraryFallback=false)=>{
     const asset=byId.get(clean(row.id))||row;
     return freeze({
       id:clean(row.id||asset.id),
@@ -1174,8 +1174,10 @@ function matchedForType(selector={},type='',manifest={},target=''){
       studioMotionCandidate:asset.studioMotionCandidate===true,
       creatureFamily:clean(asset.creatureFamily)||null,
       compatibleMotionSourceIds:freezeList(asset.compatibleMotionSourceIds||[]),
+      companyInternalSearchable:asset.companyInternalSearchable===true,
       adaptationBaseOnly,
-      finalUseStillRequiresOriginalSelectorContract:adaptationBaseOnly,
+      approximateLibraryFallback,
+      finalUseStillRequiresOriginalSelectorContract:adaptationBaseOnly&&!approximateLibraryFallback,
       targetCompatible:true
     });
   };
@@ -1196,8 +1198,17 @@ function matchedForType(selector={},type='',manifest={},target=''){
     .filter(asset=>asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase()))
     .map(asset=>normalize(asset,true));
 
+  const exactCandidates=[...finalCandidates,...authoringBases];
+  const approximateFamilies=new Set((BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE[clean(type).toLowerCase()]||[]).map(clean));
+  const approximateBases=exactCandidates.length?[]:assets
+    .filter(asset=>asset?.companyInternalSearchable===true)
+    .filter(asset=>approximateFamilies.has(clean(asset?.family||asset?.category).toUpperCase()))
+    .filter(asset=>!licenseBlocked(asset))
+    .filter(asset=>assetTargetCompatible(asset,target))
+    .filter(asset=>asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase()))
+    .map(asset=>normalize(asset,true,true));
   const deduped=new Map();
-  for(const row of [...finalCandidates,...authoringBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
+  for(const row of [...exactCandidates,...approximateBases])if(row.id&&!deduped.has(row.id))deduped.set(row.id,row);
   return freezeList([...deduped.values()]);
 }
 const BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE=Object.freeze({
@@ -1396,6 +1407,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     +(asset.productionVerified===true?8:0)
     +(asset.companyVerified===true?4:0)
     +Math.min(20,roleMatches*6)
+    +(asset.approximateLibraryFallback===true?-12:0)
     +(asset.sourceHash?5:0)
     +(asset.retargetable===true?5:0);
   const qualityDNA=qualityDnaForType(requestedType);
@@ -1422,6 +1434,9 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
+    approximateLibraryFallback:asset.approximateLibraryFallback===true,
+    blankAssetForbidden:true,
+    libraryBindingRequiredBeforeAuthoring:true,
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
@@ -1624,15 +1639,18 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
   const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
+  const approximateLibraryCandidates=freezeList(reuseCandidates.filter(asset=>asset.approximateLibraryFallback===true));
   const decisionOrder=unique([
-    'COMPARE_TARGET_GAME_QUALITY',
+    'BIND_CLOSEST_EXISTING_LIBRARY_ASSET_FIRST',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
+    approximateLibraryCandidates.length?'REUSE_CLOSEST_COMPATIBLE_LIBRARY_ASSET_WITH_STYLE_ADAPTATION':'',
+    'OPEN_VISUAL_DEBT_AFTER_BINDING',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
     postDownloadComparison.required?'POST_DOWNLOAD_COMPARE_EXTERNAL_TO_INTERNAL':'',
-    directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
-    'AUTHORING_GENERATOR_REQUEST'
+    directAuthoring.length?'VIBE_DIRECT_AUTHOR_ONLY_IF_LIBRARY_TRULY_EMPTY':'',
+    'AUTHORING_GENERATOR_REQUEST_ONLY_IF_NO_COMPATIBLE_LIBRARY_ASSET_EXISTS'
   ]);
   const motionReusePlan=type==='animation'?freeze({
     studioProduction:['roblox','unity'].includes(target)?createMotionDirectorPlan({platform:target.toUpperCase()}).studioProduction:null,
@@ -1658,6 +1676,12 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
     repositoryCandidates,
     externalCandidates,
     reuseCandidates,
+    approximateLibraryCandidates,
+    blankAssetForbidden:true,
+    geometricOrPrimitiveFallbackForbidden:true,
+    libraryBindingRequired:true,
+    qualityScoreBlocksLibraryBinding:false,
+    internalAuditScoreBlocksLibraryBinding:false,
     applyFirst:freeze({
       enabled:applyFirstCandidates.length>0,
       candidates:applyFirstCandidates,
@@ -1666,8 +1690,9 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
       donorCandidates:freezeList(donorCandidates.map(row=>freeze({id:row.id,lane:row.lane,sourceTier:row.sourceTier,qualityAxes:row.qualityAxes,donorCapabilities:row.donorCapabilities,sourceHash:row.sourceHash}))),
       lanes:freezeList(['A_SAME_GAME_BOUND','B_NATIVE_READY','C_MINIMAL_ADAPT','D_AUTHORING_REQUIRED']),
       sequence:freezeList([
-        'SELECT_LOWEST_COST_HIGH_COMPATIBILITY_READY_ASSET',
+        'SELECT_CLOSEST_READY_LIBRARY_ASSET_EVEN_WHEN_QUALITY_IS_LOW',
         'APPLY_CANDIDATE_TO_EXISTING_GAME_RESPONSIBILITY',
+        'FORBID_BLANK_GEOMETRIC_OR_NO_ASSET_STATE',
         'INSPECT_QUALITY_BY_AXIS_AND_DETAIL_DISTANCE',
         'KEEP_STRONG_AXES',
         'DERIVE_ONLY_FAILED_AXES',
@@ -1697,15 +1722,16 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
     directAuthoring,
     decisionOrder:freezeList(decisionOrder),
     qualitySelection:freeze({
-      requiredBeforeSourcePreference:true,
+      requiredBeforeSourcePreference:false,
       companyOwnershipIsNotQualityEvidence:true,
       compareCandidateIds:freezeList([...reuseCandidates,...externalCandidates].map(asset=>asset.id)),
       requiredChecks:freezeList(type==='animation'
         ?['GAME_STYLE_FIT','RIG_AND_JOINT_COMPATIBILITY','FOOT_SLIDING_AND_CONTACT','TRANSITION_AND_INTERRUPT','ACTUAL_CLIP_PLAYBACK','MULTIPLAYER_SYNC']
         :['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SCALE_COHERENCE','TARGET_RUNTIME_AND_MOBILE_PERFORMANCE']),
-      selectionState:postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED',
-      selectedAssetId:null,
-      sourcePreferenceOnlyAfterQualityPass:true,
+      selectionState:'LIBRARY_BOUND_VISUAL_DEBT_REVIEW',
+      selectedAssetId:preferredCandidateId,
+      sourcePreferenceOnlyAfterQualityPass:false,
+      initialLibraryBindingMustNotWaitForQualityScore:true,
       postDownloadInternalComparisonRequired:postDownloadComparison.required,
       conceptFitReferenceOnly:true,
       conceptTransformationAllowed:true
