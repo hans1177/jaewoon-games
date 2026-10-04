@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g7-afa4936174a5",
-  "directiveFingerprint": "afa4936174a5be0f48e838dda0797d3661ba661a100d8a7f2978e21f1ee4c87e",
-  "previousDirectiveFingerprint": "372aa072e1a99f40f784ba52100ccdb31cc3d3df15bd9388ba449962fb096f42",
-  "forbiddenRepeatFingerprint": "372aa072e1a99f40f784ba52100ccdb31cc3d3df15bd9388ba449962fb096f42",
+  "directiveId": "bug-defense-build-up-g9-2dd2fe137ff7",
+  "directiveFingerprint": "2dd2fe137ff7cbfb7fbad83fcb14a47de8e886b5a174463defbba1c1b2eed20a",
+  "previousDirectiveFingerprint": "664a231aac09ba3253bcdd5ac932201e696c6d9e8ee4699ddf92ea1167c82a85",
+  "forbiddenRepeatFingerprint": "664a231aac09ba3253bcdd5ac932201e696c6d9e8ee4699ddf92ea1167c82a85",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
-  "generation": 7,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "4bd7554f56bf2d6f134f4337421c6ac47c4645191b2906534a78d4903324cd79",
+  "sourceTreeFingerprint": "1191b39fc7dfec463520c423919960b997113c76d4ee3111fcffc34c6d933025",
   "designFingerprint": "b777a30851e67b1b07440b483d12aa7ca6d97f22da5a51fa1a648cdc58102545",
   "gameIdentityAndNonNegotiables": {
     "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
@@ -56,8 +56,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 205,
-      "progression": 194,
+      "combat": 207,
+      "progression": 207,
       "ai": 49,
       "save": 55,
       "multiplayer": 25,
@@ -69,12 +69,12 @@
       "audio": 1,
       "audioDynamics": 17,
       "ui": 57,
-      "uiFlow": 35,
+      "uiFlow": 37,
       "entryFlow": 24,
       "loadingFlow": 0,
       "input": 59,
       "map": 141,
-      "landmark": 56,
+      "landmark": 60,
       "interaction": 29,
       "inventory": 2,
       "equipment": 3,
@@ -97,7 +97,7 @@
       },
       {
         "file": "roblox-games/bug-defense/shared/GameConfig.luau",
-        "score": 254
+        "score": 252
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
@@ -354,17 +354,17 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "64c5b3a088d23154d120b995f5aeaf7045ec0b4e9710e6ee31950a91a61db7f1",
-    "currentSourceTreeFingerprint": "4bd7554f56bf2d6f134f4337421c6ac47c4645191b2906534a78d4903324cd79",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "241a25ab6973ce30662d0149e8c72e1467084889f7ee97546a7c6c1c9c570283",
+    "currentSourceTreeFingerprint": "1191b39fc7dfec463520c423919960b997113c76d4ee3111fcffc34c6d933025",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1532,8 +1532,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99878,
-        "largestFileBytes": 43857,
+        "sourceBytes": 129138,
+        "largestFileBytes": 43827,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1565,15 +1565,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
@@ -1585,6 +1585,8 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
@@ -1619,7 +1621,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 210,
+        "score": 174,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -2367,11 +2369,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "4bd7554f56bf2d6f134f4337421c6ac47c4645191b2906534a78d4903324cd79",
+      "sourceTreeFingerprint": "1191b39fc7dfec463520c423919960b997113c76d4ee3111fcffc34c6d933025",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2414,7 +2416,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2486,5 +2488,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T05:37:04.277Z"
+  "generatedAt": "2026-10-04T06:32:51.665Z"
 }

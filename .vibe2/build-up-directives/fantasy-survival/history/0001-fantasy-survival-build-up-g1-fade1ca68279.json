@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g7-665991f4a5fe",
-  "directiveFingerprint": "665991f4a5feb818d26fc254b6315e374228f2a29e4361c3b1f038e774d5ea58",
-  "previousDirectiveFingerprint": "3794b2a2f5e111871beb95095eaa452dd9bd8c7b8691855001f0d9dfca342213",
-  "forbiddenRepeatFingerprint": "3794b2a2f5e111871beb95095eaa452dd9bd8c7b8691855001f0d9dfca342213",
+  "directiveId": "fantasy-survival-build-up-g1-fade1ca68279",
+  "directiveFingerprint": "fade1ca68279c9102b6fe276ee312205bb9c98114b66dbde3ca9d5bb2f4dc92d",
+  "previousDirectiveFingerprint": null,
+  "forbiddenRepeatFingerprint": null,
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 7,
+  "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+  "previousDirectiveOutcome": null,
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
-  "platform": "ROBLOX",
-  "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "05e8f924ca9cd33a673fde460904852ec75ffdd2a0bb2043b8ba189752c1fa8d",
+  "platform": "WEB",
+  "sourceRoot": "web-games/fantasy-survival",
+  "sourceTreeFingerprint": "fb924f65fb298cc9b6e513aae49e3e495c49c51f2a0933c9b95b95501b478d40",
   "designFingerprint": "c73a53e121ef51a605007aa1df16ee39732f54300166fd6e453eb97497f1f07e",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -49,215 +49,254 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=4",
-      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
+      "CURRENT_SOURCE_FILES=2",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 74,
-      "progression": 130,
-      "ai": 19,
-      "save": 51,
-      "multiplayer": 32,
-      "animation": 28,
-      "motionStates": 125,
-      "gameFeel": 22,
-      "vfx": 19,
-      "camera": 31,
-      "audio": 1,
-      "audioDynamics": 14,
-      "ui": 58,
-      "uiFlow": 31,
-      "entryFlow": 6,
+      "combat": 1299,
+      "progression": 1517,
+      "ai": 661,
+      "save": 392,
+      "multiplayer": 249,
+      "animation": 13,
+      "motionStates": 1732,
+      "gameFeel": 80,
+      "vfx": 103,
+      "camera": 52,
+      "audio": 326,
+      "audioDynamics": 18,
+      "ui": 341,
+      "uiFlow": 197,
+      "entryFlow": 15,
       "loadingFlow": 0,
-      "input": 55,
-      "map": 94,
-      "landmark": 2,
-      "interaction": 31,
-      "inventory": 2,
-      "equipment": 0,
-      "settings": 1,
-      "feedback": 67,
-      "session": 17,
-      "content": 90,
-      "choice": 18,
-      "connection": 0,
-      "performance": 17,
-      "lighting": 37,
-      "primitive": 13,
+      "input": 28,
+      "map": 1566,
+      "landmark": 440,
+      "interaction": 140,
+      "inventory": 186,
+      "equipment": 203,
+      "settings": 47,
+      "feedback": 28,
+      "session": 132,
+      "content": 1421,
+      "choice": 180,
+      "connection": 7,
+      "performance": 59,
+      "lighting": 103,
+      "primitive": 1,
       "todo": 0,
-      "errorRecovery": 12
+      "errorRecovery": 52
     },
     "topFiles": [
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "score": 259
+        "file": "web-games/fantasy-survival/index.html",
+        "score": 4057
       },
       {
-        "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "score": 258
-      },
-      {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "score": 155
-      },
-      {
-        "file": "roblox-games/fantasy-survival/default.project.json",
-        "score": 2
+        "file": "web-games/fantasy-survival/audio/lab-recorder.mp3",
+        "score": 0
       }
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 370,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1679,
         "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
-        "score": 106
+        "symbol": "setRecorderOverlay",
+        "context": "function setRecorderOverlay(text,stateText='재생 중'){",
+        "score": 4058
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 40,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5331,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
-        "score": 98
+        "symbol": "saveGame",
+        "context": "function saveGame(manual=true){",
+        "score": 778
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 63,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5385,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98
+        "symbol": "cancelCommunicationRepairHold",
+        "context": "function cancelCommunicationRepairHold(notify=false){",
+        "score": 594
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 93,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5347,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98
+        "symbol": "loadPos",
+        "context": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
+        "score": 434
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 123,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3127,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98
+        "symbol": "templeTrapContains",
+        "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "score": 370
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 153,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3130,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98
+        "symbol": "updateTempleTrap",
+        "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "score": 370
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 177,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3131,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98
+        "symbol": "enterTempleLower",
+        "context": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
+        "score": 370
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 310,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3128,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationPlayer",
-        "context": "local function bindNativeFoundationPlayer(player)",
-        "score": 90
+        "symbol": "spawnTempleTrapLeech",
+        "context": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "score": 362
       },
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 389,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3132,
         "kind": "FUNCTION",
-        "symbol": "reportNativeFoundationReady",
-        "context": "local function reportNativeFoundationReady()",
-        "score": 82
+        "symbol": "returnTempleLobby",
+        "context": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
+        "score": 362
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 30,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5349,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 74
+        "symbol": "loadBuildList",
+        "context": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
+        "score": 362
       },
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 176,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3129,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
+        "symbol": "hostTempleTrapSpawn",
+        "context": "function hostTempleTrapSpawn(payload){if(!multiIsHost()||!payload)return;const r=multiplayer.remote.get(String(payload.playerId||''));if(!r||r.area!=='jungletemple-upper'||!templeT",
+        "score": 346
       },
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 23,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1394,
         "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(atom)",
-        "score": 50
+        "symbol": "renderInventory",
+        "context": "function renderInventory(){",
+        "score": 322
       },
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 253,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1327,
         "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "context": "local function bindVerifiedLearningControl(control)",
-        "score": 50
+        "symbol": "tabState",
+        "context": "function tabState(){",
+        "score": 306
       },
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 106,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 2692,
         "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "context": "local function syncVerifiedLearningCharacterMotion(character)",
-        "score": 42
+        "symbol": "finishPetEnemyKill",
+        "context": "function finishPetEnemyKill(e,ownerId=multiplayer.playerId){",
+        "score": 290
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 21,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1075,
         "kind": "FUNCTION",
-        "symbol": "readNumber",
-        "context": "local function readNumber(player, name, fallback)",
-        "score": 42
+        "symbol": "normalizeCost",
+        "context": "function normalizeCost(c={}){",
+        "score": 282
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 26,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1326,
         "kind": "FUNCTION",
-        "symbol": "setNumber",
-        "context": "local function setNumber(player, name, value)",
-        "score": 42
+        "symbol": "craftStationBuilt",
+        "context": "function craftStationBuilt(mode){return mode==='hand'||mode==='bench'&&!!state.bench||mode==='ironbench'&&!!state.ironBench||mode==='goldbench'&&!!state.goldBench||mode==='junglebe",
+        "score": 274
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 293,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 2917,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationCharacter",
-        "context": "local function bindNativeFoundationCharacter(character)",
-        "score": 34
+        "symbol": "leaveUnderwater",
+        "context": "function leaveUnderwater(){",
+        "score": 274
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 2886,
+        "kind": "FUNCTION",
+        "symbol": "openSmelt",
+        "context": "function openSmelt(){if(!state.furnace||state.area!=='surface')return;if(!nearFurnace()){showNotice('화로 가까이 가야 해');return}ui.smeltPanel.classList.add('open');updateSmeltUi()}",
+        "score": 266
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 2121,
+        "kind": "FUNCTION",
+        "symbol": "openMap",
+        "context": "function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.class",
+        "score": 250
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 2833,
+        "kind": "FUNCTION",
+        "symbol": "applyBurn",
+        "context": "function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}",
+        "score": 250
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5322,
+        "kind": "FUNCTION",
+        "symbol": "syncRuntimeMeta",
+        "context": "function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y",
+        "score": 250
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 922,
+        "kind": "FUNCTION",
+        "symbol": "spawnAt",
+        "context": "function spawnAt(type,x,y,packId=null){const scaledHp=enemyDifficultyMaxHp(type);return{type,hp:scaledHp,maxHp:scaledHp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwate",
+        "score": 242
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1090,
+        "kind": "FUNCTION",
+        "symbol": "recalcPlayerMaxHp",
+        "context": "function recalcPlayerMaxHp(){const p=state.player;p.maxHp=100+effectiveStat(p.armor,'maxHp')+effectiveStat(p.weapon,'maxHp');p.hp=Math.min(p.hp,p.maxHp)}",
+        "score": 242
+      },
+      {
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 2679,
+        "kind": "FUNCTION",
+        "symbol": "killPet",
+        "context": "function killPet(){",
+        "score": 242
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "140b727e5abeedf50c47694232e35ec062f253d9559c7c6613baf64aa5bd7e7d",
-    "currentSourceTreeFingerprint": "05e8f924ca9cd33a673fde460904852ec75ffdd2a0bb2043b8ba189752c1fa8d",
-    "sourceChanged": true,
-    "verifiedEvolution": false
+    "state": "NO_PREVIOUS_DIRECTIVE"
   },
   "playtestRuntimeFindings": {
-    "platform": "ROBLOX",
+    "platform": "WEB",
     "studioQualityFailure": null,
     "failureStage": "",
     "failureSignature": "",
@@ -395,18 +434,18 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CRAFTING",
@@ -415,8 +454,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -440,8 +479,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -470,8 +509,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -530,8 +569,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -540,13 +579,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -560,18 +599,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PALETTE",
@@ -867,8 +906,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -876,8 +915,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -885,8 +924,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -903,8 +942,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -948,8 +987,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1002,8 +1041,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1110,8 +1149,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1128,8 +1167,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1137,8 +1176,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1164,8 +1203,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1173,8 +1212,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1182,8 +1221,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1309,76 +1348,16 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"기존 게임플레이 의미 보존\", 현재 책임 소스는 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"기존 게임플레이 의미 보존\", 현재 책임 소스는 web-games/fantasy-survival/index.html::setRecorderOverlay, web-games/fantasy-survival/index.html::saveGame, web-games/fantasy-survival/index.html::cancelCommunicationRepairHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap, web-games/fantasy-survival/index.html::enterTempleLower, web-games/fantasy-survival/index.html::spawnTempleTrapLeech이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/fantasy-survival/client/Game.client.luau::render, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5, roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6, roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 web-games/fantasy-survival/index.html::setRecorderOverlay, web-games/fantasy-survival/index.html::saveGame, web-games/fantasy-survival/index.html::cancelCommunicationRepairHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap, web-games/fantasy-survival/index.html::enterTempleLower, web-games/fantasy-survival/index.html::spawnTempleTrapLeech에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "기존 게임플레이 의미 보존를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "표현 품질 순차 개선가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1414,7 +1393,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "requestedPlatform": "ROBLOX",
+    "requestedPlatform": "WEB",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "dataCapacityBudget": {
       "state": "NORMAL",
@@ -1427,8 +1406,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 85846,
-        "largestFileBytes": 42955,
+        "sourceBytes": 2398417,
+        "largestFileBytes": 1144065,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1459,29 +1438,22 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
+    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "themeDepth": 1,
+    "selectedThemeReason": "0 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 0
+        "PRESENTATION_WORLD_COHESION": 1
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+        "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1499,54 +1471,30 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 112,
-        "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
+        "score": 28,
+        "gapDomains": []
       },
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
-        "gapDomains": [
-          "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 26,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 24,
+        "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
@@ -1559,19 +1507,29 @@
         "gapDomains": []
       },
       {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 14,
+        "gapDomains": []
+      },
+      {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 14,
+        "gapDomains": []
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 14,
         "gapDomains": []
       }
     ],
     "coherentContentBundle": [
-      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
-      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
-      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
-      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
-      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
-      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
-      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1640,7 +1598,7 @@
       "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
       "visualPurpose": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 플레이 판단과 기존 게임플레이 의미 보존가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "표현 품질 순차 개선와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "HIGH"
+      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE"
     },
     "domains": {
       "CHARACTER": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
@@ -1686,9 +1644,9 @@
   "experienceBuildUpContract": {
     "version": 1,
     "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
-    "platform": "ROBLOX",
+    "platform": "WEB",
     "focus": "USABILITY",
-    "attention": "EXTRA",
+    "attention": "STANDARD",
     "tracks": [
       {
         "track": "MOTION_AND_ACTING",
@@ -1704,11 +1662,11 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1729,19 +1687,16 @@
     ],
     "priorityOrder": [
       "MOTION_AND_ACTING",
-      "AUDIO_MUSIC_AND_FEEDBACK",
       "COMBAT_AND_PRIMARY_ACTION_FEEL",
       "UI_HUD_AND_MENU",
       "INVENTORY_AND_EQUIPMENT",
+      "AUDIO_MUSIC_AND_FEEDBACK",
       "VFX_CAMERA_AND_IMPACT_SYNC",
       "WORLD_VISUAL_COHESION",
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -1762,84 +1717,23 @@
       "REPEAT_BUILD_UP_UNTIL_NO_CRITICAL_PLAYER_FACING_TRACK_GAP_REMAINS"
     ],
     "platformProfile": {
-      "attention": "EXTRA",
-      "runtimeSurface": "OFFICIAL_ROBLOX_STUDIO_MCP",
+      "attention": "STANDARD",
+      "runtimeSurface": "BROWSER_TOUCH_RUNTIME",
       "requirements": [
-        "ARTICULATED_ACTOR_MOTION_WITH_ANIMATOR_MOTOR6D_OR_BONES",
-        "ROOT_ONLY_MOTION_CANNOT_PASS",
-        "IDLE_WALK_JOG_RUN_START_STOP_TURN_JUMP_LAND_HIT_DEATH_COVERAGE_WHEN_APPLICABLE",
-        "ANTICIPATION_IMPACT_RECOVERY_FOR_PRIMARY_ACTIONS",
-        "TOUCH_FIRST_UI_WITH_MINIMUM_44PX_EQUIVALENT_TARGETS",
-        "INVENTORY_COMPARE_EQUIP_UNEQUIP_REPLACE_FEEDBACK_WHEN_APPLICABLE",
-        "SOUNDSERVICE_SOUNDGROUP_MIXING_AND_SPATIAL_ROLLOFF_WHEN_AUDIO_APPLICABLE",
-        "REGION_OR_STATE_BGM_TRANSITION_WHEN_MULTIPLE_CONTEXTS_EXIST",
-        "VFX_CAMERA_AUDIO_SHARE_AUTHORITATIVE_IMPACT_EVENT",
-        "OFFICIAL_STUDIO_MCP_BEFORE_AFTER_RUNTIME_CAPTURE"
-      ],
-      "ownerDisabledAudioCategoriesMustRemainDisabled": true,
-      "nativeRuntimeEvidenceRequired": true,
-      "mobileRuntimeEvidenceRequired": true
+        "REAL_POINTER_OR_TOUCH_INPUT",
+        "DOM_OR_CANVAS_RENDERED_DELTA",
+        "MOBILE_SAFE_AREA_AND_SCROLL_FLOW",
+        "WEB_AUDIO_STATE_TRANSITION_WHEN_AUDIO_APPLICABLE",
+        "FRAME_AND_MEMORY_BUDGET"
+      ]
     },
-    "robloxExtra": {
-      "priority": "EXTRA_ATTENTION",
-      "motion": {
-        "articulatedActorsRequireJointMotion": true,
-        "animatorMotor6dOrBonesRequiredWhenApplicable": true,
-        "rootOnlyLocomotionCannotPass": true,
-        "requiredStateIntent": [
-          "IDLE",
-          "WALK",
-          "JOG",
-          "RUN",
-          "START",
-          "STOP",
-          "TURN",
-          "JUMP",
-          "LAND",
-          "ATTACK_ANTICIPATION",
-          "IMPACT",
-          "RECOVERY",
-          "HIT_REACTION",
-          "DEATH"
-        ],
-        "blendAndSpeedSyncRequired": true,
-        "weightShiftAndSecondaryMotionRequired": true,
-        "ikOrProceduralGroundingPreferred": true
-      },
-      "uiAndInventory": {
-        "touchFirst": true,
-        "minimumTouchTargetPxEquivalent": 44,
-        "safeAreaRequired": true,
-        "modalStackBackCloseScrollSelectionPersistenceRequired": true,
-        "inventoryFlowWhenApplicable": [
-          "ACQUIRE",
-          "COMPARE",
-          "SELECT",
-          "EQUIP",
-          "UNEQUIP_OR_REPLACE",
-          "CURRENT_EQUIPPED_INDICATOR",
-          "WORLD_OR_CHARACTER_FEEDBACK"
-        ]
-      },
-      "audio": {
-        "ownerDisabledCategoriesPreserved": true,
-        "soundServiceLifecycleRequired": true,
-        "soundGroupMixingPreferred": true,
-        "spatialWorldAudioUsesRolloffWhenApplicable": true,
-        "bgmRegionStateCombatTransitionsRequiredWhenMultipleContextsExist": true,
-        "duplicatePlaybackOnRespawnOrResumeForbidden": true,
-        "singleLoopAcrossDistinctContextsCannotClaimMusicBuildUp": true
-      },
-      "runtimeEvidence": {
-        "officialStudioMcpRequired": true,
-        "actualInputRequired": true,
-        "beforeAfterCaptureRequired": true,
-        "mobileViewportRequired": true,
-        "runtimeStateObservationRequired": true,
-        "sourceMarkersAloneCannotPass": true
-      }
+    "robloxExtra": null,
+    "webExtra": {
+      "runtimeEvidence": "REAL_BROWSER_TOUCH_AND_RENDER_DELTA",
+      "audio": "WEBAUDIO_OR_NATIVE_MEDIA_STATE_TRANSITION_WHEN_APPLICABLE",
+      "ui": "SAFE_AREA_SCROLL_MODAL_AND_TOUCH_FLOW",
+      "motion": "VISIBLE_FRAME_DELTA_NOT_ONLY_INTERNAL_STATE"
     },
-    "webExtra": null,
     "unityExtra": null,
     "ownerLocks": {
       "gameplayBalanceSaveEconomyNetworkMeaningPreserved": true,
@@ -1867,133 +1761,128 @@
   "robloxNativeExecution": {
     "version": 1,
     "required": true,
-    "responsibleFiles": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/default.project.json"
-    ],
+    "responsibleFiles": [],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 370,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1679,
         "kind": "FUNCTION",
-        "symbol": "render",
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "setRecorderOverlay",
+        "currentBehavior": "function setRecorderOverlay(text,stateText='재생 중'){",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setRecorderOverlay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 40,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5331,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "saveGame",
+        "currentBehavior": "function saveGame(manual=true){",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 saveGame의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 63,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5385,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "cancelCommunicationRepairHold",
+        "currentBehavior": "function cancelCommunicationRepairHold(notify=false){",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 cancelCommunicationRepairHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 93,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5347,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "loadPos",
+        "currentBehavior": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 123,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3127,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "templeTrapContains",
+        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 153,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3130,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "updateTempleTrap",
+        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 177,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3131,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "enterTempleLower",
+        "currentBehavior": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 enterTempleLower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 310,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3128,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationPlayer",
-        "currentBehavior": "local function bindNativeFoundationPlayer(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 bindNativeFoundationPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "spawnTempleTrapLeech",
+        "currentBehavior": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 spawnTempleTrapLeech의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "symbol": "render",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "setRecorderOverlay",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "scopeHandler1",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "saveGame",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "scopeHandler2",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "cancelCommunicationRepairHold",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "scopeHandler3",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "loadPos",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "scopeHandler4",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "templeTrapContains",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "scopeHandler5",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "updateTempleTrap",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "scopeHandler6",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "enterTempleLower",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "symbol": "bindNativeFoundationPlayer",
-        "role": "SERVER_AUTHORITY",
+        "file": "web-games/fantasy-survival/index.html",
+        "symbol": "spawnTempleTrapLeech",
+        "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -2030,107 +1919,105 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/default.project.json"
+      "web-games/fantasy-survival/index.html",
+      "web-games/fantasy-survival/audio/lab-recorder.mp3"
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/fantasy-survival/client/Game.client.luau",
-        "line": 370,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 1679,
         "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "local function render()",
-        "score": 106,
-        "currentBehavior": "local function render()",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "setRecorderOverlay",
+        "context": "function setRecorderOverlay(text,stateText='재생 중'){",
+        "score": 4058,
+        "currentBehavior": "function setRecorderOverlay(text,stateText='재생 중'){",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setRecorderOverlay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::setRecorderOverlay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 40,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5331,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "saveGame",
+        "context": "function saveGame(manual=true){",
+        "score": 778,
+        "currentBehavior": "function saveGame(manual=true){",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 saveGame의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::saveGame이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 63,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5385,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "cancelCommunicationRepairHold",
+        "context": "function cancelCommunicationRepairHold(notify=false){",
+        "score": 594,
+        "currentBehavior": "function cancelCommunicationRepairHold(notify=false){",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 cancelCommunicationRepairHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::cancelCommunicationRepairHold이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 93,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 5347,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "loadPos",
+        "context": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
+        "score": 434,
+        "currentBehavior": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::loadPos이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 123,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3127,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "templeTrapContains",
+        "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "score": 370,
+        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::templeTrapContains이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 153,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3130,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "updateTempleTrap",
+        "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "score": 370,
+        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::updateTempleTrap이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 177,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3131,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "enterTempleLower",
+        "context": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
+        "score": 370,
+        "currentBehavior": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 enterTempleLower의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::enterTempleLower이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "line": 310,
+        "file": "web-games/fantasy-survival/index.html",
+        "line": 3128,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationPlayer",
-        "context": "local function bindNativeFoundationPlayer(player)",
-        "score": 90,
-        "currentBehavior": "local function bindNativeFoundationPlayer(player)",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 bindNativeFoundationPlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/fantasy-survival/server/Game.server.luau::bindNativeFoundationPlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/fantasy-survival/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "symbol": "spawnTempleTrapLeech",
+        "context": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "score": 362,
+        "currentBehavior": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 spawnTempleTrapLeech의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "web-games/fantasy-survival/index.html::spawnTempleTrapLeech이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -2139,86 +2026,44 @@
   },
   "developmentImpact": {
     "version": 1,
-    "platform": "ROBLOX",
+    "platform": "WEB",
     "categories": [
-      "GRAPHICS",
-      "MAP",
-      "UI",
-      "GAMEPLAY",
-      "SAVE"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "ROBLOX_LUAU_COMPILE",
-      "MAP_PROTECTED_ANCHOR_QA",
-      "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA",
-      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      "MOBILE_TOUCH_UI_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
-    "openCloudWorldChecks": [
-      "SERVER_BOOT",
-      "FINITE_WORLD_BOUNDS",
-      "SPAWN_IN_PLAYABLE_BOUNDS",
-      "LANDMARK_AND_OBJECTIVE_COUNTS",
-      "WORLD_GEOMETRY",
-      "TERRAIN_BINDING",
-      "LIGHTING_ATMOSPHERE",
-      "STREAMING_CONFIGURATION"
-    ]
+    "securityRelevant": false,
+    "openCloudWorldChecks": []
   },
   "preMutationDryRun": {
     "version": 1,
     "mode": "DRY_RUN_NO_SOURCE_MUTATION",
     "gameId": "fantasy-survival",
-    "platform": "ROBLOX",
+    "platform": "WEB",
     "plannedFiles": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
-      "roblox-games/fantasy-survival/shared/GameConfig.luau",
-      "roblox-games/fantasy-survival/default.project.json"
+      "web-games/fantasy-survival/index.html",
+      "web-games/fantasy-survival/audio/lab-recorder.mp3"
     ],
     "impact": {
       "version": 1,
-      "platform": "ROBLOX",
+      "platform": "WEB",
       "categories": [
-        "GRAPHICS",
-        "MAP",
-        "UI",
-        "GAMEPLAY",
-        "SAVE"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "ROBLOX_LUAU_COMPILE",
-        "MAP_PROTECTED_ANCHOR_QA",
-        "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
-        "VISUAL_BINDING_QA",
-        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+        "MOBILE_TOUCH_UI_QA"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
-      "openCloudWorldChecks": [
-        "SERVER_BOOT",
-        "FINITE_WORLD_BOUNDS",
-        "SPAWN_IN_PLAYABLE_BOUNDS",
-        "LANDMARK_AND_OBJECTIVE_COUNTS",
-        "WORLD_GEOMETRY",
-        "TERRAIN_BINDING",
-        "LIGHTING_ATMOSPHERE",
-        "STREAMING_CONFIGURATION"
-      ]
+      "securityRelevant": false,
+      "openCloudWorldChecks": []
     },
     "protectedSemantics": [
       "CORE_RULES",
@@ -2230,28 +2075,12 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "ROBLOX_LUAU_COMPILE",
-      "MAP_PROTECTED_ANCHOR_QA",
-      "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA",
-      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      "MOBILE_TOUCH_UI_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "openCloudWorldChecks": [
-      "SERVER_BOOT",
-      "FINITE_WORLD_BOUNDS",
-      "SPAWN_IN_PLAYABLE_BOUNDS",
-      "LANDMARK_AND_OBJECTIVE_COUNTS",
-      "WORLD_GEOMETRY",
-      "TERRAIN_BINDING",
-      "LIGHTING_ATMOSPHERE",
-      "STREAMING_CONFIGURATION"
-    ],
+    "openCloudWorldChecks": [],
     "sourceMutationPerformed": false,
     "newWorkflowOrQueueRequired": false,
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
@@ -2259,12 +2088,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "05e8f924ca9cd33a673fde460904852ec75ffdd2a0bb2043b8ba189752c1fa8d",
+      "sourceTreeFingerprint": "fb924f65fb298cc9b6e513aae49e3e495c49c51f2a0933c9b95b95501b478d40",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2279,8 +2108,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2311,12 +2140,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 2,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2326,8 +2155,8 @@
     "domainCount": 74,
     "visualDomainCount": 19,
     "experienceTrackCount": 9,
-    "experienceBuildUpPlatform": "ROBLOX",
-    "robloxExtraExperienceAttention": true,
+    "experienceBuildUpPlatform": "WEB",
+    "robloxExtraExperienceAttention": false,
     "allowedStates": [
       "PASS",
       "GAP",
@@ -2368,12 +2197,6 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
-      "EQUIPMENT_LOADOUT",
-      "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
-      "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
     "notApplicable": [
@@ -2381,5 +2204,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T06:32:51.850Z"
+  "generatedAt": "2026-10-04T06:14:07.385Z"
 }

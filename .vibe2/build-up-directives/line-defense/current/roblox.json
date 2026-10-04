@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g14-48183a16d11f",
-  "directiveFingerprint": "48183a16d11fc8c62628a752d533b68ff08739c03f22a85f917845469f3d18a9",
+  "directiveId": "line-defense-build-up-g14-ca328c316f65",
+  "directiveFingerprint": "ca328c316f65a8feab6970eb5d81ab6d70cae007d6d82e50b63671b5ceadec67",
   "previousDirectiveFingerprint": "6ba92c633c297e07a128c2219393d96758c96126a4b81b9122a0f57ba85ff5c1",
   "forbiddenRepeatFingerprint": "6ba92c633c297e07a128c2219393d96758c96126a4b81b9122a0f57ba85ff5c1",
   "gameId": "line-defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "376960ab0fa3cc9c952df79fc1afd6762baaf0c15af13acacf5bd301973dd910",
+  "sourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
   "designFingerprint": "0af2994680eaff2c523b3a07d5c43f40715028f663c36e2693fefdbe2afc97de",
   "gameIdentityAndNonNegotiables": {
     "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
@@ -355,7 +355,7 @@
     "previousFocus": "STABILITY",
     "previousGeneration": 13,
     "previousSourceTreeFingerprint": "43e0302c524c6911a568c275bd9790e2adc635bc406555a3eaab5ff90448b1e1",
-    "currentSourceTreeFingerprint": "376960ab0fa3cc9c952df79fc1afd6762baaf0c15af13acacf5bd301973dd910",
+    "currentSourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1957,9 +1957,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2119,9 +2119,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "sourceAnchors": [
@@ -2265,9 +2265,9 @@
     "gameId": "line-defense",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "impact": {
@@ -2345,7 +2345,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "376960ab0fa3cc9c952df79fc1afd6762baaf0c15af13acacf5bd301973dd910",
+      "sourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2461,5 +2461,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T05:37:04.469Z"
+  "generatedAt": "2026-10-04T06:32:51.807Z"
 }

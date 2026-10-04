@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g11-4007bd6516b8",
-  "directiveFingerprint": "4007bd6516b8a34a772bd7f453ade42ab440c33075ca0c84135246ada28974fe",
-  "previousDirectiveFingerprint": "8f8920d633ba72ae0a1c020f839404766cee60a82e3f76dc82fd5bbaef3fedbd",
-  "forbiddenRepeatFingerprint": "8f8920d633ba72ae0a1c020f839404766cee60a82e3f76dc82fd5bbaef3fedbd",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g13-bb0058fb7225",
+  "directiveFingerprint": "bb0058fb7225fd9131738516b16af993caf0e383780080730464259b02dfb025",
+  "previousDirectiveFingerprint": "3d96d6986e9bf3b222251cf961d58486b3612ea162e95aa143a202d451f2bd9b",
+  "forbiddenRepeatFingerprint": "3d96d6986e9bf3b222251cf961d58486b3612ea162e95aa143a202d451f2bd9b",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 11,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "154c7b0b04af161a500897dd9e76aef33b929833547c442dcdabbe5261e10469",
+  "sourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
   "designFingerprint": "6de468c40ad6a0372eb03c7c03158edb5d66b9d400becd715c91289ce4ef36d9",
   "gameIdentityAndNonNegotiables": {
     "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
@@ -56,52 +56,52 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 76,
-      "progression": 118,
-      "ai": 19,
-      "save": 49,
-      "multiplayer": 13,
+      "combat": 170,
+      "progression": 177,
+      "ai": 40,
+      "save": 66,
+      "multiplayer": 30,
       "animation": 28,
-      "motionStates": 111,
-      "gameFeel": 22,
+      "motionStates": 162,
+      "gameFeel": 26,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 17,
       "ui": 56,
-      "uiFlow": 30,
-      "entryFlow": 6,
+      "uiFlow": 36,
+      "entryFlow": 10,
       "loadingFlow": 0,
       "input": 59,
-      "map": 93,
-      "landmark": 2,
+      "map": 152,
+      "landmark": 75,
       "interaction": 29,
       "inventory": 2,
       "equipment": 0,
       "settings": 1,
-      "feedback": 67,
-      "session": 9,
-      "content": 87,
-      "choice": 12,
+      "feedback": 69,
+      "session": 120,
+      "content": 140,
+      "choice": 22,
       "connection": 0,
-      "performance": 16,
+      "performance": 22,
       "lighting": 37,
-      "primitive": 12,
+      "primitive": 16,
       "todo": 0,
-      "errorRecovery": 10
+      "errorRecovery": 18
     },
     "topFiles": [
       {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 252
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "score": 566
       },
       {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "score": 203
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+        "score": 254
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "score": 142
+        "score": 148
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json",
@@ -110,8 +110,24 @@
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 305,
+        "kind": "FUNCTION",
+        "symbol": "transformTerrain",
+        "context": "local function transformTerrain(player)",
+        "score": 146
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 375,
+        "kind": "FUNCTION",
+        "symbol": "damageEnemy",
+        "context": "local function damageEnemy(player, enemy, amount)",
+        "score": 114
+      },
+      {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 356,
+        "line": 357,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -119,55 +135,39 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 36,
+        "line": 472,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
+        "symbol": "spawnEnemy",
+        "context": "local function spawnEnemy(player, index)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 728,
+        "kind": "FUNCTION",
+        "symbol": "reviewDefenseState",
+        "context": "local function reviewDefenseState(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 427,
+        "kind": "FUNCTION",
+        "symbol": "runEnemyAI",
+        "context": "local function runEnemyAI(player, enemy)",
         "score": 98
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 45,
+        "line": 688,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 61,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 77,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 93,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 109,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
+        "symbol": "directCombat",
+        "context": "local function directCombat(player)",
         "score": 98
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 375,
+        "line": 386,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -175,15 +175,95 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 26,
+        "line": 266,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
+        "symbol": "getSession",
+        "context": "local function getSession(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 707,
+        "kind": "FUNCTION",
+        "symbol": "spendEnergyDuringCombat",
+        "context": "local function spendEnergyDuringCombat(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 52,
+        "kind": "FUNCTION",
+        "symbol": "initializeTransientState",
+        "context": "local function initializeTransientState(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 89,
+        "kind": "FUNCTION",
+        "symbol": "savePlayer",
+        "context": "local function savePlayer(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 103,
+        "kind": "FUNCTION",
+        "symbol": "recordAction",
+        "context": "local function recordAction(player, scopeId, learningPattern, scoreDelta, progressDelta)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 290,
+        "kind": "FUNCTION",
+        "symbol": "clearEnemies",
+        "context": "local function clearEnemies(session)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 408,
+        "kind": "FUNCTION",
+        "symbol": "retryWave",
+        "context": "local function retryWave(player, reason)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 509,
+        "kind": "FUNCTION",
+        "symbol": "createTower",
+        "context": "local function createTower(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 579,
+        "kind": "FUNCTION",
+        "symbol": "upgradeTower",
+        "context": "local function upgradeTower(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 679,
+        "kind": "FUNCTION",
+        "symbol": "prepareBastion",
+        "context": "local function prepareBastion(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 699,
+        "kind": "FUNCTION",
+        "symbol": "inspectWaveAndShapePath",
+        "context": "local function inspectWaveAndShapePath(player)",
         "score": 74
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 176,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -191,11 +271,59 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 199,
+        "line": 138,
+        "kind": "FUNCTION",
+        "symbol": "broadcastMultiplayerSync",
+        "context": "local function broadcastMultiplayerSync(changedPlayer)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 355,
+        "kind": "FUNCTION",
+        "symbol": "findTargetEnemy",
+        "context": "local function findTargetEnemy(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 624,
+        "kind": "FUNCTION",
+        "symbol": "startWave",
+        "context": "local function startWave(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 748,
+        "kind": "FUNCTION",
+        "symbol": "loadPlayer",
+        "context": "local function loadPlayer(player)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 842,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
         "score": 66
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 68,
+        "kind": "FUNCTION",
+        "symbol": "initializePlayer",
+        "context": "local function initializePlayer(player)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 78,
+        "kind": "FUNCTION",
+        "symbol": "snapshotPlayer",
+        "context": "local function snapshotPlayer(player)",
+        "score": 58
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -207,7 +335,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 253,
+        "line": 254,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -215,52 +343,28 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 106,
+        "line": 107,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
         "score": 42
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 17,
-        "kind": "FUNCTION",
-        "symbol": "readNumber",
-        "context": "local function readNumber(player, name, fallback)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 22,
-        "kind": "FUNCTION",
-        "symbol": "setNumber",
-        "context": "local function setNumber(player, name, value)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 190,
-        "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationCharacter",
-        "context": "local function bindNativeFoundationCharacter(character)",
-        "score": 34
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "2b0dc33088fc54905590f7c7180a79c8852d6f7771369e9fbbde798169ed0c7c",
-    "currentSourceTreeFingerprint": "154c7b0b04af161a500897dd9e76aef33b929833547c442dcdabbe5261e10469",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "53126973834339d6d5f45f6289f2e0cc2d78f2d537d6610ad3f4c7c89cd138d2",
+    "currentSourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1371,9 +1475,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"지형 변형 시스템\", 현재 책임 소스는 roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::render, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler1, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler2, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler3, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler4, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler5, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler6, roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::reportNativeFoundationReady이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"지형 변형 시스템\", 현재 책임 소스는 roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::transformTerrain, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::damageEnemy, roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::render, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::spawnEnemy, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::reviewDefenseState, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::runEnemyAI, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::directCombat, roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::reportNativeFoundationReady이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::render, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler1, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler2, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler3, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler4, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler5, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler6, roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::reportNativeFoundationReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::transformTerrain, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::damageEnemy, roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::render, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::spawnEnemy, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::reviewDefenseState, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::runEnemyAI, roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::directCombat, roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau::reportNativeFoundationReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "지형 변형 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "속성 공명 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1422,8 +1526,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 80796,
-        "largestFileBytes": 43650,
+        "sourceBytes": 99540,
+        "largestFileBytes": 43735,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1455,8 +1559,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
+    "themeDepth": 8,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1466,7 +1570,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 8
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1475,6 +1579,8 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1513,7 +1619,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 138,
+        "score": 102,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1864,15 +1970,33 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 305,
+        "kind": "FUNCTION",
+        "symbol": "transformTerrain",
+        "currentBehavior": "local function transformTerrain(player)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 transformTerrain의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 375,
+        "kind": "FUNCTION",
+        "symbol": "damageEnemy",
+        "currentBehavior": "local function damageEnemy(player, enemy, amount)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 356,
+        "line": 357,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1881,61 +2005,43 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 36,
+        "line": 472,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "spawnEnemy",
+        "currentBehavior": "local function spawnEnemy(player, index)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 45,
+        "line": 728,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "reviewDefenseState",
+        "currentBehavior": "local function reviewDefenseState(player)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDefenseState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 61,
+        "line": 427,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "runEnemyAI",
+        "currentBehavior": "local function runEnemyAI(player, enemy)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 runEnemyAI의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 77,
+        "line": 688,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 93,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 109,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "directCombat",
+        "currentBehavior": "local function directCombat(player)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 directCombat의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 375,
+        "line": 386,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -1945,6 +2051,18 @@
     ],
     "serverClientResponsibility": [
       {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "symbol": "transformTerrain",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "symbol": "damageEnemy",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
         "symbol": "render",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
@@ -1952,37 +2070,25 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "symbol": "scopeHandler1",
+        "symbol": "spawnEnemy",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "symbol": "scopeHandler2",
+        "symbol": "reviewDefenseState",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "symbol": "scopeHandler3",
+        "symbol": "runEnemyAI",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "symbol": "scopeHandler4",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "symbol": "scopeHandler5",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "symbol": "scopeHandler6",
+        "symbol": "directCombat",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -2026,15 +2132,39 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 305,
+        "kind": "FUNCTION",
+        "symbol": "transformTerrain",
+        "context": "local function transformTerrain(player)",
+        "score": 146,
+        "currentBehavior": "local function transformTerrain(player)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 transformTerrain의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::transformTerrain이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "line": 375,
+        "kind": "FUNCTION",
+        "symbol": "damageEnemy",
+        "context": "local function damageEnemy(player, enemy, amount)",
+        "score": 114,
+        "currentBehavior": "local function damageEnemy(player, enemy, amount)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::damageEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 356,
+        "line": 357,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2046,79 +2176,55 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 36,
+        "line": 472,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "spawnEnemy",
+        "context": "local function spawnEnemy(player, index)",
+        "score": 106,
+        "currentBehavior": "local function spawnEnemy(player, index)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::spawnEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 45,
+        "line": 728,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "reviewDefenseState",
+        "context": "local function reviewDefenseState(player)",
+        "score": 106,
+        "currentBehavior": "local function reviewDefenseState(player)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDefenseState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::reviewDefenseState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 61,
+        "line": 427,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
+        "symbol": "runEnemyAI",
+        "context": "local function runEnemyAI(player, enemy)",
         "score": 98,
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "local function runEnemyAI(player, enemy)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 runEnemyAI의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::runEnemyAI이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 77,
+        "line": 688,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
+        "symbol": "directCombat",
+        "context": "local function directCombat(player)",
         "score": 98,
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 93,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "line": 109,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "local function directCombat(player)",
+        "intendedBehavior": "STABILITY primary goal \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 directCombat의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau::directCombat이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 375,
+        "line": 386,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2175,9 +2281,9 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "impact": {
@@ -2260,11 +2366,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "154c7b0b04af161a500897dd9e76aef33b929833547c442dcdabbe5261e10469",
+      "sourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2307,7 +2413,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2379,5 +2485,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T05:28:43.074Z"
+  "generatedAt": "2026-10-04T06:32:51.730Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g5-20c8e9b2cdbe",
-  "directiveFingerprint": "20c8e9b2cdbe0dd124b75059d517018496af0ee216b72402b9292c7fb328b6a8",
-  "previousDirectiveFingerprint": "992fd2165523d14e1577f1a2ddec92cfe0228a5d51ce4db6980e17a058b2193a",
-  "forbiddenRepeatFingerprint": "992fd2165523d14e1577f1a2ddec92cfe0228a5d51ce4db6980e17a058b2193a",
+  "directiveId": "village-dungeons-build-up-g7-9203782cb0a9",
+  "directiveFingerprint": "9203782cb0a953b9ba8a22b677bcdf6d6c963935429b2a6ffcbd7756fb1b7d11",
+  "previousDirectiveFingerprint": "5036b53b81e0b1babea4811b242b985a7260697dee4bb89ace2cd9eb0304f62a",
+  "forbiddenRepeatFingerprint": "5036b53b81e0b1babea4811b242b985a7260697dee4bb89ace2cd9eb0304f62a",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 5,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "aa79a9d49889c9225fda629364ea7def3c6827958b4df61cb66a276259aa9d09",
+  "sourceTreeFingerprint": "c506ad93101ead100c4c57a1905777644773e66d2e42260fba821a4011670bc8",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -54,56 +54,55 @@
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 49,
-      "progression": 166,
-      "ai": 19,
-      "save": 68,
-      "multiplayer": 13,
+      "combat": 169,
+      "progression": 234,
+      "ai": 27,
+      "save": 76,
+      "multiplayer": 31,
       "animation": 28,
-      "motionStates": 120,
-      "gameFeel": 22,
+      "motionStates": 197,
+      "gameFeel": 25,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 16,
       "ui": 57,
-      "uiFlow": 34,
+      "uiFlow": 43,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 57,
-      "map": 128,
-      "landmark": 2,
+      "map": 310,
+      "landmark": 3,
       "interaction": 41,
-      "inventory": 2,
-      "equipment": 0,
+      "inventory": 61,
+      "equipment": 14,
       "settings": 1,
-      "feedback": 70,
-      "session": 9,
-      "content": 92,
-      "choice": 11,
+      "feedback": 73,
+      "session": 147,
+      "content": 263,
+      "choice": 17,
       "connection": 0,
-      "performance": 18,
+      "performance": 22,
       "lighting": 37,
-      "primitive": 15,
+      "primitive": 18,
       "todo": 0,
-      "errorRecovery": 11
+      "errorRecovery": 21
     },
     "topFiles": [
       {
-        "file": "roblox-games/village-dungeons/shared/GameConfig.luau",
-        "score": 268
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "score": 738
       },
       {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "score": 241
+        "file": "roblox-games/village-dungeons/shared/GameConfig.luau",
+        "score": 270
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "score": 143
+        "score": 149
       },
       {
         "file": "roblox-games/village-dungeons/default.project.json",
@@ -112,8 +111,40 @@
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 317,
+        "kind": "FUNCTION",
+        "symbol": "addItemToInventory",
+        "context": "local function addItemToInventory(player, itemId, amount)",
+        "score": 130
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 565,
+        "kind": "FUNCTION",
+        "symbol": "spawnBoss",
+        "context": "local function spawnBoss(player)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 719,
+        "kind": "FUNCTION",
+        "symbol": "reviewDungeonState",
+        "context": "local function reviewDungeonState(player)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 461,
+        "kind": "FUNCTION",
+        "symbol": "damageMonster",
+        "context": "local function damageMonster(player, enemy, amount)",
+        "score": 114
+      },
+      {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 356,
+        "line": 357,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -121,63 +152,111 @@
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 38,
+        "line": 332,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
+        "symbol": "removeInventoryItem",
+        "context": "local function removeInventoryItem(player, itemId, amount)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 371,
+        "kind": "FUNCTION",
+        "symbol": "equipWeapon",
+        "context": "local function equipWeapon(player, weaponId, power)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 392,
+        "kind": "FUNCTION",
+        "symbol": "consumeFacilityMaterial",
+        "context": "local function consumeFacilityMaterial(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 425,
+        "kind": "FUNCTION",
+        "symbol": "completeQuest",
+        "context": "local function completeQuest(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 434,
+        "kind": "FUNCTION",
+        "symbol": "currentEnemy",
+        "context": "local function currentEnemy(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 678,
+        "kind": "FUNCTION",
+        "symbol": "manageDungeonBag",
+        "context": "local function manageDungeonBag(player)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 377,
+        "kind": "FUNCTION",
+        "symbol": "craftWeapon",
+        "context": "local function craftWeapon(player)",
         "score": 98
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 54,
+        "line": 671,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
+        "symbol": "enterSelectedDungeon",
+        "context": "local function enterSelectedDungeon(player)",
         "score": 98
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 63,
+        "line": 278,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98
+        "symbol": "getSession",
+        "context": "local function getSession(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 79,
+        "line": 347,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98
+        "symbol": "preserveHalfDungeonInventory",
+        "context": "local function preserveHalfDungeonInventory(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 89,
+        "line": 416,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98
+        "symbol": "startQuest",
+        "context": "local function startQuest(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 98,
+        "line": 493,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98
+        "symbol": "runEnemyAI",
+        "context": "local function runEnemyAI(player, enemy)",
+        "score": 90
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 107,
+        "line": 665,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler7",
-        "context": "local function scopeHandler7(player)",
-        "score": 98
+        "symbol": "acceptVillageQuest",
+        "context": "local function acceptVillageQuest(player)",
+        "score": 90
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 375,
+        "line": 386,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -185,7 +264,47 @@
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 126,
+        "line": 303,
+        "kind": "FUNCTION",
+        "symbol": "updateBagSummary",
+        "context": "local function updateBagSummary(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 525,
+        "kind": "FUNCTION",
+        "symbol": "spawnMonster",
+        "context": "local function spawnMonster(player, monsterKind, index)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 588,
+        "kind": "FUNCTION",
+        "symbol": "attackMonster",
+        "context": "local function attackMonster(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 656,
+        "kind": "FUNCTION",
+        "symbol": "performCombatAction",
+        "context": "local function performCombatAction(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 705,
+        "kind": "FUNCTION",
+        "symbol": "challengeDeeperDungeon",
+        "context": "local function challengeDeeperDungeon(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 738,
         "kind": "FUNCTION",
         "symbol": "loadPlayer",
         "context": "local function loadPlayer(player)",
@@ -193,26 +312,18 @@
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 28,
+        "line": 52,
         "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
+        "symbol": "initializeTransientState",
+        "context": "local function initializeTransientState(player)",
         "score": 74
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 176,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 285,
-        "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationPlayer",
-        "context": "local function bindNativeFoundationPlayer(player)",
         "score": 66
       },
       {
@@ -225,7 +336,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 253,
+        "line": 254,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -233,75 +344,30 @@
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 106,
+        "line": 107,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
         "score": 42
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 19,
-        "kind": "FUNCTION",
-        "symbol": "readNumber",
-        "context": "local function readNumber(player, name, fallback)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 24,
-        "kind": "FUNCTION",
-        "symbol": "setNumber",
-        "context": "local function setNumber(player, name, value)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 262,
-        "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationCharacter",
-        "context": "local function bindNativeFoundationCharacter(character)",
-        "score": 34
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 4,
-    "previousSourceTreeFingerprint": "c4ab1895f8a31b250424677a14d2d3a9d6f9619b5656d902ebafd4a2cfe4b9c6",
-    "currentSourceTreeFingerprint": "aa79a9d49889c9225fda629364ea7def3c6827958b4df61cb66a276259aa9d09",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "eadea7d2e79e0bbdda53ed064a35b0cbb5785d0f3caba32d00f2098b4c78723b",
+    "currentSourceTreeFingerprint": "c506ad93101ead100c4c57a1905777644773e66d2e42260fba821a4011670bc8",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
-    "blockers": [
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-      "MISSING_GAMEPLAY_CAPABILITY:CRAFTING",
-      "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-      "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:3",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:4",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
-    ],
-    "runtimeObserved": true,
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -434,18 +500,18 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CRAFTING",
@@ -479,8 +545,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -906,8 +972,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -915,8 +981,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -924,8 +990,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -987,8 +1053,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1348,27 +1414,7 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1415,9 +1461,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"마을 재건 시설 연동 시스템\", 현재 책임 소스는 roblox-games/village-dungeons/client/Game.client.luau::render, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler1, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler2, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler3, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler4, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler5, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler6, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler7이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"마을 재건 시설 연동 시스템\", 현재 책임 소스는 roblox-games/village-dungeons/server/Game.server.luau::addItemToInventory, roblox-games/village-dungeons/server/Game.server.luau::spawnBoss, roblox-games/village-dungeons/server/Game.server.luau::reviewDungeonState, roblox-games/village-dungeons/server/Game.server.luau::damageMonster, roblox-games/village-dungeons/client/Game.client.luau::render, roblox-games/village-dungeons/server/Game.server.luau::removeInventoryItem, roblox-games/village-dungeons/server/Game.server.luau::equipWeapon, roblox-games/village-dungeons/server/Game.server.luau::consumeFacilityMaterial이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/village-dungeons/client/Game.client.luau::render, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler1, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler2, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler3, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler4, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler5, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler6, roblox-games/village-dungeons/server/Game.server.luau::scopeHandler7에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/village-dungeons/server/Game.server.luau::addItemToInventory, roblox-games/village-dungeons/server/Game.server.luau::spawnBoss, roblox-games/village-dungeons/server/Game.server.luau::reviewDungeonState, roblox-games/village-dungeons/server/Game.server.luau::damageMonster, roblox-games/village-dungeons/client/Game.client.luau::render, roblox-games/village-dungeons/server/Game.server.luau::removeInventoryItem, roblox-games/village-dungeons/server/Game.server.luau::equipWeapon, roblox-games/village-dungeons/server/Game.server.luau::consumeFacilityMaterial에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "마을 재건 시설 연동 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "리스크 배낭 정밀 적재 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1456,7 +1502,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1468,8 +1514,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 84418,
-        "largestFileBytes": 44002,
+        "sourceBytes": 104125,
+        "largestFileBytes": 44087,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1501,20 +1547,22 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=REGRESSION; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 8,
+    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1555,11 +1603,8 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 140,
+        "score": 68,
         "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "EQUIPMENT_LOADOUT",
           "SYSTEM_CONNECTION"
         ]
       },
@@ -1743,7 +1788,7 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
@@ -1778,8 +1823,7 @@
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
     "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
+      "AUDIO_MUSIC_AND_FEEDBACK"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -1914,8 +1958,44 @@
     ],
     "sourceSymbolsOrStateAnchors": [
       {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 317,
+        "kind": "FUNCTION",
+        "symbol": "addItemToInventory",
+        "currentBehavior": "local function addItemToInventory(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addItemToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 565,
+        "kind": "FUNCTION",
+        "symbol": "spawnBoss",
+        "currentBehavior": "local function spawnBoss(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 719,
+        "kind": "FUNCTION",
+        "symbol": "reviewDungeonState",
+        "currentBehavior": "local function reviewDungeonState(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDungeonState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 461,
+        "kind": "FUNCTION",
+        "symbol": "damageMonster",
+        "currentBehavior": "local function damageMonster(player, enemy, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 356,
+        "line": 357,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1924,69 +2004,57 @@
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 38,
+        "line": 332,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "removeInventoryItem",
+        "currentBehavior": "local function removeInventoryItem(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 removeInventoryItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 54,
+        "line": 371,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "equipWeapon",
+        "currentBehavior": "local function equipWeapon(player, weaponId, power)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 equipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 63,
+        "line": 392,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 79,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 89,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 98,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 107,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler7",
-        "currentBehavior": "local function scopeHandler7(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler7의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "consumeFacilityMaterial",
+        "currentBehavior": "local function consumeFacilityMaterial(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 consumeFacilityMaterial의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "addItemToInventory",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "spawnBoss",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "reviewDungeonState",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "symbol": "damageMonster",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
         "symbol": "render",
@@ -1995,43 +2063,19 @@
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler1",
+        "symbol": "removeInventoryItem",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler2",
+        "symbol": "equipWeapon",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler3",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler4",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler5",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler6",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "symbol": "scopeHandler7",
+        "symbol": "consumeFacilityMaterial",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2076,8 +2120,56 @@
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 317,
+        "kind": "FUNCTION",
+        "symbol": "addItemToInventory",
+        "context": "local function addItemToInventory(player, itemId, amount)",
+        "score": 130,
+        "currentBehavior": "local function addItemToInventory(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 addItemToInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::addItemToInventory이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 565,
+        "kind": "FUNCTION",
+        "symbol": "spawnBoss",
+        "context": "local function spawnBoss(player)",
+        "score": 122,
+        "currentBehavior": "local function spawnBoss(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::spawnBoss이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 719,
+        "kind": "FUNCTION",
+        "symbol": "reviewDungeonState",
+        "context": "local function reviewDungeonState(player)",
+        "score": 122,
+        "currentBehavior": "local function reviewDungeonState(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDungeonState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::reviewDungeonState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/village-dungeons/server/Game.server.luau",
+        "line": 461,
+        "kind": "FUNCTION",
+        "symbol": "damageMonster",
+        "context": "local function damageMonster(player, enemy, amount)",
+        "score": 114,
+        "currentBehavior": "local function damageMonster(player, enemy, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageMonster의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::damageMonster이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
-        "line": 356,
+        "line": 357,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2089,86 +2181,38 @@
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 38,
+        "line": 332,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "removeInventoryItem",
+        "context": "local function removeInventoryItem(player, itemId, amount)",
+        "score": 106,
+        "currentBehavior": "local function removeInventoryItem(player, itemId, amount)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 removeInventoryItem의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::removeInventoryItem이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 54,
+        "line": 371,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "equipWeapon",
+        "context": "local function equipWeapon(player, weaponId, power)",
+        "score": 106,
+        "currentBehavior": "local function equipWeapon(player, weaponId, power)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 equipWeapon의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::equipWeapon이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 63,
+        "line": 392,
         "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 79,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 89,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 98,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/village-dungeons/server/Game.server.luau",
-        "line": 107,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler7",
-        "context": "local function scopeHandler7(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler7(player)",
-        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler7의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::scopeHandler7이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "consumeFacilityMaterial",
+        "context": "local function consumeFacilityMaterial(player)",
+        "score": 106,
+        "currentBehavior": "local function consumeFacilityMaterial(player)",
+        "intendedBehavior": "STABILITY primary goal \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 consumeFacilityMaterial의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/village-dungeons/server/Game.server.luau::consumeFacilityMaterial이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/village-dungeons/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -2182,25 +2226,20 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI",
-      "GAMEPLAY",
-      "SAVE"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
+    "securityRelevant": false,
     "openCloudWorldChecks": [
       "SERVER_BOOT",
       "FINITE_WORLD_BOUNDS",
@@ -2229,25 +2268,20 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI",
-        "GAMEPLAY",
-        "SAVE"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
+      "securityRelevant": false,
       "openCloudWorldChecks": [
         "SERVER_BOOT",
         "FINITE_WORLD_BOUNDS",
@@ -2272,9 +2306,6 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2298,16 +2329,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "aa79a9d49889c9225fda629364ea7def3c6827958b4df61cb66a276259aa9d09",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "c506ad93101ead100c4c57a1905777644773e66d2e42260fba821a4011670bc8",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2318,8 +2349,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2350,7 +2381,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 6,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2407,11 +2438,7 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
-      "EQUIPMENT_LOADOUT",
       "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
       "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
@@ -2422,5 +2449,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T04:48:50.047Z"
+  "generatedAt": "2026-10-04T06:32:51.762Z"
 }
