@@ -1518,3 +1518,98 @@ test('common UI registry stays unverified until real consumer runtime evidence e
     assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
   }
 });
+
+
+test('company-common item pack shares one source across world drop and viewport',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-items-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonItems.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  assert.ok(source.includes('function RobloxCommonItems.Create(id, options)'));
+  assert.ok(source.includes('function RobloxCommonItems.CreateViewport(id, options)'));
+  assert.ok(source.includes('local styledRow = rowWithPalette(row, options.palette)'));
+  assert.ok(source.includes('palette = options.palette'));
+  assert.ok(source.includes('CompanyCommonBase", true'));
+  assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.sameAssetDnaAcrossWorldDropEquipAndUi,true);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+
+  for(const forbidden of [/\bDamage\s*=/,/\bPrice\s*=/,/\bHealAmount\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common item registry exposes cross-game reusable item and resource roles',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-items-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const expected=[
+    ['HEALING_POTION','ITEM','CONSUMABLE'],
+    ['MANA_CRYSTAL','RESOURCE','RESOURCE'],
+    ['IRON_INGOT','RESOURCE','RESOURCE'],
+    ['GOLD_INGOT','RESOURCE','RESOURCE'],
+    ['WOOD_BUNDLE','RESOURCE','RESOURCE'],
+    ['STONE_CHUNK','RESOURCE','RESOURCE'],
+    ['RELIC_KEY','ITEM','KEY_ITEM'],
+    ['LANTERN','ITEM','UTILITY']
+  ];
+  for(const [assetId,subfamily,itemRole] of expected){
+    const id='roblox-common-item-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.itemRole,itemRole);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority,true);
+  }
+});
+
+test('generic item requirement can choose company-common item base',()=>{
+  const registryAsset={
+    id:'common-healing-potion',
+    family:'PROP',
+    subfamily:'ITEM',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    companyCommonBase:true,
+    reuseScope:'COMPANY_ROBLOX_COMMON_BASE',
+    tags:['CONSUMABLE']
+  };
+  const gameOnly={
+    id:'game-only-potion',
+    family:'PROP',
+    subfamily:'ITEM',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    tags:['CONSUMABLE']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'PROP',subfamily:'ITEM',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-healing-potion');
+});
