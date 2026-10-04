@@ -61,6 +61,12 @@ test('empty queue and failed subjobs preserve next-cycle continuity through cano
 
 test('24h scheduler wakes remain run-scoped while refill obeys the five-minute safety-net pressure contract',()=>{
   assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
+  assert.match(runner,/exact_plan_wake:/);
+  assert.match(runner,/VIBE2_24H_EXACT_PLAN_WAKE=COALESCED:/);
+  assert.match(runner,/VIBE2_24H_EXACT_PLAN_WAKE=PASS_NO_OLDER_ACTIVE_PLAN:/);
+  assert.match(runner,/String\(job\.name\|\|''\)==='plan'/);
+  assert.match(runner,/needs\.exact_plan_wake\.outputs\.proceed == 'true'/);
+  assert.doesNotMatch(runner,/String\(row\.event\|\|''\)===event/);
   assert.match(runner,/cancel-in-progress:\s*false/);
   assert.doesNotMatch(runner,/group: vibe2-24h-cycle-singleton-v9/);
   assert.match(runner,/cron: '\*\/5 \* \* \* \*'/);

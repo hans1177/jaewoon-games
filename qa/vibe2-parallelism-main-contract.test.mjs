@@ -347,6 +347,15 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
   assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
+  assert.match(runner,/\n  exact_plan_wake:\n[\s\S]{0,260}?runs-on: ubuntu-slim/);
+  assert.match(runner,/Coalesce exact same-main 24H plan wakes/);
+  assert.match(runner,/Number\(row\.id\|\|0\)<current/);
+  assert.match(runner,/String\(row\.head_sha\|\|''\)===sha/);
+  assert.doesNotMatch(runner,/String\(row\.event\|\|''\)===event/);
+  assert.match(runner,/String\(job\.name\|\|''\)==='plan'/);
+  assert.match(runner,/VIBE2_24H_EXACT_PLAN_WAKE=COALESCED:/);
+  assert.match(runner,/VIBE2_24H_EXACT_PLAN_WAKE=PASS_NO_OLDER_ACTIVE_PLAN:/);
+  assert.match(runner,/\n  plan:\n\s+needs: exact_plan_wake\n\s+if: \$\{\{ needs\.exact_plan_wake\.outputs\.proceed == 'true'/);
   assert.match(runner,/'tools\/vibe2-queue-control\.mjs'/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
