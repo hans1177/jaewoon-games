@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,7 +492,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -3061,5 +3061,22 @@
       ],
       "vibeContinuesWhenChatgptAbsent": true
     }
+  },
+  "assetProducerConsumerBoundaryEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.assetProducerConsumerBoundary",
+    "consumerUsagePolicyAuthority": "company-asset-library.json#internalAssetUsagePolicy",
+    "consumerEvidence": [
+      "ASSET_CONSUMER_ROLE=BUILD_UP_FLOOR_ASSET_CONSUMER",
+      "ASSET_LIBRARY_VERSION=<LATEST_EXECUTION_VERSION>",
+      "ASSET_LIBRARY_FRESHNESS_FINGERPRINT=<LATEST_TYPE_ROLE_QUALITY_METADATA>",
+      "ASSET_USAGE_POLICY=company-asset-library.json#internalAssetUsagePolicy",
+      "ASSET_SOURCE_BINDING=APPLIED_OR_EXACT_GAP"
+    ],
+    "consumerMayNotClaimAssetAuthoring": true,
+    "libraryUpdateReevaluationRequired": true,
+    "unchangedValidBindingMayBeReusedAfterReevaluation": true,
+    "exactGapEvidenceRequiredBeforeProducerHandoff": true,
+    "unrelatedBuildUpMayContinueWhileGapPending": true
   }
 }
