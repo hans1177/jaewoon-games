@@ -2305,7 +2305,7 @@ test('company-common character gear pack provides eight reusable visual equipmen
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
   }
 
-  const materials=[...new Set([...source.matchAll(/Enum\\.Material\\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
+  const materials=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
   const allowed=new Set(['SmoothPlastic','Plastic','Neon','Wood','WoodPlanks','Marble','Slate','Concrete','Granite','Brick','Pebble','Cobblestone','CorrodedMetal','DiamondPlate','Foil','Metal','Grass','Sand','Fabric','Ice','Glacier','Snow','Sandstone','Mud','Ground','CrackedLava','Basalt','Asphalt','Salt','Limestone','Pavement','Air','Water']);
   assert.equal(materials.every(value=>allowed.has(value)),true);
 
@@ -2323,7 +2323,7 @@ test('company-common character gear pack provides eight reusable visual equipmen
   assert.equal(quality.productionVerified,false);
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
 
-  for(const forbidden of [/\\bDefense\\s*=/,/\\bMaxHealth\\s*=/,/\\bMoveSpeed\\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\\(/]){
+  for(const forbidden of [/\bDefense\s*=/,/\bMaxHealth\s*=/,/\bMoveSpeed\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
     assert.equal(forbidden.test(source),false,String(forbidden));
   }
 });
