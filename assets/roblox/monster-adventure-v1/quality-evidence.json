@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-monster-adventure-v1",
   "gameId": "monster-adventure",
   "createdForCurrentRobloxNeed": true,
@@ -103,5 +103,81 @@
     "lowScoreDoesNotBlockInternalUse": true,
     "newAuthoringMayFillVerifiedGaps": true,
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 813.9,
+    "currentGrade": "DEVELOPMENT_READY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "COMMERCIAL_READY_880",
+        "targetScore": 880,
+        "projectedSourceAuditScore": 893.5,
+        "requiredAxisFloor": {
+          "MOTION_RIG": 86,
+          "FEEDBACK_STATES": 84,
+          "MODULAR_REUSE": 86,
+          "PERFORMANCE_LOD": 90,
+          "INTEGRATION_READINESS": 90,
+          "DETAIL_FINISH": 90
+        },
+        "requiredEvidence": [
+          "NATIVE_RIG_PROFILE_PER_COMPATIBLE_BODY_PLAN",
+          "LOCOMOTION_ATTACK_HIT_DEATH_SET",
+          "CONTACT_AND_RECOVERY_PRESENTATION",
+          "MOBILE_LOD_VARIANT",
+          "SPECIES_PART_OR_SOCKET_REUSE_METADATA"
+        ]
+      },
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "projectedSourceAuditScore": 921.1,
+        "requiredAxisFloor": {
+          "MOTION_RIG": 92,
+          "FEEDBACK_STATES": 90,
+          "MODULAR_REUSE": 92,
+          "PERFORMANCE_LOD": 92,
+          "INTEGRATION_READINESS": 94,
+          "DETAIL_FINISH": 94,
+          "MATERIAL_SURFACE": 92,
+          "STYLE_COHERENCE": 94
+        },
+        "requiredEvidence": [
+          "STARTER_HERO_MOTION_IDENTITY",
+          "SPECIES_SPECIFIC_ATTACK_AND_REACTION_LANGUAGE",
+          "SURFACE_AND_MATERIAL_BREAKUP",
+          "CAMERA_DISTANCE_READABILITY",
+          "RUNTIME_READY_NATIVE_VARIANT_METADATA"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "MOTION_RIG",
+      "REACTION_AND_CONTACT_FEEDBACK",
+      "DETAIL_FINISH",
+      "MODULAR_REUSE",
+      "MOBILE_LOD"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "NEW_SPECIES_ROLE_GAP_REMAINS",
+        "BOSS_SIGNATURE_GAP_REMAINS",
+        "EXISTING_SPECIES_CANNOT_COVER_BODY_PLAN_OR_ECOLOGY_ROLE"
+      ],
+      "exactDuplicateSpeciesSpamForbidden": true,
+      "recolorOnlySpeciesDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "gameplayStatsAiDamageDropSaveNetworkAuthorityUnchanged": true
+    }
   }
 }
