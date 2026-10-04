@@ -1,5 +1,5 @@
 {
-  "version": 55,
+  "version": 56,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -67,7 +67,9 @@
     "genreMatrixComparisonRequired": true,
     "duplicateCommonAssetAuthoringAvoidanceRequired": true,
     "noScheduledAssetReviewWorkflowCreated": true,
-    "internalAssetDocumentationMode": "MACHINE_READABLE_ONLY"
+    "internalAssetDocumentationMode": "MACHINE_READABLE_ONLY",
+    "humanAssetStandardDocumentRequired": false,
+    "allCompanyCommonAssetsInheritInternalAssetStandard": true
   },
   "platformPacks": [
     {
@@ -27473,7 +27475,12 @@
     "gameplayAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false,
-    "documentationMode": "MACHINE_READABLE_ONLY"
+    "documentationMode": "MACHINE_READABLE_ONLY",
+    "appliesToAllCompanyCommonAssets": true,
+    "inheritanceMode": "TOP_LEVEL_DEFAULT_WITH_PACK_OVERRIDE",
+    "companyCommonSelector": "companyCommonBase=true OR reuseScope=COMPANY_ROBLOX_COMMON_BASE",
+    "humanDocumentationRequired": false,
+    "humanDocumentationPath": null
   },
   "internalAssetRoutineReview": {
     "version": 1,
@@ -27546,6 +27553,11 @@
     ],
     "productionPromotionRequiresRuntimeEvidence": true,
     "internalScoreIsUsageGate": false,
-    "existingAssetsRemainUsable": true
+    "existingAssetsRemainUsable": true,
+    "appliesToAllCompanyCommonAssets": true,
+    "reviewExecutionOwner": "EXISTING_ASSET_RESPONSIBILITY_ONLY",
+    "createsBackgroundAutomation": false,
+    "createsScheduler": false,
+    "createsWorkflow": false
   }
 }
