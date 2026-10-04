@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:4,
+  version:5,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1479,6 +1479,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'REBUILD_COMPANY_SEED_DEMAND',
     'REBUILD_REFERENCE_BREADTH_PROFILE_GAPS',
     'FILTER_IDEAS_ALREADY_PRESENT_BY_ID_ATOM_OR_ROLE',
+    'ATTACH_LICENSE_VERIFIED_FREE_SOURCE_CANDIDATES_TO_WORKLIST',
     'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
@@ -1498,6 +1499,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
+  freeSourceCandidateLimitPerAction:8,
   reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
   freeOriginalVolumePolicy:Object.freeze({
     priority:'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING',
