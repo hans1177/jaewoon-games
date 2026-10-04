@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -6445,7 +6445,10 @@
       "aiNpcInteractionComponentCount": 24,
       "mountTravelComponentCount": 22,
       "parryPresentationComponentCount": 5,
-      "worldInteractionComponentCount": 10
+      "worldInteractionComponentCount": 10,
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ]
     },
     {
       "id": "roblox-common-ui-frame-panel",
@@ -6735,7 +6738,10 @@
         "requiredComponentCount": 20,
         "priorityGaps": [],
         "state": "BASE_COVERAGE_STARTED"
-      }
+      },
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ]
     },
     {
       "id": "roblox-common-item-healing-potion",
@@ -8727,7 +8733,7 @@
         "assets/roblox/common-world-props-v1/quality-evidence.json"
       ],
       "id": "roblox-common-world-props-v1",
-      "title": "Roblox 회사 공용 월드·하우징·정착지 소품 38종 v5",
+      "title": "Roblox 회사 공용 월드·하우징·정착지 소품 38종 v6",
       "subfamily": "WORLD_PROP_PACK",
       "itemCount": 38,
       "sameAssetDnaAcrossWorldAndUi": true,
@@ -8750,7 +8756,12 @@
         "state": "GAP_FILL_REQUIRED"
       },
       "housingSettlementContractRef": "assets/roblox/common-world-props-v1/catalog.json#housingSettlementContract",
-      "interactionPresentationContractRef": "assets/roblox/common-world-props-v1/catalog.json#interactionPresentationContract"
+      "interactionPresentationContractRef": "assets/roblox/common-world-props-v1/catalog.json#interactionPresentationContract",
+      "soundRoleLinked": true,
+      "audioPlaybackAuthority": false,
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ]
     },
     {
       "category": "PROP",
@@ -8819,7 +8830,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "READ",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "SIGN_RATTLE",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -8889,7 +8902,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT_OR_VAULT",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "WOOD_CREAK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -8959,7 +8974,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "TOGGLE_LIGHT",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "TORCH_BURN",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -9029,7 +9046,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "OPEN_OR_INSPECT",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "WOOD_CONTAINER",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -9098,7 +9117,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "SIT",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "WOOD_CREAK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -9167,7 +9188,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT_OR_PLACE",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "WOOD_TAP",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -9236,7 +9259,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "SHOP_OR_INSPECT",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "CLOTH_FLAP_MARKET",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -9306,7 +9331,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "DRAW_WATER_OR_INSPECT",
-      "propKind": null
+      "propKind": null,
+      "interactionSoundRole": "ROPE_BUCKET",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "ENVIRONMENT",
@@ -10565,7 +10592,10 @@
           "UPGRADE_STAGE_VISUAL"
         ],
         "state": "GAP_FILL_REQUIRED"
-      }
+      },
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ]
     },
     {
       "category": "WEAPON",
@@ -11175,7 +11205,10 @@
           "TRANSMOG_BASE"
         ],
         "state": "GAP_FILL_REQUIRED"
-      }
+      },
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ]
     },
     {
       "category": "CHARACTER",
@@ -12396,7 +12429,10 @@
           "RIG_PROFILE"
         ],
         "state": "GAP_FILL_REQUIRED"
-      }
+      },
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ]
     },
     {
       "category": "CREATURE",
@@ -16307,7 +16343,7 @@
     },
     {
       "id": "roblox-common-environment-v1",
-      "title": "Roblox 회사 공용 환경/배경 10바이옴 + 장면조합 24종 v4",
+      "title": "Roblox 회사 공용 환경/배경 10바이옴 + 장면조합 24종 + 환경상태 14종 v5",
       "category": "ENVIRONMENT",
       "family": "ENVIRONMENT",
       "subfamily": "BIOME_KIT",
@@ -16364,7 +16400,11 @@
         "RUIN_CLUSTER",
         "DISCOVERY_POI",
         "BACKGROUND_LAYER",
-        "INTERACTION_PRESENTATION"
+        "INTERACTION_PRESENTATION",
+        "WEATHER_PRESENTATION",
+        "SKY_ATMOSPHERE",
+        "LIGHTING_PRESET",
+        "SOUNDSCAPE_ROLE"
       ],
       "recipeCount": 80,
       "machineTags": [
@@ -16410,9 +16450,6 @@
         "currentCount": 24,
         "requiredComponentCount": 40,
         "priorityGaps": [
-          "WEATHER",
-          "SKY_ATMOSPHERE",
-          "LIGHTING_PRESET",
           "STREAMING_LOD"
         ],
         "state": "GAP_FILL_REQUIRED"
@@ -16453,6 +16490,29 @@
         "BACKGROUND_3",
         "BACKGROUND_4",
         "BACKGROUND_5"
+      ],
+      "environmentStateCount": 14,
+      "environmentStates": [
+        "CLEAR_DAY",
+        "OVERCAST",
+        "RAIN",
+        "HEAVY_RAIN",
+        "THUNDERSTORM",
+        "SNOW",
+        "BLIZZARD",
+        "FOG",
+        "STRONG_WIND",
+        "WHITE_NIGHT",
+        "SOLAR_ECLIPSE",
+        "AURORA_NIGHT",
+        "SANDSTORM",
+        "HEAT_HAZE"
+      ],
+      "biomeSoundscapeCount": 10,
+      "environmentStateContractRef": "assets/roblox/common-environment-v1/catalog.json#environmentStateContract",
+      "ambientSoundscapeContractRef": "assets/roblox/common-environment-v1/catalog.json#ambientSoundscapeContract",
+      "seedIdeaConsumerCandidates": [
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
       ]
     },
     {
@@ -22093,7 +22153,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "SLEEP_OR_BIND_RESPAWN",
-      "propKind": "BED"
+      "propKind": "BED",
+      "interactionSoundRole": "FABRIC_BED",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22154,7 +22216,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "OPEN_STORAGE_OR_OUTFIT",
-      "propKind": "WARDROBE"
+      "propKind": "WARDROBE",
+      "interactionSoundRole": "WOOD_DOOR",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22215,7 +22279,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "OPEN_STORAGE_OR_INSPECT",
-      "propKind": "SHELF"
+      "propKind": "SHELF",
+      "interactionSoundRole": "WOOD_STORAGE",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22276,7 +22342,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "CRAFT",
-      "propKind": "WORKBENCH"
+      "propKind": "WORKBENCH",
+      "interactionSoundRole": "TOOL_WORK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22337,7 +22405,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "CRAFT",
-      "propKind": "CRAFT_TABLE"
+      "propKind": "CRAFT_TABLE",
+      "interactionSoundRole": "TOOL_WORK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22399,7 +22469,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "COOK",
-      "propKind": "HEARTH"
+      "propKind": "HEARTH",
+      "interactionSoundRole": "FIRE_COOK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22460,7 +22532,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "OPEN_STORAGE",
-      "propKind": "CABINET"
+      "propKind": "CABINET",
+      "interactionSoundRole": "WOOD_DOOR",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22522,7 +22596,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "PLANT_OR_INSPECT",
-      "propKind": "PLANTER"
+      "propKind": "PLANTER",
+      "interactionSoundRole": "SOIL_PLANT",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22583,7 +22659,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "PLANT_OR_HARVEST",
-      "propKind": "CROP_PLOT"
+      "propKind": "CROP_PLOT",
+      "interactionSoundRole": "SOIL_FARM",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22644,7 +22722,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "FEED",
-      "propKind": "TROUGH"
+      "propKind": "TROUGH",
+      "interactionSoundRole": "ANIMAL_YARD",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22706,7 +22786,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "TOGGLE_LIGHT",
-      "propKind": "FLOOR_LAMP"
+      "propKind": "FLOOR_LAMP",
+      "interactionSoundRole": "LAMP_HUM_OR_FLAME",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22768,7 +22850,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "TOGGLE",
-      "propKind": "SWITCH"
+      "propKind": "SWITCH",
+      "interactionSoundRole": "SWITCH_CLICK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22830,7 +22914,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "USE_CONTROL",
-      "propKind": "LEVER"
+      "propKind": "LEVER",
+      "interactionSoundRole": "LEVER_CLUNK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22892,7 +22978,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "READ",
-      "propKind": "NOTICE"
+      "propKind": "NOTICE",
+      "interactionSoundRole": "PAPER_FLUTTER",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -22954,7 +23042,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT",
-      "propKind": "RUG"
+      "propKind": "RUG",
+      "interactionSoundRole": "FABRIC_STEP",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -23016,7 +23106,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT",
-      "propKind": "STATUE"
+      "propKind": "STATUE",
+      "interactionSoundRole": "STONE_TOUCH",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "UI",
@@ -26364,7 +26456,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "PUSH_OR_INSPECT",
-      "propKind": "CART"
+      "propKind": "CART",
+      "interactionSoundRole": "CART_WHEEL",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26437,7 +26531,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "OPEN_OR_CARRY",
-      "propKind": "CRATE"
+      "propKind": "CRATE",
+      "interactionSoundRole": "WOOD_CONTAINER",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26510,7 +26606,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "OPEN_OR_INSPECT",
-      "propKind": "CHEST"
+      "propKind": "CHEST",
+      "interactionSoundRole": "WOOD_CONTAINER",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26583,7 +26681,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "TOGGLE_OR_INSPECT",
-      "propKind": "STREET_LANTERN"
+      "propKind": "STREET_LANTERN",
+      "interactionSoundRole": "LAMP_HUM_OR_FLAME",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26656,7 +26756,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT",
-      "propKind": "LAUNDRY"
+      "propKind": "LAUNDRY",
+      "interactionSoundRole": "CLOTH_FLAP",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26729,7 +26831,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT",
-      "propKind": "FLAG"
+      "propKind": "FLAG",
+      "interactionSoundRole": "CLOTH_FLAP",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26802,7 +26906,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "ENTER_OR_INSPECT",
-      "propKind": "TENT"
+      "propKind": "TENT",
+      "interactionSoundRole": "CLOTH_FLAP",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26875,7 +26981,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "GATHER_OR_INSPECT",
-      "propKind": "FIREWOOD"
+      "propKind": "FIREWOOD",
+      "interactionSoundRole": "WOOD_STACK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -26948,7 +27056,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "USE_OR_INSPECT",
-      "propKind": "FARM_TOOL_RACK"
+      "propKind": "FARM_TOOL_RACK",
+      "interactionSoundRole": "TOOL_RATTLE",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -27020,7 +27130,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "INSPECT_OR_CLIMB",
-      "propKind": "RUIN_DEBRIS"
+      "propKind": "RUIN_DEBRIS",
+      "interactionSoundRole": "STONE_RATTLE",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -27093,7 +27205,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "CLIMB_OR_INSPECT",
-      "propKind": "SCAFFOLD"
+      "propKind": "SCAFFOLD",
+      "interactionSoundRole": "WOOD_CREAK",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -27166,7 +27280,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "READ_OR_INSPECT",
-      "propKind": "LORE_STONE"
+      "propKind": "LORE_STONE",
+      "interactionSoundRole": "STONE_TOUCH",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -27239,7 +27355,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "HARVEST_OR_INSPECT",
-      "propKind": "RESOURCE_ROCK"
+      "propKind": "RESOURCE_ROCK",
+      "interactionSoundRole": "ROCK_HIT",
+      "audioPlaybackAuthority": false
     },
     {
       "category": "PROP",
@@ -27312,7 +27430,9 @@
         "preserveGameplayBalanceEconomySaveAndNetworkAuthority": true
       },
       "interactionRole": "HARVEST_OR_INSPECT",
-      "propKind": "RESOURCE_WOOD"
+      "propKind": "RESOURCE_WOOD",
+      "interactionSoundRole": "WOOD_HIT",
+      "audioPlaybackAuthority": false
     }
   ],
   "research": [
@@ -31661,9 +31781,6 @@
         "currentCount": 24,
         "requiredComponentCount": 40,
         "priorityGaps": [
-          "WEATHER",
-          "SKY_ATMOSPHERE",
-          "LIGHTING_PRESET",
           "STREAMING_LOD"
         ],
         "state": "GAP_FILL_REQUIRED"
@@ -31749,7 +31866,8 @@
         "currentCount": 0,
         "requiredComponentCount": 23,
         "priorityGaps": [
-          "COMMON_AUDIO_PACK_MISSING"
+          "COMMON_AUDIO_PACK_MISSING",
+          "ACTUAL_AUDIO_ASSETS_REQUIRED"
         ],
         "state": "GAP_FILL_REQUIRED"
       }
@@ -32166,6 +32284,259 @@
     "worldPropCount": 38,
     "environmentTerrainCompositionCount": 24,
     "environmentBackgroundDepthLayers": 5,
-    "machineReadableOnly": true
+    "machineReadableOnly": true,
+    "environmentStateCount": 14,
+    "biomeSoundscapeCount": 10,
+    "propSoundRoleCount": 38,
+    "seedDerivedIdeaSource": "seed-action-survival-rogu-echoes-of-the-lost-star"
+  },
+  "environmentStateContract": {
+    "version": 1,
+    "source": "assets/roblox/common-environment-v1/catalog.json#environmentStateContract",
+    "states": [
+      "CLEAR_DAY",
+      "OVERCAST",
+      "RAIN",
+      "HEAVY_RAIN",
+      "THUNDERSTORM",
+      "SNOW",
+      "BLIZZARD",
+      "FOG",
+      "STRONG_WIND",
+      "WHITE_NIGHT",
+      "SOLAR_ECLIPSE",
+      "AURORA_NIGHT",
+      "SANDSTORM",
+      "HEAT_HAZE"
+    ],
+    "stateCount": 14,
+    "realisticBackgroundRule": "PRECIPITATION_ALONE_IS_INSUFFICIENT",
+    "coupling": [
+      "WEATHER_STATE>SKY_ATMOSPHERE>BACKGROUND_DEPTH",
+      "WEATHER_STATE>SURFACE_PRESENTATION>PROP_MATERIAL_RESPONSE",
+      "WEATHER_STATE>WIND_PRESENTATION>FOLIAGE_CLOTH_PROP_MOTION",
+      "WEATHER_STATE>SOUNDSCAPE_ROLE>AMBIENT_LAYER_SELECTION",
+      "WEATHER_STATE>VISIBILITY_PRESENTATION>UI_WARNING_OPTIONAL",
+      "CELESTIAL_STATE>SKY_ROLE>BACKGROUND_SILHOUETTE"
+    ],
+    "weatherAuthority": false,
+    "timeAuthority": false,
+    "audioPlaybackAuthority": false,
+    "productionVerified": false
+  },
+  "ambientSoundscapeContract": {
+    "version": 1,
+    "source": "assets/roblox/common-environment-v1/catalog.json#ambientSoundscapeContract",
+    "layers": [
+      "BED",
+      "NEAR_LOOP",
+      "DISTANT_LOOP",
+      "SCATTER",
+      "ONE_SHOT",
+      "INTERACTION_SOURCE"
+    ],
+    "variationRules": [
+      "NO_SINGLE_LOOP_ONLY",
+      "USE_VARIATION_SET_FOR_REPEATING_WILDLIFE_AND_MACHINE",
+      "DISTANCE_BANDS_REQUIRED",
+      "TIME_OF_DAY_VARIANT_OPTIONAL",
+      "WEATHER_OVERRIDE_OR_BLEND",
+      "INTERIOR_EXTERIOR_BLEND",
+      "OCCLUSION_ROLE_REQUIRED_WHEN_STRUCTURE_RELEVANT",
+      "RANDOM_SCATTER_INTERVAL_WITH_DEDUPE"
+    ],
+    "sourceGroups": {
+      "wind": [
+        "WIND_LIGHT",
+        "WIND_SOFT",
+        "WIND_GUST",
+        "WIND_GALE",
+        "WIND_COLD",
+        "WIND_SAND"
+      ],
+      "insect": [
+        "INSECT_DAY",
+        "INSECT_TWILIGHT",
+        "NIGHT_INSECT",
+        "INSECT_SWARM",
+        "INSECT_DRY"
+      ],
+      "animal": [
+        "BIRD_DAY",
+        "DISTANT_BIRD",
+        "DISTANT_CROW",
+        "FROG",
+        "GULL",
+        "BAT_SCATTER",
+        "DISTANT_WILDLIFE",
+        "ANIMAL_YARD"
+      ],
+      "machine": [
+        "MACHINE_HUM",
+        "TOOL_WORK",
+        "CART_WHEEL",
+        "STRUCTURE_RATTLE",
+        "SIGN_RATTLE",
+        "CHAIN_CREAK"
+      ]
+    },
+    "biomeSoundscapes": {
+      "FOREST": [
+        "WIND_LEAF",
+        "BIRD_DAY",
+        "INSECT_DAY",
+        "WOOD_CREAK_SCATTER"
+      ],
+      "SNOW": [
+        "WIND_COLD",
+        "DISTANT_CROW",
+        "SNOW_HUSH"
+      ],
+      "DESERT": [
+        "WIND_DRY",
+        "INSECT_DRY",
+        "SAND_GRAIN_SCATTER"
+      ],
+      "SWAMP": [
+        "FROG",
+        "INSECT_SWARM",
+        "WATER_BUBBLE",
+        "REED_RUSTLE"
+      ],
+      "CAVE": [
+        "WATER_DRIP",
+        "CAVE_AIR",
+        "BAT_SCATTER",
+        "STONE_ECHO"
+      ],
+      "COAST": [
+        "SURF_NEAR",
+        "SURF_DISTANT",
+        "GULL",
+        "COAST_WIND"
+      ],
+      "VILLAGE": [
+        "WIND_SOFT",
+        "DISTANT_VOICE",
+        "ANIMAL_YARD",
+        "CART_WHEEL",
+        "TOOL_WORK"
+      ],
+      "CITY": [
+        "DISTANT_VOICE",
+        "FOOTSTEP_SCATTER",
+        "CART_WHEEL",
+        "MACHINE_HUM",
+        "SIGN_RATTLE"
+      ],
+      "RUINS": [
+        "WIND_RUIN",
+        "DISTANT_CROW",
+        "STONE_RATTLE",
+        "CLOTH_FLAP"
+      ],
+      "DUNGEON": [
+        "WATER_DRIP",
+        "CHAIN_CREAK",
+        "TORCH_BURN",
+        "STONE_ECHO"
+      ]
+    },
+    "actualAudioAssetCountFromThisContract": 0,
+    "actualAudioAssetRequiredBeforePlayback": true,
+    "singleLoopOnlyForbidden": true,
+    "audioPlaybackAuthority": false,
+    "mixAuthority": false,
+    "productionVerified": false
+  },
+  "seedDerivedInternalAssetIdeas": {
+    "version": 1,
+    "sourceSeedId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+    "sourceEvidence": "CURRENT_COMPANY_LIBRARY_INTENDED_CONSUMER_REFERENCE",
+    "rule": "COMMON_PRESENTATION_IDEAS_ONLY_NO_GAMEPLAY_COPY",
+    "gapsObserved": [
+      "ENVIRONMENT",
+      "ITEM",
+      "WORLD_PROP",
+      "UI_MENU",
+      "AMBIENT_AUDIO_LINKAGE"
+    ],
+    "environmentBackgrounds": [
+      "STARFALL_RUIN_FIELD",
+      "WIND_CUT_HIGHLAND",
+      "STORM_COAST",
+      "ECLIPSE_VALLEY",
+      "FOG_MARSH",
+      "WHITE_NIGHT_TUNDRA",
+      "CAVE_RELAY_OUTPOST",
+      "CRASHED_MACHINE_SITE"
+    ],
+    "items": [
+      "WEATHER_CLOAK_VISUAL",
+      "FIELD_REPAIR_KIT",
+      "SIGNAL_BEACON_ITEM",
+      "RELIC_FRAGMENT",
+      "FIELD_RATION",
+      "EMERGENCY_LANTERN",
+      "ROPE_KIT",
+      "COMPASS_TOOL",
+      "POWER_CELL",
+      "LORE_TABLET"
+    ],
+    "props": [
+      "WEATHER_STATION",
+      "BROKEN_RELAY_TOWER",
+      "GENERATOR",
+      "CABLE_REEL",
+      "SUPPLY_CRATE",
+      "COLLAPSED_BRIDGE",
+      "WARNING_SIGN",
+      "CAMP_TARP",
+      "STAR_MAP_TABLE",
+      "SALVAGE_PILE"
+    ],
+    "characters": [
+      "SURVIVOR_SCOUT",
+      "FIELD_ENGINEER",
+      "MEDIC_SUPPORT",
+      "RELIC_RESEARCHER",
+      "WANDERER_TRADER",
+      "ARMORED_SCAVENGER"
+    ],
+    "menus": [
+      "RUN_LOADOUT",
+      "WEATHER_WARNING",
+      "REGION_STATE",
+      "SALVAGE_COMPARE",
+      "CAMP_MANAGEMENT",
+      "RELIC_CODEX",
+      "ROUTE_CHOICE",
+      "COMPANION_COMMAND",
+      "AUDIO_ACCESSIBILITY",
+      "ENVIRONMENT_ACCESSIBILITY"
+    ],
+    "ambientAudio": [
+      "WIND_LAYERED",
+      "INSECT_SCATTER",
+      "WILDLIFE_DISTANCE",
+      "GENERATOR_HUM",
+      "RADIO_STATIC",
+      "THUNDER_NEAR_FAR",
+      "RUIN_CREAK",
+      "CLOTH_FLAP",
+      "TOOL_WORK"
+    ],
+    "coupling": [
+      "ENVIRONMENT_STATE>SKY_BACKGROUND>SURFACE_RESPONSE>SOUNDSCAPE>OPTIONAL_UI_CUE",
+      "BIOME>WILDLIFE_AUDIO>PROP_SET>CHARACTER_WARDROBE",
+      "WIND>FOLIAGE_CLOTH_PROP_MOTION>WIND_AUDIO_LAYER",
+      "MACHINE_PROP>MACHINE_SOUND_ROLE>DISTANCE_OCCLUSION>INTERACTION_ONE_SHOT",
+      "ECLIPSE>CELESTIAL_BACKGROUND>AMBIENT_HUSH>WILDLIFE_SILENCE_TRANSITION",
+      "RAIN_OR_SNOW>BACKGROUND_VISIBILITY>SURFACE_PRESENTATION>FOOTSTEP_MATERIAL_AUDIO_ROLE"
+    ],
+    "gameplayAuthority": false,
+    "balanceAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
