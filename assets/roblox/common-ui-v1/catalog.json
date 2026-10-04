@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -1974,9 +1974,199 @@
         "RUN",
         "SPRINT"
       ]
+    },
+    {
+      "atomId": "PARRY_TIMING_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateParryTimingIndicator",
+      "role": "PARRY_TIMING_INDICATOR",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "READY",
+        "WINDOW",
+        "PERFECT",
+        "CLOSED"
+      ]
+    },
+    {
+      "atomId": "GUARD_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGuardMeter",
+      "role": "GUARD_METER",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "NORMAL",
+        "LOW",
+        "BROKEN",
+        "RECOVERING"
+      ]
+    },
+    {
+      "atomId": "GUARD_BREAK_WARNING",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGuardBreakWarning",
+      "role": "GUARD_BREAK_WARNING",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "WARNING",
+        "BROKEN",
+        "RECOVERING"
+      ]
+    },
+    {
+      "atomId": "COUNTER_READY_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCounterReadyIndicator",
+      "role": "COUNTER_READY_INDICATOR",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "CLOSED",
+        "READY",
+        "EXPIRED"
+      ]
+    },
+    {
+      "atomId": "ATTACK_TELEGRAPH_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAttackTelegraphIndicator",
+      "role": "ATTACK_TELEGRAPH_INDICATOR",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "WARNING",
+        "IMMINENT",
+        "UNPARRYABLE_PRESENTATION"
+      ]
+    },
+    {
+      "atomId": "WORLD_PROP_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateWorldPropInteractionPrompt",
+      "role": "WORLD_PROP_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "FOCUSED",
+        "BLOCKED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "WORLD_PROP_ACTION_WHEEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateWorldPropActionWheel",
+      "role": "WORLD_PROP_ACTION_WHEEL",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "OPEN",
+        "SELECTED",
+        "DISABLED",
+        "CANCEL"
+      ]
+    },
+    {
+      "atomId": "INTERACTION_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInteractionProgress",
+      "role": "INTERACTION_PROGRESS",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "IDLE",
+        "ACTIVE",
+        "PAUSED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "INTERACTION_STATE_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInteractionStateCard",
+      "role": "INTERACTION_STATE_CARD",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "IN_USE",
+        "BLOCKED",
+        "RESULT"
+      ]
+    },
+    {
+      "atomId": "SEAT_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSeatInteractionPrompt",
+      "role": "SEAT_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "BED_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBedInteractionPrompt",
+      "role": "BED_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "BOUND",
+        "OCCUPIED",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "HARVEST_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateHarvestInteractionPrompt",
+      "role": "HARVEST_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "NEEDS_TOOL",
+        "DEPLETED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "CONTAINER_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateContainerInteractionPrompt",
+      "role": "CONTAINER_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "LOCKED",
+        "EMPTY",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "LIGHT_CONTROL_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLightControlPrompt",
+      "role": "LIGHT_CONTROL_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "ON",
+        "OFF",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "READ_INSPECT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateReadInspectPanel",
+      "role": "READ_INSPECT_PANEL",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "UNREAD",
+        "READ",
+        "DISCOVERED",
+        "RELATED"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·아이템·하우징·AI동료/NPC·탑승 시스템 154종 v8",
+  "title": "Roblox 회사 공용 UI·아이템·하우징·AI/NPC·탑승·전투상호작용 시스템 169종 v9",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -2081,7 +2271,9 @@
     "MOUNT_COMMAND",
     "MOUNT_CARGO",
     "MOUNT_STATUS",
-    "TRAVEL"
+    "TRAVEL",
+    "PARRY_FEEDBACK",
+    "WORLD_PROP_INTERACTION"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -2262,7 +2454,7 @@
   ],
   "deepSystemContract": {
     "version": 1,
-    "componentCount": 100,
+    "componentCount": 115,
     "requiredFlows": [
       "PICKUP>NEW_STATE>DETAIL>USE_OR_EQUIP",
       "DETAIL>COMPARE>SET_SOCKET_UPGRADE",
@@ -2289,7 +2481,9 @@
     "networkAuthority": false,
     "housingSandboxComponentCount": 24,
     "aiNpcInteractionComponentCount": 24,
-    "mountTravelComponentCount": 22
+    "mountTravelComponentCount": 22,
+    "parryPresentationComponentCount": 5,
+    "worldInteractionComponentCount": 10
   },
   "housingSandboxContract": {
     "version": 1,
@@ -2368,5 +2562,72 @@
     "cargoAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false
+  },
+  "parryPresentationContract": {
+    "version": 1,
+    "components": [
+      "PARRY_TIMING_INDICATOR",
+      "GUARD_METER",
+      "GUARD_BREAK_WARNING",
+      "COUNTER_READY_INDICATOR",
+      "ATTACK_TELEGRAPH_INDICATOR"
+    ],
+    "states": [
+      "NORMAL_BLOCK",
+      "PERFECT_PARRY",
+      "GUARD_BREAK",
+      "COUNTER_READY",
+      "ATTACK_TELEGRAPH"
+    ],
+    "reducedMotionSafe": true,
+    "colorOnlyStateForbidden": true,
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "staminaAuthority": false,
+    "stunAuthority": false
+  },
+  "worldPropInteractionContract": {
+    "version": 1,
+    "components": [
+      "WORLD_PROP_INTERACTION_PROMPT",
+      "WORLD_PROP_ACTION_WHEEL",
+      "INTERACTION_PROGRESS",
+      "INTERACTION_STATE_CARD",
+      "SEAT_INTERACTION_PROMPT",
+      "BED_INTERACTION_PROMPT",
+      "HARVEST_INTERACTION_PROMPT",
+      "CONTAINER_INTERACTION_PROMPT",
+      "LIGHT_CONTROL_PROMPT",
+      "READ_INSPECT_PANEL"
+    ],
+    "actions": [
+      "INSPECT",
+      "READ",
+      "OPEN",
+      "STORAGE",
+      "SIT",
+      "SLEEP",
+      "CRAFT",
+      "COOK",
+      "PLANT",
+      "HARVEST",
+      "FEED",
+      "TOGGLE",
+      "SHOP",
+      "PLACE",
+      "VAULT",
+      "DRAW_WATER",
+      "USE_CONTROL"
+    ],
+    "inputModes": [
+      "TOUCH",
+      "KEYBOARD_MOUSE",
+      "GAMEPAD"
+    ],
+    "interactionAuthority": false,
+    "storageAuthority": false,
+    "craftingAuthority": false,
+    "farmingAuthority": false,
+    "respawnAuthority": false
   }
 }
