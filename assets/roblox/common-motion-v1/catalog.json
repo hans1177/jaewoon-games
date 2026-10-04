@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 6,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -102,6 +102,748 @@
       "duration": 1.65,
       "source": "RobloxCommonMotion.luau",
       "productionVerified": false
+    },
+    {
+      "atomId": "BLOCK_RAISE",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.24,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "BLOCK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "BLOCK_HOLD",
+      "priority": "Action2",
+      "looped": true,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "BLOCK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PARRY_PERFECT",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.32,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "PARRY",
+      "productionVerified": false
+    },
+    {
+      "atomId": "GUARD_BREAK",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.7,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "GUARD_BREAK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "COUNTER_READY",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.42,
+      "source": "RobloxCommonMotion.luau",
+      "combatRole": "COUNTER_READY",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SPRINT",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.48,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SPRINT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CROUCH_IDLE",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.4,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CROUCH",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DODGE_LEFT",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.46,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "DODGE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DODGE_RIGHT",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.46,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "DODGE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "ROLL_FORWARD",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.62,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "ROLL",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CLIMB_LOOP",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CLIMB",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SWIM_FORWARD",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SWIM",
+      "productionVerified": false
+    },
+    {
+      "atomId": "INTERACT_USE",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.55,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "INTERACT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "GATHER_SWING",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.74,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "GATHER",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CRAFT_LOOP",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.25,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CRAFT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CARRY_IDLE",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.6,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CARRY",
+      "productionVerified": false
+    },
+    {
+      "atomId": "EQUIP_DRAW",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.52,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "EQUIP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "UNEQUIP_STOW",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.52,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "UNEQUIP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "USE_CONSUMABLE",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.78,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "USE_CONSUMABLE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DOWNED_IDLE",
+      "priority": "Action3",
+      "looped": true,
+      "duration": 1.5,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "DOWNED",
+      "productionVerified": false
+    },
+    {
+      "atomId": "REVIVE_HELP",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 1.05,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "REVIVE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "EMOTE_WAVE",
+      "priority": "Action",
+      "looped": false,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "EMOTE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LIGHT_ATTACK_1",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.46,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LIGHT_ATTACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "HEAVY_ATTACK_1",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.88,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "HEAVY_ATTACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "RANGED_DRAW_SHOT",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.82,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "RANGED_ATTACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CAST_BURST",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CAST",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CHANNEL_LOOP",
+      "priority": "Action3",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CHANNEL",
+      "productionVerified": false
+    },
+    {
+      "atomId": "HIT_BACK",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.55,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "HIT_BACK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "BLEND_NEUTRAL",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.24,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "BLEND",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SIT_DOWN",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.75,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SIT_DOWN",
+      "productionVerified": false
+    },
+    {
+      "atomId": "STAND_UP",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "STAND_UP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LEAN_WALL_IDLE",
+      "priority": "Idle",
+      "looped": true,
+      "duration": 1.8,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LEAN",
+      "productionVerified": false
+    },
+    {
+      "atomId": "OPEN_DOOR",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.75,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "OPEN_DOOR",
+      "productionVerified": false
+    },
+    {
+      "atomId": "OPEN_CONTAINER",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.68,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "OPEN_CONTAINER",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PICKUP_GROUND",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PICKUP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PLACE_GROUND",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PLACE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PUSH_OBJECT",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PUSH",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PULL_OBJECT",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PULL",
+      "productionVerified": false
+    },
+    {
+      "atomId": "TALK_GESTURE",
+      "priority": "Action",
+      "looped": false,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "TALK_GESTURE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "NPC_WORK_LOOP",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.4,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "NPC_WORK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "COOK_LOOP",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.3,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "COOK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FARM_TEND",
+      "priority": "Action2",
+      "looped": true,
+      "duration": 1.15,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "FARM",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FISH_CAST",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "FISH",
+      "productionVerified": false
+    },
+    {
+      "atomId": "BED_LIE_DOWN",
+      "priority": "Action",
+      "looped": false,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "BED",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LADDER_ENTER",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.6,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LADDER_ENTER",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LADDER_EXIT",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.65,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LADDER_EXIT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SLOPE_ASCEND",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.9,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SLOPE_ASCEND",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SLOPE_DESCEND",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.9,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SLOPE_DESCEND",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FATIGUED_IDLE",
+      "priority": "Idle",
+      "looped": true,
+      "duration": 1.8,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "FATIGUE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "INJURED_WALK",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.15,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "INJURY",
+      "productionVerified": false
+    }
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "IDLE",
+      "WALK",
+      "JOG",
+      "RUN",
+      "SPRINT",
+      "START",
+      "STOP",
+      "TURN",
+      "JUMP",
+      "LAND",
+      "CROUCH",
+      "CLIMB",
+      "SWIM",
+      "DODGE",
+      "ROLL",
+      "BLOCK",
+      "PARRY",
+      "LIGHT_ATTACK",
+      "HEAVY_ATTACK",
+      "RANGED_ATTACK",
+      "CAST",
+      "CHANNEL",
+      "INTERACT",
+      "GATHER",
+      "CRAFT",
+      "CARRY",
+      "EQUIP",
+      "UNEQUIP",
+      "USE_CONSUMABLE",
+      "HIT_FRONT",
+      "HIT_BACK",
+      "DOWNED",
+      "REVIVE",
+      "DEATH",
+      "EMOTE",
+      "BLEND",
+      "MOTION_LOD",
+      "SIT_STAND",
+      "LEAN",
+      "OPEN_CLOSE",
+      "PICK_PLACE",
+      "PUSH_PULL",
+      "DIALOGUE_GESTURE",
+      "NPC_WORK",
+      "COOK",
+      "FARM",
+      "FISH",
+      "BED",
+      "LADDER_ENTRY_EXIT",
+      "SLOPE",
+      "FATIGUE",
+      "INJURY"
+    ],
+    "currentDeclaredComponents": [
+      "IDLE_RELAXED",
+      "WALK",
+      "JOG",
+      "RUN",
+      "START",
+      "STOP",
+      "TURN_90",
+      "JUMP_START",
+      "LAND",
+      "HIT_FRONT",
+      "DEATH_FRONT",
+      "BLOCK_RAISE",
+      "BLOCK_HOLD",
+      "PARRY_PERFECT",
+      "GUARD_BREAK",
+      "COUNTER_READY",
+      "SPRINT",
+      "CROUCH_IDLE",
+      "DODGE_LEFT",
+      "DODGE_RIGHT",
+      "ROLL_FORWARD",
+      "CLIMB_LOOP",
+      "SWIM_FORWARD",
+      "INTERACT_USE",
+      "GATHER_SWING",
+      "CRAFT_LOOP",
+      "CARRY_IDLE",
+      "EQUIP_DRAW",
+      "UNEQUIP_STOW",
+      "USE_CONSUMABLE",
+      "DOWNED_IDLE",
+      "REVIVE_HELP",
+      "EMOTE_WAVE",
+      "LIGHT_ATTACK_1",
+      "HEAVY_ATTACK_1",
+      "RANGED_DRAW_SHOT",
+      "CAST_BURST",
+      "CHANNEL_LOOP",
+      "HIT_BACK",
+      "BLEND_NEUTRAL",
+      "MOTION_LOD",
+      "SIT_DOWN",
+      "STAND_UP",
+      "LEAN_WALL_IDLE",
+      "OPEN_DOOR",
+      "OPEN_CONTAINER",
+      "PICKUP_GROUND",
+      "PLACE_GROUND",
+      "PUSH_OBJECT",
+      "PULL_OBJECT",
+      "TALK_GESTURE",
+      "NPC_WORK_LOOP",
+      "COOK_LOOP",
+      "FARM_TEND",
+      "FISH_CAST",
+      "BED_LIE_DOWN",
+      "LADDER_ENTER",
+      "LADDER_EXIT",
+      "SLOPE_ASCEND",
+      "SLOPE_DESCEND",
+      "FATIGUED_IDLE",
+      "INJURED_WALK"
+    ],
+    "currentAssetCount": 61,
+    "missingComponentCandidates": [],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  },
+  "internalAssetStandard": {
+    "version": 1,
+    "routineReviewContract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT",
+    "genreExpectations": "assets/vibe-studio-asset-universe.js#COMMON_GENRE_SYSTEM_EXPECTATIONS",
+    "crossPackAudit": "assets/vibe-studio-asset-universe.js#auditCommonLibrarySystemDepth",
+    "companyLibrary": "company-asset-library.json",
+    "flowExcluded": true,
+    "workflowExcluded": true,
+    "queueExcluded": true,
+    "schedulerExcluded": true,
+    "deploymentExcluded": true,
+    "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "parryPresentationContract": {
+    "version": 1,
+    "referenceRule": "PRECISION_BLOCK_PARRY_FEEDBACK_COMMON_PRINCIPLES_ONLY_NO_TIMING_OR_DAMAGE_COPY",
+    "states": [
+      "BLOCK_RAISE",
+      "BLOCK_HOLD",
+      "PARRY_PERFECT",
+      "GUARD_BREAK",
+      "COUNTER_READY"
+    ],
+    "expectedPresentation": [
+      "ATTACK_TELEGRAPH",
+      "GUARD_POSE",
+      "PERFECT_CONTACT_POSE",
+      "IMPACT_RECOIL",
+      "COUNTER_WINDOW_CUE",
+      "GUARD_BREAK_RECOVERY"
+    ],
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "stunAuthority": false,
+    "staminaAuthority": false,
+    "counterDamageAuthority": false,
+    "networkAuthority": false
+  },
+  "motionVarietyContract": {
+    "version": 2,
+    "groups": {
+      "locomotion": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "SPRINT",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "CROUCH_IDLE"
+      ],
+      "traversal": [
+        "CLIMB_LOOP",
+        "SWIM_FORWARD",
+        "DODGE_LEFT",
+        "DODGE_RIGHT",
+        "ROLL_FORWARD",
+        "LADDER_ENTER",
+        "LADDER_EXIT",
+        "SLOPE_ASCEND",
+        "SLOPE_DESCEND"
+      ],
+      "defense": [
+        "BLOCK_RAISE",
+        "BLOCK_HOLD",
+        "PARRY_PERFECT",
+        "GUARD_BREAK",
+        "COUNTER_READY"
+      ],
+      "utility": [
+        "INTERACT_USE",
+        "GATHER_SWING",
+        "CRAFT_LOOP",
+        "CARRY_IDLE",
+        "EQUIP_DRAW",
+        "UNEQUIP_STOW",
+        "USE_CONSUMABLE"
+      ],
+      "recovery": [
+        "HIT_FRONT",
+        "DOWNED_IDLE",
+        "REVIVE_HELP",
+        "DEATH_FRONT"
+      ],
+      "social": [
+        "EMOTE_WAVE"
+      ],
+      "combat": [
+        "LIGHT_ATTACK_1",
+        "HEAVY_ATTACK_1",
+        "RANGED_DRAW_SHOT",
+        "BLOCK_RAISE",
+        "BLOCK_HOLD",
+        "PARRY_PERFECT",
+        "GUARD_BREAK",
+        "COUNTER_READY"
+      ],
+      "magic": [
+        "CAST_BURST",
+        "CHANNEL_LOOP"
+      ],
+      "reaction": [
+        "HIT_FRONT",
+        "HIT_BACK",
+        "DOWNED_IDLE",
+        "REVIVE_HELP",
+        "DEATH_FRONT"
+      ],
+      "transition": [
+        "BLEND_NEUTRAL"
+      ],
+      "dailyLiving": [
+        "SIT_DOWN",
+        "STAND_UP",
+        "LEAN_WALL_IDLE",
+        "OPEN_DOOR",
+        "OPEN_CONTAINER",
+        "PICKUP_GROUND",
+        "PLACE_GROUND",
+        "BED_LIE_DOWN"
+      ],
+      "worldInteraction": [
+        "PUSH_OBJECT",
+        "PULL_OBJECT",
+        "FISH_CAST"
+      ],
+      "npcWork": [
+        "TALK_GESTURE",
+        "NPC_WORK_LOOP",
+        "COOK_LOOP",
+        "FARM_TEND"
+      ],
+      "condition": [
+        "FATIGUED_IDLE",
+        "INJURED_WALK"
+      ]
+    },
+    "rootMotionAuthority": false,
+    "gameplayMovementAuthority": false,
+    "combatTimingAuthority": false,
+    "lifeActionAuthority": false,
+    "npcTaskAuthority": false
+  },
+  "motionLodProfiles": [
+    {
+      "id": "MOTION_LOD_FULL",
+      "cameraUse": "NEAR_GAMEPLAY",
+      "sampleDensity": "FULL",
+      "secondaryMotion": "FULL"
+    },
+    {
+      "id": "MOTION_LOD_MEDIUM",
+      "cameraUse": "MID_DISTANCE",
+      "sampleDensity": "REDUCED",
+      "secondaryMotion": "REDUCED"
+    },
+    {
+      "id": "MOTION_LOD_MINIMAL",
+      "cameraUse": "FAR_BACKGROUND",
+      "sampleDensity": "MINIMAL",
+      "secondaryMotion": "OFF"
     }
   ]
 }

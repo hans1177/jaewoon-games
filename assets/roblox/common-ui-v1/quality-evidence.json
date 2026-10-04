@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 8,
   "packId": "roblox-common-ui-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -92,7 +92,21 @@
     "fullScreens": "인벤토리·장비·캐릭터·지도·퀘스트·제작·상점의 전체창 공통 골격",
     "stateFeedback": "로딩·빈화면·실패·잠김을 색상 외 텍스트/형태/행동으로 구분",
     "inputSwitch": "터치·키보드/마우스·게임패드 힌트와 포커스 경로 지원",
-    "transition": "SIMPLE_FADE 중심, 포커스·뒤로가기 스택·정보 위계 보존"
+    "transition": "SIMPLE_FADE 중심, 포커스·뒤로가기 스택·정보 위계 보존",
+    "itemDepth": "상세·비교·상태배지·컨텍스트 액션·스택분할·획득처/사용처",
+    "inventoryDepth": "중첩 컨테이너·무게·용량·보관함·다중선택·최근획득",
+    "lootDepth": "루팅창·모두획득·희귀도 피드·최근획득",
+    "equipmentDepth": "장비비교·로드아웃·세트·소켓/인챈트·강화·수리·분해",
+    "actionDepth": "퀵슬롯·원형메뉴·입력모드 전환·게임패드 포커스",
+    "craftingDepth": "제작트리·제작법 상세·대체재료·재료추적",
+    "tradeDepth": "구매/판매·장바구니·되사기",
+    "discoveryDepth": "도감·신규표시·수집률·획득처/사용처 연결",
+    "housing": "건축 목록·배치 고스트·스냅·안정성·티어·유효성",
+    "sandbox": "이동·회전·복사·삭제·그리드/스냅·재질·블루프린트·되돌리기",
+    "management": "소유/권한·수리·철거·유지/부식·침대/리스폰·방 상태",
+    "settlement": "가구·정착지 요약·농사·동물·가공 설비",
+    "parry": "공격예고·가드·완벽패링·가드붕괴·반격가능을 색상 외 형태/텍스트/VFX와 연결",
+    "worldInteraction": "소품 조사·읽기·열기·앉기·침대·채집·보관·조명 등 컨텍스트 상호작용"
   },
   "legacyStaticAuthoringChecklist": {
     "score": 100,
@@ -111,12 +125,52 @@
   "internalAuditDoesNotRequireStudio": true,
   "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 54,
+  "sourceAssetCount": 204,
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
-    "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit."
+    "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit.",
+    "checks": {
+      "twoHundredFourReusableCurrentAtoms": true,
+      "inventoryAndMenuDepthExpanded": true,
+      "equipmentCraftTradeQuestDepthExpanded": true,
+      "combatHudDepthExpanded": true,
+      "housingFarmingDepthExpanded": true,
+      "accessibilityRecoveryDepthExpanded": true,
+      "looseVolumeAutomationBound": true,
+      "gameplayAuthorityFalse": true
+    }
   },
-  "fullScreenSurfaceCount": 15
+  "fullScreenSurfaceCount": 15,
+  "deepSystemComponentCount": 150,
+  "housingSandboxComponentCount": 24,
+  "parryPresentationComponentCount": 5,
+  "worldInteractionComponentCount": 10,
+  "subsystemDepthExpansionCount": 35,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 169,
+    "currentCount": 204,
+    "addedCount": 35,
+    "focus": [
+      "INVENTORY_ITEM_MANAGEMENT",
+      "MENU_NAVIGATION",
+      "EQUIPMENT_LOADOUT",
+      "CRAFTING_UPGRADE",
+      "SHOP_TRADE",
+      "QUEST_CODEX",
+      "NPC_RELATIONSHIP",
+      "PARTY_COMPANION",
+      "MOUNT_TRAVEL",
+      "COMBAT_HUD",
+      "HOUSING_SANDBOX",
+      "FARMING_SETTLEMENT",
+      "ACCESSIBILITY_INPUT",
+      "LOADING_ERROR_STATE",
+      "MOBILE_ONE_HAND"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  }
 }

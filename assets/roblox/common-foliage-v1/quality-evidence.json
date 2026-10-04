@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-foliage-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -8,7 +8,6 @@
     "score": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
-      "eightReusableEnvironmentAssets": true,
       "companyCommonBase": true,
       "currentRobloxGameNeedsMapped": true,
       "paletteAdaptation": true,
@@ -17,7 +16,10 @@
       "mobileFriendlyPartCounts": true,
       "gameplayAuthorityFalse": true,
       "harvestingDropsCollisionSaveNetworkUntouched": true,
-      "runtimeVerificationNotClaimed": true
+      "runtimeVerificationNotClaimed": true,
+      "eighteenReusableEnvironmentAssets": true,
+      "biomeSeasonWindLodVariants": true,
+      "companySeedCrossGenreComposition": true
     }
   },
   "runtimeQuality": {
@@ -25,5 +27,25 @@
     "requiredBeforeProductionVerified": true,
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
+  },
+  "sourceAssetCount": 18,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 8,
+    "currentCount": 18,
+    "addedRoles": [
+      "BROADLEAF_TREE",
+      "VINE",
+      "REED",
+      "MOSS",
+      "MUSHROOM",
+      "ROOT",
+      "BIOME_VARIANT",
+      "SEASON_VARIANT",
+      "WIND_VARIANT",
+      "LOD"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
   }
 }

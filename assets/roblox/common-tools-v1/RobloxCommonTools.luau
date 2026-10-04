@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-tools-v1/RobloxCommonTools.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 무기/도구 비주얼 8종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 무기/도구 비주얼 20종 생성
 -- 원칙: 순수 표현 자산만 제공한다. 공격력/공속/채집량/내구도/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonTools = {}
@@ -47,6 +47,19 @@ local Catalog = table.freeze({
 		id = "SHIELD", name = "방패", familyRootId = "TOOL_SHIELD", family = "WEAPON", subfamily = "SHIELD", toolRole = "DEFENSIVE_VISUAL",
 		silhouette = "KITE_PLATE_RIM_BOSS", palette = table.freeze({metal=c(101,107,110), edge=c(166,172,174), wood=c(94,67,48), accent=c(181,137,56)}),
 	}),
+
+	GREATSWORD = table.freeze({id="GREATSWORD",name="대검",familyRootId="TOOL_GREATSWORD",family="WEAPON",subfamily="TWO_HAND_BLADE",toolRole="HEAVY_MELEE",motionProfile="HEAVY_ATTACK_1",impactProfile="SLASH_HEAVY",trailProfile="TRAIL_WIDE",skillFamily="WEAPON_ARC",physicsFeel="HEAVY",silhouette="LONG_WIDE_TWO_HAND_BLADE",palette=table.freeze({metal=c(143,149,153),edge=c(217,222,224),dark=c(53,57,60),grip=c(78,56,44),accent=c(171,125,58)})}),
+	DAGGER = table.freeze({id="DAGGER",name="단검",familyRootId="TOOL_DAGGER",family="WEAPON",subfamily="DAGGER",toolRole="FAST_MELEE",motionProfile="LIGHT_ATTACK_1",impactProfile="PIERCE_LIGHT",trailProfile="TRAIL_THIN",skillFamily="DASH_STRIKE",physicsFeel="LIGHT",silhouette="SHORT_TAPERED_BLADE",palette=table.freeze({metal=c(165,171,174),edge=c(228,231,231),dark=c(55,58,60),grip=c(79,54,43),accent=c(160,119,57)})}),
+	MACE = table.freeze({id="MACE",name="철퇴",familyRootId="TOOL_MACE",family="WEAPON",subfamily="HAMMER_MACE",toolRole="BLUNT_MELEE",motionProfile="HEAVY_ATTACK_1",impactProfile="BLUNT_HEAVY",trailProfile="TRAIL_SHORT",skillFamily="GROUND_IMPACT",physicsFeel="HEAVY",silhouette="FLANGED_HEAD_SHORT_SHAFT",palette=table.freeze({metal=c(105,110,113),edge=c(163,169,171),shaft=c(84,62,47),accent=c(153,107,55)})}),
+	CROSSBOW = table.freeze({id="CROSSBOW",name="석궁",familyRootId="TOOL_CROSSBOW",family="WEAPON",subfamily="CROSSBOW",toolRole="RANGED",motionProfile="RANGED_DRAW_SHOT",impactProfile="PIERCE_RANGED",trailProfile="PROJECTILE_STREAK",skillFamily="PROJECTILE",physicsFeel="MEDIUM",silhouette="HORIZONTAL_LIMBS_STOCK",palette=table.freeze({wood=c(104,72,48),woodLight=c(157,111,68),metal=c(113,120,122),string=c(212,202,179),accent=c(164,121,60)})}),
+	DUAL_BLADES = table.freeze({id="DUAL_BLADES",name="쌍검",familyRootId="TOOL_DUAL_BLADES",family="WEAPON",subfamily="DUAL_WIELD_PAIR",toolRole="FAST_MELEE",motionProfile="LIGHT_ATTACK_1",impactProfile="SLASH_FAST",trailProfile="TRAIL_DOUBLE",skillFamily="DASH_STRIKE",physicsFeel="LIGHT",silhouette="TWIN_SHORT_CURVED_BLADES",palette=table.freeze({metal=c(157,165,169),edge=c(224,228,229),dark=c(50,54,56),grip=c(78,54,42),accent=c(174,128,61)})}),
+	THROWING_KNIFE = table.freeze({id="THROWING_KNIFE",name="투척 단검",familyRootId="TOOL_THROWING_KNIFE",family="WEAPON",subfamily="THROWN",toolRole="THROWN",motionProfile="RANGED_DRAW_SHOT",impactProfile="PIERCE_LIGHT",trailProfile="PROJECTILE_STREAK",skillFamily="PROJECTILE",physicsFeel="LIGHT",silhouette="BALANCED_THROWING_BLADE",palette=table.freeze({metal=c(161,168,171),edge=c(225,229,230),dark=c(56,59,60),grip=c(86,62,46),accent=c(162,120,58)})}),
+	GREAT_AXE = table.freeze({id="GREAT_AXE",name="대형 도끼",familyRootId="TOOL_GREAT_AXE",family="WEAPON",subfamily="GREAT_AXE",toolRole="HEAVY_MELEE",motionProfile="HEAVY_ATTACK_1",impactProfile="SLASH_HEAVY",trailProfile="TRAIL_WIDE",skillFamily="GROUND_IMPACT",physicsFeel="VERY_HEAVY",silhouette="TWO_HAND_DOUBLE_WEIGHT_AXE",palette=table.freeze({metal=c(112,119,122),edge=c(187,194,196),shaft=c(88,63,45),wrap=c(72,53,44),accent=c(149,99,47)})}),
+	WARHAMMER = table.freeze({id="WARHAMMER",name="전투망치",familyRootId="TOOL_WARHAMMER",family="WEAPON",subfamily="WARHAMMER",toolRole="HEAVY_MELEE",motionProfile="HEAVY_ATTACK_1",impactProfile="BLUNT_CRUSH",trailProfile="TRAIL_SHORT",skillFamily="GROUND_IMPACT",physicsFeel="VERY_HEAVY",silhouette="MASSIVE_HEAD_TWO_HAND_HANDLE",palette=table.freeze({metal=c(94,100,103),edge=c(151,158,160),shaft=c(82,59,44),accent=c(143,94,44)})}),
+	WAND = table.freeze({id="WAND",name="마법봉",familyRootId="TOOL_WAND",family="WEAPON",subfamily="MAGIC_FOCUS",toolRole="MAGIC_FOCUS",motionProfile="CAST_BURST",impactProfile="MAGIC_IMPACT",trailProfile="MAGIC_TRAIL",skillFamily="CAST_PROJECTILE",physicsFeel="ENERGY",silhouette="SHORT_FOCUS_CRYSTAL_TIP",palette=table.freeze({wood=c(78,57,45),woodLight=c(120,86,57),crystal=c(121,186,240),glow=c(176,229,255),metal=c(90,95,98)})}),
+	SCYTHE = table.freeze({id="SCYTHE",name="낫",familyRootId="TOOL_SCYTHE",family="WEAPON",subfamily="SCYTHE",toolRole="POLEARM",motionProfile="HEAVY_ATTACK_1",impactProfile="SLASH_ARC",trailProfile="TRAIL_WIDE",skillFamily="WEAPON_ARC",physicsFeel="MEDIUM_HEAVY",silhouette="LONG_SHAFT_CURVED_BLADE",palette=table.freeze({metal=c(130,136,140),edge=c(207,212,214),shaft=c(82,61,47),wrap=c(69,51,43),accent=c(150,106,54)})}),
+	CLUB = table.freeze({id="CLUB",name="곤봉",familyRootId="TOOL_CLUB",family="WEAPON",subfamily="CLUB",toolRole="BLUNT_MELEE",motionProfile="LIGHT_ATTACK_1",impactProfile="BLUNT_MEDIUM",trailProfile="TRAIL_SHORT",skillFamily="STAGGER_STRIKE",physicsFeel="MEDIUM",silhouette="THICK_TAPERED_CLUB",palette=table.freeze({wood=c(101,72,48),woodLight=c(151,108,67),dark=c(65,49,40),accent=c(130,91,48)})}),
+	JAVELIN = table.freeze({id="JAVELIN",name="투창",familyRootId="TOOL_JAVELIN",family="WEAPON",subfamily="THROWN",toolRole="POLEARM_THROWN",motionProfile="RANGED_DRAW_SHOT",impactProfile="PIERCE_HEAVY",trailProfile="PROJECTILE_STREAK",skillFamily="PROJECTILE",physicsFeel="MEDIUM",silhouette="LIGHT_SPEAR_THROWING_SHAFT",palette=table.freeze({metal=c(151,160,163),edge=c(214,220,221),shaft=c(96,69,47),wrap=c(76,57,46)})}),
 })
 
 local function makePart(name, size, color, material, shape)
@@ -228,6 +241,61 @@ local function addShield(model, root, row, level)
 	if detail(level,3) then weld(root,makePart("CenterRib",Vector3.new(0.18,2.82,0.48),p.metal,Enum.Material.Metal),CFrame.new(0,0.35,0)) end
 end
 
+
+local function addExtendedWeapon(model,root,row,level)
+	local p=row.palette
+	local id=row.id
+	if id=="GREATSWORD" then
+		weld(root,makePart("Grip",Vector3.new(0.42,2.0,0.42),p.grip,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,-1.5,0))
+		weld(root,makePart("Guard",Vector3.new(2.6,0.28,0.38),p.accent,Enum.Material.Metal),CFrame.new(0,-0.35,0))
+		weld(root,makePart("Blade",Vector3.new(0.82,4.8,0.26),p.metal,Enum.Material.Metal),CFrame.new(0,2.2,0))
+		weld(root,wedge("Tip",Vector3.new(0.82,1.15,0.26),p.edge,Enum.Material.Metal),CFrame.new(0,5.18,0))
+	elseif id=="DAGGER" or id=="THROWING_KNIFE" then
+		local gripColor=p.grip or p.dark
+		weld(root,makePart("Grip",Vector3.new(0.28,0.95,0.28),gripColor,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,-0.58,0))
+		weld(root,makePart("Guard",Vector3.new(0.95,0.16,0.24),p.accent or p.dark,Enum.Material.Metal),CFrame.new(0,-0.05,0))
+		weld(root,wedge("Blade",Vector3.new(0.42,2.0,0.18),p.metal,Enum.Material.Metal),CFrame.new(0,1.05,0))
+	elseif id=="MACE" then
+		weld(root,makePart("Handle",Vector3.new(0.34,3.15,0.34),p.shaft,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,-0.25,0))
+		weld(root,makePart("Head",Vector3.new(1.35,1.35,1.35),p.metal,Enum.Material.Metal,"BALL"),CFrame.new(0,1.75,0))
+		if detail(level,2) then for i=0,5 do local a=math.rad(i*60); weld(root,wedge("Flange"..i,Vector3.new(0.35,0.82,0.18),p.edge,Enum.Material.Metal),CFrame.new(math.cos(a)*0.78,1.75,math.sin(a)*0.78)*CFrame.Angles(0,-a,0)) end end
+	elseif id=="CROSSBOW" then
+		weld(root,makePart("Stock",Vector3.new(0.55,0.55,3.7),p.wood,Enum.Material.WoodPlanks),CFrame.new(0,0,0.35))
+		weld(root,makePart("Limb",Vector3.new(4.0,0.24,0.35),p.woodLight,Enum.Material.WoodPlanks),CFrame.new(0,0,-1.15))
+		weld(root,makePart("String",Vector3.new(3.9,0.05,0.05),p.string,Enum.Material.Fabric),CFrame.new(0,0,-0.85))
+		weld(root,makePart("Rail",Vector3.new(0.12,0.18,3.2),p.metal,Enum.Material.Metal),CFrame.new(0,0,-0.10))
+	elseif id=="DUAL_BLADES" then
+		for _,x in ipairs({-0.42,0.42}) do
+			weld(root,makePart("Grip"..x,Vector3.new(0.24,0.95,0.24),p.grip,Enum.Material.Wood,"CYLINDER"),CFrame.new(x,-0.72,0))
+			weld(root,wedge("Blade"..x,Vector3.new(0.38,2.3,0.18),p.metal,Enum.Material.Metal),CFrame.new(x,0.95,0)*CFrame.Angles(0,0,math.rad(x<0 and -5 or 5)))
+		end
+	elseif id=="GREAT_AXE" or id=="WARHAMMER" then
+		local shaft=p.shaft
+		weld(root,makePart("Handle",Vector3.new(0.42,5.2,0.42),shaft,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,-0.25,0))
+		if id=="GREAT_AXE" then
+			weld(root,wedge("HeadA",Vector3.new(2.15,1.95,0.55),p.metal,Enum.Material.Metal),CFrame.new(0.75,2.15,0)*CFrame.Angles(0,0,math.rad(-90)))
+			weld(root,wedge("HeadB",Vector3.new(1.45,1.55,0.48),p.edge,Enum.Material.Metal),CFrame.new(-0.65,2.15,0)*CFrame.Angles(0,math.rad(180),math.rad(-90)))
+		else
+			weld(root,makePart("Head",Vector3.new(2.85,1.45,1.45),p.metal,Enum.Material.Metal),CFrame.new(0,2.1,0))
+			if detail(level,2) then weld(root,makePart("Face",Vector3.new(0.22,1.60,1.60),p.edge,Enum.Material.Metal),CFrame.new(1.55,2.1,0)) end
+		end
+	elseif id=="WAND" then
+		weld(root,makePart("Shaft",Vector3.new(0.24,2.7,0.24),p.wood,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,0,0))
+		local gem=weld(root,wedge("Focus",Vector3.new(0.52,0.85,0.52),p.crystal,Enum.Material.Neon),CFrame.new(0,1.75,0))
+		gem.Transparency=0.08
+		if detail(level,2) then weld(root,makePart("Glow",Vector3.new(0.30,0.30,0.30),p.glow,Enum.Material.Neon,"BALL"),CFrame.new(0,1.82,0)) end
+	elseif id=="SCYTHE" then
+		weld(root,makePart("Shaft",Vector3.new(0.34,5.5,0.34),p.shaft,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,-0.15,0))
+		weld(root,wedge("Blade",Vector3.new(2.5,1.2,0.34),p.metal,Enum.Material.Metal),CFrame.new(0.95,2.1,0)*CFrame.Angles(0,0,math.rad(-72)))
+	elseif id=="CLUB" then
+		weld(root,makePart("Body",Vector3.new(0.75,3.7,0.75),p.wood,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,0.2,0))
+		weld(root,makePart("Head",Vector3.new(1.05,1.45,1.05),p.woodLight,Enum.Material.Wood,"BALL"),CFrame.new(0,1.95,0))
+	elseif id=="JAVELIN" then
+		weld(root,makePart("Shaft",Vector3.new(0.24,4.8,0.24),p.shaft,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,0,0))
+		weld(root,wedge("Head",Vector3.new(0.56,1.12,0.20),p.metal,Enum.Material.Metal),CFrame.new(0,3.0,0))
+	end
+end
+
 local BUILDERS=table.freeze({
 	SWORD=addSword,
 	SPEAR=addSpear,
@@ -237,12 +305,32 @@ local BUILDERS=table.freeze({
 	BOW=addBow,
 	STAFF=addStaff,
 	SHIELD=addShield,
+	GREATSWORD=addExtendedWeapon,
+	DAGGER=addExtendedWeapon,
+	MACE=addExtendedWeapon,
+	CROSSBOW=addExtendedWeapon,
+	DUAL_BLADES=addExtendedWeapon,
+	THROWING_KNIFE=addExtendedWeapon,
+	GREAT_AXE=addExtendedWeapon,
+	WARHAMMER=addExtendedWeapon,
+	WAND=addExtendedWeapon,
+	SCYTHE=addExtendedWeapon,
+	CLUB=addExtendedWeapon,
+	JAVELIN=addExtendedWeapon,
 })
 
 local function applyModelMetadata(model,row,quality)
 	model:SetAttribute("StudioAssetFamilyRootId",row.familyRootId)
 	model:SetAttribute("StudioAssetSubfamily",row.subfamily)
 	model:SetAttribute("StudioAssetToolRole",row.toolRole)
+	model:SetAttribute("CombatMotionProfile",row.motionProfile or "GAME_DEFINED")
+	model:SetAttribute("CombatImpactProfile",row.impactProfile or "GAME_DEFINED")
+	model:SetAttribute("CombatTrailProfile",row.trailProfile or "GAME_DEFINED")
+	model:SetAttribute("CombatSkillFamily",row.skillFamily or "GAME_DEFINED")
+	model:SetAttribute("CombatPhysicsFeel",row.physicsFeel or "GAME_DEFINED")
+	model:SetAttribute("OwnsDamageAuthority",false)
+	model:SetAttribute("OwnsHitboxAuthority",false)
+	model:SetAttribute("OwnsPhysicsImpulseAuthority",false)
 	model:SetAttribute("StudioAssetSilhouette",row.silhouette)
 	model:SetAttribute("StudioAssetQualityLevel",quality)
 	model:SetAttribute("StudioAssetQualityTarget",100)

@@ -1,7 +1,7 @@
 {
-  "version": 1,
+  "version": 3,
   "packId": "roblox-common-foliage-v1",
-  "title": "Roblox 회사 공용 초목/자연 환경 8종 v1",
+  "title": "Roblox 회사 공용 초목/자연 환경 18종 v3",
   "platform": "ROBLOX",
   "family": "ENVIRONMENT",
   "subfamily": "FOLIAGE_PACK",
@@ -76,6 +76,220 @@
       "subfamily": "DEAD_TREE",
       "environmentRole": "SILHOUETTE_TREE",
       "familyRootId": "FOLIAGE_DEAD_TREE"
+    },
+    {
+      "assetId": "BROADLEAF_TREE",
+      "name": "활엽수",
+      "subfamily": "BROADLEAF_TREE",
+      "environmentRole": "CANOPY_TREE",
+      "familyRootId": "FOLIAGE_BROADLEAF",
+      "systemRoles": [
+        "BROADLEAF_TREE"
+      ]
+    },
+    {
+      "assetId": "VINE_CLUSTER",
+      "name": "덩굴 군락",
+      "subfamily": "VINE",
+      "environmentRole": "CLIMBING_FOLIAGE",
+      "familyRootId": "FOLIAGE_VINE",
+      "systemRoles": [
+        "VINE"
+      ]
+    },
+    {
+      "assetId": "REED_PATCH",
+      "name": "갈대 군락",
+      "subfamily": "REED",
+      "environmentRole": "WETLAND_EDGE",
+      "familyRootId": "FOLIAGE_REED",
+      "systemRoles": [
+        "REED"
+      ]
+    },
+    {
+      "assetId": "MOSS_PATCH",
+      "name": "이끼 군락",
+      "subfamily": "MOSS",
+      "environmentRole": "GROUND_SURFACE",
+      "familyRootId": "FOLIAGE_MOSS",
+      "systemRoles": [
+        "MOSS"
+      ]
+    },
+    {
+      "assetId": "MUSHROOM_CLUSTER",
+      "name": "버섯 군락",
+      "subfamily": "MUSHROOM",
+      "environmentRole": "FOREST_FLOOR",
+      "familyRootId": "FOLIAGE_MUSHROOM",
+      "systemRoles": [
+        "MUSHROOM"
+      ]
+    },
+    {
+      "assetId": "ROOT_CLUSTER",
+      "name": "노출 뿌리 군락",
+      "subfamily": "ROOT",
+      "environmentRole": "ROOT_STRUCTURE",
+      "familyRootId": "FOLIAGE_ROOT",
+      "systemRoles": [
+        "ROOT"
+      ]
+    },
+    {
+      "assetId": "AUTUMN_TREE_VARIANT",
+      "name": "가을 활엽수 변형",
+      "subfamily": "SEASON_VARIANT",
+      "environmentRole": "SEASON_VARIANT",
+      "familyRootId": "FOLIAGE_SEASON_TREE",
+      "systemRoles": [
+        "SEASON_VARIANT",
+        "BIOME_VARIANT"
+      ]
+    },
+    {
+      "assetId": "WIND_BENT_TREE",
+      "name": "바람에 휜 나무",
+      "subfamily": "WIND_VARIANT",
+      "environmentRole": "WIND_VARIANT",
+      "familyRootId": "FOLIAGE_WIND_TREE",
+      "systemRoles": [
+        "WIND_VARIANT"
+      ]
+    },
+    {
+      "assetId": "BIOME_SHRUB_VARIANT",
+      "name": "바이옴 관목 변형",
+      "subfamily": "BIOME_VARIANT",
+      "environmentRole": "BIOME_VARIANT",
+      "familyRootId": "FOLIAGE_BIOME_SHRUB",
+      "systemRoles": [
+        "BIOME_VARIANT"
+      ]
+    },
+    {
+      "assetId": "LOD_FOLIAGE_PROXY",
+      "name": "원거리 식생 프록시",
+      "subfamily": "LOD",
+      "environmentRole": "LOD",
+      "familyRootId": "FOLIAGE_LOD",
+      "systemRoles": [
+        "LOD"
+      ]
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "GRASS",
+      "BUSH",
+      "FERN",
+      "FLOWER",
+      "STUMP",
+      "FALLEN_LOG",
+      "PINE_TREE",
+      "DEAD_TREE",
+      "BROADLEAF_TREE",
+      "VINE",
+      "REED",
+      "MOSS",
+      "MUSHROOM",
+      "ROOT",
+      "BIOME_VARIANT",
+      "SEASON_VARIANT",
+      "WIND_VARIANT",
+      "LOD"
+    ],
+    "currentDeclaredComponents": [
+      "GRASS",
+      "GROUND_COVER",
+      "BUSH",
+      "MIDGROUND_FOLIAGE",
+      "FERN",
+      "UNDERSTORY",
+      "FLOWER",
+      "GROUND_ACCENT",
+      "STUMP",
+      "NATURAL_PROP",
+      "FALLEN_LOG",
+      "NATURAL_PROP",
+      "PINE_TREE",
+      "CANOPY_TREE",
+      "DEAD_TREE",
+      "SILHOUETTE_TREE",
+      "BROADLEAF_TREE",
+      "CANOPY_TREE",
+      "BROADLEAF_TREE",
+      "VINE",
+      "CLIMBING_FOLIAGE",
+      "VINE",
+      "REED",
+      "WETLAND_EDGE",
+      "REED",
+      "MOSS",
+      "GROUND_SURFACE",
+      "MOSS",
+      "MUSHROOM",
+      "FOREST_FLOOR",
+      "MUSHROOM",
+      "ROOT",
+      "ROOT_STRUCTURE",
+      "ROOT",
+      "SEASON_VARIANT",
+      "SEASON_VARIANT",
+      "SEASON_VARIANT",
+      "BIOME_VARIANT",
+      "WIND_VARIANT",
+      "WIND_VARIANT",
+      "WIND_VARIANT",
+      "BIOME_VARIANT",
+      "BIOME_VARIANT",
+      "BIOME_VARIANT",
+      "LOD",
+      "LOD",
+      "LOD"
+    ],
+    "missingComponentCandidates": [],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false,
+    "currentAssetCount": 18,
+    "volumeUpPhase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP"
+  },
+  "internalAssetStandard": {
+    "version": 1,
+    "documentationMode": "MACHINE_READABLE_ONLY",
+    "routineReviewContract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT",
+    "genreExpectations": "assets/vibe-studio-asset-universe.js#COMMON_GENRE_SYSTEM_EXPECTATIONS",
+    "systemDepthExpectations": "assets/vibe-studio-asset-universe.js#COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS",
+    "crossPackAudit": "assets/vibe-studio-asset-universe.js#auditCommonLibrarySystemDepth",
+    "companyLibrary": "company-asset-library.json",
+    "flowExcluded": true,
+    "workflowExcluded": true,
+    "queueExcluded": true,
+    "schedulerExcluded": true,
+    "deploymentExcluded": true
+  },
+  "seedCompositionContract": {
+    "version": 1,
+    "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "compatibleSignals": [
+      "SURVIVAL",
+      "EXPLORATION",
+      "COZY_FARMING",
+      "SOCIAL_ROLEPLAY",
+      "HORROR"
+    ],
+    "variants": [
+      "BIOME_VARIANT",
+      "SEASON_VARIANT",
+      "WIND_VARIANT",
+      "LOD"
+    ],
+    "harvestingAuthority": false,
+    "dropAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  }
 }

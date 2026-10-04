@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "packId": "roblox-common-materials-v1",
   "family": "MATERIAL",
   "platform": "ROBLOX",
@@ -133,6 +133,272 @@
         "WORN",
         "PALE"
       ]
+    },
+    {
+      "atomId": "SKIN",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "WARM",
+        "PALE",
+        "DEEP",
+        "COOL"
+      ]
+    },
+    {
+      "atomId": "BONE",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "NATURAL",
+        "AGED",
+        "PALE",
+        "CHARRED"
+      ]
+    },
+    {
+      "atomId": "WATER",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "CLEAR",
+        "DEEP",
+        "SWAMP",
+        "FROZEN"
+      ]
+    },
+    {
+      "atomId": "MUD",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "WET",
+        "DARK",
+        "RED",
+        "DRYING"
+      ]
+    },
+    {
+      "atomId": "SAND",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "DRY",
+        "PALE",
+        "RED",
+        "WET"
+      ]
+    },
+    {
+      "atomId": "SNOW",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "FRESH",
+        "PACKED",
+        "DIRTY",
+        "ICED"
+      ]
+    },
+    {
+      "atomId": "MOSS",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "GREEN",
+        "DEEP",
+        "PALE",
+        "DAMP"
+      ]
+    },
+    {
+      "atomId": "EMISSIVE",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "COOL",
+        "WARM",
+        "TOXIC",
+        "VOID"
+      ]
+    },
+    {
+      "atomId": "CORROSION",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "RUST_LIGHT",
+        "RUST_HEAVY",
+        "OXIDIZED",
+        "SALT_WORN"
+      ]
+    },
+    {
+      "atomId": "DIRT",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "DUST",
+        "SOOT",
+        "ASH",
+        "CLAY"
+      ]
+    },
+    {
+      "atomId": "WET_DRY",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "DRY",
+        "DAMP",
+        "WET",
+        "SOAKED"
+      ]
+    },
+    {
+      "atomId": "DAMAGE",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "WORN",
+        "SCRATCHED",
+        "CRACKED",
+        "SCORCHED"
+      ]
+    },
+    {
+      "atomId": "WEATHERING",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "AGED",
+        "SUN_BLEACHED",
+        "RAIN_DARKENED",
+        "MINERAL_STAIN"
+      ]
+    },
+    {
+      "atomId": "STYLE_VARIANT",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "FANTASY",
+        "INDUSTRIAL",
+        "COZY",
+        "HORROR"
+      ]
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "WOOD",
+      "STONE",
+      "METAL",
+      "GLASS",
+      "FABRIC",
+      "LEATHER",
+      "GROUND",
+      "BRICK",
+      "ICE",
+      "ASPHALT",
+      "SKIN",
+      "BONE",
+      "WATER",
+      "MUD",
+      "SAND",
+      "SNOW",
+      "MOSS",
+      "CRYSTAL",
+      "EMISSIVE",
+      "CORROSION",
+      "DIRT",
+      "WET_DRY",
+      "DAMAGE",
+      "WEATHERING",
+      "STYLE_VARIANT"
+    ],
+    "currentDeclaredComponents": [
+      "WOOD",
+      "STONE",
+      "METAL",
+      "GLASS",
+      "FABRIC",
+      "LEATHER_LIKE",
+      "GROUND",
+      "MAGIC_CRYSTAL",
+      "BRICK",
+      "ICE",
+      "ASPHALT",
+      "SKIN",
+      "BONE",
+      "WATER",
+      "MUD",
+      "SAND",
+      "SNOW",
+      "MOSS",
+      "EMISSIVE",
+      "CORROSION",
+      "DIRT",
+      "WET_DRY",
+      "DAMAGE",
+      "WEATHERING",
+      "STYLE_VARIANT"
+    ],
+    "currentAssetCount": 25,
+    "missingComponentCandidates": [],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false,
+    "volumeUpPhase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "surfaceStateFamilies": [
+      "WET_DRY",
+      "DIRT",
+      "MUD",
+      "SNOW",
+      "MOSS",
+      "CORROSION",
+      "DAMAGE",
+      "WEATHERING",
+      "STYLE_VARIANT"
+    ]
+  },
+  "internalAssetStandard": {
+    "version": 1,
+    "routineReviewContract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT",
+    "genreExpectations": "assets/vibe-studio-asset-universe.js#COMMON_GENRE_SYSTEM_EXPECTATIONS",
+    "crossPackAudit": "assets/vibe-studio-asset-universe.js#auditCommonLibrarySystemDepth",
+    "companyLibrary": "company-asset-library.json",
+    "flowExcluded": true,
+    "workflowExcluded": true,
+    "queueExcluded": true,
+    "schedulerExcluded": true,
+    "deploymentExcluded": true,
+    "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "title": "Roblox 회사 공용 재질 25종 v5",
+  "seedCompositionContract": {
+    "version": 1,
+    "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "stateVariants": [
+      "WET_DRY",
+      "DIRT_MUD",
+      "SNOW_FROST",
+      "HEAT_COLD",
+      "DAMAGE_WEAR",
+      "CORROSION",
+      "REGIONAL_VARIANT"
+    ],
+    "compatibleKits": [
+      "ECLIPSE_MARKET_BLACKOUT",
+      "FLOODED_RUIN_RESEARCH_RUN",
+      "SANDSTORM_CONVOY_DEFENSE",
+      "CRYSTAL_FACTORY_OVERLOAD",
+      "FOG_TOWN_MEMORY_CASE",
+      "INDUSTRIAL_FREEZE_FAILURE",
+      "RUINED_COAST_SIGNAL_RESCUE"
+    ],
+    "physicalPropertiesPreservedByDefault": true,
+    "gameplayAuthority": false
+  }
 }

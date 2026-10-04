@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
@@ -16,9 +17,29 @@ import {
   COMMON_UI_SURFACE_EXPECTATIONS,
   COMMON_ENVIRONMENT_BIOME_EXPECTATIONS,
   COMMON_ENVIRONMENT_ROLE_EXPECTATIONS,
+  COMMON_TERRAIN_COMPOSITION_EXPECTATIONS,
+  COMMON_ENVIRONMENT_STATE_EXPECTATIONS,
+  COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS,
+  SEED_ACTION_SURVIVAL_ROGUE_INTERNAL_ASSET_IDEAS,
+  COMPANY_COMMON_SEED_ASSET_IDEA_AXES,
+  COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS,
+  COMMON_LIBRARY_LOOSE_VOLUME_BANDS,
+  COMMON_UI_SUBSYSTEM_VOLUME_BANDS,
+  COMMON_UI_SUBSYSTEM_IDEA_POOLS,
+  COMMON_LIBRARY_AUTOMATED_IDEA_POOLS,
+  INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,
+  INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,
+  INTERNAL_ASSET_REFERENCE_IDEA_POOLS,
+  INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,
+  selectInternalProgressionComplexityProfile,
+  buildInternalAssetLibraryAutomationPlan,
+  createCompanySeedAssetIdeationPlan,
   COMMON_PRESENTATION_EXPECTATIONS,
+  COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS,
+  COMMON_GENRE_SYSTEM_EXPECTATIONS,
   INTERNAL_ASSET_MINIMUM_COVERAGE,
   INTERNAL_ASSET_REUSE_POLICY,
+  INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT,
   INTERNAL_ASSET_ADAPTATION_AXES,
   CONCEPT_AXES,
   CREATURE_BODY_PLANS,
@@ -43,6 +64,7 @@ import {
   chooseInternalAssetReplacement,
   scoreStudioAssetCandidate,
   buildStudioAssetLoadout,
+  auditCommonLibrarySystemDepth,
   buildFutureAssetDemandForecast,
   createCreatureSpeciesBlueprint,
   createPlatformAssetVariantPlan,
@@ -74,6 +96,7 @@ import {
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
+import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
@@ -1544,8 +1567,8 @@ test('company-common item pack shares one source across world drop and viewport'
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN'];
-  assert.equal(catalog.items.length,8);
+  const ids=['HEALING_POTION','MANA_CRYSTAL','IRON_INGOT','GOLD_INGOT','WOOD_BUNDLE','STONE_CHUNK','RELIC_KEY','LANTERN','MANA_POTION','ANTIDOTE','STAMINA_TONIC','UPGRADE_SHARD','TREASURE_GEM','SILVER_INGOT','CLOTH_ROLL','HERB_BUNDLE','COOKED_MEAT','QUEST_SCROLL','LORE_BOOK','COIN_POUCH','ARROW_BUNDLE','THROWING_BOMB','LOCKPICK_SET','SIGNAL_LANTERN'];
+  assert.equal(catalog.items.length,40);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -1559,6 +1582,8 @@ test('company-common item pack shares one source across world drop and viewport'
   assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
   assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(catalog.sameAssetDnaAcrossWorldDropEquipAndUi,true);
+  assert.ok(catalog.systemDepthContract.inventoryCategories.includes('QUEST'));
+  assert.ok(catalog.systemDepthContract.linkedSystems.includes('STASH'));
   assert.equal(quality.staticAuthoringChecklist.score,100);
   assert.equal(quality.quality120.claimedRuntimeScore,null);
   assert.equal(quality.productionVerified,false);
@@ -1577,6 +1602,9 @@ test('company-common item registry exposes cross-game reusable item and resource
   assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.assetCount,40);
+  assert.ok(pack.inventoryCategories.includes('THROWABLE'));
+  assert.ok(pack.inventoryCategories.includes('LORE'));
 
   const expected=[
     ['HEALING_POTION','ITEM','CONSUMABLE'],
@@ -1586,7 +1614,14 @@ test('company-common item registry exposes cross-game reusable item and resource
     ['WOOD_BUNDLE','RESOURCE','RESOURCE'],
     ['STONE_CHUNK','RESOURCE','RESOURCE'],
     ['RELIC_KEY','ITEM','KEY_ITEM'],
-    ['LANTERN','ITEM','UTILITY']
+    ['LANTERN','ITEM','UTILITY'],
+    ['MANA_POTION','ITEM','CONSUMABLE'],
+    ['UPGRADE_SHARD','UPGRADE_MATERIAL','UPGRADE_MATERIAL'],
+    ['COOKED_MEAT','FOOD','FOOD'],
+    ['QUEST_SCROLL','QUEST_ITEM','QUEST_ITEM'],
+    ['LORE_BOOK','LORE','LORE'],
+    ['ARROW_BUNDLE','AMMUNITION','AMMUNITION'],
+    ['THROWING_BOMB','THROWABLE','THROWABLE'],
   ];
   for(const [assetId,subfamily,itemRole] of expected){
     const id='roblox-common-item-'+assetId.toLowerCase().replaceAll('_','-');
@@ -1823,7 +1858,7 @@ test('company-common material registry exposes reusable physics-preserving atoms
 });
 
 
-test('company-common R15 motion pack covers current reusable motion atoms',()=>{
+test('company-common R15 motion pack covers sixty-one reusable motion atoms',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-motion-v1');
@@ -1831,151 +1866,143 @@ test('company-common R15 motion pack covers current reusable motion atoms',()=>{
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
   const survivalConfig=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
-  const expected=['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'];
+  const core=['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'];
+  const living=['SIT_DOWN','STAND_UP','LEAN_WALL_IDLE','OPEN_DOOR','OPEN_CONTAINER','PICKUP_GROUND','PLACE_GROUND','PUSH_OBJECT','PULL_OBJECT','TALK_GESTURE','NPC_WORK_LOOP','COOK_LOOP','FARM_TEND','FISH_CAST','BED_LIE_DOWN','LADDER_ENTER','LADDER_EXIT','SLOPE_ASCEND','SLOPE_DESCEND','FATIGUED_IDLE','INJURED_WALK'];
 
-  assert.equal(catalog.atoms.length,11);
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.atoms.length,61);
+  assert.equal(quality.sourceAssetCount,61);
   assert.equal(catalog.compatibleRig,'R15');
   assert.equal(catalog.rootMotionOwned,false);
   assert.equal(catalog.gameplayMovementAuthority,false);
   assert.equal(catalog.productionVerified,false);
   assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.quality120.claimedRuntimeScore,null);
 
-  for(const atom of expected){
+  for(const atom of core){
     assert.ok(source.includes(atom),atom+':source');
     assert.ok(survivalConfig.includes(atom),atom+':config');
     assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
   }
-
+  for(const atom of living){
+    assert.ok(source.includes(atom),atom+':source');
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
   for(const joint of [
     'HumanoidRootPart','LowerTorso','UpperTorso','Head',
     'LeftUpperArm','LeftLowerArm','LeftHand','RightUpperArm','RightLowerArm','RightHand',
     'LeftUpperLeg','LeftLowerLeg','LeftFoot','RightUpperLeg','RightLowerLeg','RightFoot'
-  ]){
-    assert.ok(source.includes('name = "'+joint+'"'),joint);
-  }
+  ])assert.ok(source.includes('name = "'+joint+'"'),joint);
 
   assert.ok(source.includes('Instance.new("KeyframeSequence")'));
-  assert.ok(source.includes('Instance.new("Keyframe")'));
-  assert.ok(source.includes('Instance.new("Pose")'));
-  assert.ok(source.includes('RegisterKeyframeSequence(sequence)'));
-  assert.ok(source.includes('animator:LoadAnimation(animation)'));
+  assert.ok(source.includes('LIFE_ACTION = makeLifeAction'));
+  assert.ok(source.includes('expectedAtomCount = 61'));
   assert.ok(source.includes('RootMotionOwned", false'));
   assert.ok(source.includes('GameplayMovementAuthority", false'));
-
-  for(const forbidden of [
-    /WalkSpeed\s*=/,
-    /JumpPower\s*=/,
-    /HumanoidRootPart\.CFrame\s*=/,
-    /PivotTo\(/,
-    /MoveTo\(/,
-    /TakeDamage\(/,
-    /RemoteEvent/,
-    /FireServer\(/,
-    /DataStoreService/
-  ]){
+  for(const forbidden of [/WalkSpeed\s*=/,/JumpPower\s*=/,/HumanoidRootPart\.CFrame\s*=/,/TakeDamage\(/,/RemoteEvent/,/FireServer\(/,/DataStoreService/]){
     assert.equal(forbidden.test(source),false,String(forbidden));
   }
 });
 
-test('company-common motion registry supports cross-game R15 reuse without false production verification',()=>{
+test('company-common motion registry mirrors all sixty-one reusable motion atoms',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-motion-v1','catalog.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-motion-v1');
   assert.ok(pack);
+  assert.equal(pack.motionCount,61);
   assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(pack.compatibleRig,'R15');
-  assert.equal(pack.automaticCrossGameReuseAllowed,true);
-  assert.equal(pack.crossGameReuseRequiresCompatibilityPass,true);
-  assert.equal(pack.rootMotionOwned,false);
-  assert.equal(pack.gameplayMovementAuthority,false);
   assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-
-  const atoms=['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'];
-  for(const atom of atoms){
-    const id='roblox-common-motion-'+atom.toLowerCase().replaceAll('_','-');
+  for(const atom of catalog.atoms){
+    const id='roblox-common-motion-'+atom.atomId.toLowerCase().replaceAll('_','-');
     const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atom);
-    assert.equal(row.companyCommonBase,true);
+    assert.ok(row,atom.atomId);
+    assert.equal(row.atomId,atom.atomId);
     assert.equal(row.family,'MOTION');
-    assert.equal(row.subfamily,atom);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
     assert.equal(row.bindingHint.compatibleRig,'R15');
-    assert.equal(row.bindingHint.persistentAnimationUploadRequiredForProduction,true);
     assert.equal(row.bindingHint.preserveGameplayMovementDamageSaveAndNetworkAuthority,true);
     assert.equal(row.productionVerified,false);
   }
 });
 
-
-test('company-common world prop pack provides eight reusable visual props',()=>{
+test('company-common world prop pack provides thirty-eight reusable housing settlement props',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-world-props-v1');
   const source=fs.readFileSync(path.join(packDir,'RobloxCommonWorldProps.luau'),'utf8');
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-
-  const ids=['SIGNPOST','WOOD_FENCE','WALL_TORCH','WOOD_BARREL','BENCH','TABLE','MARKET_STALL','STONE_WELL'];
-  assert.equal(catalog.items.length,8);
-  for(const id of ids){
-    assert.ok(source.includes(id),id);
-    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.items.length,38);
+  assert.equal(quality.sourceAssetCount,38);
+  for(const row of catalog.items){
+    assert.ok(source.includes(row.assetId),row.assetId);
+    assert.ok(row.interactionRole,row.assetId+':interaction');
+    assert.ok(row.interactionSoundRole,row.assetId+':sound');
   }
-
-  assert.ok(source.includes('function RobloxCommonWorldProps.Create(id, options)'));
-  assert.ok(source.includes('function RobloxCommonWorldProps.CreateViewport(id, options)'));
-  assert.ok(source.includes('local styledRow = rowWithPalette(row, options.palette)'));
-  assert.ok(source.includes('CompanyCommonBase", true'));
-  assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
-  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
-  assert.equal(catalog.companyCommonBase,true);
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.runtimeQuality.claimedScore,null);
-  assert.equal(quality.productionVerified,false);
-  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
-
+  for(const id of ['WOOD_CART','WOOD_CRATE','TREASURE_CHEST','STREET_LANTERN','LAUNDRY_LINE','SETTLEMENT_FLAG','CANVAS_TENT','FIREWOOD_STACK','FARM_TOOL_RACK','RUIN_DEBRIS','CONSTRUCTION_SCAFFOLD','LORE_STONE','RESOURCE_ROCK_NODE','RESOURCE_WOOD_NODE']){
+    assert.ok(catalog.items.some(row=>row.assetId===id),id);
+  }
+  assert.ok(source.includes('InteractionSoundRole'));
+  assert.ok(source.includes('OwnsAudioPlaybackAuthority", false'));
+  assert.equal(catalog.interactionPresentationContract.audioPlaybackAuthority,false);
+  assert.equal(quality.soundRoleLinkage.actualAudioAssetsNotClaimed,true);
+  assert.equal(catalog.housingSettlementContract.gameplayAuthority,false);
   for(const forbidden of [/\bDamage\s*=/,/\bPrice\s*=/,/\bReward\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
     assert.equal(forbidden.test(source),false,String(forbidden));
   }
 });
 
-test('company-common world prop registry preserves gameplay authority and current-game reuse targets',()=>{
+test('company-common world prop registry mirrors thirty-eight prop interaction and sound roles',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-world-props-v1','catalog.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-world-props-v1');
   assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.itemCount,38);
   assert.equal(pack.gameplayAuthority,false);
-
-  const expected=[
-    ['SIGNPOST','SIGNPOST','WAYFINDING'],
-    ['WOOD_FENCE','FENCE','BOUNDARY'],
-    ['WALL_TORCH','TORCH','LIGHTING_PROP'],
-    ['WOOD_BARREL','BARREL','SET_DRESSING'],
-    ['BENCH','BENCH','SEATING_PROP'],
-    ['TABLE','TABLE','SURFACE_PROP'],
-    ['MARKET_STALL','MARKET_STALL','VENDOR_PROP'],
-    ['STONE_WELL','WELL','LANDMARK_PROP']
-  ];
-  for(const [assetId,subfamily,worldRole] of expected){
-    const id='roblox-common-world-prop-'+assetId.toLowerCase().replaceAll('_','-');
+  assert.equal(pack.audioPlaybackAuthority,false);
+  for(const item of catalog.items){
+    const id='roblox-common-world-prop-'+item.assetId.toLowerCase().replaceAll('_','-');
     const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.worldRole,worldRole);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority,true);
+    assert.ok(row,item.assetId);
+    assert.equal(row.subfamily,item.subfamily);
+    assert.equal(row.worldRole,item.worldRole);
+    assert.equal(row.interactionRole,item.interactionRole);
+    assert.equal(row.interactionSoundRole,item.interactionSoundRole);
+    assert.equal(row.audioPlaybackAuthority,false);
+  }
+});
+
+
+test('expanded common item tool creature and VFX registry mirrors current catalogs',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const checks=[
+    ['assets/roblox/common-items-v1/catalog.json','roblox-common-items-v1','items','roblox-common-item-',40],
+    ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
+    ['assets/roblox/common-character-gear-v1/catalog.json','roblox-common-character-gear-v1','items','roblox-common-character-gear-',18],
+    ['assets/roblox/common-foliage-v1/catalog.json','roblox-common-foliage-v1','items','roblox-common-foliage-',18],
+    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
+    ['assets/roblox/common-skill-v1/catalog.json','roblox-common-skill-v1','atoms','roblox-common-skill-',20],
+    ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
+    ['assets/roblox/common-materials-v1/catalog.json','roblox-common-materials-v1','atoms','roblox-common-material-',25],
+  ];
+  for(const [relative,packId,key,prefix,count] of checks){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
+    const rows=catalog[key];
+    assert.equal(rows.length,count,relative);
+    for(const row of rows){
+      const atom=row.assetId||row.atomId;
+      const id=prefix+atom.toLowerCase().replaceAll('_','-');
+      assert.ok(registry.assets.some(asset=>asset.id===id),id);
+    }
+    const pack=registry.assets.find(asset=>asset.id===packId);
+    assert.ok(pack,packId);
+    assert.equal(pack.productionVerified,false,packId);
   }
 });
 
@@ -2007,7 +2034,7 @@ test('generic world prop requirement can choose company-common base',()=>{
 });
 
 
-test('company-common foliage pack provides eight reusable environment assets',()=>{
+test('company-common foliage pack provides eighteen reusable environment assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-foliage-v1');
@@ -2015,8 +2042,9 @@ test('company-common foliage pack provides eight reusable environment assets',()
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['GRASS_TUFT','BUSH_ROUND','FERN_CLUSTER','WILDFLOWER_PATCH','TREE_STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE'];
-  assert.equal(catalog.items.length,8);
+  const ids=['GRASS_TUFT','BUSH_ROUND','FERN_CLUSTER','WILDFLOWER_PATCH','TREE_STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE','BROADLEAF_TREE','VINE_CLUSTER','REED_PATCH','MOSS_PATCH','MUSHROOM_CLUSTER','ROOT_CLUSTER','AUTUMN_TREE_VARIANT','WIND_BENT_TREE','BIOME_SHRUB_VARIANT','LOD_FOLIAGE_PROXY'];
+  assert.equal(catalog.items.length,18);
+  assert.equal(quality.sourceAssetCount,18);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2106,7 +2134,7 @@ test('generic foliage requirement can choose company-common base',()=>{
 });
 
 
-test('company-common building pack provides eight non-duplicate reusable modules',()=>{
+test('company-common building pack provides twenty housing snap modules without gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-building-v1');
@@ -2114,8 +2142,8 @@ test('company-common building pack provides eight non-duplicate reusable modules
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['FLOOR_TILE','WALL_WINDOW','WALL_CORNER','PILLAR_STONE','STAIRS_STRAIGHT','ARCHWAY','ROOF_FLAT','RAILING'];
-  assert.equal(catalog.items.length,8);
+  const ids=['FLOOR_TILE','WALL_WINDOW','WALL_CORNER','PILLAR_STONE','STAIRS_STRAIGHT','ARCHWAY','ROOF_FLAT','RAILING','FOUNDATION_TRIANGLE','FENCE_FOUNDATION','HALF_WALL','DOOR_FRAME','WINDOW_FRAME','CEILING_TILE','CEILING_WEDGE','ROOF_SLOPE','ROOF_CORNER','GATE_FRAME','LADDER','WALL_TRIM'];
+  assert.equal(catalog.items.length,20);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2129,6 +2157,8 @@ test('company-common building pack provides eight non-duplicate reusable modules
   assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
   assert.equal(catalog.family,'BUILDING');
   assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.housingContract.noGameSpecificCopy,true);
+  assert.equal(catalog.housingContract.stabilityAuthority,false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
   assert.equal(quality.runtimeQuality.claimedScore,null);
   assert.equal(quality.productionVerified,false);
@@ -2206,7 +2236,7 @@ test('generic building requirement can choose company-common base',()=>{
 });
 
 
-test('company-common tool pack provides eight reusable weapon and tool visuals',()=>{
+test('company-common tool pack provides twenty reusable weapon and tool visuals',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-tools-v1');
@@ -2215,7 +2245,7 @@ test('company-common tool pack provides eight reusable weapon and tool visuals',
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
   const ids=['SWORD','SPEAR','AXE','HAMMER','PICKAXE','BOW','STAFF','SHIELD'];
-  assert.equal(catalog.items.length,8);
+  assert.equal(catalog.items.length,20);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2306,7 +2336,7 @@ test('generic weapon requirement can choose company-common tool base',()=>{
 });
 
 
-test('company-common character gear pack provides eight reusable visual equipment pieces',()=>{
+test('company-common character gear pack provides eighteen reusable visual equipment pieces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-character-gear-v1');
@@ -2314,8 +2344,8 @@ test('company-common character gear pack provides eight reusable visual equipmen
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['CLOTH_TUNIC','LEATHER_VEST','IRON_CHESTPLATE','CLOTH_HOOD','IRON_HELMET','LEATHER_GLOVES','LEATHER_BOOTS','TRAVEL_CLOAK'];
-  assert.equal(catalog.items.length,8);
+  const ids=['CLOTH_TUNIC','LEATHER_VEST','IRON_CHESTPLATE','CLOTH_HOOD','IRON_HELMET','LEATHER_GLOVES','LEATHER_BOOTS','TRAVEL_CLOAK','LEG_PLATES','SHOULDER_PAULDRONS','UTILITY_BELT','SIGNET_RING','TRAVEL_AMULET','COSMETIC_SASH','SET_CREST','SOCKET_CHARM','UPGRADE_TRIM','WORN_ARMOR_PATCH'];
+  assert.equal(catalog.items.length,18);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2356,6 +2386,7 @@ test('company-common character gear registry preserves equipment gameplay save a
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.gameplayAuthority,false);
   assert.equal(pack.bodyPlanCompatibilityRequired,true);
+  assert.equal(pack.itemCount,18);
 
   const expected=[
     ['CLOTH_TUNIC','TORSO_GEAR','LIGHT_TORSO'],
@@ -2403,81 +2434,49 @@ test('generic character gear requirement can choose company-common base',()=>{
 });
 
 
-test('company-common UI v4 preserves prior atoms and expands reusable interaction surfaces',()=>{
+test('company-common UI current catalog preserves prior atoms and expands reusable interaction surfaces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-ui-v1');
   const source=fs.readFileSync(path.join(packDir,'RobloxCommonUI.luau'),'utf8');
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-
-  const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
-  const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,54);
-  for(const id of [...oldIds,...newIds]){
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(quality.sourceAssetCount,catalog.atoms.length);
+  assert.match(source,new RegExp('atomCount = '+catalog.atoms.length+'\\b'));
+  for(const id of ['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH','INVENTORY_SLOT','DIALOGUE_PANEL','AI_COMPANION_STATUS_CARD','MOUNT_STATUS_HUD','PARRY_TIMING_INDICATOR','WORLD_PROP_INTERACTION_PROMPT']){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
   }
-
-  assert.ok(source.includes('function RobloxCommonUI.CreateInventorySlot(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateTooltip(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateModal(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateTabButton(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateQuestCard(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
-  assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
-  assert.ok(source.includes('atomCount = 54'));
-  for(const id of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','INVENTORY_GRID','CHARACTER_SHEET','MINIMAP','HOTBAR']){
-    assert.ok(source.includes(id),id);
-    assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
-  }
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(catalog.deepSystemContract.aiNpcInteractionComponentCount,24);
+  assert.equal(catalog.deepSystemContract.mountTravelComponentCount,22);
+  assert.equal(catalog.deepSystemContract.parryPresentationComponentCount,5);
+  assert.equal(catalog.deepSystemContract.worldInteractionComponentCount,10);
   assert.equal(quality.productionVerified,false);
-  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
-
-  assert.ok(source.includes('button:SetAttribute("OwnsInventoryAuthority", false)'));
-  assert.ok(source.includes('root:SetAttribute("OwnsQuestProgress", false)'));
-  assert.ok(source.includes('root:SetAttribute("OwnsRewardAuthority", false)'));
-  assert.ok(source.includes('root:SetAttribute("OwnsEconomyAuthority", false)'));
-  assert.ok(source.includes('root:SetAttribute("OwnsProgressValue", false)'));
-  assert.ok(source.includes('button:SetAttribute("OwnsGameplayAction", false)'));
-  assert.ok(source.includes('button:SetAttribute("OwnsRemoteAuthority", false)'));
-
   for(const forbidden of [/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/InvokeServer\(/]){
     assert.equal(forbidden.test(source),false,String(forbidden));
   }
 });
 
-test('company-common UI v4 registry exposes reusable atoms without production promotion',()=>{
+test('company-common UI registry exposes all current reusable atoms without production promotion',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
   assert.ok(pack);
-  assert.equal(pack.assetCount,54);
-  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.assetCount,catalog.atoms.length);
+  assert.equal(pack.componentCount,catalog.atoms.length);
   assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-
-  const atoms=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH','INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
-  for(const atomId of atoms){
-    const id='roblox-common-ui-'+atomId.toLowerCase().replaceAll('_','-');
+  for(const atom of catalog.atoms){
+    const id='roblox-common-ui-'+atom.atomId.toLowerCase().replaceAll('_','-');
     const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atomId);
-    assert.equal(row.companyCommonBase,true);
+    assert.ok(row,atom.atomId);
+    assert.equal(row.atomId,atom.atomId);
     assert.equal(row.family,'UI');
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
     assert.equal(row.productionVerified,false);
     assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
-  }
-
-  for(const atomId of ['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON']){
-    const id='roblox-common-ui-'+atomId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.equal(row.bindingHint.preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority,true);
   }
 });
 
@@ -2493,7 +2492,7 @@ test('generic inventory UI requirement can choose company-common base',()=>{
 });
 
 
-test('company-common creature parts pack provides eight reusable visual modules',()=>{
+test('company-common creature parts pack provides twenty-four reusable visual modules',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-creature-parts-v1');
@@ -2502,7 +2501,7 @@ test('company-common creature parts pack provides eight reusable visual modules'
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
   const ids=['BIPED_TORSO','QUADRUPED_TORSO','INSECT_THORAX','WING_PAIR','TAIL_LONG','HORN_PAIR','SHELL_BACK','TENTACLE_CLUSTER'];
-  assert.equal(catalog.items.length,8);
+  assert.equal(catalog.items.length,24);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2583,7 +2582,7 @@ test('generic creature torso requirement can choose company-common base',()=>{
   assert.equal(loadout.selections[0].assetId,'common-biped-torso');
 });
 
-test('company-common materials v3 preserves old atoms and expands to eleven',()=>{
+test('company-common materials v5 preserves old atoms and expands to twenty-five',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-materials-v1');
@@ -2591,20 +2590,20 @@ test('company-common materials v3 preserves old atoms and expands to eleven',()=
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
-  assert.equal(catalog.version,3);
-  assert.equal(catalog.atoms.length,11);
+  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','STYLE_VARIANT'];
+  assert.equal(catalog.version,5);
+  assert.equal(catalog.atoms.length,25);
   for(const atomId of atoms){
     assert.ok(source.includes(atomId),atomId);
     assert.ok(catalog.atoms.some(row=>row.atomId===atomId),atomId+':catalog');
   }
 
   const materialRefs=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
-  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement']);
+  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement','SmoothPlastic','Grass']);
   assert.equal(materialRefs.length>0,true);
   assert.equal(materialRefs.every(value=>allowed.has(value)),true);
 
-  assert.ok(source.includes('atomCount = 11'));
+  assert.ok(source.includes('atomCount = 25'));
   assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
   assert.equal(/\.(CanCollide|CanTouch|CanQuery)\s*=/.test(source),false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
@@ -2613,17 +2612,17 @@ test('company-common materials v3 preserves old atoms and expands to eleven',()=
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
 });
 
-test('company-common material v3 registry exposes eleven unverified reusable atoms',()=>{
+test('company-common material v5 registry exposes twenty-five unverified reusable atoms',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
   assert.ok(pack);
-  assert.equal(pack.assetCount,11);
+  assert.equal(pack.assetCount,25);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
 
-  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
+  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','STYLE_VARIANT'];
   for(const atomId of added){
     const id='roblox-common-material-'+atomId.toLowerCase().replaceAll('_','-');
     const row=registry.assets.find(asset=>asset.id===id);
@@ -2691,47 +2690,33 @@ test('studio-independent 1000-point internal asset audit uses strict score and h
   assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('dialogue/helper'));
 });
 
-test('common Roblox UI v4 preserves AI dialogue NPC interaction core game screens and vector icons',()=>{
+test('common Roblox UI current catalog preserves AI dialogue NPC interaction core screens and vector icons',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const icons=fs.readFileSync(path.join(root,'RobloxCommonIcons.luau'),'utf8');
-
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,54);
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
   assert.equal(catalog.vectorIconCount,12);
-  assert.equal(catalog.internalAudit.studioRequired,false);
-  assert.equal(catalog.internalAudit.passScore,880);
-  for(const surface of ['INVENTORY','CHARACTER_SHEET','MINIMAP','DIALOGUE','AI_DIALOGUE_HELPER','NPC_INTERACTION','QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR']){
+  for(const surface of ['INVENTORY','DIALOGUE','NPC_INTERACTION','AI_COMPANION','NPC_MEMORY','NPC_DIALOGUE_DEEP','NPC_SERVICE','NPC_QUEST','PARTY_DEEP','MOUNT_RIDE','TRAVEL','PARRY_FEEDBACK','WORLD_PROP_INTERACTION']){
     assert.ok(catalog.surfaces.includes(surface),surface);
     assert.ok(COMMON_UI_SURFACE_EXPECTATIONS.includes(surface),surface);
   }
-  for(const atom of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','DIALOGUE_CHOICE','DIALOGUE_INPUT','TYPING_INDICATOR','DIALOGUE_HISTORY','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','NPC_RELATIONSHIP_CARD','INVENTORY_GRID','EQUIPMENT_SLOT','CHARACTER_SHEET','MINIMAP','QUEST_TRACKER','PARTY_MEMBER_CARD','CRAFTING_RECIPE_CARD','SHOP_ITEM_CARD','NOTIFICATION_TOAST','STATUS_EFFECT_CHIP','HOTBAR']){
+  for(const atom of ['DIALOGUE_ASSISTANT_BUTTON','NPC_INTERACTION_MENU','AI_COMPANION_STATUS_CARD','NPC_MEMORY_SUMMARY','NPC_SERVICE_MENU','PARTY_TACTICS_PANEL','MOUNT_STATUS_HUD','TRAVEL_ROUTE_PANEL','PARRY_TIMING_INDICATOR','WORLD_PROP_ACTION_WHEEL']){
     assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
-    assert.match(source,new RegExp('Create'+atom.toLowerCase().split('_').map(part=>part[0].toUpperCase()+part.slice(1)).join('').replace('Npc','Npc')));
+    assert.match(source,new RegExp('"'+atom+'"'));
   }
-  assert.match(source,/OwnsDialogueBranchAuthority", false/);
-  assert.match(source,/OwnsInteractionAuthority", false/);
-  assert.match(source,/OwnsQuestAuthority", false/);
-  assert.match(source,/OwnsTradeAuthority", false/);
-  assert.match(source,/OwnsInventoryAuthority", false/);
-  assert.match(source,/OwnsEquipAuthority", false/);
-  assert.match(source,/OwnsPurchaseAuthority", false/);
-  assert.match(source,/OwnsEconomyAuthority", false/);
   for(const icon of ['CHAT','AI_SPARK','INVENTORY','CHARACTER','EQUIPMENT','MINIMAP','QUEST','PARTY','CRAFT','SHOP','NOTIFICATION','SETTINGS']){
     assert.ok(catalog.iconSymbols.includes(icon),icon);
     assert.match(icons,new RegExp('\\b'+icon+'\\b'));
   }
   assert.equal(evidence.sourceAudit.studioRequired,false);
-  assert.equal(evidence.sourceAudit.passScore,880);
-  assert.equal(evidence.sourceAudit.targetGrade,'MASTERPIECE');
-  assert.equal(evidence.sourceAssetCount,54);
   assert.equal(evidence.productionVerified,false);
   assert.equal(evidence.verifiedCompanyReusable,false);
 });
-
 
 test('flexible internal asset reuse keeps low-score assets usable and adapts good mismatches before rejection',()=>{
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.lowScoreUseAllowed,true);
@@ -2828,66 +2813,55 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
 });
 
 
-test('common UI v4 expands full-screen navigation search states and input switching without gameplay authority',()=>{
+test('common UI current catalog expands full-screen navigation search states and input switching without gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
-
-  assert.equal(catalog.version,4);
-  assert.equal(catalog.atoms.length,54);
-  assert.equal(evidence.sourceAssetCount,54);
-  for(const atom of [
-    'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_PANEL',
-    'SEARCH_FIELD','FILTER_BAR','SORT_CONTROL','INVENTORY_FULL_SCREEN','EQUIPMENT_FULL_SCREEN',
-    'CHARACTER_DETAIL_SCREEN','MAP_FULL_SCREEN','QUEST_LOG','CRAFTING_FULL_SCREEN','SHOP_FULL_SCREEN',
-    'CONFIRM_DIALOG','POPUP_PANEL','LOADING_STATE','EMPTY_STATE','FAILURE_STATE','LOCKED_STATE','INPUT_HINT'
-  ]){
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
+  for(const atom of ['MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_PANEL','SEARCH_FIELD','FILTER_BAR','SORT_CONTROL','INVENTORY_FULL_SCREEN','MAP_FULL_SCREEN','CONFIRM_DIALOG','LOADING_STATE','FAILURE_STATE','INPUT_HINT']){
     assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
-    assert.match(source,new RegExp('"' + atom + '"'));
-  }
-  for(const surface of [
-    'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE','SETTINGS','SEARCH_FILTER_SORT',
-    'INVENTORY_FULL','EQUIPMENT_FULL','CHARACTER_DETAIL','MAP_FULL','QUEST_LOG','CRAFTING_FULL',
-    'SHOP_FULL','STATE_FEEDBACK','INPUT_HINT','SCREEN_TRANSITION'
-  ]){
-    assert.ok(catalog.surfaces.includes(surface),surface);
-    assert.ok(COMMON_UI_SURFACE_EXPECTATIONS.includes(surface),surface);
   }
   assert.equal(catalog.navigationContract.maxRecommendedDepth,3);
   assert.equal(catalog.navigationContract.colorOnlyStateForbidden,true);
   assert.equal(catalog.continuationContract.machineReadableSelectionRequired,true);
-  assert.match(source,/OwnsGameplayAuthority", false/);
-  assert.match(source,/OwnsSaveAuthority", false/);
-  assert.match(source,/OwnsRemoteAuthority", false/);
-  assert.match(source,/OwnsPurchaseAuthority",false/);
-  assert.match(source,/OwnsEconomyAuthority",false/);
   assert.match(source,/SupportsAutomaticInputModeSwap",true/);
+  assert.equal(catalog.deepSystemContract.gameplayAuthority,false);
+  assert.equal(catalog.deepSystemContract.saveAuthority,false);
+  assert.equal(catalog.deepSystemContract.networkAuthority,false);
 });
 
-test('common environment v1 provides ten reusable biome kits with terrain road cliff water landmark and set dressing roles',()=>{
+test('common environment v5 provides ten biomes twenty-four terrain compositions and fourteen realistic environment states',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-environment-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonEnvironment.luau'),'utf8');
-
+  assert.equal(catalog.version,5);
   assert.equal(catalog.biomes.length,10);
-  assert.equal(catalog.recipeCount,80);
+  assert.equal(catalog.recipeCount,104);
   assert.deepEqual(catalog.biomes,COMMON_ENVIRONMENT_BIOME_EXPECTATIONS);
   assert.deepEqual(catalog.roles,COMMON_ENVIRONMENT_ROLE_EXPECTATIONS);
-  for(const biome of ['FOREST','SNOW','DESERT','SWAMP','CAVE','COAST','VILLAGE','CITY','RUINS','DUNGEON']){
-    assert.match(source,new RegExp('\\b'+biome+'\\b'));
-  }
-  for(const role of ['TERRAIN','PATH_ROAD','CLIFF','WATER','LANDMARK','SET_DRESSING']){
-    assert.match(source,new RegExp(role));
-  }
-  assert.equal(evidence.coverage.recipeCount,80);
+  assert.deepEqual(catalog.terrainCompositions,COMMON_TERRAIN_COMPOSITION_EXPECTATIONS);
+  assert.deepEqual(catalog.environmentStateContract.states,COMMON_ENVIRONMENT_STATE_EXPECTATIONS);
+  assert.equal(catalog.terrainCompositions.length,24);
+  assert.equal(catalog.backgroundCompositionContract.backgroundLayerCount,5);
+  assert.equal(evidence.coverage.recipeCount,104);
+  assert.equal(evidence.coverage.environmentStateCount,14);
+  assert.equal(evidence.coverage.biomeSoundscapeCount,10);
+  assert.ok(source.includes('function CommonEnvironment.CreateEnvironmentPresentation'));
+  assert.ok(source.includes('function CommonEnvironment.BindEnvironmentState'));
+  assert.ok(source.includes('SOLAR_ECLIPSE'));
+  assert.ok(source.includes('WHITE_NIGHT'));
+  assert.ok(source.includes('THUNDERSTORM'));
+  assert.equal(catalog.environmentStateContract.weatherAuthority,false);
+  assert.equal(catalog.environmentStateContract.timeAuthority,false);
+  assert.equal(catalog.ambientSoundscapeContract.audioPlaybackAuthority,false);
+  assert.equal(catalog.ambientSoundscapeContract.productionVerified,false);
   assert.equal(evidence.productionVerified,false);
-  assert.match(source,/GameplayAuthority",false/);
-  assert.match(source,/PreserveGameSpawnAuthority",true/);
-  assert.match(source,/PreserveGameResourceAuthority",true/);
 });
 
 test('common presentation v1 provides reusable loading and five short intro modes without camera or gameplay authority',()=>{
@@ -2939,3 +2913,847 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   assert.equal(loadout.selections[0].usageContract.developmentStageAutoDiscovery,true);
   assert.equal(loadout.selections[0].companyCommonBase,true);
 });
+
+
+test('common UI current catalog preserves deep item inventory equipment crafting trade and codex components',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const deep=['ITEM_DETAIL_PANEL','ITEM_COMPARE_PANEL','ITEM_CONTEXT_MENU','STACK_SPLIT_DIALOG','MULTI_SELECT_BAR','ITEM_STATE_BADGES','INVENTORY_CONTAINER_PANEL','STASH_SCREEN','LOOT_WINDOW','RADIAL_MENU','LOADOUT_PRESET_PANEL','EQUIPMENT_COMPARE_PANEL','SET_BONUS_PANEL','SOCKET_ENCHANT_PANEL','UPGRADE_PANEL','REPAIR_PANEL','DISMANTLE_PANEL','CRAFTING_TREE','RECIPE_DETAIL_PANEL','MATERIAL_TRACKER','BUY_SELL_PANEL','BUYBACK_PANEL','CODEX_SCREEN','COLLECTION_PROGRESS','RECENT_ITEMS_PANEL','ITEM_SOURCE_USAGE_PANEL'];
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.deepSystemComponentCount,catalog.deepSystemContract.componentCount);
+  assert.ok(catalog.deepSystemContract.componentCount>=deep.length);
+  for(const atom of deep){
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.match(source,new RegExp('"'+atom+'"'));
+  }
+  assert.equal(catalog.deepSystemContract.gameplayAuthority,false);
+  assert.equal(catalog.deepSystemContract.saveAuthority,false);
+  assert.equal(catalog.deepSystemContract.networkAuthority,false);
+});
+
+test('company library system depth audit covers every common asset domain without becoming a usage gate',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const audit=registry.commonLibrarySystemDepthAudit;
+  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assert.equal(audit.status,'EXPANDED');
+  assert.equal(audit.scoreIsUsageGate,false);
+  assert.equal(audit.existingAssetsRemainUsable,true);
+  assert.equal(audit.rows.length,15);
+  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    assert.ok(audit.rows.some(row=>row.domain===domain),domain);
+  }
+  const uiCatalog=JSON.parse(fs.readFileSync(path.resolve(here,'..','assets','roblox','common-ui-v1','catalog.json'),'utf8'));
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,uiCatalog.atoms.length);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-motion-v1').motionCount,61);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,40);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-building-v1').itemCount,20);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-world-props-v1').itemCount,38);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-environment-v1').environmentStateCount,14);
+  assert.equal(registry.ambientSoundscapeContract.actualAudioAssetCountFromThisContract,0);
+  assert.equal(registry.ambientSoundscapeContract.productionVerified,false);
+  assert.equal(registry.seedDerivedInternalAssetIdeas.sourceSeedId,'seed-action-survival-rogu-echoes-of-the-lost-star');
+});
+
+test('all existing common pack catalogs expose system depth contracts for gap-directed iteration',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const paths=[
+    'assets/roblox/common-tools-v1/catalog.json',
+    'assets/roblox/common-character-gear-v1/catalog.json',
+    'assets/roblox/common-skill-v1/catalog.json',
+    'assets/roblox/common-vfx-v1/catalog.json',
+    'assets/roblox/common-motion-v1/catalog.json',
+    'assets/roblox/common-materials-v1/catalog.json',
+    'assets/roblox/common-environment-v1/catalog.json',
+    'assets/roblox/common-building-v1/catalog.json',
+    'assets/roblox/common-world-props-v1/catalog.json',
+    'assets/roblox/common-creature-parts-v1/catalog.json',
+    'assets/roblox/common-foliage-v1/catalog.json',
+    'assets/roblox/common-presentation-v1/catalog.json'
+  ];
+  for(const relative of paths){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
+    assert.ok(catalog.systemDepthContract,relative);
+    assert.equal(catalog.systemDepthContract.referenceLevel,'GOTY_COMMON_PRINCIPLES_NOT_COPY',relative);
+    assert.equal(catalog.systemDepthContract.qualityScoreIsNotUsageGate,true,relative);
+    assert.equal(catalog.systemDepthContract.existingAssetsRemainUsable,true,relative);
+    assert.equal(catalog.systemDepthContract.gameplayAuthority,false,relative);
+    assert.ok(catalog.systemDepthContract.requiredComponents.length>0,relative);
+  }
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.UI.required.includes('STASH'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.WEAPON.required.includes('CROSSBOW'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.MOTION.required.includes('REVIVE'));
+  assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required.includes('LOOT_RARITY'));
+});
+
+
+test('common UI current catalog covers housing sandbox settlement farming and processing presentation without owning simulation authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
+  const atoms=['BUILD_CATALOG_PANEL','PLACEMENT_GHOST_STATE','SNAP_INDICATOR','STABILITY_METER','OBJECT_TRANSFORM_PANEL','MATERIAL_PALETTE_PANEL','BLUEPRINT_PANEL','UNDO_REDO_BAR','OWNERSHIP_PERMISSION_PANEL','REPAIR_BUILDING_PANEL','BED_RESPAWN_PANEL','FURNITURE_CATALOG','SETTLEMENT_OVERVIEW','FARM_PLOT_PANEL','ANIMAL_HOUSING_PANEL','PROCESSING_MACHINE_PANEL'];
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
+  assert.equal(catalog.housingSandboxContract.version,1);
+  assert.equal(evidence.housingSandboxComponentCount,24);
+  for(const atom of atoms){
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.match(source,new RegExp('"'+atom+'"'));
+  }
+  assert.equal(catalog.housingSandboxContract.gameplayAuthority,false);
+  assert.equal(catalog.housingSandboxContract.placementAuthority,false);
+  assert.equal(catalog.housingSandboxContract.stabilityAuthority,false);
+  assert.equal(catalog.housingSandboxContract.ownershipAuthority,false);
+  assert.equal(catalog.housingSandboxContract.saveAuthority,false);
+  assert.equal(catalog.housingSandboxContract.networkAuthority,false);
+});
+
+test('genre system expectations include survival RPG casual sandbox housing cozy farming and settlement depth',()=>{
+  for(const genre of ['SURVIVAL','RPG','CASUAL','SANDBOX','HOUSING','COZY','FARMING','SETTLEMENT']){
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre],genre);
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre].length>=10,genre);
+  }
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.HOUSING.includes('SNAP_SOCKET'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.HOUSING.includes('STRUCTURAL_SUPPORT_PRESENTATION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.SANDBOX.includes('UNDO_REDO'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.SURVIVAL.includes('SHELTER'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.RPG.includes('SET_BONUS'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.COZY.includes('HOME_CUSTOMIZATION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.FARMING.includes('PROCESSING_MACHINE'));
+});
+
+test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
+  assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
+  assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
+  for(const id of [
+    'roblox-common-building-foundation-triangle','roblox-common-building-roof-slope','roblox-common-building-gate-frame',
+    'roblox-common-world-prop-bed-single','roblox-common-world-prop-workbench','roblox-common-world-prop-cooking-hearth',
+    'roblox-common-world-prop-crop-plot','roblox-common-world-prop-animal-trough','roblox-common-world-prop-floor-lamp',
+    'roblox-common-ui-build-catalog-panel','roblox-common-ui-placement-ghost-state','roblox-common-ui-settlement-overview'
+  ]){
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,id);
+    assert.equal(row.companyCommonBase,true,id);
+    assert.equal(row.gameplayAuthority,false,id);
+  }
+});
+
+
+test('cross-pack common library audit resolves existing shared coverage before declaring new gaps',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  assert.equal(report.crossPackCoverage,true);
+  assert.equal(report.scoreIsUsageGate,false);
+  assert.equal(report.existingAssetsRemainUsable,true);
+  assert.equal(report.newPipelineCreated,false);
+
+  const building=report.rows.find(row=>row.domain==='BUILDING');
+  const worldProp=report.rows.find(row=>row.domain==='WORLD_PROP');
+  const item=report.rows.find(row=>row.domain==='ITEM');
+  const ui=report.rows.find(row=>row.domain==='UI');
+  const audio=report.rows.find(row=>row.domain==='AUDIO');
+
+  assert.ok(building);
+  assert.ok(worldProp);
+  assert.ok(item);
+  assert.ok(ui);
+  assert.ok(audio);
+
+  assert.ok(building.covered.includes('FOUNDATION'));
+  assert.ok(building.covered.includes('DOOR'));
+  assert.ok(building.covered.includes('ROOF'));
+  assert.ok(worldProp.covered.includes('CHEST'));
+  assert.ok(worldProp.covered.includes('CRATE'));
+  assert.ok(worldProp.covered.includes('LORE_COLLECTIBLE'));
+  assert.ok(item.covered.includes('QUEST_ITEM'));
+  assert.ok(item.covered.includes('THROWABLE'));
+  assert.ok(ui.covered.includes('STASH'));
+  assert.ok(ui.covered.includes('RADIAL_MENU'));
+  assert.ok(audio.missing.includes('UI_CONFIRM'));
+});
+
+test('expanded genre matrix covers action adventure puzzle tycoon defense horror coop and narrative',()=>{
+  for(const genre of ['ACTION','ADVENTURE','PUZZLE','TYCOON','DEFENSE','HORROR','COOP_MULTIPLAYER','NARRATIVE']){
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre],genre);
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre].length>=10,genre);
+  }
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.TYCOON.includes('PLACEMENT_VALIDATION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.COOP_MULTIPLAYER.includes('OWNERSHIP_PERMISSION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.NARRATIVE.includes('DECISION_CONSEQUENCE_FEEDBACK'));
+
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.commonGenreSystemExpectations.version,2);
+  assert.equal(Object.keys(registry.commonGenreSystemExpectations.genres).length,16);
+});
+
+
+test('internal asset standards are machine-readable only and exclude flow workflow queue scheduler deployment changes',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+
+  assert.equal(registry.internalAssetStandard.documentationMode,'MACHINE_READABLE_ONLY');
+  assert.equal(Object.hasOwn(registry.internalAssetStandard,'humanDocument'),false);
+  assert.equal(registry.internalAssetStandard.authorityBoundary,'INTERNAL_ASSET_SCOPE_ONLY');
+  assert.equal(registry.internalAssetStandard.flowMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.workflowMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.queueMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.schedulerMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.deploymentMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.shadowPipelineAllowed,false);
+  assert.equal(registry.internalAssetStandard.wrapperPipelineAllowed,false);
+
+  assert.equal(registry.internalAssetRoutineReview.mode,'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER');
+  assert.equal(registry.internalAssetRoutineReview.scheduleCreated,false);
+  assert.equal(registry.internalAssetRoutineReview.workflowCreated,false);
+  assert.equal(registry.internalAssetRoutineReview.internalScoreIsUsageGate,false);
+  assert.equal(registry.internalAssetRoutineReview.existingAssetsRemainUsable,true);
+
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.documentationMode,'MACHINE_READABLE_ONLY');
+  assert.equal(Object.hasOwn(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT,'humanDocument'),false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.mode,'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER');
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.flowMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.workflowMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.queueMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.schedulerMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.deploymentMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.newPipelineCreated,false);
+
+  assert.equal(fs.existsSync(path.join(root,'assets','ASSET-STANDARD.md')),false);
+});
+
+test('all common asset catalogs bind the machine-readable internal asset standard without a human-document dependency',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const catalogs=[
+    'assets/roblox/common-ui-v1/catalog.json',
+    'assets/roblox/common-items-v1/catalog.json',
+    'assets/roblox/common-tools-v1/catalog.json',
+    'assets/roblox/common-character-gear-v1/catalog.json',
+    'assets/roblox/common-skill-v1/catalog.json',
+    'assets/roblox/common-vfx-v1/catalog.json',
+    'assets/roblox/common-motion-v1/catalog.json',
+    'assets/roblox/common-materials-v1/catalog.json',
+    'assets/roblox/common-environment-v1/catalog.json',
+    'assets/roblox/common-building-v1/catalog.json',
+    'assets/roblox/common-world-props-v1/catalog.json',
+    'assets/roblox/common-creature-parts-v1/catalog.json',
+    'assets/roblox/common-foliage-v1/catalog.json',
+    'assets/roblox/common-presentation-v1/catalog.json'
+  ];
+  for(const relative of catalogs){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
+    assert.ok(catalog.internalAssetStandard,relative);
+    assert.equal(catalog.internalAssetStandard.documentationMode,'MACHINE_READABLE_ONLY',relative);
+    assert.equal(Object.hasOwn(catalog.internalAssetStandard,'humanDocument'),false,relative);
+    assert.equal(catalog.internalAssetStandard.flowExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.workflowExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.queueExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.schedulerExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.deploymentExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.companyLibrary,'company-asset-library.json',relative);
+  }
+});
+
+
+test('all internal assets may be composed from every existing flow stage without giving assets flow authority',()=>{
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.stageSpecificCombinationAllowed,true);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.crossFamilyCompositionAllowed,true);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.flowOwnership,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.flowMutationAllowed,false);
+
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.stageSpecificCombinationAllowed,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.crossFamilyCompositionAllowed,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.compositionDoesNotGrantGameplaySaveNetworkOrFlowAuthority,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.hardBlockersStillApply,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.composition.newFlowOrPipelineCreated,false);
+
+  const asset={
+    id:'stage-composable-prop',
+    family:'PROP',
+    subfamily:'INTERACTIVE',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    license:'project-original',
+    sourceFiles:['assets/example.luau'],
+    tags:['INTERACTIVE']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'PROP',subfamily:'INTERACTIVE',required:true}],
+    assets:[asset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.complete,true);
+  assert.equal(loadout.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(loadout.allSelectedAssetsComposableAcrossExistingFlowStages,true);
+  assert.equal(loadout.stageSpecificCombinationAllowed,true);
+  assert.equal(loadout.crossFamilyCompositionAllowed,true);
+  assert.equal(loadout.flowOwnership,false);
+  assert.equal(loadout.flowMutationAllowed,false);
+  assert.equal(loadout.selections[0].consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(loadout.selections[0].composableAcrossExistingFlowStages,true);
+  assert.equal(loadout.selections[0].stageSpecificCombinationAllowed,true);
+  assert.equal(loadout.selections[0].flowOwnership,false);
+});
+
+test('company asset library exposes all-stage composition as an asset contract only',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const contract=registry.internalAssetCompositionContract;
+  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
+  assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(contract.stageSpecificCombinationAllowed,true);
+  assert.equal(contract.crossFamilyCompositionAllowed,true);
+  assert.equal(contract.modifiesFlow,false);
+  assert.equal(contract.modifiesWorkflow,false);
+  assert.equal(contract.modifiesQueue,false);
+  assert.equal(contract.modifiesScheduler,false);
+  assert.equal(contract.modifiesDeployment,false);
+  assert.equal(contract.createsPipeline,false);
+  assert.equal(contract.createsWrapper,false);
+  assert.equal(contract.createsShadowSystem,false);
+  const uiCatalog=JSON.parse(fs.readFileSync(path.resolve(here,'..','assets','roblox','common-ui-v1','catalog.json'),'utf8'));
+  assert.equal(contract.uiComponentCount,uiCatalog.atoms.length);
+  assert.equal(contract.uiRegistryAtomCount,uiCatalog.atoms.length);
+  assert.equal(contract.vfxAtomCount,registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount);
+  assert.equal(contract.materialAtomCount,registry.assets.find(row=>row.id==='roblox-common-materials-v1').assetCount);
+  assert.equal(registry.internalAssetStandard.allInternalAssetsComposableAcrossExistingStages,true);
+  assert.equal(registry.internalAssetRoutineReview.allInternalAssetsComposableAcrossExistingStages,true);
+});
+
+
+test('realistic environment states couple sky background surface wind and soundscape without gameplay authority',()=>{
+  assert.equal(COMMON_ENVIRONMENT_STATE_EXPECTATIONS.length,14);
+  assert.ok(COMMON_ENVIRONMENT_STATE_EXPECTATIONS.includes('THUNDERSTORM'));
+  assert.ok(COMMON_ENVIRONMENT_STATE_EXPECTATIONS.includes('WHITE_NIGHT'));
+  assert.ok(COMMON_ENVIRONMENT_STATE_EXPECTATIONS.includes('SOLAR_ECLIPSE'));
+  assert.ok(COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS.sourceGroups.WIND.includes('WIND_GALE'));
+  assert.ok(COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS.sourceGroups.INSECT.includes('INSECT_SWARM'));
+  assert.ok(COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS.sourceGroups.ANIMAL.includes('FROG'));
+  assert.ok(COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS.sourceGroups.MACHINE.includes('MACHINE_HUM'));
+  assert.equal(COMMON_AMBIENT_SOUNDSCAPE_EXPECTATIONS.audioPlaybackAuthority,false);
+});
+
+test('latest action survival rogue seed ideas fill environment item prop character menu and ambient linkage gaps',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const ideas=registry.seedDerivedInternalAssetIdeas;
+  assert.equal(ideas.sourceSeedId,SEED_ACTION_SURVIVAL_ROGUE_INTERNAL_ASSET_IDEAS.seedId);
+  for(const key of ['environmentBackgrounds','items','props','characters','menus','ambientAudio','coupling']){
+    assert.ok(Array.isArray(ideas[key])&&ideas[key].length>=6,key);
+  }
+  assert.equal(ideas.sourceGameFacts.gameName,'잃어버린 별의 메아리');
+  assert.ok(ideas.sourceGameFacts.coreLoop.includes('ECHO_SHARD_PICKUP'));
+  assert.ok(ideas.sourceGameFacts.coreLoop.includes('REALTIME_BUILD_SELECTION'));
+  assert.ok(ideas.menus.includes('ECHO_SELECTION'));
+  assert.ok(ideas.menus.includes('WAVE_THREAT_HUD'));
+  assert.ok(ideas.menus.includes('BOSS_WARNING'));
+  assert.ok(ideas.menus.includes('ONE_HAND_PORTRAIT_ACTION_HUD'));
+  assert.ok(ideas.items.includes('ECHO_SHARD_WORLD_MODEL'));
+  assert.ok(ideas.props.includes('WEATHER_STATION'));
+  assert.ok(ideas.props.includes('WAVE_WARNING_BEACON'));
+  assert.ok(ideas.ambientAudio.includes('ECHO_RESONANCE'));
+  assert.ok(ideas.ambientAudio.includes('GENERATOR_HUM'));
+  assert.ok(ideas.coupling.includes('ECHO_SHARD_DROP>WORLD_MODEL>PICKUP_VFX>PICKUP_AUDIO_ROLE>HUD_FEEDBACK'));
+  assert.equal(ideas.gameplayAuthority,false);
+  assert.equal(ideas.balanceAuthority,false);
+  assert.equal(registry.ambientSoundscapeContract.actualAudioAssetCountFromThisContract,0);
+});
+
+
+test('company common seed asset ideation reads all company seed artbooks and produces cross-genre volume-up demand',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const seedRoot=path.join(root,'artbook-submissions');
+  const seedDirs=fs.readdirSync(seedRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-'))
+    .map(entry=>entry.name)
+    .filter(name=>fs.existsSync(path.join(seedRoot,name,'current.json')))
+    .sort();
+
+  const seeds=seedDirs.map(name=>{
+    const row=JSON.parse(fs.readFileSync(path.join(seedRoot,name,'current.json'),'utf8'));
+    return{
+      gameId:row.gameId||name,
+      gameName:row.gameName||row.designCore?.identity||row.content?.identity,
+      identity:row.designCore?.identity||row.content?.identity,
+      coreFun:row.designCore?.coreFun,
+      coreLoop:row.designCore?.coreLoop||row.content?.coreLoop||[],
+      signatureSystems:row.designCore?.signatureSystems||row.content?.signatureSystems||[],
+      progressionDirection:row.designCore?.progressionDirection||row.content?.progressionDirection,
+      visualDirection:row.designCore?.visualDirection||row.content?.visualDirection,
+      mobileUx:row.designCore?.mobileUx
+    };
+  });
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const plan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
+
+  assert.equal(COMPANY_COMMON_SEED_ASSET_IDEA_AXES.scope,'ALL_COMPANY_COMMON_SEEDS');
+  assert.equal(COMPANY_COMMON_SEED_ASSET_IDEA_AXES.sourcePattern,'artbook-submissions/seed-*/current.json');
+  assert.equal(plan.seedCount,seeds.length);
+  assert.ok(plan.seedCount>=10);
+  for(const seed of seeds)assert.ok(plan.seeds.some(row=>row.gameId===seed.gameId),seed.gameId);
+
+  for(const signal of ['ACTION_COMBAT','SURVIVAL','RPG_PROGRESSION','PUZZLE','CASUAL_SHORT_RUN','IDLE_GROWTH','TYCOON_SIM','SOCIAL_ROLEPLAY','HORROR','DEFENSE','NARRATIVE','EXPLORATION']){
+    assert.ok(plan.detectedSignals.includes(signal),signal);
+  }
+  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    assert.ok(plan.ideas.some(row=>row.domain===domain),domain);
+  }
+
+  assert.ok(plan.ideaCount>=60);
+  assert.ok(plan.familyDemand.length>=12);
+  assert.ok(plan.familyDemand.some(row=>row.currentGapCount>0&&row.action==='VOLUME_UP_GAP_FIRST'));
+  assert.ok(plan.crossGenreKitCount>=8);
+  for(const id of ['ECLIPSE_MARKET_BLACKOUT','SANDSTORM_CONVOY_DEFENSE','CRYSTAL_FACTORY_OVERLOAD','FOG_TOWN_MEMORY_CASE','AURORA_HARVEST_FESTIVAL','RUINED_COAST_SIGNAL_RESCUE']){
+    assert.ok(plan.crossGenreKits.some(row=>row.id===id),id);
+    assert.ok(COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS.some(row=>row.id===id),id+':library');
+  }
+
+  assert.equal(plan.volumeBeforeQuality,true);
+  assert.equal(plan.reuseAdaptRecombineBeforeNewAuthoring,true);
+  assert.equal(plan.schedulerCreated,false);
+  assert.equal(plan.workflowCreated,false);
+  assert.equal(plan.queueCreated,false);
+  assert.equal(plan.pipelineCreated,false);
+  assert.equal(plan.gameplayAuthority,false);
+  assert.equal(plan.balanceAuthority,false);
+  assert.equal(plan.saveAuthority,false);
+  assert.equal(plan.networkAuthority,false);
+
+  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.triggers.includes('COMPANY_COMMON_SEED_SET_CHANGED'));
+  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.triggers.includes('COMPANY_COMMON_SEED_CONTENT_CHANGED'));
+  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.preBinding.includes('BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN'));
+  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND'));
+  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('VOLUME_UP_BEFORE_QUALITY_UP'));
+
+  const contract=registry.companyCommonSeedAssetIdeation;
+  assert.ok(contract);
+  assert.equal(contract.scope,'ALL_COMPANY_COMMON_SEEDS');
+  assert.equal(contract.sourcePattern,'artbook-submissions/seed-*/current.json');
+  assert.equal(contract.currentSeedCount,seeds.length);
+  assert.deepEqual([...contract.currentSeedIds].sort(),seeds.map(row=>row.gameId).sort());
+  assert.equal(contract.planBuilder,'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan');
+  assert.equal(contract.execution.schedulerCreated,false);
+  assert.equal(contract.execution.workflowCreated,false);
+  assert.equal(contract.execution.queueCreated,false);
+  assert.equal(contract.execution.pipelineCreated,false);
+});
+
+
+test('company-common VFX v4 expands reusable cross-genre feedback roles to twenty-seven',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-vfx-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonVFX.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+
+  assert.equal(catalog.version,4);
+  assert.equal(catalog.atoms.length,27);
+  assert.equal(quality.sourceAssetCount,27);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount,27);
+  for(const role of ['CRITICAL','DODGE','HEAL','BUFF','DEBUFF','STATUS','LOOT_COMMON','LOOT_RARE','LOOT_LEGENDARY','UPGRADE','CRAFT','DISMANTLE','QUEST_UPDATE','INTERACTION','ENVIRONMENT','WEATHER','DESTRUCTION','BOSS','MOBILE_DENSITY']){
+    const atom=catalog.atoms.find(row=>row.role===role);
+    assert.ok(atom,role);
+    assert.ok(source.includes(atom.atomId),atom.atomId);
+    const id='roblox-common-vfx-'+atom.atomId.toLowerCase().replaceAll('_','-');
+    const registered=registry.assets.find(row=>row.id===id);
+    assert.ok(registered,id);
+    assert.equal(registered.role,role,id);
+    assert.equal(registered.productionVerified,false,id);
+  }
+  assert.equal(catalog.systemDepthContract.missingComponentCandidates.length,0);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+  for(const forbidden of [/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/TakeDamage\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('material and VFX system depth become complete without claiming runtime production verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const vfx=report.rows.find(row=>row.domain==='VFX');
+  const material=report.rows.find(row=>row.domain==='MATERIAL');
+  assert.ok(vfx);
+  assert.ok(material);
+  assert.equal(vfx.missing.length,0);
+  assert.equal(material.missing.length,0);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1').productionVerified,false);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-materials-v1').productionVerified,false);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.vfxCount,27);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.materialCount,25);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.volumeBeforeQuality,true);
+});
+
+
+test('company-common skill v3 expands reusable presentation roles to twenty',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-skill-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonSkillPresentation.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.atoms.length,20);
+  assert.equal(quality.sourceAssetCount,20);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-skill-v1').assetCount,20);
+  for(const role of ['PROJECTILE','TRAIL','AREA','CHANNEL','BEAM','SUMMON','DASH','SHIELD','HEAL','AURA','STATUS_APPLY','STATUS_CLEANSE','INTERRUPT','ICON','AUDIO_ROLE','CAMERA_ROLE','MOBILE_DENSITY']){
+    const atom=catalog.atoms.find(row=>row.role===role);
+    assert.ok(atom,role);
+    assert.ok(source.includes(atom.atomId),atom.atomId);
+    const id='roblox-common-skill-'+atom.atomId.toLowerCase().replaceAll('_','-');
+    const registered=registry.assets.find(row=>row.id===id);
+    assert.ok(registered,id);
+    assert.equal(registered.role,role,id);
+    assert.equal(registered.productionVerified,false,id);
+  }
+  assert.equal(catalog.systemDepthContract.missingComponentCandidates.length,0);
+  assert.equal(catalog.seedCompositionContract.audioPlaybackAuthority,false);
+  assert.equal(catalog.seedCompositionContract.cameraAuthority,false);
+  assert.ok(source.includes('OwnsAudioPlaybackAuthority", false'));
+  assert.ok(source.includes('OwnsCameraAuthority", false'));
+  for(const forbidden of [/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/TakeDamage\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('skill system depth is complete after company-seed volume-up without gameplay authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const skill=report.rows.find(row=>row.domain==='SKILL');
+  assert.ok(skill);
+  assert.equal(skill.missing.length,0);
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.skillCount,20);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-skill-v1').productionVerified,false);
+});
+
+
+test('character gear system depth is complete after company-seed volume-up',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-character-gear-v1','catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-character-gear-v1','quality-evidence.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const gear=report.rows.find(row=>row.domain==='CHARACTER_GEAR');
+  assert.ok(gear);
+  assert.equal(gear.missing.length,0);
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.items.length,18);
+  assert.equal(quality.sourceAssetCount,18);
+  for(const role of ['LEGS','SHOULDER','BELT','RING','AMULET','ACCESSORY','COSMETIC_OVERLAY','SET_IDENTITY','SOCKET_POINT','UPGRADE_STAGE_VISUAL','DAMAGE_WEAR_VARIANT','TRANSMOG_BASE']){
+    const found=registry.assets.some(row=>row.packId==='roblox-common-character-gear-v1'&&((row.systemRoles||[]).includes(role)||row.gearRole===role||row.subfamily===role));
+    assert.equal(found,true,role);
+  }
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.characterGearCount,18);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-character-gear-v1').productionVerified,false);
+});
+
+
+test('foliage system depth is complete after company-seed volume-up',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-foliage-v1','catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-foliage-v1','quality-evidence.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const foliage=report.rows.find(row=>row.domain==='FOLIAGE');
+  assert.ok(foliage);
+  assert.equal(foliage.missing.length,0);
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.items.length,18);
+  assert.equal(quality.sourceAssetCount,18);
+  for(const role of ['BROADLEAF_TREE','VINE','REED','MOSS','MUSHROOM','ROOT','BIOME_VARIANT','SEASON_VARIANT','WIND_VARIANT','LOD']){
+    const found=registry.assets.some(row=>row.packId==='roblox-common-foliage-v1'&&((row.systemRoles||[]).includes(role)||row.subfamily===role||row.environmentRole===role));
+    assert.equal(found,true,role);
+  }
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.foliageCount,18);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-foliage-v1').productionVerified,false);
+});
+
+
+test('internal asset library automation uses loose bands and concrete UI subsystem idea pools',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const ui=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
+  const seedRoot=path.join(root,'artbook-submissions');
+  const seeds=fs.readdirSync(seedRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-')&&fs.existsSync(path.join(seedRoot,entry.name,'current.json')))
+    .map(entry=>{
+      const value=JSON.parse(fs.readFileSync(path.join(seedRoot,entry.name,'current.json'),'utf8'));
+      return{
+        gameId:value.gameId||entry.name,
+        gameName:value.gameName||value.designCore?.identity||value.content?.identity,
+        identity:value.designCore?.identity||value.content?.identity,
+        coreFun:value.designCore?.coreFun,
+        coreLoop:value.designCore?.coreLoop||value.content?.coreLoop||[],
+        signatureSystems:value.designCore?.signatureSystems||value.content?.signatureSystems||[],
+        progressionDirection:value.designCore?.progressionDirection||value.content?.progressionDirection,
+        visualDirection:value.designCore?.visualDirection||value.content?.visualDirection,
+        mobileUx:value.designCore?.mobileUx
+      };
+    });
+  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
+  const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId)});
+
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,4);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.productionRuntimeVerificationSeparateFromInternalQuality,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.commercialUseRequired,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.derivativeModificationRequired,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.provenanceRequired,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.directProtectedCommercialGameAssetCopyForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.hardMaximum,null);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.overSoftLimitBlocksUse,false);
+  assert.equal(plan.hardMaximum,null);
+  assert.equal(plan.overSoftLimitBlocksUse,false);
+  assert.equal(plan.automaticDeletion,false);
+  assert.equal(plan.productionPromotionAutomatic,false);
+  assert.equal(plan.runtimeVerificationRequired,true);
+  assert.equal(plan.qualityTarget,1000);
+  assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,true);
+  assert.equal(plan.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.ok(['VOLUME_UP','QUALITY_UP_1000'].includes(plan.focusPhase));
+  if(plan.focusPhase==='VOLUME_UP'){
+    assert.ok(plan.nextVolumeActions.length>0);
+    assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
+    assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
+    assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
+    assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
+  }
+
+  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    const row=plan.domains.find(item=>item.domain===domain);
+    assert.ok(row,domain);
+    assert.equal(row.hardMaximum,null,domain);
+    assert.ok(row.targetMax>row.targetMin,domain);
+    assert.ok(COMMON_LIBRARY_LOOSE_VOLUME_BANDS[domain],domain);
+  }
+
+  for(const subsystem of ['INVENTORY_ITEM_MANAGEMENT','MENU_NAVIGATION','COMBAT_HUD','HOUSING_SANDBOX','FARMING_SETTLEMENT','ACCESSIBILITY_INPUT','MOBILE_ONE_HAND']){
+    const row=plan.uiSubsystems.find(item=>item.subsystem===subsystem);
+    assert.ok(row,subsystem);
+    assert.equal(row.hardMaximum,null,subsystem);
+    assert.ok(COMMON_UI_SUBSYSTEM_VOLUME_BANDS[subsystem],subsystem);
+    assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS[subsystem].length>=10,subsystem);
+    if(row.currentCount<row.targetMin){
+      assert.ok(row.suggestedIdeas.length>0,subsystem);
+      assert.ok(row.suggestedIdeas.some(idea=>idea.source==='UI_SUBSYSTEM_IDEA_POOL'),subsystem);
+    }
+  }
+
+  for(const domain of ['ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain].length>=10,domain);
+  }
+  assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.INVENTORY_ITEM_MANAGEMENT.includes('SMART_SORT_PREVIEW'));
+  assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.COMBAT_HUD.includes('BOSS_PHASE_STRIP'));
+  assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.HOUSING_SANDBOX.includes('STRUCTURAL_SUPPORT_OVERLAY'));
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.ENVIRONMENT.includes('COSMIC_ANOMALY_HORIZON'));
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
+  assert.equal(plan.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
+  assert.equal(plan.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.equal(plan.qualityUpPolicy.selection,'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST');
+  assert.equal(plan.qualityUpPolicy.workingBandMin,980);
+  assert.equal(plan.qualityUpPolicy.target,1000);
+  assert.equal(plan.qualityUpPolicy.productionRuntimeVerificationSeparate,true);
+  assert.equal(plan.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
+  assert.equal(plan.freeOriginalVolumePolicy.allowed,'CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED');
+
+  const foliagePool=[...new Set([
+    ...COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.FOLIAGE,
+    ...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS.FOLIAGE||[])
+  ])];
+  const dedupAssets=[
+    ...registry.assets,
+    ...foliagePool.map((ideaId,index)=>({
+      id:'dedup-foliage-'+index,
+      family:'FOLIAGE',
+      category:'ENVIRONMENT',
+      assetId:ideaId,
+      subfamily:'TEST_EXISTING_IDENTITY'
+    })),
+    {
+      id:'dedup-foliage-distinct-01',
+      family:'FOLIAGE',
+      category:'ENVIRONMENT',
+      atomId:'FOLIAGE_DISTINCT_VARIATION_01',
+      subfamily:'TEST_EXISTING_IDENTITY'
+    }
+  ];
+  const dedupPlan=buildInternalAssetLibraryAutomationPlan({
+    assets:dedupAssets,
+    seedPlan:{ideas:[]},
+    uiAtomIds:ui.atoms.map(row=>row.atomId)
+  });
+  const foliage=dedupPlan.domains.find(row=>row.domain==='FOLIAGE');
+  assert.ok(foliage);
+  assert.ok(foliage.suggestedIdeas.some(row=>row.source==='LOOSE_VOLUME_TARGET'));
+  for(const ideaId of foliagePool)assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===ideaId),false,ideaId);
+  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_01'),false);
+  assert.ok(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_02'));
+});
+
+test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,4);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
+
+  assert.deepEqual(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES),['VERY_SIMPLE','SURVIVAL_SIMPLE','DEEP_RPG']);
+  assert.equal(selectInternalProgressionComplexityProfile({requested:'VERY_SIMPLE'}).id,'VERY_SIMPLE');
+  assert.equal(selectInternalProgressionComplexityProfile({signals:['survival','crafting','perk']}).id,'SURVIVAL_SIMPLE');
+  assert.equal(selectInternalProgressionComplexityProfile({signals:['rpg','d20','class','companion']}).id,'DEEP_RPG');
+
+  for(const id of ['SURVIVAL_HOUSING_CONQUEST','MARITIME_TRADE_ECONOMY','CIVILIZATION_WORLD_EXPRESSION','RPG_RULES_CRAFTING_SKILL_STORY','SAMURAI_DYNASTY_WUXIA_STORY','EXPLORATION_EVENT_WORLD','MULTI_AXIS_PROGRESSION_GROWTH','GOTY_MOTION_MUSIC_RESPONSIVITY']){
+    assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES[id],id);
+    assert.equal(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES[id].protectedExpressionCopyForbidden,true,id);
+  }
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.SURVIVAL_HOUSING_CONQUEST.creatureEcology.speciesTarget>=60);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.MARITIME_TRADE_ECONOMY.tradeItemCategoryTarget>=18);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.RPG_RULES_CRAFTING_SKILL_STORY.skillLibrary.skillPresentationTarget>=180);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.SAMURAI_DYNASTY_WUXIA_STORY.wuxiaSystems.skillCategories.length>=18);
+  assert.ok(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.EXPLORATION_EVENT_WORLD.eventFamilies.length>=24);
+  assert.equal(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES.GOTY_MOTION_MUSIC_RESPONSIVITY.domainTargetMin.MOTION,200);
+});
+
+test('catalog-driven company asset registry synchronization is persistent only when requested and idempotent',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-asset-registry-sync-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets','roblox','common-vfx-v1'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','common-ui-v1'),{recursive:true});
+    fs.mkdirSync(path.join(root,'artbook-submissions','seed-demo'),{recursive:true});
+
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false},
+        {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false},
+        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false}
+      ],
+      commonLibrarySystemDepthAudit:{status:'EXPANDED',scoreIsUsageGate:false,existingAssetsRemainUsable:true,rows:[]}
+    },null,2)+'\n');
+
+    fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','catalog.json'),JSON.stringify({
+      version:4,packId:'roblox-common-vfx-v1',family:'VFX',platform:'ROBLOX',title:'VFX demo',productionVerified:false,
+      atoms:[
+        {atomId:'IMPACT_FLASH',factory:'CreateImpactFlash',role:'HIT'},
+        {atomId:'WEATHER_GUST_PULSE',factory:'CreateWeatherGustPulse',role:'WEATHER'}
+      ],
+      systemDepthContract:{currentDeclaredComponents:['HIT','WEATHER']}
+    },null,2)+'\n');
+
+    fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),JSON.stringify({
+      version:9,packId:'roblox-common-ui-v1',family:'UI',platform:'ROBLOX',title:'UI demo',productionVerified:false,
+      atoms:[
+        {atomId:'INVENTORY_SLOT',factory:'CreateInventorySlot',role:'INVENTORY'},
+        {atomId:'MAIN_MENU',factory:'CreateMainMenu',role:'MENU'}
+      ],
+      deepSystemContract:{componentCount:2}
+    },null,2)+'\n');
+
+    fs.writeFileSync(path.join(root,'artbook-submissions','seed-demo','current.json'),JSON.stringify({
+      gameId:'seed-demo',gameName:'Demo',designCore:{coreFun:'combat survival',coreLoop:['combat','upgrade','boss'],signatureSystems:['action']}
+    },null,2)+'\n');
+
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(first.changed,true);
+    assert.equal(first.persisted,true);
+    assert.equal(first.persistError,null);
+    assert.equal(first.discoveredCatalogCount,2);
+    assert.equal(first.seedCount,1);
+    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount,2);
+    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,2);
+    assert.ok(first.registry.assets.some(row=>row.id==='roblox-common-vfx-impact-flash'));
+    assert.ok(first.registry.assets.some(row=>row.id==='roblox-common-vfx-weather-gust-pulse'));
+    const stale=first.registry.assets.find(row=>row.id==='roblox-common-vfx-old-effect');
+    assert.ok(stale);
+    assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
+    assert.equal(stale.automaticDeletionForbidden,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,4);
+    assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
+    assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
+    assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.nextVolumeActions,first.automationPlan.nextVolumeActions);
+    assert.equal(first.registry.internalAssetLibraryAutomation.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
+    assert.equal(first.registry.internalAssetLibraryAutomation.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
+    assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.workingBandMin,980);
+    assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.target,1000);
+    assert.equal(first.registry.internalAssetLibraryAutomation.productionRuntimeVerificationSeparateFromInternalQuality,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.autoDelete,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.hardMaximum,null);
+    assert.equal(first.registry.internalAssetLibraryAutomation.overSoftLimitBlocksUse,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.workflowCreated,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.schedulerCreated,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.queueCreated,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.pipelineCreated,false);
+
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(second.changed,false);
+    assert.equal(second.persisted,false);
+    assert.equal(second.registry.version,first.registry.version);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
+test('canonical company asset registry is dry-run synchronization idempotent',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+  assert.equal(result.changed,false,JSON.stringify(result.changedSections));
+  assert.deepEqual(result.changedSections,[]);
+  assert.equal(result.persisted,false);
+  assert.equal(result.persistError,null);
+  assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,4);
+  assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
+  assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
+  assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
+  assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.schedulerCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.queueCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.pipelineCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.wrapperCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
+});
+

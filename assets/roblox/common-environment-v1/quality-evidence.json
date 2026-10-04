@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 4,
   "packId": "roblox-common-environment-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -13,10 +13,17 @@
   },
   "coverage": {
     "biomeCount": 10,
-    "roleCount": 8,
-    "recipeCount": 80,
+    "roleCount": 18,
+    "recipeCount": 104,
     "setDressingRecipesPerBiome": 6,
-    "detailTiers": 3
+    "detailTiers": 3,
+    "terrainCompositionCount": 24,
+    "environmentRoleCount": 18,
+    "interactionPresentationRoles": 10,
+    "backgroundDepthLayerCount": 5,
+    "environmentStateCount": 14,
+    "biomeSoundscapeCount": 10,
+    "weatherBackgroundCouplingChannels": 12
   },
   "qualityAxes": {
     "IDENTITY_SILHOUETTE": 94,
@@ -34,5 +41,37 @@
   },
   "productionVerified": false,
   "verifiedCompanyReusable": false,
-  "runtimeVerificationState": "PENDING_STUDIO"
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "backgroundComposition": {
+    "foregroundMidgroundBackground": true,
+    "villageCluster": true,
+    "poiCue": true,
+    "collisionNavigationSpawnAuthorityFalse": true,
+    "fiveBackgroundLayers": true,
+    "parallaxBandMetadata": true,
+    "terrainCompositionCatalogSynced": true,
+    "realisticWeatherBackgroundCoupling": true,
+    "precipitationAloneInsufficient": true
+  },
+  "environmentStatePresentation": {
+    "stateCount": 14,
+    "actualLightingEffectSource": true,
+    "atmosphereCloudColorGradeBloomSunRays": true,
+    "whiteNight": true,
+    "solarEclipse": true,
+    "thunderstormLightningCue": true,
+    "weatherAuthority": false,
+    "timeAuthority": false,
+    "audioPlaybackAuthority": false,
+    "nativeRuntimeVerificationRequired": true
+  },
+  "soundscapeRoleLinkage": {
+    "biomeCount": 10,
+    "wind": true,
+    "insect": true,
+    "animal": true,
+    "machine": true,
+    "singleLoopOnlyForbidden": true,
+    "actualAudioAssetsNotClaimed": true
+  }
 }

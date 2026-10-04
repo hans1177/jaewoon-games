@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 10,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -640,9 +640,1962 @@
         "GAMEPAD",
         "AUTO"
       ]
+    },
+    {
+      "atomId": "ITEM_DETAIL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemDetailPanel",
+      "role": "ITEM_DETAIL_PANEL",
+      "surface": "ITEM_DETAIL",
+      "states": [
+        "DEFAULT",
+        "NEW",
+        "FAVORITE",
+        "LOCKED",
+        "EQUIPPED",
+        "QUEST_BOUND"
+      ]
+    },
+    {
+      "atomId": "ITEM_COMPARE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemComparePanel",
+      "role": "ITEM_COMPARE_PANEL",
+      "surface": "ITEM_COMPARE",
+      "states": [
+        "BETTER",
+        "WORSE",
+        "MIXED",
+        "REQUIREMENT_LOCKED"
+      ]
+    },
+    {
+      "atomId": "ITEM_CONTEXT_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemContextMenu",
+      "role": "ITEM_CONTEXT_MENU",
+      "surface": "ITEM_ACTIONS",
+      "states": [
+        "USE",
+        "EQUIP",
+        "QUICKSLOT",
+        "FAVORITE",
+        "LOCK",
+        "SPLIT",
+        "MOVE",
+        "SELL",
+        "DROP"
+      ]
+    },
+    {
+      "atomId": "STACK_SPLIT_DIALOG",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStackSplitDialog",
+      "role": "STACK_SPLIT_DIALOG",
+      "surface": "ITEM_ACTIONS",
+      "states": [
+        "MIN",
+        "MID",
+        "MAX",
+        "CONFIRM"
+      ]
+    },
+    {
+      "atomId": "MULTI_SELECT_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMultiSelectBar",
+      "role": "MULTI_SELECT_BAR",
+      "surface": "ITEM_ACTIONS",
+      "states": [
+        "NONE",
+        "PARTIAL",
+        "ALL"
+      ]
+    },
+    {
+      "atomId": "ITEM_STATE_BADGES",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemStateBadges",
+      "role": "ITEM_STATE_BADGES",
+      "surface": "ITEM_STATE",
+      "states": [
+        "NEW",
+        "FAVORITE",
+        "LOCKED",
+        "EQUIPPED",
+        "QUEST"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_CONTAINER_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryContainerPanel",
+      "role": "INVENTORY_CONTAINER_PANEL",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "BAG",
+        "POUCH",
+        "QUEST_CONTAINER",
+        "NESTED"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_WEIGHT_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryWeightMeter",
+      "role": "INVENTORY_WEIGHT_METER",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "NORMAL",
+        "HEAVY",
+        "OVER_CAPACITY"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_CAPACITY_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryCapacityMeter",
+      "role": "INVENTORY_CAPACITY_METER",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "AVAILABLE",
+        "NEAR_FULL",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "STASH_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStashScreen",
+      "role": "STASH_SCREEN",
+      "surface": "STASH",
+      "states": [
+        "DEFAULT",
+        "SEARCH",
+        "FILTERED",
+        "TRANSFER",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "LOOT_WINDOW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLootWindow",
+      "role": "LOOT_WINDOW",
+      "surface": "LOOT",
+      "states": [
+        "DEFAULT",
+        "EMPTY",
+        "TAKE_ALL",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "LOOT_FEED",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLootFeed",
+      "role": "LOOT_FEED",
+      "surface": "LOOT",
+      "states": [
+        "COMMON",
+        "RARE",
+        "LEGENDARY",
+        "NEW"
+      ]
+    },
+    {
+      "atomId": "QUICK_SLOT_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateQuickSlotBar",
+      "role": "QUICK_SLOT_BAR",
+      "surface": "QUICKSLOT",
+      "states": [
+        "EMPTY",
+        "BOUND",
+        "SELECTED",
+        "COOLDOWN"
+      ]
+    },
+    {
+      "atomId": "RADIAL_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRadialMenu",
+      "role": "RADIAL_MENU",
+      "surface": "RADIAL_ACTION",
+      "states": [
+        "OPEN",
+        "SELECTED",
+        "DISABLED",
+        "CANCEL"
+      ]
+    },
+    {
+      "atomId": "LOADOUT_PRESET_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLoadoutPresetPanel",
+      "role": "LOADOUT_PRESET_PANEL",
+      "surface": "LOADOUT",
+      "states": [
+        "EMPTY",
+        "SAVED",
+        "ACTIVE",
+        "CONFLICT"
+      ]
+    },
+    {
+      "atomId": "EQUIPMENT_COMPARE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEquipmentComparePanel",
+      "role": "EQUIPMENT_COMPARE_PANEL",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "BETTER",
+        "WORSE",
+        "MIXED",
+        "SET_CHANGE"
+      ]
+    },
+    {
+      "atomId": "SET_BONUS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSetBonusPanel",
+      "role": "SET_BONUS_PANEL",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "INACTIVE",
+        "PARTIAL",
+        "ACTIVE",
+        "MAX"
+      ]
+    },
+    {
+      "atomId": "SOCKET_ENCHANT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSocketEnchantPanel",
+      "role": "SOCKET_ENCHANT_PANEL",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "EMPTY_SOCKET",
+        "FILLED",
+        "LOCKED",
+        "REQUIREMENT"
+      ]
+    },
+    {
+      "atomId": "UPGRADE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateUpgradePanel",
+      "role": "UPGRADE_PANEL",
+      "surface": "UPGRADE",
+      "states": [
+        "AVAILABLE",
+        "MISSING_MATERIAL",
+        "MAX",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "REPAIR_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRepairPanel",
+      "role": "REPAIR_PANEL",
+      "surface": "REPAIR",
+      "states": [
+        "GOOD",
+        "DAMAGED",
+        "BROKEN",
+        "REPAIRABLE"
+      ]
+    },
+    {
+      "atomId": "DISMANTLE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDismantlePanel",
+      "role": "DISMANTLE_PANEL",
+      "surface": "DISMANTLE",
+      "states": [
+        "SELECTED",
+        "PROTECTED",
+        "LOCKED",
+        "MULTI"
+      ]
+    },
+    {
+      "atomId": "CRAFTING_TREE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCraftingTree",
+      "role": "CRAFTING_TREE",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "DISCOVERED",
+        "LOCKED",
+        "AVAILABLE",
+        "COMPLETED"
+      ]
+    },
+    {
+      "atomId": "RECIPE_DETAIL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRecipeDetailPanel",
+      "role": "RECIPE_DETAIL_PANEL",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "CRAFTABLE",
+        "MISSING",
+        "ALTERNATIVE_MATERIAL",
+        "TRACKED"
+      ]
+    },
+    {
+      "atomId": "MATERIAL_TRACKER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMaterialTracker",
+      "role": "MATERIAL_TRACKER",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "INCOMPLETE",
+        "COMPLETE",
+        "PINNED"
+      ]
+    },
+    {
+      "atomId": "BUY_SELL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuySellPanel",
+      "role": "BUY_SELL_PANEL",
+      "surface": "TRADE",
+      "states": [
+        "BUY",
+        "SELL",
+        "CART",
+        "INSUFFICIENT_FUNDS"
+      ]
+    },
+    {
+      "atomId": "BUYBACK_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuybackPanel",
+      "role": "BUYBACK_PANEL",
+      "surface": "TRADE",
+      "states": [
+        "AVAILABLE",
+        "EMPTY",
+        "EXPIRED"
+      ]
+    },
+    {
+      "atomId": "CODEX_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCodexScreen",
+      "role": "CODEX_SCREEN",
+      "surface": "CODEX",
+      "states": [
+        "UNDISCOVERED",
+        "DISCOVERED",
+        "NEW",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "COLLECTION_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCollectionProgress",
+      "role": "COLLECTION_PROGRESS",
+      "surface": "CODEX",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "RECENT_ITEMS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRecentItemsPanel",
+      "role": "RECENT_ITEMS_PANEL",
+      "surface": "RECENT_ITEMS",
+      "states": [
+        "NEW",
+        "VIEWED",
+        "FILTERED"
+      ]
+    },
+    {
+      "atomId": "ITEM_SOURCE_USAGE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateItemSourceUsagePanel",
+      "role": "ITEM_SOURCE_USAGE_PANEL",
+      "surface": "ITEM_DETAIL",
+      "states": [
+        "SOURCE",
+        "CRAFT_USE",
+        "UPGRADE_USE",
+        "QUEST_USE",
+        "SHOP_USE"
+      ]
+    },
+    {
+      "atomId": "BUILD_CATALOG_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildCatalogPanel",
+      "role": "BUILD_CATALOG_PANEL",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "DEFAULT",
+        "FILTERED",
+        "SEARCH",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "BUILD_PIECE_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildPieceCard",
+      "role": "BUILD_PIECE_CARD",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "AVAILABLE",
+        "LOCKED",
+        "MISSING_MATERIAL",
+        "SELECTED"
+      ]
+    },
+    {
+      "atomId": "PLACEMENT_GHOST_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePlacementGhostState",
+      "role": "PLACEMENT_GHOST_STATE",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "VALID",
+        "INVALID",
+        "SNAPPED",
+        "FREE_PLACE"
+      ]
+    },
+    {
+      "atomId": "SNAP_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSnapIndicator",
+      "role": "SNAP_INDICATOR",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "FOUNDATION",
+        "WALL",
+        "CEILING",
+        "ROOF",
+        "ATTACHMENT"
+      ]
+    },
+    {
+      "atomId": "STABILITY_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStabilityMeter",
+      "role": "STABILITY_METER",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "STABLE",
+        "WARNING",
+        "UNSUPPORTED"
+      ]
+    },
+    {
+      "atomId": "BUILD_TIER_BADGE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildTierBadge",
+      "role": "BUILD_TIER_BADGE",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "TIER_1",
+        "TIER_2",
+        "TIER_3",
+        "CUSTOM"
+      ]
+    },
+    {
+      "atomId": "PLACEMENT_VALIDITY_BANNER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePlacementValidityBanner",
+      "role": "PLACEMENT_VALIDITY_BANNER",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "VALID",
+        "INVALID",
+        "BLOCKED",
+        "NO_SUPPORT"
+      ]
+    },
+    {
+      "atomId": "BUILD_ACTION_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildActionBar",
+      "role": "BUILD_ACTION_BAR",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "PLACE",
+        "ROTATE",
+        "MOVE",
+        "COPY",
+        "DEMOLISH",
+        "MATERIAL"
+      ]
+    },
+    {
+      "atomId": "OBJECT_TRANSFORM_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateObjectTransformPanel",
+      "role": "OBJECT_TRANSFORM_PANEL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "MOVE",
+        "ROTATE",
+        "HEIGHT",
+        "COPY",
+        "ALIGN",
+        "DELETE"
+      ]
+    },
+    {
+      "atomId": "GRID_SNAP_CONTROL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGridSnapControl",
+      "role": "GRID_SNAP_CONTROL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "FREE",
+        "GRID",
+        "ANGLE",
+        "SURFACE",
+        "SOCKET"
+      ]
+    },
+    {
+      "atomId": "MATERIAL_PALETTE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMaterialPalettePanel",
+      "role": "MATERIAL_PALETTE_PANEL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "MATERIAL",
+        "COLOR",
+        "WEAR",
+        "DIRT",
+        "WET",
+        "STYLE"
+      ]
+    },
+    {
+      "atomId": "BLUEPRINT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBlueprintPanel",
+      "role": "BLUEPRINT_PANEL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "EMPTY",
+        "SAVED",
+        "PREVIEW",
+        "MISSING_MATERIAL"
+      ]
+    },
+    {
+      "atomId": "UNDO_REDO_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateUndoRedoBar",
+      "role": "UNDO_REDO_BAR",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "CAN_UNDO",
+        "CAN_REDO",
+        "EMPTY"
+      ]
+    },
+    {
+      "atomId": "OWNERSHIP_PERMISSION_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateOwnershipPermissionPanel",
+      "role": "OWNERSHIP_PERMISSION_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "OWNER",
+        "PARTY",
+        "CLAN",
+        "GUEST",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "REPAIR_BUILDING_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRepairBuildingPanel",
+      "role": "REPAIR_BUILDING_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "GOOD",
+        "DAMAGED",
+        "REPAIRABLE",
+        "MISSING_MATERIAL"
+      ]
+    },
+    {
+      "atomId": "DEMOLISH_PREVIEW_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDemolishPreviewPanel",
+      "role": "DEMOLISH_PREVIEW_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "SAFE",
+        "CONNECTED_IMPACT",
+        "STORAGE_IMPACT",
+        "CONFIRM"
+      ]
+    },
+    {
+      "atomId": "UPKEEP_DECAY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateUpkeepDecayPanel",
+      "role": "UPKEEP_DECAY_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "PROTECTED",
+        "WARNING",
+        "DECAYING",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "BED_RESPAWN_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBedRespawnPanel",
+      "role": "BED_RESPAWN_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "UNBOUND",
+        "BOUND",
+        "COOLDOWN",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "ROOM_SCORE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRoomScorePanel",
+      "role": "ROOM_SCORE_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "OUTDOOR",
+        "ROOM",
+        "COMFORT_LOW",
+        "COMFORT_HIGH"
+      ]
+    },
+    {
+      "atomId": "FURNITURE_CATALOG",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFurnitureCatalog",
+      "role": "FURNITURE_CATALOG",
+      "surface": "HOUSING_DECOR",
+      "states": [
+        "DEFAULT",
+        "SEARCH",
+        "FILTERED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "SETTLEMENT_OVERVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSettlementOverview",
+      "role": "SETTLEMENT_OVERVIEW",
+      "surface": "SETTLEMENT",
+      "states": [
+        "HEALTHY",
+        "WARNING",
+        "MISSING_SERVICE",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "FARM_PLOT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFarmPlotPanel",
+      "role": "FARM_PLOT_PANEL",
+      "surface": "FARMING",
+      "states": [
+        "EMPTY",
+        "SEEDED",
+        "GROWING",
+        "READY",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "ANIMAL_HOUSING_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAnimalHousingPanel",
+      "role": "ANIMAL_HOUSING_PANEL",
+      "surface": "FARMING",
+      "states": [
+        "EMPTY",
+        "OCCUPIED",
+        "HUNGRY",
+        "PRODUCT_READY"
+      ]
+    },
+    {
+      "atomId": "PROCESSING_MACHINE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateProcessingMachinePanel",
+      "role": "PROCESSING_MACHINE_PANEL",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "IDLE",
+        "PROCESSING",
+        "OUTPUT_READY",
+        "NO_FUEL",
+        "QUEUE"
+      ]
+    },
+    {
+      "atomId": "AI_COMPANION_STATUS_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAiCompanionStatusCard",
+      "role": "AI_COMPANION_STATUS_CARD",
+      "surface": "AI_COMPANION",
+      "states": [
+        "FOLLOWING",
+        "WAITING",
+        "BUSY",
+        "DOWNED",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "COMPANION_COMMAND_WHEEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionCommandWheel",
+      "role": "COMPANION_COMMAND_WHEEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "OPEN",
+        "SELECTED",
+        "LOCKED",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "COMPANION_ORDER_QUEUE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionOrderQueue",
+      "role": "COMPANION_ORDER_QUEUE",
+      "surface": "AI_COMPANION",
+      "states": [
+        "EMPTY",
+        "ACTIVE",
+        "QUEUED",
+        "PAUSED"
+      ]
+    },
+    {
+      "atomId": "COMPANION_ROLE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionRolePanel",
+      "role": "COMPANION_ROLE_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "COMBAT",
+        "GATHER",
+        "SCOUT",
+        "CRAFT",
+        "SUPPORT"
+      ]
+    },
+    {
+      "atomId": "COMPANION_FORMATION_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionFormationPanel",
+      "role": "COMPANION_FORMATION_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "CLOSE",
+        "NORMAL",
+        "FAR",
+        "LEFT",
+        "RIGHT",
+        "REAR"
+      ]
+    },
+    {
+      "atomId": "COMPANION_COMBAT_STANCE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionCombatStancePanel",
+      "role": "COMPANION_COMBAT_STANCE_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "DEFENSIVE",
+        "BALANCED",
+        "AGGRESSIVE",
+        "PROTECT",
+        "FOCUS_TARGET"
+      ]
+    },
+    {
+      "atomId": "COMPANION_TARGET_PING_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionTargetPingCard",
+      "role": "COMPANION_TARGET_PING_CARD",
+      "surface": "AI_COMPANION",
+      "states": [
+        "ATTACK",
+        "MOVE",
+        "INTERACT",
+        "DANGER",
+        "INTEREST"
+      ]
+    },
+    {
+      "atomId": "COMPANION_HELP_REQUEST",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionHelpRequest",
+      "role": "COMPANION_HELP_REQUEST",
+      "surface": "AI_COMPANION",
+      "states": [
+        "REQUESTED",
+        "ACKNOWLEDGED",
+        "UNAVAILABLE",
+        "RESOLVED"
+      ]
+    },
+    {
+      "atomId": "COMPANION_REVIVE_RESCUE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionReviveRescuePanel",
+      "role": "COMPANION_REVIVE_RESCUE_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "DOWNED",
+        "RESCUE_AVAILABLE",
+        "IN_PROGRESS",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "COMPANION_INVENTORY_HANDOFF",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionInventoryHandoff",
+      "role": "COMPANION_INVENTORY_HANDOFF",
+      "surface": "AI_COMPANION",
+      "states": [
+        "TRANSFER",
+        "FULL",
+        "LOCKED",
+        "QUEST_BOUND"
+      ]
+    },
+    {
+      "atomId": "COMPANION_GIFT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionGiftPanel",
+      "role": "COMPANION_GIFT_PANEL",
+      "surface": "NPC_RELATIONSHIP",
+      "states": [
+        "AVAILABLE",
+        "LOCKED",
+        "REACTION_HINT",
+        "CONFIRM"
+      ]
+    },
+    {
+      "atomId": "COMPANION_RELATIONSHIP_DETAIL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionRelationshipDetail",
+      "role": "COMPANION_RELATIONSHIP_DETAIL",
+      "surface": "NPC_RELATIONSHIP",
+      "states": [
+        "NEUTRAL",
+        "FRIENDLY",
+        "TRUSTED",
+        "HOSTILE",
+        "SPECIAL"
+      ]
+    },
+    {
+      "atomId": "NPC_MEMORY_SUMMARY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcMemorySummary",
+      "role": "NPC_MEMORY_SUMMARY",
+      "surface": "NPC_MEMORY",
+      "states": [
+        "RECENT",
+        "PROMISE",
+        "PERSON",
+        "PLACE",
+        "UNRESOLVED"
+      ]
+    },
+    {
+      "atomId": "NPC_TOPIC_BROWSER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcTopicBrowser",
+      "role": "NPC_TOPIC_BROWSER",
+      "surface": "NPC_DIALOGUE_DEEP",
+      "states": [
+        "CURRENT_EVENT",
+        "PLACE",
+        "PERSON",
+        "QUEST",
+        "RUMOR",
+        "PERSONAL"
+      ]
+    },
+    {
+      "atomId": "NPC_CONTEXT_REACTION",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcContextReaction",
+      "role": "NPC_CONTEXT_REACTION",
+      "surface": "NPC_DIALOGUE_DEEP",
+      "states": [
+        "WEATHER",
+        "TIME",
+        "COMBAT",
+        "REGION",
+        "PLAYER_STATE",
+        "RECENT_EVENT"
+      ]
+    },
+    {
+      "atomId": "NPC_SCHEDULE_AVAILABILITY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcScheduleAvailability",
+      "role": "NPC_SCHEDULE_AVAILABILITY",
+      "surface": "NPC_SERVICE",
+      "states": [
+        "AVAILABLE",
+        "BUSY",
+        "TRAVELING",
+        "SLEEPING",
+        "SPECIAL_EVENT"
+      ]
+    },
+    {
+      "atomId": "NPC_SERVICE_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcServiceMenu",
+      "role": "NPC_SERVICE_MENU",
+      "surface": "NPC_SERVICE",
+      "states": [
+        "TRADE",
+        "REPAIR",
+        "CRAFT",
+        "HEAL",
+        "TRAIN",
+        "INFO",
+        "STORAGE"
+      ]
+    },
+    {
+      "atomId": "NPC_QUEST_HANDOFF",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcQuestHandoff",
+      "role": "NPC_QUEST_HANDOFF",
+      "surface": "NPC_QUEST",
+      "states": [
+        "ACTIVE",
+        "TURN_IN",
+        "MISSING",
+        "COMPLETE",
+        "REWARD_PREVIEW"
+      ]
+    },
+    {
+      "atomId": "NPC_RECRUIT_DISMISS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcRecruitDismissPanel",
+      "role": "NPC_RECRUIT_DISMISS_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "RECRUITABLE",
+        "PARTY_FULL",
+        "RECRUITED",
+        "DISMISS_WARNING"
+      ]
+    },
+    {
+      "atomId": "NPC_RUMOR_KNOWLEDGE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcRumorKnowledgePanel",
+      "role": "NPC_RUMOR_KNOWLEDGE_PANEL",
+      "surface": "NPC_DIALOGUE_DEEP",
+      "states": [
+        "RUMOR",
+        "REGION_INFO",
+        "DANGER_INFO",
+        "PERSON_INFO",
+        "UNCERTAIN"
+      ]
+    },
+    {
+      "atomId": "NPC_CAMP_ACTIVITY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcCampActivityPanel",
+      "role": "NPC_CAMP_ACTIVITY_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "REST",
+        "GUARD",
+        "CRAFT",
+        "COOK",
+        "TALK",
+        "HAUL"
+      ]
+    },
+    {
+      "atomId": "PARTY_TACTICS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePartyTacticsPanel",
+      "role": "PARTY_TACTICS_PANEL",
+      "surface": "PARTY_DEEP",
+      "states": [
+        "TARGET_PRIORITY",
+        "RANGE",
+        "FOCUS",
+        "PROTECT",
+        "RETREAT"
+      ]
+    },
+    {
+      "atomId": "COMPANION_EQUIPMENT_SUMMARY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionEquipmentSummary",
+      "role": "COMPANION_EQUIPMENT_SUMMARY",
+      "surface": "AI_COMPANION",
+      "states": [
+        "WEAPON",
+        "ARMOR",
+        "UTILITY",
+        "SET_EFFECT",
+        "RESTRICTION"
+      ]
+    },
+    {
+      "atomId": "AI_COMPANION_AUTONOMY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAiCompanionAutonomyPanel",
+      "role": "AI_COMPANION_AUTONOMY_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "AUTONOMY",
+        "DANGER_AVOID",
+        "HELP_PRIORITY",
+        "RESOURCE_INTERACT",
+        "DIALOGUE_PARTICIPATE"
+      ]
+    },
+    {
+      "atomId": "MOUNT_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountInteractionPrompt",
+      "role": "MOUNT_INTERACTION_PROMPT",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "LOCKED",
+        "TOO_FAR"
+      ]
+    },
+    {
+      "atomId": "MOUNT_STATUS_HUD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountStatusHud",
+      "role": "MOUNT_STATUS_HUD",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "RIDING",
+        "SPRINTING",
+        "EXHAUSTED",
+        "INJURED"
+      ]
+    },
+    {
+      "atomId": "MOUNT_STAMINA_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountStaminaMeter",
+      "role": "MOUNT_STAMINA_METER",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "NORMAL",
+        "LOW",
+        "EMPTY",
+        "RECOVERING"
+      ]
+    },
+    {
+      "atomId": "RIDE_SEAT_SELECTOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRideSeatSelector",
+      "role": "RIDE_SEAT_SELECTOR",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "DRIVER",
+        "PASSENGER",
+        "CARGO",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "PASSENGER_LIST",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePassengerList",
+      "role": "PASSENGER_LIST",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "FULL",
+        "OFFLINE"
+      ]
+    },
+    {
+      "atomId": "BOARDING_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBoardingProgress",
+      "role": "BOARDING_PROGRESS",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "BOARDING",
+        "READY",
+        "BLOCKED",
+        "CANCELLED"
+      ]
+    },
+    {
+      "atomId": "DISEMBARK_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDisembarkPrompt",
+      "role": "DISEMBARK_PROMPT",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "SAFE",
+        "UNSAFE",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "SEAT_SWITCH_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSeatSwitchPanel",
+      "role": "SEAT_SWITCH_PANEL",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "MOUNT_COMMAND_WHEEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountCommandWheel",
+      "role": "MOUNT_COMMAND_WHEEL",
+      "surface": "MOUNT_COMMAND",
+      "states": [
+        "FOLLOW",
+        "WAIT",
+        "COME",
+        "FLEE",
+        "STAY"
+      ]
+    },
+    {
+      "atomId": "MOUNT_INVENTORY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountInventoryPanel",
+      "role": "MOUNT_INVENTORY_PANEL",
+      "surface": "MOUNT_CARGO",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "FULL",
+        "OVERWEIGHT"
+      ]
+    },
+    {
+      "atomId": "MOUNT_EQUIPMENT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountEquipmentPanel",
+      "role": "MOUNT_EQUIPMENT_PANEL",
+      "surface": "MOUNT_CARGO",
+      "states": [
+        "SADDLE",
+        "REINS",
+        "BAGS",
+        "LIGHT",
+        "ARMOR"
+      ]
+    },
+    {
+      "atomId": "VEHICLE_DAMAGE_STATUS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateVehicleDamageStatus",
+      "role": "VEHICLE_DAMAGE_STATUS",
+      "surface": "MOUNT_STATUS",
+      "states": [
+        "GOOD",
+        "DAMAGED",
+        "CRITICAL",
+        "BROKEN"
+      ]
+    },
+    {
+      "atomId": "FUEL_ENERGY_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFuelEnergyMeter",
+      "role": "FUEL_ENERGY_METER",
+      "surface": "MOUNT_STATUS",
+      "states": [
+        "FULL",
+        "NORMAL",
+        "LOW",
+        "EMPTY"
+      ]
+    },
+    {
+      "atomId": "CARGO_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCargoPanel",
+      "role": "CARGO_PANEL",
+      "surface": "MOUNT_CARGO",
+      "states": [
+        "EMPTY",
+        "LOADED",
+        "FULL",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "TRAVEL_ROUTE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTravelRoutePanel",
+      "role": "TRAVEL_ROUTE_PANEL",
+      "surface": "TRAVEL",
+      "states": [
+        "ROUTE",
+        "REROUTE",
+        "BLOCKED",
+        "ARRIVAL"
+      ]
+    },
+    {
+      "atomId": "DESTINATION_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDestinationCard",
+      "role": "DESTINATION_CARD",
+      "surface": "TRAVEL",
+      "states": [
+        "UNKNOWN",
+        "DISCOVERED",
+        "SELECTED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "TRAVEL_PROGRESS_HUD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTravelProgressHud",
+      "role": "TRAVEL_PROGRESS_HUD",
+      "surface": "TRAVEL",
+      "states": [
+        "DEPARTING",
+        "TRAVELING",
+        "NEAR_DESTINATION",
+        "ARRIVED"
+      ]
+    },
+    {
+      "atomId": "MOUNT_RECALL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountRecallPanel",
+      "role": "MOUNT_RECALL_PANEL",
+      "surface": "MOUNT_COMMAND",
+      "states": [
+        "AVAILABLE",
+        "CALLING",
+        "ARRIVING",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "MOUNT_WHISTLE_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountWhistleState",
+      "role": "MOUNT_WHISTLE_STATE",
+      "surface": "MOUNT_COMMAND",
+      "states": [
+        "READY",
+        "SENT",
+        "ACKNOWLEDGED",
+        "COOLDOWN"
+      ]
+    },
+    {
+      "atomId": "TERRAIN_ACCESS_WARNING",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTerrainAccessWarning",
+      "role": "TERRAIN_ACCESS_WARNING",
+      "surface": "TRAVEL",
+      "states": [
+        "PASSABLE",
+        "DIFFICULT",
+        "BLOCKED",
+        "SPECIAL_REQUIREMENT"
+      ]
+    },
+    {
+      "atomId": "VEHICLE_CONTROL_HINTS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateVehicleControlHints",
+      "role": "VEHICLE_CONTROL_HINTS",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "TOUCH",
+        "KEYBOARD_MOUSE",
+        "GAMEPAD"
+      ]
+    },
+    {
+      "atomId": "MOUNT_SPEED_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountSpeedState",
+      "role": "MOUNT_SPEED_STATE",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "STOPPED",
+        "WALK",
+        "RUN",
+        "SPRINT"
+      ]
+    },
+    {
+      "atomId": "PARRY_TIMING_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateParryTimingIndicator",
+      "role": "PARRY_TIMING_INDICATOR",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "READY",
+        "WINDOW",
+        "PERFECT",
+        "CLOSED"
+      ]
+    },
+    {
+      "atomId": "GUARD_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGuardMeter",
+      "role": "GUARD_METER",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "NORMAL",
+        "LOW",
+        "BROKEN",
+        "RECOVERING"
+      ]
+    },
+    {
+      "atomId": "GUARD_BREAK_WARNING",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGuardBreakWarning",
+      "role": "GUARD_BREAK_WARNING",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "WARNING",
+        "BROKEN",
+        "RECOVERING"
+      ]
+    },
+    {
+      "atomId": "COUNTER_READY_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCounterReadyIndicator",
+      "role": "COUNTER_READY_INDICATOR",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "CLOSED",
+        "READY",
+        "EXPIRED"
+      ]
+    },
+    {
+      "atomId": "ATTACK_TELEGRAPH_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAttackTelegraphIndicator",
+      "role": "ATTACK_TELEGRAPH_INDICATOR",
+      "surface": "PARRY_FEEDBACK",
+      "states": [
+        "WARNING",
+        "IMMINENT",
+        "UNPARRYABLE_PRESENTATION"
+      ]
+    },
+    {
+      "atomId": "WORLD_PROP_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateWorldPropInteractionPrompt",
+      "role": "WORLD_PROP_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "FOCUSED",
+        "BLOCKED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "WORLD_PROP_ACTION_WHEEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateWorldPropActionWheel",
+      "role": "WORLD_PROP_ACTION_WHEEL",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "OPEN",
+        "SELECTED",
+        "DISABLED",
+        "CANCEL"
+      ]
+    },
+    {
+      "atomId": "INTERACTION_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInteractionProgress",
+      "role": "INTERACTION_PROGRESS",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "IDLE",
+        "ACTIVE",
+        "PAUSED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "INTERACTION_STATE_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInteractionStateCard",
+      "role": "INTERACTION_STATE_CARD",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "IN_USE",
+        "BLOCKED",
+        "RESULT"
+      ]
+    },
+    {
+      "atomId": "SEAT_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSeatInteractionPrompt",
+      "role": "SEAT_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "BED_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBedInteractionPrompt",
+      "role": "BED_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "BOUND",
+        "OCCUPIED",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "HARVEST_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateHarvestInteractionPrompt",
+      "role": "HARVEST_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "NEEDS_TOOL",
+        "DEPLETED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "CONTAINER_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateContainerInteractionPrompt",
+      "role": "CONTAINER_INTERACTION_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "LOCKED",
+        "EMPTY",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "LIGHT_CONTROL_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLightControlPrompt",
+      "role": "LIGHT_CONTROL_PROMPT",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "ON",
+        "OFF",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "READ_INSPECT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateReadInspectPanel",
+      "role": "READ_INSPECT_PANEL",
+      "surface": "WORLD_PROP_INTERACTION",
+      "states": [
+        "UNREAD",
+        "READ",
+        "DISCOVERED",
+        "RELATED"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_SMART_SORT_PREVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventorySmartSortPreview",
+      "role": "INVENTORY_SMART_SORT_PREVIEW",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "DEFAULT",
+        "PREVIEW",
+        "APPLIED"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_CAPACITY_FORECAST",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryCapacityForecast",
+      "role": "INVENTORY_CAPACITY_FORECAST",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "NORMAL",
+        "NEAR_LIMIT",
+        "OVER_LIMIT"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_OVERWEIGHT_RESOLUTION",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryOverweightResolution",
+      "role": "INVENTORY_OVERWEIGHT_RESOLUTION",
+      "surface": "INVENTORY_DEEP",
+      "states": [
+        "OVER_LIMIT",
+        "RESOLVING",
+        "RESOLVED"
+      ]
+    },
+    {
+      "atomId": "EQUIP_CONFLICT_PREVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEquipConflictPreview",
+      "role": "EQUIP_CONFLICT_PREVIEW",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "NO_CONFLICT",
+        "CONFLICT",
+        "RESOLVED"
+      ]
+    },
+    {
+      "atomId": "LOOT_FILTER_PRESET",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLootFilterPreset",
+      "role": "LOOT_FILTER_PRESET",
+      "surface": "LOOT",
+      "states": [
+        "DEFAULT",
+        "FILTERED",
+        "SAVED"
+      ]
+    },
+    {
+      "atomId": "STASH_TRANSFER_QUEUE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStashTransferQueue",
+      "role": "STASH_TRANSFER_QUEUE",
+      "surface": "STASH",
+      "states": [
+        "IDLE",
+        "QUEUED",
+        "BLOCKED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "MENU_SYSTEM_SWITCHER_DRAWER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMenuSystemSwitcherDrawer",
+      "role": "MENU_SYSTEM_SWITCHER_DRAWER",
+      "surface": "NAVIGATION",
+      "states": [
+        "CLOSED",
+        "OPEN",
+        "SELECTED"
+      ]
+    },
+    {
+      "atomId": "NAVIGATION_BREADCRUMB_BACKSTACK",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNavigationBreadcrumbBackstack",
+      "role": "NAVIGATION_BREADCRUMB_BACKSTACK",
+      "surface": "NAVIGATION",
+      "states": [
+        "ROOT",
+        "NESTED",
+        "BACK_AVAILABLE"
+      ]
+    },
+    {
+      "atomId": "MENU_LAST_LOCATION_RESUME",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMenuLastLocationResume",
+      "role": "MENU_LAST_LOCATION_RESUME",
+      "surface": "NAVIGATION",
+      "states": [
+        "AVAILABLE",
+        "UNAVAILABLE",
+        "RESUMED"
+      ]
+    },
+    {
+      "atomId": "MENU_CONTEXT_QUICK_ACTION_SHEET",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMenuContextQuickActionSheet",
+      "role": "MENU_CONTEXT_QUICK_ACTION_SHEET",
+      "surface": "NAVIGATION",
+      "states": [
+        "CLOSED",
+        "OPEN",
+        "ACTION_SELECTED"
+      ]
+    },
+    {
+      "atomId": "ONE_HAND_BOTTOM_NAV",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateOneHandBottomNav",
+      "role": "ONE_HAND_BOTTOM_NAV",
+      "surface": "NAVIGATION",
+      "states": [
+        "PORTRAIT",
+        "LANDSCAPE",
+        "SELECTED"
+      ]
+    },
+    {
+      "atomId": "SET_PROGRESS_TRACKER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSetProgressTracker",
+      "role": "SET_PROGRESS_TRACKER",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "INCOMPLETE",
+        "BREAKPOINT",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "SOCKET_ROUTE_PREVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSocketRoutePreview",
+      "role": "SOCKET_ROUTE_PREVIEW",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "EMPTY",
+        "ROUTE_PREVIEW",
+        "APPLIED"
+      ]
+    },
+    {
+      "atomId": "DURABILITY_WEAR_PREVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDurabilityWearPreview",
+      "role": "DURABILITY_WEAR_PREVIEW",
+      "surface": "EQUIPMENT_DEEP",
+      "states": [
+        "HEALTHY",
+        "WORN",
+        "CRITICAL",
+        "REPAIRED"
+      ]
+    },
+    {
+      "atomId": "CRAFT_QUEUE_OVERVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCraftQueueOverview",
+      "role": "CRAFT_QUEUE_OVERVIEW",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "IDLE",
+        "QUEUED",
+        "CRAFTING",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "RECIPE_PREREQUISITE_CHAIN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRecipePrerequisiteChain",
+      "role": "RECIPE_PREREQUISITE_CHAIN",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "READY",
+        "BLOCKED",
+        "PARTIAL"
+      ]
+    },
+    {
+      "atomId": "MATERIAL_SHORTAGE_ROUTE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMaterialShortageRoute",
+      "role": "MATERIAL_SHORTAGE_ROUTE",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "READY",
+        "SHORTAGE",
+        "ROUTE_PINNED"
+      ]
+    },
+    {
+      "atomId": "SHOP_PRICE_DELTA_COMPARE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateShopPriceDeltaCompare",
+      "role": "SHOP_PRICE_DELTA_COMPARE",
+      "surface": "TRADE",
+      "states": [
+        "NORMAL",
+        "CHEAPER",
+        "EXPENSIVE"
+      ]
+    },
+    {
+      "atomId": "VENDOR_STOCK_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateVendorStockState",
+      "role": "VENDOR_STOCK_STATE",
+      "surface": "TRADE",
+      "states": [
+        "IN_STOCK",
+        "LOW_STOCK",
+        "SOLD_OUT",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "QUEST_DEPENDENCY_CHAIN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateQuestDependencyChain",
+      "role": "QUEST_DEPENDENCY_CHAIN",
+      "surface": "QUEST",
+      "states": [
+        "READY",
+        "BLOCKED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "atomId": "LORE_RELATION_GRAPH",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLoreRelationGraph",
+      "role": "LORE_RELATION_GRAPH",
+      "surface": "CODEX_COLLECTION",
+      "states": [
+        "UNKNOWN",
+        "PARTIAL",
+        "DISCOVERED"
+      ]
+    },
+    {
+      "atomId": "NPC_RELATIONSHIP_TIMELINE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcRelationshipTimeline",
+      "role": "NPC_RELATIONSHIP_TIMELINE",
+      "surface": "NPC_RELATIONSHIP",
+      "states": [
+        "NEUTRAL",
+        "CHANGED",
+        "THRESHOLD"
+      ]
+    },
+    {
+      "atomId": "PARTY_ROLE_OVERVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePartyRoleOverview",
+      "role": "PARTY_ROLE_OVERVIEW",
+      "surface": "PARTY_DEEP",
+      "states": [
+        "BALANCED",
+        "DUPLICATE",
+        "MISSING_ROLE"
+      ]
+    },
+    {
+      "atomId": "ROUTE_RISK_PREVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRouteRiskPreview",
+      "role": "ROUTE_RISK_PREVIEW",
+      "surface": "TRAVEL",
+      "states": [
+        "SAFE",
+        "CAUTION",
+        "DANGER",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "THREAT_EDGE_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateThreatEdgeIndicator",
+      "role": "THREAT_EDGE_INDICATOR",
+      "surface": "HUD",
+      "states": [
+        "CLEAR",
+        "CAUTION",
+        "DANGER"
+      ]
+    },
+    {
+      "atomId": "BOSS_PHASE_STRIP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBossPhaseStrip",
+      "role": "BOSS_PHASE_STRIP",
+      "surface": "HUD",
+      "states": [
+        "PHASE_1",
+        "PHASE_2",
+        "FINAL"
+      ]
+    },
+    {
+      "atomId": "WAVE_FORECAST_RIBBON",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateWaveForecastRibbon",
+      "role": "WAVE_FORECAST_RIBBON",
+      "surface": "HUD",
+      "states": [
+        "CURRENT",
+        "NEXT",
+        "ELITE",
+        "BOSS"
+      ]
+    },
+    {
+      "atomId": "STATUS_EFFECT_TIMELINE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStatusEffectTimeline",
+      "role": "STATUS_EFFECT_TIMELINE",
+      "surface": "HUD",
+      "states": [
+        "ACTIVE",
+        "EXPIRING",
+        "STACKED",
+        "CLEANSED"
+      ]
+    },
+    {
+      "atomId": "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateHousingStructuralSupportOverlay",
+      "role": "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "SUPPORTED",
+        "WEAK",
+        "UNSUPPORTED"
+      ]
+    },
+    {
+      "atomId": "HOUSING_ROOM_FUNCTION_HEATMAP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateHousingRoomFunctionHeatmap",
+      "role": "HOUSING_ROOM_FUNCTION_HEATMAP",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "LIVING",
+        "CRAFT",
+        "STORAGE",
+        "PATH"
+      ]
+    },
+    {
+      "atomId": "CROP_GROWTH_TIMELINE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCropGrowthTimeline",
+      "role": "CROP_GROWTH_TIMELINE",
+      "surface": "FARMING",
+      "states": [
+        "SEED",
+        "GROWING",
+        "READY",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "ACCESSIBILITY_REDUCED_FLASH_MODE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAccessibilityReducedFlashMode",
+      "role": "ACCESSIBILITY_REDUCED_FLASH_MODE",
+      "surface": "SETTINGS",
+      "states": [
+        "OFF",
+        "ON",
+        "PREVIEW"
+      ]
+    },
+    {
+      "atomId": "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAccessibilityColorBlindShapeBackup",
+      "role": "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+      "surface": "SETTINGS",
+      "states": [
+        "COLOR_ONLY",
+        "SHAPE_BACKUP",
+        "TEXT_BACKUP"
+      ]
+    },
+    {
+      "atomId": "LOADING_RETRY_WITH_CAUSE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLoadingRetryWithCause",
+      "role": "LOADING_RETRY_WITH_CAUSE",
+      "surface": "STATE_FEEDBACK",
+      "states": [
+        "FAILED",
+        "RETRYING",
+        "OFFLINE_OPTION"
+      ]
+    },
+    {
+      "atomId": "FAILURE_RECOVERY_CHECKPOINT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFailureRecoveryCheckpoint",
+      "role": "FAILURE_RECOVERY_CHECKPOINT",
+      "surface": "STATE_FEEDBACK",
+      "states": [
+        "AVAILABLE",
+        "RECOVERING",
+        "RESTORED"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·AI/NPC·전체 메뉴 시스템 v4",
+  "title": "Roblox 회사 공용 UI·인벤토리·메뉴·시스템 깊이 204종 v10",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -709,7 +2662,47 @@
     "SHOP_FULL",
     "STATE_FEEDBACK",
     "INPUT_HINT",
-    "SCREEN_TRANSITION"
+    "SCREEN_TRANSITION",
+    "ITEM_DETAIL",
+    "ITEM_COMPARE",
+    "ITEM_ACTIONS",
+    "ITEM_STATE",
+    "INVENTORY_DEEP",
+    "STASH",
+    "LOOT",
+    "QUICKSLOT",
+    "RADIAL_ACTION",
+    "LOADOUT",
+    "EQUIPMENT_DEEP",
+    "UPGRADE",
+    "REPAIR",
+    "DISMANTLE",
+    "CRAFTING_DEEP",
+    "TRADE",
+    "CODEX",
+    "RECENT_ITEMS",
+    "HOUSING_BUILD",
+    "PLACEMENT_FEEDBACK",
+    "SANDBOX_EDIT",
+    "HOUSING_MANAGEMENT",
+    "HOUSING_DECOR",
+    "SETTLEMENT",
+    "FARMING",
+    "AI_COMPANION",
+    "NPC_RELATIONSHIP",
+    "NPC_MEMORY",
+    "NPC_DIALOGUE_DEEP",
+    "NPC_SERVICE",
+    "NPC_QUEST",
+    "PARTY_DEEP",
+    "MOUNT_RIDE",
+    "MOUNT_SEATING",
+    "MOUNT_COMMAND",
+    "MOUNT_CARGO",
+    "MOUNT_STATUS",
+    "TRAVEL",
+    "PARRY_FEEDBACK",
+    "WORLD_PROP_INTERACTION"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -751,7 +2744,7 @@
   "iconAssetDependency": false,
   "vectorIconCount": 12,
   "continuationContract": {
-    "version": 3,
+    "version": 6,
     "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
     "infrastructureMutationAllowed": false,
     "flowMutationAllowed": false,
@@ -847,7 +2840,11 @@
       "COPY",
       "INTENSITY",
       "DURATION"
-    ]
+    ],
+    "deepSystemComponentCoverageRequired": true,
+    "housingSandboxCoverageRequired": true,
+    "aiNpcInteractionCoverageRequired": true,
+    "mountTravelCoverageRequired": true
   },
   "navigationContract": {
     "version": 1,
@@ -883,5 +2880,223 @@
     "LOADING_STATE",
     "FAILURE_STATE",
     "LOCKED_STATE"
-  ]
+  ],
+  "deepSystemContract": {
+    "version": 2,
+    "componentCount": 150,
+    "requiredFlows": [
+      "PICKUP>NEW_STATE>DETAIL>USE_OR_EQUIP",
+      "DETAIL>COMPARE>SET_SOCKET_UPGRADE",
+      "INVENTORY>CONTAINER_OR_STASH>TRANSFER",
+      "LOOT>TAKE_OR_TAKE_ALL>RECENT_ITEMS",
+      "ITEM>QUICKSLOT_OR_RADIAL>ACTION",
+      "GEAR>LOADOUT>COMPARE>UPGRADE_OR_REPAIR_OR_DISMANTLE",
+      "CRAFT_TREE>RECIPE_DETAIL>MATERIAL_TRACKING>CRAFT",
+      "SHOP>BUY_OR_SELL>BUYBACK",
+      "DISCOVERY>CODEX>COLLECTION_PROGRESS"
+    ],
+    "requiredItemStates": [
+      "NEW",
+      "FAVORITE",
+      "LOCKED",
+      "EQUIPPED",
+      "QUEST_BOUND",
+      "RECENTLY_ACQUIRED"
+    ],
+    "colorOnlyStateForbidden": true,
+    "touchKeyboardMouseGamepadParity": true,
+    "gameplayAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false,
+    "housingSandboxComponentCount": 24,
+    "aiNpcInteractionComponentCount": 24,
+    "mountTravelComponentCount": 22,
+    "parryPresentationComponentCount": 5,
+    "worldInteractionComponentCount": 10,
+    "subsystemDepthExpansionCount": 35,
+    "uiSubsystemAutomationContract": "assets/vibe-studio-asset-universe.js#COMMON_UI_SUBSYSTEM_VOLUME_BANDS",
+    "uiSubsystemIdeaPool": "assets/vibe-studio-asset-universe.js#COMMON_UI_SUBSYSTEM_IDEA_POOLS",
+    "menuInventoryDepth": [
+      "SMART_SORT",
+      "CAPACITY_FORECAST",
+      "OVERWEIGHT_RESOLUTION",
+      "EQUIP_CONFLICT",
+      "LOOT_FILTER",
+      "STASH_TRANSFER_QUEUE",
+      "SYSTEM_SWITCHER",
+      "BREADCRUMB_BACKSTACK",
+      "LAST_LOCATION_RESUME",
+      "CONTEXT_QUICK_ACTION",
+      "ONE_HAND_BOTTOM_NAV"
+    ],
+    "combatDepth": [
+      "THREAT_EDGE",
+      "BOSS_PHASE",
+      "WAVE_FORECAST",
+      "STATUS_TIMELINE"
+    ],
+    "housingFarmingDepth": [
+      "STRUCTURAL_SUPPORT",
+      "ROOM_FUNCTION",
+      "CROP_GROWTH"
+    ],
+    "accessibilityDepth": [
+      "REDUCED_FLASH",
+      "COLOR_BLIND_SHAPE_BACKUP",
+      "FAILURE_RECOVERY"
+    ]
+  },
+  "housingSandboxContract": {
+    "version": 1,
+    "referenceRule": "SURVIVAL_SANDBOX_HOUSING_COMMON_PRINCIPLES_ONLY_NO_COPY",
+    "requiredFlows": [
+      "CATALOG>PIECE>PLACEMENT_GHOST>SNAP_OR_FREE_PLACE>VALIDATION>PLACE",
+      "SELECT_OBJECT>MOVE_ROTATE_COPY_DELETE>UNDO_REDO",
+      "BUILDING>STABILITY_TIER>REPAIR_OR_DEMOLISH",
+      "HOUSE>OWNERSHIP_PERMISSION>UPKEEP_OPTIONAL>ROOM_SCORE",
+      "FURNITURE>CATALOG>PLACEMENT>MATERIAL_THEME",
+      "SETTLEMENT>HOUSING_STORAGE_CRAFTING_LIGHTING_FARMING_STATUS",
+      "FARM_PLOT>SEED>GROWTH>HARVEST",
+      "ANIMAL_HOUSING>FEED>STATE>PRODUCT",
+      "PROCESSING>INPUT>QUEUE>OUTPUT"
+    ],
+    "gameplayAuthority": false,
+    "placementAuthority": false,
+    "stabilityAuthority": false,
+    "ownershipAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  },
+  "internalAssetStandard": {
+    "version": 1,
+    "routineReviewContract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT",
+    "genreExpectations": "assets/vibe-studio-asset-universe.js#COMMON_GENRE_SYSTEM_EXPECTATIONS",
+    "crossPackAudit": "assets/vibe-studio-asset-universe.js#auditCommonLibrarySystemDepth",
+    "companyLibrary": "company-asset-library.json",
+    "flowExcluded": true,
+    "workflowExcluded": true,
+    "queueExcluded": true,
+    "schedulerExcluded": true,
+    "deploymentExcluded": true,
+    "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "aiNpcInteractionContract": {
+    "version": 1,
+    "componentCount": 24,
+    "requiredFlows": [
+      "NPC>TOPIC_OR_CONTEXT_REACTION>DIALOGUE_OR_SERVICE",
+      "NPC>QUEST_HANDOFF>PROGRESS_OR_REWARD_PREVIEW",
+      "NPC>RECRUIT>COMPANION_STATUS>COMMAND_OR_ROLE",
+      "COMPANION>FORMATION_COMBAT_STANCE>TARGET_OR_HELP",
+      "COMPANION>DOWNED>RESCUE_OR_REVIVE_PRESENTATION",
+      "COMPANION>INVENTORY_HANDOFF_OR_GIFT>RELATIONSHIP_PRESENTATION",
+      "NPC>MEMORY_SUMMARY>RUMOR_KNOWLEDGE>CONTEXT_REACTION",
+      "CAMP>ACTIVITY>PARTY_TACTICS"
+    ],
+    "aiDecisionAuthority": false,
+    "memoryTruthAuthority": false,
+    "dialogueTruthAuthority": false,
+    "relationshipAuthority": false,
+    "questAuthority": false,
+    "combatAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  },
+  "mountTravelContract": {
+    "version": 1,
+    "componentCount": 22,
+    "requiredFlows": [
+      "APPROACH>MOUNT_PROMPT>BOARDING>SEAT>RIDING_HUD",
+      "RIDING>STAMINA_SPEED_DAMAGE_OR_FUEL_STATUS",
+      "RIDE>PASSENGERS>SEAT_SWITCH>DISEMBARK",
+      "MOUNT>COMMAND_OR_RECALL>ARRIVAL_STATE",
+      "MOUNT_OR_VEHICLE>CARGO_OR_EQUIPMENT>TRANSFER",
+      "DESTINATION>ROUTE>TRAVEL_PROGRESS>ARRIVAL",
+      "ROUTE>TERRAIN_ACCESS_WARNING>REROUTE_OR_BLOCKED"
+    ],
+    "movementAuthority": false,
+    "physicsAuthority": false,
+    "speedAuthority": false,
+    "seatAuthority": false,
+    "mountOwnershipAuthority": false,
+    "fuelAuthority": false,
+    "cargoAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  },
+  "parryPresentationContract": {
+    "version": 1,
+    "components": [
+      "PARRY_TIMING_INDICATOR",
+      "GUARD_METER",
+      "GUARD_BREAK_WARNING",
+      "COUNTER_READY_INDICATOR",
+      "ATTACK_TELEGRAPH_INDICATOR"
+    ],
+    "states": [
+      "NORMAL_BLOCK",
+      "PERFECT_PARRY",
+      "GUARD_BREAK",
+      "COUNTER_READY",
+      "ATTACK_TELEGRAPH"
+    ],
+    "reducedMotionSafe": true,
+    "colorOnlyStateForbidden": true,
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "staminaAuthority": false,
+    "stunAuthority": false
+  },
+  "worldPropInteractionContract": {
+    "version": 1,
+    "components": [
+      "WORLD_PROP_INTERACTION_PROMPT",
+      "WORLD_PROP_ACTION_WHEEL",
+      "INTERACTION_PROGRESS",
+      "INTERACTION_STATE_CARD",
+      "SEAT_INTERACTION_PROMPT",
+      "BED_INTERACTION_PROMPT",
+      "HARVEST_INTERACTION_PROMPT",
+      "CONTAINER_INTERACTION_PROMPT",
+      "LIGHT_CONTROL_PROMPT",
+      "READ_INSPECT_PANEL"
+    ],
+    "actions": [
+      "INSPECT",
+      "READ",
+      "OPEN",
+      "STORAGE",
+      "SIT",
+      "SLEEP",
+      "CRAFT",
+      "COOK",
+      "PLANT",
+      "HARVEST",
+      "FEED",
+      "TOGGLE",
+      "SHOP",
+      "PLACE",
+      "VAULT",
+      "DRAW_WATER",
+      "USE_CONTROL"
+    ],
+    "inputModes": [
+      "TOUCH",
+      "KEYBOARD_MOUSE",
+      "GAMEPAD"
+    ],
+    "interactionAuthority": false,
+    "storageAuthority": false,
+    "craftingAuthority": false,
+    "farmingAuthority": false,
+    "respawnAuthority": false
+  },
+  "internalAssetAutomation": {
+    "version": 1,
+    "contract": "company-asset-library.json#internalAssetLibraryAutomation",
+    "autoRegistrySync": true,
+    "looseTargetBands": true,
+    "hardMaximum": null,
+    "overSoftLimitBlocksUse": false
+  }
 }

@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-building-v1/RobloxCommonBuilding.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 건축 모듈 8종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 건축/하우징 모듈 20종 생성
 -- 원칙: 순수 표현 자산만 제공한다. 충돌/건설비용/내구도/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonBuilding = {}
@@ -127,6 +127,67 @@ local Catalog = table.freeze({
 			trim = c(61, 54, 48),
 			accent = c(152, 116, 75),
 		}),
+	}),
+
+	FOUNDATION_TRIANGLE = table.freeze({
+		id="FOUNDATION_TRIANGLE",name="삼각 기초",familyRootId="BUILDING_FOUNDATION",family="BUILDING",subfamily="FOUNDATION_TRIANGLE",
+		buildingRole="FOUNDATION",housingShape="FOUNDATION_TRIANGLE",snapClass="FOUNDATION",stabilityRole="PRIMARY_SUPPORT",silhouette="TRIANGLE_FOUNDATION",
+		palette=table.freeze({main=c(114,101,82),trim=c(72,64,54),accent=c(151,133,105)}),
+	}),
+	FENCE_FOUNDATION = table.freeze({
+		id="FENCE_FOUNDATION",name="울타리 기초",familyRootId="BUILDING_FOUNDATION",family="BUILDING",subfamily="FENCE_FOUNDATION",
+		buildingRole="BOUNDARY_FOUNDATION",housingShape="FENCE_FOUNDATION",snapClass="FOUNDATION_EDGE",stabilityRole="PRIMARY_SUPPORT",silhouette="NARROW_FOUNDATION_STRIP",
+		palette=table.freeze({main=c(112,94,72),trim=c(68,58,48),accent=c(157,128,89)}),
+	}),
+	HALF_WALL = table.freeze({
+		id="HALF_WALL",name="반벽",familyRootId="BUILDING_WALL",family="BUILDING",subfamily="HALF_WALL",
+		buildingRole="WALL",housingShape="HALF_WALL",snapClass="WALL",stabilityRole="SUPPORTED",silhouette="LOW_WALL_PANEL",
+		palette=table.freeze({main=c(137,122,101),trim=c(78,65,53),accent=c(180,153,113)}),
+	}),
+	DOOR_FRAME = table.freeze({
+		id="DOOR_FRAME",name="문틀",familyRootId="BUILDING_OPENING",family="BUILDING",subfamily="DOOR_FRAME",
+		buildingRole="DOOR_OPENING",housingShape="DOOR_FRAME",snapClass="WALL_OPENING",stabilityRole="SUPPORTED",silhouette="RECT_DOOR_FRAME",
+		palette=table.freeze({main=c(133,116,95),trim=c(74,61,50),accent=c(176,146,103)}),
+	}),
+	WINDOW_FRAME = table.freeze({
+		id="WINDOW_FRAME",name="창틀",familyRootId="BUILDING_OPENING",family="BUILDING",subfamily="WINDOW_FRAME",
+		buildingRole="WINDOW_OPENING",housingShape="WINDOW_FRAME",snapClass="WALL_OPENING",stabilityRole="SUPPORTED",silhouette="RECT_WINDOW_FRAME",
+		palette=table.freeze({main=c(133,116,95),trim=c(75,63,52),accent=c(183,157,116)}),
+	}),
+	CEILING_TILE = table.freeze({
+		id="CEILING_TILE",name="천장 모듈",familyRootId="BUILDING_CEILING",family="BUILDING",subfamily="CEILING_TILE",
+		buildingRole="CEILING",housingShape="CEILING_TILE",snapClass="CEILING",stabilityRole="SPAN_SUPPORTED",silhouette="SQUARE_CEILING_TILE",
+		palette=table.freeze({main=c(119,92,66),trim=c(74,59,48),accent=c(157,123,82)}),
+	}),
+	CEILING_WEDGE = table.freeze({
+		id="CEILING_WEDGE",name="삼각 천장",familyRootId="BUILDING_CEILING",family="BUILDING",subfamily="CEILING_WEDGE",
+		buildingRole="CEILING",housingShape="CEILING_WEDGE",snapClass="CEILING",stabilityRole="SPAN_SUPPORTED",silhouette="TRIANGLE_CEILING",
+		palette=table.freeze({main=c(119,92,66),trim=c(74,59,48),accent=c(157,123,82)}),
+	}),
+	ROOF_SLOPE = table.freeze({
+		id="ROOF_SLOPE",name="경사 지붕",familyRootId="BUILDING_ROOF",family="BUILDING",subfamily="ROOF_SLOPE",
+		buildingRole="ROOF",housingShape="ROOF_SLOPE",snapClass="ROOF",stabilityRole="SPAN_SUPPORTED",silhouette="SLOPED_ROOF_PANEL",
+		palette=table.freeze({main=c(96,82,70),trim=c(58,52,48),accent=c(143,116,86)}),
+	}),
+	ROOF_CORNER = table.freeze({
+		id="ROOF_CORNER",name="모서리 지붕",familyRootId="BUILDING_ROOF",family="BUILDING",subfamily="ROOF_CORNER",
+		buildingRole="ROOF",housingShape="ROOF_CORNER",snapClass="ROOF",stabilityRole="SPAN_SUPPORTED",silhouette="CORNER_ROOF_WEDGE",
+		palette=table.freeze({main=c(96,82,70),trim=c(58,52,48),accent=c(143,116,86)}),
+	}),
+	GATE_FRAME = table.freeze({
+		id="GATE_FRAME",name="대문 틀",familyRootId="BUILDING_GATE",family="BUILDING",subfamily="GATE_FRAME",
+		buildingRole="GATE_OPENING",housingShape="GATE_FRAME",snapClass="WALL_OPENING",stabilityRole="SUPPORTED",silhouette="WIDE_GATE_FRAME",
+		palette=table.freeze({main=c(116,100,82),trim=c(69,57,48),accent=c(163,132,90)}),
+	}),
+	LADDER = table.freeze({
+		id="LADDER",name="사다리",familyRootId="BUILDING_VERTICAL_LINK",family="BUILDING",subfamily="LADDER",
+		buildingRole="VERTICAL_LINK_VISUAL",housingShape="LADDER",snapClass="WALL_ATTACHMENT",stabilityRole="ATTACHED",silhouette="TWIN_RAIL_RUNGS",
+		palette=table.freeze({main=c(104,76,53),trim=c(70,55,44),accent=c(149,112,72)}),
+	}),
+	WALL_TRIM = table.freeze({
+		id="WALL_TRIM",name="벽 장식띠",familyRootId="BUILDING_TRIM",family="BUILDING",subfamily="WALL_TRIM",
+		buildingRole="EXTERIOR_TRIM",housingShape="WALL_TRIM",snapClass="WALL_ATTACHMENT",stabilityRole="ATTACHED",silhouette="LONG_TRIM_STRIP",
+		palette=table.freeze({main=c(91,72,57),trim=c(60,51,45),accent=c(156,121,79)}),
 	}),
 })
 
@@ -357,6 +418,56 @@ local function addRailing(model, root, row, level)
 	end
 end
 
+
+local function addHousingModule(model,root,row,level)
+	local p=row.palette
+	local shape=row.housingShape
+	if shape=="FOUNDATION_TRIANGLE" or shape=="CEILING_WEDGE" then
+		local piece=weld(root,wedge("Triangle",Vector3.new(6,shape=="FOUNDATION_TRIANGLE" and 0.70 or 0.34,6),p.main,Enum.Material.Slate),CFrame.new(0,shape=="FOUNDATION_TRIANGLE" and 0.35 or 0.17,0))
+		piece:SetAttribute("SnapVisualRole",row.snapClass)
+	elseif shape=="FENCE_FOUNDATION" then
+		weld(root,makePart("Strip",Vector3.new(6,0.72,0.72),p.main,Enum.Material.Slate),CFrame.new(0,0.36,0))
+	elseif shape=="HALF_WALL" then
+		weld(root,makePart("Panel",Vector3.new(6,2.6,0.38),p.main,Enum.Material.Brick),CFrame.new(0,1.3,0))
+		if detail(level,2) then weld(root,makePart("TopCap",Vector3.new(6.15,0.22,0.50),p.accent,Enum.Material.WoodPlanks),CFrame.new(0,2.55,0)) end
+	elseif shape=="DOOR_FRAME" then
+		for _,x in ipairs({-2.15,2.15}) do weld(root,makePart("Post"..x,Vector3.new(0.72,5,0.46),p.main,Enum.Material.Brick),CFrame.new(x,2.5,0)) end
+		weld(root,makePart("Header",Vector3.new(5.0,0.82,0.46),p.main,Enum.Material.Brick),CFrame.new(0,4.59,0))
+		if detail(level,2) then weld(root,makePart("InnerTrim",Vector3.new(3.65,0.18,0.54),p.accent,Enum.Material.WoodPlanks),CFrame.new(0,4.08,0)) end
+	elseif shape=="WINDOW_FRAME" then
+		for _,x in ipairs({-2.25,2.25}) do weld(root,makePart("Side"..x,Vector3.new(0.55,5,0.42),p.main,Enum.Material.Brick),CFrame.new(x,2.5,0)) end
+		for _,y in ipairs({0.45,4.55}) do weld(root,makePart("Rail"..y,Vector3.new(4.1,0.55,0.42),p.main,Enum.Material.Brick),CFrame.new(0,y,0)) end
+		if detail(level,2) then
+			weld(root,makePart("CrossV",Vector3.new(0.14,3.45,0.24),p.trim,Enum.Material.WoodPlanks),CFrame.new(0,2.5,-0.05))
+			weld(root,makePart("CrossH",Vector3.new(4.0,0.14,0.24),p.trim,Enum.Material.WoodPlanks),CFrame.new(0,2.5,-0.05))
+		end
+	elseif shape=="CEILING_TILE" then
+		weld(root,makePart("Ceiling",Vector3.new(6,0.34,6),p.main,Enum.Material.WoodPlanks),CFrame.new(0,0.17,0))
+		if detail(level,2) then
+			for _,x in ipairs({-2.75,2.75}) do weld(root,makePart("Edge"..x,Vector3.new(0.18,0.22,5.9),p.trim,Enum.Material.WoodPlanks),CFrame.new(x,0.37,0)) end
+		end
+	elseif shape=="ROOF_SLOPE" then
+		weld(root,wedge("Slope",Vector3.new(6,1.5,6),p.main,Enum.Material.Slate),CFrame.new(0,0.75,0))
+		if detail(level,2) then weld(root,makePart("Eave",Vector3.new(6.2,0.22,0.36),p.trim,Enum.Material.WoodPlanks),CFrame.new(0,0.18,-2.85)) end
+	elseif shape=="ROOF_CORNER" then
+		weld(root,wedge("CornerA",Vector3.new(3.2,1.5,6),p.main,Enum.Material.Slate),CFrame.new(-1.45,0.75,0))
+		weld(root,wedge("CornerB",Vector3.new(3.2,1.5,6),p.main,Enum.Material.Slate),CFrame.new(1.45,0.75,0)*CFrame.Angles(0,math.rad(180),0))
+	elseif shape=="GATE_FRAME" then
+		for _,x in ipairs({-3.0,3.0}) do
+			weld(root,makePart("GatePost"..x,Vector3.new(0.90,6.2,0.90),p.main,Enum.Material.Brick),CFrame.new(x,3.1,0))
+		end
+		weld(root,makePart("GateHeader",Vector3.new(6.9,0.95,0.90),p.accent,Enum.Material.Slate),CFrame.new(0,5.8,0))
+	elseif shape=="LADDER" then
+		for _,x in ipairs({-0.72,0.72}) do weld(root,makePart("Rail"..x,Vector3.new(0.20,5.6,0.20),p.main,Enum.Material.WoodPlanks),CFrame.new(x,2.8,0)) end
+		for i=0,7 do weld(root,makePart("Rung"..i,Vector3.new(1.62,0.16,0.20),p.accent,Enum.Material.WoodPlanks),CFrame.new(0,0.45+i*0.68,0)) end
+	elseif shape=="WALL_TRIM" then
+		weld(root,makePart("Trim",Vector3.new(6,0.34,0.42),p.main,Enum.Material.WoodPlanks),CFrame.new(0,0.17,0))
+		if detail(level,3) then
+			for i=-2,2 do weld(root,makePart("Stud"..i,Vector3.new(0.12,0.48,0.52),p.accent,Enum.Material.Metal),CFrame.new(i*1.15,0.18,0)) end
+		end
+	end
+end
+
 local BUILDERS = table.freeze({
 	FLOOR_TILE = addFloor,
 	WALL_WINDOW = addWindowWall,
@@ -366,6 +477,18 @@ local BUILDERS = table.freeze({
 	ARCHWAY = addArchway,
 	ROOF_FLAT = addFlatRoof,
 	RAILING = addRailing,
+	FOUNDATION_TRIANGLE = addHousingModule,
+	FENCE_FOUNDATION = addHousingModule,
+	HALF_WALL = addHousingModule,
+	DOOR_FRAME = addHousingModule,
+	WINDOW_FRAME = addHousingModule,
+	CEILING_TILE = addHousingModule,
+	CEILING_WEDGE = addHousingModule,
+	ROOF_SLOPE = addHousingModule,
+	ROOF_CORNER = addHousingModule,
+	GATE_FRAME = addHousingModule,
+	LADDER = addHousingModule,
+	WALL_TRIM = addHousingModule,
 })
 
 local function applyModelMetadata(model, row, quality)
@@ -373,6 +496,9 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("StudioAssetSubfamily", row.subfamily)
 	model:SetAttribute("StudioAssetBuildingRole", row.buildingRole)
 	model:SetAttribute("StudioAssetSilhouette", row.silhouette)
+	model:SetAttribute("HousingSnapClass", row.snapClass or "NONE")
+	model:SetAttribute("HousingStabilityRole", row.stabilityRole or "VISUAL_ONLY")
+	model:SetAttribute("HousingBuildingRole", row.buildingRole or "DECORATION")
 	model:SetAttribute("StudioAssetQualityLevel", quality)
 	model:SetAttribute("StudioAssetQualityTarget", 100)
 	model:SetAttribute("RuntimeVerificationState", "PENDING_STUDIO")

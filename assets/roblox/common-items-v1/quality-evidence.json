@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 3,
   "packId": "roblox-common-items-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -15,7 +15,8 @@
       "projectOriginalLicenseAndProvenance": 10,
       "automaticCrossGameReuseMetadata": 10,
       "gameplayAuthorityIsolation": 5
-    }
+    },
+    "itemCount": 40
   },
   "quality120": {
     "target": 100,
@@ -27,5 +28,50 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 8
+  "sourceAssetCount": 40,
+  "systemDepth": {
+    "inventoryRoleCoverage": [
+      "CONSUMABLE",
+      "FOOD",
+      "INGREDIENT",
+      "RESOURCE",
+      "CRAFT_MATERIAL",
+      "UPGRADE_MATERIAL",
+      "QUEST_ITEM",
+      "KEY_ITEM",
+      "LORE",
+      "UTILITY",
+      "AMMUNITION",
+      "THROWABLE",
+      "TREASURE",
+      "CURRENCY_CONTAINER"
+    ],
+    "sameAssetDnaAcross": [
+      "WORLD_MODEL",
+      "DROP_MODEL",
+      "VIEWPORT_ICON",
+      "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+    ],
+    "gameplayAuthority": false,
+    "target": "DEEP_COMMON_ITEM_PRESENTATION_BASE",
+    "utilityGadgetCount": 16,
+    "utilityFamilies": [
+      "TRAVERSAL_GRAPPLE",
+      "SCAN_INSPECT",
+      "OBSERVE_ZOOM",
+      "NAVIGATION",
+      "WORLD_MARKER",
+      "CLIMB_ANCHOR",
+      "FISHING",
+      "DIG",
+      "WATER_PLANTS",
+      "PHOTO_RECORD",
+      "SIGNAL_REFLECT",
+      "ROPE_ATTACH",
+      "REPAIR",
+      "WAYPOINT_SIGNAL",
+      "SPECIMEN_COLLECT",
+      "CAMP_DEPLOY"
+    ]
+  }
 }

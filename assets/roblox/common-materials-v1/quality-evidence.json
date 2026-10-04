@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-materials-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -16,7 +16,9 @@
       "gameplayAuthorityIsolation": 5,
       "validRobloxMaterialEnums": 5,
       "physicalPropertyPreservationRuntimeClaim": false,
-      "elevenReusableCurrentAtoms": 15
+      "twentyFiveReusableCurrentAtoms": 20,
+      "weatherDamageWetDryStyleVariants": true,
+      "waterTransparencyIsPresentationOnly": true
     }
   },
   "quality120": {
@@ -30,5 +32,30 @@
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
   "physicalPropertiesPreservedByDefault": true,
-  "sourceAssetCount": 11
+  "sourceAssetCount": 25,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 11,
+    "currentCount": 25,
+    "addedSurfaceFamilies": [
+      "SKIN",
+      "BONE",
+      "WATER",
+      "MUD",
+      "SAND",
+      "SNOW",
+      "MOSS",
+      "EMISSIVE",
+      "CORROSION",
+      "DIRT",
+      "WET_DRY",
+      "DAMAGE",
+      "WEATHERING",
+      "STYLE_VARIANT"
+    ],
+    "physicalPropertiesPreservedByDefault": true,
+    "collisionTouchQueryMutation": false,
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  }
 }
