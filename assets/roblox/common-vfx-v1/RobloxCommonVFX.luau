@@ -210,6 +210,189 @@ function RobloxCommonVFX.CreateShapeBurst(options)
   return folder
 end
 
+
+function RobloxCommonVFX.CreateDangerTelegraph(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.65, 0.18, 2.0)
+  local radius = clamp(options.radius or 3.0, 0.75, 12.0)
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(255, 93, 79)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonDangerTelegraph"
+  tag(folder, "DANGER_TELEGRAPH")
+  folder.Parent = parent
+
+  local ring = visualPart("DangerRing", Vector3.new(0.08, radius * 2, radius * 2), color, "CYLINDER")
+  ring.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+  ring.Transparency = 0.48
+  ring.Parent = folder
+  tag(ring, "DANGER_TELEGRAPH")
+
+  local center = visualPart("DangerCenter", Vector3.new(0.06, radius * 1.15, radius * 1.15), color, "CYLINDER")
+  center.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+  center.Transparency = 0.78
+  center.Parent = folder
+  tag(center, "DANGER_TELEGRAPH")
+
+  TweenService:Create(ring, TweenInfo.new(duration, Enum.EasingStyle.Linear), {Transparency = 0.15}):Play()
+  TweenService:Create(center, TweenInfo.new(duration, Enum.EasingStyle.Linear), {Transparency = 0.48}):Play()
+  Debris:AddItem(folder, duration + 0.12)
+  return folder
+end
+
+function RobloxCommonVFX.CreateHealBurst(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.55, 0.18, 1.2)
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(106, 224, 153)
+  local accent = typeof(options.accent) == "Color3" and options.accent or Color3.fromRGB(221, 255, 232)
+  local count = math.floor(clamp(options.count or 6, 4, 10))
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonHealBurst"
+  tag(folder, "HEAL_BURST")
+  folder.Parent = parent
+
+  for i = 1, count do
+    local angle = (i - 1) * math.pi * 2 / count
+    local orb = visualPart("HealOrb_" .. i, Vector3.new(0.28, 0.28, 0.28), i % 2 == 0 and accent or color, "BALL")
+    orb.CFrame = cframe * CFrame.new(math.cos(angle) * 0.55, 0, math.sin(angle) * 0.55)
+    orb.Parent = folder
+    tag(orb, "HEAL_BURST")
+    local target = cframe.Position + Vector3.new(math.cos(angle) * 1.15, 2.0 + (i % 2) * 0.45, math.sin(angle) * 1.15)
+    TweenService:Create(orb, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+      CFrame = CFrame.new(target),
+      Size = Vector3.new(0.08, 0.08, 0.08),
+      Transparency = 1,
+    }):Play()
+  end
+
+  local core = visualPart("HealCore", Vector3.new(0.7, 0.7, 0.7), color, "BALL")
+  core.CFrame = cframe
+  core.Parent = folder
+  tag(core, "HEAL_BURST")
+  TweenService:Create(core, TweenInfo.new(duration * 0.65, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = core.Size * 2.4,
+    Transparency = 1,
+  }):Play()
+
+  Debris:AddItem(folder, duration + 0.12)
+  return folder
+end
+
+function RobloxCommonVFX.CreatePickupSparkle(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.42, 0.14, 0.9)
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(255, 225, 118)
+  local count = math.floor(clamp(options.count or 5, 3, 8))
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonPickupSparkle"
+  tag(folder, "PICKUP_SPARKLE")
+  folder.Parent = parent
+
+  for i = 1, count do
+    local angle = (i - 1) * math.pi * 2 / count
+    local shard = visualPart("Sparkle_" .. i, Vector3.new(0.12, 0.55, 0.12), color)
+    shard.CFrame = cframe * CFrame.new(math.cos(angle) * 0.45, 0.15, math.sin(angle) * 0.45) * CFrame.Angles(0, 0, angle)
+    shard.Parent = folder
+    tag(shard, "PICKUP_SPARKLE")
+    local target = cframe.Position + Vector3.new(math.cos(angle) * 1.35, 1.15 + (i % 2) * 0.35, math.sin(angle) * 1.35)
+    TweenService:Create(shard, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+      CFrame = CFrame.new(target) * CFrame.Angles(0, 0, angle + math.rad(90)),
+      Size = Vector3.new(0.04, 0.18, 0.04),
+      Transparency = 1,
+    }):Play()
+  end
+
+  Debris:AddItem(folder, duration + 0.12)
+  return folder
+end
+
+function RobloxCommonVFX.CreateLevelUpBurst(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.70, 0.25, 1.5)
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(118, 179, 255)
+  local accent = typeof(options.accent) == "Color3" and options.accent or Color3.fromRGB(245, 230, 142)
+  local count = math.floor(clamp(options.count or 8, 6, 12))
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonLevelUpBurst"
+  tag(folder, "LEVEL_UP_BURST")
+  folder.Parent = parent
+
+  local ring = visualPart("LevelRing", Vector3.new(0.10, 2.4, 2.4), accent, "CYLINDER")
+  ring.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+  ring.Parent = folder
+  tag(ring, "LEVEL_UP_BURST")
+  TweenService:Create(ring, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+    Size = Vector3.new(0.05, 7.0, 7.0),
+    Transparency = 1,
+  }):Play()
+
+  for i = 1, count do
+    local angle = (i - 1) * math.pi * 2 / count
+    local ray = visualPart("LevelRay_" .. i, Vector3.new(0.16, 0.16, 1.35), i % 2 == 0 and accent or color)
+    local dir = Vector3.new(math.cos(angle), 0.65, math.sin(angle)).Unit
+    ray.CFrame = cframe * CFrame.lookAt(Vector3.zero, dir)
+    ray.Parent = folder
+    tag(ray, "LEVEL_UP_BURST")
+    local target = cframe.Position + dir * 5.2
+    TweenService:Create(ray, TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+      CFrame = CFrame.lookAt(target, target + dir),
+      Size = Vector3.new(0.04, 0.04, 0.42),
+      Transparency = 1,
+    }):Play()
+  end
+
+  Debris:AddItem(folder, duration + 0.15)
+  return folder
+end
+
+function RobloxCommonVFX.CreateShieldHit(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local duration = clamp(options.duration or 0.36, 0.12, 0.9)
+  local color = typeof(options.color) == "Color3" and options.color or Color3.fromRGB(113, 183, 255)
+  local accent = typeof(options.accent) == "Color3" and options.accent or Color3.fromRGB(218, 240, 255)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonShieldHit"
+  tag(folder, "SHIELD_HIT")
+  folder.Parent = parent
+
+  local disc = visualPart("ShieldDisc", Vector3.new(0.12, 2.5, 2.5), color, "CYLINDER")
+  disc.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+  disc.Transparency = 0.42
+  disc.Parent = folder
+  tag(disc, "SHIELD_HIT")
+
+  local core = visualPart("ShieldCore", Vector3.new(0.18, 0.72, 0.72), accent, "CYLINDER")
+  core.CFrame = cframe * CFrame.Angles(0, 0, math.rad(90))
+  core.Parent = folder
+  tag(core, "SHIELD_HIT")
+
+  TweenService:Create(disc, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = Vector3.new(0.05, 4.1, 4.1),
+    Transparency = 1,
+  }):Play()
+  TweenService:Create(core, TweenInfo.new(duration * 0.7, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+    Size = Vector3.new(0.05, 1.65, 1.65),
+    Transparency = 1,
+  }):Play()
+
+  Debris:AddItem(folder, duration + 0.12)
+  return folder
+end
+
 function RobloxCommonVFX.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "IMPACT_FLASH" then
@@ -219,16 +402,26 @@ function RobloxCommonVFX.Create(atomId, options)
     return RobloxCommonVFX.AttachShortTrail(options.hostPart, options)
   elseif id == "SHAPE_BURST" then
     return RobloxCommonVFX.CreateShapeBurst(options)
+  elseif id == "DANGER_TELEGRAPH" then
+    return RobloxCommonVFX.CreateDangerTelegraph(options)
+  elseif id == "HEAL_BURST" then
+    return RobloxCommonVFX.CreateHealBurst(options)
+  elseif id == "PICKUP_SPARKLE" then
+    return RobloxCommonVFX.CreatePickupSparkle(options)
+  elseif id == "LEVEL_UP_BURST" then
+    return RobloxCommonVFX.CreateLevelUpBurst(options)
+  elseif id == "SHIELD_HIT" then
+    return RobloxCommonVFX.CreateShieldHit(options)
   end
   error("UNKNOWN_COMMON_VFX_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonVFX.Audit()
   return table.freeze({
-    version = 1,
+    version = 2,
     packId = "roblox-common-vfx-v1",
-    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST"}),
-    atomCount = 3,
+    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "DANGER_TELEGRAPH", "HEAL_BURST", "PICKUP_SPARKLE", "LEVEL_UP_BURST", "SHIELD_HIT"}),
+    atomCount = 8,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
