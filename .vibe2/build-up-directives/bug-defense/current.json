@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g3-336f197522e4",
-  "directiveFingerprint": "336f197522e4890ac49afc43595e62dab806a5d09918bbf904d52ebf745f4789",
-  "previousDirectiveFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
-  "forbiddenRepeatFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
+  "directiveId": "bug-defense-build-up-g2-703cfc9d5541",
+  "directiveFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
+  "previousDirectiveFingerprint": "9372df2a3a798bdbeb5e31243fadb2f3101ee5c7672ac3e7cac85a9e53b8ea07",
+  "forbiddenRepeatFingerprint": "9372df2a3a798bdbeb5e31243fadb2f3101ee5c7672ac3e7cac85a9e53b8ea07",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
-  "generation": 3,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
+  "sourceTreeFingerprint": "9e12efda726a161ae595855be281ea66b68909412114dfa294b7730382443054",
   "designFingerprint": "b777a30851e67b1b07440b483d12aa7ca6d97f22da5a51fa1a648cdc58102545",
   "gameIdentityAndNonNegotiables": {
     "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
@@ -53,51 +53,52 @@
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "AUDIO_IMPLEMENTATION_SPARSE",
+      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 205,
-      "progression": 203,
-      "ai": 49,
-      "save": 55,
+      "combat": 88,
+      "progression": 135,
+      "ai": 19,
+      "save": 49,
       "multiplayer": 13,
       "animation": 28,
-      "motionStates": 172,
-      "gameFeel": 28,
+      "motionStates": 112,
+      "gameFeel": 22,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 17,
       "ui": 57,
-      "uiFlow": 35,
+      "uiFlow": 32,
       "entryFlow": 24,
       "loadingFlow": 0,
       "input": 59,
-      "map": 140,
-      "landmark": 60,
+      "map": 94,
+      "landmark": 6,
       "interaction": 29,
       "inventory": 2,
-      "equipment": 3,
+      "equipment": 0,
       "settings": 1,
       "feedback": 67,
-      "session": 101,
-      "content": 178,
-      "choice": 16,
+      "session": 11,
+      "content": 93,
+      "choice": 12,
       "connection": 0,
-      "performance": 22,
+      "performance": 16,
       "lighting": 37,
-      "primitive": 18,
+      "primitive": 14,
       "todo": 0,
-      "errorRecovery": 19
+      "errorRecovery": 11
     },
     "topFiles": [
       {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "score": 475
-      },
-      {
         "file": "roblox-games/bug-defense/shared/GameConfig.luau",
         "score": 251
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "score": 229
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
@@ -110,38 +111,6 @@
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 284,
-        "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "context": "local function damageEnemy(player, enemy, amount)",
-        "score": 130
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 360,
-        "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "context": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "score": 130
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 400,
-        "kind": "FUNCTION",
-        "symbol": "spawnBoss",
-        "context": "local function spawnBoss(player, wave)",
-        "score": 114
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 608,
-        "kind": "FUNCTION",
-        "symbol": "reviewDefenseState",
-        "context": "local function reviewDefenseState(player)",
-        "score": 114
-      },
-      {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
         "line": 356,
         "kind": "FUNCTION",
@@ -151,27 +120,59 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 555,
+        "line": 42,
         "kind": "FUNCTION",
-        "symbol": "attackEnemy",
-        "context": "local function attackEnemy(player)",
-        "score": 106
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 314,
-        "kind": "FUNCTION",
-        "symbol": "runEnemyAI",
-        "context": "local function runEnemyAI(player, enemy)",
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
         "score": 98
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 182,
+        "line": 51,
         "kind": "FUNCTION",
-        "symbol": "getSession",
-        "context": "local function getSession(player)",
-        "score": 90
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 67,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 83,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 99,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 115,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 131,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler7",
+        "context": "local function scopeHandler7(player)",
+        "score": 98
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
@@ -183,82 +184,10 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 220,
+        "line": 32,
         "kind": "FUNCTION",
-        "symbol": "finishWave",
-        "context": "local function finishWave(player, reason)",
-        "score": 82
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 46,
-        "kind": "FUNCTION",
-        "symbol": "initializeTransientState",
-        "context": "local function initializeTransientState(player)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 78,
-        "kind": "FUNCTION",
-        "symbol": "recordAction",
-        "context": "local function recordAction(player, scopeId, learningPattern, scoreDelta, progressDelta)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 196,
-        "kind": "FUNCTION",
-        "symbol": "countModels",
-        "context": "local function countModels(models)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 206,
-        "kind": "FUNCTION",
-        "symbol": "clearEnemies",
-        "context": "local function clearEnemies(session)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 236,
-        "kind": "FUNCTION",
-        "symbol": "retryWave",
-        "context": "local function retryWave(player, reason)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 432,
-        "kind": "FUNCTION",
-        "symbol": "analyzeWaveStrategy",
-        "context": "local function analyzeWaveStrategy(player)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 447,
-        "kind": "FUNCTION",
-        "symbol": "createPredatorTower",
-        "context": "local function createPredatorTower(player)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 569,
-        "kind": "FUNCTION",
-        "symbol": "useCombatSkill",
-        "context": "local function useCombatSkill(player)",
-        "score": 74
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 591,
-        "kind": "FUNCTION",
-        "symbol": "prepareNextWave",
-        "context": "local function prepareNextWave(player)",
+        "symbol": "initializePlayer",
+        "context": "local function initializePlayer(player)",
         "score": 74
       },
       {
@@ -271,51 +200,11 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 267,
-        "kind": "FUNCTION",
-        "symbol": "findTargetEnemy",
-        "context": "local function findTargetEnemy(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 408,
-        "kind": "FUNCTION",
-        "symbol": "startWave",
-        "context": "local function startWave(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 602,
-        "kind": "FUNCTION",
-        "symbol": "prepareDefenseObjective",
-        "context": "local function prepareDefenseObjective(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 768,
+        "line": 263,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
         "score": 66
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 58,
-        "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 58
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 65,
-        "kind": "FUNCTION",
-        "symbol": "savePlayer",
-        "context": "local function savePlayer(player)",
-        "score": 58
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
@@ -334,19 +223,35 @@
         "score": 50
       },
       {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 35,
-        "kind": "FUNCTION",
-        "symbol": "readNumber",
-        "context": "local function readNumber(player, name, fallback)",
-        "score": 50
-      },
-      {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
         "line": 106,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "readNumber",
+        "context": "local function readNumber(player, name, fallback)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 28,
+        "kind": "FUNCTION",
+        "symbol": "setNumber",
+        "context": "local function setNumber(player, name, value)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 248,
+        "kind": "FUNCTION",
+        "symbol": "bindNativeFoundationCharacter",
+        "context": "local function bindNativeFoundationCharacter(character)",
         "score": 42
       }
     ]
@@ -354,19 +259,19 @@
   "previousVersionDelta": {
     "previousGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "9e12efda726a161ae595855be281ea66b68909412114dfa294b7730382443054",
-    "currentSourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "e8b4bac33720abbfdc28051082fc428119d4787c1b9135d672a2a261bc486bf5",
+    "currentSourceTreeFingerprint": "9e12efda726a161ae595855be281ea66b68909412114dfa294b7730382443054",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -509,8 +414,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "NOT_APPLICABLE",
+      "reason": "game has no current equipment/loadout system"
     },
     {
       "domain": "CRAFTING",
@@ -989,12 +894,12 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
       "developmentDepth": 1,
-      "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
+      "directive": "현재 승인 설계상 game has no current equipment/loadout system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
     },
     {
       "domain": "CRAFTING",
@@ -1423,11 +1328,6 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "SYSTEM_CONNECTION",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -1480,9 +1380,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"생태 상성 시스템\", 현재 책임 소스는 roblox-games/bug-defense/server/Game.server.luau::damageEnemy, roblox-games/bug-defense/server/Game.server.luau::spawnEnemy, roblox-games/bug-defense/server/Game.server.luau::spawnBoss, roblox-games/bug-defense/server/Game.server.luau::reviewDefenseState, roblox-games/bug-defense/client/Game.client.luau::render, roblox-games/bug-defense/server/Game.server.luau::attackEnemy, roblox-games/bug-defense/server/Game.server.luau::runEnemyAI, roblox-games/bug-defense/server/Game.server.luau::getSession이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"생태 상성 시스템\", 현재 책임 소스는 roblox-games/bug-defense/client/Game.client.luau::render, roblox-games/bug-defense/server/Game.server.luau::scopeHandler1, roblox-games/bug-defense/server/Game.server.luau::scopeHandler2, roblox-games/bug-defense/server/Game.server.luau::scopeHandler3, roblox-games/bug-defense/server/Game.server.luau::scopeHandler4, roblox-games/bug-defense/server/Game.server.luau::scopeHandler5, roblox-games/bug-defense/server/Game.server.luau::scopeHandler6, roblox-games/bug-defense/server/Game.server.luau::scopeHandler7이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/bug-defense/server/Game.server.luau::damageEnemy, roblox-games/bug-defense/server/Game.server.luau::spawnEnemy, roblox-games/bug-defense/server/Game.server.luau::spawnBoss, roblox-games/bug-defense/server/Game.server.luau::reviewDefenseState, roblox-games/bug-defense/client/Game.client.luau::render, roblox-games/bug-defense/server/Game.server.luau::attackEnemy, roblox-games/bug-defense/server/Game.server.luau::runEnemyAI, roblox-games/bug-defense/server/Game.server.luau::getSession에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/bug-defense/client/Game.client.luau::render, roblox-games/bug-defense/server/Game.server.luau::scopeHandler1, roblox-games/bug-defense/server/Game.server.luau::scopeHandler2, roblox-games/bug-defense/server/Game.server.luau::scopeHandler3, roblox-games/bug-defense/server/Game.server.luau::scopeHandler4, roblox-games/bug-defense/server/Game.server.luau::scopeHandler5, roblox-games/bug-defense/server/Game.server.luau::scopeHandler6, roblox-games/bug-defense/server/Game.server.luau::scopeHandler7에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "생태 상성 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "서식지 적응 시스템가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"웨이브 시작 전 적의 침입 경로와 곤충 유형을 분석하여 방어 전략을 수립합니다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1532,7 +1432,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 127405,
+        "sourceBytes": 113132,
         "largestFileBytes": 43793,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1565,12 +1465,12 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 4,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 4,
+        "WORLD_ECOLOGY_STORY_CHAIN": 3,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
@@ -1579,7 +1479,6 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN"
@@ -1617,18 +1516,8 @@
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 120,
+        "score": 138,
         "gapDomains": []
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 68,
-        "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
-        ]
       },
       {
         "theme": "PRESENTATION_WORLD_COHESION",
@@ -1638,6 +1527,15 @@
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
+        ]
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 54,
+        "gapDomains": [
+          "INVENTORY",
+          "INVENTORY_USABILITY",
+          "SYSTEM_CONNECTION"
         ]
       },
       {
@@ -1970,48 +1868,12 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/client/Game.client.luau",
       "roblox-games/bug-defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 284,
-        "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "currentBehavior": "local function damageEnemy(player, enemy, amount)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 360,
-        "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "currentBehavior": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 400,
-        "kind": "FUNCTION",
-        "symbol": "spawnBoss",
-        "currentBehavior": "local function spawnBoss(player, wave)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 608,
-        "kind": "FUNCTION",
-        "symbol": "reviewDefenseState",
-        "currentBehavior": "local function reviewDefenseState(player)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDefenseState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
         "line": 356,
@@ -2023,57 +1885,69 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 555,
+        "line": 42,
         "kind": "FUNCTION",
-        "symbol": "attackEnemy",
-        "currentBehavior": "local function attackEnemy(player)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 attackEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "scopeHandler1",
+        "currentBehavior": "local function scopeHandler1(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 314,
+        "line": 51,
         "kind": "FUNCTION",
-        "symbol": "runEnemyAI",
-        "currentBehavior": "local function runEnemyAI(player, enemy)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 runEnemyAI의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "scopeHandler2",
+        "currentBehavior": "local function scopeHandler2(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 182,
+        "line": 67,
         "kind": "FUNCTION",
-        "symbol": "getSession",
-        "currentBehavior": "local function getSession(player)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 getSession의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "scopeHandler3",
+        "currentBehavior": "local function scopeHandler3(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 83,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "currentBehavior": "local function scopeHandler4(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 99,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "currentBehavior": "local function scopeHandler5(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 115,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "currentBehavior": "local function scopeHandler6(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 131,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler7",
+        "currentBehavior": "local function scopeHandler7(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler7의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "damageEnemy",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "spawnEnemy",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "spawnBoss",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "reviewDefenseState",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
         "symbol": "render",
@@ -2082,19 +1956,43 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "attackEnemy",
+        "symbol": "scopeHandler1",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "runEnemyAI",
+        "symbol": "scopeHandler2",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "symbol": "getSession",
+        "symbol": "scopeHandler3",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "symbol": "scopeHandler4",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "symbol": "scopeHandler5",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "symbol": "scopeHandler6",
+        "role": "SERVER_AUTHORITY",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "symbol": "scopeHandler7",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2132,60 +2030,12 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/client/Game.client.luau",
       "roblox-games/bug-defense/default.project.json"
     ],
     "sourceAnchors": [
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 284,
-        "kind": "FUNCTION",
-        "symbol": "damageEnemy",
-        "context": "local function damageEnemy(player, enemy, amount)",
-        "score": 130,
-        "currentBehavior": "local function damageEnemy(player, enemy, amount)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 damageEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::damageEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 360,
-        "kind": "FUNCTION",
-        "symbol": "spawnEnemy",
-        "context": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "score": 130,
-        "currentBehavior": "local function spawnEnemy(player, enemyKind, wave, index)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::spawnEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 400,
-        "kind": "FUNCTION",
-        "symbol": "spawnBoss",
-        "context": "local function spawnBoss(player, wave)",
-        "score": 114,
-        "currentBehavior": "local function spawnBoss(player, wave)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 spawnBoss의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::spawnBoss이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 608,
-        "kind": "FUNCTION",
-        "symbol": "reviewDefenseState",
-        "context": "local function reviewDefenseState(player)",
-        "score": 114,
-        "currentBehavior": "local function reviewDefenseState(player)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reviewDefenseState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::reviewDefenseState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
         "line": 356,
@@ -2200,38 +2050,86 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 555,
+        "line": 42,
         "kind": "FUNCTION",
-        "symbol": "attackEnemy",
-        "context": "local function attackEnemy(player)",
-        "score": 106,
-        "currentBehavior": "local function attackEnemy(player)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 attackEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::attackEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 314,
-        "kind": "FUNCTION",
-        "symbol": "runEnemyAI",
-        "context": "local function runEnemyAI(player, enemy)",
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
         "score": 98,
-        "currentBehavior": "local function runEnemyAI(player, enemy)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 runEnemyAI의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::runEnemyAI이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "currentBehavior": "local function scopeHandler1(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 182,
+        "line": 51,
         "kind": "FUNCTION",
-        "symbol": "getSession",
-        "context": "local function getSession(player)",
-        "score": 90,
-        "currentBehavior": "local function getSession(player)",
-        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 getSession의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::getSession이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler2(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 67,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler3(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 83,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler4(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 99,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler5(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 115,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler6(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 131,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler7",
+        "context": "local function scopeHandler7(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler7(player)",
+        "intendedBehavior": "STABILITY primary goal \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler7의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/bug-defense/server/Game.server.luau::scopeHandler7이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/bug-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -2239,138 +2137,19 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
-  "developmentImpact": {
-    "version": 1,
-    "platform": "ROBLOX",
-    "categories": [
-      "GRAPHICS",
-      "MAP",
-      "UI",
-      "GAMEPLAY",
-      "SAVE"
-    ],
-    "requiredQa": [
-      "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "ROBLOX_LUAU_COMPILE",
-      "MAP_PROTECTED_ANCHOR_QA",
-      "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA",
-      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
-    ],
-    "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
-    ],
-    "securityRelevant": true,
-    "openCloudWorldChecks": [
-      "SERVER_BOOT",
-      "FINITE_WORLD_BOUNDS",
-      "SPAWN_IN_PLAYABLE_BOUNDS",
-      "LANDMARK_AND_OBJECTIVE_COUNTS",
-      "WORLD_GEOMETRY",
-      "TERRAIN_BINDING",
-      "LIGHTING_ATMOSPHERE",
-      "STREAMING_CONFIGURATION"
-    ]
-  },
-  "preMutationDryRun": {
-    "version": 1,
-    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
-    "gameId": "bug-defense",
-    "platform": "ROBLOX",
-    "plannedFiles": [
-      "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
-      "roblox-games/bug-defense/shared/GameConfig.luau",
-      "roblox-games/bug-defense/default.project.json"
-    ],
-    "impact": {
-      "version": 1,
-      "platform": "ROBLOX",
-      "categories": [
-        "GRAPHICS",
-        "MAP",
-        "UI",
-        "GAMEPLAY",
-        "SAVE"
-      ],
-      "requiredQa": [
-        "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "ROBLOX_LUAU_COMPILE",
-        "MAP_PROTECTED_ANCHOR_QA",
-        "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
-        "VISUAL_BINDING_QA",
-        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
-      ],
-      "conditionalQa": [
-        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
-      ],
-      "securityRelevant": true,
-      "openCloudWorldChecks": [
-        "SERVER_BOOT",
-        "FINITE_WORLD_BOUNDS",
-        "SPAWN_IN_PLAYABLE_BOUNDS",
-        "LANDMARK_AND_OBJECTIVE_COUNTS",
-        "WORLD_GEOMETRY",
-        "TERRAIN_BINDING",
-        "LIGHTING_ATMOSPHERE",
-        "STREAMING_CONFIGURATION"
-      ]
-    },
-    "protectedSemantics": [
-      "CORE_RULES",
-      "BALANCE",
-      "PROGRESSION",
-      "SAVE_MEANING",
-      "ECONOMY",
-      "NETWORK_AUTHORITY"
-    ],
-    "requiredQa": [
-      "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "ROBLOX_LUAU_COMPILE",
-      "MAP_PROTECTED_ANCHOR_QA",
-      "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
-      "VISUAL_BINDING_QA",
-      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
-    ],
-    "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
-    ],
-    "openCloudWorldChecks": [
-      "SERVER_BOOT",
-      "FINITE_WORLD_BOUNDS",
-      "SPAWN_IN_PLAYABLE_BOUNDS",
-      "LANDMARK_AND_OBJECTIVE_COUNTS",
-      "WORLD_GEOMETRY",
-      "TERRAIN_BINDING",
-      "LIGHTING_ATMOSPHERE",
-      "STREAMING_CONFIGURATION"
-    ],
-    "sourceMutationPerformed": false,
-    "newWorkflowOrQueueRequired": false,
-    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
-  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure",
+      "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
+      "sourceTreeFingerprint": "9e12efda726a161ae595855be281ea66b68909412114dfa294b7730382443054",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2381,8 +2160,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2413,7 +2192,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2472,7 +2251,6 @@
     "holisticGaps": [
       "INVENTORY",
       "INVENTORY_USABILITY",
-      "EQUIPMENT_LOADOUT",
       "SYSTEM_CONNECTION",
       "SAVE_COMPLETENESS",
       "SETTINGS_ACCESSIBILITY",
@@ -2480,10 +2258,11 @@
     ],
     "notApplicable": [
       "QUESTS",
+      "EQUIPMENT_LOADOUT",
       "CRAFTING",
       "NARRATIVE_STORY"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:35:52.495Z"
+  "generatedAt": "2026-10-02T18:08:49.201Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g4-e84057921fd8",
-  "directiveFingerprint": "e84057921fd82304816ebbf73147f52a750b0b5c688ea69bab550d72ec3aeaad",
-  "previousDirectiveFingerprint": "944a0086a7d188c58de3e14a0938fca610c9bf6944b1b9022aebe75f646a99b0",
-  "forbiddenRepeatFingerprint": "944a0086a7d188c58de3e14a0938fca610c9bf6944b1b9022aebe75f646a99b0",
+  "directiveId": "daechung-rpg-build-up-g5-770a225022e4",
+  "directiveFingerprint": "770a225022e4b90d442cf0da3cfcf5d3cda537f2d30d8c22f33915931ff3e008",
+  "previousDirectiveFingerprint": "e84057921fd82304816ebbf73147f52a750b0b5c688ea69bab550d72ec3aeaad",
+  "forbiddenRepeatFingerprint": "e84057921fd82304816ebbf73147f52a750b0b5c688ea69bab550d72ec3aeaad",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 4,
+  "generation": 5,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
+  "sourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 3,
-    "previousSourceTreeFingerprint": "1cf2508f5d8b20616a163ba541619539cb61daa28f36c21c1b4b55a0929d79cf",
-    "currentSourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
+    "previousGeneration": 4,
+    "previousSourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
+    "currentSourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -559,7 +559,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1696,7 +1696,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 265411,
+        "sourceBytes": 236002,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1729,8 +1729,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1740,9 +1740,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1782,7 +1783,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 164,
+        "score": 146,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2403,15 +2404,126 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "ROBLOX",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": false,
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ]
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "daechung-rpg",
+    "platform": "ROBLOX",
+    "plannedFiles": [
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+      "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/launch-mvp.json",
+      "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+      "roblox-games/daechung-rpg/default.project.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "ROBLOX",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "ROBLOX_LUAU_COMPILE",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "VISUAL_BINDING_QA",
+        "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": false,
+      "openCloudWorldChecks": [
+        "SERVER_BOOT",
+        "FINITE_WORLD_BOUNDS",
+        "SPAWN_IN_PLAYABLE_BOUNDS",
+        "LANDMARK_AND_OBJECTIVE_COUNTS",
+        "WORLD_GEOMETRY",
+        "TERRAIN_BINDING",
+        "LIGHTING_ATMOSPHERE",
+        "STREAMING_CONFIGURATION"
+      ]
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "ROBLOX_LUAU_COMPILE",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "VISUAL_BINDING_QA",
+      "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [
+      "SERVER_BOOT",
+      "FINITE_WORLD_BOUNDS",
+      "SPAWN_IN_PLAYABLE_BOUNDS",
+      "LANDMARK_AND_OBJECTIVE_COUNTS",
+      "WORLD_GEOMETRY",
+      "TERRAIN_BINDING",
+      "LIGHTING_ATMOSPHERE",
+      "STREAMING_CONFIGURATION"
+    ],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
+      "sourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2426,8 +2538,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2458,7 +2570,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 5,
+    "nextGeneration": 6,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2523,5 +2635,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T14:15:26.366Z"
+  "generatedAt": "2026-10-04T01:38:46.244Z"
 }
