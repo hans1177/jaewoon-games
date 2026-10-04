@@ -512,7 +512,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
   const sourceExt=/\\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
   const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
+  const assetIdSet=new Set(assetIds);
+  const assetIdTokenPattern=/[A-Za-z0-9][A-Za-z0-9._:\\/-]{3,127}/g;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
+  let sourceFilesScanned=0,sourceBytesScanned=0,sourceTokenCandidatesScanned=0,sourceExactAssetIdTokenHits=0;
   for(const gameRootName of gameRoots){
     const gameRoot=path.join(repoRoot,gameRootName);
     let gameDirs=[];
@@ -557,8 +560,18 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           let content='';
           try{content=fs.readFileSync(full,'utf8');}catch{continue;}
           if(!content)continue;
+          sourceFilesScanned++;
+          sourceBytesScanned+=Buffer.byteLength(content,'utf8');
           const relativeSource=path.relative(repoRoot,full).replaceAll('\\','/');
-          for(const assetId of assetIds)if(content.includes(assetId))addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+          const seenInFile=new Set();
+          for(const match of content.matchAll(assetIdTokenPattern)){
+            sourceTokenCandidatesScanned++;
+            const assetId=match[0];
+            if(!assetIdSet.has(assetId)||seenInFile.has(assetId))continue;
+            seenInFile.add(assetId);
+            sourceExactAssetIdTokenHits++;
+            addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+          }
         }
       }
     }
@@ -593,7 +606,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     ...(automaticSearchEligibleCount>0&&detectedConsumerGameIds.size>0?['CONTINUE_AUTOMATIC_LIBRARY_CONSUMPTION']:[])
   ]);
   const repositoryAssetSync={
-    version:2,
+    version:3,
     totalAssetRows:next.assets.length,
     repositoryPathPresentCount,
     missingRepositoryPathCount:missingRepositoryAssetIds.length,
@@ -606,6 +619,14 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
     sourceConsumptionCoveragePct,
+    sourceScanStrategy:'SINGLE_PASS_ASSET_ID_TOKEN_SET',
+    sourceFilesScanned,
+    sourceBytesScanned,
+    sourceTokenCandidatesScanned,
+    sourceExactAssetIdTokenHits,
+    naiveAssetIdFileComparisonUpperBound:sourceFilesScanned*assetIds.length,
+    perFileAssetIdLoopEliminated:true,
+    sourceScanComplexity:'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)',
     bottleneckState:repositoryAssetBottleneckState,
     bottleneckActions:repositoryAssetBottleneckActions,
     bottleneckScope:'INTERNAL_ASSET_SEARCH_AND_SOURCE_CONSUMPTION_ONLY',
