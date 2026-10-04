@@ -26,6 +26,204 @@ const GENRE_FLOW_PREFERENCES={
   CASUAL:['SANDBOX_SELF_DIRECTED','HUB_AND_SPOKE','PUZZLE_DISCOVERY','LIFE_SCHEDULE'],
 };
 
+export const AWARD_CALIBER_SYSTEM_PRINCIPLES=Object.freeze([
+  'SYSTEMS_INTERLOCK_AROUND_THE_CORE_FANTASY_INSTEAD_OF_EXISTING_AS_A_FEATURE_CHECKLIST',
+  'PROGRESSION_UNLOCKS_NEW_VERBS_COMBINATIONS_ROUTES_OR_RELATIONSHIPS_NOT_ONLY_LARGER_NUMBERS',
+  'SIDE_CONTENT_FEEDS_BACK_INTO_CORE_PLAY_WORLD_STATE_CHARACTER_RELATIONSHIPS_OR_BUILD_OPTIONS',
+  'WORLD_NPCS_ENEMIES_ECONOMY_AND_ACCESS_REACT_TO_PLAYER_ACTION_OR_NEGLECT',
+  'EARLY_MID_LATE_PLAY_CHANGE_DECISION_STRUCTURE_PRESSURE_OR_SYSTEM_COMBINATION',
+  'AUTHORED_PEAK_MOMENTS_AND_SYSTEMIC_REPLAY_VALUE_COEXIST',
+  'FAILURE_CREATES_RECOVERY_ADAPTATION_OR_NEW_INFORMATION_INSTEAD_OF_EMPTY_REPETITION',
+  'OPTIONAL_SYSTEMS_RESPECT_THE_GAME_CONCEPT_AND_DO_NOT_DILUTE_THE_CORE_FANTASY',
+  'CONTENT_EXPANSION_ADDS_NEW_ROLES_RULES_INTERACTIONS_OR_CONSEQUENCES_NOT_RESKINS_ONLY',
+  'QUALITY_OF_LIFE_REDUCES_FRICTION_WITHOUT_REMOVING_MEANINGFUL_DECISIONS',
+]);
+
+const SYSTEM_CATALOG=Object.freeze({
+  SURVIVAL_VITALS:Object.freeze({owners:['PLAYER','CORE_STATE'],libraries:[],purpose:'bounded health hunger energy temperature or equivalent survival pressure when concept-relevant'}),
+  GATHERING_RESOURCE:Object.freeze({owners:['WORLD','INTERACTION','ECONOMY'],libraries:['assets/inventory-equipment.js'],purpose:'world resources become real inventory inputs through spatial interaction'}),
+  INVENTORY_EQUIPMENT:Object.freeze({owners:['PLAYER','ECONOMY','SAVE'],libraries:['assets/inventory-equipment.js'],purpose:'acquire compare equip replace and persist items without shadow inventory authority'}),
+  ITEM_LOOT:Object.freeze({owners:['ECONOMY','PROGRESSION'],libraries:['assets/economy-loot-shop.js','assets/inventory-equipment.js'],purpose:'drops and rewards have source tables rarity roles and meaningful use'}),
+  CRAFTING:Object.freeze({owners:['ECONOMY','PROGRESSION','INTERACTION'],libraries:['assets/crafting-recipes.js','assets/inventory-equipment.js'],purpose:'recipes consume real resources and create items buildings upgrades or tools that affect play'}),
+  HOUSING_BUILDING:Object.freeze({owners:['WORLD','PLACEMENT','ECONOMY','SAVE'],libraries:[],purpose:'player-built shelter base or structures change access safety production storage or planning'}),
+  WEATHER_ENVIRONMENT:Object.freeze({owners:['WORLD','PRESENTATION'],libraries:[],purpose:'environment state changes readability traversal pressure or presentation without visual-only fake depth'}),
+  EXPLORATION_REGION:Object.freeze({owners:['WORLD','PROGRESSION'],libraries:[],purpose:'regions routes landmarks shortcuts and discoveries alter future choices'}),
+  THREAT_ECOLOGY:Object.freeze({owners:['AI','WORLD','COMBAT'],libraries:['assets/targeting-system.js'],purpose:'enemy species roles territories and behaviors interact with world and player decisions'}),
+  TARGETING_COMBAT:Object.freeze({owners:['COMBAT','AI','INPUT'],libraries:['assets/targeting-system.js'],purpose:'target selection range priority and combat outcomes remain authoritative and readable'}),
+  SKILL_BUILD:Object.freeze({owners:['COMBAT','PROGRESSION'],libraries:['assets/skill-effects.js'],purpose:'skills create build identity counters combinations and timing choices'}),
+  ECONOMY_SHOP:Object.freeze({owners:['ECONOMY','PROGRESSION'],libraries:['assets/economy-loot-shop.js'],purpose:'sources sinks prices shops and rewards connect to progression without free loops'}),
+  QUEST_DIALOGUE:Object.freeze({owners:['NARRATIVE','PROGRESSION','SAVE'],libraries:['assets/quest-dialogue.js'],purpose:'quests prerequisites dialogue consequences and rewards remain causal and persistent'}),
+  NPC_INTERACTION:Object.freeze({owners:['NARRATIVE','INTERACTION','AI'],libraries:['assets/quest-dialogue.js','assets/common-ai.js'],purpose:'NPCs have world roles knowledge boundaries reactions and meaningful interactions'}),
+  COMPANION_PARTY:Object.freeze({owners:['NARRATIVE','AI','PLAYER'],libraries:['assets/ai-party.js','assets/common-ai.js','assets/quest-dialogue.js'],purpose:'companions have distinct roles relationships behaviors and player-style complement without stealing gameplay authority'}),
+  SOCIAL_RELATIONSHIP:Object.freeze({owners:['NARRATIVE','AI','SAVE'],libraries:['assets/quest-dialogue.js','assets/common-ai.js'],purpose:'relationships change causally and unlock reactions quests information or access'}),
+  FACTION_WORLD_STATE:Object.freeze({owners:['NARRATIVE','WORLD','PROGRESSION'],libraries:['assets/quest-dialogue.js'],purpose:'faction and world-state consequences change access conflict support or region behavior'}),
+  CODEX_COLLECTION:Object.freeze({owners:['PROGRESSION','NARRATIVE'],libraries:[],purpose:'discovery collection or bestiary knowledge rewards observation and mastery'}),
+  WAVE_ENCOUNTER:Object.freeze({owners:['CORE_STATE','AI','COMBAT','PROGRESSION'],libraries:['assets/targeting-system.js'],purpose:'encounter waves change composition rules and pressure rather than only health scaling'}),
+  DEFENSE_PLACEMENT:Object.freeze({owners:['PLACEMENT','WORLD','COMBAT'],libraries:[],purpose:'positioning and placement alter routes ranges targets or combat outcomes'}),
+  RESEARCH_TECH:Object.freeze({owners:['PROGRESSION','ECONOMY'],libraries:[],purpose:'research opens strategic branches counters and system interactions'}),
+  PRODUCTION_CHAIN:Object.freeze({owners:['ECONOMY','WORLD','PROGRESSION'],libraries:['assets/economy-loot-shop.js'],purpose:'production transforms inputs through connected facilities capacity and bottlenecks'}),
+  STAFF_CUSTOMER:Object.freeze({owners:['AI','ECONOMY','WORLD'],libraries:['assets/common-ai.js'],purpose:'staff and customer behavior creates service flow preferences queues satisfaction or operational pressure'}),
+  UPGRADE_BRANCH:Object.freeze({owners:['PROGRESSION','ECONOMY'],libraries:[],purpose:'upgrades create branching roles and tradeoffs rather than linear stat inflation'}),
+  PUZZLE_STATE:Object.freeze({owners:['CORE_STATE','WORLD','INTERACTION'],libraries:[],purpose:'puzzle state preserves clues dependencies reset rules and consequence'}),
+  TRAVERSAL_CHECKPOINT:Object.freeze({owners:['PLAYER','WORLD','PROGRESSION'],libraries:[],purpose:'movement mastery checkpoints shortcuts and recovery create pacing and route learning'}),
+  TERRITORY_OBJECTIVE:Object.freeze({owners:['WORLD','CORE_STATE','PROGRESSION'],libraries:[],purpose:'territory state objectives and control consequences change routes pressure or resources'}),
+});
+
+export const GENRE_SYSTEM_BUNDLES=Object.freeze({
+  ACTION_SURVIVAL_ROGUELITE:Object.freeze({
+    required:['SURVIVAL_VITALS','GATHERING_RESOURCE','INVENTORY_EQUIPMENT','ITEM_LOOT','CRAFTING','HOUSING_BUILDING','EXPLORATION_REGION','THREAT_ECOLOGY'],
+    recommended:['WEATHER_ENVIRONMENT','ECONOMY_SHOP','QUEST_DIALOGUE','SKILL_BUILD','CODEX_COLLECTION'],
+    phases:Object.freeze({
+      EARLY:['SURVIVAL_VITALS','GATHERING_RESOURCE','INVENTORY_EQUIPMENT'],
+      MID:['CRAFTING','HOUSING_BUILDING','ITEM_LOOT','EXPLORATION_REGION'],
+      LATE:['THREAT_ECOLOGY','WEATHER_ENVIRONMENT','SKILL_BUILD','CODEX_COLLECTION']
+    }),
+    chains:['GATHERING_RESOURCE->CRAFTING->HOUSING_BUILDING','THREAT_ECOLOGY->ITEM_LOOT->INVENTORY_EQUIPMENT','EXPLORATION_REGION->WEATHER_ENVIRONMENT->SURVIVAL_VITALS','CRAFTING->INVENTORY_EQUIPMENT->EXPLORATION_REGION']
+  }),
+  SURVIVAL_HORROR_ESCAPE:Object.freeze({
+    required:['SURVIVAL_VITALS','INVENTORY_EQUIPMENT','ITEM_LOOT','EXPLORATION_REGION','THREAT_ECOLOGY','PUZZLE_STATE'],
+    recommended:['CRAFTING','QUEST_DIALOGUE','NPC_INTERACTION','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['SURVIVAL_VITALS','INVENTORY_EQUIPMENT','EXPLORATION_REGION'],MID:['PUZZLE_STATE','ITEM_LOOT','THREAT_ECOLOGY'],LATE:['QUEST_DIALOGUE','CODEX_COLLECTION']}),
+    chains:['EXPLORATION_REGION->PUZZLE_STATE->ITEM_LOOT','THREAT_ECOLOGY->SURVIVAL_VITALS->EXPLORATION_REGION','ITEM_LOOT->INVENTORY_EQUIPMENT->PUZZLE_STATE']
+  }),
+  STORY_COMPLETE_RPG:Object.freeze({
+    required:['NPC_INTERACTION','QUEST_DIALOGUE','INVENTORY_EQUIPMENT','ITEM_LOOT','SKILL_BUILD','ECONOMY_SHOP','COMPANION_PARTY','EXPLORATION_REGION','TARGETING_COMBAT'],
+    recommended:['CRAFTING','SOCIAL_RELATIONSHIP','FACTION_WORLD_STATE','CODEX_COLLECTION'],
+    phases:Object.freeze({
+      EARLY:['NPC_INTERACTION','QUEST_DIALOGUE','INVENTORY_EQUIPMENT','TARGETING_COMBAT'],
+      MID:['COMPANION_PARTY','SKILL_BUILD','ITEM_LOOT','ECONOMY_SHOP','EXPLORATION_REGION'],
+      LATE:['CRAFTING','SOCIAL_RELATIONSHIP','FACTION_WORLD_STATE','CODEX_COLLECTION']
+    }),
+    chains:['NPC_INTERACTION->QUEST_DIALOGUE->EXPLORATION_REGION','TARGETING_COMBAT->ITEM_LOOT->INVENTORY_EQUIPMENT','COMPANION_PARTY->SOCIAL_RELATIONSHIP->QUEST_DIALOGUE','SKILL_BUILD->CRAFTING->ECONOMY_SHOP','FACTION_WORLD_STATE->EXPLORATION_REGION->QUEST_DIALOGUE']
+  }),
+  STORY_RPG_ADVENTURE_RPG:Object.freeze({
+    required:['NPC_INTERACTION','QUEST_DIALOGUE','INVENTORY_EQUIPMENT','ITEM_LOOT','SKILL_BUILD','COMPANION_PARTY','EXPLORATION_REGION','TARGETING_COMBAT'],
+    recommended:['CRAFTING','ECONOMY_SHOP','SOCIAL_RELATIONSHIP','FACTION_WORLD_STATE','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['NPC_INTERACTION','QUEST_DIALOGUE','INVENTORY_EQUIPMENT','TARGETING_COMBAT'],MID:['COMPANION_PARTY','SKILL_BUILD','ITEM_LOOT','EXPLORATION_REGION'],LATE:['CRAFTING','SOCIAL_RELATIONSHIP','FACTION_WORLD_STATE','CODEX_COLLECTION']}),
+    chains:['NPC_INTERACTION->QUEST_DIALOGUE->EXPLORATION_REGION','TARGETING_COMBAT->ITEM_LOOT->INVENTORY_EQUIPMENT','COMPANION_PARTY->SOCIAL_RELATIONSHIP->QUEST_DIALOGUE','SKILL_BUILD->CRAFTING->ECONOMY_SHOP']
+  }),
+  IDLE_GROWTH_RPG:Object.freeze({
+    required:['INVENTORY_EQUIPMENT','ITEM_LOOT','SKILL_BUILD','ECONOMY_SHOP','QUEST_DIALOGUE','UPGRADE_BRANCH'],
+    recommended:['NPC_INTERACTION','COMPANION_PARTY','CRAFTING','EXPLORATION_REGION','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['ECONOMY_SHOP','ITEM_LOOT','UPGRADE_BRANCH'],MID:['INVENTORY_EQUIPMENT','SKILL_BUILD','QUEST_DIALOGUE'],LATE:['CRAFTING','COMPANION_PARTY','EXPLORATION_REGION']}),
+    chains:['ITEM_LOOT->ECONOMY_SHOP->UPGRADE_BRANCH','UPGRADE_BRANCH->SKILL_BUILD->INVENTORY_EQUIPMENT','QUEST_DIALOGUE->EXPLORATION_REGION->ITEM_LOOT']
+  }),
+  SINGLE_DEFENSE_STRATEGY:Object.freeze({
+    required:['DEFENSE_PLACEMENT','WAVE_ENCOUNTER','ECONOMY_SHOP','UPGRADE_BRANCH','RESEARCH_TECH','TARGETING_COMBAT'],
+    recommended:['ITEM_LOOT','QUEST_DIALOGUE','EXPLORATION_REGION','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['DEFENSE_PLACEMENT','WAVE_ENCOUNTER','ECONOMY_SHOP'],MID:['UPGRADE_BRANCH','RESEARCH_TECH','TARGETING_COMBAT'],LATE:['ITEM_LOOT','CODEX_COLLECTION','EXPLORATION_REGION']}),
+    chains:['DEFENSE_PLACEMENT->TARGETING_COMBAT->WAVE_ENCOUNTER','WAVE_ENCOUNTER->ECONOMY_SHOP->UPGRADE_BRANCH','UPGRADE_BRANCH->RESEARCH_TECH->DEFENSE_PLACEMENT']
+  }),
+  SIMULATOR_TYCOON_INCREMENTAL:Object.freeze({
+    required:['HOUSING_BUILDING','PRODUCTION_CHAIN','ECONOMY_SHOP','STAFF_CUSTOMER','UPGRADE_BRANCH'],
+    recommended:['QUEST_DIALOGUE','NPC_INTERACTION','INVENTORY_EQUIPMENT','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['HOUSING_BUILDING','ECONOMY_SHOP'],MID:['PRODUCTION_CHAIN','STAFF_CUSTOMER','UPGRADE_BRANCH'],LATE:['QUEST_DIALOGUE','NPC_INTERACTION','CODEX_COLLECTION']}),
+    chains:['HOUSING_BUILDING->PRODUCTION_CHAIN->ECONOMY_SHOP','STAFF_CUSTOMER->ECONOMY_SHOP->UPGRADE_BRANCH','UPGRADE_BRANCH->PRODUCTION_CHAIN->HOUSING_BUILDING']
+  }),
+  ROLEPLAY_LIFE_AVATAR:Object.freeze({
+    required:['NPC_INTERACTION','SOCIAL_RELATIONSHIP','HOUSING_BUILDING','ECONOMY_SHOP','QUEST_DIALOGUE'],
+    recommended:['COMPANION_PARTY','INVENTORY_EQUIPMENT','CRAFTING','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['NPC_INTERACTION','SOCIAL_RELATIONSHIP'],MID:['HOUSING_BUILDING','ECONOMY_SHOP','QUEST_DIALOGUE'],LATE:['COMPANION_PARTY','CRAFTING','CODEX_COLLECTION']}),
+    chains:['NPC_INTERACTION->SOCIAL_RELATIONSHIP->QUEST_DIALOGUE','ECONOMY_SHOP->HOUSING_BUILDING->SOCIAL_RELATIONSHIP','CRAFTING->INVENTORY_EQUIPMENT->HOUSING_BUILDING']
+  }),
+  BATTLEGROUND_FIGHTING_SHOOTER:Object.freeze({
+    required:['TARGETING_COMBAT','SKILL_BUILD','INVENTORY_EQUIPMENT','UPGRADE_BRANCH','TERRITORY_OBJECTIVE'],
+    recommended:['ITEM_LOOT','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['TARGETING_COMBAT','INVENTORY_EQUIPMENT'],MID:['SKILL_BUILD','UPGRADE_BRANCH'],LATE:['TERRITORY_OBJECTIVE','ITEM_LOOT']}),
+    chains:['TARGETING_COMBAT->SKILL_BUILD->UPGRADE_BRANCH','TERRITORY_OBJECTIVE->TARGETING_COMBAT->ITEM_LOOT']
+  }),
+  OBBY_PARTY_MINIGAME:Object.freeze({
+    required:['TRAVERSAL_CHECKPOINT','PUZZLE_STATE','UPGRADE_BRANCH'],
+    recommended:['ITEM_LOOT','CODEX_COLLECTION'],
+    phases:Object.freeze({EARLY:['TRAVERSAL_CHECKPOINT'],MID:['PUZZLE_STATE','UPGRADE_BRANCH'],LATE:['ITEM_LOOT','CODEX_COLLECTION']}),
+    chains:['TRAVERSAL_CHECKPOINT->PUZZLE_STATE->UPGRADE_BRANCH']
+  }),
+  PUZZLE:Object.freeze({
+    required:['PUZZLE_STATE','EXPLORATION_REGION','UPGRADE_BRANCH'],
+    recommended:['QUEST_DIALOGUE','CODEX_COLLECTION','ITEM_LOOT'],
+    phases:Object.freeze({EARLY:['PUZZLE_STATE'],MID:['EXPLORATION_REGION','UPGRADE_BRANCH'],LATE:['QUEST_DIALOGUE','CODEX_COLLECTION']}),
+    chains:['EXPLORATION_REGION->PUZZLE_STATE->UPGRADE_BRANCH','PUZZLE_STATE->CODEX_COLLECTION->QUEST_DIALOGUE']
+  }),
+  CASUAL:Object.freeze({
+    required:['UPGRADE_BRANCH','ITEM_LOOT'],
+    recommended:['NPC_INTERACTION','QUEST_DIALOGUE','CODEX_COLLECTION','INVENTORY_EQUIPMENT'],
+    phases:Object.freeze({EARLY:['ITEM_LOOT'],MID:['UPGRADE_BRANCH'],LATE:['NPC_INTERACTION','QUEST_DIALOGUE','CODEX_COLLECTION']}),
+    chains:['ITEM_LOOT->UPGRADE_BRANCH->CODEX_COLLECTION']
+  }),
+});
+
+function normalizedGenreSystemBundle(genre=''){
+  const key=genreKey(genre);
+  if(GENRE_SYSTEM_BUNDLES[key])return{key,bundle:GENRE_SYSTEM_BUNDLES[key]};
+  if(/DEFEN|TOWER|STRATEG/.test(key))return{key:'SINGLE_DEFENSE_STRATEGY',bundle:GENRE_SYSTEM_BUNDLES.SINGLE_DEFENSE_STRATEGY};
+  if(/HORROR/.test(key)&&/SURVIV|ESCAPE/.test(key))return{key:'SURVIVAL_HORROR_ESCAPE',bundle:GENRE_SYSTEM_BUNDLES.SURVIVAL_HORROR_ESCAPE};
+  if(/SURVIV|ROGUE/.test(key))return{key:'ACTION_SURVIVAL_ROGUELITE',bundle:GENRE_SYSTEM_BUNDLES.ACTION_SURVIVAL_ROGUELITE};
+  if(/RPG|STORY|ADVENTURE/.test(key))return{key:'STORY_COMPLETE_RPG',bundle:GENRE_SYSTEM_BUNDLES.STORY_COMPLETE_RPG};
+  if(/TYCOON|SIMULATOR/.test(key))return{key:'SIMULATOR_TYCOON_INCREMENTAL',bundle:GENRE_SYSTEM_BUNDLES.SIMULATOR_TYCOON_INCREMENTAL};
+  if(/ROLEPLAY|LIFE/.test(key))return{key:'ROLEPLAY_LIFE_AVATAR',bundle:GENRE_SYSTEM_BUNDLES.ROLEPLAY_LIFE_AVATAR};
+  if(/PUZZLE/.test(key))return{key:'PUZZLE',bundle:GENRE_SYSTEM_BUNDLES.PUZZLE};
+  return{key:'CASUAL',bundle:GENRE_SYSTEM_BUNDLES.CASUAL};
+}
+function systemDescriptor(id,priority='REQUIRED'){
+  const row=SYSTEM_CATALOG[id]||{owners:['CORE_STATE'],libraries:[],purpose:'concept-specific gameplay system'};
+  return Object.freeze({
+    id,priority,
+    ownerSystems:Object.freeze([...(row.owners||[])]),
+    reusableLibraryHints:Object.freeze([...(row.libraries||[])]),
+    purpose:row.purpose,
+    reuseRule:'REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY',
+    shadowSystemForbidden:true,
+    gameplayAuthorityMustStayWithExistingResponsibleSystem:true,
+  });
+}
+export function buildConceptSystemBlueprint({genre='',baseline={},architecture={}}={}){
+  const {key,bundle}=normalizedGenreSystemBundle(genre);
+  const semantic=baselineText(baseline).toUpperCase();
+  const required=new Set(bundle.required||[]),recommended=new Set(bundle.recommended||[]);
+  const promote=id=>{recommended.delete(id);required.add(id);};
+  if(/CRAFT|제작/.test(semantic))promote('CRAFTING');
+  if(/HOUSE|HOUSING|BASE|SHELTER|건축|집|기지|거점/.test(semantic))promote('HOUSING_BUILDING');
+  if(/COMPANION|PARTY|동료|파티/.test(semantic))promote('COMPANION_PARTY');
+  if(/NPC|DIALOG|QUEST|대화|퀘스트/.test(semantic)){promote('NPC_INTERACTION');promote('QUEST_DIALOGUE');}
+  if(/FACTION|세력|진영/.test(semantic))promote('FACTION_WORLD_STATE');
+  if(/RELATION|관계|호감/.test(semantic))promote('SOCIAL_RELATIONSHIP');
+  if(/WEATHER|RAIN|SNOW|STORM|FOG|날씨|비|눈|폭풍|안개/.test(semantic))promote('WEATHER_ENVIRONMENT');
+  if(/SKILL|MAGIC|ABILITY|스킬|마법/.test(semantic))promote('SKILL_BUILD');
+  if(/SHOP|ECONOM|상점|경제/.test(semantic))promote('ECONOMY_SHOP');
+  const requiredRows=[...required].map(id=>systemDescriptor(id,'REQUIRED'));
+  const recommendedRows=[...recommended].filter(id=>!required.has(id)).map(id=>systemDescriptor(id,'EXPANSION'));
+  const phasePlan={};
+  for(const phase of ['EARLY','MID','LATE']){
+    const ids=uniq(bundle.phases?.[phase]||[]).filter(id=>required.has(id)||recommended.has(id));
+    phasePlan[phase]=Object.freeze(ids);
+  }
+  return Object.freeze({
+    version:1,profile:key,
+    target:'CONCEPT_MATCHED_INTERCONNECTED_SYSTEM_BUNDLE',
+    requiredSystems:Object.freeze(requiredRows),
+    expansionSystems:Object.freeze(recommendedRows),
+    phasePlan:Object.freeze(phasePlan),
+    interconnectionChains:Object.freeze(uniq(bundle.chains||[])),
+    awardCaliberPrinciples:AWARD_CALIBER_SYSTEM_PRINCIPLES,
+    libraryReusePolicy:Object.freeze({
+      existingCompatibleLibraryFirst:true,
+      directCrossPlatformCodeCopyForbidden:true,
+      platformNativeReauthoringWhenNeeded:true,
+      existingGameplayAuthorityWins:true,
+      wrapperOrShadowSystemForbidden:true,
+      knownReusableLibraries:Object.freeze(uniq([...requiredRows,...recommendedRows].flatMap(row=>row.reusableLibraryHints))),
+    }),
+    expansionPolicy:Object.freeze({
+      contentBundlesMustConnectAtLeastTwoSystems:true,
+      newContentMustChangeDecisionStateRouteRelationshipOrBuild:true,
+      statOnlyReskinOnlyAndMenuOnlyExpansionDoesNotCount:true,
+      sideContentMustFeedCoreFantasyOrWorldState:true,
+      laterUpdatesMayAddSystemsWithoutRewritingValidatedCore:true,
+    }),
+    sourceFlowDNA:Object.freeze(uniq(architecture.flowDNA||[])),
+  });
+}
+
 function explicitArchitecture(baseline={}){
   const candidates=[baseline.GAME_FLOW_ARCHITECTURE,baseline.gameFlowArchitecture,baseline.GAMEPLAY_SKETCH?.flowArchitecture,baseline.gameplaySketch?.flowArchitecture,baseline.gameSeed?.GAMEPLAY_SKETCH?.flowArchitecture,baseline.seed?.GAMEPLAY_SKETCH?.flowArchitecture];
   return candidates.find(x=>x&&typeof x==='object'&&!Array.isArray(x))||null;
@@ -57,6 +255,36 @@ function phaseArc(flowDNA){
 }
 function pickModes(seed,items,min=2,max=3){const count=Math.min(items.length,min+(seed%Math.max(1,max-min+1)));return rotate(items,seed%items.length).slice(0,count);}
 
+const SYSTEM_ASSET_ROLE_MAP=Object.freeze({
+  SURVIVAL_VITALS:[['UI','STATUS']],
+  GATHERING_RESOURCE:[['PROP','RESOURCE'],['MOTION','SURVIVAL_CRAFTING'],['UI','ICON']],
+  INVENTORY_EQUIPMENT:[['UI','INVENTORY'],['UI','ICON'],['CHARACTER','ACCESSORY']],
+  ITEM_LOOT:[['PROP','RESOURCE'],['UI','ICON']],
+  CRAFTING:[['PROP','CRAFTING'],['MOTION','SURVIVAL_CRAFTING'],['UI','INVENTORY']],
+  HOUSING_BUILDING:[['BUILDING','MODULAR_EXTERIOR'],['BUILDING','INTERIOR'],['PROP','FURNITURE'],['UI','ICON']],
+  WEATHER_ENVIRONMENT:[['ENVIRONMENT','WEATHER'],['VFX','WEATHER'],['AUDIO','WEATHER']],
+  EXPLORATION_REGION:[['ENVIRONMENT','BIOME'],['ENVIRONMENT','LANDMARK'],['UI','MAP']],
+  THREAT_ECOLOGY:[['CREATURE','SPECIES'],['MOTION','COMBAT'],['AUDIO','CREATURE_VOCAL']],
+  TARGETING_COMBAT:[['MOTION','COMBAT'],['VFX','IMPACT'],['AUDIO','HIT'],['UI','STATUS']],
+  SKILL_BUILD:[['SKILL','VFX'],['MOTION','SKILL'],['UI','ICON']],
+  ECONOMY_SHOP:[['UI','FRAME'],['UI','ICON']],
+  QUEST_DIALOGUE:[['UI','FRAME'],['UI','ICON']],
+  NPC_INTERACTION:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME']],
+  COMPANION_PARTY:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME']],
+  SOCIAL_RELATIONSHIP:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','STATUS']],
+  FACTION_WORLD_STATE:[['CHARACTER','ACCESSORY'],['UI','STATUS'],['ENVIRONMENT','LANDMARK']],
+  CODEX_COLLECTION:[['UI','FRAME'],['UI','ICON']],
+  WAVE_ENCOUNTER:[['CREATURE','BODY_PLAN'],['UI','HUD'],['VFX','STATUS']],
+  DEFENSE_PLACEMENT:[['PROP','INTERACTIVE'],['UI','HUD']],
+  RESEARCH_TECH:[['UI','FRAME'],['UI','ICON']],
+  PRODUCTION_CHAIN:[['BUILDING','MODULAR_EXTERIOR'],['PROP','INTERACTIVE'],['UI','HUD']],
+  STAFF_CUSTOMER:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','HUD']],
+  UPGRADE_BRANCH:[['UI','FRAME'],['UI','ICON']],
+  PUZZLE_STATE:[['PROP','INTERACTIVE'],['UI','ICON'],['VFX','STATUS']],
+  TRAVERSAL_CHECKPOINT:[['MOTION','TRAVERSAL'],['UI','STATUS']],
+  TERRITORY_OBJECTIVE:[['UI','MAP'],['ENVIRONMENT','LANDMARK'],['VFX','STATUS']],
+});
+
 const FLOW_ASSET_ROLE_MAP=Object.freeze({
   HUB_AND_SPOKE:[['ENVIRONMENT','LANDMARK'],['UI','MAP'],['PROP','INTERACTIVE']],
   EXPEDITION:[['ENVIRONMENT','BIOME'],['MOTION','TRAVERSAL'],['PROP','RESOURCE']],
@@ -83,10 +311,10 @@ function baselineText(baseline={}){
     ...(Array.isArray(content?.signatureSystems)?content.signatureSystems.flatMap(row=>[row?.name,row?.purpose,row?.playerChoice]):[]),
   ].map(clean).filter(Boolean).join(' ');
 }
-function assetRequirement(family,subfamily,{flowRoles=[],phases=[],reason='FLOW_ROLE'}={}){
+function assetRequirement(family,subfamily,{flowRoles=[],systemRoles=[],phases=[],reason='FLOW_ROLE',required=true}={}){
   return Object.freeze({
-    family,subfamily,required:true,priority:'FLOW_CRITICAL',
-    flowRoles:Object.freeze(uniq(flowRoles)),phases:Object.freeze(uniq(phases)),reason,
+    family,subfamily,required:required!==false,priority:required===false?'FLOW_EXPANSION':'FLOW_CRITICAL',
+    flowRoles:Object.freeze(uniq(flowRoles)),systemRoles:Object.freeze(uniq(systemRoles)),phases:Object.freeze(uniq(phases)),reason,
     resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
     allowedReuseModes:Object.freeze(['USE_AS_IS','LIGHT_THEME_ADAPT','STYLE_ADAPT','RECOMBINE_PARTS','NATIVE_REAUTHOR_BASE']),
     assetIdPinned:false,gameplayAuthority:false,balanceAuthority:false,saveAuthority:false,
@@ -98,8 +326,10 @@ export function buildFlowAssetRequirements({architecture={},genre='',baseline={}
     const key=`${family}:${subfamily}`,prev=keyed.get(key);
     const next=assetRequirement(family,subfamily,{
       flowRoles:[...(prev?.flowRoles||[]),...(meta.flowRoles||[])],
+      systemRoles:[...(prev?.systemRoles||[]),...(meta.systemRoles||[])],
       phases:[...(prev?.phases||[]),...(meta.phases||[])],
-      reason:prev?.reason||meta.reason||'FLOW_ROLE'
+      reason:prev?.reason||meta.reason||'FLOW_ROLE',
+      required:prev?.required===true||meta.required!==false
     });
     keyed.set(key,next);
   };
@@ -113,6 +343,14 @@ export function buildFlowAssetRequirements({architecture={},genre='',baseline={}
   for(const flow of uniq(architecture.flowDNA||[]).map(value=>value.toUpperCase())){
     for(const [family,subfamily] of FLOW_ASSET_ROLE_MAP[flow]||[])add(family,subfamily,{flowRoles:[flow],phases:phaseByFlow.get(flow)||[],reason:'FLOW_DNA'});
   }
+  const systemBlueprint=architecture.systemBlueprint||buildConceptSystemBlueprint({genre,baseline,architecture});
+  const systemPhases=new Map();
+  for(const [phase,ids] of Object.entries(systemBlueprint.phasePlan||{}))for(const id of ids||[]){
+    if(!systemPhases.has(id))systemPhases.set(id,[]);
+    systemPhases.get(id).push(phase);
+  }
+  for(const row of systemBlueprint.requiredSystems||[])for(const [family,subfamily] of SYSTEM_ASSET_ROLE_MAP[row.id]||[])add(family,subfamily,{systemRoles:[row.id],phases:systemPhases.get(row.id)||[],reason:'CONCEPT_SYSTEM_REQUIRED',required:true});
+  for(const row of systemBlueprint.expansionSystems||[])for(const [family,subfamily] of SYSTEM_ASSET_ROLE_MAP[row.id]||[])add(family,subfamily,{systemRoles:[row.id],phases:systemPhases.get(row.id)||[],reason:'CONCEPT_SYSTEM_EXPANSION',required:false});
   const semantic=(genre+' '+baselineText(baseline)).toUpperCase();
   if(/COMBAT|FIGHT|ATTACK|BATTLE|전투|공격|디펜스|DEFEN/.test(semantic)){
     add('MOTION','COMBAT',{reason:'SEMANTIC_COMBAT'});
@@ -184,9 +422,11 @@ function buildQualityGrowthContract({architecture={},genre='',baseline={}}={}){
 export function buildGameFlowArchitecture({gameId='',genre='',baseline={},inventory=[]}={}){
   const explicit=explicitArchitecture(baseline);
   if(explicit){
-    const base={version:Number(explicit.version||1),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE',...explicit};
-    const assetRequirements=buildFlowAssetRequirements({architecture:base,genre,baseline});
-    return{...base,assetFlow:base.assetFlow||{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:base,genre,baseline})};
+    const base={version:Math.max(3,Number(explicit.version||1)),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE',...explicit};
+    const systemBlueprint=base.systemBlueprint||buildConceptSystemBlueprint({genre,baseline,architecture:base});
+    const enriched={...base,systemBlueprint};
+    const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
+    return{...enriched,assetFlow:base.assetFlow||{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:enriched,genre,baseline})};
   }
   const seed=stableInt(`${gameId}|${genre}|${(inventory||[]).map(x=>`${x?.path||''}:${x?.label||''}`).join('|')}`),flowDNA=chooseFlowDNA({gameId,genre,baseline});
   const returnModes=['HUB_RETURN','CONTINUOUS_FORWARD','EXTRACTION_DECISION','MULTI_BASE_ROTATION'];
@@ -196,7 +436,7 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
   const playstyles=['DIRECT_COMBAT','ECONOMY_AND_BUILD','EXPLORATION_AND_DISCOVERY','SOCIAL_OR_QUEST','STEALTH_OR_AVOIDANCE','TACTICAL_CONTROL'];
   const informationModes=['MAP_DISCOVERY','NPC_KNOWLEDGE','SCOUTING_OR_SENSOR','ITEM_OR_ABILITY_REVEAL','CAUSE_AND_EFFECT_LEARNING'];
   const architecture={
-    version:2,source:'DERIVED_GAME_FLOW_ARCHITECT',gameId:clean(gameId),genre:genreKey(genre),
+    version:3,source:'DERIVED_GAME_FLOW_ARCHITECT',gameId:clean(gameId),genre:genreKey(genre),
     flowDNA,
     phaseArc:phaseArc(flowDNA),
     transitionEvents:[
@@ -223,8 +463,10 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
     endingModel:{required:true,multipleOutcomeCapable:true,contract:'WHEN DESIGN HAS BRANCHING_OR_WORLD_STATE ENDING OR TERMINAL STATE MUST REFLECT ACCUMULATED CHOICES_OR_WORLD_STATE'},
     diversityRules:{minFlowArchetypes:2,maxFlowArchetypes:4,phaseDominantFlowMustChange:true,parallelGoalThreadsMin:3,failureModesMin:2,victoryModesMin:2,worldReactionRequired:true,regionalRuleDifferenceRequired:true,sameMacroLoopAcrossAllPhasesForbidden:true,renameOnlyVariationForbidden:true},
   };
-  const assetRequirements=buildFlowAssetRequirements({architecture,genre,baseline});
-  return{...architecture,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:buildQualityGrowthContract({architecture,genre,baseline})};
+  const systemBlueprint=buildConceptSystemBlueprint({genre,baseline,architecture});
+  const enriched={...architecture,systemBlueprint};
+  const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
+  return{...enriched,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:buildQualityGrowthContract({architecture:enriched,genre,baseline})};
 }
 
 export function evaluateGameFlowArchitecture(architecture={}){
@@ -242,11 +484,17 @@ export function evaluateGameFlowArchitecture(architecture={}){
   const assetRequirements=architecture.assetFlow?.requirements||[];
   if(!Array.isArray(assetRequirements)||assetRequirements.length<3)blockers.push('FLOW_ASSET_REQUIREMENTS_REQUIRED');
   if(assetRequirements.some(row=>row?.assetIdPinned===true||row?.gameplayAuthority===true||row?.balanceAuthority===true||row?.saveAuthority===true))blockers.push('FLOW_ASSET_AUTHORITY_OR_PINNING_FORBIDDEN');
+  const systemBlueprint=architecture.systemBlueprint||{};
+  if((systemBlueprint.requiredSystems||[]).length<2)blockers.push('FLOW_CONCEPT_SYSTEM_BUNDLE_REQUIRED');
+  if((systemBlueprint.interconnectionChains||[]).length<1)blockers.push('FLOW_SYSTEM_INTERCONNECTION_REQUIRED');
+  if((systemBlueprint.awardCaliberPrinciples||[]).length<8)blockers.push('FLOW_AWARD_CALIBER_SYSTEM_PRINCIPLES_REQUIRED');
+  if(systemBlueprint.libraryReusePolicy?.wrapperOrShadowSystemForbidden!==true)blockers.push('FLOW_SHADOW_SYSTEM_FORBIDDEN_POLICY_REQUIRED');
+  if(systemBlueprint.expansionPolicy?.contentBundlesMustConnectAtLeastTwoSystems!==true)blockers.push('FLOW_INTERCONNECTED_CONTENT_EXPANSION_REQUIRED');
   const quality=architecture.qualityGrowthContract||{};
   if((quality.funDrivers||[]).length<3)blockers.push('FLOW_FUN_DRIVERS_REQUIRED');
   if((quality.balanceRules||[]).length<4)blockers.push('FLOW_BALANCE_RULES_REQUIRED');
   if((quality.expansionRules||[]).length<4)blockers.push('FLOW_EXPANSION_RULES_REQUIRED');
   if((quality.completionCriteria||[]).length<4)blockers.push('FLOW_COMPLETION_CRITERIA_REQUIRED');
   if(quality.codingGrowthContract?.dataDrivenExtensionPreferred!==true)blockers.push('FLOW_CODING_GROWTH_CONTRACT_REQUIRED');
-  return{pass:blockers.length===0,blockers,flowArchetypeCount:dna.length,phaseFlowCount:phaseFlows.length,flowAssetRequirementCount:assetRequirements.length};
+  return{pass:blockers.length===0,blockers,flowArchetypeCount:dna.length,phaseFlowCount:phaseFlows.length,flowAssetRequirementCount:assetRequirements.length,requiredSystemCount:(systemBlueprint.requiredSystems||[]).length,expansionSystemCount:(systemBlueprint.expansionSystems||[]).length};
 }
