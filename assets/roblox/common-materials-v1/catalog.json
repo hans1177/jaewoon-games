@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "packId": "roblox-common-materials-v1",
+  "family": "MATERIAL",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+  "themeAdaptationRequiredPerGame": true,
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "physicalPropertiesPreservedByDefault": true,
+  "gameplayAuthority": false,
+  "atoms": [
+    {
+      "atomId": "WOOD",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "NATURAL",
+        "DARK",
+        "WEATHERED",
+        "PALE"
+      ]
+    },
+    {
+      "atomId": "STONE",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "NATURAL",
+        "DARK",
+        "PALE",
+        "WEATHERED"
+      ]
+    },
+    {
+      "atomId": "METAL",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "BRUSHED",
+        "DARK",
+        "LIGHT",
+        "INDUSTRIAL"
+      ]
+    }
+  ]
+}
