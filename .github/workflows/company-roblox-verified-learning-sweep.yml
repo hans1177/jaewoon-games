@@ -21,7 +21,9 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
+  # Coalesce repeated sweeps for the same game across fast-moving main SHAs.
+  # Keep the active run alive; GitHub retains only the newest pending run per group.
+  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
