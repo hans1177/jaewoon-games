@@ -96,7 +96,13 @@
       1000
     ]
   },
-  "presentationIntegrationRoles": [],
+  "presentationIntegrationRoles": [
+    "FOREGROUND_MIDGROUND_BACKGROUND",
+    "AMBIENT_MOTION",
+    "CLUSTER_COMPOSITION",
+    "LANDMARK_SUPPORT",
+    "MOBILE_CLUTTER_CONTROL"
+  ],
   "referencePrinciples": [
     "SUBJECT_BACKGROUND_SEPARATION",
     "MATERIAL_LIGHTING_DEPTH",
