@@ -37585,14 +37585,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T12:06:13.343Z",
+      "updatedAt": "2026-10-04T12:22:03.132Z",
       "robloxSourceCommit": "9af61be761c423faee2970b5ea529a6b03dcaec7",
       "robloxSourceBootstrapPassedAt": "2026-10-04T10:28:13.701Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T12:00:00.341Z",
@@ -37664,7 +37664,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-single-defense-strat-celestial-bastion-37149677034",
       "unitySourceCommit": "8998de2310017a93419bbac6f58dd027ac8c1d16",
-      "unityBuildRunId": 37199122294,
+      "unityBuildRunId": 37201390290,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -37722,7 +37722,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T11:44:11.446Z"
+        "verifiedAt": "2026-10-04T12:22:03.132Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -50979,7 +50979,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T12:21:25.975Z",
+  "updatedAt": "2026-10-04T12:22:05.609Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
