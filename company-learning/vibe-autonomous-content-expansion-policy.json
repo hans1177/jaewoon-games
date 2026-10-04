@@ -193,7 +193,15 @@
     ],
     "studioRequired": false,
     "internalAuditCanPassWithoutStudio": true,
-    "runtimeEvidenceRule": "USE_EXISTING_CANONICAL_RUNTIME_EVIDENCE_WHEN_THAT_STAGE_REQUIRES_IT; STUDIO_IS_NOT_REQUIRED_FOR_INTERNAL_EXPECTATION_ESCALATION"
+    "runtimeEvidenceRule": "USE_EXISTING_CANONICAL_RUNTIME_EVIDENCE_WHEN_THAT_STAGE_REQUIRES_IT; STUDIO_IS_NOT_REQUIRED_FOR_INTERNAL_EXPECTATION_ESCALATION",
+    "machineEnforcement": {
+      "existingCanonicalGate": "tools/vibe2-source-worker.mjs#evaluateStudioQualityCandidateDelta",
+      "buildUpConnectedImprovementMinimumFeedsRequiredSourceDeltaUnits": true,
+      "insufficientConnectedSourceDeltaFailsCandidate": true,
+      "newValidationStageCreated": false,
+      "studioRuntimeRequired": false,
+      "note": "Uses the existing source-candidate delta gate. The field name is historical; this enforcement is static source validation and does not require Roblox Studio."
+    }
   },
   "expansionDomains": [
     "WORLD_BACKGROUND_AND_ENVIRONMENT",
