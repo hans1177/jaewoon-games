@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-items-v1/RobloxCommonItems.luau
--- 역할: Roblox 공용 내부 아이템 비주얼 24종과 동일 모델 기반 Viewport UI 아이콘 생성
+-- 역할: Roblox 공용 내부 아이템 비주얼 40종과 동일 모델 기반 Viewport UI 아이콘 생성
 -- 원칙: 순수 표현 자산만 제공한다. 데미지/회복량/가격/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonItems = {}
@@ -224,6 +224,23 @@ local Catalog = table.freeze({
 		inventoryCategory="UTILITY", stackProfile="UNIQUE", rarityBand="UNCOMMON_TO_RARE", silhouette="CAGED_GLASS_LANTERN_HANDLE", cameraRole="HANDHELD_MEDIUM",
 		palette=table.freeze({metal=c(67,70,72), edge=c(145,148,146), glass=c(198,223,230), glow=c(106,200,255), dark=c(31,35,39)}),
 	}),
+
+	GRAPPLING_KIT = table.freeze({id="GRAPPLING_KIT",name="갈고리 로프 키트",familyRootId="UTILITY_GRAPPLING",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="UNCOMMON_TO_EPIC",interactionFamily="TRAVERSAL_GRAPPLE",silhouette="HOOK_ROPE_REEL",cameraRole="HANDHELD_MEDIUM",palette=table.freeze({metal=c(101,109,113),edge=c(175,184,187),rope=c(124,91,60),dark=c(57,61,63),accent=c(170,126,61)})}),
+	FIELD_SCANNER = table.freeze({id="FIELD_SCANNER",name="휴대 스캐너",familyRootId="UTILITY_SCANNER",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="UNCOMMON_TO_EPIC",interactionFamily="SCAN_INSPECT",silhouette="HANDHELD_SCANNER_SCREEN_SENSOR",cameraRole="HANDHELD_SMALL",palette=table.freeze({body=c(64,73,81),edge=c(127,143,154),screen=c(84,199,221),dark=c(31,37,42),accent=c(181,224,236)})}),
+	BINOCULARS = table.freeze({id="BINOCULARS",name="쌍안경",familyRootId="UTILITY_OPTIC",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="COMMON_TO_RARE",interactionFamily="OBSERVE_ZOOM",silhouette="TWIN_OPTIC_BARRELS",cameraRole="HANDHELD_SMALL",palette=table.freeze({body=c(67,72,66),edge=c(128,133,124),glass=c(74,125,142),dark=c(34,37,34),accent=c(148,132,87)})}),
+	COMPASS_TOOL = table.freeze({id="COMPASS_TOOL",name="탐험 나침반",familyRootId="UTILITY_COMPASS",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="COMMON_TO_RARE",interactionFamily="NAVIGATION",silhouette="ROUND_COMPASS_LID_NEEDLE",cameraRole="HANDHELD_SMALL",palette=table.freeze({metal=c(143,111,61),edge=c(213,177,100),face=c(218,211,183),dark=c(68,54,43),accent=c(157,55,52)})}),
+	CHALK_MARKER_KIT = table.freeze({id="CHALK_MARKER_KIT",name="표식 키트",familyRootId="UTILITY_MARKER",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="STACKABLE_SMALL",rarityBand="COMMON_TO_RARE",interactionFamily="WORLD_MARKER",silhouette="CHALK_STICKS_POUCH",cameraRole="HANDHELD_SMALL",palette=table.freeze({cloth=c(104,82,62),light=c(159,129,93),chalk=c(220,217,202),accent=c(185,82,67),dark=c(65,52,44)})}),
+	CLIMBING_PITON_SET = table.freeze({id="CLIMBING_PITON_SET",name="등반 피톤 세트",familyRootId="UTILITY_CLIMB",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="STACKABLE_SMALL",rarityBand="COMMON_TO_RARE",interactionFamily="CLIMB_ANCHOR",silhouette="METAL_PITONS_RING",cameraRole="HANDHELD_SMALL",palette=table.freeze({metal=c(118,124,127),edge=c(183,190,192),ring=c(90,94,96),strap=c(102,71,49),dark=c(57,61,63)})}),
+	FISHING_ROD = table.freeze({id="FISHING_ROD",name="낚싯대",familyRootId="UTILITY_FISHING",family="PROP",subfamily="UTILITY_TOOL",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="COMMON_TO_RARE",interactionFamily="FISHING",silhouette="LONG_ROD_REEL_LINE",cameraRole="HANDHELD_MEDIUM",palette=table.freeze({rod=c(97,68,47),light=c(154,111,70),metal=c(111,117,120),line=c(211,207,188),accent=c(155,112,58)})}),
+	SHOVEL_TOOL = table.freeze({id="SHOVEL_TOOL",name="삽",familyRootId="UTILITY_SHOVEL",family="PROP",subfamily="UTILITY_TOOL",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="COMMON_TO_RARE",interactionFamily="DIG",silhouette="LONG_HANDLE_SHOVEL_BLADE",cameraRole="HANDHELD_MEDIUM",palette=table.freeze({shaft=c(101,70,47),light=c(153,110,69),metal=c(111,118,121),edge=c(179,186,188),dark=c(58,61,62)})}),
+	WATERING_CAN = table.freeze({id="WATERING_CAN",name="물뿌리개",familyRootId="UTILITY_WATERING",family="PROP",subfamily="UTILITY_TOOL",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="COMMON_TO_RARE",interactionFamily="WATER_PLANTS",silhouette="CAN_HANDLE_LONG_SPOUT",cameraRole="HANDHELD_MEDIUM",palette=table.freeze({metal=c(105,120,126),edge=c(164,180,184),dark=c(56,66,70),accent=c(86,151,179),handle=c(90,96,96)})}),
+	FIELD_CAMERA = table.freeze({id="FIELD_CAMERA",name="휴대 카메라",familyRootId="UTILITY_CAMERA",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="UNCOMMON_TO_RARE",interactionFamily="PHOTO_RECORD",silhouette="BOX_CAMERA_LENS_GRIP",cameraRole="HANDHELD_SMALL",palette=table.freeze({body=c(54,58,61),edge=c(105,112,116),glass=c(80,125,145),dark=c(29,31,33),accent=c(164,123,62)})}),
+	SIGNAL_MIRROR = table.freeze({id="SIGNAL_MIRROR",name="신호 거울",familyRootId="UTILITY_SIGNAL_MIRROR",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="COMMON_TO_RARE",interactionFamily="SIGNAL_REFLECT",silhouette="ROUND_MIRROR_HANDLE",cameraRole="HANDHELD_SMALL",palette=table.freeze({metal=c(125,133,136),edge=c(205,214,216),mirror=c(209,229,235),grip=c(91,66,48),dark=c(57,61,62)})}),
+	ROPE_COIL = table.freeze({id="ROPE_COIL",name="로프 묶음",familyRootId="UTILITY_ROPE",family="PROP",subfamily="UTILITY_MATERIAL",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="STACKABLE_SMALL",rarityBand="COMMON_TO_RARE",interactionFamily="ROPE_ATTACH",silhouette="COILED_ROPE_BIND",cameraRole="HANDHELD_SMALL",palette=table.freeze({rope=c(142,111,74),light=c(191,157,111),dark=c(87,67,50),band=c(76,59,47)})}),
+	REPAIR_MULTITOOL = table.freeze({id="REPAIR_MULTITOOL",name="수리 멀티툴",familyRootId="UTILITY_REPAIR",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="UNCOMMON_TO_EPIC",interactionFamily="REPAIR",silhouette="FOLDING_MULTITOOL_HANDLE",cameraRole="HANDHELD_SMALL",palette=table.freeze({metal=c(118,125,128),edge=c(186,193,195),grip=c(73,80,82),accent=c(190,126,54),dark=c(48,52,54)})}),
+	PORTABLE_BEACON = table.freeze({id="PORTABLE_BEACON",name="휴대 비콘",familyRootId="UTILITY_BEACON",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="UNCOMMON_TO_EPIC",interactionFamily="WAYPOINT_SIGNAL",silhouette="TRIPOD_BEACON_LIGHT",cameraRole="HANDHELD_MEDIUM",palette=table.freeze({body=c(67,75,80),edge=c(132,145,151),glow=c(95,204,237),dark=c(34,39,42),accent=c(196,142,61)})}),
+	SPECIMEN_JAR = table.freeze({id="SPECIMEN_JAR",name="표본병",familyRootId="UTILITY_SPECIMEN",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="STACKABLE_SMALL",rarityBand="COMMON_TO_RARE",interactionFamily="SPECIMEN_COLLECT",silhouette="GLASS_JAR_LID_LABEL",cameraRole="HANDHELD_SMALL",palette=table.freeze({glass=c(195,220,222),lid=c(95,101,102),label=c(219,209,179),accent=c(109,160,118),dark=c(51,56,57)})}),
+	CAMP_KIT = table.freeze({id="CAMP_KIT",name="휴대 캠프 키트",familyRootId="UTILITY_CAMP",family="PROP",subfamily="UTILITY_GADGET",itemRole="UTILITY",inventoryCategory="UTILITY",stackProfile="UNIQUE",rarityBand="UNCOMMON_TO_RARE",interactionFamily="CAMP_DEPLOY",silhouette="ROLLED_BEDROLL_PACK_STRAPS",cameraRole="HANDHELD_MEDIUM",palette=table.freeze({cloth=c(106,91,72),light=c(157,137,105),strap=c(78,58,46),metal=c(110,113,109),accent=c(123,141,86)})}),
 })
 
 local function makePart(name, size, color, material, shape)
@@ -518,6 +535,74 @@ local function addBomb(model, root, row, level)
 	if detail(level,2) then weld(root,makePart("WarningBand",Vector3.new(1.62,0.20,1.62),p.accent,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(0,0.12,0)) end
 end
 
+
+local function addUtilityGadget(model,root,row,level)
+	local p=row.palette
+	local id=row.id
+	if id=="GRAPPLING_KIT" then
+		weld(root,makePart("Reel",Vector3.new(1.55,0.72,1.55),p.dark,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0,0)*CFrame.Angles(0,0,math.rad(90)))
+		weld(root,makePart("Rope",Vector3.new(1.15,0.52,1.15),p.rope,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0,0,0)*CFrame.Angles(0,0,math.rad(90)))
+		for _,x in ipairs({-0.48,0.48}) do weld(root,wedge("Hook"..x,Vector3.new(0.35,0.85,0.22),p.metal,Enum.Material.Metal),CFrame.new(x,0.82,0)*CFrame.Angles(0,0,math.rad(x<0 and -35 or 35))) end
+	elseif id=="FIELD_SCANNER" then
+		weld(root,makePart("Body",Vector3.new(1.55,2.15,0.55),p.body,Enum.Material.SmoothPlastic),CFrame.new())
+		weld(root,makePart("Screen",Vector3.new(1.18,0.78,0.08),p.screen,Enum.Material.Neon),CFrame.new(0,0.28,-0.32))
+		weld(root,makePart("Sensor",Vector3.new(0.40,0.40,0.28),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(0,1.24,0))
+	elseif id=="BINOCULARS" then
+		for _,x in ipairs({-0.48,0.48}) do
+			weld(root,makePart("Barrel"..x,Vector3.new(0.62,1.75,0.62),p.body,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(x,0,0)*CFrame.Angles(math.rad(90),0,0))
+			weld(root,makePart("Lens"..x,Vector3.new(0.48,0.12,0.48),p.glass,Enum.Material.Glass,"CYLINDER"),CFrame.new(x,0,-0.92)*CFrame.Angles(math.rad(90),0,0))
+		end
+		weld(root,makePart("Bridge",Vector3.new(0.62,0.32,0.42),p.edge,Enum.Material.Metal),CFrame.new())
+	elseif id=="COMPASS_TOOL" then
+		weld(root,makePart("Case",Vector3.new(1.75,0.32,1.75),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new()*CFrame.Angles(math.rad(90),0,0))
+		weld(root,makePart("Face",Vector3.new(1.42,0.08,1.42),p.face,Enum.Material.Glass,"CYLINDER"),CFrame.new(0,0.18,0)*CFrame.Angles(math.rad(90),0,0))
+		weld(root,makePart("Needle",Vector3.new(0.12,0.08,1.05),p.accent,Enum.Material.Neon),CFrame.new(0,0.25,0))
+	elseif id=="CHALK_MARKER_KIT" then
+		weld(root,makePart("Pouch",Vector3.new(1.55,1.20,0.85),p.cloth,Enum.Material.Fabric),CFrame.new(0,-0.1,0))
+		for i=-1,1 do weld(root,makePart("Chalk"..i,Vector3.new(0.24,1.15,0.24),i==0 and p.accent or p.chalk,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(i*0.38,0.65,-0.20)) end
+	elseif id=="CLIMBING_PITON_SET" then
+		for i=-1,1 do weld(root,wedge("Piton"..i,Vector3.new(0.28,1.55,0.22),p.metal,Enum.Material.Metal),CFrame.new(i*0.42,0,0)) end
+		weld(root,makePart("Ring",Vector3.new(1.35,0.16,1.35),p.ring,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,-0.55,0))
+	elseif id=="FISHING_ROD" then
+		weld(root,makePart("Rod",Vector3.new(0.20,5.2,0.20),p.rod,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,0,0)*CFrame.Angles(0,0,math.rad(-6)))
+		weld(root,makePart("Reel",Vector3.new(0.72,0.46,0.72),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0.32,-1.4,0)*CFrame.Angles(0,0,math.rad(90)))
+		weld(root,makePart("Line",Vector3.new(0.04,3.5,0.04),p.line,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0.30,1.9,0))
+	elseif id=="SHOVEL_TOOL" then
+		weld(root,makePart("Shaft",Vector3.new(0.28,4.6,0.28),p.shaft,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,0,0))
+		weld(root,wedge("Blade",Vector3.new(1.35,1.55,0.32),p.metal,Enum.Material.Metal),CFrame.new(0,-2.85,0)*CFrame.Angles(math.rad(180),0,0))
+	elseif id=="WATERING_CAN" then
+		weld(root,makePart("Can",Vector3.new(1.75,1.35,1.45),p.metal,Enum.Material.Metal),CFrame.new())
+		weld(root,makePart("Spout",Vector3.new(0.28,2.8,0.28),p.edge,Enum.Material.Metal,"CYLINDER"),CFrame.new(1.55,0.15,0)*CFrame.Angles(0,0,math.rad(62)))
+		weld(root,makePart("Rose",Vector3.new(0.72,0.22,0.72),p.accent,Enum.Material.Metal,"CYLINDER"),CFrame.new(2.75,0.75,0)*CFrame.Angles(0,0,math.rad(90)))
+	elseif id=="FIELD_CAMERA" then
+		weld(root,makePart("Body",Vector3.new(1.85,1.30,0.85),p.body,Enum.Material.SmoothPlastic),CFrame.new())
+		weld(root,makePart("Lens",Vector3.new(0.88,0.62,0.88),p.edge,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0,-0.65)*CFrame.Angles(math.rad(90),0,0))
+		weld(root,makePart("Glass",Vector3.new(0.62,0.12,0.62),p.glass,Enum.Material.Glass,"CYLINDER"),CFrame.new(0,0,-1.00)*CFrame.Angles(math.rad(90),0,0))
+	elseif id=="SIGNAL_MIRROR" then
+		weld(root,makePart("Mirror",Vector3.new(1.55,0.14,1.55),p.mirror,Enum.Material.Glass,"CYLINDER"),CFrame.new()*CFrame.Angles(math.rad(90),0,0))
+		weld(root,makePart("Rim",Vector3.new(1.78,0.18,1.78),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,-0.03,0)*CFrame.Angles(math.rad(90),0,0))
+		weld(root,makePart("Grip",Vector3.new(0.30,1.35,0.30),p.grip,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,-1.2,0))
+	elseif id=="ROPE_COIL" then
+		for i=1,3 do weld(root,makePart("Coil"..i,Vector3.new(1.55+i*0.08,0.20,1.55+i*0.08),i==2 and p.light or p.rope,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0,(i-2)*0.22,0)) end
+		weld(root,makePart("Band",Vector3.new(0.32,0.88,1.85),p.band,Enum.Material.Fabric),CFrame.new())
+	elseif id=="REPAIR_MULTITOOL" then
+		weld(root,makePart("Handle",Vector3.new(0.62,2.05,0.52),p.grip,Enum.Material.SmoothPlastic),CFrame.new())
+		for _,x in ipairs({-0.42,0.42}) do weld(root,wedge("Tool"..x,Vector3.new(0.25,1.25,0.18),p.metal,Enum.Material.Metal),CFrame.new(x,0.85,0)*CFrame.Angles(0,0,math.rad(x<0 and -28 or 28))) end
+	elseif id=="PORTABLE_BEACON" then
+		weld(root,makePart("Body",Vector3.new(1.15,1.75,1.15),p.body,Enum.Material.Metal),CFrame.new(0,0.65,0))
+		local glow=weld(root,makePart("Beacon",Vector3.new(0.72,0.72,0.72),p.glow,Enum.Material.Neon,"BALL"),CFrame.new(0,1.85,0));glow.Transparency=0.08
+		for _,x in ipairs({-0.72,0.72}) do weld(root,makePart("Leg"..x,Vector3.new(0.16,1.35,0.16),p.edge,Enum.Material.Metal,"CYLINDER"),CFrame.new(x,-0.45,0)*CFrame.Angles(0,0,math.rad(x<0 and -18 or 18))) end
+	elseif id=="SPECIMEN_JAR" then
+		local glass=weld(root,makePart("Jar",Vector3.new(1.25,1.70,1.25),p.glass,Enum.Material.Glass,"CYLINDER"),CFrame.new());glass.Transparency=0.38
+		weld(root,makePart("Lid",Vector3.new(1.32,0.24,1.32),p.lid,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0.92,0))
+		weld(root,makePart("Label",Vector3.new(0.78,0.48,0.06),p.label,Enum.Material.SmoothPlastic),CFrame.new(0,0,-0.66))
+	elseif id=="CAMP_KIT" then
+		weld(root,makePart("Roll",Vector3.new(1.45,2.65,1.45),p.cloth,Enum.Material.Fabric,"CYLINDER"),CFrame.new()*CFrame.Angles(0,0,math.rad(90)))
+		for _,x in ipairs({-0.48,0.48}) do weld(root,makePart("Strap"..x,Vector3.new(0.22,1.55,1.62),p.strap,Enum.Material.Fabric),CFrame.new(x,0,0)) end
+		if detail(level,2) then weld(root,makePart("Pack",Vector3.new(1.65,1.25,0.75),p.light,Enum.Material.Fabric),CFrame.new(0,-0.95,0)) end
+	end
+end
+
 local BUILDERS = table.freeze({
 	HEALING_POTION = addBottle,
 	MANA_CRYSTAL = addCrystal,
@@ -543,6 +628,22 @@ local BUILDERS = table.freeze({
 	THROWING_BOMB = addBomb,
 	LOCKPICK_SET = addKey,
 	SIGNAL_LANTERN = addLantern,
+	GRAPPLING_KIT = addUtilityGadget,
+	FIELD_SCANNER = addUtilityGadget,
+	BINOCULARS = addUtilityGadget,
+	COMPASS_TOOL = addUtilityGadget,
+	CHALK_MARKER_KIT = addUtilityGadget,
+	CLIMBING_PITON_SET = addUtilityGadget,
+	FISHING_ROD = addUtilityGadget,
+	SHOVEL_TOOL = addUtilityGadget,
+	WATERING_CAN = addUtilityGadget,
+	FIELD_CAMERA = addUtilityGadget,
+	SIGNAL_MIRROR = addUtilityGadget,
+	ROPE_COIL = addUtilityGadget,
+	REPAIR_MULTITOOL = addUtilityGadget,
+	PORTABLE_BEACON = addUtilityGadget,
+	SPECIMEN_JAR = addUtilityGadget,
+	CAMP_KIT = addUtilityGadget,
 })
 
 local function applyModelMetadata(model, row, quality)
@@ -554,6 +655,12 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("InventoryCategory", row.inventoryCategory or row.itemRole)
 	model:SetAttribute("StackProfile", row.stackProfile or "GAME_DEFINED")
 	model:SetAttribute("RarityBand", row.rarityBand or "GAME_DEFINED")
+	model:SetAttribute("InteractionFamily", row.interactionFamily or "NONE")
+	model:SetAttribute("OwnsTraversalAuthority", false)
+	model:SetAttribute("OwnsScanningAuthority", false)
+	model:SetAttribute("OwnsNavigationAuthority", false)
+	model:SetAttribute("OwnsFarmingAuthority", false)
+	model:SetAttribute("OwnsFishingAuthority", false)
 	model:SetAttribute("StudioAssetQualityLevel", quality)
 	model:SetAttribute("StudioAssetQualityTarget", 120)
 	model:SetAttribute("RuntimeVerificationState", "PENDING_STUDIO")
@@ -683,11 +790,11 @@ function RobloxCommonItems.Audit()
 		end
 	end
 	return table.freeze({
-		version = 2,
+		version = 3,
 		packId = "roblox-common-items-v1",
 		itemCount = #rows,
-		expectedItemCount = 24,
-		pass = #rows == 24 and #missing == 0,
+		expectedItemCount = 40,
+		pass = #rows == 40 and #missing == 0,
 		missing = table.freeze(missing),
 		companyCommonBase = true,
 		compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
