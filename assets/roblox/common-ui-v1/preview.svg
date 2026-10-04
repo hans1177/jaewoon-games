@@ -1,22 +1,92 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="720" viewBox="0 0 1050 720">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820">
 <defs>
-<linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3b4552"/><stop offset="1" stop-color="#20262e"/></linearGradient>
-<linearGradient id="btn" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6692cf"/><stop offset="1" stop-color="#345b97"/></linearGradient>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0f151c"/><stop offset="1" stop-color="#151d26"/></linearGradient>
+  <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3b4654"/><stop offset="1" stop-color="#20272f"/></linearGradient>
+  <linearGradient id="btn" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6a9ad6"/><stop offset="1" stop-color="#345f9d"/></linearGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity=".35"/></filter>
 </defs>
-<rect width="1050" height="720" fill="#11161c"/>
-<text x="55" y="58" fill="#f2f5f8" font-family="sans-serif" font-size="32" font-weight="700">ROBLOX COMMON UI · BASE V2</text>
-<text x="55" y="92" fill="#98a5b6" font-family="sans-serif" font-size="17">11 reusable components · theme adaptable · runtime unverified</text>
-<rect x="55" y="125" width="940" height="520" rx="22" fill="url(#panel)" stroke="#64758b" stroke-width="3"/>
-<rect x="82" y="154" width="886" height="462" rx="16" fill="#161c22" opacity=".82" stroke="#8c9db3" stroke-opacity=".4"/>
-<rect x="115" y="195" width="190" height="64" rx="12" fill="url(#btn)"/><text x="210" y="234" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="17" font-weight="700">BUTTON_PRIMARY</text>
-<rect x="350" y="205" width="250" height="28" rx="9" fill="#373e45"/><rect x="350" y="205" width="175" height="28" rx="9" fill="#5bb55b"/><text x="475" y="225" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="12">BAR_HEALTH</text>
-<rect x="650" y="188" width="72" height="72" rx="12" fill="#202830" stroke="#64758b"/><rect x="735" y="188" width="72" height="72" rx="12" fill="#202830" stroke="#64758b"/><text x="728" y="282" text-anchor="middle" fill="#aab4c2" font-family="sans-serif" font-size="13">INVENTORY_SLOT</text>
-<rect x="115" y="315" width="230" height="120" rx="12" fill="#29313a" stroke="#8c9db3"/><text x="135" y="345" fill="#fff" font-family="sans-serif" font-size="15" font-weight="700">TOOLTIP</text><text x="135" y="373" fill="#aab4c2" font-family="sans-serif" font-size="12">context text</text>
-<rect x="390" y="315" width="250" height="145" rx="16" fill="#27313b" stroke="#9aabc0"/><text x="515" y="350" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="16" font-weight="700">MODAL</text><rect x="430" y="405" width="170" height="38" rx="10" fill="url(#btn)"/>
-<rect x="690" y="318" width="205" height="45" rx="10" fill="#43516a"/><text x="792" y="347" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="14">TAB_BUTTON</text>
-<rect x="690" y="382" width="205" height="88" rx="12" fill="#252d36" stroke="#64758b"/><text x="710" y="410" fill="#fff" font-family="sans-serif" font-size="13">QUEST_CARD</text><text x="710" y="439" fill="#6692cf" font-family="sans-serif" font-size="12">reward</text>
-<rect x="115" y="510" width="150" height="42" rx="21" fill="#323b46"/><text x="190" y="537" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="13">CURRENCY_CHIP</text>
-<rect x="315" y="520" width="240" height="22" rx="8" fill="#373e45"/><rect x="315" y="520" width="145" height="22" rx="8" fill="#4c78b7"/><text x="435" y="538" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="11">BAR_PROGRESS</text>
-<circle cx="690" cy="532" r="42" fill="#4c78b7" stroke="#9aabc0" stroke-width="2"/><text x="690" y="537" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="12" font-weight="700">ACTION</text>
-<text x="55" y="685" fill="#748296" font-family="sans-serif" font-size="15">Static authoring target 100 · productionVerified=false · PENDING_STUDIO</text>
+<rect width="1280" height="820" fill="url(#bg)"/>
+<text x="52" y="54" fill="#f2f5f8" font-family="sans-serif" font-size="30" font-weight="700">ROBLOX COMMON UI · V3</text>
+<text x="52" y="84" fill="#97a7ba" font-family="sans-serif" font-size="15">32 UI components · 12 vector icons · AI/NPC interaction · inventory · character · minimap · mobile-first</text>
+
+<!-- dialogue -->
+<g filter="url(#shadow)">
+<rect x="52" y="120" width="560" height="230" rx="20" fill="url(#panel)" stroke="#71869f" stroke-width="2"/>
+<rect x="70" y="140" width="524" height="192" rx="14" fill="#171e26" stroke="#8da1b8" stroke-opacity=".35"/>
+<rect x="88" y="158" width="82" height="82" rx="14" fill="#293644" stroke="#8da1b8"/>
+<circle cx="129" cy="187" r="20" fill="#6cafe1"/><path d="M103 226 Q129 198 155 226" fill="#6cafe1"/>
+<rect x="88" y="248" width="82" height="4" rx="2" fill="#6cafe1"/>
+<text x="190" y="176" fill="#6cafe1" font-family="sans-serif" font-size="16" font-weight="700">NPC · 연구원 서진</text>
+<text x="190" y="199" fill="#97a7ba" font-family="sans-serif" font-size="12">관계: 신뢰 · 현재 감정: 경계</text>
+<text x="190" y="229" fill="#f2f5f8" font-family="sans-serif" font-size="14">“무전기 부품을 찾으면 연구소 안쪽 문을 열 수 있어.”</text>
+<rect x="190" y="256" width="178" height="46" rx="10" fill="#354252" stroke="#6cafe1"/>
+<rect x="380" y="256" width="178" height="46" rx="10" fill="#354252" stroke="#71869f"/>
+<text x="279" y="284" text-anchor="middle" fill="#f2f5f8" font-family="sans-serif" font-size="13">부품 위치를 물어본다</text>
+<text x="469" y="284" text-anchor="middle" fill="#f2f5f8" font-family="sans-serif" font-size="13">거래한다</text>
+<circle cx="568" cy="160" r="23" fill="#4c78b7" stroke="#a0bedc" stroke-width="2"/>
+<text x="568" y="166" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="13" font-weight="700">AI</text>
+<circle cx="584" cy="144" r="6" fill="#5fb578" stroke="#171e26" stroke-width="2"/>
+</g>
+
+<!-- inventory/character -->
+<g filter="url(#shadow)">
+<rect x="640" y="120" width="588" height="330" rx="20" fill="url(#panel)" stroke="#71869f" stroke-width="2"/>
+<text x="666" y="154" fill="#f2f5f8" font-family="sans-serif" font-size="17" font-weight="700">인벤토리 · 장비 · 캐릭터</text>
+<g fill="#202a34" stroke="#5e738a">
+<rect x="666" y="178" width="62" height="62" rx="10"/><rect x="738" y="178" width="62" height="62" rx="10"/><rect x="810" y="178" width="62" height="62" rx="10"/>
+<rect x="666" y="250" width="62" height="62" rx="10"/><rect x="738" y="250" width="62" height="62" rx="10"/><rect x="810" y="250" width="62" height="62" rx="10"/>
+<rect x="666" y="322" width="62" height="62" rx="10"/><rect x="738" y="322" width="62" height="62" rx="10"/><rect x="810" y="322" width="62" height="62" rx="10"/>
+</g>
+<path d="M688 214 l18-20 16 20-7 17h-20z" fill="#6cafe1"/><path d="M760 199 h18 v28 h-18z" fill="#d7a94c"/>
+<circle cx="841" cy="207" r="17" fill="#5fb578"/><path d="M688 279 l20-14 14 22-20 14z" fill="#ba7d5b"/>
+<path d="M760 286 l10-28 10 28z" fill="#b7c4d2"/><circle cx="841" cy="281" r="17" fill="#9a76d0"/>
+<text x="697" y="410" text-anchor="middle" fill="#97a7ba" font-family="sans-serif" font-size="11">INVENTORY_GRID</text>
+
+<rect x="900" y="178" width="300" height="236" rx="14" fill="#171e26" stroke="#5e738a"/>
+<rect x="918" y="196" width="92" height="92" rx="14" fill="#293644" stroke="#71869f"/>
+<circle cx="964" cy="225" r="19" fill="#e1c4a5"/><path d="M934 274 Q964 235 994 274" fill="#5f7fb2"/>
+<text x="1028" y="210" fill="#f2f5f8" font-family="sans-serif" font-size="17" font-weight="700">캐릭터</text>
+<text x="1028" y="235" fill="#6cafe1" font-family="sans-serif" font-size="12">탐험가 · Lv. 12</text>
+<g font-family="sans-serif" font-size="12"><text x="920" y="320" fill="#97a7ba">체력</text><text x="1176" y="320" text-anchor="end" fill="#f2f5f8">125 / 125</text>
+<text x="920" y="344" fill="#97a7ba">공격</text><text x="1176" y="344" text-anchor="end" fill="#f2f5f8">42</text>
+<text x="920" y="368" fill="#97a7ba">이동속도</text><text x="1176" y="368" text-anchor="end" fill="#f2f5f8">16</text></g>
+</g>
+
+<!-- map / interaction / quest -->
+<g filter="url(#shadow)">
+<rect x="52" y="390" width="560" height="310" rx="20" fill="url(#panel)" stroke="#71869f" stroke-width="2"/>
+<rect x="74" y="412" width="188" height="188" rx="18" fill="#141d24" stroke="#8da1b8"/>
+<g stroke="#485b67" stroke-width="1" opacity=".7"><line x1="121" y1="412" x2="121" y2="600"/><line x1="168" y1="412" x2="168" y2="600"/><line x1="215" y1="412" x2="215" y2="600"/><line x1="74" y1="459" x2="262" y2="459"/><line x1="74" y1="506" x2="262" y2="506"/><line x1="74" y1="553" x2="262" y2="553"/></g>
+<path d="M100 550 Q135 505 160 525 T235 455" fill="none" stroke="#6cafe1" stroke-width="5" stroke-linecap="round"/>
+<circle cx="151" cy="528" r="8" fill="#6cafe1" stroke="#fff" stroke-width="2"/><rect x="224" y="447" width="13" height="13" rx="2" fill="#e0aa45" transform="rotate(45 230 453)"/>
+<text x="168" y="623" text-anchor="middle" fill="#97a7ba" font-family="sans-serif" font-size="11">MINIMAP</text>
+
+<rect x="288" y="412" width="300" height="72" rx="14" fill="#222c36" stroke="#8da1b8"/>
+<rect x="300" y="425" width="46" height="46" rx="11" fill="url(#btn)"/><text x="323" y="454" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="17" font-weight="700">E</text>
+<text x="360" y="440" fill="#f2f5f8" font-family="sans-serif" font-size="14" font-weight="700">연구원과 대화</text>
+<text x="360" y="462" fill="#97a7ba" font-family="sans-serif" font-size="11">퀘스트 · 거래 · 아이템 전달</text>
+
+<rect x="288" y="500" width="300" height="126" rx="14" fill="#222c36" stroke="#667b91"/>
+<rect x="300" y="514" width="5" height="98" rx="3" fill="#e0aa45"/>
+<text x="318" y="534" fill="#f2f5f8" font-family="sans-serif" font-size="14" font-weight="700">연구소 무전기 복구</text>
+<text x="318" y="557" fill="#97a7ba" font-family="sans-serif" font-size="11">무전기 부품 찾기  2 / 4</text>
+<rect x="318" y="575" width="245" height="16" rx="7" fill="#353e47"/><rect x="318" y="575" width="122" height="16" rx="7" fill="#4c78b7"/>
+<text x="440" y="606" text-anchor="middle" fill="#97a7ba" font-family="sans-serif" font-size="10">QUEST_TRACKER</text>
+</g>
+
+<!-- hotbar/status/toast -->
+<g filter="url(#shadow)">
+<rect x="640" y="480" width="588" height="220" rx="20" fill="url(#panel)" stroke="#71869f" stroke-width="2"/>
+<text x="666" y="514" fill="#f2f5f8" font-family="sans-serif" font-size="16" font-weight="700">HUD · HOTBAR · STATUS · NOTIFICATION</text>
+<rect x="666" y="536" width="390" height="70" rx="14" fill="#202830" stroke="#5e738a"/>
+<g fill="#1a222b" stroke="#61778f"><rect x="680" y="545" width="52" height="52" rx="10"/><rect x="740" y="545" width="52" height="52" rx="10"/><rect x="800" y="545" width="52" height="52" rx="10"/><rect x="860" y="545" width="52" height="52" rx="10"/><rect x="920" y="545" width="52" height="52" rx="10"/><rect x="980" y="545" width="52" height="52" rx="10"/></g>
+<rect x="680" y="545" width="52" height="52" rx="10" fill="none" stroke="#6cafe1" stroke-width="3"/>
+<rect x="1072" y="536" width="132" height="40" rx="10" fill="#29323d" stroke="#bd6262"/><text x="1138" y="561" text-anchor="middle" fill="#f2f5f8" font-family="sans-serif" font-size="11">독 · 00:08</text>
+<rect x="1072" y="586" width="132" height="40" rx="10" fill="#29323d" stroke="#5fb578"/><text x="1138" y="611" text-anchor="middle" fill="#f2f5f8" font-family="sans-serif" font-size="11">재생 · 00:12</text>
+<rect x="666" y="624" width="390" height="56" rx="12" fill="#202830" stroke="#5fb578"/><rect x="678" y="636" width="5" height="32" rx="2" fill="#5fb578"/>
+<text x="694" y="646" fill="#f2f5f8" font-family="sans-serif" font-size="12" font-weight="700">제작 완료</text><text x="694" y="665" fill="#97a7ba" font-family="sans-serif" font-size="10">강철 곡괭이가 인벤토리에 추가됨</text>
+</g>
+
+<text x="52" y="758" fill="#6cafe1" font-family="sans-serif" font-size="14" font-weight="700">INTERNAL AUDIT: 1000 max · PASS 880 · HERO 920 · ELITE 950 · MASTERPIECE 980</text>
+<text x="52" y="786" fill="#77879a" font-family="sans-serif" font-size="13">Studio not required for internal audit · production/runtime verification remains separate · continual improvement after PASS</text>
 </svg>
