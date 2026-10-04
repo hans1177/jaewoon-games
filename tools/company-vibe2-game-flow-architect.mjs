@@ -422,7 +422,7 @@ function buildQualityGrowthContract({architecture={},genre='',baseline={}}={}){
 export function buildGameFlowArchitecture({gameId='',genre='',baseline={},inventory=[]}={}){
   const explicit=explicitArchitecture(baseline);
   if(explicit){
-    const base={version:Math.max(3,Number(explicit.version||1)),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE',...explicit};
+    const base={...explicit,version:Math.max(3,Number(explicit.version||1)),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE'};
     const systemBlueprint=base.systemBlueprint||buildConceptSystemBlueprint({genre,baseline,architecture:base});
     const enriched={...base,systemBlueprint};
     const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
