@@ -1133,6 +1133,42 @@ test('natural language concept inference covers full preset families and concept
   assert.ok(concept.axes.PRESENTATION.includes('HAND_PAINTED'));
 });
 
+test('static actor library candidates require motion adaptation before native-ready use',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'static-actor-library-safety-test',goal:'캐릭터와 몬스터 자산 적용'},
+    target:'roblox',
+    repoRoot:path.resolve(here,'..'),
+    manifest:{
+      version:1,
+      assets:[{
+        id:'static-character-test',
+        family:'CHARACTER',
+        category:'CHARACTER',
+        types:['character'],
+        tags:['character','hero'],
+        path:'assets/static-character-test.glb',
+        license:'project-original',
+        platforms:['roblox'],
+        downloaded:true,
+        productionVerified:false
+      }]
+    },
+    presetCatalog:{presets:[]}
+  });
+  const characterDecision=plan.decisions.find(row=>row.type==='character');
+  assert.ok(characterDecision);
+  const candidate=characterDecision.applyFirst.candidates.find(row=>row.id==='static-character-test');
+  assert.ok(candidate);
+  assert.equal(candidate.actorMotionAdaptationRequired,true);
+  assert.equal(candidate.lane,'C_MINIMAL_ADAPT');
+  assert.equal(candidate.mode,'ADAPT_THEN_APPLY');
+  assert.ok(candidate.adaptationAxes.includes('MOTION_SOURCE_BINDING'));
+  assert.ok(candidate.adaptationAxes.includes('RIG_RETARGET'));
+  assert.notEqual(candidate.mode,'IMPORT_NATIVE_READY_ASSET');
+});
+
 test('asset production planner consumes the studio universe contract',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
