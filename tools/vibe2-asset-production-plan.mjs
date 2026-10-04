@@ -553,6 +553,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     persistentWorklistField:libraryPlan.persistentWorklistField,
     volumeActionConsumption:libraryPlan.volumeActionConsumption,
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
+    freeOriginalVolumePolicy:libraryPlan.freeOriginalVolumePolicy,
     ideaDeduplication:libraryPlan.ideaDeduplication,
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     referenceBreadthProfiles:Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES),
