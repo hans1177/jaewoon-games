@@ -2195,8 +2195,11 @@ test('existing Roblox games automatically receive a Studio asset selection hando
   },null,2),'utf8');
   const gameId='legacy-rbx';
   const shared=path.join(root,'roblox-games',gameId,'shared');
+  const client=path.join(root,'roblox-games',gameId,'client');
   fs.mkdirSync(shared,{recursive:true});
+  fs.mkdirSync(client,{recursive:true});
   fs.writeFileSync(path.join(shared,'GameConfig.luau'),'return { GameName = "Legacy" }\n','utf8');
+  fs.writeFileSync(path.join(client,'Game.client.luau'),'local ReplicatedStorage = game:GetService("ReplicatedStorage")\n','utf8');
   const project={gameId,name:'Legacy Roblox',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
   const task=findRobloxStudioAssetBackfillTask(project,root,{tasks:[]});
   assert.ok(task);
@@ -2212,6 +2215,15 @@ test('existing Roblox games automatically receive a Studio asset selection hando
   assert.ok(task.evidence.includes('roblox-studio-asset-runtime-promotion:blocked-until-pass'));
 
   fs.writeFileSync(path.join(shared,'GameConfig.luau'),'local STUDIO_ASSET_BINDING_VERSION = 1\nreturn { StudioAssets = { BindingVersion = 1 } }\n','utf8');
+  const configOnly=findRobloxStudioAssetBackfillTask(project,root,{tasks:[]});
+  assert.ok(configOnly);
+  assert.ok(configOnly.evidence.includes('roblox-studio-asset-config-only-binding:REPAIR_REQUIRED'));
+
+  fs.writeFileSync(path.join(client,'Game.client.luau'),[
+    'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
+    'local RobloxCommonUI = require(ReplicatedStorage.Assets.RobloxCommonUI)',
+    'local hud = RobloxCommonUI.CreateHud and RobloxCommonUI.CreateHud()'
+  ].join('\n')+'\n','utf8');
   assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}),null);
 });
 
