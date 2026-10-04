@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "packId": "roblox-common-items-v1",
+  "family": "PROP",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+  "themeAdaptationRequiredPerGame": true,
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "sameAssetDnaAcrossWorldDropEquipAndUi": true,
+  "gameplayAuthority": false,
+  "items": [
+    {
+      "assetId": "HEALING_POTION",
+      "name": "회복 포션",
+      "subfamily": "ITEM",
+      "itemRole": "CONSUMABLE",
+      "familyRootId": "POTION_BOTTLE",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "MANA_CRYSTAL",
+      "name": "마력 수정",
+      "subfamily": "RESOURCE",
+      "itemRole": "RESOURCE",
+      "familyRootId": "CRYSTAL_CLUSTER",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "IRON_INGOT",
+      "name": "철괴",
+      "subfamily": "RESOURCE",
+      "itemRole": "RESOURCE",
+      "familyRootId": "METAL_INGOT",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "GOLD_INGOT",
+      "name": "금괴",
+      "subfamily": "RESOURCE",
+      "itemRole": "RESOURCE",
+      "familyRootId": "METAL_INGOT",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "WOOD_BUNDLE",
+      "name": "나무 묶음",
+      "subfamily": "RESOURCE",
+      "itemRole": "RESOURCE",
+      "familyRootId": "RESOURCE_BUNDLE",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "STONE_CHUNK",
+      "name": "돌 덩이",
+      "subfamily": "RESOURCE",
+      "itemRole": "RESOURCE",
+      "familyRootId": "STONE_RESOURCE",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "RELIC_KEY",
+      "name": "유물 열쇠",
+      "subfamily": "ITEM",
+      "itemRole": "KEY_ITEM",
+      "familyRootId": "RELIC_KEY",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "LANTERN",
+      "name": "랜턴",
+      "subfamily": "ITEM",
+      "itemRole": "UTILITY",
+      "familyRootId": "HAND_LANTERN",
+      "source": "RobloxCommonItems.luau",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    }
+  ]
+}
