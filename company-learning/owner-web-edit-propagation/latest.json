@@ -1,7 +1,40 @@
 {
   "version": 1,
-  "before": "0aeebce9d5c25566da7f1a182cd6c7168abd6819",
-  "after": "c7aac6ca13a2c5fa847b96f7813b6fefab8e0982",
-  "generatedAt": "2026-10-04T08:06:18.539Z",
-  "manifests": []
+  "before": "04ed163b20bbf8a3244172d86c024377c5b49bd9",
+  "after": "76d0932c46966e267bc4bb062a2ef2bc1704c62d",
+  "generatedAt": "2026-10-04T09:38:54.077Z",
+  "manifests": [
+    {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE",
+      "gameId": "fantasy-survival",
+      "sourcePath": "web-games/fantasy-survival",
+      "sourceBefore": "04ed163b20bbf8a3244172d86c024377c5b49bd9",
+      "sourceAfter": "76d0932c46966e267bc4bb062a2ef2bc1704c62d",
+      "semanticIntentFingerprint": "8912b244b47d5316f582677a2a47bd7483a8e417afda9efee00d6eb21d9915da",
+      "affectedSystems": [
+        "MOVEMENT",
+        "COMBAT",
+        "CRAFTING",
+        "INVENTORY",
+        "WORLD",
+        "MULTIPLAYER",
+        "PROGRESSION",
+        "AUDIO",
+        "UI_UX",
+        "SAVE",
+        "BALANCE"
+      ],
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "literalWebCodeCrossPlatformCopyForbidden": true,
+      "semanticIntentPropagationRequired": true,
+      "affectedWebQaRequired": true,
+      "affectedPlatformQaRequired": true,
+      "detectedAt": "2026-10-04T09:38:54.077Z",
+      "state": "PLATFORM_PROPAGATION_REQUIRED"
+    }
+  ]
 }
