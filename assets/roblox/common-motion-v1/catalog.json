@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -147,6 +147,159 @@
       "source": "RobloxCommonMotion.luau",
       "combatRole": "COUNTER_READY",
       "productionVerified": false
+    },
+    {
+      "atomId": "SPRINT",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.48,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SPRINT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CROUCH_IDLE",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.4,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CROUCH",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DODGE_LEFT",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.46,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "DODGE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DODGE_RIGHT",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.46,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "DODGE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "ROLL_FORWARD",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.62,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "ROLL",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CLIMB_LOOP",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CLIMB",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SWIM_FORWARD",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SWIM",
+      "productionVerified": false
+    },
+    {
+      "atomId": "INTERACT_USE",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.55,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "INTERACT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "GATHER_SWING",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.74,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "GATHER",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CRAFT_LOOP",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.25,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CRAFT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CARRY_IDLE",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.6,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "CARRY",
+      "productionVerified": false
+    },
+    {
+      "atomId": "EQUIP_DRAW",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.52,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "EQUIP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "UNEQUIP_STOW",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.52,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "UNEQUIP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "USE_CONSUMABLE",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 0.78,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "USE_CONSUMABLE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DOWNED_IDLE",
+      "priority": "Action3",
+      "looped": true,
+      "duration": 1.5,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "DOWNED",
+      "productionVerified": false
+    },
+    {
+      "atomId": "REVIVE_HELP",
+      "priority": "Action3",
+      "looped": false,
+      "duration": 1.05,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "REVIVE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "EMOTE_WAVE",
+      "priority": "Action",
+      "looped": false,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "EMOTE",
+      "productionVerified": false
     }
   ],
   "systemDepthContract": {
@@ -206,32 +359,33 @@
       "BLOCK_HOLD",
       "PARRY_PERFECT",
       "GUARD_BREAK",
-      "COUNTER_READY"
-    ],
-    "currentAssetCount": 16,
-    "missingComponentCandidates": [
+      "COUNTER_READY",
       "SPRINT",
-      "CROUCH",
-      "CLIMB",
-      "SWIM",
-      "DODGE",
-      "ROLL",
+      "CROUCH_IDLE",
+      "DODGE_LEFT",
+      "DODGE_RIGHT",
+      "ROLL_FORWARD",
+      "CLIMB_LOOP",
+      "SWIM_FORWARD",
+      "INTERACT_USE",
+      "GATHER_SWING",
+      "CRAFT_LOOP",
+      "CARRY_IDLE",
+      "EQUIP_DRAW",
+      "UNEQUIP_STOW",
+      "USE_CONSUMABLE",
+      "DOWNED_IDLE",
+      "REVIVE_HELP",
+      "EMOTE_WAVE"
+    ],
+    "currentAssetCount": 33,
+    "missingComponentCandidates": [
       "LIGHT_ATTACK",
       "HEAVY_ATTACK",
       "RANGED_ATTACK",
       "CAST",
       "CHANNEL",
-      "INTERACT",
-      "GATHER",
-      "CRAFT",
-      "CARRY",
-      "EQUIP",
-      "UNEQUIP",
-      "USE_CONSUMABLE",
       "HIT_BACK",
-      "DOWNED",
-      "REVIVE",
-      "EMOTE",
       "BLEND",
       "MOTION_LOD"
     ],
@@ -276,5 +430,58 @@
     "staminaAuthority": false,
     "counterDamageAuthority": false,
     "networkAuthority": false
+  },
+  "motionVarietyContract": {
+    "version": 1,
+    "groups": {
+      "locomotion": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "SPRINT",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "CROUCH_IDLE"
+      ],
+      "traversal": [
+        "CLIMB_LOOP",
+        "SWIM_FORWARD",
+        "DODGE_LEFT",
+        "DODGE_RIGHT",
+        "ROLL_FORWARD"
+      ],
+      "defense": [
+        "BLOCK_RAISE",
+        "BLOCK_HOLD",
+        "PARRY_PERFECT",
+        "GUARD_BREAK",
+        "COUNTER_READY"
+      ],
+      "utility": [
+        "INTERACT_USE",
+        "GATHER_SWING",
+        "CRAFT_LOOP",
+        "CARRY_IDLE",
+        "EQUIP_DRAW",
+        "UNEQUIP_STOW",
+        "USE_CONSUMABLE"
+      ],
+      "recovery": [
+        "HIT_FRONT",
+        "DOWNED_IDLE",
+        "REVIVE_HELP",
+        "DEATH_FRONT"
+      ],
+      "social": [
+        "EMOTE_WAVE"
+      ]
+    },
+    "rootMotionAuthority": false,
+    "gameplayMovementAuthority": false,
+    "combatTimingAuthority": false
   }
 }
