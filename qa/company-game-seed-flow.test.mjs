@@ -12,6 +12,11 @@ import {
   ensureSeedMaterialPool,
 } from '../tools/game-seed-state.mjs';
 import {GAME_SEED_POLICY,GAME_SEED_REQUIRED_FIELDS} from '../tools/company-game-seed-contract.mjs';
+import {
+  GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD,
+  gameSeedConceptSimilarity,
+  findSimilarActiveSeed,
+} from '../tools/company-game-seed-bootstrap.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -144,6 +149,40 @@ test('seed material pool is fixed at 100 and composed seeds use mixed material i
   assert.match(bootstrap,/MULTIPLAYER_DESIGN_MODE/);
   assert.match(bootstrap,/GAME_SEED_CONCEPT_DUPLICATE/);
   assert.match(platformProfileTool,/ANDROID_MOBILE.*UNITY/s);
+});
+
+test('similar active game design is reused instead of creating a duplicate seed',()=>{
+  assert.equal(GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD,0.82);
+  const existing={
+    seedId:'SEED-ROBLOX-SURVIVAL-001',
+    gameId:'existing-survival',
+    status:'ACTIVE',
+    CORE_LOOP:['자원을 수집한다','도구를 제작한다','밤의 위협에서 생존한다'],
+    DISTINCT_IDENTITY:'숲 거점 생존 제작 탐험'
+  };
+  const same={
+    coreLoop:['자원을 수집한다','도구를 제작한다','밤의 위협에서 생존한다'],
+    distinctIdentity:'숲 거점 생존 제작 탐험'
+  };
+  assert.equal(gameSeedConceptSimilarity(existing,same),1);
+  const match=findSimilarActiveSeed(same,[existing]);
+  assert.equal(match.seed.gameId,'existing-survival');
+  assert.equal(match.score,1);
+
+  const discarded={...existing,gameId:'discarded-survival',seedId:'OLD',status:'DISCARDED'};
+  assert.equal(findSimilarActiveSeed(same,[discarded]),null);
+
+  const different={
+    coreLoop:['도시를 건설한다','외교 협정을 맺는다','무역 항로를 운영한다'],
+    distinctIdentity:'해상 문명 외교 무역 전략'
+  };
+  assert.equal(findSimilarActiveSeed(different,[existing]),null);
+
+  assert.match(bootstrap,/findSimilarActiveSeed\(proposal,state\.seeds\)/);
+  assert.match(bootstrap,/GAME_SEED_CONCEPT_DUPLICATE_REUSE_EXISTING/);
+  assert.match(bootstrap,/releaseSeedMaterialReservations\(state,target\.materials/);
+  assert.match(bootstrap,/fulfillPortfolioSeedRequest\(target\.portfolioRequest,existing,timestamp\)/);
+  assert.match(bootstrap,/duplicatePolicy:'SEARCH_EXISTING_ACTIVE_SEEDS_THEN_REUSE_SIMILAR_NO_DUPLICATE_CREATION'/);
 });
 
 test('owner preservation pilots materialize through canonical GAME_SEED bootstrap',()=>{

@@ -183,18 +183,23 @@ function fallbackTitle(target){
 function conceptTokens(seedLike){
   return new Set(norm([...(seedLike.CORE_LOOP||seedLike.coreLoop||[]),seedLike.DISTINCT_IDENTITY||seedLike.distinctIdentity||''].join(' ')).split(/[^a-z0-9가-힣]+/).filter(x=>x.length>2));
 }
-function similarity(a,b){
+export const GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD=0.82;
+export function gameSeedConceptSimilarity(a,b){
   const A=conceptTokens(a),B=conceptTokens(b);
   if(!A.size||!B.size)return 0;
   let hit=0;
   for(const t of A)if(B.has(t))hit++;
   return hit/Math.max(A.size,B.size);
 }
-function assertDistinctConcept(proposal){
-  for(const seed of state.seeds||[]){
-    if(['DISCARDED','REMOVED'].includes(clean(seed.status).toUpperCase()))continue;
-    if(similarity(seed,proposal)>=0.82)throw new Error(`GAME_SEED_CONCEPT_DUPLICATE ${seed.gameId||seed.seedId}`);
+export function findSimilarActiveSeed(proposal,seeds=state.seeds||[],threshold=GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD){
+  let best=null;
+  for(const seed of seeds||[]){
+    if(['DISCARDED','REMOVED'].includes(clean(seed?.status).toUpperCase()))continue;
+    const score=gameSeedConceptSimilarity(seed,proposal);
+    if(score<Number(threshold||0))continue;
+    if(!best||score>best.score)best={seed,score};
   }
+  return best;
 }
 function activeSeed(seed){
   return seed&&!['DISCARDED','REMOVED'].includes(clean(seed.status).toUpperCase());
@@ -412,7 +417,6 @@ function validateProposal(target,p){
   const sketch=p.gameplaySketch||{};
   if(Number(sketch.version||0)<2||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2)errors.push('gameplaySketch');
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
-  assertDistinctConcept(p);
 }
 async function callModelBatch(targets){
   const controller=new AbortController();
@@ -524,10 +528,27 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
     if(proposals.length!==targets.length)throw new Error('GAME_SEED_BATCH_COUNT_MISMATCH');
     const used=new Set((state.seeds||[]).map(s=>s.gameId));
     const created=[];
+    const reused=[];
     const serials=new Map();
     for(let i=0;i<targets.length;i++){
       const target=targets[i],proposal=normalizeProposal(target,proposals[i]);
       validateProposal(target,proposal);
+      const duplicate=findSimilarActiveSeed(proposal,state.seeds);
+      if(duplicate){
+        const existing=duplicate.seed;
+        releaseSeedMaterialReservations(state,target.materials,{timestamp});
+        if(target.portfolioRequest)fulfillPortfolioSeedRequest(target.portfolioRequest,existing,timestamp);
+        reused.push({
+          requestId:target.requestId,
+          seedId:existing.seedId,
+          gameId:existing.gameId,
+          category:existing.GAME_CATEGORY,
+          initialTargetPlatform:seedPlatform(existing),
+          similarityScore:Math.round(duplicate.score*10000)/10000,
+          reason:'GAME_SEED_CONCEPT_DUPLICATE_REUSE_EXISTING'
+        });
+        continue;
+      }
       const platform=normalizeSeedPlatform(proposal.initialTargetPlatform);
       const key=`${platform}:${target.category}`;
       const serial=(serials.get(key)??initialSerialCount(platform,target.category))+1;
@@ -542,7 +563,9 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
     }
     if(initial){
       state.bootstrapCompletedAt=timestamp;
-      state.initialBatchCount=created.length;
+      state.initialBatchCount=created.length+reused.length;
+      state.initialBatchCreatedCount=created.length;
+      state.initialBatchReusedCount=reused.length;
       state.initialBatchCategories=[...historicalCategories];
     }
     state.lastRunAt=timestamp;
@@ -561,6 +584,10 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
         seedMaterialCount:s.SEED_MATERIAL_COUNT,
         seedMaterialSelectionMode:s.SEED_MATERIAL_SELECTION_MODE,
       })),
+      reused,
+      duplicateReuseCount:reused.length,
+      duplicatePolicy:'SEARCH_EXISTING_ACTIVE_SEEDS_THEN_REUSE_SIMILAR_NO_DUPLICATE_CREATION',
+      duplicateSimilarityThreshold:GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD,
       modelCalls:proposalProvider?0:1,
       ownerPreservationGameIds,
       seedMaterialPoolTarget:100,
@@ -580,6 +607,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   runGameSeedBootstrap().then(result=>{
     console.log(JSON.stringify(result,null,2));
     console.log(`GAME_SEED_CREATED_COUNT=${result.created.length}`);
+    console.log(`GAME_SEED_REUSED_COUNT=${(result.reused||[]).length}`);
+    console.log(`GAME_SEED_DUPLICATE_POLICY=${result.duplicatePolicy||'SEARCH_EXISTING_ACTIVE_SEEDS_THEN_REUSE_SIMILAR_NO_DUPLICATE_CREATION'}`);
+    console.log(`GAME_SEED_DUPLICATE_SIMILARITY_THRESHOLD=${result.duplicateSimilarityThreshold??GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD}`);
     console.log(`GAME_SEED_MODEL_CALLS=${result.modelCalls}`);
     console.log(`OWNER_PRESERVATION_SEED_MATERIALIZED_COUNT=${(result.ownerPreservationGameIds||[]).length}`);
     console.log(`OWNER_PRESERVATION_SEED_GAME_IDS=${(result.ownerPreservationGameIds||[]).join(',')||'NONE'}`);
