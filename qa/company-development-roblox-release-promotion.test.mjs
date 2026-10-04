@@ -291,7 +291,9 @@ test('validation and final publish dedupe same-game stage without workflow-level
   assert.match(workflow,/run-name: Roblox publish · \$\{\{ inputs\.game_id \|\| 'push' \}\} · \$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.publish_stage \|\| 'validation'\) \|\| 'sync-only' \}\}/);
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
-  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  const header=workflow.slice(0,jobsAt);
+  assert.match(header,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);
+  assert.match(header,/cancel-in-progress: false/);
   assert.match(workflow,/release-dedupe:/);
   assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
   assert.match(workflow,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);

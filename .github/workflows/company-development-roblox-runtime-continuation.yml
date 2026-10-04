@@ -14,7 +14,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}
+  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
   cancel-in-progress: false
 
 env:

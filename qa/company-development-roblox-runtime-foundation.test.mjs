@@ -894,7 +894,8 @@ test('Roblox F0-F9 orchestration dispatches exact games without cross-game fan-i
   assert.match(continueBlock,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
 
   const releaseHeader=release.slice(0,release.indexOf('\njobs:\n'));
-  assert.doesNotMatch(releaseHeader,/concurrency:/);
+  assert.match(releaseHeader,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);
+  assert.match(releaseHeader,/cancel-in-progress: false/);
   assert.match(release,/retry_window_seconds=900/);
   assert.match(release,/ROBLOX_PUBLISH_SERVER_BUSY_ATTEMPT=/);
   assert.match(release,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
