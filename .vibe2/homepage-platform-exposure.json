@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-04T14:34:06.911Z",
+  "updatedAt": "2026-10-04T15:04:51.535Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -72,14 +72,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -100,8 +100,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "f3009510f04c478e575da4c8cfa95bb38ef63257",
-            "artifactIdentity": "sha256:060ebec147148d32a56e81ec479809cb3211bd0fc0699001e3f149e3724a6c6a",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleasePublished": true,
@@ -147,7 +147,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 4
+            "candidateVersionNumber": 0
           },
           "perpetualBuildupActive": true,
           "testerTickets": {
