@@ -3302,7 +3302,8 @@ export function buildVibeAssetProductionPlan({
         externalLicensedMotionGapFill:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.searchExternalLicensedMotionBeforeAuthoringMissingCoverage===true,
         platformNativeRuntimeVerificationRequired:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.retargetCleanupAndPlatformNativeRuntimeValidationRequired===true
       }),
-      verifiedCompanyAssetCount:verifiedCompanyManifestAssets(companyRegistry).length,
+      searchableCompanyAssetCount:companyManifestAssets(companyRegistry,repoRoot).length,
+      verifiedCompanyAssetCount:companyManifestAssets(companyRegistry,repoRoot).filter(asset=>asset.companyVerified===true).length,
       externalSourceCount:Array.isArray(companyRegistry?.externalSources)?companyRegistry.externalSources.length:0,
       externalSourceIds:freezeList((companyRegistry?.externalSources||[]).map(row=>clean(row.id)).filter(Boolean))
     }),
