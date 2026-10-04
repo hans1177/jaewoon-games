@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, evaluateInternalAssetSourceBinding, evaluateAudioPresentationSourceBinding } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -6397,5 +6397,134 @@ test('Luau focused anchors fall back to directive line hints when the symbolic l
   const focused=buildFocusedReplaceOnlyPrompt(prompt,{sourceRoot:root,responsibleFiles:[relative],preferredTargets:[]});
   assert.equal(focused.spec.find,'  panel.BackgroundColor3=Color3.fromRGB(20,20,20)');
   assert.ok(focused.spec.context.includes('local function renderQuestHud()'));
+});
+
+test('selected internal asset binding requires executable game-source use and skips already bound source',()=>{
+  const root=tempRoot();
+  write(path.join(root,'shared','GameConfig.luau'),[
+    'local Config = {}',
+    'Config.StudioAssets = { BindingVersion = 2, Families = { UI = { "FRAME_PANEL" } } }',
+    'return Config'
+  ].join('\n'));
+  write(path.join(root,'client','Game.client.luau'),[
+    'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
+    'local Config = require(ReplicatedStorage.Shared.GameConfig)',
+    'local frame = Instance.new("Frame")',
+    'frame.Parent = game.Players.LocalPlayer.PlayerGui'
+  ].join('\n'));
+
+  const order={
+    target:'roblox',
+    gameId:'asset-binding-fixture',
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION'},
+    assetProduction:{
+      flowAssetLoadout:{
+        selections:[{
+          requirementId:'UI:HUD',
+          assetId:'roblox-common-ui-hud-fixture',
+          family:'UI',
+          role:'HUD',
+          applicationMode:'USE_AS_IS',
+          sourceFiles:['assets/roblox/common-ui-v1/RobloxCommonUI.luau']
+        }]
+      }
+    }
+  };
+
+  const metadataOnly=evaluateInternalAssetSourceBinding({
+    order,
+    sourceRoot:root,
+    candidate:{edits:[{
+      path:'shared/GameConfig.luau',
+      replace:'Config.StudioAssets = { BindingVersion = 2, Families = { UI = { "FRAME_PANEL" } } }'
+    }]}
+  });
+  assert.equal(metadataOnly.required,true);
+  assert.equal(metadataOnly.pass,false);
+  assert.equal(metadataOnly.reason,'SELECTED_INTERNAL_ASSET_SOURCE_BINDING_MISSING');
+  assert.equal(metadataOnly.newlyBound,0);
+
+  const candidateBound=evaluateInternalAssetSourceBinding({
+    order,
+    sourceRoot:root,
+    candidate:{edits:[{
+      path:'client/Game.client.luau',
+      replace:'local RobloxCommonUI = require(ReplicatedStorage.Assets.RobloxCommonUI)\nlocal hud = RobloxCommonUI.CreateHud and RobloxCommonUI.CreateHud()'
+    }]}
+  });
+  assert.equal(candidateBound.pass,true);
+  assert.equal(candidateBound.reason,'NEW_SELECTED_INTERNAL_ASSET_SOURCE_BINDING_PRESENT');
+  assert.equal(candidateBound.newlyBound,1);
+  assert.deepEqual(candidateBound.newlyBoundAssetIds,['roblox-common-ui-hud-fixture']);
+
+  write(path.join(root,'client','Game.client.luau'),[
+    'local ReplicatedStorage = game:GetService("ReplicatedStorage")',
+    'local Config = require(ReplicatedStorage.Shared.GameConfig)',
+    'local RobloxCommonUI = require(ReplicatedStorage.Assets.RobloxCommonUI)',
+    'local hud = RobloxCommonUI.CreateHud and RobloxCommonUI.CreateHud()'
+  ].join('\n'));
+  const alreadyBound=evaluateInternalAssetSourceBinding({order,sourceRoot:root,candidate:{}});
+  assert.equal(alreadyBound.pass,true);
+  assert.equal(alreadyBound.reason,'ALL_SELECTED_ASSETS_ALREADY_BOUND');
+  assert.equal(alreadyBound.existingBound,1);
+  assert.equal(alreadyBound.newlyBound,0);
+});
+
+test('audio feel requires native audio binding plus an actual audio mutation and reuses existing binding',()=>{
+  const root=tempRoot();
+  write(path.join(root,'client','Game.client.luau'),[
+    'local SoundService = game:GetService("SoundService")',
+    'local lobbyBgm = Instance.new("Sound")',
+    'lobbyBgm.SoundId = "rbxassetid://90251742289566"',
+    'lobbyBgm.Volume = 0.10',
+    'lobbyBgm.Parent = SoundService',
+    'lobbyBgm:Play()'
+  ].join('\n'));
+  const audioOrder={
+    target:'roblox',
+    gameId:'audio-binding-fixture',
+    presentationQuality:{required:true,pass:'AUDIO_FEEL'}
+  };
+
+  const weak=evaluateAudioPresentationSourceBinding({
+    order:audioOrder,
+    sourceRoot:root,
+    candidate:{edits:[{path:'client/Game.client.luau',replace:'local musicState = "combat"'}]}
+  });
+  assert.equal(weak.required,true);
+  assert.equal(weak.pass,false);
+  assert.equal(weak.reason,'AUDIO_FEEL_SOURCE_MUTATION_MISSING');
+  assert.equal(weak.existingBinding,true);
+
+  const reuse=evaluateAudioPresentationSourceBinding({
+    order:audioOrder,
+    sourceRoot:root,
+    candidate:{edits:[{path:'client/Game.client.luau',replace:'lobbyBgm.Volume = 0.16\nlobbyBgm.PlaybackSpeed = 1.02'}]}
+  });
+  assert.equal(reuse.pass,true);
+  assert.equal(reuse.reason,'EXISTING_AUDIO_BINDING_REUSED_WITH_MUTATION');
+  assert.equal(reuse.existingBinding,true);
+  assert.equal(reuse.newBinding,false);
+  assert.equal(reuse.audioMutation,true);
+  assert.equal(reuse.studioRequired,false);
+  assert.equal(reuse.runtimeVerificationRequired,true);
+
+  const empty=tempRoot();
+  write(path.join(empty,'client','Game.client.luau'),'local ready = true\n');
+  const created=evaluateAudioPresentationSourceBinding({
+    order:audioOrder,
+    sourceRoot:empty,
+    candidate:{edits:[{path:'client/Game.client.luau',replace:[
+      'local SoundService = game:GetService("SoundService")',
+      'local bossBgm = Instance.new("Sound")',
+      'bossBgm.SoundId = "rbxassetid://90251742289566"',
+      'bossBgm.Parent = SoundService',
+      'bossBgm:Play()'
+    ].join('\n')}]}
+  });
+  assert.equal(created.pass,true);
+  assert.equal(created.reason,'AUDIO_NATIVE_BINDING_AND_MUTATION_PRESENT');
+  assert.equal(created.existingBinding,false);
+  assert.equal(created.newBinding,true);
 });
 

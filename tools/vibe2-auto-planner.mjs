@@ -128,25 +128,295 @@ function expectationMetric(spec={},cycle=1,fallback={}){
   return Number.isFinite(max)&&max>0?Math.min(max,value):value;
 }
 const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE=new Map();
+const REPOSITORY_AUDIO_SOURCE_SNAPSHOT_CACHE=new Map();
+const REPOSITORY_AUDIO_MIN_BYTES=1024;
+const REPOSITORY_AUDIO_EXTENSIONS=new Set(['.ogg','.mp3','.wav','.flac','.m4a','.aac','.opus','.mid','.midi']);
+const REPOSITORY_AUDIO_SCAN_ROOTS=Object.freeze(['assets','roblox-games','web-games','unity-games','uefn-games','unreal-games','godot-games']);
+const REPOSITORY_AUDIO_GAME_ROOTS=Object.freeze([
+  Object.freeze(['roblox-games','ROBLOX']),
+  Object.freeze(['web-games','WEB']),
+  Object.freeze(['unity-games','UNITY']),
+  Object.freeze(['uefn-games','FORTNITE_UEFN']),
+  Object.freeze(['unreal-games','FORTNITE_UEFN']),
+  Object.freeze(['godot-games','GODOT'])
+]);
+const REPOSITORY_AUDIO_SOURCE_EXTENSIONS=new Set(['.luau','.lua','.js','.mjs','.cjs','.ts','.tsx','.jsx','.html','.htm','.cs','.uxml','.uss','.verse','.gd','.json']);
+const REPOSITORY_AUDIO_SKIP_DIRS=new Set(['.git','node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache','build','dist','.cache']);
+
+function repositoryAudioScanFingerprint(repoRoot){
+  const root=path.resolve(repoRoot);
+  return REPOSITORY_AUDIO_SCAN_ROOTS.map(relative=>{
+    const absolute=path.join(root,relative);
+    try{
+      const stat=fs.statSync(absolute);
+      return relative+':'+String(stat.mtimeMs)+':'+String(stat.size);
+    }catch{return relative+':MISSING';}
+  }).join('|');
+}
+function collectRepositoryAudioIds(value,out=new Set()){
+  if(Array.isArray(value)){for(const row of value)collectRepositoryAudioIds(row,out);return out;}
+  if(!value||typeof value!=='object')return out;
+  for(const [key,row] of Object.entries(value)){
+    if(/(?:audio|music|sound)[a-z0-9_]*id$/i.test(key)&&/^[1-9][0-9]{5,}$/.test(String(row??'').trim()))out.add(String(row).trim());
+    if(row&&typeof row==='object')collectRepositoryAudioIds(row,out);
+  }
+  return out;
+}
+function repositoryAudioSourceSnapshot(repoRoot){
+  const root=path.resolve(repoRoot);
+  const fingerprint=repositoryAudioScanFingerprint(root);
+  const cached=REPOSITORY_AUDIO_SOURCE_SNAPSHOT_CACHE.get(root);
+  if(cached&&cached.fingerprint===fingerprint)return cached.snapshot;
+  const audioFiles=[],tinyFiles=[];
+  const walk=(absolute,onFile)=>{
+    const stack=[absolute];
+    while(stack.length){
+      const current=stack.pop();
+      let entries=[];
+      try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+      for(const entry of entries){
+        if(entry.isDirectory()){
+          if(REPOSITORY_AUDIO_SKIP_DIRS.has(entry.name))continue;
+          stack.push(path.join(current,entry.name));
+          continue;
+        }
+        if(!entry.isFile())continue;
+        onFile(path.join(current,entry.name),entry.name);
+      }
+    }
+  };
+  for(const relativeRoot of REPOSITORY_AUDIO_SCAN_ROOTS){
+    const absoluteRoot=path.join(root,relativeRoot);
+    if(!fs.existsSync(absoluteRoot))continue;
+    walk(absoluteRoot,(full,name)=>{
+      const extension=path.extname(name).toLowerCase();
+      if(!REPOSITORY_AUDIO_EXTENSIONS.has(extension))return;
+      let size=0;
+      try{size=fs.statSync(full).size;}catch{return;}
+      const row={path:posix(path.relative(root,full)),size,extension};
+      if(size>=REPOSITORY_AUDIO_MIN_BYTES)audioFiles.push(row);else tinyFiles.push(row);
+    });
+  }
+  audioFiles.sort((a,b)=>a.path.localeCompare(b.path));
+  tinyFiles.sort((a,b)=>a.path.localeCompare(b.path));
+
+  const jsonIdCache=new Map();
+  const idsFromJson=file=>{
+    if(jsonIdCache.has(file))return jsonIdCache.get(file);
+    const ids=new Set();
+    try{
+      const stat=fs.statSync(file);
+      if(stat.size>0&&stat.size<=524288)collectRepositoryAudioIds(JSON.parse(fs.readFileSync(file,'utf8')),ids);
+    }catch{}
+    const values=Object.freeze([...ids].sort());
+    jsonIdCache.set(file,values);
+    return values;
+  };
+  const rows=audioFiles.map(row=>{
+    const absolute=path.join(root,row.path);
+    const ids=new Set(),metadataFiles=[];
+    for(const dir of new Set([path.dirname(absolute),path.dirname(path.dirname(absolute))])){
+      let entries=[];
+      try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch{continue;}
+      for(const entry of entries){
+        if(!entry.isFile()||path.extname(entry.name).toLowerCase()!=='.json')continue;
+        const jsonFile=path.join(dir,entry.name);
+        const found=idsFromJson(jsonFile);
+        if(!found.length)continue;
+        metadataFiles.push(posix(path.relative(root,jsonFile)));
+        for(const id of found)ids.add(id);
+      }
+    }
+    return{...row,assetIds:[...ids].sort(),metadataFiles:[...new Set(metadataFiles)].sort(),bindingGameIds:[]};
+  });
+
+  const idToRows=new Map(),refToRows=new Map();
+  const addToken=(map,key,index)=>{
+    const token=String(key||'').trim().toLowerCase();
+    if(!token)return;
+    const set=map.get(token)||new Set();
+    set.add(index);
+    map.set(token,set);
+  };
+  rows.forEach((row,index)=>{
+    for(const id of row.assetIds)addToken(idToRows,id,index);
+    const normalized=row.path.toLowerCase();
+    const base=path.basename(normalized);
+    const parts=normalized.split('/');
+    addToken(refToRows,normalized,index);
+    addToken(refToRows,base,index);
+    if(parts.length>=2)addToken(refToRows,parts.slice(-2).join('/'),index);
+  });
+
+  const nativeAudioOwnerPattern=/(?:Instance\.new\s*\(\s*["']Sound["']|SoundService|\bSoundId\s*=|\bAudioSource\b|\bAudioClip\b|\bAudioMixer\b|\bnew\s+Audio\s*\(|\bAudioContext\b|\bwebkitAudioContext\b|createBufferSource\s*\(|<audio\b|audio_player_device)/i;
+  for(const [relativeRoot,platform] of REPOSITORY_AUDIO_GAME_ROOTS){
+    const absoluteRoot=path.join(root,relativeRoot);
+    let games=[];
+    try{games=fs.readdirSync(absoluteRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory());}catch{continue;}
+    for(const game of games){
+      const state={nativeAudioOwner:false,hits:new Set()};
+      walk(path.join(absoluteRoot,game.name),(full,name)=>{
+        const extension=path.extname(name).toLowerCase();
+        if(!REPOSITORY_AUDIO_SOURCE_EXTENSIONS.has(extension))return;
+        let stat=null;
+        try{stat=fs.statSync(full);}catch{return;}
+        if(stat.size<=0||stat.size>2097152)return;
+        let text='';
+        try{text=fs.readFileSync(full,'utf8');}catch{return;}
+        if(nativeAudioOwnerPattern.test(text))state.nativeAudioOwner=true;
+        for(const id of text.match(/\b[1-9][0-9]{5,}\b/g)||[])for(const index of idToRows.get(id)||[])state.hits.add(index);
+        for(const ref of text.match(/[A-Za-z0-9_./\\-]+\.(?:ogg|mp3|wav|flac|m4a|aac|opus|mid|midi)\b/gi)||[]){
+          const normalized=ref.replaceAll('\\','/').toLowerCase();
+          const candidates=[normalized,path.basename(normalized)];
+          const parts=normalized.split('/');
+          if(parts.length>=2)candidates.push(parts.slice(-2).join('/'));
+          for(const candidate of candidates)for(const index of refToRows.get(candidate)||[])state.hits.add(index);
+        }
+      });
+      if(!state.nativeAudioOwner)continue;
+      const gameKey=platform+':'+game.name;
+      for(const index of state.hits)if(rows[index])rows[index].bindingGameIds.push(gameKey);
+    }
+  }
+
+  const finalized=rows.map(row=>Object.freeze({
+    ...row,
+    assetIds:Object.freeze([...row.assetIds]),
+    metadataFiles:Object.freeze([...row.metadataFiles]),
+    bindingGameIds:Object.freeze([...new Set(row.bindingGameIds)].sort())
+  }));
+  const snapshot=Object.freeze({
+    version:1,
+    mode:'REPOSITORY_AUDIO_FILE_UPLOAD_AND_GAME_BINDING_DISCOVERY',
+    fingerprint,
+    actualFileCount:finalized.length,
+    assetTreeFileCount:finalized.filter(row=>row.path.startsWith('assets/')).length,
+    gameLocalFileCount:finalized.filter(row=>!row.path.startsWith('assets/')).length,
+    uploadedFileCount:finalized.filter(row=>row.assetIds.length>0).length,
+    boundFileCount:finalized.filter(row=>row.bindingGameIds.length>0).length,
+    tinyRejectedCount:tinyFiles.length,
+    sourcePreview:Object.freeze(finalized.slice(0,12).map(row=>Object.freeze({path:row.path,size:row.size,assetIds:row.assetIds,bindingGameIds:row.bindingGameIds}))),
+    sourcePreviewIsNotEligibilityCap:true,
+    allDetectedAudioFilesRemainEligible:true,
+    tinyRejectedPreview:Object.freeze(tinyFiles.slice(0,12).map(row=>Object.freeze({...row})))
+  });
+  REPOSITORY_AUDIO_SOURCE_SNAPSHOT_CACHE.set(root,Object.freeze({fingerprint,snapshot}));
+  return snapshot;
+}
+
 function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_PATH){
   const assetLibraryPath=clean(relativePath)||COMPANY_ASSET_LIBRARY_PATH;
   const file=path.resolve(repoRoot,assetLibraryPath);
   let stat=null;
   try{stat=fs.statSync(file);}catch{}
+  const repositoryAudio=repositoryAudioSourceSnapshot(repoRoot);
   const cached=ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.get(file);
-  if(cached&&cached.mtimeMs===(stat?.mtimeMs??null)&&cached.size===(stat?.size??0))return cached.snapshot;
+  if(cached&&cached.mtimeMs===(stat?.mtimeMs??null)&&cached.size===(stat?.size??0)&&cached.repositoryAudioFingerprint===repositoryAudio.fingerprint)return cached.snapshot;
   const assetLibrary=readJson(file,null);
   const assets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
   const families=[...new Set(assets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
+  const familyCounts=Object.freeze(Object.fromEntries(families.map(family=>[
+    family,
+    assets.filter(row=>clean(row?.family||row?.category).toUpperCase()===family).length
+  ])));
+  const usagePolicy=assetLibrary?.internalAssetUsagePolicy||{};
+  const universal=assetLibrary?.universalVibeUpgradeAssetContract||{};
+  const rules=assetLibrary?.rules||{};
+  const composition=assetLibrary?.internalAssetCompositionContract||{};
+  const soundscape=assetLibrary?.ambientSoundscapeContract||{};
+  const environmentState=assetLibrary?.environmentStateContract||{};
+  const automation=assetLibrary?.internalAssetLibraryAutomation||{};
+  const maintenance=automation?.maintenance||{};
+  const variationAxes=automation?.studioVariationAxes&&typeof automation.studioVariationAxes==='object'?automation.studioVariationAxes:{};
+  const soundscapeLayers=(Array.isArray(soundscape?.layers)?soundscape.layers:[]).map(clean).filter(Boolean);
+  const soundscapeVariationRules=(Array.isArray(soundscape?.variationRules)?soundscape.variationRules:[]).map(clean).filter(Boolean);
+  const biomeSoundscapeCount=Object.keys(soundscape?.biomeSoundscapes||{}).length;
+  const environmentStateCount=Math.max(Number(environmentState?.stateCount||0)||0,Array.isArray(environmentState?.states)?environmentState.states.length:0);
+  const domainPlan=Array.isArray(automation?.domainPlan)?automation.domainPlan:[];
+  const audioDomain=domainPlan.find(row=>clean(row?.domain).toUpperCase()==='AUDIO')||{};
+  const registeredAudioAssetCount=Number(familyCounts.AUDIO||0);
+  const actualAudioAssetCount=Math.max(
+    0,
+    Number(soundscape?.actualAudioAssetCountFromThisContract||0)||0,
+    Number(audioDomain?.actualVerifiedAudioAssetCount||0)||0
+  );
+  const audioRoleContractCount=Math.max(
+    0,
+    Number(audioDomain?.roleContractCount||0)||0,
+    Object.values(soundscape?.sourceGroups||{}).reduce((sum,row)=>sum+(Array.isArray(row)?row.length:0),0)
+  );
+  const scored=assets.map(row=>Number(row?.internalAuditScore)).filter(Number.isFinite);
+  const has=(...names)=>names.some(name=>Number(familyCounts[clean(name).toUpperCase()]||0)>0);
+  const boundAudioState=repositoryAudio.boundFileCount>0?'READY_EXISTING_BOUND_SOURCE':repositoryAudio.actualFileCount>0?'SOURCE_PRESENT_BINDING_REQUIRED':'ROLE_ASSET_GAP';
+  const roleAudioState=actualAudioAssetCount>0?'READY_LIBRARY_AUDIO':repositoryAudio.actualFileCount>0?'MATCHING_ROLE_REQUIRED':'ROLE_ASSET_GAP';
+  const idea=(id,state,purpose,requiredFamilies=[],extra={})=>Object.freeze({
+    id,state,purpose,
+    requiredFamilies:Object.freeze(requiredFamilies),
+    applyRule:'APPLY_ONLY_WHEN_MISSING_OR_WEAKER_THAN_CURRENT_LIBRARY_CAPABILITY',
+    existingVerifiedAction:'PASS_AND_SELECT_NEXT_MISSING_IDEA',
+    ...extra
+  });
+  const applicationIdeas=[
+    idea('WORLD_LAYERED_COMPOSITION',has('ENVIRONMENT')&&(has('PROP')||has('BUILDING'))?'READY':'UNAVAILABLE','전경·중경·배경, 랜드마크, 건물, set dressing을 월드 상태와 동선에 연결',['ENVIRONMENT','PROP_OR_BUILDING']),
+    idea('ACTOR_IDENTITY_MOTION_MATERIAL',has('CHARACTER','CREATURE')&&(has('MOTION')||has('MATERIAL'))?'READY':'UNAVAILABLE','캐릭터·생물의 실루엣, 재질, 장비 상태, 모션 정체성을 한 표현 묶음으로 연결',['CHARACTER_OR_CREATURE','MOTION_OR_MATERIAL']),
+    idea('COMBAT_SKILL_FEEDBACK_STACK',has('MOTION')&&has('VFX')&&has('UI')&&(has('WEAPON')||has('SKILL'))?'READY':'UNAVAILABLE','공격·스킬의 예고→실행→충돌→상태/회복 피드백을 모션·VFX·UI·무기/스킬 표현으로 연결',['MOTION','VFX','UI','WEAPON_OR_SKILL']),
+    idea('UI_STATE_REWARD_FEEDBACK',has('UI')&&(has('VFX')||has('MOTION'))?'READY':'UNAVAILABLE','확인·취소·오류·보상·위험·상태 전이를 실제 게임 상태와 연결',['UI','VFX_OR_MOTION']),
+    idea('ENVIRONMENT_STATE_COHESION',has('ENVIRONMENT')&&environmentStateCount>0?'READY':'UNAVAILABLE','시간·날씨·가시성·표면·바람·배경 깊이 변화를 하나의 환경 상태로 묶음',['ENVIRONMENT'],{environmentStateCount}),
+    idea('BOSS_PHASE_MILESTONE_PRESENTATION',has('MOTION')&&has('VFX')&&has('UI')&&(has('CREATURE')||has('CHARACTER'))?'READY':'UNAVAILABLE','보스 단계·발견·승리·패배·주요 보상을 상태 전환과 전용 표현 계층으로 연결',['MOTION','VFX','UI','CREATURE_OR_CHARACTER']),
+    idea('EXISTING_BOUND_AUDIO_REUSE',boundAudioState,'실제 파일·업로드 ID·게임 오디오 객체 연결이 확인된 소스는 같은 역할에서 재사용하고 이미 적용됐으면 중복 연결 없이 PASS',['AUDIO'],{repositoryBoundFileCount:repositoryAudio.boundFileCount}),
+    idea('SAFE_HUB_REGION_BGM',roleAudioState,'안전지대·로비·마을·도시·야외·던전·해상 등 공간 역할에 맞는 BGM을 상태 전환과 연결하고 한 곡을 전 구간에 고정 반복하지 않음',['AUDIO']),
+    idea('EXPLORATION_CALM_TENSION_TRANSITION',roleAudioState,'탐험 평온→경계→긴장 전환을 적 발견·위험 상태·지역 경계와 연결하되 게임 판정은 오디오가 소유하지 않음',['AUDIO']),
+    idea('COMBAT_LOW_HIGH_INTENSITY_LAYER',roleAudioState,'전투 저강도/고강도 레이어를 실제 전투 상태에 맞춰 전환하고 중복 재생·재접속 누적을 방지',['AUDIO']),
+    idea('BOSS_PHASE_STINGER_AND_LAYER',roleAudioState,'보스 진입·페이즈 변화·마무리 순간을 전용 레이어/스팅어로 구분하고 일반 전투음을 그대로 복제하지 않음',['AUDIO']),
+    idea('DISCOVERY_VICTORY_DEFEAT_REWARD_STINGER',roleAudioState,'발견·승리·패배·보상·퀘스트 완료를 짧은 상태별 스팅어로 구분해 UI/VFX와 타이밍을 맞춤',['AUDIO','UI_OR_VFX']),
+    idea('AMBIENT_BED_NEAR_DISTANT_SCATTER',soundscapeLayers.length?roleAudioState:'UNAVAILABLE','BED+NEAR_LOOP+DISTANT_LOOP+SCATTER+ONE_SHOT+INTERACTION_SOURCE 계층을 거리·지역에 맞게 조합',['AUDIO'],{layers:Object.freeze(soundscapeLayers)}),
+    idea('WEATHER_TIME_INDOOR_OUTDOOR_AUDIO_BLEND',environmentStateCount>0&&soundscapeLayers.length?roleAudioState:'UNAVAILABLE','낮/밤·비·눈·폭풍·바람과 실내/실외 전환에서 환경음·공간감·오클루전을 시각 상태와 함께 블렌드',['ENVIRONMENT','AUDIO']),
+    idea('SPATIAL_INTERACTION_SOURCE',roleAudioState,'문·기계·물·시장·구조물·생물 등 상호작용 소리를 실제 월드 소스 위치와 거리 밴드에 연결',['AUDIO','PROP_OR_ENVIRONMENT']),
+    idea('AUDIO_VARIATION_DEDUPE_MOBILE_BUDGET',repositoryAudio.actualFileCount>0?'READY_FOR_BOUND_AUDIO_CONTROL':'ROLE_ASSET_GAP','반복 SFX/BGM에 variation·랜덤 scatter·중복 방지·모바일 동시재생 예산을 적용하고 동일 루프 무한 반복을 피함',['AUDIO']),
+    idea('CURRENT_LIBRARY_VARIATION_DERIVATION',Object.keys(variationAxes).length?'READY':'UNAVAILABLE','현재 라이브러리 variation 축으로 지역·역할·강도·상태·플랫폼 변형을 재사용·재조합',['LATEST_LIBRARY_VARIATION_AXES'],{variationDomains:Object.freeze(Object.keys(variationAxes).sort())})
+  ].filter(row=>row.state!=='UNAVAILABLE');
   const snapshot=Object.freeze({
     present:Boolean(assetLibrary&&((Number(assetLibrary?.version)||0)>0||assets.length)),
     path:assetLibraryPath,
     version:Number(assetLibrary?.version||0),
     assetCount:assets.length,
     families:Object.freeze(families),
-    familyCount:families.length
+    familyCount:families.length,
+    familyCounts,
+    usagePolicyVersion:Number(usagePolicy?.version||0),
+    usagePolicySource:'company-asset-library.json#internalAssetUsagePolicy',
+    usageRequiredForEveryGame:universal?.status==='ACTIVE_EXECUTABLE_CONTRACT'&&rules?.vibeUpgradeUniversalAssetFirstRequired===true,
+    allFamiliesEvaluated:universal?.selection==='ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE'||rules?.allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade===true,
+    applicableFamiliesRequireActualSourceBinding:rules?.applicableAssetFamiliesRequireActualSourceBinding===true,
+    primitiveOnlyForbidden:universal?.primitiveOnlyPassForbidden===true||rules?.primitiveOnlyVisualUpgradeForbidden===true,
+    markerOnlyForbidden:universal?.markerOnlyPassForbidden===true||rules?.assetConfigMarkerOnlyCannotPass===true,
+    mapEnvironmentCoverageRequired:rules?.mapEnvironmentBuildingPropAssetCoverageRequired===true,
+    mapMinimum:Object.freeze([...(Array.isArray(universal?.mapMinimum)?universal.mapMinimum:[])]),
+    consumerStageAccess:clean(composition?.consumerStageAccess)||null,
+    allInternalAssetsComposableAcrossExistingStages:composition?.allInternalAssetsComposableAcrossExistingStages===true,
+    applicationMode:'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING',
+    applicationIdeas:Object.freeze(applicationIdeas),
+    readyApplicationIdeaCount:applicationIdeas.filter(row=>row.state==='READY').length,
+    roleContractOnlyIdeaCount:applicationIdeas.filter(row=>row.state==='ROLE_CONTRACT_ONLY').length,
+    soundscapeLayers:Object.freeze(soundscapeLayers),
+    soundscapeVariationRules:Object.freeze(soundscapeVariationRules),
+    biomeSoundscapeCount,
+    environmentStateCount,
+    registeredAudioAssetCount,
+    actualAudioAssetCount,
+    audioRoleContractCount,
+    audioRoleContractOnly:audioRoleContractCount>0&&actualAudioAssetCount===0&&repositoryAudio.actualFileCount===0,
+    audioRegistryGap:repositoryAudio.actualFileCount>0&&registeredAudioAssetCount===0,
+    repositoryAudio,
+    scoredAssetCount:scored.length,
+    qualityMin:scored.length?Math.min(...scored):null,
+    qualityMax:scored.length?Math.max(...scored):null,
+    maintenanceInventoryFingerprint:clean(maintenance?.inventoryFingerprint)||null,
+    maintenanceTypeRoleFingerprint:clean(maintenance?.typeRoleFingerprint)||null,
+    maintenanceQualityFingerprint:clean(maintenance?.qualityFingerprint)||null,
+    freshnessIdentity:clean(maintenance?.inventoryFingerprint)||('REGISTRY_VERSION:'+String(Number(assetLibrary?.version||0)))
   });
-  ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,Object.freeze({mtimeMs:stat?.mtimeMs??null,size:stat?.size??0,snapshot}));
+  ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,Object.freeze({mtimeMs:stat?.mtimeMs??null,size:stat?.size??0,repositoryAudioFingerprint:repositoryAudio.fingerprint,snapshot}));
   return snapshot;
 }
 export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle=1,phase='BUILD_UP',focusPillar=''}={}){
@@ -205,6 +475,46 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     assetLibraryAssetCount:assetLibrarySnapshot.assetCount,
     assetLibraryFamilyCount:assetLibrarySnapshot.familyCount,
     assetLibraryFamilies:assetLibrarySnapshot.families,
+    assetLibraryFamilyCounts:assetLibrarySnapshot.familyCounts,
+    assetLibraryUsagePolicyVersion:assetLibrarySnapshot.usagePolicyVersion,
+    assetLibraryUsagePolicySource:assetLibrarySnapshot.usagePolicySource,
+    assetLibraryUsageRequired:assetLibrarySnapshot.usageRequiredForEveryGame,
+    assetLibraryAllFamiliesEvaluated:assetLibrarySnapshot.allFamiliesEvaluated,
+    assetLibraryApplicableFamiliesRequireActualSourceBinding:assetLibrarySnapshot.applicableFamiliesRequireActualSourceBinding,
+    assetLibraryPrimitiveOnlyForbidden:assetLibrarySnapshot.primitiveOnlyForbidden,
+    assetLibraryMarkerOnlyForbidden:assetLibrarySnapshot.markerOnlyForbidden,
+    assetLibraryMapEnvironmentCoverageRequired:assetLibrarySnapshot.mapEnvironmentCoverageRequired,
+    assetLibraryMapMinimum:assetLibrarySnapshot.mapMinimum,
+    assetLibraryConsumerStageAccess:assetLibrarySnapshot.consumerStageAccess,
+    assetLibraryAllInternalAssetsComposableAcrossExistingStages:assetLibrarySnapshot.allInternalAssetsComposableAcrossExistingStages,
+    assetLibraryApplicationMode:assetLibrarySnapshot.applicationMode,
+    assetLibraryApplicationIdeas:assetLibrarySnapshot.applicationIdeas,
+    assetLibraryReadyApplicationIdeaCount:assetLibrarySnapshot.readyApplicationIdeaCount,
+    assetLibraryRoleContractOnlyIdeaCount:assetLibrarySnapshot.roleContractOnlyIdeaCount,
+    assetLibrarySoundscapeLayers:assetLibrarySnapshot.soundscapeLayers,
+    assetLibrarySoundscapeVariationRules:assetLibrarySnapshot.soundscapeVariationRules,
+    assetLibraryBiomeSoundscapeCount:assetLibrarySnapshot.biomeSoundscapeCount,
+    assetLibraryEnvironmentStateCount:assetLibrarySnapshot.environmentStateCount,
+    assetLibraryRegisteredAudioAssetCount:assetLibrarySnapshot.registeredAudioAssetCount,
+    assetLibraryActualAudioAssetCount:assetLibrarySnapshot.actualAudioAssetCount,
+    assetLibraryAudioRoleContractCount:assetLibrarySnapshot.audioRoleContractCount,
+    assetLibraryAudioRoleContractOnly:assetLibrarySnapshot.audioRoleContractOnly,
+    assetLibraryAudioRegistryGap:assetLibrarySnapshot.audioRegistryGap,
+    repositoryAudioFileCount:assetLibrarySnapshot.repositoryAudio.actualFileCount,
+    repositoryAudioAssetTreeFileCount:assetLibrarySnapshot.repositoryAudio.assetTreeFileCount,
+    repositoryAudioGameLocalFileCount:assetLibrarySnapshot.repositoryAudio.gameLocalFileCount,
+    repositoryAudioUploadedFileCount:assetLibrarySnapshot.repositoryAudio.uploadedFileCount,
+    repositoryAudioBoundFileCount:assetLibrarySnapshot.repositoryAudio.boundFileCount,
+    repositoryAudioTinyRejectedCount:assetLibrarySnapshot.repositoryAudio.tinyRejectedCount,
+    repositoryAudioSourcePreview:assetLibrarySnapshot.repositoryAudio.sourcePreview,
+    repositoryAudioSourcePreviewIsNotEligibilityCap:assetLibrarySnapshot.repositoryAudio.sourcePreviewIsNotEligibilityCap,
+    assetLibraryScoredAssetCount:assetLibrarySnapshot.scoredAssetCount,
+    assetLibraryQualityMin:assetLibrarySnapshot.qualityMin,
+    assetLibraryQualityMax:assetLibrarySnapshot.qualityMax,
+    assetLibraryFreshnessIdentity:assetLibrarySnapshot.freshnessIdentity,
+    assetLibraryMaintenanceInventoryFingerprint:assetLibrarySnapshot.maintenanceInventoryFingerprint,
+    assetLibraryMaintenanceTypeRoleFingerprint:assetLibrarySnapshot.maintenanceTypeRoleFingerprint,
+    assetLibraryMaintenanceQualityFingerprint:assetLibrarySnapshot.maintenanceQualityFingerprint,
     assetLibrarySourceParityRequired:assetLibrarySnapshot.present&&sourceParity?.sourceMustKeepPaceWithApplicableAssetCapability!==false,
     assetOnlySwapCountsAsEvolution:sourceParity?.assetOnlySwapCountsAsEvolution===true,
     sourceCompositionApplicabilityRule:sourceParity?.applicableOnly===false?'ALL_DIMENSIONS_REQUIRED':'APPLICABLE_OR_REASONED_NOT_APPLICABLE',
@@ -241,6 +551,7 @@ function buildUpIterationExpectationPrompt(expectation={}){
 최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
 소스 구성 성장: depth=${expectation.sourceCompositionDepthLevel}; 최소 ${(expectation.activeSourceCompositionDimensions||[]).length}/${expectation.minimumActiveSourceCompositionDimensions}개 축을 실제 책임 소스에서 연결한다. 활성 축=${(expectation.activeSourceCompositionDimensions||[]).join(' | ')||'CORE_LOOP_ORCHESTRATION'}. 내부 자산 라이브러리=${expectation.assetLibraryPresent?`v${expectation.assetLibraryVersion}, assets=${expectation.assetLibraryAssetCount}, families=${expectation.assetLibraryFamilyCount}`:'NOT_OBSERVED'}. 적용 가능한 고급 자산·UI·모션·VFX·컷신·인트로·로딩·메뉴 표현이 생기면 실제 전투/AI/월드 상태/퀘스트/보상/세션 전환/중후반 콘텐츠 흐름과 소스에서 연결한다. 자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면 source evolution으로 계산하지 않는다. 모든 축 활성화 이후에도 sourceCompositionDepth는 계속 상승하며, 비적용 축은 이유가 있어야 한다.
+자산 활용 플로어: 기존 ${expectation.assetLibraryUsagePolicySource||'company-asset-library.json#internalAssetUsagePolicy'}를 그대로 사용한다. 라이브러리 사용=${expectation.assetLibraryUsageRequired?'MANDATORY':'POLICY_NOT_OBSERVED'}, primitive-only=${expectation.assetLibraryPrimitiveOnlyForbidden?'FORBIDDEN':'POLICY_NOT_OBSERVED'}, marker-only=${expectation.assetLibraryMarkerOnlyForbidden?'FORBIDDEN':'POLICY_NOT_OBSERVED'}. 현재 게임 소스에 동일 활용이 이미 실제 구현·검증되어 있으면 해당 아이디어는 PASS하고 중복 wrapper/복제 구현하지 않는다. ${expectation.assetLibraryApplicationMode||'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING'} 방식으로 미구현 READY 활용만 선택한다. 실제 저장소 오디오=${expectation.repositoryAudioFileCount||0}, 업로드 ID 확인=${expectation.repositoryAudioUploadedFileCount||0}, 게임 오디오 객체 바인딩 확인=${expectation.repositoryAudioBoundFileCount||0}, 의심되는 초소형 파일 제외=${expectation.repositoryAudioTinyRejectedCount||0}, 공용 AUDIO 등록=${expectation.assetLibraryRegisteredAudioAssetCount||0}. 레지스트리 AUDIO가 0이어도 실제 파일/업로드/게임소스 바인딩이 있으면 없는 자산으로 취급하지 말고 기존 저장소 자산 우선순위로 재사용 후보에 포함한다. 반대로 파일 존재만으로 production/runtime verified를 주장하지 않는다. 역할이 맞지 않는 음악을 모든 지역·전투·보스에 억지 재사용하지 않는다. 활용 후보=${(expectation.assetLibraryApplicationIdeas||[]).map(row=>row.id+'['+row.state+']='+row.purpose).join(' | ')||'NONE'}. 이 목록은 활용 하한이지 상한이 아니다. 오디오는 안전지대/지역 BGM, 탐험 평온↔긴장, 전투 저↔고강도, 보스 페이즈, 발견·승리·패배·보상 스팅어, BED/NEAR_LOOP/DISTANT_LOOP/SCATTER/ONE_SHOT/INTERACTION_SOURCE, 낮/밤·날씨·실내외·오클루전, 공간 상호작용 소스, 반복 변형·중복 방지·모바일 동시재생 예산을 역할에 맞게 조합한다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
 }
@@ -1833,6 +2144,7 @@ function collectGraphicsEvolutionSignals(project={},queue={tasks:[]}){
     }
     if(status!=='verified')continue;
     for(const marker of evidence){
+      if(/^studio-quality-/i.test(marker))continue;
       if(!presentationRelevantText(marker))continue;
       if(/^owner-presentation-change:/i.test(marker)){
         const intent=marker.slice('owner-presentation-change:'.length),eventId=ownerPresentationEventIdentity(item,evidence),repeat=ownerPresentationRepeatCount(queue,project,intent);
@@ -2322,6 +2634,20 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
+function buildUpDirectiveWithAssetRequirements(directive={},taskInput={}){
+  const requirements=(Array.isArray(taskInput?.assetRequirements)?taskInput.assetRequirements:[])
+    .filter(row=>row&&typeof row==='object'&&clean(row.family))
+    .map(row=>JSON.parse(JSON.stringify(row)));
+  if(!requirements.length)return directive;
+  return{
+    ...directive,
+    assetRequirementsVersion:1,
+    assetRequirements:requirements,
+    assetRequirementResolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    assetRequirementHandoff:'EXISTING_BUILD_UP_DIRECTIVE'
+  };
+}
+
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
@@ -2383,14 +2709,14 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   );
   if(activeDirectiveMatchesCurrentSource){
     const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
-    const directive={
+    const directive=buildUpDirectiveWithAssetRequirements({
       ...activeDirectiveTask.buildUpDirective,
       playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,
         studioQualityFailure:platformLane==='roblox'?project.queueRobloxQualityBuildUpEvidence||null:null,
         ...(repairRequired?{runtimeObserved:true,runtimePassed:false}:{} )},
       ...(repairRequired?{nextActionDecision:{action:'CAUSAL_REPAIR',reason:'current source Studio product-quality failure requires source repair before another observation'},
         effectivenessMeasurement:{...activeDirectiveTask.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason:'current source Studio product-quality failure',runtimeObserved:true}}}:{} )
-    };
+    },taskInput);
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -2424,6 +2750,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-generation:'+directive.generation,
         'build-up-focus:'+directive.primaryFocus,
         'build-up-source-tree:'+directive.sourceTreeFingerprint,
+        ...(directive.assetRequirements?.length?['studio-quality-flow-asset-requirements-handoff:BUILD_UP_DIRECTIVE']:[]),
         'build-up-platform-common-goal:YES',
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
@@ -2497,7 +2824,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
     };
   }
-  const directive=buildGameSpecificBuildUpDirective({
+  const directive=buildUpDirectiveWithAssetRequirements(buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
     platform:buildUpPlatformToken(project,platformLane),
@@ -2512,7 +2839,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
     requestedFocus:sourceSafeNoDesign?requestedFocus:'',
     safeDesignlessMode:sourceSafeNoDesign
-  });
+  }),taskInput);
   return{
     ...taskInput,
     goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -2796,6 +3123,7 @@ ${expectationInstruction}
     'studio-quality-asset-library-version:'+String(iterationExpectation.assetLibraryVersion),
     'studio-quality-asset-library-family-count:'+String(iterationExpectation.assetLibraryFamilyCount),
     'studio-quality-asset-source-parity:'+(iterationExpectation.assetLibrarySourceParityRequired?'REQUIRED':'NOT_OBSERVED'),
+    'studio-quality-library-floor-projection:v1',
     'studio-quality-asset-only-source-growth:ZERO',
     'studio-quality-qualitative-detail-depth:UNBOUNDED',
     'studio-quality-queue-amplification:FORBIDDEN',
@@ -2887,6 +3215,38 @@ ${expectationInstruction}
       assetCount:iterationExpectation.assetLibraryAssetCount,
       familyCount:iterationExpectation.assetLibraryFamilyCount,
       families:[...iterationExpectation.assetLibraryFamilies],
+      familyCounts:{...iterationExpectation.assetLibraryFamilyCounts},
+      usagePolicyVersion:iterationExpectation.assetLibraryUsagePolicyVersion,
+      usagePolicySource:iterationExpectation.assetLibraryUsagePolicySource,
+      mandatoryForEveryGame:iterationExpectation.assetLibraryUsageRequired,
+      allFamiliesEvaluated:iterationExpectation.assetLibraryAllFamiliesEvaluated,
+      applicableFamiliesRequireActualSourceBinding:iterationExpectation.assetLibraryApplicableFamiliesRequireActualSourceBinding,
+      primitiveOnlyForbidden:iterationExpectation.assetLibraryPrimitiveOnlyForbidden,
+      markerOnlyForbidden:iterationExpectation.assetLibraryMarkerOnlyForbidden,
+      mapEnvironmentCoverageRequired:iterationExpectation.assetLibraryMapEnvironmentCoverageRequired,
+      mapMinimum:[...iterationExpectation.assetLibraryMapMinimum],
+      consumerStageAccess:iterationExpectation.assetLibraryConsumerStageAccess,
+      allInternalAssetsComposableAcrossExistingStages:iterationExpectation.assetLibraryAllInternalAssetsComposableAcrossExistingStages,
+      applicationMode:iterationExpectation.assetLibraryApplicationMode,
+      applicationIdeas:iterationExpectation.assetLibraryApplicationIdeas.map(row=>({...row,requiredFamilies:[...(row.requiredFamilies||[])],layers:Array.isArray(row.layers)?[...row.layers]:row.layers,variationDomains:Array.isArray(row.variationDomains)?[...row.variationDomains]:row.variationDomains})),
+      readyApplicationIdeaCount:iterationExpectation.assetLibraryReadyApplicationIdeaCount,
+      roleContractOnlyIdeaCount:iterationExpectation.assetLibraryRoleContractOnlyIdeaCount,
+      soundscapeLayers:[...iterationExpectation.assetLibrarySoundscapeLayers],
+      soundscapeVariationRules:[...iterationExpectation.assetLibrarySoundscapeVariationRules],
+      biomeSoundscapeCount:iterationExpectation.assetLibraryBiomeSoundscapeCount,
+      environmentStateCount:iterationExpectation.assetLibraryEnvironmentStateCount,
+      actualAudioAssetCount:iterationExpectation.assetLibraryActualAudioAssetCount,
+      audioRoleContractCount:iterationExpectation.assetLibraryAudioRoleContractCount,
+      audioRoleContractOnly:iterationExpectation.assetLibraryAudioRoleContractOnly,
+      scoredAssetCount:iterationExpectation.assetLibraryScoredAssetCount,
+      qualityMin:iterationExpectation.assetLibraryQualityMin,
+      qualityMax:iterationExpectation.assetLibraryQualityMax,
+      freshnessIdentity:iterationExpectation.assetLibraryFreshnessIdentity,
+      maintenanceFingerprints:{
+        inventory:iterationExpectation.assetLibraryMaintenanceInventoryFingerprint,
+        typeRole:iterationExpectation.assetLibraryMaintenanceTypeRoleFingerprint,
+        quality:iterationExpectation.assetLibraryMaintenanceQualityFingerprint
+      },
       applicabilityRule:iterationExpectation.sourceCompositionApplicabilityRule,
       assetOnlySwapCountsAsEvolution:iterationExpectation.assetOnlySwapCountsAsEvolution,
       actualGameplayOrPresentationBindingRequired:true
@@ -2963,6 +3323,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
+      ...(directive.assetRequirements?.length?['studio-quality-flow-asset-requirements-handoff:BUILD_UP_DIRECTIVE']:[]),
       'build-up-platform-common-goal:YES',
       ...(presentationFocus?[
         'asset-production-parallel:v1',
