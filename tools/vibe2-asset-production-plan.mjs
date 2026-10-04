@@ -524,11 +524,39 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
   const sourceExt=/\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
   const assetIds=unique(next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4)).sort((a,b)=>b.length-a.length||a.localeCompare(b));
+  const escapeRegex=value=>String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\  const assetIds=unique(next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4)).sort((a,b)=>b.length-a.length||a.localeCompare(b));
   const regexSpecialChars='\\^$.*+?()[]{}|';
   const escapeRegex=value=>String(value).split('').map(ch=>regexSpecialChars.includes(ch)?'\\'+ch:ch).join('');
   const assetIdMatcher=assetIds.length?new RegExp(assetIds.map(escapeRegex).join('|'),'g'):null;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
   const modulePathRows=[...sourcePathGroups.keys()].map(assetPath=>({assetPath,moduleToken:path.basename(assetPath).replace(/\.[^.]+$/,'')})).filter(row=>row.moduleToken.length>=4);
+  let sourceFilesScanned=0,sourceBytesScanned=0;');
+  const exactTokenMatcher=tokens=>{
+    const values=unique(tokens).filter(Boolean).sort((a,b)=>b.length-a.length||a.localeCompare(b));
+    return values.length?new RegExp('(?:^|[^A-Za-z0-9_.:-])('+values.map(escapeRegex).join('|')+')(?=$|[^A-Za-z0-9_.:-])','g'):null;
+  };
+  const exactTokenMatches=(content,matcher)=>{
+    const out=new Set();
+    if(!matcher)return out;
+    matcher.lastIndex=0;
+    for(const match of content.matchAll(matcher))if(match[1])out.add(match[1]);
+    return out;
+  };
+  const assetIdMatcher=exactTokenMatcher(assetIds);
+  const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
+  const moduleSourceExtensions=new Set(['.lua','.luau','.js','.mjs','.cjs','.ts','.tsx','.jsx','.gd','.cs']);
+  const moduleTokenPaths=new Map();
+  let skippedNonModulePathCount=0;
+  for(const assetPath of sourcePathGroups.keys()){
+    const extension=path.extname(assetPath).toLowerCase();
+    if(!moduleSourceExtensions.has(extension)){skippedNonModulePathCount++;continue;}
+    const moduleToken=path.basename(assetPath,extension);
+    if(moduleToken.length<4){skippedNonModulePathCount++;continue;}
+    if(!moduleTokenPaths.has(moduleToken))moduleTokenPaths.set(moduleToken,[]);
+    moduleTokenPaths.get(moduleToken).push(assetPath);
+  }
+  const moduleTokens=[...moduleTokenPaths.keys()].sort((a,b)=>b.length-a.length||a.localeCompare(b));
+  const moduleTokenMatcher=exactTokenMatcher(moduleTokens);
   let sourceFilesScanned=0,sourceBytesScanned=0;
   for(const gameRootName of gameRoots){
     const gameRoot=path.join(repoRoot,gameRootName);
@@ -577,12 +605,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           sourceFilesScanned++;
           sourceBytesScanned+=Buffer.byteLength(content,'utf8');
           const relativeSource=path.relative(repoRoot,full).replaceAll('\\','/');
-          if(assetIdMatcher){
-            assetIdMatcher.lastIndex=0;
-            const matchedIds=new Set(content.match(assetIdMatcher)||[]);
-            for(const assetId of matchedIds)addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+          for(const assetId of exactTokenMatches(content,assetIdMatcher))addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+          for(const moduleToken of exactTokenMatches(content,moduleTokenMatcher)){
+            for(const assetPath of moduleTokenPaths.get(moduleToken)||[])addLibraryModuleConsumption(assetPath,gameId,'SOURCE_MODULE_MARKER',relativeSource);
           }
-          for(const row of modulePathRows)if(content.includes(row.moduleToken))addLibraryModuleConsumption(row.assetPath,gameId,'SOURCE_MODULE_MARKER',relativeSource);
         }
       }
     }
@@ -626,8 +652,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     repositoryPathExistenceCheckCount:repositoryPathExistsCache.size,
     sharedSourcePathGroupCount:[...sourcePathGroups.values()].filter(ids=>ids.length>1).length,
     sharedSourcePathRowsAreNotAutomaticDuplicates:true,
-    assetIdMatcherMode:'COMPILED_EXACT_TOKEN_REGEX',
+    assetIdMatcherMode:'COMPILED_BOUNDARY_EXACT_TOKEN_REGEX',
     assetIdMatcherTokenCount:assetIds.length,
+    moduleMatcherMode:'COMPILED_BOUNDARY_EXACT_MODULE_TOKEN_REGEX',
+    moduleMatcherTokenCount:moduleTokens.length,
+    moduleCandidatePathCount:[...moduleTokenPaths.values()].reduce((sum,paths)=>sum+paths.length,0),
+    skippedNonModulePathCount,
     sourceFilesScanned,
     sourceBytesScanned,
     sourceConsumerAssetCount,
@@ -816,6 +846,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       sourceFilesScanned:repositoryAssetSync.sourceFilesScanned,
       sourceBytesScanned:repositoryAssetSync.sourceBytesScanned,
       assetIdMatcherMode:repositoryAssetSync.assetIdMatcherMode,
+      moduleMatcherMode:repositoryAssetSync.moduleMatcherMode,
+      moduleMatcherTokenCount:repositoryAssetSync.moduleMatcherTokenCount,
+      moduleCandidatePathCount:repositoryAssetSync.moduleCandidatePathCount,
+      skippedNonModulePathCount:repositoryAssetSync.skippedNonModulePathCount,
       sourceConsumptionEvidenceMode:repositoryAssetSync.sourceConsumptionEvidenceMode,
       sourceConsumptionDoesNotPromoteProductionVerification:true
     },
