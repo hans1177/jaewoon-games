@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "packId": "roblox-common-motion-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -20,7 +20,10 @@
       "locomotionTraversalDefenseUtilityRecoverySocialCoverage": true,
       "rootMotionGameplayMovementCombatTimingAuthorityFalse": true,
       "lightHeavyRangedCastChannelHitBackBlendCoverage": true,
-      "motionLodProfilesDefined": true
+      "motionLodProfilesDefined": true,
+      "dailyLivingAndWorldInteractionCoverage": true,
+      "npcWorkCookFarmFishCoverage": true,
+      "ladderSlopeFatigueInjuryCoverage": true
     }
   },
   "quality120": {
@@ -34,7 +37,7 @@
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayMovementAuthority": false,
   "rootMotionOwned": false,
-  "sourceAssetCount": 40,
+  "sourceAssetCount": 61,
   "parryPresentation": {
     "states": 5,
     "gameplayTimingAuthority": false,
@@ -43,14 +46,18 @@
     "nativeRuntimeVerificationRequired": true
   },
   "motionVariety": {
-    "atomCount": 40,
+    "atomCount": 61,
     "groups": [
       "locomotion",
       "traversal",
       "defense",
       "utility",
       "recovery",
-      "social"
+      "social",
+      "dailyLiving",
+      "worldInteraction",
+      "npcWork",
+      "condition"
     ],
     "rootMotionAuthority": false,
     "gameplayMovementAuthority": false,
@@ -59,6 +66,8 @@
     "magic": true,
     "reaction": true,
     "transition": true,
-    "motionLodProfiles": 3
+    "motionLodProfiles": 3,
+    "lifeActionAuthority": false,
+    "npcTaskAuthority": false
   }
 }
