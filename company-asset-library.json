@@ -1,5 +1,5 @@
 {
-  "version": 54,
+  "version": 55,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -61,7 +61,13 @@
     "survivalWildlifePackAvailable": true,
     "protectedReferenceQualityMayBeMatchedButAssetsMustBeOriginalOrLicensed": true,
     "animalPrimitiveOnlyFinalAssetForbidden": true,
-    "animalRootOnlyMotionForbidden": true
+    "animalRootOnlyMotionForbidden": true,
+    "internalAssetStandardDocument": "assets/ASSET-STANDARD.md",
+    "internalAssetRoutineReview": true,
+    "crossPackSystemDepthAuditRequired": true,
+    "genreMatrixComparisonRequired": true,
+    "duplicateCommonAssetAuthoringAvoidanceRequired": true,
+    "noScheduledAssetReviewWorkflowCreated": true
   },
   "platformPacks": [
     {
@@ -27445,5 +27451,101 @@
         "DECISION_CONSEQUENCE_FEEDBACK"
       ]
     }
+  },
+  "internalAssetStandard": {
+    "version": 1,
+    "status": "ACTIVE_INTERNAL_ASSET_STANDARD",
+    "humanDocument": "assets/ASSET-STANDARD.md",
+    "machineSources": [
+      "company-asset-library.json",
+      "assets/vibe-studio-asset-universe.js",
+      "assets/roblox/*/catalog.json",
+      "assets/roblox/*/quality-evidence.json"
+    ],
+    "authorityBoundary": "INTERNAL_ASSET_SCOPE_ONLY",
+    "centralPolicyAuthorityUnchanged": true,
+    "flowMutationAllowed": false,
+    "workflowMutationAllowed": false,
+    "queueMutationAllowed": false,
+    "schedulerMutationAllowed": false,
+    "deploymentMutationAllowed": false,
+    "shadowPipelineAllowed": false,
+    "wrapperPipelineAllowed": false,
+    "gameplayAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  },
+  "internalAssetRoutineReview": {
+    "version": 1,
+    "mode": "EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER",
+    "scheduleCreated": false,
+    "workflowCreated": false,
+    "appliesTo": [
+      "UI",
+      "ITEM",
+      "WEAPON",
+      "CHARACTER_GEAR",
+      "SKILL",
+      "VFX",
+      "MOTION",
+      "MATERIAL",
+      "ENVIRONMENT",
+      "BUILDING",
+      "WORLD_PROP",
+      "CREATURE",
+      "FOLIAGE",
+      "PRESENTATION",
+      "AUDIO"
+    ],
+    "triggers": [
+      "INTERNAL_ASSET_ADDED",
+      "INTERNAL_ASSET_CHANGED",
+      "COMMON_PACK_VERSION_CHANGED",
+      "GENRE_EXPECTATION_CHANGED",
+      "NEW_GAME_ASSET_REQUIREMENT_NOT_COVERED",
+      "BEFORE_GAME_ASSET_BINDING",
+      "AFTER_RUNTIME_ASSET_FAILURE",
+      "BEFORE_COMPANY_REUSABLE_PROMOTION"
+    ],
+    "preBindingChecks": [
+      "SEARCH_EXISTING_GAME_ASSETS",
+      "SEARCH_COMPANY_COMMON_ASSETS",
+      "CROSS_PACK_SYSTEM_DEPTH_AUDIT",
+      "GENRE_SYSTEM_EXPECTATION_COMPARE",
+      "REMOVE_DUPLICATE_AUTHORING_CANDIDATES",
+      "CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY",
+      "PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING"
+    ],
+    "postBindingChecks": [
+      "RECORD_SOURCE_FILES",
+      "RECORD_PACK_ID",
+      "RECORD_MACHINE_TAGS",
+      "RECORD_USAGE_CONTRACT",
+      "RECORD_GAME_SPECIFIC_VARIATION_FIELDS",
+      "PRESERVE_ASSET_LINEAGE",
+      "KEEP_INTERNAL_SCORE_SEPARATE_FROM_PRODUCTION_VERIFICATION",
+      "RECORD_CONFIRMED_FAILURE_AS_EFFECTIVE_QUALITY_PENALTY_NOT_AUTOMATIC_BAN"
+    ],
+    "commonPackRevisionChecks": [
+      "PACK_LOCAL_GAP_AUDIT",
+      "COMPANY_CROSS_PACK_GAP_AUDIT",
+      "REMOVE_GAPS_ALREADY_COVERED_BY_OTHER_COMMON_PACKS",
+      "KEEP_ONLY_REAL_COMPANY_WIDE_GAPS",
+      "UPDATE_PRIORITY_GAPS",
+      "UPDATE_CATALOG_AND_LIBRARY",
+      "UPDATE_ASSET_QA"
+    ],
+    "completionEvidence": [
+      "CATALOG_UPDATED",
+      "COMPANY_LIBRARY_UPDATED",
+      "MACHINE_METADATA_UPDATED",
+      "ASSET_QA_PASS",
+      "REGRESSION_PASS",
+      "LATEST_MAIN_FRESHNESS_VERIFIED",
+      "MAIN_MERGED"
+    ],
+    "productionPromotionRequiresRuntimeEvidence": true,
+    "internalScoreIsUsageGate": false,
+    "existingAssetsRemainUsable": true
   }
 }
