@@ -45,6 +45,7 @@ import {
   chooseInternalAssetReplacement,
   scoreStudioAssetCandidate,
   buildStudioAssetLoadout,
+  auditCommonLibrarySystemDepth,
   buildFutureAssetDemandForecast,
   createCreatureSpeciesBlueprint,
   createPlatformAssetVariantPlan,
@@ -2995,7 +2996,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,53);
+  assert.equal(registry.version,54);
   assert.equal(audit.status,'STARTED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3097,7 +3098,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,53);
+  assert.equal(registry.version,54);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3112,4 +3113,54 @@ test('company library registers housing building and settlement assets as reusab
     assert.equal(row.companyCommonBase,true,id);
     assert.equal(row.gameplayAuthority,false,id);
   }
+});
+
+
+test('cross-pack common library audit resolves existing shared coverage before declaring new gaps',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  assert.equal(report.crossPackCoverage,true);
+  assert.equal(report.scoreIsUsageGate,false);
+  assert.equal(report.existingAssetsRemainUsable,true);
+  assert.equal(report.newPipelineCreated,false);
+
+  const building=report.rows.find(row=>row.domain==='BUILDING');
+  const worldProp=report.rows.find(row=>row.domain==='WORLD_PROP');
+  const item=report.rows.find(row=>row.domain==='ITEM');
+  const ui=report.rows.find(row=>row.domain==='UI');
+  const audio=report.rows.find(row=>row.domain==='AUDIO');
+
+  assert.ok(building);
+  assert.ok(worldProp);
+  assert.ok(item);
+  assert.ok(ui);
+  assert.ok(audio);
+
+  assert.ok(building.covered.includes('FOUNDATION'));
+  assert.ok(building.covered.includes('DOOR'));
+  assert.ok(building.covered.includes('ROOF'));
+  assert.ok(worldProp.covered.includes('CHEST'));
+  assert.ok(worldProp.covered.includes('CRATE'));
+  assert.ok(worldProp.covered.includes('LORE_COLLECTIBLE'));
+  assert.ok(item.covered.includes('QUEST_ITEM'));
+  assert.ok(item.covered.includes('THROWABLE'));
+  assert.ok(ui.covered.includes('STASH'));
+  assert.ok(ui.covered.includes('RADIAL_MENU'));
+  assert.ok(audio.missing.includes('UI_CONFIRM'));
+});
+
+test('expanded genre matrix covers action adventure puzzle tycoon defense horror coop and narrative',()=>{
+  for(const genre of ['ACTION','ADVENTURE','PUZZLE','TYCOON','DEFENSE','HORROR','COOP_MULTIPLAYER','NARRATIVE']){
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre],genre);
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre].length>=10,genre);
+  }
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.TYCOON.includes('PLACEMENT_VALIDATION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.COOP_MULTIPLAYER.includes('OWNERSHIP_PERMISSION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.NARRATIVE.includes('DECISION_CONSEQUENCE_FEEDBACK'));
+
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.commonGenreSystemExpectations.version,2);
+  assert.equal(Object.keys(registry.commonGenreSystemExpectations.genres).length,16);
 });
