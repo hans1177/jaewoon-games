@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-world-props-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -20,7 +20,11 @@
       "runtimeVerificationNotClaimed": true,
       "reusableWorldHousingProps24": true,
       "housingSettlementRoles": true,
-      "farmingAndCraftStationVisuals": true
+      "farmingAndCraftStationVisuals": true,
+      "reusableWorldHousingProps38": true,
+      "settlementLifeProps": true,
+      "loreAndResourcePresentation": true,
+      "interactionRoleMetadataSynced": true
     }
   },
   "runtimeQuality": {
@@ -29,5 +33,5 @@
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
   },
-  "sourceAssetCount": 24
+  "sourceAssetCount": 38
 }
