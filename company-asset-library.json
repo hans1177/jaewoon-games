@@ -1,5 +1,5 @@
 {
-  "version": 81,
+  "version": 82,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -50668,10 +50668,13 @@
         "GLTF",
         "RETARGETABLE"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kaykit-adventurers",
@@ -50694,10 +50697,13 @@
         "GLTF",
         "KAYKIT_MOTION_COMPATIBLE"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-universal-animation-library",
@@ -50723,10 +50729,13 @@
         "GLB",
         "RETARGETABLE_HUMANOID"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-universal-animation-library-2",
@@ -50753,10 +50762,13 @@
         "GLB",
         "RETARGETABLE_HUMANOID"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-universal-base-characters",
@@ -50781,10 +50793,13 @@
         "GLTF",
         "ANIMATION_FRIENDLY_TOPOLOGY"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-ultimate-animated-animals",
@@ -50809,10 +50824,13 @@
         "GLTF",
         "QUADRUPED_REFERENCE"
       ],
-      "acquisition": "ON_DEMAND",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-bestiary-dungeon-monsters",
@@ -50890,10 +50908,13 @@
         "FOREST",
         "BASE_CAMP"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-mini-dungeon",
@@ -50920,10 +50941,13 @@
         "CHARACTER_RIGS",
         "DUNGEON"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "promotionRequiresRuntimeConsumer": true,
       "prefetchAllowed": false,
-      "speculativeDownloadAllowed": false
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-modular-buildings",
@@ -56882,7 +56906,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 81,
+    "lastCatalogSynchronizedVersion": 82,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
