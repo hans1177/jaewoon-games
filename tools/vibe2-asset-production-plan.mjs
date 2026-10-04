@@ -1056,27 +1056,39 @@ const COMPANY_CATEGORY_TYPES=freeze({
   WEAPON:freeze(['item'])
 });
 
-function verifiedCompanyManifestAssets(registry={}){
+function companyManifestAssets(registry={},repoRoot=process.cwd()){
+  const licenseBlocked=asset=>{
+    const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
+    return !value||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value)||lower.includes('unknown')||lower.includes('출처 불명')||lower.includes('재배포 제한');
+  };
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()))
-    .map(asset=>({
-      ...asset,
-      id:clean(asset.id),
-      path:clean(asset.path).replace(/^\//,''),
-      types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category).toUpperCase()]||[]),
-      tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
-      platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
-      downloaded:true,
-      companyVerified:true,
-      source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
-    }))
-    .filter(asset=>asset.id);
+    .filter(asset=>asset?.catalogActive!==false&&asset?.referenceOnly!==true&&!licenseBlocked(asset))
+    .map(asset=>{
+      const relative=clean(asset.path).replace(/^\//,'');
+      const fileExists=Boolean(relative&&fs.existsSync(path.join(repoRoot,relative)));
+      const companyVerified=asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase());
+      return{
+        ...asset,
+        id:clean(asset.id),
+        path:relative,
+        types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category||asset.family).toUpperCase()]||[]),
+        tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category),clean(asset.family),clean(asset.subfamily)].filter(Boolean),
+        platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
+        downloaded:fileExists,
+        companyVerified,
+        companyInternalSearchable:fileExists,
+        productionVerified:asset.productionVerified===true,
+        verifiedCompanyReusable:asset.verifiedCompanyReusable===true,
+        source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
+      };
+    })
+    .filter(asset=>asset.id&&asset.companyInternalSearchable===true);
 }
 
-function mergeManifestWithCompanyLibrary(manifest={},registry={}){
+function mergeManifestWithCompanyLibrary(manifest={},registry={},repoRoot=process.cwd()){
   const rows=[...(Array.isArray(manifest?.assets)?manifest.assets:[])];
   const byId=new Map(rows.map(asset=>[clean(asset?.id),asset]));
-  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
+  for(const asset of companyManifestAssets(registry,repoRoot))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
   return {...manifest,assets:[...byId.values()]};
 }
 
@@ -1370,7 +1382,8 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
+  const internalRepositoryReady=asset.companyInternalSearchable===true&&asset.downloaded!==false&&hasNativeReference;
+  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true||internalRepositoryReady);
   const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
@@ -1412,7 +1425,10 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
-    qualityPassRequiredBeforeKeep:true,
+    qualityPassRequiredBeforeKeep:false,
+    qualityScoreBlocksInitialUse:false,
+    internalAuditScoreBlocksInitialUse:false,
+    visualDebtRemainsOpenUntilImproved:true,
     runtimeCheckRequiredAfterApply:true,
     qualityDNA,
     qualityAxes:freezeList(qualityAxes),
@@ -1670,7 +1686,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
         randomDetailInflationForbidden:true,
         fullReauthorTrigger:'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION'
       }),
-      keepCondition:'TARGET_QUALITY_AND_RUNTIME_BINDING_PASS',
+      keepCondition:'RUNTIME_BINDING_PASS_WITH_VISUAL_DEBT_ALLOWED',
       deriveBeforeReplace:true,
       candidateFailureAdvancesLadder:true,
       failedCandidateCanRemainAsReusablePartDonor:true,
@@ -1982,7 +1998,7 @@ export function buildVibeAssetProductionPlan({
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
-  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry,repoRoot);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
