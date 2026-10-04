@@ -1181,6 +1181,9 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.ok(sixth.detailDepthLevel>third.detailDepthLevel);
   assert.equal(sixth.midLateEndgameOrReplayDepthRequired,true);
   assert.equal(sixth.secondOrderDetailRequired,true);
+  assert.ok(sixth.activeDetailDimensions.length>first.activeDetailDimensions.length);
+  assert.ok(sixth.minimumPlayerFacingProofs>first.minimumPlayerFacingProofs);
+  assert.equal(sixth.qualitativeDetailDepthUnbounded,true);
   assert.equal(sixth.queueAmplificationForbidden,true);
   assert.equal(sixth.newWorkflowForbidden,true);
   assert.equal(sixth.newStageForbidden,true);
@@ -1214,6 +1217,9 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.equal(third.studioQualityEvolution.qualityExpectation.coherentContentExpansionRequired,true);
   assert.ok(third.studioQualityEvolution.requiredConnectedImprovements.min>first.studioQualityEvolution.requiredConnectedImprovements.min);
   assert.match(third.goal,/COHERENT_CONTENT_EXPANSION_REQUIRED/);
+  assert.match(third.goal,/디테일 렌즈:/);
+  assert.ok(third.studioQualityEvolution.qualityExpectation.activeDetailDimensions.length>=4);
+  assert.equal(third.studioQualityEvolution.qualityExpectation.qualitativeDetailDepthUnbounded,true);
   assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
   assert.ok(third.evidence.includes('studio-quality-studio-required:NO'));
 });
