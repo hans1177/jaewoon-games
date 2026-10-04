@@ -147,6 +147,7 @@ const E={
   mole:{name:'갑옷두더지',hp:360,atk:22,range:28,speed:19,rate:2.5,size:22,reward:40,kind:'mole'},
   boar:{name:'붉은멧돼지',hp:460,atk:39,range:34,speed:30,rate:4,size:24,reward:55,kind:'boar',splash:62},
   goose:{name:'모래거위',hp:150,atk:15,range:34,speed:31,rate:.7,size:19,reward:50,kind:'goose'},
+  seaWolf:{name:'바다 늑대',hp:1500,atk:65,range:40,speed:32,rate:2,size:28,kind:'seaWolf',multi:3},
   boss:{name:'바위왕',hp:1350,atk:58,range:42,speed:14,rate:4,size:34,reward:180,kind:'boss',splash:86}
 };
 const STAGE_PLANS={
@@ -182,7 +183,7 @@ function defaultSave(){
 function load(){
   try{
     const raw=JSON.parse(localStorage.getItem(KEY)||'{}'),d=defaultSave(),v=Object.assign(d,raw);
-    v.gold=Math.max(0,Number(v.gold)||0);v.exp=Math.max(0,Number(v.exp)||0);v.stage=clamp(Number(v.stage)||1,1,9);v.maxCleared=clamp(Number(raw.maxCleared??Math.max(0,v.stage-1))||0,0,9);
+    v.gold=Math.max(0,Number(v.gold)||0);v.exp=Math.max(0,Number(v.exp)||0);v.stage=clamp(Number(v.stage)||1,1,10);v.maxCleared=clamp(Number(raw.maxCleared??Math.max(0,v.stage-1))||0,0,10);
     v.owned=Object.assign({},d.owned,raw.owned||{});applyStoryUnlocks(v,false);
     v.charLv=Object.assign({},raw.charLv||{});
     Object.keys(U).forEach(k=>v.charLv[k]=clamp(Number(v.charLv[k])||0,0,3));
@@ -224,7 +225,7 @@ let fighterSeq=0;
 function fighter(t,x,team){return Object.assign({},t,{x,team,uid:++fighterSeq,maxHp:t.hp,hp:t.hp,cd:Math.random()*.12,flash:0,dead:false})}
 function fresh(){
   const h=castleMax(),stage=save.stage;
-  return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,stage7BoarTriggered:false,stage7MoleSpawned:false,stage8WaveSpawned:false,stage8BossKilledAt:null,stage8NextRabbit:null,cools:{},shake:0}
+  return{running:true,paused:false,time:0,money:160,income:incomeRate(),walletLv:1,maxMoney:battleWalletMax(1),ally:{hp:h,maxHp:h},enemy:{hp:1500,maxHp:1500},a:[],e:[],stage,plan:STAGE_PLANS[stage]||[],spawn:0,nextRabbit:2,bossSpawned:false,stage7BoarTriggered:false,stage7MoleSpawned:false,stage8WaveSpawned:false,stage8BossKilledAt:null,stage8NextRabbit:null,stage9OpeningWaveSpawned:false,stage9GooseWaveSpawned:false,stage9BoarSpawned:false,stage10WolfSpawned:false,cools:{},shake:0}
 }
 
 // ===== UI =====
@@ -291,6 +292,7 @@ function upgradeMeta(type){
 function start(){
   s=fresh();buttons();q('startOverlay').hidden=true;q('restOverlay').hidden=true;q('defeatOverlay').hidden=true;q('battleBar').hidden=false;q('phase').textContent='전투 중';q('stageLabel').textContent='스테이지 '+s.stage;
   if(s.stage===7){spawn('boar','stage7OpeningBoar');spawn('boar','stage7OpeningBoar')}
+  if(s.stage===10){for(let i=0;i<2;i++)spawn('goose','stage10OpeningGoose');for(let i=0;i<4;i++)spawn('rabbit','stage10OpeningRabbit')}
   last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);hud();
 }
 function summon(k){
@@ -299,7 +301,7 @@ function summon(k){
   s.money-=u.cost;s.cools[k]=u.cool;s.a.push(fighter(u,86,'ally'));toast(u.name+' 출격!');
 }
 function spawn(k,tag=''){
-  const f=fighter(E[k],innerWidth-92,'enemy');f.spawnTag=tag;s.e.push(f);if(k==='boss')toast('바위왕 등장!');
+  const f=fighter(E[k],innerWidth-92,'enemy');f.spawnTag=tag;s.e.push(f);if(k==='boss')toast('바위왕 등장!');if(k==='seaWolf')toast('바다 늑대 등장!');
 }
 function onEnemyKilled(enemy){
   if(s.stage===7&&enemy.spawnTag==='stage7OpeningBoar'&&!s.stage7BoarTriggered){
@@ -307,6 +309,10 @@ function onEnemyKilled(enemy){
   }
   if(s.stage===8&&enemy.spawnTag==='stage8Boss'&&s.stage8BossKilledAt===null){
     s.stage8BossKilledAt=s.time;for(let i=0;i<4;i++)spawn('rabbit','stage8BossRabbit');s.stage8NextRabbit=s.time+5;
+  }
+  if(s.stage===9&&enemy.spawnTag==='stage9Goose'&&!s.stage9BoarSpawned){
+    const gooseLeft=s.e.some(o=>!o.dead&&o.spawnTag==='stage9Goose');
+    if(!gooseLeft){s.stage9BoarSpawned=true;spawn('boar','stage9Boar');spawn('boar','stage9Boar')}
   }
 }
 function loop(now){if(!s||!s.running)return;const dt=Math.min(.035,(now-last)/1000||0);last=now;if(!s.paused)update(dt);draw();hud();if(s&&s.running)raf=requestAnimationFrame(loop)}
@@ -320,6 +326,18 @@ function update(dt){
     if(!s.stage8WaveSpawned&&s.time>=12){s.stage8WaveSpawned=true;spawn('boss','stage8Boss');spawn('boar','stage8Boar')}
     while(s.stage8NextRabbit!==null&&s.time>=s.stage8NextRabbit){spawn('rabbit','stage8EndlessRabbit');s.stage8NextRabbit+=2.5}
   }
+  else if(s.stage===9){
+    if(!s.stage9OpeningWaveSpawned&&s.time>=4){
+      s.stage9OpeningWaveSpawned=true;
+      for(let i=0;i<2;i++)spawn('mouse','stage9OpeningMouse');
+      for(let i=0;i<2;i++)spawn('rabbit','stage9OpeningRabbit');
+    }
+    if(!s.stage9GooseWaveSpawned&&s.time>=9){
+      s.stage9GooseWaveSpawned=true;
+      for(let i=0;i<3;i++)spawn('goose','stage9Goose');
+    }
+  }
+  else if(s.stage===10){}
   else while(s.spawn<s.plan.length&&s.plan[s.spawn][0]<=s.time){spawn(s.plan[s.spawn][1]);s.spawn++}
   team(s.a,s.e,'ally',dt);team(s.e,s.a,'enemy',dt);
   s.a=s.a.filter(v=>!v.dead);s.e=s.e.filter(v=>!v.dead);s.shake=Math.max(0,s.shake-dt*18);
@@ -337,41 +355,31 @@ function team(group,foes,side,dt){
     else if(bd<=f.range){
       if(f.cd<=0){
         if(side==='ally'&&s.stage===6&&!s.bossSpawned){s.bossSpawned=true;spawn('boss');toast('성을 공격했다! 바위왕 등장!')}
+        if(side==='ally'&&s.stage===10&&!s.stage10WolfSpawned){s.stage10WolfSpawned=true;spawn('seaWolf','stage10SeaWolf')}
         const base=side==='ally'?s.enemy:s.ally;base.hp=Math.max(0,base.hp-f.atk);f.cd=f.rate;s.shake=Math.min(6,s.shake+1.5);
       }
     }else{
-      const ahead=live.filter(o=>o!==f&&!o.dead&&(side==='ally'?o.x>f.x:o.x<f.x))
-        .sort((a,b)=>side==='ally'?a.x-b.x:b.x-a.x)[0];
-      let step=f.speed*dt;
-      if(ahead){
-        const minGap=Math.max(8,(ahead.size+f.size)*.58);
-        const gap=(side==='ally'?ahead.x-f.x:f.x-ahead.x)-minGap;
-        step=gap<=0?0:Math.min(step,gap);
-      }
-      f.x+=dir*step;
+      const gap=side==='ally'?frontX-f.x:f.x-frontX;
+      if(gap>0&&gap<=90)f.x=frontX;
+      else if(gap>90)f.x+=dir*f.speed*4*dt;
+      else f.x+=dir*f.speed*dt;
       f.x=clamp(f.x,63,innerWidth-63);
     }
   });
-  const ordered=group.filter(o=>!o.dead).sort((a,b)=>{
-    const pos=side==='ally'?b.x-a.x:a.x-b.x;
-    return pos||a.uid-b.uid;
-  });
-  for(let i=1;i<ordered.length;i++){
-    const front=ordered[i-1],back=ordered[i],minGap=Math.max(8,(front.size+back.size)*.5);
-    const gap=side==='ally'?front.x-back.x:back.x-front.x;
-    if(gap<minGap){
-      const correction=Math.min(minGap-gap,90*dt);
-      back.x-=dir*correction;
-      back.x=clamp(back.x,63,innerWidth-63);
-    }
+  const after=group.filter(o=>!o.dead);
+  if(after.length){
+    const stackX=side==='ally'?Math.max(...after.map(o=>o.x)):Math.min(...after.map(o=>o.x));
+    after.forEach(o=>{const gap=side==='ally'?stackX-o.x:o.x-stackX;if(gap<=90)o.x=stackX});
   }
 }
 function hit(a,t,foes){
   if(a.cd>0)return;
   let targets=[t];
-  if(a.team==='ally'&&a.multi){
+  if(a.multi){
     targets=foes.filter(o=>{
-      if(o.dead||o.x<a.x-4)return false;
+      if(o.dead)return false;
+      if(a.team==='ally'&&o.x<a.x-4)return false;
+      if(a.team==='enemy'&&o.x>a.x+4)return false;
       const dist=Math.abs(o.x-a.x)-(o.size+a.size)*.62;
       return dist<=a.range;
     }).sort((x,y)=>Math.abs(x.x-a.x)-Math.abs(y.x-a.x)).slice(0,a.multi);
@@ -398,10 +406,10 @@ function finish(win){
   if(!win){q('defeatOverlay').hidden=false;q('phase').textContent='패배';return}
   const cleared=s.stage,goldReward=120+cleared*20,expReward=50+cleared*25;lastCleared=cleared;
   save.gold+=goldReward;save.exp+=expReward;save.maxCleared=Math.max(save.maxCleared||0,cleared);
-  const unlocked=applyStoryUnlocks(save,true);if(save.stage<9)save.stage++;persist();q('phase').textContent='휴식';
+  const unlocked=applyStoryUnlocks(save,true);if(save.stage<10)save.stage++;persist();q('phase').textContent='휴식';
   const unlockText=unlocked.length?' · '+unlocked.map(id=>U[id].name).join(', ')+' 해금':'';
   q('restReward').textContent=cleared+'스테이지 클리어 · 골드 +'+goldReward+' · 경험치 +'+expReward+unlockText;
-  q('nextStage').textContent=cleared<9?save.stage+'스테이지 시작':'9스테이지 다시 하기';
+  q('nextStage').textContent=cleared<10?save.stage+'스테이지 시작':'10스테이지 다시 하기';
   updateMeta();q('restOverlay').hidden=false;
 }
 
@@ -430,7 +438,7 @@ function actor(f,g,visualY=0){
   if(f.team==='enemy')X.scale(-1,1);const hp=clamp(f.hp/f.maxHp,0,1);X.fillStyle='#26374e';X.fillRect(-f.size,-f.size-18,f.size*2,5);X.fillStyle=f.team==='ally'?'#65d77a':'#ff6c69';X.fillRect(-f.size+1,-f.size-17,(f.size*2-2)*hp,3);if(f.kind==='boss'){X.fillStyle='#26374e';X.font='bold 9px system-ui';X.textAlign='center';X.fillText('바위왕',0,-f.size-23)}X.restore();
 }
 function body(f){
-  const z=f.size;X.beginPath();if(f.kind==='rush'||f.kind==='boar')X.ellipse(0,-z*.5,z*1.08,z*.72,0,0,Math.PI*2);else if(f.kind==='goose')X.ellipse(0,-z*.55,z*.92,z*.7,0,0,Math.PI*2);else if(f.kind==='boss'){X.moveTo(-z,-z*.2);for(let i=0;i<8;i++){const a=i/8*Math.PI*2,r=i%2?z*.86:z;X.lineTo(Math.cos(a)*r,Math.sin(a)*r-z*.55)}X.closePath()}else X.arc(0,-z*.55,z,0,Math.PI*2);X.fill();
+  const z=f.size;X.beginPath();if(f.kind==='rush'||f.kind==='boar'||f.kind==='seaWolf')X.ellipse(0,-z*.5,z*1.08,z*.72,0,0,Math.PI*2);else if(f.kind==='goose')X.ellipse(0,-z*.55,z*.92,z*.7,0,0,Math.PI*2);else if(f.kind==='boss'){X.moveTo(-z,-z*.2);for(let i=0;i<8;i++){const a=i/8*Math.PI*2,r=i%2?z*.86:z;X.lineTo(Math.cos(a)*r,Math.sin(a)*r-z*.55)}X.closePath()}else X.arc(0,-z*.55,z,0,Math.PI*2);X.fill();
   if(f.team==='ally'){X.beginPath();X.moveTo(-z*.65,-z*1.18);X.lineTo(-z*.28,-z*1.78);X.lineTo(-z*.05,-z*1.2);X.closePath();X.moveTo(z*.05,-z*1.2);X.lineTo(z*.28,-z*1.78);X.lineTo(z*.65,-z*1.18);X.closePath();X.fill()}
 }
 function face(f){const z=f.size;X.fillStyle='#26374e';X.beginPath();X.arc(-z*.28,-z*.68,2.2,0,Math.PI*2);X.arc(z*.28,-z*.68,2.2,0,Math.PI*2);X.fill();X.beginPath();X.arc(0,-z*.5,z*.2,0,Math.PI);X.stroke()}
@@ -445,9 +453,10 @@ function gear(f){
   else if(f.kind==='mole'){X.fillStyle='#78879a';X.fillRect(-z*.85,-z*1.1,z*1.7,z*.42)}
   else if(f.kind==='boar'){X.fillStyle='#fff3da';X.beginPath();X.moveTo(z*.7,-z*.55);X.lineTo(z*1.15,-z*.34);X.lineTo(z*.72,-z*.2);X.fill()}
   else if(f.kind==='goose'){X.fillStyle='#d99b45';X.beginPath();X.moveTo(z*.72,-z*.68);X.lineTo(z*1.25,-z*.52);X.lineTo(z*.72,-z*.36);X.closePath();X.fill();X.strokeStyle='#7b5b32';X.beginPath();X.moveTo(-z*.2,-z*1.15);X.quadraticCurveTo(-z*.65,-z*1.7,-z*.15,-z*1.95);X.stroke()}
+  else if(f.kind==='seaWolf'){X.fillStyle='#dff6ff';X.beginPath();X.moveTo(-z*.55,-z*1.05);X.lineTo(-z*.3,-z*1.65);X.lineTo(-z*.05,-z*1.1);X.moveTo(z*.05,-z*1.1);X.lineTo(z*.3,-z*1.65);X.lineTo(z*.55,-z*1.05);X.fill();X.strokeStyle='#325a7a';X.beginPath();X.moveTo(-z*.9,-z*.25);X.quadraticCurveTo(-z*1.4,-z*.6,-z*1.55,-z*.15);X.stroke()}
   else if(f.kind==='boss'){X.fillStyle='#ffd15a';X.fillRect(-z*.5,-z*1.6,z,.3)}
 }
-function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',goose:'#e6cf8a',boss:'#7d746d'}[k]||'#ddd'}
+function enemyColor(k){return{mouse:'#c7b7a7',rabbit:'#ffb2aa',mole:'#8291a2',boar:'#d86d61',goose:'#e6cf8a',seaWolf:'#5aa7c8',boss:'#7d746d'}[k]||'#ddd'}
 function hud(){
   if(!s)return;q('money').textContent=Math.floor(s.money)+' / '+s.maxMoney;q('income').textContent='초당 +'+s.income;q('timer').textContent=Math.floor(s.time)+'초';q('allyText').textContent=Math.ceil(s.ally.hp)+' / '+s.ally.maxHp;q('enemyText').textContent=Math.ceil(s.enemy.hp)+' / '+s.enemy.maxHp;q('allyBar').style.width=100*s.ally.hp/s.ally.maxHp+'%';q('enemyBar').style.width=100*s.enemy.hp/s.enemy.maxHp+'%';
   const wc=walletUpgradeCost(),wb=q('walletBattle');wb.disabled=s.paused||s.walletLv>=10||s.money<wc;wb.textContent=s.walletLv>=10?'최대 재화 MAX':'최대 재화 Lv.'+s.walletLv+' · '+wc;
