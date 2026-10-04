@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function finish(win){",
+      "replace": "function finish(win) {\n  if (!s || !s.running) return;\n  s.running = false;\n  cancelAnimationFrame(raf);\n  q('battleBar').hidden = true;\n  if (!win) {\n    q('defeatOverlay').hidden = false;\n    q('phase').textContent = '패배';\n    return;\n  }\n  const cleared = s.stage, goldReward = 120 + cleared * 20, expReward = 50 + cleared * 25;\n  lastCleared = cleared;\n  save.gold += goldReward; save.exp += expReward; save.maxCleared = Math.max(save.maxCleared || 0, cleared);\n  const unlocked = applyStoryUnlocks(save, true); if (save.stage < 10) save.stage++; persist();\n  q('phase').textContent = '휴식';\n  const unlockText = unlocked.length ? ' · ' + unlocked.map(id => U[id].name).join(', ') + ' 해금' : '';\n  q('restReward').textContent = cleared + '스테이지 클리어 · 골드 +' + goldReward + ' · 경험치 +' + expReward + unlockText;\n  q('nextStage').textContent = cleared < 10 ? save.stage + '스테이지 시작' : '10스테이지 다시 하기';\n  updateMeta();\n  q('restOverlay').hidden = false;\n}\n\n// ===== 그리기 =====\nfunction world(w, h, g) {\n  const sky = X.createLinearGradient(0, 0, 0, g);\n  sky.addColorStop(0, '#bde9ff');\n  sky.addColorStop(1, '#f9f1c3');\n  X.fillStyle = sky;\n  X.fillRect(0, 0, w, g);\n  X.fillStyle = '#d9f2a7';\n  X.beginPath();\n  X.moveTo(0, g - 90);\n  for (let x = 0; x <= w; x += 70) {\n    X.quadraticCurveTo(x + 35, g - 125 + (x % 140 ? 16 : 0), x + 70, g - 90);\n    X.lineTo(w, g);\n    X.lineTo(0, g);\n    X.fill();\n  }\n  X.fillStyle = '#caa36a';\n  X.fillRect(0, g, w, h - g);\n  X.fillStyle = '#b48a56';\n  for (let x = 0; x < w; x += 42) {\n    X.fillRect(x, g + 18 + (x % 84 ? 7 : 0), 24, 5);\n  }\n  base(42, g - 22, 'ally');\n  base(w - 42, g - 22, 'enemy');\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
