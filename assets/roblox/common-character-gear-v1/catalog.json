@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-character-gear-v1",
-  "title": "Roblox 회사 공용 방어구/의상 8종 v1",
+  "title": "Roblox 회사 공용 방어구/의상 18종 v3",
   "platform": "ROBLOX",
   "family": "CHARACTER",
   "subfamily": "GEAR_PACK",
@@ -77,6 +77,115 @@
       "subfamily": "BACK_GEAR",
       "gearRole": "BACK",
       "familyRootId": "GEAR_CLOAK"
+    },
+    {
+      "assetId": "LEG_PLATES",
+      "name": "다리 보호대",
+      "subfamily": "LEG_GEAR",
+      "gearRole": "LEGS",
+      "familyRootId": "GEAR_LEGS",
+      "systemRoles": [
+        "LEGS"
+      ]
+    },
+    {
+      "assetId": "SHOULDER_PAULDRONS",
+      "name": "어깨 견갑",
+      "subfamily": "SHOULDER_GEAR",
+      "gearRole": "SHOULDER",
+      "familyRootId": "GEAR_SHOULDER",
+      "systemRoles": [
+        "SHOULDER"
+      ]
+    },
+    {
+      "assetId": "UTILITY_BELT",
+      "name": "다용도 벨트",
+      "subfamily": "BELT_GEAR",
+      "gearRole": "BELT",
+      "familyRootId": "GEAR_BELT",
+      "systemRoles": [
+        "BELT",
+        "ACCESSORY",
+        "SOCKET_POINT"
+      ]
+    },
+    {
+      "assetId": "SIGNET_RING",
+      "name": "인장 반지",
+      "subfamily": "RING_GEAR",
+      "gearRole": "RING",
+      "familyRootId": "GEAR_RING",
+      "systemRoles": [
+        "RING",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "assetId": "TRAVEL_AMULET",
+      "name": "여행 목걸이",
+      "subfamily": "AMULET_GEAR",
+      "gearRole": "AMULET",
+      "familyRootId": "GEAR_AMULET",
+      "systemRoles": [
+        "AMULET",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "assetId": "COSMETIC_SASH",
+      "name": "장식 띠",
+      "subfamily": "COSMETIC_OVERLAY",
+      "gearRole": "COSMETIC_OVERLAY",
+      "familyRootId": "GEAR_COSMETIC_SASH",
+      "systemRoles": [
+        "COSMETIC_OVERLAY",
+        "TRANSMOG_BASE"
+      ]
+    },
+    {
+      "assetId": "SET_CREST",
+      "name": "세트 문장",
+      "subfamily": "ACCESSORY_GEAR",
+      "gearRole": "SET_IDENTITY",
+      "familyRootId": "GEAR_SET_CREST",
+      "systemRoles": [
+        "SET_IDENTITY",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "assetId": "SOCKET_CHARM",
+      "name": "소켓 부적",
+      "subfamily": "ACCESSORY_GEAR",
+      "gearRole": "SOCKET_POINT",
+      "familyRootId": "GEAR_SOCKET_CHARM",
+      "systemRoles": [
+        "SOCKET_POINT",
+        "ACCESSORY"
+      ]
+    },
+    {
+      "assetId": "UPGRADE_TRIM",
+      "name": "강화 장식 테두리",
+      "subfamily": "COSMETIC_OVERLAY",
+      "gearRole": "UPGRADE_STAGE_VISUAL",
+      "familyRootId": "GEAR_UPGRADE_TRIM",
+      "systemRoles": [
+        "UPGRADE_STAGE_VISUAL",
+        "LIGHT_MEDIUM_HEAVY"
+      ]
+    },
+    {
+      "assetId": "WORN_ARMOR_PATCH",
+      "name": "손상 장비 패치",
+      "subfamily": "COSMETIC_OVERLAY",
+      "gearRole": "DAMAGE_WEAR_VARIANT",
+      "familyRootId": "GEAR_WEAR_PATCH",
+      "systemRoles": [
+        "DAMAGE_WEAR_VARIANT",
+        "TRANSMOG_BASE"
+      ]
     }
   ],
   "systemDepthContract": {
@@ -103,38 +212,67 @@
     ],
     "currentDeclaredComponents": [
       "TORSO_GEAR",
+      "LIGHT_TORSO",
       "TORSO_GEAR",
+      "MEDIUM_TORSO",
       "TORSO_GEAR",
+      "HEAVY_TORSO",
       "HEAD_GEAR",
+      "LIGHT_HEAD",
       "HEAD_GEAR",
+      "HEAVY_HEAD",
       "HAND_GEAR",
+      "HAND",
       "FOOT_GEAR",
-      "BACK_GEAR"
-    ],
-    "currentAssetCount": 8,
-    "missingComponentCandidates": [
-      "HEAD",
-      "CHEST",
-      "HANDS",
-      "LEGS",
-      "FEET",
+      "FOOT",
+      "BACK_GEAR",
       "BACK",
+      "LEG_GEAR",
+      "LEGS",
+      "LEGS",
+      "SHOULDER_GEAR",
       "SHOULDER",
+      "SHOULDER",
+      "BELT_GEAR",
       "BELT",
+      "BELT",
+      "ACCESSORY",
+      "SOCKET_POINT",
+      "RING_GEAR",
       "RING",
+      "RING",
+      "ACCESSORY",
+      "AMULET_GEAR",
+      "AMULET",
       "AMULET",
       "ACCESSORY",
       "COSMETIC_OVERLAY",
-      "LIGHT_MEDIUM_HEAVY",
+      "COSMETIC_OVERLAY",
+      "COSMETIC_OVERLAY",
+      "TRANSMOG_BASE",
+      "ACCESSORY_GEAR",
       "SET_IDENTITY",
+      "SET_IDENTITY",
+      "ACCESSORY",
+      "ACCESSORY_GEAR",
       "SOCKET_POINT",
+      "SOCKET_POINT",
+      "ACCESSORY",
+      "COSMETIC_OVERLAY",
       "UPGRADE_STAGE_VISUAL",
+      "UPGRADE_STAGE_VISUAL",
+      "LIGHT_MEDIUM_HEAVY",
+      "COSMETIC_OVERLAY",
+      "DAMAGE_WEAR_VARIANT",
       "DAMAGE_WEAR_VARIANT",
       "TRANSMOG_BASE"
     ],
+    "currentAssetCount": 18,
+    "missingComponentCandidates": [],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
-    "gameplayAuthority": false
+    "gameplayAuthority": false,
+    "volumeUpPhase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP"
   },
   "internalAssetStandard": {
     "version": 1,
@@ -148,5 +286,27 @@
     "schedulerExcluded": true,
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "seedCompositionContract": {
+    "version": 1,
+    "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "compatibleSignals": [
+      "RPG_PROGRESSION",
+      "SOCIAL_ROLEPLAY",
+      "SURVIVAL",
+      "NARRATIVE",
+      "COOP_MULTIPLAYER"
+    ],
+    "stateVariants": [
+      "REGIONAL_VARIANT",
+      "SEASON",
+      "DAMAGE_WEAR",
+      "UPGRADE_STAGE"
+    ],
+    "setIdentityAndTransmogPresentationOnly": true,
+    "armorStatAuthority": false,
+    "equipAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
