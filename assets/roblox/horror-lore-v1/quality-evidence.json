@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-horror-lore-v1",
   "gameId": "horror-escape-room",
   "staticAuthoringChecklist": {
@@ -96,5 +96,79 @@
     "lowScoreDoesNotBlockInternalUse": true,
     "newAuthoringMayFillVerifiedGaps": true,
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 875.9,
+    "currentGrade": "HIGH_QUALITY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "COMMERCIAL_READY_880",
+        "targetScore": 880,
+        "projectedSourceAuditScore": 888.5,
+        "requiredAxisFloor": {
+          "MODULAR_REUSE": 84,
+          "INTEGRATION_READINESS": 90,
+          "DETAIL_FINISH": 90
+        },
+        "requiredEvidence": [
+          "REUSABLE_LORE_PROP_SOCKET_AND_SCALE_METADATA",
+          "MAP_CONTEXT_BINDING_HINTS_WITHOUT_GAMEPLAY_AUTHORITY",
+          "DETAIL_FINISH_FOR_CLOSE_AND_GAME_CAMERA"
+        ]
+      },
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "projectedSourceAuditScore": 925.9,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 92,
+          "FORM_STRUCTURE": 90,
+          "MATERIAL_SURFACE": 92,
+          "COLOR_LIGHTING": 90,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 94,
+          "READABILITY_SCALE": 92,
+          "MODULAR_REUSE": 90,
+          "VARIATION_BREADTH": 92,
+          "PERFORMANCE_LOD": 94,
+          "INTEGRATION_READINESS": 94
+        },
+        "requiredEvidence": [
+          "DISTINCT_LORE_SILHOUETTES_BY_LOCATION_ROLE",
+          "MATERIAL_AND_AGE_VARIANTS",
+          "REUSABLE_LORE_DISPLAY_AND_INTERACTION_PRESENTATION",
+          "MOBILE_DISTANCE_READABILITY",
+          "LOD_OR_DETAIL_TIER_METADATA"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "MODULAR_REUSE",
+      "INTEGRATION_READINESS",
+      "DETAIL_FINISH",
+      "MATERIAL_VARIATION",
+      "LOD"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "NEW_LORE_ROLE_OR_LOCATION_GAP_REMAINS",
+        "EXISTING_PROP_CANNOT_PRESERVE_NARRATIVE_IDENTITY",
+        "DISTINCT_SILHOUETTE_IS_REQUIRED"
+      ],
+      "exactDuplicateLoreSpamForbidden": true,
+      "recolorOnlyLoreVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "questRewardDoorSaveNetworkAuthorityUnchanged": true
+    }
   }
 }
