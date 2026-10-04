@@ -2804,6 +2804,178 @@ function RobloxCommonUI.CreateMountSpeedState(options)
   return root,parts
 end
 
+
+-- 패링/가드 표현 UI
+function RobloxCommonUI.CreateParryTimingIndicator(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "ParryTimingIndicator"
+  root.Size=options.size or UDim2.fromOffset(118,118)
+  root.BackgroundColor3=theme.PanelInset
+  root.BackgroundTransparency=0.18
+  root.BorderSizePixel=0
+  tag(root,"PARRY_TIMING_INDICATOR")
+  corner(root,59)
+  stroke(root,theme.BorderBright,2,0.15)
+
+  local inner=Instance.new("Frame")
+  inner.Name="TimingCore"
+  inner.AnchorPoint=Vector2.new(0.5,0.5)
+  inner.Position=UDim2.fromScale(0.5,0.5)
+  inner.Size=UDim2.fromScale(0.62,0.62)
+  inner.BackgroundColor3=theme.Accent
+  inner.BackgroundTransparency=0.42
+  inner.BorderSizePixel=0
+  inner.Parent=root
+  corner(inner,42)
+
+  local label=commonText(root,"State",options.text or "패링",UDim2.fromScale(0,0.34),UDim2.fromScale(1,0.32),theme.Text,13,true)
+  label.TextXAlignment=Enum.TextXAlignment.Center
+  root:SetAttribute("PresentationRole","PARRY_TIMING_INDICATOR")
+  root:SetAttribute("OwnsParryTimingAuthority",false)
+  root:SetAttribute("OwnsDamageAuthority",false)
+  root:SetAttribute("ReducedMotionSafe",true)
+
+  local controller={}
+  function controller.SetDisplayRatio(ratio,stateText)
+    local value=math.clamp(tonumber(ratio) or 0,0,1)
+    inner.Size=UDim2.fromScale(0.42+value*0.20,0.42+value*0.20)
+    if stateText~=nil then label.Text=tostring(stateText) end
+  end
+  return root,controller
+end
+
+function RobloxCommonUI.CreateGuardMeter(options)
+  options=options or {}
+  local root,controller=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "GuardMeter",label=options.label or "가드",value=options.value or 0,
+    size=options.size or UDim2.fromOffset(260,42),theme=options.theme
+  })
+  tag(root,"GUARD_METER")
+  root:SetAttribute("PresentationRole","GUARD_METER")
+  root:SetAttribute("OwnsGuardValue",false)
+  root:SetAttribute("OwnsStaminaAuthority",false)
+  return root,controller
+end
+
+function RobloxCommonUI.CreateGuardBreakWarning(options)
+  local root,parts=deepSystemPanel(options,"GUARD_BREAK_WARNING","GUARD_BREAK_WARNING","가드 붕괴",{"방어가 무너졌어","회복 상태 확인","입력/이동 가능 여부는 게임 상태 기준"})
+  root.Size=options and options.size or UDim2.fromOffset(330,210)
+  root:SetAttribute("OwnsGuardBreakAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCounterReadyIndicator(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "CounterReadyIndicator"
+  root.Size=options.size or UDim2.fromOffset(180,42)
+  root.BackgroundColor3=theme.Positive
+  root.BackgroundTransparency=0.18
+  root.BorderSizePixel=0
+  tag(root,"COUNTER_READY_INDICATOR")
+  corner(root,11)
+  stroke(root,theme.BorderBright,1,0.18)
+  local label=commonText(root,"Label",options.text or "반격 가능",UDim2.fromOffset(10,0),UDim2.new(1,-20,1,0),theme.Text,13,true)
+  label.TextXAlignment=Enum.TextXAlignment.Center
+  root:SetAttribute("OwnsCounterWindowAuthority",false)
+  return root,label
+end
+
+function RobloxCommonUI.CreateAttackTelegraphIndicator(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "AttackTelegraphIndicator"
+  root.Size=options.size or UDim2.fromOffset(220,48)
+  root.BackgroundColor3=theme.Warning
+  root.BackgroundTransparency=0.18
+  root.BorderSizePixel=0
+  tag(root,"ATTACK_TELEGRAPH_INDICATOR")
+  corner(root,12)
+  stroke(root,theme.BorderBright,1.2,0.15)
+  local label=commonText(root,"Label",options.text or "공격 예고",UDim2.fromOffset(12,0),UDim2.new(1,-24,1,0),theme.Text,13,true)
+  root:SetAttribute("OwnsEnemyAttackTiming",false)
+  root:SetAttribute("ColorOnlyStateForbidden",true)
+  return root,label
+end
+
+-- 월드 소품 상호작용 표현 UI
+function RobloxCommonUI.CreateWorldPropInteractionPrompt(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "WorldPropInteractionPrompt"
+  root.Size=options.size or UDim2.fromOffset(280,52)
+  root.BackgroundColor3=theme.Panel
+  root.BackgroundTransparency=0.08
+  root.BorderSizePixel=0
+  tag(root,"WORLD_PROP_INTERACTION_PROMPT")
+  corner(root,12)
+  stroke(root,theme.BorderBright,1,0.18)
+  local action=commonText(root,"Action",options.actionText or "상호작용",UDim2.fromOffset(12,0),UDim2.new(0.46,-12,1,0),theme.Accent,13,true)
+  local target=commonText(root,"Target",options.targetText or "대상",UDim2.new(0.46,4,0,0),UDim2.new(0.54,-16,1,0),theme.Text,13,false)
+  target.TextXAlignment=Enum.TextXAlignment.Right
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("InputModes","TOUCH|KEYBOARD_MOUSE|GAMEPAD")
+  return root,{action=action,target=target}
+end
+
+function RobloxCommonUI.CreateWorldPropActionWheel(options)
+  options=options or {}
+  local actions=options.actions or {"조사","사용","열기","옮기기","수리","취소"}
+  local root,buttons=RobloxCommonUI.CreateRadialMenu({name=options.name or "WorldPropActionWheel",actions=actions,centerText=options.centerText or "상호작용",size=options.size,theme=options.theme})
+  tag(root,"WORLD_PROP_ACTION_WHEEL")
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateInteractionProgress(options)
+  options=options or {}
+  local root,controller=RobloxCommonUI.CreateProgressBar({name=options.name or "InteractionProgress",label=options.label or "진행",value=options.value or 0,size=options.size or UDim2.fromOffset(260,40),theme=options.theme})
+  tag(root,"INTERACTION_PROGRESS")
+  root:SetAttribute("OwnsInteractionDuration",false)
+  return root,controller
+end
+
+function RobloxCommonUI.CreateInteractionStateCard(options)
+  local root,parts=deepSystemPanel(options,"INTERACTION_STATE_CARD","INTERACTION_STATE_CARD",options and options.title or "상호작용 상태",{"사용 가능","조건","현재 사용 중","결과"})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateSeatInteractionPrompt(options)
+  options=options or {}
+  return RobloxCommonUI.CreateWorldPropInteractionPrompt({name=options.name or "SeatInteractionPrompt",actionText=options.actionText or "앉기",targetText=options.targetText or "좌석",size=options.size,theme=options.theme})
+end
+
+function RobloxCommonUI.CreateBedInteractionPrompt(options)
+  options=options or {}
+  return deepSystemPanel(options,"BED_INTERACTION_PROMPT","BED_INTERACTION_PROMPT","침대",{"쉬기","재시작 지점 표시","현재 사용 상태","사용 조건"})
+end
+
+function RobloxCommonUI.CreateHarvestInteractionPrompt(options)
+  options=options or {}
+  return deepSystemPanel(options,"HARVEST_INTERACTION_PROMPT","HARVEST_INTERACTION_PROMPT","채집 / 수확",{"대상","필요 도구","진행 상태","예상 분류"})
+end
+
+function RobloxCommonUI.CreateContainerInteractionPrompt(options)
+  options=options or {}
+  return deepSystemPanel(options,"CONTAINER_INTERACTION_PROMPT","CONTAINER_INTERACTION_PROMPT","보관함",{"열기","현재 상태","용량 표시","권한 표시"})
+end
+
+function RobloxCommonUI.CreateLightControlPrompt(options)
+  options=options or {}
+  return deepSystemPanel(options,"LIGHT_CONTROL_PROMPT","LIGHT_CONTROL_PROMPT","조명",{"켜기 / 끄기","현재 상태","연결 장치","조건"})
+end
+
+function RobloxCommonUI.CreateReadInspectPanel(options)
+  options=options or {}
+  return deepSystemPanel(options,"READ_INSPECT_PANEL","READ_INSPECT_PANEL",options.title or "조사",{"이름 / 종류","설명","관련 정보","다른 시스템 연결"})
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -3114,13 +3286,43 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateVehicleControlHints(options)
   elseif id == "MOUNT_SPEED_STATE" then
     return RobloxCommonUI.CreateMountSpeedState(options)
+  elseif id == "PARRY_TIMING_INDICATOR" then
+    return RobloxCommonUI.CreateParryTimingIndicator(options)
+  elseif id == "GUARD_METER" then
+    return RobloxCommonUI.CreateGuardMeter(options)
+  elseif id == "GUARD_BREAK_WARNING" then
+    return RobloxCommonUI.CreateGuardBreakWarning(options)
+  elseif id == "COUNTER_READY_INDICATOR" then
+    return RobloxCommonUI.CreateCounterReadyIndicator(options)
+  elseif id == "ATTACK_TELEGRAPH_INDICATOR" then
+    return RobloxCommonUI.CreateAttackTelegraphIndicator(options)
+  elseif id == "WORLD_PROP_INTERACTION_PROMPT" then
+    return RobloxCommonUI.CreateWorldPropInteractionPrompt(options)
+  elseif id == "WORLD_PROP_ACTION_WHEEL" then
+    return RobloxCommonUI.CreateWorldPropActionWheel(options)
+  elseif id == "INTERACTION_PROGRESS" then
+    return RobloxCommonUI.CreateInteractionProgress(options)
+  elseif id == "INTERACTION_STATE_CARD" then
+    return RobloxCommonUI.CreateInteractionStateCard(options)
+  elseif id == "SEAT_INTERACTION_PROMPT" then
+    return RobloxCommonUI.CreateSeatInteractionPrompt(options)
+  elseif id == "BED_INTERACTION_PROMPT" then
+    return RobloxCommonUI.CreateBedInteractionPrompt(options)
+  elseif id == "HARVEST_INTERACTION_PROMPT" then
+    return RobloxCommonUI.CreateHarvestInteractionPrompt(options)
+  elseif id == "CONTAINER_INTERACTION_PROMPT" then
+    return RobloxCommonUI.CreateContainerInteractionPrompt(options)
+  elseif id == "LIGHT_CONTROL_PROMPT" then
+    return RobloxCommonUI.CreateLightControlPrompt(options)
+  elseif id == "READ_INSPECT_PANEL" then
+    return RobloxCommonUI.CreateReadInspectPanel(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 8,
+    version = 9,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -3162,11 +3364,17 @@ function RobloxCommonUI.Audit()
       "MOUNT_COMMAND_WHEEL", "MOUNT_INVENTORY_PANEL", "MOUNT_EQUIPMENT_PANEL", "VEHICLE_DAMAGE_STATUS",
       "FUEL_ENERGY_METER", "CARGO_PANEL", "TRAVEL_ROUTE_PANEL", "DESTINATION_CARD",
       "TRAVEL_PROGRESS_HUD", "MOUNT_RECALL_PANEL", "MOUNT_WHISTLE_STATE", "TERRAIN_ACCESS_WARNING",
-      "VEHICLE_CONTROL_HINTS", "MOUNT_SPEED_STATE"
+      "VEHICLE_CONTROL_HINTS", "MOUNT_SPEED_STATE",
+      "PARRY_TIMING_INDICATOR", "GUARD_METER", "GUARD_BREAK_WARNING", "COUNTER_READY_INDICATOR", "ATTACK_TELEGRAPH_INDICATOR",
+      "WORLD_PROP_INTERACTION_PROMPT", "WORLD_PROP_ACTION_WHEEL", "INTERACTION_PROGRESS", "INTERACTION_STATE_CARD",
+      "SEAT_INTERACTION_PROMPT", "BED_INTERACTION_PROMPT", "HARVEST_INTERACTION_PROMPT", "CONTAINER_INTERACTION_PROMPT",
+      "LIGHT_CONTROL_PROMPT", "READ_INSPECT_PANEL"
     }),
-    atomCount = 154,
+    atomCount = 169,
     fullScreenSurfaceCount = 17,
-    deepSystemComponentCount = 100,
+    deepSystemComponentCount = 115,
+    parryPresentationComponentCount = 5,
+    worldInteractionComponentCount = 10,
     housingSandboxComponentCount = 24,
     aiNpcInteractionComponentCount = 24,
     mountTravelComponentCount = 22,
