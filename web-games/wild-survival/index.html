@@ -363,6 +363,35 @@ function draw(){
     if(r.type==='berry'){ctx.fillStyle='#355b36';ctx.beginPath();ctx.arc(r.x,r.y,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8b3040';for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(r.x-7+n*5,r.y-2+(n%2)*6,2.5,0,Math.PI*2);ctx.fill()}}
   }
   if(S.camp.shelter>0){
+    ctx.fillStyle=S.camp.shelter===2?'#5a4936':'#6c5d43';
+    ctx.beginPath();
+    ctx.moveTo(2850,420);
+    ctx.lineTo(2850+470,420+260);
+    ctx.fill();
+    ctx.fillStyle='#777867';
+    ctx.beginPath();
+    ctx.moveTo(2850,420);
+    ctx.lineTo(2850+470,420+260);
+    ctx.fill();
+  }
+}
+  const w=innerWidth,h=innerHeight,p=S.player,camX=clamp(p.x-w/2,0,WORLD.w-w),camY=clamp(p.y-h/2,0,WORLD.h-h);
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#657c54';ctx.fillRect(0,0,w,h);
+  ctx.save();ctx.translate(-camX,-camY);
+  ctx.fillStyle='#79825e';ctx.fillRect(0,WORLD.riverY-420,WORLD.w,360);
+  ctx.fillStyle='#52718a';ctx.fillRect(0,WORLD.riverY,WORLD.w,WORLD.riverH);
+  ctx.fillStyle='#a8a17a';ctx.fillRect(0,WORLD.riverY-18,WORLD.w,18);ctx.fillRect(0,WORLD.riverY+WORLD.riverH,WORLD.w,18);
+  ctx.fillStyle='#777867';ctx.beginPath();ctx.ellipse(2850,420,470,260,0,0,Math.PI*2);ctx.fill();
+  for(const r of resources){
+    if(r.amount<=0)continue;
+    if(r.x<camX-50||r.x>camX+w+50||r.y<camY-50||r.y>camY+h+50)continue;
+    if(r.type==='tree')tree(r.x,r.y);
+    if(r.type==='stone'){ctx.fillStyle='#70756e';ctx.beginPath();ctx.ellipse(r.x,r.y,16,11,-.3,0,Math.PI*2);ctx.fill()}
+    if(r.type==='fiber'){ctx.strokeStyle='#b4b26c';ctx.lineWidth=3;for(let n=-2;n<=2;n++){ctx.beginPath();ctx.moveTo(r.x+n*3,r.y+12);ctx.lineTo(r.x+n*4,r.y-10);ctx.stroke()}}
+    if(r.type==='berry'){ctx.fillStyle='#355b36';ctx.beginPath();ctx.arc(r.x,r.y,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8b3040';for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(r.x-7+n*5,r.y-2+(n%2)*6,2.5,0,Math.PI*2);ctx.fill()}}
+  }
+  if(S.camp.shelter>0){
     ctx.fillStyle=S.camp.shelter===2?'#5a4936':'#6c5d43';ctx.beginPath();ctx.moveTo(S.camp.x-42,S.camp.y+26);ctx.lineTo(S.camp.x,S.camp.y-34);ctx.lineTo(S.camp.x+42,S.camp.y+26);ctx.closePath();ctx.fill();
   }
   if(S.camp.fire){
