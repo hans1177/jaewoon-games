@@ -1183,6 +1183,15 @@ test('build-up iteration expectation rises with verified cycles without adding p
     version:50,
     assets:['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'].map((family,index)=>({id:`asset-${index}`,family}))
   },null,2),'utf8');
+  const audioRoot=path.join(root,'assets','audio-fixture');
+  const webAudioRoot=path.join(root,'web-games','audio-fixture','audio');
+  fs.mkdirSync(audioRoot,{recursive:true});
+  fs.mkdirSync(webAudioRoot,{recursive:true});
+  fs.writeFileSync(path.join(audioRoot,'region-theme.ogg'),Buffer.from('OggS-real-audio-fixture'));
+  fs.writeFileSync(path.join(webAudioRoot,'field-recording.m4a'),Buffer.from('materialized-recording-fixture'));
+  fs.writeFileSync(path.join(webAudioRoot,'field-recording.mpga'),Buffer.from('materialized-recording-alt-fixture'));
+  fs.writeFileSync(path.join(webAudioRoot,'field-recording.mp3'),'version https://git-lfs.github.com/spec/v1\noid sha256:'+'a'.repeat(64)+'\nsize 436653\n','utf8');
+  fs.writeFileSync(path.join(root,'web-games','audio-fixture','index.html'),'<audio src="../../assets/audio-fixture/region-theme.ogg"></audio>\n','utf8');
   const first=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN'});
   const third=resolveBuildUpIterationExpectation({repoRoot:root,cycle:3,phase:'BUILD_UP',focusPillar:'PROGRESSION'});
   const sixth=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'BUILD_UP',focusPillar:'PRESENTATION'});
@@ -1207,6 +1216,17 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.equal(sixth.assetLibraryVersion,50);
   assert.equal(sixth.assetLibraryFamilyCount,11);
   assert.equal(sixth.assetLibrarySourceParityRequired,true);
+  assert.equal(sixth.assetLibraryRegisteredAudioCount,0);
+  assert.equal(sixth.repositoryAudioFileCount,4);
+  assert.equal(sixth.repositoryAudioMaterializedCount,3);
+  assert.equal(sixth.repositoryAudioSourceReferencedCount,1);
+  assert.equal(sixth.repositoryAudioUnreferencedMaterializedCount,2);
+  assert.equal(sixth.repositoryAudioLfsPointerCount,1);
+  assert.equal(sixth.repositoryAudioRegistryGap,true);
+  assert.equal(sixth.repositoryAudioProductionVerified,false);
+  assert.ok(sixth.repositoryAudioSources.some(row=>row.path==='assets/audio-fixture/region-theme.ogg'&&row.state==='MATERIALIZED_SOURCE_REFERENCED'&&row.role==='MUSIC_BGM'));
+  assert.ok(sixth.repositoryAudioSources.some(row=>row.path==='web-games/audio-fixture/audio/field-recording.m4a'&&row.state==='MATERIALIZED_UNREFERENCED'&&row.role==='RAW_RECORDING'));
+  assert.ok(sixth.repositoryAudioSources.some(row=>row.path==='web-games/audio-fixture/audio/field-recording.mp3'&&row.state==='LFS_POINTER_ONLY'&&row.declaredBytes===436653));
   assert.equal(sixth.assetOnlySwapCountsAsEvolution,false);
   assert.equal(sixth.sourceCompositionDepthUnbounded,true);
   assert.equal(sixth.qualitativeDetailDepthUnbounded,true);
@@ -1255,8 +1275,12 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.equal(third.studioQualityEvolution.requiredActiveSourceCompositionDimensions.min,third.studioQualityEvolution.qualityExpectation.minimumActiveSourceCompositionDimensions);
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.required,true);
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.libraryVersion,50);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.repositoryAudio.materializedCount,0);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.repositoryAudio.productionVerified,false);
   assert.ok(third.evidence.includes('studio-quality-asset-source-parity:REQUIRED'));
+  assert.ok(third.evidence.includes('studio-quality-repository-audio-materialized:0'));
   assert.match(third.goal,/소스 구성 성장:/);
+  assert.match(third.goal,/오디오 실파일 점검:/);
   assert.match(third.goal,/자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면/);
   assert.match(third.goal,/같은 QA\/체크 재통과만 반복/);
   assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
