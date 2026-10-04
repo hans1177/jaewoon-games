@@ -1953,8 +1953,11 @@ export function buildVibeAssetProductionPlan({
     for(const subfamily of Object.keys(subs)){
       const key=family+':'+subfamily;
       const externalReady=(companyRegistry?.externalSources||[]).some(row=>{
-        const cat=clean(row.category).toUpperCase();
-        return /LICENSE_VERIFIED/.test(clean(row.status).toUpperCase())&&(cat===family||(family==='BUILDING'&&['ENVIRONMENT','PROP'].includes(cat))||(family==='MATERIAL'&&['VFX','ENVIRONMENT'].includes(cat)));
+        const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
+        const categoryMatch=categories.includes(family)
+          ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
+          ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
+        return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
       });
       const verifiedReuse=(companyRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
       universeSignals[key]={
