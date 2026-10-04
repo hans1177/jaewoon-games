@@ -2188,3 +2188,103 @@ test('generic building requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-wall-window');
 });
+
+
+test('company-common tool pack provides eight reusable weapon and tool visuals',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-tools-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonTools.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['SWORD','SPEAR','AXE','HAMMER','PICKAXE','BOW','STAFF','SHIELD'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  assert.ok(source.includes('function RobloxCommonTools.Create(id,options)'));
+  assert.ok(source.includes('function RobloxCommonTools.CreateViewport(id,options)'));
+  assert.ok(source.includes('attachment.Name = "VisualGrip"'));
+  assert.ok(source.includes('local styledRow=rowWithPalette(row,options.palette)'));
+  assert.ok(source.includes('CompanyCommonBase", true'));
+  assert.equal(catalog.family,'WEAPON');
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bAttackSpeed\s*=/,/\bHarvestAmount\s*=/,/\bDurability\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common tool registry preserves combat gathering equipment save and network authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-tools-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.family,'WEAPON');
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.gameplayAuthority,false);
+
+  const expected=[
+    ['SWORD','SWORD','MELEE'],
+    ['SPEAR','SPEAR','POLEARM'],
+    ['AXE','AXE','MELEE_TOOL'],
+    ['HAMMER','HAMMER','HEAVY_TOOL'],
+    ['PICKAXE','PICKAXE','GATHERING_TOOL'],
+    ['BOW','BOW','RANGED'],
+    ['STAFF','STAFF','MAGIC_FOCUS'],
+    ['SHIELD','SHIELD','DEFENSIVE_VISUAL']
+  ];
+  for(const [assetId,subfamily,toolRole] of expected){
+    const id='roblox-common-tool-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'WEAPON');
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.toolRole,toolRole);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.visualGripAttachment,'VisualGrip');
+    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
+
+test('generic weapon requirement can choose company-common tool base',()=>{
+  const registryAsset={
+    id:'common-sword',
+    family:'WEAPON',
+    subfamily:'SWORD',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    companyCommonBase:true,
+    reuseScope:'COMPANY_ROBLOX_COMMON_BASE',
+    tags:['MELEE']
+  };
+  const gameOnly={
+    id:'game-only-sword',
+    family:'WEAPON',
+    subfamily:'SWORD',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    tags:['MELEE']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'WEAPON',subfamily:'SWORD',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-sword');
+});

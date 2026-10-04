@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "packId": "roblox-common-tools-v1",
+  "title": "Roblox 회사 공용 무기/도구 8종 v1",
+  "platform": "ROBLOX",
+  "family": "WEAPON",
+  "subfamily": "TOOL_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "automaticCrossGameReuseAllowed": true,
+  "crossGameReuseRequiresCompatibilityPass": true,
+  "gameplayAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "intendedConsumerGameIds": [
+    "survival",
+    "daechung-rpg",
+    "monster-adventure",
+    "village-dungeons",
+    "seed-action-survival-rogu-echoes-of-the-lost-star"
+  ],
+  "items": [
+    {
+      "assetId": "SWORD",
+      "name": "장검",
+      "subfamily": "SWORD",
+      "toolRole": "MELEE",
+      "familyRootId": "TOOL_SWORD"
+    },
+    {
+      "assetId": "SPEAR",
+      "name": "창",
+      "subfamily": "SPEAR",
+      "toolRole": "POLEARM",
+      "familyRootId": "TOOL_SPEAR"
+    },
+    {
+      "assetId": "AXE",
+      "name": "도끼",
+      "subfamily": "AXE",
+      "toolRole": "MELEE_TOOL",
+      "familyRootId": "TOOL_AXE"
+    },
+    {
+      "assetId": "HAMMER",
+      "name": "망치",
+      "subfamily": "HAMMER",
+      "toolRole": "HEAVY_TOOL",
+      "familyRootId": "TOOL_HAMMER"
+    },
+    {
+      "assetId": "PICKAXE",
+      "name": "곡괭이",
+      "subfamily": "PICKAXE",
+      "toolRole": "GATHERING_TOOL",
+      "familyRootId": "TOOL_PICKAXE"
+    },
+    {
+      "assetId": "BOW",
+      "name": "활",
+      "subfamily": "BOW",
+      "toolRole": "RANGED",
+      "familyRootId": "TOOL_BOW"
+    },
+    {
+      "assetId": "STAFF",
+      "name": "지팡이",
+      "subfamily": "STAFF",
+      "toolRole": "MAGIC_FOCUS",
+      "familyRootId": "TOOL_STAFF"
+    },
+    {
+      "assetId": "SHIELD",
+      "name": "방패",
+      "subfamily": "SHIELD",
+      "toolRole": "DEFENSIVE_VISUAL",
+      "familyRootId": "TOOL_SHIELD"
+    }
+  ]
+}
