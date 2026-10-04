@@ -495,9 +495,19 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     assetLibrarySoundscapeVariationRules:assetLibrarySnapshot.soundscapeVariationRules,
     assetLibraryBiomeSoundscapeCount:assetLibrarySnapshot.biomeSoundscapeCount,
     assetLibraryEnvironmentStateCount:assetLibrarySnapshot.environmentStateCount,
+    assetLibraryRegisteredAudioAssetCount:assetLibrarySnapshot.registeredAudioAssetCount,
     assetLibraryActualAudioAssetCount:assetLibrarySnapshot.actualAudioAssetCount,
     assetLibraryAudioRoleContractCount:assetLibrarySnapshot.audioRoleContractCount,
     assetLibraryAudioRoleContractOnly:assetLibrarySnapshot.audioRoleContractOnly,
+    assetLibraryAudioRegistryGap:assetLibrarySnapshot.audioRegistryGap,
+    repositoryAudioFileCount:assetLibrarySnapshot.repositoryAudio.actualFileCount,
+    repositoryAudioAssetTreeFileCount:assetLibrarySnapshot.repositoryAudio.assetTreeFileCount,
+    repositoryAudioGameLocalFileCount:assetLibrarySnapshot.repositoryAudio.gameLocalFileCount,
+    repositoryAudioUploadedFileCount:assetLibrarySnapshot.repositoryAudio.uploadedFileCount,
+    repositoryAudioBoundFileCount:assetLibrarySnapshot.repositoryAudio.boundFileCount,
+    repositoryAudioTinyRejectedCount:assetLibrarySnapshot.repositoryAudio.tinyRejectedCount,
+    repositoryAudioSourcePreview:assetLibrarySnapshot.repositoryAudio.sourcePreview,
+    repositoryAudioSourcePreviewIsNotEligibilityCap:assetLibrarySnapshot.repositoryAudio.sourcePreviewIsNotEligibilityCap,
     assetLibraryScoredAssetCount:assetLibrarySnapshot.scoredAssetCount,
     assetLibraryQualityMin:assetLibrarySnapshot.qualityMin,
     assetLibraryQualityMax:assetLibrarySnapshot.qualityMax,
@@ -541,7 +551,7 @@ function buildUpIterationExpectationPrompt(expectation={}){
 최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
 소스 구성 성장: depth=${expectation.sourceCompositionDepthLevel}; 최소 ${(expectation.activeSourceCompositionDimensions||[]).length}/${expectation.minimumActiveSourceCompositionDimensions}개 축을 실제 책임 소스에서 연결한다. 활성 축=${(expectation.activeSourceCompositionDimensions||[]).join(' | ')||'CORE_LOOP_ORCHESTRATION'}. 내부 자산 라이브러리=${expectation.assetLibraryPresent?`v${expectation.assetLibraryVersion}, assets=${expectation.assetLibraryAssetCount}, families=${expectation.assetLibraryFamilyCount}`:'NOT_OBSERVED'}. 적용 가능한 고급 자산·UI·모션·VFX·컷신·인트로·로딩·메뉴 표현이 생기면 실제 전투/AI/월드 상태/퀘스트/보상/세션 전환/중후반 콘텐츠 흐름과 소스에서 연결한다. 자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면 source evolution으로 계산하지 않는다. 모든 축 활성화 이후에도 sourceCompositionDepth는 계속 상승하며, 비적용 축은 이유가 있어야 한다.
-자산 활용 플로어: 기존 ${expectation.assetLibraryUsagePolicySource||'company-asset-library.json#internalAssetUsagePolicy'}를 그대로 사용한다. 라이브러리 사용=${expectation.assetLibraryUsageRequired?'MANDATORY':'POLICY_NOT_OBSERVED'}, primitive-only=${expectation.assetLibraryPrimitiveOnlyForbidden?'FORBIDDEN':'POLICY_NOT_OBSERVED'}, marker-only=${expectation.assetLibraryMarkerOnlyForbidden?'FORBIDDEN':'POLICY_NOT_OBSERVED'}. 현재 게임 소스에 동일 활용이 이미 실제 구현·검증되어 있으면 해당 아이디어는 PASS하고 중복 wrapper/복제 구현하지 않는다. ${expectation.assetLibraryApplicationMode||'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING'} 방식으로 미구현 READY 활용만 선택한다. 활용 후보=${(expectation.assetLibraryApplicationIdeas||[]).map(row=>row.id+':'+row.state).join(' | ')||'NONE'}. ROLE_CONTRACT_ONLY 오디오는 실제 검증 음원이 생기기 전까지 재생 자산이 있다고 주장하지 않는다.
+자산 활용 플로어: 기존 ${expectation.assetLibraryUsagePolicySource||'company-asset-library.json#internalAssetUsagePolicy'}를 그대로 사용한다. 라이브러리 사용=${expectation.assetLibraryUsageRequired?'MANDATORY':'POLICY_NOT_OBSERVED'}, primitive-only=${expectation.assetLibraryPrimitiveOnlyForbidden?'FORBIDDEN':'POLICY_NOT_OBSERVED'}, marker-only=${expectation.assetLibraryMarkerOnlyForbidden?'FORBIDDEN':'POLICY_NOT_OBSERVED'}. 현재 게임 소스에 동일 활용이 이미 실제 구현·검증되어 있으면 해당 아이디어는 PASS하고 중복 wrapper/복제 구현하지 않는다. ${expectation.assetLibraryApplicationMode||'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING'} 방식으로 미구현 READY 활용만 선택한다. 실제 저장소 오디오=${expectation.repositoryAudioFileCount||0}, 업로드 ID 확인=${expectation.repositoryAudioUploadedFileCount||0}, 게임 오디오 객체 바인딩 확인=${expectation.repositoryAudioBoundFileCount||0}, 의심되는 초소형 파일 제외=${expectation.repositoryAudioTinyRejectedCount||0}, 공용 AUDIO 등록=${expectation.assetLibraryRegisteredAudioAssetCount||0}. 레지스트리 AUDIO가 0이어도 실제 파일/업로드/게임소스 바인딩이 있으면 없는 자산으로 취급하지 말고 기존 저장소 자산 우선순위로 재사용 후보에 포함한다. 반대로 파일 존재만으로 production/runtime verified를 주장하지 않는다. 역할이 맞지 않는 음악을 모든 지역·전투·보스에 억지 재사용하지 않는다. 활용 후보=${(expectation.assetLibraryApplicationIdeas||[]).map(row=>row.id+'['+row.state+']='+row.purpose).join(' | ')||'NONE'}. 이 목록은 활용 하한이지 상한이 아니다. 오디오는 안전지대/지역 BGM, 탐험 평온↔긴장, 전투 저↔고강도, 보스 페이즈, 발견·승리·패배·보상 스팅어, BED/NEAR_LOOP/DISTANT_LOOP/SCATTER/ONE_SHOT/INTERACTION_SOURCE, 낮/밤·날씨·실내외·오클루전, 공간 상호작용 소스, 반복 변형·중복 방지·모바일 동시재생 예산을 역할에 맞게 조합한다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
 }
