@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#172018">
+<title>야생 생존</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#11170f;color:#f3f4e9;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button{font:inherit}
+#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none;background:#536946}
+#hud{position:fixed;left:10px;right:10px;top:max(10px,env(safe-area-inset-top));display:grid;grid-template-columns:1fr auto;gap:8px;pointer-events:none;z-index:5}
+.panel{background:#12180fd9;border:1px solid #ffffff22;border-radius:14px;backdrop-filter:blur(5px);box-shadow:0 8px 30px #0005}
+#bars{padding:9px 10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px}
+.stat{display:grid;grid-template-columns:50px 1fr 35px;gap:6px;align-items:center;font-size:11px;font-weight:800}
+.track{height:7px;border-radius:99px;background:#ffffff16;overflow:hidden}
+.track i{display:block;height:100%;background:#d7ead0}
+.stat.hot .track i{background:#efb97a}.stat.bad .track i{background:#e88b78}
+#meta{padding:9px 11px;text-align:right;font-size:11px;line-height:1.45;min-width:118px}
+#meta b{display:block;font-size:14px}
+#objective{position:fixed;top:112px;left:50%;transform:translateX(-50%);max-width:min(92vw,440px);padding:8px 12px;text-align:center;font-size:12px;font-weight:800;z-index:5;pointer-events:none}
+#notice{position:fixed;left:50%;top:150px;transform:translateX(-50%);padding:9px 13px;border-radius:12px;background:#0e140de8;border:1px solid #ffffff20;opacity:0;transition:.18s;z-index:8;font-size:12px;pointer-events:none}
+#notice.on{opacity:1}
+#controls{position:fixed;inset:auto 0 max(12px,env(safe-area-inset-bottom)) 0;height:155px;z-index:6;pointer-events:none}
+#stick{position:absolute;left:18px;bottom:8px;width:126px;height:126px;border-radius:50%;background:#10150db8;border:1px solid #ffffff28;pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:38px;top:38px;width:50px;height:50px;border-radius:50%;background:#e7ead7c9;box-shadow:0 3px 12px #0007}
+#actions{position:absolute;right:14px;bottom:7px;display:grid;grid-template-columns:repeat(2,84px);gap:8px;pointer-events:auto}
+.act{min-height:56px;border:1px solid #ffffff28;border-radius:16px;background:#202a1ddb;color:#fff;font-weight:900;font-size:12px;box-shadow:0 4px 18px #0005}
+.act:active{transform:scale(.97)}
+#menuBtn{position:fixed;right:11px;top:104px;z-index:7;width:46px;height:42px;border:1px solid #ffffff22;border-radius:12px;background:#12180fe0;color:#fff;font-weight:900}
+#craft{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,480px);max-height:72vh;overflow:auto;padding:14px;z-index:12;display:none}
+#craft.open{display:block}
+#craft h2{margin:0 0 5px;font-size:20px}
+#craft .sub{font-size:11px;color:#cbd4c4;margin-bottom:10px}
+.recipe{width:100%;display:grid;grid-template-columns:1fr auto;gap:8px;text-align:left;margin:7px 0;padding:11px;border:1px solid #ffffff1e;border-radius:12px;background:#1a2318;color:#fff}
+.recipe b{display:block;font-size:13px}.recipe small{display:block;margin-top:3px;color:#b9c4b1}
+.recipe span{align-self:center;font-size:11px;font-weight:900;color:#e9dca4}
+#inventory{margin-top:10px;padding-top:10px;border-top:1px solid #ffffff20;font-size:11px;line-height:1.7;color:#d9dfd3}
+#closeCraft{width:100%;min-height:42px;margin-top:8px;border:0;border-radius:11px;background:#dce4d6;color:#111b10;font-weight:900}
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b0f0ad9;z-index:20}
+.overlay.hide{display:none}
+.card{width:min(90vw,430px);padding:21px;border-radius:20px;background:#182016;border:1px solid #ffffff22;box-shadow:0 20px 60px #0009}
+.card h1{margin:0 0 8px;font-size:28px}.card p{font-size:13px;line-height:1.55;color:#d1d8cb}
+.card ul{font-size:12px;line-height:1.6;padding-left:19px;color:#e3e8df}
+.primary{width:100%;min-height:50px;border:0;border-radius:14px;background:#dfe7d7;color:#152015;font-weight:950}
+#death .primary{margin-top:12px}
+@media (max-width:380px){#bars{grid-template-columns:1fr}.stat:nth-child(n+4){display:none}#objective{top:145px}#menuBtn{top:136px}}
+</style>
+</head>
+<body data-web-artifact-type="REAL_PLAYABLE_GAME" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-realism-lock="NO_FANTASY" data-run-result="running">
+<canvas id="game" data-gameplay-surface="main"></canvas>
+<section id="hud">
+  <div id="bars" class="panel"></div>
+  <div id="meta" class="panel"><b id="dayText">1일차</b><span id="timeText">08:00</span><br><span id="weatherText">맑음 · 18°C</span></div>
+</section>
+<div id="objective" class="panel">목표: 7일 생존하고 튼튼한 쉼터를 만들어라</div>
+<div id="notice"></div>
+<button id="menuBtn">제작</button>
+<section id="craft" class="panel">
+  <h2>제작 · 야영</h2>
+  <div class="sub">주변에서 얻은 실제 재료만 사용해. 마법·판타지 자원은 없어.</div>
+  <div id="recipes"></div>
+  <div id="inventory"></div>
+  <button id="closeCraft">닫기</button>
+</section>
+<section id="controls">
+  <div id="stick"><div id="knob"></div></div>
+  <div id="actions">
+    <button id="interact" class="act" data-gameplay-action="true">채집/사용</button>
+    <button id="attack" class="act" data-gameplay-action="true">공격</button>
+    <button id="eat" class="act" data-gameplay-action="true">먹기</button>
+    <button id="rest" class="act" data-gameplay-action="true">휴식</button>
+  </div>
+</section>
+<section id="start" class="overlay">
+  <div class="card">
+    <h1>야생 생존</h1>
+    <p>산림과 강이 있는 실제 야생에 고립됐다. 판타지 생물이나 마법은 없다. 물, 체온, 상처와 날씨를 관리하면서 살아남아야 한다.</p>
+    <ul>
+      <li>사슴·토끼는 사람을 피해서 도망감</li>
+      <li>멧돼지는 가까이 위협하거나 공격하면 돌진함</li>
+      <li>비를 맞으면 젖고 밤에는 저체온 위험이 커짐</li>
+      <li>강물은 끓이지 않고 마시면 탈이 날 수 있음</li>
+      <li>나무·돌·섬유로 도구, 모닥불, 쉼터를 제작</li>
+    </ul>
+    <button id="begin" class="primary">생존 시작</button>
+  </div>
+</section>
+<section id="death" class="overlay hide">
+  <div class="card">
+    <h1 id="endTitle">생존 실패</h1>
+    <p id="endText"></p>
+    <button id="restart" class="primary">새 게임</button>
+  </div>
+</section>
+<script>
+(()=>{
+'use strict';
+// 파일명: web-games/wild-survival/index.html
+// 메인 상태
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const bars=document.getElementById('bars'),notice=document.getElementById('notice');
+const WORLD={w:3400,h:2500,riverY:1280,riverH:260};
+const SAVE_KEY='jg-wild-survival-v1';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(a,b,c,d)=>Math.hypot(a-c,b-d);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const baseState=()=>({
+  started:false,won:false,dead:false,day:1,time:8*60,weather:'clear',weatherTimer:150,
+  ambient:18,player:{x:480,y:560,hp:100,hunger:100,thirst:100,energy:100,temp:37,wet:0,ill:0,bleed:0,faceX:1,faceY:0,attackAt:0},
+  inv:{wood:0,stone:0,fiber:0,berries:0,rawMeat:0,cookedMeat:0,dirtyWater:0,cleanWater:0},
+  gear:{knife:false,axe:false,spear:false},camp:{fire:false,fireFuel:0,shelter:0,x:0,y:0},
+  score:0,survivedGoal:false,lastSave:0
+});
+let S=baseState();
+try{const old=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(old&&old.player&&old.inv)S={...baseState(),...old,player:{...baseState().player,...old.player},inv:{...baseState().inv,...old.inv},gear:{...baseState().gear,...old.gear},camp:{...baseState().camp,...old.camp},started:false,dead:false}}catch{}
+const keys={},joy={x:0,y:0,id:null};
+let last=performance.now(),noticeTimer=0;
+const resources=[],animals=[];
+
+// 월드 생성
+function addResource(type,x,y,amount=5){resources.push({type,x,y,amount,respawn:0})}
+for(let i=0;i<60;i++)addResource('tree',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(4,8)|0);
+for(let i=0;i<36;i++)addResource('stone',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(3,6)|0);
+for(let i=0;i<30;i++)addResource('fiber',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(3,6)|0);
+for(let i=0;i<22;i++)addResource('berry',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(2,5)|0);
+function newAnimal(type,x,y){
+  const stat={rabbit:[28,130,12],deer:[90,112,24],boar:[115,82,32]}[type];
+  animals.push({id:Math.random().toString(36).slice(2),type,x,y,hp:stat[0],maxHp:stat[0],speed:stat[1],r:stat[2],vx:rand(-1,1),vy:rand(-1,1),wander:rand(.5,3),alert:0,attackAt:0,dead:0});
+}
+for(let i=0;i<10;i++)newAnimal('rabbit',rand(300,WORLD.w-300),rand(250,WORLD.h-250));
+for(let i=0;i<8;i++)newAnimal('deer',rand(350,WORLD.w-350),rand(280,WORLD.h-280));
+for(let i=0;i<5;i++)newAnimal('boar',rand(450,WORLD.w-450),rand(350,WORLD.h-350));
+
+// 저장
+function save(){
+  const copy=JSON.parse(JSON.stringify(S));copy.started=false;copy.dead=false;
+  localStorage.setItem(SAVE_KEY,JSON.stringify(copy));
+}
+function reset(){
+  localStorage.removeItem(SAVE_KEY);S=baseState();S.started=true;location.reload();
+}
+
+// UI
+function showNotice(msg){
+  notice.textContent=msg;notice.classList.add('on');noticeTimer=2.3;
+}
+function bar(label,value,extra=''){
+  const v=clamp(value,0,100),klass=v<25?'bad':extra;
+  return `<div class="stat ${klass}"><span>${label}</span><div class="track"><i style="width:${v}%"></i></div><b>${Math.round(value)}</b></div>`;
+}
+function updateHud(){
+  const p=S.player;
+  bars.innerHTML=bar('체력',p.hp)+bar('허기',p.hunger)+bar('갈증',p.thirst)+bar('기력',p.energy)+(p.wet>8?bar('젖음',p.wet,'hot'):'')+(p.ill>0?bar('몸상태',100-p.ill,'bad'):'');
+  document.getElementById('dayText').textContent=`${S.day}일차`;
+  const hh=String(Math.floor(S.time/60)%24).padStart(2,'0'),mm=String(Math.floor(S.time%60)).padStart(2,'0');
+  document.getElementById('timeText').textContent=`${hh}:${mm}`;
+  const w={clear:'맑음',cloud:'흐림',rain:'비',storm:'폭우'}[S.weather];
+  document.getElementById('weatherText').textContent=`${w} · ${Math.round(S.ambient)}°C`;
+  document.body.dataset.runResult=S.dead?'defeat':S.won?'victory':'running';
+  document.getElementById('objective').textContent=S.won?'7일 생존 달성 · 계속 생존할 수 있어':`목표: 7일 생존 + 쉼터 건설 (${S.camp.shelter}/2)`;
+}
+function inventoryText(){
+  const i=S.inv,g=S.gear,c=S.camp;
+  return `나무 ${i.wood} · 돌 ${i.stone} · 섬유 ${i.fiber} · 열매 ${i.berries}<br>`+
+    `생고기 ${i.rawMeat} · 익힌고기 ${i.cookedMeat} · 강물 ${i.dirtyWater} · 식수 ${i.cleanWater}<br>`+
+    `도구: ${g.knife?'돌칼 ':''}${g.axe?'돌도끼 ':''}${g.spear?'창 ':''}${!g.knife&&!g.axe&&!g.spear?'없음':''}<br>`+
+    `야영: 모닥불 ${c.fire?'켜짐':'없음'} · 쉼터 ${c.shelter}단계`;
+}
+const recipes=[
+  {id:'knife',name:'돌칼',cost:{stone:2,fiber:1},desc:'도축과 채집 효율 증가'},
+  {id:'axe',name:'돌도끼',cost:{wood:2,stone:3,fiber:1},desc:'나무 채집량 증가'},
+  {id:'spear',name:'나무창',cost:{wood:3,stone:1,fiber:1},desc:'사냥 시 안전거리와 피해 증가'},
+  {id:'fire',name:'모닥불',cost:{wood:5,stone:3},desc:'체온 회복, 물 끓이기, 고기 굽기'},
+  {id:'shelter1',name:'간이 쉼터',cost:{wood:10,fiber:8},desc:'비와 밤 추위 완화'},
+  {id:'shelter2',name:'튼튼한 쉼터',cost:{wood:16,stone:6,fiber:10},desc:'폭우와 밤 추위 크게 완화'},
+  {id:'boil',name:'물 끓이기',cost:{dirtyWater:1,wood:1},desc:'강물 1 → 안전한 식수 1'},
+  {id:'cook',name:'고기 굽기',cost:{rawMeat:1,wood:1},desc:'생고기 1 → 익힌고기 1'}
+];
+function costText(cost){const nm={wood:'나무',stone:'돌',fiber:'섬유',dirtyWater:'강물',rawMeat:'생고기'};return Object.entries(cost).map(([k,v])=>`${nm[k]||k} ${v}`).join(' · ')}
+function canPay(cost){return Object.entries(cost).every(([k,v])=>(S.inv[k]||0)>=v)}
+function pay(cost){for(const [k,v] of Object.entries(cost))S.inv[k]-=v}
+function craft(id){
+  const r=recipes.find(x=>x.id===id);if(!r)return;
+  if(['boil','cook'].includes(id)&&!S.camp.fire){showNotice('불이 켜진 모닥불이 필요해');return}
+  if(id==='shelter1'&&S.camp.shelter>=1){showNotice('간이 쉼터는 이미 있어');return}
+  if(id==='shelter2'&&S.camp.shelter<1){showNotice('간이 쉼터부터 만들어');return}
+  if(id==='shelter2'&&S.camp.shelter>=2){showNotice('튼튼한 쉼터가 이미 있어');return}
+  if(id==='knife'&&S.gear.knife||id==='axe'&&S.gear.axe||id==='spear'&&S.gear.spear){showNotice('이미 만든 도구야');return}
+  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
+  pay(r.cost);
+  if(id==='knife')S.gear.knife=true;
+  if(id==='axe')S.gear.axe=true;
+  if(id==='spear')S.gear.spear=true;
+  if(id==='fire'){S.camp.fire=true;S.camp.fireFuel+=8;S.camp.x=S.player.x;S.camp.y=S.player.y}
+  if(id==='shelter1'){S.camp.shelter=1;S.camp.x=S.player.x;S.camp.y=S.player.y}
+  if(id==='shelter2')S.camp.shelter=2;
+  if(id==='boil')S.inv.cleanWater++;
+  if(id==='cook')S.inv.cookedMeat++;
+  showNotice(`${r.name} 완료`);renderCraft();save();
+}
+function renderCraft(){
+  document.getElementById('recipes').innerHTML=recipes.map(r=>`<button class="recipe" data-id="${r.id}"><div><b>${r.name}</b><small>${r.desc}</small></div><span>${costText(r.cost)}</span></button>`).join('');
+  document.querySelectorAll('.recipe').forEach(b=>b.onclick=()=>craft(b.dataset.id));
+  document.getElementById('inventory').innerHTML=inventoryText();
+}
+
+// 상호작용
+function nearestResource(max=74){
+  let best=null,bd=max;
+  for(const r of resources){if(r.amount<=0)continue;const d=dist(S.player.x,S.player.y,r.x,r.y);if(d<bd){bd=d;best=r}}
+  return best;
+}
+function nearRiver(){return Math.abs(S.player.y-(WORLD.riverY+WORLD.riverH/2))<WORLD.riverH/2+55}
+function interact(){
+  if(!S.started||S.dead)return;
+  if(nearRiver()){S.inv.dirtyWater=Math.min(6,S.inv.dirtyWater+1);showNotice('강물 1 채움 · 마시기 전에 끓이는 게 안전해');return}
+  const r=nearestResource();
+  if(!r){showNotice('채집할 것이 가까이 없어');return}
+  if(r.type==='tree'){const n=S.gear.axe?3:1;S.inv.wood+=Math.min(n,r.amount);r.amount-=n;showNotice(`나무 +${n}`)}
+  if(r.type==='stone'){const n=S.gear.knife?2:1;S.inv.stone+=Math.min(n,r.amount);r.amount-=n;showNotice(`돌 +${n}`)}
+  if(r.type==='fiber'){const n=S.gear.knife?2:1;S.inv.fiber+=Math.min(n,r.amount);r.amount-=n;showNotice(`섬유 +${n}`)}
+  if(r.type==='berry'){const n=Math.min(2,r.amount);S.inv.berries+=n;r.amount-=n;showNotice(`야생 열매 +${n}`)}
+  if(r.amount<=0)r.respawn=180;
+  S.score+=2;
+}
+function eat(){
+  if(S.inv.cleanWater>0&&S.player.thirst<58){S.inv.cleanWater--;S.player.thirst=clamp(S.player.thirst+42,0,100);showNotice('끓인 물을 마셨다');return}
+  if(S.inv.cookedMeat>0){S.inv.cookedMeat--;S.player.hunger=clamp(S.player.hunger+46,0,100);S.player.hp=clamp(S.player.hp+6,0,100);showNotice('익힌 고기를 먹었다');return}
+  if(S.inv.berries>0){S.inv.berries--;S.player.hunger=clamp(S.player.hunger+15,0,100);S.player.thirst=clamp(S.player.thirst+5,0,100);showNotice('야생 열매를 먹었다');return}
+  if(S.inv.dirtyWater>0){S.inv.dirtyWater--;S.player.thirst=clamp(S.player.thirst+30,0,100);if(Math.random()<.32){S.player.ill=clamp(S.player.ill+32,0,100);showNotice('강물을 그대로 마셔 배가 아프다')}else showNotice('강물을 마셨다 · 위험한 선택이야');return}
+  if(S.inv.rawMeat>0){S.inv.rawMeat--;S.player.hunger=clamp(S.player.hunger+18,0,100);if(Math.random()<.45){S.player.ill=clamp(S.player.ill+42,0,100);showNotice('생고기로 몸 상태가 나빠졌다')}else showNotice('생고기를 먹었다');return}
+  showNotice('먹거나 마실 것이 없어');
+}
+function attack(){
+  if(!S.started||S.dead)return;
+  const p=S.player,range=S.gear.spear?92:54,damage=S.gear.spear?34:S.gear.knife?19:9;
+  p.attackAt=performance.now();
+  let best=null,bd=range;
+  for(const a of animals){if(a.dead>0)continue;const d=dist(p.x,p.y,a.x,a.y);if(d<bd){bd=d;best=a}}
+  if(!best){showNotice('공격 범위에 동물이 없어');return}
+  best.hp-=damage;best.alert=7;
+  if(best.hp<=0){
+    best.dead=70;const meat=best.type==='rabbit'?1:best.type==='deer'?4:3;
+    if(S.gear.knife){S.inv.rawMeat+=meat;showNotice(`${best.type==='rabbit'?'토끼':best.type==='deer'?'사슴':'멧돼지'} 사냥 · 생고기 +${meat}`)}
+    else{S.inv.rawMeat+=Math.max(1,meat-1);showNotice('도축 도구가 없어 고기를 일부만 얻었다')}
+    S.score+=15;
+  }else showNotice('동물을 공격했다');
+}
+function rest(){
+  if(!S.started||S.dead)return;
+  const p=S.player,nearCamp=S.camp.shelter>0&&dist(p.x,p.y,S.camp.x,S.camp.y)<150;
+  if(!nearCamp&&S.time>19*60){showNotice('밤에는 쉼터 근처에서 쉬는 게 안전해')}
+  p.energy=clamp(p.energy+(nearCamp?30:16),0,100);
+  p.hp=clamp(p.hp+(nearCamp?5:1),0,100);
+  S.time+=45;
+  showNotice(nearCamp?'쉼터에서 휴식했다':'잠깐 쉬었다');
+}
+
+// 현실 상태 시뮬레이션
+function chooseWeather(){
+  const r=Math.random();S.weather=r<.5?'clear':r<.7?'cloud':r<.94?'rain':'storm';
+  S.weatherTimer=rand(95,190);
+}
+function worldMinute(dt){
+  const p=S.player;
+  S.time+=dt*5.4;
+  if(S.time>=24*60){S.time-=24*60;S.day++;chooseWeather();save()}
+  const hour=S.time/60;
+  const daylight=Math.max(0,Math.sin((hour-6)/24*Math.PI*2));
+  const baseTemp=9+10*daylight+(S.weather==='rain'?-3:S.weather==='storm'?-5:S.weather==='cloud'?-1:0);
+  S.ambient=baseTemp;
+  p.hunger-=dt*.085;p.thirst-=dt*.13;p.energy-=dt*.055;
+  if(S.weather==='rain'||S.weather==='storm')p.wet=clamp(p.wet+dt*(S.camp.shelter&&dist(p.x,p.y,S.camp.x,S.camp.y)<140?.3:2.4),0,100);
+  else p.wet=clamp(p.wet-dt*.7,0,100);
+  const nearFire=S.camp.fire&&dist(p.x,p.y,S.camp.x,S.camp.y)<150;
+  if(S.camp.fire){S.camp.fireFuel-=dt*.055;if(S.camp.fireFuel<=0){S.camp.fire=false;showNotice('모닥불이 꺼졌다')}}
+  let target=37;
+  if(baseTemp<10)target-=.35;if(baseTemp<5)target-=.55;if(p.wet>50)target-=.45;
+  if(nearFire)target=37.2;
+  if(S.camp.shelter&&dist(p.x,p.y,S.camp.x,S.camp.y)<150)target+=S.camp.shelter*.12;
+  p.temp+=(target-p.temp)*dt*.035;
+  if(p.ill>0){p.ill=clamp(p.ill-dt*.08,0,100);p.energy-=dt*.05}
+  if(p.bleed>0){p.bleed=clamp(p.bleed-dt*.12,0,100);p.hp-=dt*.1}
+  let damage=0;
+  if(p.hunger<=0)damage+=.18;if(p.thirst<=0)damage+=.45;if(p.temp<35.2)damage+=.34;if(p.ill>65)damage+=.16;
+  p.hp-=damage*dt*10;
+  p.hunger=clamp(p.hunger,0,100);p.thirst=clamp(p.thirst,0,100);p.energy=clamp(p.energy,0,100);p.hp=clamp(p.hp,0,100);
+  S.weatherTimer-=dt;if(S.weatherTimer<=0)chooseWeather();
+  if(S.day>=7&&S.camp.shelter>=2&&!S.survivedGoal){S.survivedGoal=true;S.won=true;showNotice('7일 생존 목표 달성! 계속 살아남을 수 있어');save()}
+  if(p.hp<=0)die();
+}
+function die(){
+  if(S.dead)return;S.dead=true;S.started=false;save();
+  document.getElementById('endTitle').textContent='생존 실패';
+  document.getElementById('endText').textContent=`${S.day}일차까지 생존했어. 물·체온·부상과 야생동물 위험을 다시 관리해봐.`;
+  document.getElementById('death').classList.remove('hide');
+}
+
+// 동물 AI
+function updateAnimals(dt){
+  const p=S.player;
+  for(const a of animals){
+    if(a.dead>0){a.dead-=dt;if(a.dead<=0){a.hp=a.maxHp;a.x=rand(250,WORLD.w-250);a.y=rand(220,WORLD.h-220);a.alert=0}continue}
+    const d=dist(a.x,a.y,p.x,p.y);a.wander-=dt;a.alert=Math.max(0,a.alert-dt);
+    let tx=a.vx,ty=a.vy,spd=a.speed*.42;
+    if(a.type==='rabbit'||a.type==='deer'){
+      if(d<(a.type==='rabbit'?220:300)){tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed}
+    }else if(a.type==='boar'){
+      const threatened=a.alert>0||d<85;
+      if(threatened&&d<330){tx=(p.x-a.x)/(d||1);ty=(p.y-a.y)/(d||1);spd=a.speed*1.18;
+        if(d<40&&performance.now()-a.attackAt>1200){a.attackAt=performance.now();p.hp-=14;p.bleed=clamp(p.bleed+18,0,100);showNotice('멧돼지에게 들이받혀 출혈이 생겼다')}}
+      else if(d<180){tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed*.55}
+    }
+    if(a.wander<=0&&!(d<300)){a.wander=rand(1.5,4);const ang=rand(0,Math.PI*2);a.vx=Math.cos(ang);a.vy=Math.sin(ang)}
+    a.x=clamp(a.x+tx*spd*dt,35,WORLD.w-35);a.y=clamp(a.y+ty*spd*dt,35,WORLD.h-35);
+  }
+}
+
+// 이동
+function updatePlayer(dt){
+  const p=S.player;
+  let x=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;
+  let y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
+  const m=Math.hypot(x,y);
+  if(m>.06){
+    x/=Math.max(1,m);y/=Math.max(1,m);p.faceX=x;p.faceY=y;
+    const speed=(p.energy<18?92:145)*(p.wet>75?.86:1);
+    p.x=clamp(p.x+x*speed*dt,22,WORLD.w-22);p.y=clamp(p.y+y*speed*dt,22,WORLD.h-22);
+    p.energy=clamp(p.energy-dt*.13,0,100);
+  }
+}
+function respawnResources(dt){
+  for(const r of resources){if(r.amount<=0&&r.respawn>0){r.respawn-=dt;if(r.respawn<=0)r.amount=r.type==='tree'?5:3}}
+}
+
+// 그래픽
+function resize(){canvas.width=Math.floor(innerWidth*devicePixelRatio);canvas.height=Math.floor(innerHeight*devicePixelRatio);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+addEventListener('resize',resize);resize();
+function tree(x,y){ctx.fillStyle='#33432c';ctx.fillRect(x-5,y,10,25);ctx.fillStyle='#314f2d';ctx.beginPath();ctx.arc(x,y-6,19,0,Math.PI*2);ctx.fill();ctx.fillStyle='#45643b';ctx.beginPath();ctx.arc(x-10,y-12,12,0,Math.PI*2);ctx.arc(x+11,y-11,13,0,Math.PI*2);ctx.fill()}
+function drawAnimal(a,x,y){
+  const c={rabbit:'#b9ae99',deer:'#9a6e48',boar:'#4e3d31'}[a.type];
+  ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,a.r,a.r*.68,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(x+a.r*.7,y-4,a.r*.42,0,Math.PI*2);ctx.fill();
+  if(a.type==='deer'){ctx.strokeStyle='#d3ba88';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+a.r*.8,y-a.r*.4);ctx.lineTo(x+a.r*.9,y-a.r);ctx.moveTo(x+a.r*.9,y-a.r*.7);ctx.lineTo(x+a.r*1.2,y-a.r);ctx.stroke()}
+}
+function draw(){
+  const w=innerWidth,h=innerHeight,p=S.player,camX=clamp(p.x-w/2,0,WORLD.w-w),camY=clamp(p.y-h/2,0,WORLD.h-h);
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#657c54';ctx.fillRect(0,0,w,h);
+  ctx.save();ctx.translate(-camX,-camY);
+  ctx.fillStyle='#79825e';ctx.fillRect(0,WORLD.riverY-420,WORLD.w,360);
+  ctx.fillStyle='#52718a';ctx.fillRect(0,WORLD.riverY,WORLD.w,WORLD.riverH);
+  ctx.fillStyle='#a8a17a';ctx.fillRect(0,WORLD.riverY-18,WORLD.w,18);ctx.fillRect(0,WORLD.riverY+WORLD.riverH,WORLD.w,18);
+  ctx.fillStyle='#777867';ctx.beginPath();ctx.ellipse(2850,420,470,260,0,0,Math.PI*2);ctx.fill();
+  for(const r of resources){
+    if(r.amount<=0)continue;
+    if(r.x<camX-50||r.x>camX+w+50||r.y<camY-50||r.y>camY+h+50)continue;
+    if(r.type==='tree')tree(r.x,r.y);
+    if(r.type==='stone'){ctx.fillStyle='#70756e';ctx.beginPath();ctx.ellipse(r.x,r.y,16,11,-.3,0,Math.PI*2);ctx.fill()}
+    if(r.type==='fiber'){ctx.strokeStyle='#b4b26c';ctx.lineWidth=3;for(let n=-2;n<=2;n++){ctx.beginPath();ctx.moveTo(r.x+n*3,r.y+12);ctx.lineTo(r.x+n*4,r.y-10);ctx.stroke()}}
+    if(r.type==='berry'){ctx.fillStyle='#355b36';ctx.beginPath();ctx.arc(r.x,r.y,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8b3040';for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(r.x-7+n*5,r.y-2+(n%2)*6,2.5,0,Math.PI*2);ctx.fill()}}
+  }
+  if(S.camp.shelter>0){
+    ctx.fillStyle=S.camp.shelter===2?'#5a4936':'#6c5d43';ctx.beginPath();ctx.moveTo(S.camp.x-42,S.camp.y+26);ctx.lineTo(S.camp.x,S.camp.y-34);ctx.lineTo(S.camp.x+42,S.camp.y+26);ctx.closePath();ctx.fill();
+  }
+  if(S.camp.fire){
+    ctx.strokeStyle='#4e3c2d';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(S.camp.x-13,S.camp.y+10);ctx.lineTo(S.camp.x+13,S.camp.y-7);ctx.moveTo(S.camp.x+13,S.camp.y+10);ctx.lineTo(S.camp.x-13,S.camp.y-7);ctx.stroke();
+    ctx.fillStyle='#e7a647';ctx.beginPath();ctx.arc(S.camp.x,S.camp.y-8,10,0,Math.PI*2);ctx.fill();
+  }
+  for(const a of animals){if(a.dead>0)continue;if(a.x<camX-70||a.x>camX+w+70||a.y<camY-70||a.y>camY+h+70)continue;drawAnimal(a,a.x,a.y)}
+  ctx.fillStyle='#20271f';ctx.beginPath();ctx.arc(p.x,p.y,14,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#d3b18b';ctx.beginPath();ctx.arc(p.x,p.y-14,8,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#eee6ce';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.faceX*21,p.y+p.faceY*21);ctx.stroke();
+  if(performance.now()-p.attackAt<180){ctx.strokeStyle='#e3d6b0';ctx.lineWidth=4;ctx.beginPath();ctx.arc(p.x,p.y,S.gear.spear?70:42,-.6,.6);ctx.stroke()}
+  ctx.restore();
+  const hour=S.time/60,night=hour<6?(.75-hour/8):hour>19?Math.min(.68,(hour-19)/6):0;
+  if(night>0){ctx.fillStyle=`rgba(5,12,18,${night})`;ctx.fillRect(0,0,w,h)}
+  if(S.weather==='rain'||S.weather==='storm'){ctx.strokeStyle=S.weather==='storm'?'#cbd5df88':'#cbd5df55';ctx.lineWidth=1;const count=S.weather==='storm'?90:45;for(let i=0;i<count;i++){const x=(i*71+performance.now()*.15)%w,y=(i*113+performance.now()*.34)%h;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-7,y+16);ctx.stroke()}}
+}
+
+// 루프
+function loop(now){
+  const dt=Math.min(.04,(now-last)/1000||0);last=now;
+  if(S.started&&!S.dead){
+    updatePlayer(dt);updateAnimals(dt);worldMinute(dt);respawnResources(dt);
+    if(noticeTimer>0){noticeTimer-=dt;if(noticeTimer<=0)notice.classList.remove('on')}
+    if(now-S.lastSave>10000){S.lastSave=now;save()}
+  }
+  draw();updateHud();requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// 입력
+addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' ')attack();if(e.key.toLowerCase()==='e')interact()});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+const stick=document.getElementById('stick'),knob=document.getElementById('knob');
+function moveJoy(clientX,clientY){
+  const r=stick.getBoundingClientRect();let x=clientX-(r.left+r.width/2),y=clientY-(r.top+r.height/2),d=Math.hypot(x,y),m=r.width*.31;
+  if(d>m){x=x/d*m;y=y/d*m}joy.x=x/m;joy.y=y/m;knob.style.transform=`translate(${x}px,${y}px)`;
+}
+stick.addEventListener('pointerdown',e=>{joy.id=e.pointerId;stick.setPointerCapture(e.pointerId);moveJoy(e.clientX,e.clientY)});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)moveJoy(e.clientX,e.clientY)});
+function endJoy(e){if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;knob.style.transform=''}}
+stick.addEventListener('pointerup',endJoy);stick.addEventListener('pointercancel',endJoy);
+document.getElementById('interact').onclick=interact;
+document.getElementById('attack').onclick=attack;
+document.getElementById('eat').onclick=eat;
+document.getElementById('rest').onclick=rest;
+document.getElementById('menuBtn').onclick=()=>{document.getElementById('craft').classList.add('open');renderCraft()};
+document.getElementById('closeCraft').onclick=()=>document.getElementById('craft').classList.remove('open');
+document.getElementById('begin').onclick=()=>{S.started=true;document.getElementById('start').classList.add('hide');showNotice('물과 쉼터부터 확보해')};
+document.getElementById('restart').onclick=reset;
+if(S.inv.wood+S.inv.stone+S.inv.fiber+S.day>1)document.querySelector('#start p').textContent='저장된 생존 기록이 있어. 이어서 시작할 수 있어.';
+})();
+</script>
+</body>
+</html>
