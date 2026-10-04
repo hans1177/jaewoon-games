@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "packId": "roblox-common-motion-v1",
   "family": "MOTION",
   "platform": "ROBLOX",
@@ -363,6 +363,195 @@
       "source": "RobloxCommonMotion.luau",
       "motionRole": "BLEND",
       "productionVerified": false
+    },
+    {
+      "atomId": "SIT_DOWN",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.75,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SIT_DOWN",
+      "productionVerified": false
+    },
+    {
+      "atomId": "STAND_UP",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "STAND_UP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LEAN_WALL_IDLE",
+      "priority": "Idle",
+      "looped": true,
+      "duration": 1.8,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LEAN",
+      "productionVerified": false
+    },
+    {
+      "atomId": "OPEN_DOOR",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.75,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "OPEN_DOOR",
+      "productionVerified": false
+    },
+    {
+      "atomId": "OPEN_CONTAINER",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.68,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "OPEN_CONTAINER",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PICKUP_GROUND",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PICKUP",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PLACE_GROUND",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.72,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PLACE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PUSH_OBJECT",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PUSH",
+      "productionVerified": false
+    },
+    {
+      "atomId": "PULL_OBJECT",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.2,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "PULL",
+      "productionVerified": false
+    },
+    {
+      "atomId": "TALK_GESTURE",
+      "priority": "Action",
+      "looped": false,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "TALK_GESTURE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "NPC_WORK_LOOP",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.4,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "NPC_WORK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "COOK_LOOP",
+      "priority": "Action",
+      "looped": true,
+      "duration": 1.3,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "COOK",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FARM_TEND",
+      "priority": "Action2",
+      "looped": true,
+      "duration": 1.15,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "FARM",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FISH_CAST",
+      "priority": "Action2",
+      "looped": false,
+      "duration": 1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "FISH",
+      "productionVerified": false
+    },
+    {
+      "atomId": "BED_LIE_DOWN",
+      "priority": "Action",
+      "looped": false,
+      "duration": 1.1,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "BED",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LADDER_ENTER",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.6,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LADDER_ENTER",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LADDER_EXIT",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.65,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "LADDER_EXIT",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SLOPE_ASCEND",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.9,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SLOPE_ASCEND",
+      "productionVerified": false
+    },
+    {
+      "atomId": "SLOPE_DESCEND",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.9,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "SLOPE_DESCEND",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FATIGUED_IDLE",
+      "priority": "Idle",
+      "looped": true,
+      "duration": 1.8,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "FATIGUE",
+      "productionVerified": false
+    },
+    {
+      "atomId": "INJURED_WALK",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1.15,
+      "source": "RobloxCommonMotion.luau",
+      "motionRole": "INJURY",
+      "productionVerified": false
     }
   ],
   "systemDepthContract": {
@@ -404,7 +593,22 @@
       "DEATH",
       "EMOTE",
       "BLEND",
-      "MOTION_LOD"
+      "MOTION_LOD",
+      "SIT_STAND",
+      "LEAN",
+      "OPEN_CLOSE",
+      "PICK_PLACE",
+      "PUSH_PULL",
+      "DIALOGUE_GESTURE",
+      "NPC_WORK",
+      "COOK",
+      "FARM",
+      "FISH",
+      "BED",
+      "LADDER_ENTRY_EXIT",
+      "SLOPE",
+      "FATIGUE",
+      "INJURY"
     ],
     "currentDeclaredComponents": [
       "IDLE_RELAXED",
@@ -447,9 +651,30 @@
       "CHANNEL_LOOP",
       "HIT_BACK",
       "BLEND_NEUTRAL",
-      "MOTION_LOD"
+      "MOTION_LOD",
+      "SIT_DOWN",
+      "STAND_UP",
+      "LEAN_WALL_IDLE",
+      "OPEN_DOOR",
+      "OPEN_CONTAINER",
+      "PICKUP_GROUND",
+      "PLACE_GROUND",
+      "PUSH_OBJECT",
+      "PULL_OBJECT",
+      "TALK_GESTURE",
+      "NPC_WORK_LOOP",
+      "COOK_LOOP",
+      "FARM_TEND",
+      "FISH_CAST",
+      "BED_LIE_DOWN",
+      "LADDER_ENTER",
+      "LADDER_EXIT",
+      "SLOPE_ASCEND",
+      "SLOPE_DESCEND",
+      "FATIGUED_IDLE",
+      "INJURED_WALK"
     ],
-    "currentAssetCount": 40,
+    "currentAssetCount": 61,
     "missingComponentCandidates": [],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
@@ -494,7 +719,7 @@
     "networkAuthority": false
   },
   "motionVarietyContract": {
-    "version": 1,
+    "version": 2,
     "groups": {
       "locomotion": [
         "IDLE_RELAXED",
@@ -514,7 +739,11 @@
         "SWIM_FORWARD",
         "DODGE_LEFT",
         "DODGE_RIGHT",
-        "ROLL_FORWARD"
+        "ROLL_FORWARD",
+        "LADDER_ENTER",
+        "LADDER_EXIT",
+        "SLOPE_ASCEND",
+        "SLOPE_DESCEND"
       ],
       "defense": [
         "BLOCK_RAISE",
@@ -564,11 +793,38 @@
       ],
       "transition": [
         "BLEND_NEUTRAL"
+      ],
+      "dailyLiving": [
+        "SIT_DOWN",
+        "STAND_UP",
+        "LEAN_WALL_IDLE",
+        "OPEN_DOOR",
+        "OPEN_CONTAINER",
+        "PICKUP_GROUND",
+        "PLACE_GROUND",
+        "BED_LIE_DOWN"
+      ],
+      "worldInteraction": [
+        "PUSH_OBJECT",
+        "PULL_OBJECT",
+        "FISH_CAST"
+      ],
+      "npcWork": [
+        "TALK_GESTURE",
+        "NPC_WORK_LOOP",
+        "COOK_LOOP",
+        "FARM_TEND"
+      ],
+      "condition": [
+        "FATIGUED_IDLE",
+        "INJURED_WALK"
       ]
     },
     "rootMotionAuthority": false,
     "gameplayMovementAuthority": false,
-    "combatTimingAuthority": false
+    "combatTimingAuthority": false,
+    "lifeActionAuthority": false,
+    "npcTaskAuthority": false
   },
   "motionLodProfiles": [
     {
