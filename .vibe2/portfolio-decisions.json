@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-04T08:25:42.616Z",
+  "generatedAt": "2026-10-04T08:58:40.803Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -34,15 +34,15 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "daechung-rpg",
+      "gameId": "horror-escape-room",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "evidence": {
         "planningGrowthMarketing": {
-          "packagePresent": true,
-          "joint": "AWAITING_VIBE"
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
           "activeTasks": 10,
@@ -154,15 +154,15 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "horror-escape-room",
+      "gameId": "daechung-rpg",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "evidence": {
         "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
+          "packagePresent": true,
+          "joint": "AWAITING_VIBE"
         },
         "development": {
           "activeTasks": 10,
