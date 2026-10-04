@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "packId": "roblox-common-creature-parts-v1",
+  "title": "Roblox 회사 공용 생물/몬스터 외형 모듈 8종 v1",
+  "platform": "ROBLOX",
+  "family": "CREATURE",
+  "subfamily": "CREATURE_PARTS_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "bodyPlanCompatibilityRequired": true,
+  "automaticCrossGameReuseAllowed": true,
+  "crossGameReuseRequiresCompatibilityPass": true,
+  "gameplayAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "rigBindingState": "AUTHORING_REQUIRED",
+  "intendedConsumerGameIds": [
+    "survival",
+    "monster-adventure",
+    "daechung-rpg",
+    "horror-escape-room",
+    "seed-action-survival-rogu-echoes-of-the-lost-star"
+  ],
+  "complementsExistingCommonSubfamilies": [
+    "HEAD_CANINE",
+    "JAW_LONG",
+    "CLAW"
+  ],
+  "items": [
+    {
+      "assetId": "BIPED_TORSO",
+      "name": "이족형 몸통",
+      "subfamily": "TORSO_BIPED",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_BIPED_TORSO"
+    },
+    {
+      "assetId": "QUADRUPED_TORSO",
+      "name": "사족형 몸통",
+      "subfamily": "TORSO_QUADRUPED",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_QUADRUPED_TORSO"
+    },
+    {
+      "assetId": "INSECT_THORAX",
+      "name": "곤충 흉부",
+      "subfamily": "THORAX_INSECT",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_INSECT_THORAX"
+    },
+    {
+      "assetId": "WING_PAIR",
+      "name": "날개 한 쌍",
+      "subfamily": "WING_PAIR",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_WINGS"
+    },
+    {
+      "assetId": "TAIL_LONG",
+      "name": "긴 꼬리",
+      "subfamily": "TAIL_LONG",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_TAIL"
+    },
+    {
+      "assetId": "HORN_PAIR",
+      "name": "뿔 한 쌍",
+      "subfamily": "HORN_PAIR",
+      "creatureRole": "HEAD_APPENDAGE",
+      "familyRootId": "CREATURE_HORNS"
+    },
+    {
+      "assetId": "SHELL_BACK",
+      "name": "등껍질",
+      "subfamily": "SHELL_BACK",
+      "creatureRole": "BACK_ARMOR_VISUAL",
+      "familyRootId": "CREATURE_SHELL"
+    },
+    {
+      "assetId": "TENTACLE_CLUSTER",
+      "name": "촉수 군락",
+      "subfamily": "TENTACLE_CLUSTER",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_TENTACLE"
+    }
+  ]
+}

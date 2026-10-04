@@ -2385,3 +2385,246 @@ test('generic character gear requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-character-helmet');
 });
+
+
+test('company-common UI v2 preserves old atoms and adds eight reusable components',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-ui-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonUI.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
+  const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
+  assert.equal(catalog.version,2);
+  assert.equal(catalog.atoms.length,11);
+  for(const id of [...oldIds,...newIds]){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
+  }
+
+  assert.ok(source.includes('function RobloxCommonUI.CreateInventorySlot(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateTooltip(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateModal(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateTabButton(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateQuestCard(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
+  assert.ok(source.includes('atomCount = 11'));
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  assert.ok(source.includes('button:SetAttribute("OwnsInventoryAuthority", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsQuestProgress", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsRewardAuthority", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsEconomyAuthority", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsProgressValue", false)'));
+  assert.ok(source.includes('button:SetAttribute("OwnsGameplayAction", false)'));
+  assert.ok(source.includes('button:SetAttribute("OwnsRemoteAuthority", false)'));
+
+  for(const forbidden of [/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/InvokeServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common UI v2 registry exposes eleven unverified reusable atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
+  assert.ok(pack);
+  assert.equal(pack.assetCount,11);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const atoms=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH','INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
+  for(const atomId of atoms){
+    const id='roblox-common-ui-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'UI');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
+  }
+
+  for(const atomId of ['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON']){
+    const id='roblox-common-ui-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.equal(row.bindingHint.preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority,true);
+  }
+});
+
+test('generic inventory UI requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-inventory-slot',family:'UI',subfamily:'INVENTORY_SLOT',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['INVENTORY_SLOT']};
+  const gameOnly={id:'game-only-inventory-slot',family:'UI',subfamily:'INVENTORY_SLOT',platform:'ROBLOX',status:'REPO_ASSET',tags:['INVENTORY_SLOT']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'UI',subfamily:'INVENTORY_SLOT',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-inventory-slot');
+});
+
+
+test('company-common creature parts pack provides eight reusable visual modules',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-creature-parts-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonCreatureParts.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['BIPED_TORSO','QUADRUPED_TORSO','INSECT_THORAX','WING_PAIR','TAIL_LONG','HORN_PAIR','SHELL_BACK','TENTACLE_CLUSTER'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  const materials=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
+  const allowed=new Set(['SmoothPlastic','Plastic','Neon','Wood','WoodPlanks','Marble','Slate','Concrete','Granite','Brick','Pebble','Cobblestone','CorrodedMetal','DiamondPlate','Foil','Metal','Grass','Sand','Fabric','Ice','Glacier','Snow','Sandstone','Mud','Ground','CrackedLava','Basalt','Asphalt','Salt','Limestone','Pavement','Air','Water','Glass','Rock']);
+  assert.equal(materials.length>0,true);
+  assert.equal(materials.every(value=>allowed.has(value)),true);
+
+  assert.ok(source.includes('function RobloxCommonCreatureParts.Create(id,options)'));
+  assert.ok(source.includes('function RobloxCommonCreatureParts.CreateViewport(id,options)'));
+  assert.ok(source.includes('anchor.Name="CreatureVisualAnchor"'));
+  assert.ok(source.includes('BodyPlanCompatibilityRequired",true'));
+  assert.ok(source.includes('RigBindingState","AUTHORING_REQUIRED"'));
+  assert.equal(catalog.family,'CREATURE');
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.bodyPlanCompatibilityRequired,true);
+  assert.equal(catalog.rigBindingState,'AUTHORING_REQUIRED');
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.staticAuthoringChecklist.checks.validRobloxMaterialEnums,true);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bHealth\s*=/,/\bMoveSpeed\s*=/,/\bHitbox\s*=/,/\bDropRate\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common creature registry preserves gameplay and rig verification authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-creature-parts-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.family,'CREATURE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.rigBindingState,'AUTHORING_REQUIRED');
+  assert.equal(pack.bodyPlanCompatibilityRequired,true);
+
+  const expected=[
+    ['BIPED_TORSO','TORSO_BIPED','BODY_CORE'],
+    ['QUADRUPED_TORSO','TORSO_QUADRUPED','BODY_CORE'],
+    ['INSECT_THORAX','THORAX_INSECT','BODY_CORE'],
+    ['WING_PAIR','WING_PAIR','APPENDAGE'],
+    ['TAIL_LONG','TAIL_LONG','APPENDAGE'],
+    ['HORN_PAIR','HORN_PAIR','HEAD_APPENDAGE'],
+    ['SHELL_BACK','SHELL_BACK','BACK_ARMOR_VISUAL'],
+    ['TENTACLE_CLUSTER','TENTACLE_CLUSTER','APPENDAGE']
+  ];
+  for(const [assetId,subfamily,creatureRole] of expected){
+    const id='roblox-common-creature-part-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'CREATURE');
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.creatureRole,creatureRole);
+    assert.equal(row.bodyPlanCompatibilityRequired,true);
+    assert.equal(row.rigBindingState,'AUTHORING_REQUIRED');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
+
+test('generic creature torso requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-biped-torso',family:'CREATURE',subfamily:'TORSO_BIPED',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['BODY_CORE']};
+  const gameOnly={id:'game-only-biped-torso',family:'CREATURE',subfamily:'TORSO_BIPED',platform:'ROBLOX',status:'REPO_ASSET',tags:['BODY_CORE']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'CREATURE',subfamily:'TORSO_BIPED',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-biped-torso');
+});
+
+test('company-common materials v3 preserves old atoms and expands to eleven',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-materials-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonMaterials.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const atoms=['WOOD','STONE','METAL','GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.atoms.length,11);
+  for(const atomId of atoms){
+    assert.ok(source.includes(atomId),atomId);
+    assert.ok(catalog.atoms.some(row=>row.atomId===atomId),atomId+':catalog');
+  }
+
+  const materialRefs=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
+  const allowed=new Set(['WoodPlanks','Slate','Limestone','Rock','Metal','DiamondPlate','Glass','Fabric','Ground','Mud','Sand','Neon','Brick','Ice','Glacier','Snow','Asphalt','Pavement']);
+  assert.equal(materialRefs.length>0,true);
+  assert.equal(materialRefs.every(value=>allowed.has(value)),true);
+
+  assert.ok(source.includes('atomCount = 11'));
+  assert.ok(source.includes('part.CustomPhysicalProperties = physicalBefore'));
+  assert.equal(/\.(CanCollide|CanTouch|CanQuery)\s*=/.test(source),false);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+});
+
+test('company-common material v3 registry exposes eleven unverified reusable atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
+  assert.ok(pack);
+  assert.equal(pack.assetCount,11);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT'];
+  for(const atomId of added){
+    const id='roblox-common-material-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'MATERIAL');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
+    assert.equal(row.bindingHint.preservePhysicalCollisionTouchQueryGameplaySaveAndNetworkAuthority,true);
+  }
+});
+
+test('generic material requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-glass',family:'MATERIAL',subfamily:'GLASS',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['GLASS']};
+  const gameOnly={id:'game-only-glass',family:'MATERIAL',subfamily:'GLASS',platform:'ROBLOX',status:'REPO_ASSET',tags:['GLASS']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'MATERIAL',subfamily:'GLASS',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-glass');
+});
