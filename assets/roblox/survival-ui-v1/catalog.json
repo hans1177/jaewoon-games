@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "packId": "roblox-survival-ui-v1",
+  "targetGameId": "survival",
+  "sourceOfTruth": "roblox-games/survival/shared/GameConfig.luau#StudioAssets.Families.UI",
+  "license": "project-original",
+  "family": "UI",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "touchFirst": true,
+  "gameplayAuthority": false,
+  "atoms": [
+    {
+      "atomId": "FRAME_PANEL",
+      "source": "SurvivalUIAssets.luau",
+      "factory": "CreatePanel",
+      "role": "SURVIVAL_READABLE_PANEL"
+    },
+    {
+      "atomId": "BUTTON_PRIMARY",
+      "source": "SurvivalUIAssets.luau",
+      "factory": "CreatePrimaryButton",
+      "role": "PRIMARY_TOUCH_ACTION"
+    },
+    {
+      "atomId": "BAR_HEALTH",
+      "source": "SurvivalUIAssets.luau",
+      "factory": "CreateHealthBar",
+      "role": "HEALTH_STATUS_READOUT"
+    }
+  ]
+}
