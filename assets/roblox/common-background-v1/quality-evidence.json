@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "packId": "roblox-common-background-v1",
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "axes": {
+      "IDENTITY_SILHOUETTE": 94,
+      "FORM_STRUCTURE": 95,
+      "MATERIAL_SURFACE": 90,
+      "COLOR_LIGHTING": 98,
+      "STYLE_COHERENCE": 97,
+      "DETAIL_FINISH": 94,
+      "READABILITY_SCALE": 97,
+      "MOTION_RIG": 88,
+      "FEEDBACK_STATES": 90,
+      "MODULAR_REUSE": 99,
+      "VARIATION_BREADTH": 99,
+      "PERFORMANCE_LOD": 98,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 98
+    }
+  },
+  "checks": {
+    "layerCountMinimum": 6,
+    "profileCountMinimum": 12,
+    "landmarkPerProfile": true,
+    "foregroundMidgroundBackgroundRequired": true,
+    "fogOrLightDepthCueRequired": true,
+    "reducedMotionCompatible": true,
+    "gameplayAuthority": false,
+    "worldGeometryAuthority": false,
+    "paletteOnlyDistinctProfileForbidden": true
+  },
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO"
+}
