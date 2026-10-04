@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-motion-v1/RobloxCommonMotion.luau
--- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 11종
+-- 역할: 모든 Roblox R15 게임에서 재사용 가능한 회사 공용 관절 모션 원본 16종
 -- 원칙: 관절 포즈만 소유한다. Humanoid 이동속도/위치/루트모션/데미지/게임플레이 권한은 소유하지 않는다.
 
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
@@ -18,6 +18,11 @@ local MOTION = table.freeze({
 	LAND = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.48, mode = "LAND"}),
 	HIT_FRONT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action, duration = 0.52, mode = "HIT"}),
 	DEATH_FRONT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action4, duration = 1.65, mode = "DEATH"}),
+	BLOCK_RAISE = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.24, mode = "BLOCK_RAISE"}),
+	BLOCK_HOLD = table.freeze({looped = true, priority = Enum.AnimationPriority.Action2, duration = 1.10, mode = "BLOCK_HOLD"}),
+	PARRY_PERFECT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.32, mode = "PARRY"}),
+	GUARD_BREAK = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.70, mode = "GUARD_BREAK"}),
+	COUNTER_READY = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.42, mode = "COUNTER_READY"}),
 })
 
 local HIERARCHY = table.freeze({
@@ -342,6 +347,99 @@ local function makeDeath(sequence, row)
 	}, "Down")
 end
 
+
+local function makeBlockRaise(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(-2,0,0),UpperTorso=angles(1,0,0),
+		LeftUpperArm=angles(-8,-8,-6),RightUpperArm=angles(-8,8,6),
+	},"Ready")
+	addFrame(sequence,row.duration*0.55,{
+		LowerTorso=angles(4,0,0),UpperTorso=angles(-5,0,0),
+		LeftUpperArm=angles(-48,-18,-26),LeftLowerArm=angles(-72,0,-12),
+		RightUpperArm=angles(-42,16,24),RightLowerArm=angles(-68,0,10),
+		Head=angles(-3,0,0),
+	},"GuardUp")
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(3,0,0),UpperTorso=angles(-4,0,0),
+		LeftUpperArm=angles(-44,-15,-24),LeftLowerArm=angles(-70,0,-10),
+		RightUpperArm=angles(-40,14,22),RightLowerArm=angles(-66,0,10),
+	},"GuardSet")
+end
+
+local function makeBlockHold(sequence,row)
+	for i=0,4 do
+		local t=row.duration*i/4
+		local breathe=math.sin(i*math.pi/2)
+		addFrame(sequence,t,{
+			LowerTorso=angles(3+breathe*0.6,0,0),UpperTorso=angles(-4-breathe*0.5,0,0),
+			Head=angles(-2+breathe*0.3,0,0),
+			LeftUpperArm=angles(-44,-15,-24),LeftLowerArm=angles(-70+breathe*1.5,0,-10),
+			RightUpperArm=angles(-40,14,22),RightLowerArm=angles(-66-breathe*1.5,0,10),
+			LeftUpperLeg=angles(-4,0,-2),RightUpperLeg=angles(6,0,2),
+		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+	end
+end
+
+local function makeParry(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(3,0,0),UpperTorso=angles(-4,0,0),
+		LeftUpperArm=angles(-44,-15,-24),LeftLowerArm=angles(-70,0,-10),
+		RightUpperArm=angles(-40,14,22),RightLowerArm=angles(-66,0,10),
+	},"Guard")
+	addFrame(sequence,row.duration*0.28,{
+		LowerTorso=angles(-6,-4,-3),UpperTorso=angles(8,7,6),Head=angles(-4,8,-2),
+		LeftUpperArm=angles(-22,-32,-38),LeftLowerArm=angles(-40,0,-20),
+		RightUpperArm=angles(-16,34,42),RightLowerArm=angles(-36,0,20),
+		LeftUpperLeg=angles(-9,-3,-3),RightUpperLeg=angles(12,4,4),
+	},"PerfectContact")
+	addFrame(sequence,row.duration*0.62,{
+		LowerTorso=angles(2,3,2),UpperTorso=angles(-2,-4,-2),
+		LeftUpperArm=angles(-34,-20,-28),LeftLowerArm=angles(-58,0,-14),
+		RightUpperArm=angles(-30,18,27),RightLowerArm=angles(-56,0,13),
+	},"Recenter")
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(0,0,0),UpperTorso=angles(0,0,0),
+		LeftUpperArm=angles(-8,-4,-4),RightUpperArm=angles(-8,4,4),
+	},"Ready")
+end
+
+local function makeGuardBreak(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(3,0,0),UpperTorso=angles(-4,0,0),
+		LeftUpperArm=angles(-44,-15,-24),RightUpperArm=angles(-40,14,22),
+	},"Guard")
+	addFrame(sequence,row.duration*0.25,{
+		LowerTorso=angles(16,0,10),UpperTorso=angles(25,-7,14),Head=angles(13,-9,-8),
+		LeftUpperArm=angles(20,-8,-44),RightUpperArm=angles(28,8,48),
+		LeftUpperLeg=angles(-16,0,-5),RightUpperLeg=angles(22,0,5),
+	},"Break")
+	addFrame(sequence,row.duration*0.65,{
+		LowerTorso=angles(10,0,6),UpperTorso=angles(12,-3,8),
+		LeftUpperArm=angles(6,-4,-22),RightUpperArm=angles(10,4,25),
+		LeftLowerLeg=angles(18,0,0),
+	},"Stagger")
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(2,0,0),UpperTorso=angles(1,0,0),
+		LeftUpperArm=angles(-6,0,-5),RightUpperArm=angles(-6,0,5),
+	},"Recover")
+end
+
+local function makeCounterReady(sequence,row)
+	addFrame(sequence,0,{
+		LowerTorso=angles(-4,-2,0),UpperTorso=angles(6,4,0),
+		LeftUpperArm=angles(-28,-12,-18),RightUpperArm=angles(18,12,14),
+		LeftUpperLeg=angles(-10,0,-3),RightUpperLeg=angles(14,0,3),
+	},"WindowOpen")
+	addFrame(sequence,row.duration*0.55,{
+		LowerTorso=angles(-7,4,-2),UpperTorso=angles(9,-5,3),Head=angles(-2,-6,0),
+		LeftUpperArm=angles(-18,-14,-12),RightUpperArm=angles(32,18,18),
+	},"CounterPose")
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(-1,0,0),UpperTorso=angles(1,0,0),
+		LeftUpperArm=angles(-8,-4,-4),RightUpperArm=angles(-8,4,4),
+	},"Close")
+end
+
 local BUILDERS = table.freeze({
 	IDLE = makeIdle,
 	LOCOMOTION = makeLocomotion,
@@ -352,6 +450,11 @@ local BUILDERS = table.freeze({
 	LAND = makeLand,
 	HIT = makeHit,
 	DEATH = makeDeath,
+	BLOCK_RAISE = makeBlockRaise,
+	BLOCK_HOLD = makeBlockHold,
+	PARRY = makeParry,
+	GUARD_BREAK = makeGuardBreak,
+	COUNTER_READY = makeCounterReady,
 })
 
 local function resolve(atomId)
@@ -430,11 +533,11 @@ function RobloxCommonMotion.Audit()
 	end
 	table.sort(ids)
 	return table.freeze({
-		version = 1,
+		version = 2,
 		packId = "roblox-common-motion-v1",
 		atoms = table.freeze(ids),
 		atomCount = #ids,
-		expectedAtomCount = 11,
+		expectedAtomCount = 16,
 		companyCommonBase = true,
 		compatibleRig = "R15",
 		keyframeSequenceSource = true,
