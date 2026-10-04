@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-04T01:29:35.994Z",
+  "updatedAt": "2026-10-04T01:31:00.137Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -4826,8 +4826,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T12:16:33.532Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 91
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 92
     },
     {
       "id": "bug-ba7de0058247e1c56192",
@@ -4851,8 +4851,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T12:16:33.532Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 91
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 92
     },
     {
       "id": "bug-7dcb6f730a3788cd6de4",
@@ -5042,8 +5042,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 286
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 287
     },
     {
       "id": "bug-fd76025ae58f67c545ad",
@@ -5066,8 +5066,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 286
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 287
     },
     {
       "id": "bug-90de0bdb99f218cbda83",
@@ -5090,8 +5090,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 167
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 168
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5114,8 +5114,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 167
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 168
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -5128,7 +5128,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0\",\"sourceRootTreeSha\":\"d05aed7d004cf8f382f5a0988faf571528196844\",\"sourceFingerprint\":\"978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5137,8 +5138,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-02T14:20:51.093Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 2
     },
     {
       "id": "bug-21a9483913fbc47f4745",
@@ -5151,7 +5152,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0\",\"sourceRootTreeSha\":\"d05aed7d004cf8f382f5a0988faf571528196844\",\"sourceFingerprint\":\"978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5160,8 +5162,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-02T14:20:51.093Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 2
     },
     {
       "id": "bug-b5588ff2b4ec06cf2a70",
@@ -5184,8 +5186,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 167
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 168
     },
     {
       "id": "bug-f516510d1b674c9f0600",
@@ -5208,8 +5210,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 167
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 168
     },
     {
       "id": "bug-af160e0477c6c79bfed3",
@@ -5232,8 +5234,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 286
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 287
     },
     {
       "id": "bug-a8d2b957fc2b22115227",
@@ -5256,8 +5258,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 286
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 287
     },
     {
       "id": "bug-2c14b904d6aeb3e17198",
@@ -5280,8 +5282,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 5
     },
     {
       "id": "bug-3c0bdee1b5468f57a0bb",
@@ -5304,8 +5306,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 5
     },
     {
       "id": "bug-25e94dca8ade9aea96e7",
@@ -5328,8 +5330,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 161
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 162
     },
     {
       "id": "bug-e775cd1958cd4f0f247c",
@@ -5352,8 +5354,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 161
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 162
     },
     {
       "id": "bug-c2d3a1169668b0efacd1",
@@ -5376,8 +5378,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 235
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 236
     },
     {
       "id": "bug-ab4cd36474b0527e2ece",
@@ -5400,8 +5402,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 235
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 236
     },
     {
       "id": "bug-1c6129dad74bac44976e",
@@ -5516,8 +5518,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 166
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 167
     },
     {
       "id": "bug-ad9dae5e09804b30a45f",
@@ -5540,8 +5542,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 166
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 167
     },
     {
       "id": "bug-4591ef62527e5cb1e58b",
@@ -5564,8 +5566,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 131
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 132
     },
     {
       "id": "bug-56464a8b672b9c04b27c",
@@ -5588,8 +5590,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 131
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 132
     },
     {
       "id": "bug-8832e82ed03edad848cc",
@@ -5612,8 +5614,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 166
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 167
     },
     {
       "id": "bug-ed88b9a0af2e14105e09",
@@ -5636,8 +5638,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 166
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 167
     },
     {
       "id": "bug-9bbef74d19fb4096288d",
@@ -5683,8 +5685,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:13:52.233Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 121
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 122
     },
     {
       "id": "bug-485efab0d0c4686b2964",
@@ -5706,8 +5708,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:13:52.233Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 121
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 122
     },
     {
       "id": "bug-82c6f5ddcd3737c8292e",
@@ -5776,8 +5778,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 147
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 148
     },
     {
       "id": "bug-c2f825be7c318eb119f7",
@@ -5799,8 +5801,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 147
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 148
     },
     {
       "id": "bug-77b2b4cecf5a663c0e0b",
@@ -5822,8 +5824,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 92
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 93
     },
     {
       "id": "bug-fcd7e3b7410acdcb39be",
@@ -5845,8 +5847,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-04T01:29:35.991Z",
-      "occurrenceCount": 92
+      "updatedAt": "2026-10-04T01:31:00.133Z",
+      "occurrenceCount": 93
     }
   ]
 }
