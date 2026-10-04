@@ -125,17 +125,17 @@
       "updatedAt": "2026-10-04T15:51:08.621Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 7,
+      "calls": 8,
       "successes": 0,
-      "failures": 7,
+      "failures": 8,
       "timeouts": 4,
-      "jsonFailures": 3,
-      "totalMs": 719155,
-      "lastMs": 110806,
-      "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
-      "updatedAt": "2026-10-04T15:50:58.698Z"
+      "jsonFailures": 4,
+      "totalMs": 829119,
+      "lastMs": 109964,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T15:52:58.586Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T15:51:08.621Z"
+  "updatedAt": "2026-10-04T15:52:58.587Z"
 }
