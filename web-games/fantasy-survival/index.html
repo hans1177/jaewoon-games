@@ -41,7 +41,7 @@ const NEW_REGION_TARGET_AREA=36000*14400/5; // 기존 특수지역 설계 기준
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 기존 수정 지대 크기 유지
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const JUNGLE_REGION={x:18000,y:0,w:7200,h:3840}; // 기존 밀림의 0.4배
-const SWAMP_REGION={x:25200,y:0,w:3600,h:3840}; // 밀림 오른쪽 늪지대
+const SWAMP_REGION={x:25200,y:0,w:7200,h:3840}; // 밀림 오른쪽 늪지대 · 기존 면적의 정확히 2배
 const SNOW_REGION={x:18000,y:3840,w:18000,h:4800}; // 축소된 밀림 바로 아래
 const FLOWER_FIELD={x:18000,y:8640,w:18000,h:2880};
 const GIANT_GARDEN={x:28800,y:8640,w:7200,h:2880};
@@ -841,6 +841,7 @@ function discoverRegion(){
   if(r==='flowerfield'&&!state.discovered.flowerfield){state.discovered.flowerfield=true;state.dirty=true;showNotice('발견함 꽃밭 지역')}
   if(r==='giantgarden'&&!state.discovered.giantgarden){state.discovered.giantgarden=true;state.dirty=true;showNotice('미니 바이옴 발견 · 거대화원')}
   if(r==='jungle'&&!state.discovered.jungle){state.discovered.jungle=true;state.dirty=true;showNotice('발견함 밀림')}
+  if(r==='swamp'&&!state.discovered.swamp){state.discovered.swamp=true;state.dirty=true;showNotice('발견함 늪지대')}
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}
   if(r==='volcano'&&!state.discovered.volcano){state.discovered.volcano=true;state.dirty=true;showNotice('발견함 화산')}
@@ -1446,6 +1447,7 @@ function drawMap(){
  if(state.discovered.giantgarden){m.strokeStyle='#b66ea8';m.lineWidth=2;m.strokeRect(GIANT_GARDEN.x*sx,GIANT_GARDEN.y*sy,GIANT_GARDEN.w*sx,GIANT_GARDEN.h*sy);m.fillStyle='#ffc9ef';m.font='bold 10px system-ui';m.fillText('거대화원',(GIANT_GARDEN.x+GIANT_GARDEN.w*.5)*sx,(GIANT_GARDEN.y+GIANT_GARDEN.h*.5)*sy)}
  if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,(SNOW_REGION.y+SNOW_REGION.h/2)*sy);for(const o of SNOW_OUTPOSTS){m.fillStyle='#7ba0ad';m.fillRect(o.x*sx-3,o.y*sy-3,6,6)}}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
+ if(state.discovered.swamp){m.strokeStyle='#536b4d';m.lineWidth=2;m.strokeRect(SWAMP_REGION.x*sx,SWAMP_REGION.y*sy,SWAMP_REGION.w*sx,SWAMP_REGION.h*sy);m.fillStyle='#b8c9a8';m.font='bold 11px system-ui';m.textAlign='center';m.fillText('늪지대',(SWAMP_REGION.x+SWAMP_REGION.w/2)*sx,(SWAMP_REGION.y+SWAMP_REGION.h/2)*sy)}
  if(state.templeDiscovered){const tx=JUNGLE_TEMPLE_ENTRANCE.x*sx,ty=JUNGLE_TEMPLE_ENTRANCE.y*sy;
  m.save();m.fillStyle='#f0cf68';m.strokeStyle='#3d321a';m.lineWidth=2;m.beginPath();m.moveTo(tx,ty-7);m.lineTo(tx+7,ty+5);m.lineTo(tx-7,ty+5);m.closePath();m.fill();m.stroke();m.fillStyle='#fff0ad';m.font='bold 9px system-ui';m.textAlign='center';m.fillText('밀림 신전',tx,ty-10);m.restore()}
  if(state.discovered.giantlake){m.strokeStyle='#4ba6c8';m.lineWidth=2;m.strokeRect(GIANT_LAKE_SURFACE.x*sx,GIANT_LAKE_SURFACE.y*sy,GIANT_LAKE_SURFACE.w*sx,GIANT_LAKE_SURFACE.h*sy);m.fillStyle='#a8e8ff';m.font='bold 11px system-ui';m.fillText('거대 호수',6800*sx,900*sy)}
@@ -1539,7 +1541,7 @@ function drawMiniMap(now=performance.now()){
   const a=toMini(rect.x,rect.y),b=toMini(rect.x+rect.w,rect.y+rect.h);
   m.strokeStyle=stroke;m.lineWidth=width;m.strokeRect(a.x,a.y,b.x-a.x,b.y-a.y)
  };
- drawRect(SNOW_REGION,'#d7f4ff77',1);if(state.discovered.flowerfield)drawRect(FLOWER_FIELD,'#ffd1ef88',1);if(state.discovered.giantgarden)drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
+ drawRect(SNOW_REGION,'#d7f4ff77',1);if(state.discovered.flowerfield)drawRect(FLOWER_FIELD,'#ffd1ef88',1);if(state.discovered.giantgarden)drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);if(state.discovered.swamp)drawRect(SWAMP_REGION,'#71886688',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
  const landmark=(x,y,color,size=3)=>{
   const q=toMini(x,y);if((q.x-cx)*(q.x-cx)+(q.y-cy)*(q.y-cy)>r*r)return;
   m.fillStyle=color;m.beginPath();m.arc(q.x,q.y,size,0,Math.PI*2);m.fill()

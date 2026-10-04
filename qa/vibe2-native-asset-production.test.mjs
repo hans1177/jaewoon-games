@@ -1686,3 +1686,32 @@ test('quality DNA keeps hero floors higher than background floors without invent
   assert.match(guidance,/QUALITY DNA/);
   assert.match(guidance,/최소 제작 하한/);
 });
+
+test('flow asset requirements resolve through the latest company library and are exposed to source workers',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{
+      gameId:'flow-loadout-fixture',
+      goal:'전투 디펜스 플로우의 HUD, 랜드마크, 피격 피드백을 최신 내부 자산으로 적용',
+      assetRequirements:[
+        {family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',assetIdPinned:false,gameplayAuthority:false},
+        {family:'ENVIRONMENT',subfamily:'LANDMARK',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',assetIdPinned:false,gameplayAuthority:false},
+        {family:'VFX',subfamily:'IMPACT',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',assetIdPinned:false,gameplayAuthority:false}
+      ]
+    }
+  });
+  assert.equal(plan.flowAssetRequirements.length,3);
+  assert.equal(plan.flowAssetLoadout.selections.length,3);
+  assert.equal(plan.flowAssetLoadout.resolutionMode,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
+  assert.equal(plan.flowAssetLoadout.assetIdPinnedByFlow,false);
+  assert.equal(plan.flowAssetLoadout.gameplayAuthority,false);
+  assert.equal(plan.flowAssetLoadout.genreRestrictionApplied,false);
+  assert.equal(plan.flowAssetLoadout.crossGenreReuseAllowed,true);
+  assert.equal(plan.flowAssetLoadout.genreUsedForEligibility,false);
+  assert.ok(plan.flowAssetRequirements.every(row=>row.genreRestriction===false&&row.crossGenreReuseAllowed===true));
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/FLOW-DRIVEN ASSET REQUIREMENTS/);
+  assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
+  assert.match(guidance,/최신 company-asset-library\.json/);
+  assert.match(guidance,/gameplay\/balance\/progression\/save\/network 권한을 갖지 않는다/);
+});

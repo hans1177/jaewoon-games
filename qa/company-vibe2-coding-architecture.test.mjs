@@ -161,3 +161,62 @@ test('development planner binds adaptive world and narrative work into existing 
   assert.match(verifyTask.reason,/faction relationship persistence/i);
   assert.ok(context.patchPlan.forbidden.includes('UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY'));
 });
+
+test('coding architecture keeps flow-driven assets dynamic and outside gameplay authority',()=>{
+  const baseline={content:{
+    identity:'Expandable tactical adventure',
+    coreFun:'Explore, fight, choose rewards, and open routes.',
+    coreLoop:['explore a region','fight or avoid a threat','choose a reward','unlock a route'],
+    progressionDirection:'New options widen strategy instead of replacing the core loop.'
+  }};
+  const gameplaySketch=sketch('asset-bound','STORY_COMPLETE_RPG',baseline);
+  const architecture=buildCodingArchitecture({gameId:'asset-bound',genre:'STORY_COMPLETE_RPG',baseline,gameplaySketch,sourceAnalysis:analyzeExistingGameSource('')});
+  assert.equal(architecture.assetIntegration.required,true);
+  assert.equal(architecture.assetIntegration.resolutionMode,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
+  assert.equal(architecture.assetIntegration.assetIdPinningForbidden,true);
+  assert.equal(architecture.assetIntegration.gameplayAuthority,false);
+  assert.equal(architecture.assetIntegration.balanceAuthority,false);
+  assert.equal(architecture.assetIntegration.progressionAuthority,false);
+  assert.equal(architecture.assetIntegration.saveAuthority,false);
+  assert.equal(architecture.assetIntegration.networkingAuthority,false);
+  assert.ok(architecture.assetIntegration.requirements.length>=3);
+  assert.equal(evaluateCodingArchitecture(architecture).pass,true);
+});
+
+test('coding architecture maps survival crafting and housing into existing owners instead of shadow modules',()=>{
+  const baseline={content:{
+    identity:'Systemic survival',
+    coreFun:'Gather craft build survive',
+    coreLoop:['gather resources','craft equipment','build housing','explore dangerous regions']
+  }};
+  const gameplaySketch=sketch('survival-owner-map','ACTION_SURVIVAL_ROGUELITE',baseline);
+  const architecture=buildCodingArchitecture({gameId:'survival-owner-map',genre:'ACTION_SURVIVAL_ROGUELITE',baseline,gameplaySketch,sourceAnalysis:analyzeExistingGameSource('')});
+  const required=new Set(architecture.featureIntegration.requiredSystems.map(row=>row.id));
+  assert.ok(required.has('CRAFTING'));
+  assert.ok(required.has('HOUSING_BUILDING'));
+  assert.ok(required.has('INVENTORY_EQUIPMENT'));
+  assert.ok(architecture.sourceLayout.logicalModules.includes('PLACEMENT'));
+  assert.ok(architecture.sourceLayout.logicalModules.includes('ECONOMY'));
+  assert.ok(architecture.sourceLayout.logicalModules.includes('SAVE'));
+  assert.ok(architecture.featureIntegration.reusableLibraryHints.includes('assets/crafting-recipes.js'));
+  assert.equal(architecture.featureIntegration.wrapperOrShadowSystemForbidden,true);
+  assert.ok(architecture.invariants.some(row=>row.id==='NO_SHADOW_CONCEPT_SYSTEM_AUTHORITY'));
+  assert.ok(architecture.invariants.some(row=>row.id==='CONNECTED_CONTENT_EXPANSION_REQUIRED'));
+  assert.equal(evaluateCodingArchitecture(architecture).pass,true);
+});
+
+test('coding architecture carries RPG companion quest item and economy systems through shared owners',()=>{
+  const baseline={content:{
+    identity:'Companion quest RPG',
+    coreFun:'Talk quest fight loot craft grow relationships',
+    coreLoop:['talk to NPC companion','accept quest','fight and collect items','craft and choose new route']
+  }};
+  const gameplaySketch=sketch('rpg-owner-map','STORY_COMPLETE_RPG',baseline);
+  const architecture=buildCodingArchitecture({gameId:'rpg-owner-map',genre:'STORY_COMPLETE_RPG',baseline,gameplaySketch,sourceAnalysis:analyzeExistingGameSource('')});
+  const required=new Set(architecture.featureIntegration.requiredSystems.map(row=>row.id));
+  for(const id of ['NPC_INTERACTION','QUEST_DIALOGUE','COMPANION_PARTY','ITEM_LOOT','ECONOMY_SHOP','CRAFTING'])assert.ok(required.has(id),id);
+  for(const owner of ['NARRATIVE','AI','ECONOMY','PROGRESSION','SAVE'])assert.ok(architecture.sourceLayout.logicalModules.includes(owner),owner);
+  assert.ok(architecture.featureIntegration.interconnectionChains.length>=3);
+  assert.equal(architecture.featureIntegration.crossPlatformSourceCopyForbidden,true);
+  assert.equal(evaluateCodingArchitecture(architecture).pass,true);
+});
