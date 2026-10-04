@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g14-ca328c316f65",
-  "directiveFingerprint": "ca328c316f65a8feab6970eb5d81ab6d70cae007d6d82e50b63671b5ceadec67",
-  "previousDirectiveFingerprint": "6ba92c633c297e07a128c2219393d96758c96126a4b81b9122a0f57ba85ff5c1",
-  "forbiddenRepeatFingerprint": "6ba92c633c297e07a128c2219393d96758c96126a4b81b9122a0f57ba85ff5c1",
+  "directiveId": "line-defense-build-up-g15-cdd1d0a054d6",
+  "directiveFingerprint": "cdd1d0a054d643d6a2a81918871c9b59809d41cd71afb0efb0f5af3a724bf92f",
+  "previousDirectiveFingerprint": "ca328c316f65a8feab6970eb5d81ab6d70cae007d6d82e50b63671b5ceadec67",
+  "forbiddenRepeatFingerprint": "ca328c316f65a8feab6970eb5d81ab6d70cae007d6d82e50b63671b5ceadec67",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 14,
+  "generation": 15,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
+  "sourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
   "designFingerprint": "0af2994680eaff2c523b3a07d5c43f40715028f663c36e2693fefdbe2afc97de",
   "gameIdentityAndNonNegotiables": {
     "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
@@ -55,8 +55,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 203,
-      "progression": 239,
+      "combat": 205,
+      "progression": 252,
       "ai": 49,
       "save": 57,
       "multiplayer": 31,
@@ -68,12 +68,12 @@
       "audio": 1,
       "audioDynamics": 16,
       "ui": 57,
-      "uiFlow": 38,
+      "uiFlow": 40,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 59,
       "map": 147,
-      "landmark": 59,
+      "landmark": 63,
       "interaction": 31,
       "inventory": 29,
       "equipment": 2,
@@ -96,7 +96,7 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 253
+        "score": 251
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
@@ -353,17 +353,17 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 13,
-    "previousSourceTreeFingerprint": "43e0302c524c6911a568c275bd9790e2adc635bc406555a3eaab5ff90448b1e1",
-    "currentSourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
+    "previousGeneration": 14,
+    "previousSourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
+    "currentSourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1515,8 +1515,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99321,
-        "largestFileBytes": 43368,
+        "sourceBytes": 128581,
+        "largestFileBytes": 43338,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1548,8 +1548,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 7,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=5.",
+    "themeDepth": 8,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1559,7 +1559,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 7
+        "PRESENTATION_WORLD_COHESION": 8
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1568,7 +1568,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1608,7 +1608,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2345,11 +2345,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c560956410b6dc9a1b5ccb3ce3f0f85d7d9305290498aafbeda6616995a7ff25",
+      "sourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2392,7 +2392,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 15,
+    "nextGeneration": 16,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2461,5 +2461,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T06:32:51.807Z"
+  "generatedAt": "2026-10-04T07:08:33.168Z"
 }

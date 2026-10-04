@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g13-bb0058fb7225",
-  "directiveFingerprint": "bb0058fb7225fd9131738516b16af993caf0e383780080730464259b02dfb025",
-  "previousDirectiveFingerprint": "3d96d6986e9bf3b222251cf961d58486b3612ea162e95aa143a202d451f2bd9b",
-  "forbiddenRepeatFingerprint": "3d96d6986e9bf3b222251cf961d58486b3612ea162e95aa143a202d451f2bd9b",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g14-24da4594aae0",
+  "directiveFingerprint": "24da4594aae00ae7a104ddf7895e8fa3f481b02cde053522bde7befb18803257",
+  "previousDirectiveFingerprint": "bb0058fb7225fd9131738516b16af993caf0e383780080730464259b02dfb025",
+  "forbiddenRepeatFingerprint": "bb0058fb7225fd9131738516b16af993caf0e383780080730464259b02dfb025",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 13,
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+  "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
   "designFingerprint": "6de468c40ad6a0372eb03c7c03158edb5d66b9d400becd715c91289ce4ef36d9",
   "gameIdentityAndNonNegotiables": {
     "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
@@ -56,8 +56,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 170,
-      "progression": 177,
+      "combat": 172,
+      "progression": 191,
       "ai": 40,
       "save": 66,
       "multiplayer": 30,
@@ -69,12 +69,12 @@
       "audio": 1,
       "audioDynamics": 17,
       "ui": 56,
-      "uiFlow": 36,
+      "uiFlow": 38,
       "entryFlow": 10,
       "loadingFlow": 0,
       "input": 59,
       "map": 152,
-      "landmark": 75,
+      "landmark": 79,
       "interaction": 29,
       "inventory": 2,
       "equipment": 0,
@@ -97,7 +97,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 254
+        "score": 252
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -354,9 +354,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "53126973834339d6d5f45f6289f2e0cc2d78f2d537d6610ad3f4c7c89cd138d2",
-    "currentSourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+    "currentSourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1526,8 +1526,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99540,
-        "largestFileBytes": 43735,
+        "sourceBytes": 128800,
+        "largestFileBytes": 43705,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1559,8 +1559,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1570,7 +1570,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 8
+        "PRESENTATION_WORLD_COHESION": 9
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1578,7 +1578,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1619,7 +1619,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 102,
+        "score": 84,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2366,7 +2366,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+      "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2413,7 +2413,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2485,5 +2485,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T06:32:51.730Z"
+  "generatedAt": "2026-10-04T07:08:33.101Z"
 }
