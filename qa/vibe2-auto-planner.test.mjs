@@ -1220,6 +1220,116 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.equal(repair.coherentContentExpansionRequired,false);
 });
 
+test('build-up asset utilization floor evaluates every library family and keeps compatible low-score assets usable',()=>{
+  const root=tempRepo();
+  fs.writeFileSync(path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json'),JSON.stringify({
+    iterationExpectationEscalation:{
+      status:'ACTIVE',
+      assetLibrarySourceParity:{status:'ACTIVE',libraryPath:'company-asset-library.json',sourceMustKeepPaceWithApplicableAssetCapability:true,applicableOnly:true,assetOnlySwapCountsAsEvolution:false}
+    }
+  },null,2),'utf8');
+  const families=['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'];
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+    version:77,
+    rules:{
+      vibeUpgradeUniversalAssetFirstRequired:true,
+      allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade:true,
+      applicableAssetFamiliesRequireActualSourceBinding:true,
+      primitiveOnlyVisualUpgradeForbidden:true,
+      assetConfigMarkerOnlyCannotPass:true,
+      buildingGrammar:true,
+      biomeDna:true,
+      variantRecipeSystem:true,
+      identityBudgetByImportance:true,
+      usageWeightedVariation:true,
+      crossAssetCompatibilityGraph:true
+    },
+    universalVibeUpgradeAssetContract:{
+      status:'ACTIVE_EXECUTABLE_CONTRACT',
+      selection:'ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE',
+      families:[...families,'AUDIO'],
+      primitiveOnlyPassForbidden:true,
+      markerOnlyPassForbidden:true
+    },
+    internalAssetUsagePolicy:{version:3,lowScoreAssetUseAllowed:true,internalAuditScoreIsUsageGate:false},
+    internalAssetCompositionContract:{consumerStageAccess:'ALL_EXISTING_FLOW_STAGES'},
+    ambientSoundscapeContract:{
+      actualAudioAssetCountFromThisContract:0,
+      sourceGroups:{wind:['WIND_LIGHT','WIND_GUST'],animal:['DISTANT_WILDLIFE']},
+      layers:['BED','NEAR_LOOP','DISTANT_LOOP','SCATTER','ONE_SHOT','INTERACTION_SOURCE']
+    },
+    environmentStateContract:{stateCount:14},
+    internalAssetLibraryAutomation:{
+      actualVerifiedAudioAssetCount:0,
+      audioRoleContractCount:65,
+      studioVariationAxes:{
+        AUDIO:['EVENT_ROLE','DISTANCE_BAND','WEATHER_TIME','VARIATION_SET','MOBILE_BUDGET'],
+        ENVIRONMENT:['BIOME_REGION','WEATHER','TIME_OF_DAY','LOD_STREAMING'],
+        UI:['CONTEXT_STATE','ACCESSIBILITY','INFORMATION_DENSITY']
+      }
+    },
+    motionDirector:{version:1},
+    characterNpcCustomization:{version:1},
+    duelCombatMotion:{version:1},
+    survivalWildlifePack:{version:1},
+    baseMaterialLibrary:{version:1},
+    assets:families.map((family,index)=>({id:`asset-${index}`,family,internalAuditScore:300+index*10}))
+  },null,2),'utf8');
+  const expectation=resolveBuildUpIterationExpectation({repoRoot:root,cycle:4,phase:'BUILD_UP',focusPillar:'PRESENTATION'});
+  assert.equal(expectation.assetLibraryUtilizationMode,'ALL_CURRENT_LIBRARY_CAPABILITIES_NO_FIXED_IDEA_CAP');
+  assert.equal(expectation.assetLibraryUsageRequiredForEveryGame,true);
+  assert.equal(expectation.assetLibraryAllFamiliesEvaluated,true);
+  assert.equal(expectation.assetLibraryApplicableFamiliesRequireActualSourceBinding,true);
+  assert.equal(expectation.assetLibraryLowScoreUseAllowed,true);
+  assert.equal(expectation.assetLibraryInternalAuditScoreIsUsageGate,false);
+  assert.equal(expectation.assetLibraryQualityDebtCandidateCount,11);
+  assert.equal(expectation.assetLibraryEvaluatedFamilies.length,12);
+  assert.ok(expectation.assetLibraryEvaluatedFamilies.includes('AUDIO'));
+  assert.equal(expectation.assetLibraryActualAudioAssetCount,0);
+  assert.equal(expectation.assetLibraryAudioRoleContractCount,65);
+  assert.equal(expectation.assetLibraryConsumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
+  assert.ok(expectation.assetLibraryReadyIdeaCount>20);
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='LOW_SCORE_COMPATIBLE_USE_WITH_QUALITY_DEBT'&&row.state==='READY'));
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='FAMILY_AUDIO_COVERAGE'&&row.state==='ROLE_CONTRACT_ONLY'));
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='VARIATION_AUDIO'&&row.axes.includes('MOBILE_BUDGET')));
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='BUILDING_GRAMMAR_REUSE'));
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='MOTION_DIRECTOR_STATE_BLEND'));
+  assert.ok(expectation.assetLibraryUtilizationIdeas.some(row=>row.id==='CROSS_PACK_COMPATIBLE_RECOMBINATION'));
+});
+
+test('studio BUILD_UP goal carries full-library utilization ideas and low-score use policy without requiring Studio',()=>{
+  const root=tempRepo();
+  const gameId='asset-floor-max-use';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas><script>function attack(){} function interact(){} function reward(){}</script></body></html>\n','utf8');
+  const families=['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'];
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+    version:78,
+    rules:{vibeUpgradeUniversalAssetFirstRequired:true,allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade:true,applicableAssetFamiliesRequireActualSourceBinding:true,buildingGrammar:true,variantRecipeSystem:true},
+    universalVibeUpgradeAssetContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',selection:'ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE',families:[...families,'AUDIO'],primitiveOnlyPassForbidden:true,markerOnlyPassForbidden:true},
+    internalAssetUsagePolicy:{version:3,lowScoreAssetUseAllowed:true,internalAuditScoreIsUsageGate:false},
+    internalAssetCompositionContract:{consumerStageAccess:'ALL_EXISTING_FLOW_STAGES'},
+    ambientSoundscapeContract:{actualAudioAssetCountFromThisContract:0,sourceGroups:{wind:['WIND_LIGHT']}},
+    internalAssetLibraryAutomation:{actualVerifiedAudioAssetCount:0,audioRoleContractCount:65,studioVariationAxes:{WEAPON:['FAMILY_ROLE','MOTION_VFX_PAIRING'],AUDIO:['DISTANCE_BAND','VARIATION_SET']}},
+    assets:families.map((family,index)=>({id:`asset-${index}`,family,internalAuditScore:index===0?120:956.4}))
+  },null,2),'utf8');
+  writeStudioDesign(root,gameId);
+  const project={gameId,name:'Asset Floor Max Use',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(task);
+  assert.match(task.goal,/자산 최대활용 플로어:/);
+  assert.match(task.goal,/ALL_CURRENT_LIBRARY_CAPABILITIES_NO_FIXED_IDEA_CAP/);
+  assert.match(task.goal,/점수 낮은 안전 자산도/);
+  assert.match(task.goal,/고득점 wrong-role보다 저득점 exact-role을 우선/);
+  assert.match(task.goal,/낮은 점수만으로 NOT_APPLICABLE 처리하지 않는다/);
+  assert.match(task.goal,/현재 게임 소스에 해당 아이디어의 실제 바인딩과 동작이 이미 구현돼 있으면 그 아이디어는 PASS/);
+  assert.match(task.goal,/FAMILY_AUDIO_COVERAGE\[ROLE_CONTRACT_ONLY\]/);
+  assert.match(task.goal,/VARIATION_WEAPON\[READY\]/);
+  assert.match(task.goal,/BUILDING_GRAMMAR_REUSE\[READY\]/);
+  assert.match(task.goal,/Studio\/실런타임 증거는 기존 canonical 단계가 원래 요구하는 경우에만/);
+});
+
 test('verified BUILD_UP cycles escalate from completeness to system depth to coherent content expansion',()=>{
   const root=tempRepo();
   const gameId='build-up-expectation-integration';
