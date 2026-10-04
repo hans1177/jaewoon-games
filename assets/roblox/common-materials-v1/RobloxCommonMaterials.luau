@@ -32,6 +32,51 @@ local PRESETS = table.freeze({
       INDUSTRIAL = table.freeze({material = Enum.Material.DiamondPlate, color = Color3.fromRGB(95, 101, 104), reflectance = 0.05}),
     }),
   }),
+  GLASS = table.freeze({
+    defaultVariant = "CLEAR",
+    variants = table.freeze({
+      CLEAR = table.freeze({material = Enum.Material.Glass, color = Color3.fromRGB(190, 215, 220), reflectance = 0.08}),
+      COOL = table.freeze({material = Enum.Material.Glass, color = Color3.fromRGB(139, 187, 210), reflectance = 0.10}),
+      WARM = table.freeze({material = Enum.Material.Glass, color = Color3.fromRGB(222, 199, 160), reflectance = 0.08}),
+      SMOKED = table.freeze({material = Enum.Material.Glass, color = Color3.fromRGB(79, 91, 96), reflectance = 0.06}),
+    }),
+  }),
+  FABRIC = table.freeze({
+    defaultVariant = "NATURAL",
+    variants = table.freeze({
+      NATURAL = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(122, 118, 105), reflectance = 0.00}),
+      PALE = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(188, 178, 153), reflectance = 0.00}),
+      DARK = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(61, 64, 65), reflectance = 0.00}),
+      DYED = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(91, 111, 139), reflectance = 0.00}),
+    }),
+  }),
+  LEATHER_LIKE = table.freeze({
+    defaultVariant = "BROWN",
+    variants = table.freeze({
+      BROWN = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(96, 65, 45), reflectance = 0.01}),
+      DARK = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(55, 43, 37), reflectance = 0.01}),
+      TAN = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(150, 108, 72), reflectance = 0.01}),
+      WEATHERED = table.freeze({material = Enum.Material.Fabric, color = Color3.fromRGB(112, 89, 69), reflectance = 0.00}),
+    }),
+  }),
+  GROUND = table.freeze({
+    defaultVariant = "EARTH",
+    variants = table.freeze({
+      EARTH = table.freeze({material = Enum.Material.Ground, color = Color3.fromRGB(91, 78, 60), reflectance = 0.00}),
+      MUD = table.freeze({material = Enum.Material.Mud, color = Color3.fromRGB(74, 65, 52), reflectance = 0.00}),
+      SAND = table.freeze({material = Enum.Material.Sand, color = Color3.fromRGB(180, 158, 116), reflectance = 0.00}),
+      PALE = table.freeze({material = Enum.Material.Ground, color = Color3.fromRGB(143, 128, 101), reflectance = 0.00}),
+    }),
+  }),
+  MAGIC_CRYSTAL = table.freeze({
+    defaultVariant = "ARCANE_BLUE",
+    variants = table.freeze({
+      ARCANE_BLUE = table.freeze({material = Enum.Material.Neon, color = Color3.fromRGB(102, 175, 238), reflectance = 0.04}),
+      HEALING_GREEN = table.freeze({material = Enum.Material.Neon, color = Color3.fromRGB(103, 211, 153), reflectance = 0.04}),
+      FIRE_ORANGE = table.freeze({material = Enum.Material.Neon, color = Color3.fromRGB(239, 143, 67), reflectance = 0.04}),
+      VOID_PURPLE = table.freeze({material = Enum.Material.Neon, color = Color3.fromRGB(151, 105, 220), reflectance = 0.04}),
+    }),
+  }),
 })
 
 local function clamp(value, minValue, maxValue)
@@ -137,10 +182,10 @@ end
 
 function RobloxCommonMaterials.Audit()
   return table.freeze({
-    version = 1,
+    version = 2,
     packId = "roblox-common-materials-v1",
-    atoms = table.freeze({"WOOD", "STONE", "METAL"}),
-    atomCount = 3,
+    atoms = table.freeze({"WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL"}),
+    atomCount = 8,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
