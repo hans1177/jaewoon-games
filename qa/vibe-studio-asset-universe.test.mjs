@@ -1972,6 +1972,7 @@ test('expanded common item tool creature and VFX registry mirrors current catalo
   const checks=[
     ['assets/roblox/common-items-v1/catalog.json','roblox-common-items-v1','items','roblox-common-item-',40],
     ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
+    ['assets/roblox/common-character-gear-v1/catalog.json','roblox-common-character-gear-v1','items','roblox-common-character-gear-',18],
     ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
     ['assets/roblox/common-skill-v1/catalog.json','roblox-common-skill-v1','atoms','roblox-common-skill-',20],
     ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
@@ -2321,7 +2322,7 @@ test('generic weapon requirement can choose company-common tool base',()=>{
 });
 
 
-test('company-common character gear pack provides eight reusable visual equipment pieces',()=>{
+test('company-common character gear pack provides eighteen reusable visual equipment pieces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-character-gear-v1');
@@ -2329,8 +2330,8 @@ test('company-common character gear pack provides eight reusable visual equipmen
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['CLOTH_TUNIC','LEATHER_VEST','IRON_CHESTPLATE','CLOTH_HOOD','IRON_HELMET','LEATHER_GLOVES','LEATHER_BOOTS','TRAVEL_CLOAK'];
-  assert.equal(catalog.items.length,8);
+  const ids=['CLOTH_TUNIC','LEATHER_VEST','IRON_CHESTPLATE','CLOTH_HOOD','IRON_HELMET','LEATHER_GLOVES','LEATHER_BOOTS','TRAVEL_CLOAK','LEG_PLATES','SHOULDER_PAULDRONS','UTILITY_BELT','SIGNET_RING','TRAVEL_AMULET','COSMETIC_SASH','SET_CREST','SOCKET_CHARM','UPGRADE_TRIM','WORN_ARMOR_PATCH'];
+  assert.equal(catalog.items.length,18);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2371,6 +2372,7 @@ test('company-common character gear registry preserves equipment gameplay save a
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(pack.gameplayAuthority,false);
   assert.equal(pack.bodyPlanCompatibilityRequired,true);
+  assert.equal(pack.itemCount,18);
 
   const expected=[
     ['CLOTH_TUNIC','TORSO_GEAR','LIGHT_TORSO'],
@@ -2923,7 +2925,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,65);
+  assert.equal(registry.version,66);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3015,7 +3017,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,65);
+  assert.equal(registry.version,66);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3200,7 +3202,7 @@ test('company asset library exposes all-stage composition as an asset contract o
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
-  assert.equal(registry.version,65);
+  assert.equal(registry.version,66);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -3429,4 +3431,26 @@ test('skill system depth is complete after company-seed volume-up without gamepl
   assert.equal(skill.missing.length,0);
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.skillCount,20);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-skill-v1').productionVerified,false);
+});
+
+
+test('character gear system depth is complete after company-seed volume-up',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-character-gear-v1','catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-character-gear-v1','quality-evidence.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const gear=report.rows.find(row=>row.domain==='CHARACTER_GEAR');
+  assert.ok(gear);
+  assert.equal(gear.missing.length,0);
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.items.length,18);
+  assert.equal(quality.sourceAssetCount,18);
+  for(const role of ['LEGS','SHOULDER','BELT','RING','AMULET','ACCESSORY','COSMETIC_OVERLAY','SET_IDENTITY','SOCKET_POINT','UPGRADE_STAGE_VISUAL','DAMAGE_WEAR_VARIANT','TRANSMOG_BASE']){
+    const found=registry.assets.some(row=>row.packId==='roblox-common-character-gear-v1'&&((row.systemRoles||[]).includes(role)||row.gearRole===role||row.subfamily===role));
+    assert.equal(found,true,role);
+  }
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.characterGearCount,18);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-character-gear-v1').productionVerified,false);
 });
