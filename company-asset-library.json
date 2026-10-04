@@ -1,5 +1,5 @@
 {
-  "version": 80,
+  "version": 81,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -73,7 +73,13 @@
     "allInternalAssetsComposableAcrossExistingFlowStages": true,
     "internalAssetConsumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
     "compositionUsesExistingAssetUniverseOnly": true,
-    "compositionMayNotCreateFlowPipelineWrapperOrShadowSystem": true
+    "compositionMayNotCreateFlowPipelineWrapperOrShadowSystem": true,
+    "externalSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
+    "externalSourceBulkPrefetchForbidden": true,
+    "externalSourceSpeculativeDownloadForbidden": true,
+    "externalSourceOnDemandAcquisition": true,
+    "externalSourceAcquisitionOnlyAfterInternalReuseFailure": true,
+    "qualityAndAutomationDetailPrimaryAttention": true
   },
   "platformPacks": [
     {
@@ -50663,7 +50669,9 @@
         "RETARGETABLE"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "kaykit-adventurers",
@@ -50687,7 +50695,9 @@
         "KAYKIT_MOTION_COMPATIBLE"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "quaternius-universal-animation-library",
@@ -50714,7 +50724,9 @@
         "RETARGETABLE_HUMANOID"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "quaternius-universal-animation-library-2",
@@ -50742,7 +50754,9 @@
         "RETARGETABLE_HUMANOID"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "quaternius-universal-base-characters",
@@ -50768,7 +50782,9 @@
         "ANIMATION_FRIENDLY_TOPOLOGY"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "quaternius-ultimate-animated-animals",
@@ -50794,7 +50810,9 @@
         "QUADRUPED_REFERENCE"
       ],
       "acquisition": "ON_DEMAND",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "quaternius-bestiary-dungeon-monsters",
@@ -50820,7 +50838,9 @@
       ],
       "acquisition": "ON_DEMAND",
       "rawRedistributionAllowed": false,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "adobe-mixamo",
@@ -50841,9 +50861,12 @@
         "HUMANOID_ANIMATION_LIBRARY",
         "FBX_DOWNLOAD"
       ],
-      "acquisition": "MANUAL_ACCOUNT_REQUIRED",
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
       "rawRedistributionAllowed": false,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": false
     },
     {
       "id": "kenney-mini-forest",
@@ -50868,7 +50891,9 @@
         "BASE_CAMP"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "kenney-mini-dungeon",
@@ -50896,7 +50921,9 @@
         "DUNGEON"
       ],
       "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "kenney-modular-buildings",
@@ -50924,13 +50951,18 @@
         "MODULAR_BUILDINGS",
         "VARIATIONS"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 100,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-building-kit",
@@ -50957,13 +50989,18 @@
         "BUILDING_STRUCTURE",
         "ANIMATION"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 98,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-ultimate-buildings",
@@ -50995,13 +51032,18 @@
         "OBJ",
         "BLEND"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 100,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-medieval-village",
@@ -51033,13 +51075,18 @@
         "OBJ",
         "BLEND"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 96,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-modular-medieval-buildings",
@@ -51069,13 +51116,18 @@
         "OBJ",
         "BLEND"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 95,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-ultimate-fantasy-rts",
@@ -51108,13 +51160,18 @@
         "GLTF",
         "BLEND"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 94,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-furniture-kit",
@@ -51141,13 +51198,18 @@
         "FURNITURE",
         "INTERIOR_PROPS"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 100,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-ultimate-modular-ruins",
@@ -51179,13 +51241,18 @@
         "OBJ",
         "BLEND"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 96,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-ui-pack",
@@ -51212,13 +51279,18 @@
         "SLIDERS",
         "INTERFACE"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 100,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-ui-audio",
@@ -51244,13 +51316,18 @@
         "SWITCH",
         "CLICK"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 100,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-interface-sounds",
@@ -51276,13 +51353,18 @@
         "CLICK",
         "BUTTON"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 99,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-rpg-audio",
@@ -51308,13 +51390,18 @@
         "FOOTSTEP",
         "WEAPON"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 98,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-impact-sounds",
@@ -51339,13 +51426,18 @@
         "IMPACT",
         "FOLEY"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 97,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-nature-kit",
@@ -51374,13 +51466,18 @@
         "ROCKS",
         "FOLIAGE"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 100,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-ultimate-nature",
@@ -51410,13 +51507,18 @@
         "OBJ",
         "BLEND"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 98,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "poly-haven-cc0-library",
@@ -51444,13 +51546,18 @@
         "HDRI",
         "CC0_LIBRARY"
       ],
-      "acquisition": "ON_DEMAND_PUBLIC_DOWNLOAD",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 96,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-city-kit-roads",
@@ -51479,13 +51586,18 @@
         "SIGNS",
         "TRAFFIC_LIGHTS"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 94,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-city-kit-industrial",
@@ -51514,13 +51626,18 @@
         "WAREHOUSE",
         "ENERGY"
       ],
-      "acquisition": "PRIORITY_NOW",
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
       "volumeAdaptationEligible": true,
       "sourcePriority": 93,
       "commercialUseAllowed": true,
       "derivativesAllowed": true,
       "rawRedistributionAllowed": true,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     }
   ],
   "unarmedCombat": {
@@ -56145,7 +56262,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 5,
+    "version": 6,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56765,7 +56882,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 80,
+    "lastCatalogSynchronizedVersion": 81,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -57085,7 +57202,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57110,7 +57231,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57135,7 +57260,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57160,7 +57289,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57189,7 +57322,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57218,7 +57355,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57247,7 +57388,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57276,7 +57421,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57296,7 +57445,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57316,7 +57469,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57336,7 +57493,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57356,7 +57517,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57385,7 +57550,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57414,7 +57583,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57434,7 +57607,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57460,7 +57637,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57486,7 +57667,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57512,7 +57697,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57541,7 +57730,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57570,7 +57763,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57599,7 +57796,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57628,7 +57829,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57657,7 +57862,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57686,7 +57895,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57715,7 +57928,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57744,7 +57961,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57773,7 +57994,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57793,7 +58018,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57813,7 +58042,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57835,7 +58068,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57855,7 +58092,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57884,7 +58125,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57913,7 +58158,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57942,7 +58191,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -57971,7 +58224,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58000,7 +58257,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58029,7 +58290,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58058,7 +58323,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58078,7 +58347,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58104,7 +58377,11 @@
           "kenney-interface-sounds",
           "kenney-rpg-audio",
           "kenney-impact-sounds"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58126,7 +58403,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58146,7 +58427,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58175,7 +58460,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58204,7 +58493,11 @@
           "quaternius-medieval-village",
           "quaternius-ultimate-modular-ruins",
           "kenney-city-kit-roads"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58226,7 +58519,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58255,7 +58552,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58284,7 +58585,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58313,7 +58618,11 @@
           "quaternius-ultimate-nature",
           "poly-haven-cc0-library",
           "quaternius-medieval-village"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58342,7 +58651,11 @@
           "quaternius-medieval-village",
           "quaternius-ultimate-modular-ruins",
           "kenney-city-kit-roads"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58371,7 +58684,11 @@
           "quaternius-medieval-village",
           "quaternius-ultimate-modular-ruins",
           "kenney-city-kit-roads"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58400,7 +58717,11 @@
           "quaternius-medieval-village",
           "quaternius-ultimate-modular-ruins",
           "kenney-city-kit-roads"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58420,7 +58741,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58442,7 +58767,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58462,7 +58791,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "DOMAIN_VOLUME",
@@ -58482,7 +58815,11 @@
           "NEW_AUTHORING"
         ],
         "freeSourceAvailable": false,
-        "freeSourceCandidateIds": []
+        "freeSourceCandidateIds": [],
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58505,7 +58842,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58528,7 +58869,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58551,7 +58896,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58574,7 +58923,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58597,7 +58950,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58620,7 +58977,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58643,7 +59004,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58666,7 +59031,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58689,7 +59058,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58712,7 +59085,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58735,7 +59112,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58758,7 +59139,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58781,7 +59166,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58804,7 +59193,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58827,7 +59220,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58850,7 +59247,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58873,7 +59274,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58896,7 +59301,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58919,7 +59328,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58942,7 +59355,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58965,7 +59382,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -58988,7 +59409,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59011,7 +59436,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59034,7 +59463,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59057,7 +59490,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59080,7 +59517,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59103,7 +59544,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59126,7 +59571,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59149,7 +59598,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59172,7 +59625,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59195,7 +59652,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59218,7 +59679,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59241,7 +59706,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59264,7 +59733,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59287,7 +59760,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59310,7 +59787,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59333,7 +59814,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59356,7 +59841,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59379,7 +59868,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59402,7 +59895,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       },
       {
         "kind": "UI_SUBSYSTEM_VOLUME",
@@ -59425,7 +59922,11 @@
         "freeSourceAvailable": true,
         "freeSourceCandidateIds": [
           "kenney-ui-pack"
-        ]
+        ],
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true
       }
     ],
     "persistentWorklistField": "internalAssetLibraryAutomation.nextVolumeActions",
@@ -59459,8 +59960,18 @@
     "productionRuntimeVerificationSeparateFromInternalQuality": true,
     "freeOriginalVolumePolicy": {
       "priority": "AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING",
-      "purpose": "FILL_VOLUME_FASTER_THEN_SPEND_MORE_CYCLES_ON_QUALITY",
+      "purpose": "ON_DEMAND_GAP_FILL_WHILE_PRIMARY_WORK_FOCUSES_ON_QUALITY_AND_AUTOMATION_DETAIL",
       "allowed": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
+      "sourceCatalogMode": "SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION",
+      "bulkPrefetchForbidden": true,
+      "speculativeDownloadForbidden": true,
+      "automaticAcquisitionMode": "SELECTED_WORKLIST_ACTION_ONLY",
+      "acquireOnlyWhen": [
+        "ACTIVE_WORKLIST_ACTION_REQUIRES_SOURCE",
+        "NO_SUITABLE_EXISTING_INTERNAL_ASSET",
+        "NO_ACCEPTABLE_DERIVED_OR_RECOMBINED_INTERNAL_VARIANT"
+      ],
+      "reuseDownloadedSourceAcrossFutureCompatibleActions": true,
       "commercialUseRequired": true,
       "derivativeModificationRequired": true,
       "provenanceRequired": true,
@@ -59470,7 +59981,11 @@
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
     "eligibleFreeSourceCount": 18,
-    "freeSourceCandidateLimitPerAction": 8
+    "freeSourceCandidateLimitPerAction": 8,
+    "freeSourceCatalogSufficiencyCount": 12,
+    "freeSourceCatalogReady": true,
+    "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
+    "primaryAttention": "QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL"
   },
   "characterNpcCustomization": {
     "version": 1,
