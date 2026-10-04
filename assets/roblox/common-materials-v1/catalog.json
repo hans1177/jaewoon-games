@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-materials-v1",
   "family": "MATERIAL",
   "platform": "ROBLOX",
@@ -99,6 +99,39 @@
         "HEALING_GREEN",
         "FIRE_ORANGE",
         "VOID_PURPLE"
+      ]
+    },
+    {
+      "atomId": "BRICK",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "RED",
+        "DARK",
+        "PALE",
+        "WEATHERED"
+      ]
+    },
+    {
+      "atomId": "ICE",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "CLEAR_BLUE",
+        "PALE",
+        "DEEP",
+        "FROSTED"
+      ]
+    },
+    {
+      "atomId": "ASPHALT",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "ROAD",
+        "DARK",
+        "WORN",
+        "PALE"
       ]
     }
   ]
