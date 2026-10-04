@@ -1714,6 +1714,8 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     }):null;
     selections.push(Object.freeze({
       family,subfamily,required:requirement.required!==false,
+      recommended:requirement.recommended===true,
+      flowStageRecommended:requirement.flowStageRecommended===true,
       assetId:picked?.row.id||null,
       score:scored?.score??null,
       sourceTier:scored?.sourceTier??0,
@@ -2497,7 +2499,21 @@ export function createStudioAssetUniversePlan({
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
   const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
-  const effectiveRequirements=inferredRequirements.map(requirement=>{
+  const targetPlatform=upper(platform);
+  const defaultPresentationRecommendations=['ROBLOX','UNITY'].includes(targetPlatform)?[
+    {family:'UI',subfamily:'MENU',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'SETTINGS',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'NAVIGATION',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'LOADING',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'INTRO',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'INVENTORY',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'MAP',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'JOURNAL',required:false,recommended:true,flowStageRecommended:true},
+    {family:'ENVIRONMENT',subfamily:'BACKGROUND',required:false,recommended:true,flowStageRecommended:true}
+  ]:[];
+  const requirementKeys=new Set(inferredRequirements.map(row=>upper(row.family)+':'+upper(row.subfamily)));
+  const recommendedPresentationRequirements=defaultPresentationRecommendations.filter(row=>!requirementKeys.has(row.family+':'+row.subfamily));
+  const effectiveRequirements=[...inferredRequirements,...recommendedPresentationRequirements].map(requirement=>{
     if(text(requirement.currentAssetId))return requirement;
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
     const current=combinedAssets.find(asset=>{
@@ -2536,6 +2552,8 @@ export function createStudioAssetUniversePlan({
     conceptCoherence,
     gameVisualDna:visualDna,
     loadout,
+    defaultPresentationRecommendations:freezeList(defaultPresentationRecommendations),
+    recommendedPresentationRequirements:freezeList(recommendedPresentationRequirements),
     futureDemand,
     usageFeedback,
     baseMaterialRotation,
