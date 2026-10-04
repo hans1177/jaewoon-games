@@ -2333,6 +2333,219 @@ function RobloxCommonUI.CreateProcessingMachinePanel(options)
   return root,parts
 end
 
+
+-- AI 동료/NPC 상호작용 시스템 깊이 v7
+function RobloxCommonUI.CreateAiCompanionStatusCard(options)
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"AI_COMPANION_STATUS_CARD","AI_COMPANION_STATUS_CARD",options.nameText or "AI 동료",{
+    options.roleText or "역할 / 현재 행동",
+    options.distanceText or "거리 / 합류 상태",
+    options.moodText or "관계 / 기분",
+    options.contextText or "현재 상황 반응"
+  })
+  root:SetAttribute("OwnsCompanionStateAuthority",false)
+  root:SetAttribute("OwnsAiDecisionAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionCommandWheel(options)
+  options=options or {}
+  local actions=options.actions or {"따라와","대기","이동","공격 지원","방어","후퇴","상호작용","도움"}
+  local root,buttons=RobloxCommonUI.CreateRadialMenu({name=options.name or "CompanionCommandWheel",actions=actions,centerText=options.centerText or "동료 명령",size=options.size,theme=options.theme})
+  tag(root,"COMPANION_COMMAND_WHEEL")
+  root:SetAttribute("PresentationRole","COMPANION_COMMAND_WHEEL")
+  root:SetAttribute("OwnsCommandAuthority",false)
+  root:SetAttribute("OwnsAiDecisionAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateCompanionOrderQueue(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_ORDER_QUEUE","COMPANION_ORDER_QUEUE","명령 대기열",{
+    "현재 명령","다음 명령","상호작용 예약","취소/순서변경"
+  })
+  root:SetAttribute("OwnsCommandQueueAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionRolePanel(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_ROLE_PANEL","COMPANION_ROLE_PANEL","동료 역할",{
+    "전투 지원","채집/운반","정찰","제작/서비스","치유/보조"
+  })
+  root:SetAttribute("OwnsRoleAssignmentAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionFormationPanel(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_FORMATION_PANEL","COMPANION_FORMATION_PANEL","진형 / 거리",{
+    "가까이","기본 거리","멀리","좌/우 위치","후방 지원"
+  })
+  root:SetAttribute("OwnsFormationAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionCombatStancePanel(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_COMBAT_STANCE_PANEL","COMPANION_COMBAT_STANCE_PANEL","전투 성향",{
+    "방어적","균형","공격적","플레이어 보호","대상 집중"
+  })
+  root:SetAttribute("OwnsCombatAiAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionTargetPingCard(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_TARGET_PING_CARD","COMPANION_TARGET_PING_CARD","대상 지시",{
+    "공격 대상","이동 지점","상호작용 대상","위험/관심 지점"
+  })
+  root:SetAttribute("OwnsTargetAuthority",false)
+  root:SetAttribute("OwnsPingAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionHelpRequest(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_HELP_REQUEST","COMPANION_HELP_REQUEST","도움 요청",{
+    "위험 상태","도움 종류","거리","응답 상태"
+  })
+  root:SetAttribute("OwnsHelpResolutionAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionReviveRescuePanel(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_REVIVE_RESCUE_PANEL","COMPANION_REVIVE_RESCUE_PANEL","구조 / 회복",{
+    "쓰러짐 상태","구조 가능 여부","거리","위험도","진행 상태"
+  })
+  root:SetAttribute("OwnsReviveAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionInventoryHandoff(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_INVENTORY_HANDOFF","COMPANION_INVENTORY_HANDOFF","아이템 전달",{
+    "내 인벤토리","동료 보유","전달 수량","무게/용량","잠금/퀘스트 상태"
+  })
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsTransferAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionGiftPanel(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_GIFT_PANEL","COMPANION_GIFT_PANEL","선물 / 호감 상호작용",{
+    "선택 아이템","반응 예상 표시","관계 상태","선물 가능 여부"
+  })
+  root:SetAttribute("OwnsRelationshipAuthority",false)
+  root:SetAttribute("OwnsGiftOutcomeAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionRelationshipDetail(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_RELATIONSHIP_DETAIL","COMPANION_RELATIONSHIP_DETAIL","관계 상세",{
+    "관계 단계","신뢰","기분","최근 상호작용","잠긴 대화/행동"
+  })
+  root:SetAttribute("OwnsRelationshipValue",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcMemorySummary(options)
+  local root,parts=deepSystemPanel(options,"NPC_MEMORY_SUMMARY","NPC_MEMORY_SUMMARY","기억 요약",{
+    "최근 사건","플레이어와의 약속","중요 인물","알고 있는 장소","미해결 대화"
+  })
+  root:SetAttribute("OwnsMemoryTruthAuthority",false)
+  root:SetAttribute("OwnsAiMemoryAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcTopicBrowser(options)
+  local root,parts=deepSystemPanel(options,"NPC_TOPIC_BROWSER","NPC_TOPIC_BROWSER","대화 주제",{
+    "현재 사건","지역","인물","의뢰","소문","개인 이야기"
+  })
+  root:SetAttribute("OwnsDialogueTruth",false)
+  root:SetAttribute("OwnsTopicUnlockAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcContextReaction(options)
+  local root,parts=deepSystemPanel(options,"NPC_CONTEXT_REACTION","NPC_CONTEXT_REACTION","상황 반응",{
+    "날씨/시간","전투 직후","지역 상태","플레이어 장비/상태","최근 사건"
+  })
+  root:SetAttribute("OwnsWorldStateAuthority",false)
+  root:SetAttribute("OwnsAiDecisionAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcScheduleAvailability(options)
+  local root,parts=deepSystemPanel(options,"NPC_SCHEDULE_AVAILABILITY","NPC_SCHEDULE_AVAILABILITY","일정 / 이용 가능",{
+    "현재 위치","현재 활동","다음 활동","서비스 가능","특수 일정"
+  })
+  root:SetAttribute("OwnsScheduleAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcServiceMenu(options)
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"NPC_SERVICE_MENU","NPC_SERVICE_MENU",options.title or "서비스",{
+    "거래","수리","제작","치유","훈련","정보","보관"
+  })
+  root:SetAttribute("OwnsServiceAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcQuestHandoff(options)
+  local root,parts=deepSystemPanel(options,"NPC_QUEST_HANDOFF","NPC_QUEST_HANDOFF","의뢰 인계",{
+    "현재 목표","진행 요약","전달 아이템","완료 조건","보상 미리보기"
+  })
+  root:SetAttribute("OwnsQuestAuthority",false)
+  root:SetAttribute("OwnsRewardAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcRecruitDismissPanel(options)
+  local root,parts=deepSystemPanel(options,"NPC_RECRUIT_DISMISS_PANEL","NPC_RECRUIT_DISMISS_PANEL","영입 / 해산",{
+    "동료 역할","현재 파티","영입 조건","해산 영향","확인"
+  })
+  root:SetAttribute("OwnsPartyAuthority",false)
+  root:SetAttribute("OwnsRecruitAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcRumorKnowledgePanel(options)
+  local root,parts=deepSystemPanel(options,"NPC_RUMOR_KNOWLEDGE_PANEL","NPC_RUMOR_KNOWLEDGE_PANEL","소문 / 지식",{
+    "최근 소문","지역 정보","위험 정보","인물 정보","확실성 표시"
+  })
+  root:SetAttribute("OwnsKnowledgeTruthAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateNpcCampActivityPanel(options)
+  local root,parts=deepSystemPanel(options,"NPC_CAMP_ACTIVITY_PANEL","NPC_CAMP_ACTIVITY_PANEL","캠프 활동",{
+    "휴식","경계","제작","요리","대화","정리/운반"
+  })
+  root:SetAttribute("OwnsCampTaskAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreatePartyTacticsPanel(options)
+  local root,parts=deepSystemPanel(options,"PARTY_TACTICS_PANEL","PARTY_TACTICS_PANEL","파티 전술",{
+    "대상 우선순위","거리 유지","집중 공격","보호 대상","후퇴 조건"
+  })
+  root:SetAttribute("OwnsPartyCombatAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCompanionEquipmentSummary(options)
+  local root,parts=deepSystemPanel(options,"COMPANION_EQUIPMENT_SUMMARY","COMPANION_EQUIPMENT_SUMMARY","동료 장비",{
+    "무기","방어구","유틸리티","세트/효과","장착 제한"
+  })
+  root:SetAttribute("OwnsEquipAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateAiCompanionAutonomyPanel(options)
+  local root,parts=deepSystemPanel(options,"AI_COMPANION_AUTONOMY_PANEL","AI_COMPANION_AUTONOMY_PANEL","행동 선호",{
+    "자율 행동 표시","위험 회피","도움 우선","자원 상호작용","대화 참여"
+  })
+  root:SetAttribute("OwnsAiDecisionAuthority",false)
+  root:SetAttribute("OwnsAutonomyAuthority",false)
+  return root,parts
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -2551,13 +2764,61 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateAnimalHousingPanel(options)
   elseif id == "PROCESSING_MACHINE_PANEL" then
     return RobloxCommonUI.CreateProcessingMachinePanel(options)
+  elseif id == "AI_COMPANION_STATUS_CARD" then
+    return RobloxCommonUI.CreateAiCompanionStatusCard(options)
+  elseif id == "COMPANION_COMMAND_WHEEL" then
+    return RobloxCommonUI.CreateCompanionCommandWheel(options)
+  elseif id == "COMPANION_ORDER_QUEUE" then
+    return RobloxCommonUI.CreateCompanionOrderQueue(options)
+  elseif id == "COMPANION_ROLE_PANEL" then
+    return RobloxCommonUI.CreateCompanionRolePanel(options)
+  elseif id == "COMPANION_FORMATION_PANEL" then
+    return RobloxCommonUI.CreateCompanionFormationPanel(options)
+  elseif id == "COMPANION_COMBAT_STANCE_PANEL" then
+    return RobloxCommonUI.CreateCompanionCombatStancePanel(options)
+  elseif id == "COMPANION_TARGET_PING_CARD" then
+    return RobloxCommonUI.CreateCompanionTargetPingCard(options)
+  elseif id == "COMPANION_HELP_REQUEST" then
+    return RobloxCommonUI.CreateCompanionHelpRequest(options)
+  elseif id == "COMPANION_REVIVE_RESCUE_PANEL" then
+    return RobloxCommonUI.CreateCompanionReviveRescuePanel(options)
+  elseif id == "COMPANION_INVENTORY_HANDOFF" then
+    return RobloxCommonUI.CreateCompanionInventoryHandoff(options)
+  elseif id == "COMPANION_GIFT_PANEL" then
+    return RobloxCommonUI.CreateCompanionGiftPanel(options)
+  elseif id == "COMPANION_RELATIONSHIP_DETAIL" then
+    return RobloxCommonUI.CreateCompanionRelationshipDetail(options)
+  elseif id == "NPC_MEMORY_SUMMARY" then
+    return RobloxCommonUI.CreateNpcMemorySummary(options)
+  elseif id == "NPC_TOPIC_BROWSER" then
+    return RobloxCommonUI.CreateNpcTopicBrowser(options)
+  elseif id == "NPC_CONTEXT_REACTION" then
+    return RobloxCommonUI.CreateNpcContextReaction(options)
+  elseif id == "NPC_SCHEDULE_AVAILABILITY" then
+    return RobloxCommonUI.CreateNpcScheduleAvailability(options)
+  elseif id == "NPC_SERVICE_MENU" then
+    return RobloxCommonUI.CreateNpcServiceMenu(options)
+  elseif id == "NPC_QUEST_HANDOFF" then
+    return RobloxCommonUI.CreateNpcQuestHandoff(options)
+  elseif id == "NPC_RECRUIT_DISMISS_PANEL" then
+    return RobloxCommonUI.CreateNpcRecruitDismissPanel(options)
+  elseif id == "NPC_RUMOR_KNOWLEDGE_PANEL" then
+    return RobloxCommonUI.CreateNpcRumorKnowledgePanel(options)
+  elseif id == "NPC_CAMP_ACTIVITY_PANEL" then
+    return RobloxCommonUI.CreateNpcCampActivityPanel(options)
+  elseif id == "PARTY_TACTICS_PANEL" then
+    return RobloxCommonUI.CreatePartyTacticsPanel(options)
+  elseif id == "COMPANION_EQUIPMENT_SUMMARY" then
+    return RobloxCommonUI.CreateCompanionEquipmentSummary(options)
+  elseif id == "AI_COMPANION_AUTONOMY_PANEL" then
+    return RobloxCommonUI.CreateAiCompanionAutonomyPanel(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 6,
+    version = 7,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -2587,12 +2848,19 @@ function RobloxCommonUI.Audit()
       "OBJECT_TRANSFORM_PANEL", "GRID_SNAP_CONTROL", "MATERIAL_PALETTE_PANEL", "BLUEPRINT_PANEL",
       "UNDO_REDO_BAR", "OWNERSHIP_PERMISSION_PANEL", "REPAIR_BUILDING_PANEL", "DEMOLISH_PREVIEW_PANEL",
       "UPKEEP_DECAY_PANEL", "BED_RESPAWN_PANEL", "ROOM_SCORE_PANEL", "FURNITURE_CATALOG",
-      "SETTLEMENT_OVERVIEW", "FARM_PLOT_PANEL", "ANIMAL_HOUSING_PANEL", "PROCESSING_MACHINE_PANEL"
+      "SETTLEMENT_OVERVIEW", "FARM_PLOT_PANEL", "ANIMAL_HOUSING_PANEL", "PROCESSING_MACHINE_PANEL",
+      "AI_COMPANION_STATUS_CARD", "COMPANION_COMMAND_WHEEL", "COMPANION_ORDER_QUEUE", "COMPANION_ROLE_PANEL",
+      "COMPANION_FORMATION_PANEL", "COMPANION_COMBAT_STANCE_PANEL", "COMPANION_TARGET_PING_CARD", "COMPANION_HELP_REQUEST",
+      "COMPANION_REVIVE_RESCUE_PANEL", "COMPANION_INVENTORY_HANDOFF", "COMPANION_GIFT_PANEL", "COMPANION_RELATIONSHIP_DETAIL",
+      "NPC_MEMORY_SUMMARY", "NPC_TOPIC_BROWSER", "NPC_CONTEXT_REACTION", "NPC_SCHEDULE_AVAILABILITY",
+      "NPC_SERVICE_MENU", "NPC_QUEST_HANDOFF", "NPC_RECRUIT_DISMISS_PANEL", "NPC_RUMOR_KNOWLEDGE_PANEL",
+      "NPC_CAMP_ACTIVITY_PANEL", "PARTY_TACTICS_PANEL", "COMPANION_EQUIPMENT_SUMMARY", "AI_COMPANION_AUTONOMY_PANEL"
     }),
-    atomCount = 108,
+    atomCount = 132,
     fullScreenSurfaceCount = 17,
-    deepSystemComponentCount = 54,
+    deepSystemComponentCount = 78,
     housingSandboxComponentCount = 24,
+    aiNpcInteractionComponentCount = 24,
     stateSurfaceCount = 4,
     companyCommonBase = true,
     themeAdaptationRequiredPerGame = true,
