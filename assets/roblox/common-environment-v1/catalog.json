@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-environment-v1",
   "family": "ENVIRONMENT",
   "platform": "ROBLOX",
@@ -70,5 +70,65 @@
     "LANDMARK",
     "SET_DRESSING",
     "STYLE_ADAPTABLE"
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "FOREST",
+      "SNOW",
+      "DESERT",
+      "SWAMP",
+      "CAVE",
+      "COAST",
+      "VILLAGE",
+      "CITY",
+      "RUINS",
+      "DUNGEON",
+      "TERRAIN",
+      "GROUND_DETAIL",
+      "PATH_ROAD",
+      "CLIFF",
+      "WATER",
+      "LANDMARK",
+      "SET_DRESSING",
+      "WEATHER",
+      "SKY_ATMOSPHERE",
+      "LIGHTING_PRESET",
+      "STREAMING_LOD",
+      "INTERIOR_EXTERIOR_TRANSITION",
+      "DISCOVERY_POI"
+    ],
+    "currentDeclaredComponents": [
+      "FOREST",
+      "SNOW",
+      "DESERT",
+      "SWAMP",
+      "CAVE",
+      "COAST",
+      "VILLAGE",
+      "CITY",
+      "RUINS",
+      "DUNGEON",
+      "BIOME_KIT",
+      "TERRAIN",
+      "GROUND_DETAIL",
+      "PATH_ROAD",
+      "CLIFF",
+      "WATER",
+      "LANDMARK",
+      "SET_DRESSING"
+    ],
+    "currentAssetCount": 10,
+    "missingComponentCandidates": [
+      "WEATHER",
+      "SKY_ATMOSPHERE",
+      "LIGHTING_PRESET",
+      "STREAMING_LOD",
+      "INTERIOR_EXTERIOR_TRANSITION",
+      "DISCOVERY_POI"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
