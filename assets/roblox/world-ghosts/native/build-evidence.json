@@ -50,5 +50,80 @@
   "officialLuauCompiled": true,
   "nativeStudioVerified": false,
   "artVerified": false,
-  "gameplayVerified": false
+  "gameplayVerified": false,
+  "sourceAudit": {
+    "type": "PACK_LEVEL_GHOST_LIBRARY_SOURCE_AUTHORING_AUDIT",
+    "version": 1,
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 92,
+      "FORM_STRUCTURE": 86,
+      "MATERIAL_SURFACE": 80,
+      "COLOR_LIGHTING": 82,
+      "STYLE_COHERENCE": 89,
+      "DETAIL_FINISH": 78,
+      "READABILITY_SCALE": 88,
+      "MOTION_RIG": 72,
+      "FEEDBACK_STATES": 70,
+      "MODULAR_REUSE": 95,
+      "VARIATION_BREADTH": 99,
+      "PERFORMANCE_LOD": 84,
+      "PROVENANCE_MAINTAINABILITY": 96,
+      "INTEGRATION_READINESS": 88
+    },
+    "expectedScore": 859.1,
+    "expectedGrade": "HIGH_QUALITY",
+    "auditPass": false,
+    "hardGateFailures": [
+      "DETAIL_FINISH:78<82_CREATURE",
+      "MOTION_RIG:72<84_CREATURE"
+    ],
+    "evidenceBasis": {
+      "skinCount": 100,
+      "bodyFormCount": 27,
+      "motionStateCount": 6,
+      "officialLuauCompiled": true,
+      "catalogRows": 100,
+      "nativePackageArtifacts": [
+        "world-ghosts-gallery.rbxlx",
+        "world-ghost-skins.rbxmx"
+      ],
+      "authoredSkinnedMeshEvidence": [
+        "assets/roblox/world-ghosts/native/mesh/evidence.json"
+      ],
+      "provenanceResearch": "assets/roblox/world-ghosts/research.json",
+      "structuralAuditSource": "assets/roblox/world-ghosts/GhostSkinAudit.luau",
+      "sourceFiles": [
+        "Gallery.client.luau",
+        "GhostSkinAudit.luau",
+        "GhostSkinCatalog.luau",
+        "GhostSkinFactory.luau",
+        "GhostSkinMotion.luau",
+        "default.project.json",
+        "model.project.json"
+      ]
+    },
+    "limitations": [
+      "ALL_100_SKINS_NOT_PROVEN_AS_INDIVIDUAL_SKINNED_MESHES",
+      "STRUCTURAL_AUDIT_SOURCE_EXISTS_BUT_NATIVE_STUDIO_PASS_NOT_RECORDED",
+      "ART_REVIEW_NOT_VERIFIED",
+      "GAMEPLAY_RUNTIME_NOT_VERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "lowScoreDoesNotBlockInternalUse": true,
+    "newAuthoringMayFillVerifiedGaps": true,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
