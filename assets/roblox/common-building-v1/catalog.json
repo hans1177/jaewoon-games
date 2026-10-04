@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "packId": "roblox-common-building-v1",
+  "title": "Roblox 회사 공용 건축 모듈 8종 v1",
+  "platform": "ROBLOX",
+  "family": "BUILDING",
+  "subfamily": "BUILDING_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "automaticCrossGameReuseAllowed": true,
+  "crossGameReuseRequiresCompatibilityPass": true,
+  "gameplayAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "intendedConsumerGameIds": [
+    "survival",
+    "daechung-rpg",
+    "horror-escape-room",
+    "amusement-tycoon",
+    "village-dungeons",
+    "cozy-island"
+  ],
+  "complementsExistingCommonSubfamilies": [
+    "FOUNDATION_RECT",
+    "WALL_SOLID",
+    "DOOR_SINGLE",
+    "ROOF_GABLE"
+  ],
+  "items": [
+    {
+      "assetId": "FLOOR_TILE",
+      "name": "바닥 모듈",
+      "subfamily": "FLOOR_TILE",
+      "buildingRole": "FLOOR",
+      "familyRootId": "BUILDING_FLOOR"
+    },
+    {
+      "assetId": "WALL_WINDOW",
+      "name": "창문 벽",
+      "subfamily": "WALL_WINDOW",
+      "buildingRole": "WALL_OPENING",
+      "familyRootId": "BUILDING_WALL"
+    },
+    {
+      "assetId": "WALL_CORNER",
+      "name": "모서리 벽",
+      "subfamily": "WALL_CORNER",
+      "buildingRole": "WALL_CORNER",
+      "familyRootId": "BUILDING_WALL"
+    },
+    {
+      "assetId": "PILLAR_STONE",
+      "name": "돌 기둥",
+      "subfamily": "PILLAR",
+      "buildingRole": "STRUCTURAL_VISUAL",
+      "familyRootId": "BUILDING_PILLAR"
+    },
+    {
+      "assetId": "STAIRS_STRAIGHT",
+      "name": "직선 계단",
+      "subfamily": "STAIRS",
+      "buildingRole": "VERTICAL_LINK_VISUAL",
+      "familyRootId": "BUILDING_STAIRS"
+    },
+    {
+      "assetId": "ARCHWAY",
+      "name": "아치문",
+      "subfamily": "ARCHWAY",
+      "buildingRole": "PASSAGE_VISUAL",
+      "familyRootId": "BUILDING_OPENING"
+    },
+    {
+      "assetId": "ROOF_FLAT",
+      "name": "평지붕",
+      "subfamily": "ROOF_FLAT",
+      "buildingRole": "ROOF",
+      "familyRootId": "BUILDING_ROOF"
+    },
+    {
+      "assetId": "RAILING",
+      "name": "난간",
+      "subfamily": "RAILING",
+      "buildingRole": "EDGE_VISUAL",
+      "familyRootId": "BUILDING_RAILING"
+    }
+  ]
+}
