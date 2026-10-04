@@ -3203,7 +3203,7 @@ test('common presentation v1 provides reusable loading and five short intro mode
 });
 
 test('Vibe loadout returns machine-readable discovery and use contract from existing canonical asset selector',()=>{
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,3);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,4);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.enabled,true);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.newPipelineCreated,false);
   const asset={
@@ -4219,19 +4219,22 @@ test('repository asset sync detects real search eligibility consumption and bott
     assert.equal(sync.bottleneckState,'HEALTHY_WITH_STALE_PATH_REVIEW');
     assert.ok(sync.bottleneckActions.includes('REVIEW_MISSING_REPOSITORY_ASSET_PATHS'));
     assert.ok(sync.bottleneckActions.includes('CONTINUE_AUTOMATIC_LIBRARY_CONSUMPTION'));
+    assert.deepEqual(sync.sourceConsumerAssetIds,['internal-prop-one','internal-ui-frame']);
+    assert.ok(sync.sourceConsumerEvidenceSample.some(row=>row.assetId==='internal-prop-one'&&row.consumerGameIds.includes('demo')));
+    assert.ok(sync.sourceConsumerEvidenceSample.some(row=>row.assetId==='internal-ui-frame'&&row.evidence.some(item=>item.includes('ATOMID'))));
+    assert.equal(sync.sourceConsumptionObservationOnly,true);
+    assert.equal(sync.sourceConsumptionDoesNotMutateAssetRows,true);
+    assert.equal(sync.missingRepositoryPathDisposition,'MISSING_SOURCE_REVIEW');
+    assert.equal(sync.missingRepositoryAssetsAutomaticSearchExcluded,true);
     const consumed=result.registry.assets.find(row=>row.id==='internal-prop-one');
-    assert.deepEqual(consumed.detectedSourceConsumerGameIds,['demo']);
-    assert.equal(consumed.sourceConsumptionIsRuntimeVerification,false);
-    assert.equal(consumed.productionVerified,false);
     const atomConsumed=result.registry.assets.find(row=>row.id==='internal-ui-frame');
-    assert.deepEqual(atomConsumed.detectedSourceConsumerGameIds,['demo']);
-    assert.ok(atomConsumed.sourceConsumptionEvidence[0].evidence.some(row=>row.includes('ATOMID')));
-    assert.equal(atomConsumed.sourceConsumptionIsRuntimeVerification,false);
-    assert.equal(atomConsumed.productionVerified,false);
     const missing=result.registry.assets.find(row=>row.id==='missing-prop-one');
-    assert.equal(missing.repositoryPathState,'MISSING_SOURCE_REVIEW');
-    assert.equal(missing.automaticSearchEligible,false);
-    assert.equal(missing.automaticDeletionForbidden,true);
+    assert.equal(consumed.detectedSourceConsumerGameIds,undefined);
+    assert.equal(atomConsumed.sourceConsumptionEvidence,undefined);
+    assert.equal(missing.repositoryPathState,undefined);
+    assert.equal(consumed.productionVerified,false);
+    assert.equal(atomConsumed.productionVerified,false);
+    assert.equal(missing.productionVerified,false);
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
@@ -4241,6 +4244,8 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+  const repositorySync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
+  console.log('[ASSET_LIBRARY_CONSUMPTION]',JSON.stringify(repositorySync));
   assert.equal(result.changed,false,JSON.stringify(result.changedSections));
   assert.deepEqual(result.changedSections,[]);
   assert.equal(result.persisted,false);
@@ -4277,8 +4282,6 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.pipelineCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.wrapperCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
-  const repositorySync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
-  console.log('[ASSET_LIBRARY_CONSUMPTION]',JSON.stringify(repositorySync));
   assert.equal(repositorySync.version,3);
   assert.ok(repositorySync.totalAssetRows>0);
   assert.ok(repositorySync.repositoryPathPresentCount>0);
@@ -4303,6 +4306,9 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.ok(repositorySync.naiveAssetIdFileComparisonUpperBound>=repositorySync.sourceFilesScanned);
   assert.notEqual(repositorySync.bottleneckState,'SEARCH_BLOCKED');
   assert.notEqual(repositorySync.bottleneckState,'CONSUMPTION_EVIDENCE_MISSING');
+  assert.equal(repositorySync.sourceConsumptionObservationOnly,true);
+  assert.equal(repositorySync.sourceConsumptionDoesNotMutateAssetRows,true);
+  assert.equal(repositorySync.missingRepositoryPathDisposition,'MISSING_SOURCE_REVIEW');
   assert.equal(repositorySync.sourceConsumptionDoesNotPromoteProductionVerification,true);
 });
 
