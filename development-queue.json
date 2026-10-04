@@ -26577,14 +26577,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T18:13:14.772Z",
+      "updatedAt": "2026-10-04T18:20:55.705Z",
       "robloxSourceCommit": "5a60bca75b8835c462c9c32183bc2d7d47085d07",
       "robloxSourceBootstrapPassedAt": "2026-10-04T18:04:15.031Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -27208,7 +27208,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-casual-realm-weaver-37131116107",
       "unitySourceCommit": "67bae3aea07a0c39628743d40ecbc5c026a7f629",
-      "unityBuildRunId": 37221162660,
+      "unityBuildRunId": 37223489813,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -27266,7 +27266,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T17:46:46.853Z"
+        "verifiedAt": "2026-10-04T18:20:55.705Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -50030,7 +50030,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T18:20:53.287Z",
+  "updatedAt": "2026-10-04T18:20:57.564Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
