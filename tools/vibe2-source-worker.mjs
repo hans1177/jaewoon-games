@@ -1909,6 +1909,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
   };
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+  const mandatoryDispositionIds=Object.freeze(unique([
+    ...flowSelections.map(row=>row.assetId||row.requirementId),
+    ...dedupedSources.map(row=>row.assetId)
+  ]).filter(Boolean).sort());
   const usageMatrix=Object.freeze([
     Object.freeze({signal:'ATTACK_OR_COMBO',families:Object.freeze(['WEAPON','MOTION','VFX','AUDIO']),optional:Object.freeze(['CAMERA_PRESENTATION','UI']),rule:'gameplay code owns hit, damage, cooldown and combo legality; assets express anticipation/contact/recoil/recovery'}),
     Object.freeze({signal:'HIT_BLOCK_PARRY_CRITICAL',families:Object.freeze(['MOTION','VFX','AUDIO']),optional:Object.freeze(['UI','CAMERA_PRESENTATION']),rule:'consume direction/strength/result emitted by gameplay; never calculate the result in the asset layer'}),
@@ -2010,7 +2014,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
       selectedSubsetOnly:true,
       unchangedFingerprintReusePreferred:true,
       changedFamilyRebindOnly:true,
-      sourceApiContextOnlyForSelectedAssets:true
+      sourceApiContextOnlyForSelectedAssets:true,
+      libraryMayGrowWithoutFullGameResync:true,
+      latestSelectionFingerprintWins:true,
+      staleSelectionMayNotOverwriteNewerBinding:true
     }),
     eligibility:Object.freeze({
       genreRestrictionApplied:false,
@@ -2045,6 +2052,20 @@ export function buildInternalAssetSourceUsageContract(order={}){
       noArtificialCombinationCap:true,
       allApplicableExistingSystemsEligible:true,
       allApplicableSelectedAssetsEligible:true,
+      applicableSelectionCoverageTargetPct:100,
+      allApplicableSelectionsRequireDisposition:true,
+      silentDropForbidden:true,
+      mandatoryDispositionIds,
+      allowedDispositions:Object.freeze(['APPLIED','HARD_BLOCKED','CARRY_FORWARD_NEXT_BUILD_UP']),
+      carryForwardRequiresExactReason:true,
+      carryForwardMustRemainEligibleNextCycle:true,
+      blankPresentationForbiddenWhenCompatibleInternalAssetExists:true,
+      defaultPrimitiveForbiddenWhenCompatibleInternalAssetExists:true,
+      genericPlaceholderForbiddenWhenCompatibleInternalAssetExists:true,
+      emptyUiSurfaceForbiddenWhenCompatibleUiAssetExists:true,
+      silentAudioGapForbiddenWhenCompatibleAudioRoleExists:true,
+      staticMotionGapForbiddenWhenCompatibleMotionExists:true,
+      missingVfxFeedbackForbiddenWhenCompatibleVfxExists:true,
       continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
       contextBudgetIsNotUsageCap:true,
       apiContextBatchingAllowedForSynchronizationEfficiency:true,
@@ -2114,6 +2135,9 @@ function internalAssetSourceUsageGuidance(order={}){
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
     'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
+    'Every applicable selected asset or flow requirement MUST receive one explicit disposition in the current responsibility scope: APPLIED, HARD_BLOCKED with an exact blocker, or CARRY_FORWARD_NEXT_BUILD_UP with an exact reason. Silent dropping is forbidden. Carry-forward remains eligible and must be reconsidered next cycle until applicable coverage reaches 100%.',
+    'Blank/default/primitive presentation is forbidden when a safe compatible internal asset exists for that responsibility. This includes empty UI surfaces, silent feedback where a compatible audio role exists, static actors where compatible motion exists, missing impact/skill feedback where compatible VFX exists, and generic world props/buildings where a compatible role asset exists.',
+    'Do not force unrelated assets into a system merely to reach a number. 100% means every APPLICABLE compatible selection is consumed or explicitly dispositioned; incompatibility, absent system, security, license, corrupt source, or platform mismatch are valid non-application reasons.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
@@ -4812,6 +4836,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetLowScoreCompatibleUseAllowed:true,
     internalAssetSafeFallbackPreferredOverBlank:true,
     internalAssetApplicationNoArtificialCap:true,
+    internalAssetApplicableSelectionCoverageTargetPct:Number(assetSourceUsageContract.applicationCoverage?.applicableSelectionCoverageTargetPct||0),
+    internalAssetAllApplicableSelectionsRequireDisposition:assetSourceUsageContract.applicationCoverage?.allApplicableSelectionsRequireDisposition===true,
+    internalAssetBlankPresentationForbidden:assetSourceUsageContract.applicationCoverage?.blankPresentationForbiddenWhenCompatibleInternalAssetExists===true,
+    internalAssetMandatoryDispositionCount:Number(assetSourceUsageContract.applicationCoverage?.mandatoryDispositionIds?.length||0),
     internalAssetContextBudgetIsNotUsageCap:true,
     internalAssetExplicitUsageSignalCount:Number(assetSourceUsageContract.usageMatrix?.length||0),
     internalAssetAdaptiveSignalRouting:assetSourceUsageContract.adaptiveSignalRouting?.enabled===true,
