@@ -511,3 +511,43 @@ test('Vibe gameplay plan requires causal living-actor implementation and runtime
   }});
   assert.ok(blockers.includes('LIVING_ACTOR_CAUSALITY_FAILED'));
 });
+
+test('flow architecture carries award-caliber growth rules and execution-time asset roles',()=>{
+  const baseline={content:{
+    identity:'A tactical defense expedition with readable routes and boss adaptation.',
+    playerFantasy:'Read threats, build a plan, adapt under pressure, and turn mastery into new routes.',
+    coreFun:'Route reading, defense placement, combat feedback and progression choices interact every cycle.',
+    coreLoop:['read routes and threats','place or upgrade defenses','survive pressure and collect rewards','open a new route or counter-build'],
+    signatureSystems:[{name:'Adaptive route pressure',purpose:'change the safe route as threats evolve',playerChoice:'commit to safety, speed, or reward'}],
+    progressionDirection:'New defenses and route knowledge open different tactical options instead of only larger numbers.'
+  }};
+  const flow=buildGameFlowArchitecture({gameId:'flow-assets',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory});
+  const review=evaluateGameFlowArchitecture(flow);
+  assert.equal(review.pass,true,review.blockers.join(','));
+  assert.equal(flow.qualityGrowthContract.target,'AWARD_CALIBER_SYSTEMIC_GAME_COMPLETENESS');
+  assert.ok(flow.qualityGrowthContract.funDrivers.length>=3);
+  assert.ok(flow.qualityGrowthContract.balanceRules.length>=4);
+  assert.ok(flow.qualityGrowthContract.expansionRules.length>=4);
+  assert.ok(flow.qualityGrowthContract.completionCriteria.length>=4);
+  assert.equal(flow.qualityGrowthContract.codingGrowthContract.dataDrivenExtensionPreferred,true);
+  assert.ok(flow.assetFlow.requirements.length>=3);
+  assert.ok(flow.assetFlow.requirements.every(row=>row.resolution==='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'));
+  assert.ok(flow.assetFlow.requirements.every(row=>row.assetIdPinned===false&&row.gameplayAuthority===false&&row.balanceAuthority===false&&row.saveAuthority===false));
+  assert.ok(flow.assetFlow.requirements.some(row=>row.family==='UI'&&row.subfamily==='HUD'));
+});
+
+test('patch plan converts flow asset roles into existing selector apply adapt and verification work',()=>{
+  const baseline={content:{identity:'Flow-bound RPG',coreFun:'Explore fight and grow',coreLoop:['explore region','fight threat','choose reward','unlock route']}};
+  const gameplaySketch=deriveGameplaySketch({gameId:'flow-asset-plan',genre:'STORY_COMPLETE_RPG',baseline,inventory});
+  const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis:analyzeExistingGameSource(''),inventory});
+  const ids=plan.tasks.map(row=>row.id);
+  assert.ok(plan.flowAssetRequirements.length>=3);
+  assert.ok(ids.includes('IMPLEMENT_FLOW_FUN_BALANCE_AND_COMPLETION_BAR'));
+  assert.ok(ids.includes('IMPLEMENT_DATA_DRIVEN_GROWTH_HOOKS'));
+  assert.ok(ids.includes('RESOLVE_FLOW_ASSET_REQUIREMENTS_FROM_LATEST_LIBRARY'));
+  assert.ok(ids.includes('APPLY_OR_ADAPT_FLOW_ASSETS_WITHOUT_GAMEPLAY_AUTHORITY'));
+  assert.ok(ids.includes('VERIFY_FLOW_ASSET_STATE_AND_PHASE_COVERAGE'));
+  assert.equal(plan.verificationOrder[1],'FLOW_ASSET_BINDING');
+  assert.ok(plan.forbidden.includes('PIN_INTERNAL_ASSET_ID_IN_FLOW_CONTRACT'));
+  assert.ok(plan.forbidden.includes('ASSET_LAYER_OWNS_GAMEPLAY_BALANCE_SAVE_OR_NETWORK'));
+});
