@@ -9,7 +9,7 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-10-04T22:33:31.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-04T22:47:41.097Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms",
@@ -114,15 +114,15 @@
       "updatedAt": "2026-10-04T21:14:40.605Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 28,
-      "successes": 5,
-      "failures": 23,
+      "calls": 31,
+      "successes": 6,
+      "failures": 25,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 159189,
-      "lastMs": 4142,
+      "totalMs": 170032,
+      "lastMs": 2861,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T22:45:34.350Z"
+      "updatedAt": "2026-10-04T22:47:43.959Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 11,
@@ -137,5 +137,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T22:47:34.358Z"
+  "updatedAt": "2026-10-04T22:47:43.959Z"
 }
