@@ -62,6 +62,10 @@ public sealed class JaewoonNativeMotionActor : MonoBehaviour
         if (!reported && elapsed >= 6f)
         {
             reported = true;
+            LogState();
+        }
+        {
+            reported = true;
             string reason = MotionFailureReason();
             string fields = " fps=" + fpsEma.ToString("F1") +
                             " human=" + animator.isHuman +
@@ -198,6 +202,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         foreach (Animator candidate in FindObjectsByType<Animator>(FindObjectsSortMode.None))
         {
             if (candidate == null) continue;
+            LogState();
             if (candidate.GetComponent<JaewoonNativeMotionActor>() == null)
                 candidate.gameObject.AddComponent<JaewoonNativeMotionActor>();
             count++;
@@ -258,11 +263,16 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         {
             enemy.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
             var p=enemy.transform.position;
+            LogState();
             p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;
             enemy.transform.position=p;
         }
         if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
         if (player != null && started)
+        {
+            PerformAction(false);
+            LogState();
+        }
         {
             var p=player.transform.position;
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
@@ -285,6 +295,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void PerformAction(bool mobile)
     {
         if(!started) StartGameplay();
+        LogState();
         actions++;
         progress += Mathf.Max(1,level);
         resource += 1 + (actions % 3);
