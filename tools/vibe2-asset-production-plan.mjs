@@ -819,6 +819,18 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     count:Number(libraryPlan.qualityHealth.below880Count||0),
     action:'IMPROVE_WEAKEST_INTERNAL_AUDIT_AXIS'
   });
+  const bottleneckSeverityRank=Object.freeze({CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1});
+  const bottleneckTiePriority=Object.freeze({
+    VOLUME_DEFICIT:30,
+    QUALITY_EVIDENCE_GAP:20,
+    QUALITY_BELOW_INTERNAL_PASS:10,
+    STALE_REFERENCE_PATH_REVIEW:0
+  });
+  managementBottlenecks.sort((a,b)=>
+    Number(bottleneckSeverityRank[b.severity]||0)-Number(bottleneckSeverityRank[a.severity]||0)
+    ||Number(bottleneckTiePriority[b.id]||0)-Number(bottleneckTiePriority[a.id]||0)
+    ||String(a.id).localeCompare(String(b.id))
+  );
   const assetManagementHealth={
     version:1,
     status:managementBottlenecks.some(row=>row.severity==='CRITICAL')?'CRITICAL_REPAIR_REQUIRED':
