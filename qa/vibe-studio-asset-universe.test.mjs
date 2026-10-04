@@ -18,6 +18,7 @@ import {
   COMMON_ENVIRONMENT_ROLE_EXPECTATIONS,
   COMMON_PRESENTATION_EXPECTATIONS,
   COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS,
+  COMMON_GENRE_SYSTEM_EXPECTATIONS,
   INTERNAL_ASSET_MINIMUM_COVERAGE,
   INTERNAL_ASSET_REUSE_POLICY,
   INTERNAL_ASSET_ADAPTATION_AXES,
@@ -1924,7 +1925,7 @@ test('company-common motion registry supports cross-game R15 reuse without false
 });
 
 
-test('company-common world prop pack provides eight reusable visual props',()=>{
+test('company-common world prop pack provides twenty-four reusable housing settlement props',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-world-props-v1');
@@ -1932,8 +1933,8 @@ test('company-common world prop pack provides eight reusable visual props',()=>{
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['SIGNPOST','WOOD_FENCE','WALL_TORCH','WOOD_BARREL','BENCH','TABLE','MARKET_STALL','STONE_WELL'];
-  assert.equal(catalog.items.length,8);
+  const ids=['SIGNPOST','WOOD_FENCE','WALL_TORCH','WOOD_BARREL','BENCH','TABLE','MARKET_STALL','STONE_WELL','BED_SINGLE','WARDROBE','SHELF','WORKBENCH','CRAFT_TABLE','COOKING_HEARTH','STORAGE_CABINET','PLANTER_BOX','CROP_PLOT','ANIMAL_TROUGH','FLOOR_LAMP','WALL_SWITCH','LEVER_CONTROL','NOTICE_BOARD','RUG','DECOR_STATUE'];
+  assert.equal(catalog.items.length,24);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -1946,6 +1947,8 @@ test('company-common world prop pack provides eight reusable visual props',()=>{
   assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
   assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
   assert.equal(catalog.companyCommonBase,true);
+  assert.ok(catalog.housingSettlementContract.categories.includes('FARMING'));
+  assert.equal(catalog.housingSettlementContract.gameplayAuthority,false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
   assert.equal(quality.runtimeQuality.claimedScore,null);
   assert.equal(quality.productionVerified,false);
@@ -2119,7 +2122,7 @@ test('generic foliage requirement can choose company-common base',()=>{
 });
 
 
-test('company-common building pack provides eight non-duplicate reusable modules',()=>{
+test('company-common building pack provides twenty housing snap modules without gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-building-v1');
@@ -2127,8 +2130,8 @@ test('company-common building pack provides eight non-duplicate reusable modules
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['FLOOR_TILE','WALL_WINDOW','WALL_CORNER','PILLAR_STONE','STAIRS_STRAIGHT','ARCHWAY','ROOF_FLAT','RAILING'];
-  assert.equal(catalog.items.length,8);
+  const ids=['FLOOR_TILE','WALL_WINDOW','WALL_CORNER','PILLAR_STONE','STAIRS_STRAIGHT','ARCHWAY','ROOF_FLAT','RAILING','FOUNDATION_TRIANGLE','FENCE_FOUNDATION','HALF_WALL','DOOR_FRAME','WINDOW_FRAME','CEILING_TILE','CEILING_WEDGE','ROOF_SLOPE','ROOF_CORNER','GATE_FRAME','LADDER','WALL_TRIM'];
+  assert.equal(catalog.items.length,20);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2142,6 +2145,8 @@ test('company-common building pack provides eight non-duplicate reusable modules
   assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
   assert.equal(catalog.family,'BUILDING');
   assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.housingContract.noGameSpecificCopy,true);
+  assert.equal(catalog.housingContract.stabilityAuthority,false);
   assert.equal(quality.staticAuthoringChecklist.score,100);
   assert.equal(quality.runtimeQuality.claimedScore,null);
   assert.equal(quality.productionVerified,false);
@@ -2416,7 +2421,7 @@ test('generic character gear requirement can choose company-common base',()=>{
 });
 
 
-test('company-common UI v5 preserves prior atoms and expands reusable interaction surfaces',()=>{
+test('company-common UI v6 preserves prior atoms and expands reusable interaction surfaces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-ui-v1');
@@ -2426,8 +2431,8 @@ test('company-common UI v5 preserves prior atoms and expands reusable interactio
 
   const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
   const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
-  assert.equal(catalog.version,5);
-  assert.equal(catalog.atoms.length,84);
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.atoms.length,108);
   for(const id of [...oldIds,...newIds]){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2441,7 +2446,7 @@ test('company-common UI v5 preserves prior atoms and expands reusable interactio
   assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
-  assert.ok(source.includes('atomCount = 84'));
+  assert.ok(source.includes('atomCount = 108'));
   for(const id of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','INVENTORY_GRID','CHARACTER_SHEET','MINIMAP','HOTBAR']){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2704,7 +2709,7 @@ test('studio-independent 1000-point internal asset audit uses strict score and h
   assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('dialogue/helper'));
 });
 
-test('common Roblox UI v5 preserves AI dialogue NPC interaction core game screens and vector icons',()=>{
+test('common Roblox UI v6 preserves AI dialogue NPC interaction core game screens and vector icons',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
@@ -2712,8 +2717,8 @@ test('common Roblox UI v5 preserves AI dialogue NPC interaction core game screen
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const icons=fs.readFileSync(path.join(root,'RobloxCommonIcons.luau'),'utf8');
 
-  assert.equal(catalog.version,5);
-  assert.equal(catalog.atoms.length,84);
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.atoms.length,108);
   assert.equal(catalog.vectorIconCount,12);
   assert.equal(catalog.internalAudit.studioRequired,false);
   assert.equal(catalog.internalAudit.passScore,880);
@@ -2740,7 +2745,7 @@ test('common Roblox UI v5 preserves AI dialogue NPC interaction core game screen
   assert.equal(evidence.sourceAudit.studioRequired,false);
   assert.equal(evidence.sourceAudit.passScore,880);
   assert.equal(evidence.sourceAudit.targetGrade,'MASTERPIECE');
-  assert.equal(evidence.sourceAssetCount,84);
+  assert.equal(evidence.sourceAssetCount,108);
   assert.equal(evidence.productionVerified,false);
   assert.equal(evidence.verifiedCompanyReusable,false);
 });
@@ -2841,16 +2846,16 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
 });
 
 
-test('common UI v5 expands full-screen navigation search states and input switching without gameplay authority',()=>{
+test('common UI v6 expands full-screen navigation search states and input switching without gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
 
-  assert.equal(catalog.version,5);
-  assert.equal(catalog.atoms.length,84);
-  assert.equal(evidence.sourceAssetCount,84);
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.atoms.length,108);
+  assert.equal(evidence.sourceAssetCount,108);
   for(const atom of [
     'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_PANEL',
     'SEARCH_FIELD','FILTER_BAR','SORT_CONTROL','INVENTORY_FULL_SCREEN','EQUIPMENT_FULL_SCREEN',
@@ -2967,8 +2972,8 @@ test('common UI v5 adds deep item inventory equipment crafting trade and codex c
     'UPGRADE_PANEL','REPAIR_PANEL','DISMANTLE_PANEL','CRAFTING_TREE','RECIPE_DETAIL_PANEL','MATERIAL_TRACKER',
     'BUY_SELL_PANEL','BUYBACK_PANEL','CODEX_SCREEN','COLLECTION_PROGRESS','RECENT_ITEMS_PANEL','ITEM_SOURCE_USAGE_PANEL'
   ];
-  assert.equal(catalog.version,5);
-  assert.equal(catalog.atoms.length,84);
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.atoms.length,108);
   assert.equal(catalog.deepSystemContract.componentCount,30);
   assert.equal(evidence.deepSystemComponentCount,30);
   for(const atom of deep){
@@ -2990,7 +2995,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,52);
+  assert.equal(registry.version,53);
   assert.equal(audit.status,'STARTED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -2998,8 +3003,10 @@ test('company library system depth audit covers every common asset domain withou
   for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
     assert.ok(audit.rows.some(row=>row.domain===domain),domain);
   }
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,84);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,108);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,24);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-building-v1').itemCount,20);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-world-props-v1').itemCount,24);
   for(const id of ['roblox-common-item-quest-scroll','roblox-common-item-lore-book','roblox-common-item-arrow-bundle','roblox-common-ui-stash-screen','roblox-common-ui-radial-menu','roblox-common-ui-codex-screen']){
     assert.ok(registry.assets.some(row=>row.id===id),id);
   }
@@ -3035,4 +3042,74 @@ test('all existing common pack catalogs expose system depth contracts for gap-di
   assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.WEAPON.required.includes('CROSSBOW'));
   assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.MOTION.required.includes('REVIVE'));
   assert.ok(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.AUDIO.required.includes('LOOT_RARITY'));
+});
+
+
+test('common UI v6 covers housing sandbox settlement farming and processing presentation without owning simulation authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
+  const atoms=[
+    'BUILD_CATALOG_PANEL','BUILD_PIECE_CARD','PLACEMENT_GHOST_STATE','SNAP_INDICATOR','STABILITY_METER','BUILD_TIER_BADGE',
+    'PLACEMENT_VALIDITY_BANNER','BUILD_ACTION_BAR','OBJECT_TRANSFORM_PANEL','GRID_SNAP_CONTROL','MATERIAL_PALETTE_PANEL',
+    'BLUEPRINT_PANEL','UNDO_REDO_BAR','OWNERSHIP_PERMISSION_PANEL','REPAIR_BUILDING_PANEL','DEMOLISH_PREVIEW_PANEL',
+    'UPKEEP_DECAY_PANEL','BED_RESPAWN_PANEL','ROOM_SCORE_PANEL','FURNITURE_CATALOG','SETTLEMENT_OVERVIEW',
+    'FARM_PLOT_PANEL','ANIMAL_HOUSING_PANEL','PROCESSING_MACHINE_PANEL'
+  ];
+  assert.equal(catalog.version,6);
+  assert.equal(catalog.atoms.length,108);
+  assert.equal(catalog.housingSandboxContract.version,1);
+  assert.equal(evidence.housingSandboxComponentCount,24);
+  for(const atom of atoms){
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.match(source,new RegExp('"' + atom + '"'));
+  }
+  for(const surface of ['HOUSING_BUILD','PLACEMENT_FEEDBACK','SANDBOX_EDIT','HOUSING_MANAGEMENT','HOUSING_DECOR','SETTLEMENT','FARMING']){
+    assert.ok(catalog.surfaces.includes(surface),surface);
+  }
+  for(const authority of ['OwnsPlacementAuthority","false','OwnsStabilityCalculation","false','OwnsPermissionAuthority","false','OwnsDecayAuthority","false','OwnsFarmingAuthority","false','OwnsAnimalAuthority","false','OwnsProcessingAuthority","false']){
+    assert.ok(source.includes(authority),authority);
+  }
+  assert.equal(catalog.housingSandboxContract.gameplayAuthority,false);
+  assert.equal(catalog.housingSandboxContract.placementAuthority,false);
+  assert.equal(catalog.housingSandboxContract.stabilityAuthority,false);
+  assert.equal(catalog.housingSandboxContract.ownershipAuthority,false);
+  assert.equal(catalog.housingSandboxContract.saveAuthority,false);
+  assert.equal(catalog.housingSandboxContract.networkAuthority,false);
+});
+
+test('genre system expectations include survival RPG casual sandbox housing cozy farming and settlement depth',()=>{
+  for(const genre of ['SURVIVAL','RPG','CASUAL','SANDBOX','HOUSING','COZY','FARMING','SETTLEMENT']){
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre],genre);
+    assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre].length>=10,genre);
+  }
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.HOUSING.includes('SNAP_SOCKET'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.HOUSING.includes('STRUCTURAL_SUPPORT_PRESENTATION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.SANDBOX.includes('UNDO_REDO'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.SURVIVAL.includes('SHELTER'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.RPG.includes('SET_BONUS'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.COZY.includes('HOME_CUSTOMIZATION'));
+  assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS.FARMING.includes('PROCESSING_MACHINE'));
+});
+
+test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.version,53);
+  assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
+  assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
+  assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
+  for(const id of [
+    'roblox-common-building-foundation-triangle','roblox-common-building-roof-slope','roblox-common-building-gate-frame',
+    'roblox-common-world-prop-bed-single','roblox-common-world-prop-workbench','roblox-common-world-prop-cooking-hearth',
+    'roblox-common-world-prop-crop-plot','roblox-common-world-prop-animal-trough','roblox-common-world-prop-floor-lamp',
+    'roblox-common-ui-build-catalog-panel','roblox-common-ui-placement-ghost-state','roblox-common-ui-settlement-overview'
+  ]){
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,id);
+    assert.equal(row.companyCommonBase,true,id);
+    assert.equal(row.gameplayAuthority,false,id);
+  }
 });
