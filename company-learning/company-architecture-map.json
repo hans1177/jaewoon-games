@@ -1,5 +1,5 @@
 {
-  "version": 310,
+  "version": 311,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4255,7 +4255,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -6875,5 +6875,26 @@
       "vibeContinuesWithoutAssist": true,
       "noShadowManagerTopology": true
     }
+  },
+  "assetProducerConsumerBoundaryTopology": {
+    "version": 2,
+    "authority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.assetProducerConsumerBoundary",
+    "producerRole": "GRAPHICS_ASSET_PRODUCER",
+    "consumerRole": "BUILD_UP_FLOOR_ASSET_CONSUMER",
+    "producerOwnsAssetCreationQualityEvolutionAndLibraryMutation": true,
+    "consumerOwnsLatestLibraryDiscoveryRankingCompositionGameSourceBindingAndUsageVerification": true,
+    "latestLibraryReadPerBuildUpExecution": true,
+    "fullCurrentLibraryEligibility": true,
+    "existingCompatibleLibraryUseMandatory": true,
+    "genreRestrictionOnEligibility": false,
+    "genreConceptThemeAndOriginAreRankingSignalsOnly": true,
+    "qualityAndTypeUpdatesReevaluateAffectedResponsibilities": true,
+    "existingAssetIsDefaultBaseline": true,
+    "consumerAssetAuthoringForbidden": true,
+    "unresolvedGapRoutesToExistingProducer": true,
+    "producerAndConsumerParallelWhenNoResponsibleFileConflict": true,
+    "independentBuildUpContinuesWhileAssetGapPending": true,
+    "promptContextSubsetIsNotLibraryEligibilitySubset": true,
+    "noNewPipelineWorkflowQueueSchedulerOrShadowTopology": true
   }
 }
