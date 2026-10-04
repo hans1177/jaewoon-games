@@ -9,21 +9,21 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-10-04T12:57:45.163Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
+      "calls": 5,
+      "successes": 1,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4945,
-      "lastMs": 3489,
+      "totalMs": 12955,
+      "lastMs": 3076,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T12:55:24.607Z"
+      "updatedAt": "2026-10-04T12:57:48.241Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,17 +114,28 @@
       "updatedAt": "2026-10-04T12:55:37.887Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
+      "calls": 3,
       "successes": 0,
-      "failures": 2,
+      "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 38989,
-      "lastMs": 20308,
+      "totalMs": 44680,
+      "lastMs": 5691,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T12:55:41.426Z"
+      "updatedAt": "2026-10-04T12:57:50.856Z"
+    },
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 120002,
+      "lastMs": 120002,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T12:57:41.429Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T12:55:41.426Z"
+  "updatedAt": "2026-10-04T12:57:50.857Z"
 }
