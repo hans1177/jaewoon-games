@@ -1842,7 +1842,13 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const nextVolumeActionRows=volumeReady?[]:[
     ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
     ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
-  ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96);
+  ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96).sort((a,b)=>{
+    const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
+    const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
+    const scoreA=Number(a.priority||0)+deficitA;
+    const scoreB=Number(b.priority||0)+deficitB;
+    return scoreB-scoreA||Number(b.priority||0)-Number(a.priority||0)||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId));
+  });
   const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
     const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
