@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g10-d541ddcde50f",
-  "directiveFingerprint": "d541ddcde50fb7a4609fd4c97ec6fcde3c72dfc161b6c8cb55af468374ca5f96",
-  "previousDirectiveFingerprint": "3814cf0a19093cf18be32ebd90dd148d1cc688ca025261530c4d9247681902e7",
-  "forbiddenRepeatFingerprint": "3814cf0a19093cf18be32ebd90dd148d1cc688ca025261530c4d9247681902e7",
+  "directiveId": "seed-casual-realm-weaver-build-up-g11-f820a51f1529",
+  "directiveFingerprint": "f820a51f15296bd1a8bf12e0eda3855aa01364c3fadef1119100ed9eb46732ed",
+  "previousDirectiveFingerprint": "d541ddcde50fb7a4609fd4c97ec6fcde3c72dfc161b6c8cb55af468374ca5f96",
+  "forbiddenRepeatFingerprint": "d541ddcde50fb7a4609fd4c97ec6fcde3c72dfc161b6c8cb55af468374ca5f96",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 10,
+  "generation": 11,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "1e1305fe70b787379dfea7829a48b19e13091cf6b89fc7a95ad9e7ef03ff1045",
+  "sourceTreeFingerprint": "ac7ddc099d5b140057ec8006a7742b40cf1f3d086b6876fc07fd85582f1a2edb",
   "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
@@ -267,9 +267,9 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 9,
-    "previousSourceTreeFingerprint": "7d4f1fd9b0f31c5932110928d4228cbbb6f119d6827b7f582299111000780dce",
-    "currentSourceTreeFingerprint": "1e1305fe70b787379dfea7829a48b19e13091cf6b89fc7a95ad9e7ef03ff1045",
+    "previousGeneration": 10,
+    "previousSourceTreeFingerprint": "1e1305fe70b787379dfea7829a48b19e13091cf6b89fc7a95ad9e7ef03ff1045",
+    "currentSourceTreeFingerprint": "ac7ddc099d5b140057ec8006a7742b40cf1f3d086b6876fc07fd85582f1a2edb",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -280,7 +280,7 @@
       "artifactIdentity": "sha256:65fe6c97208ad8a325dda43e14d041e550265272364d872282eb799212c4174b",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
       "workflowRunId": 37229834460,
-      "testedAt": "2026-10-04T20:13:12.789Z",
+      "testedAt": "2026-10-04T20:13:52.603Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -373,9 +373,22 @@
         }
       ]
     },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:3",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1525,7 +1538,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1537,7 +1550,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 80856,
+        "sourceBytes": 80858,
         "largestFileBytes": 43738,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1570,8 +1583,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 4,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
+    "themeDepth": 5,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=4; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1581,7 +1594,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 4
+        "PRESENTATION_WORLD_COHESION": 5
       },
       "sequence": [
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1591,6 +1604,7 @@
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1627,7 +1641,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 174,
+        "score": 156,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2370,15 +2384,15 @@
     "expectedPlayerEffect": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
+      "reason": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "1e1305fe70b787379dfea7829a48b19e13091cf6b89fc7a95ad9e7ef03ff1045",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "ac7ddc099d5b140057ec8006a7742b40cf1f3d086b6876fc07fd85582f1a2edb",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2390,7 +2404,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2421,7 +2435,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 11,
+    "nextGeneration": 12,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2495,5 +2509,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T17:25:08.680Z"
+  "generatedAt": "2026-10-04T20:18:58.182Z"
 }
