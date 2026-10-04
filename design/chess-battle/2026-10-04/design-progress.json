@@ -12,18 +12,18 @@
   "lastSuccessfulModelCallAt": "2026-10-04T14:04:10.744Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 10,
+      "calls": 11,
       "successes": 2,
-      "failures": 8,
+      "failures": 9,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 26933,
-      "lastMs": 2962,
+      "totalMs": 28549,
+      "lastMs": 1616,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T14:04:13.707Z"
+      "updatedAt": "2026-10-04T14:05:50.721Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -125,17 +125,17 @@
       "updatedAt": "2026-10-04T14:04:16.442Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 360011,
-      "lastMs": 120008,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T14:04:06.632Z"
+      "jsonFailures": 1,
+      "totalMs": 451611,
+      "lastMs": 91600,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T14:05:48.043Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T14:04:16.443Z"
+  "updatedAt": "2026-10-04T14:05:50.722Z"
 }
