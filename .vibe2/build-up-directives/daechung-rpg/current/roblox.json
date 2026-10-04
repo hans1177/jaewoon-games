@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g8-14c8089823ec",
-  "directiveFingerprint": "14c8089823ecd7f101c13d20bc796200dab1bec3741f360e5b636e47ddaade84",
-  "previousDirectiveFingerprint": "e772b2117d78cf8ea068d79235268aed8b75d5744518a8dd0be3982bab22ec71",
-  "forbiddenRepeatFingerprint": "e772b2117d78cf8ea068d79235268aed8b75d5744518a8dd0be3982bab22ec71",
+  "directiveId": "daechung-rpg-build-up-g9-29fbcab28792",
+  "directiveFingerprint": "29fbcab28792af94f7a981a9fde1ea59176b1f0827c473bc691b52128ab37585",
+  "previousDirectiveFingerprint": "14c8089823ecd7f101c13d20bc796200dab1bec3741f360e5b636e47ddaade84",
+  "forbiddenRepeatFingerprint": "14c8089823ecd7f101c13d20bc796200dab1bec3741f360e5b636e47ddaade84",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "c9f81c4571cf480d0ef92b2d70f862118baac133ce9169fe574363ff7e9ea200",
+  "sourceTreeFingerprint": "939605f441912b050e337679b2262d99690f8cfdd0359b235680dc21e8a51d5b",
   "designFingerprint": "180b392ae260071d960a586fd46e312d83468098133916a5cd5f62c7bdd7feaa",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "99cf37ab56b7c5d6cad41b86c3ebc75adb855ec23feee9034d0e3893c1fa5a6a",
-    "currentSourceTreeFingerprint": "c9f81c4571cf480d0ef92b2d70f862118baac133ce9169fe574363ff7e9ea200",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "c9f81c4571cf480d0ef92b2d70f862118baac133ce9169fe574363ff7e9ea200",
+    "currentSourceTreeFingerprint": "939605f441912b050e337679b2262d99690f8cfdd0359b235680dc21e8a51d5b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1729,8 +1729,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1740,9 +1740,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1786,7 +1787,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 92,
+        "score": 74,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2526,7 +2527,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c9f81c4571cf480d0ef92b2d70f862118baac133ce9169fe574363ff7e9ea200",
+      "sourceTreeFingerprint": "939605f441912b050e337679b2262d99690f8cfdd0359b235680dc21e8a51d5b",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2573,7 +2574,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2638,5 +2639,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T07:08:32.991Z"
+  "generatedAt": "2026-10-04T13:47:22.969Z"
 }
