@@ -791,6 +791,9 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.match(built.result.sharedConfig,/FRAME_PANEL/);
   assert.match(built.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(built.result.clientCode,/Config\.StudioAssets/);
+  assert.match(built.result.clientCode,/local studioAssetFamilies = Config\.StudioAssets and Config\.StudioAssets\.Families or \{\}/);
+  assert.match(built.result.clientCode,/local function studioAssetFamily\(family\)/);
+  assert.match(built.result.clientCode,/hasStudioAtom\("UI", "FRAME_PANEL"\)/);
   assert.match(built.result.clientCode,/StudioHealthTrack/);
   assert.match(built.result.clientCode,/Instance\.new\("Frame"\)/);
 });
