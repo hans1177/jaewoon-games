@@ -470,7 +470,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
     return !value||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value)||lower.includes('unknown')||lower.includes('출처 불명')||lower.includes('재배포 제한');
   };
-  const normalizeRepoPath=value=>clean(value).replace(/^\\/+/, '').replaceAll('\\\\','/');
+  const normalizeRepoPath=value=>clean(value).replace(/^\/+/, '').replaceAll('\\','/');
   const missingRepositoryAssetIds=[];
   const sourcePathGroups=new Map();
   let repositoryPathPresentCount=0;
@@ -510,10 +510,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     byGame.get(game).add([kind,sourcePath].filter(Boolean).join(':'));
   };
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
-  const sourceExt=/\\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
+  const sourceExt=/\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
   const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
   const assetIdSet=new Set(assetIds);
-  const assetIdTokenPattern=/[A-Za-z0-9][A-Za-z0-9._:\\/-]{3,127}/g;
+  const assetIdTokenPattern=/[A-Za-z0-9][A-Za-z0-9._:\/-]{3,127}/g;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
   let sourceFilesScanned=0,sourceBytesScanned=0,sourceTokenCandidatesScanned=0,sourceExactAssetIdTokenHits=0;
   for(const gameRootName of gameRoots){
