@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -29,6 +29,54 @@
       "source": "RobloxCommonUI.luau",
       "factory": "CreateHealthBar",
       "role": "HEALTH_STATUS_READOUT"
+    },
+    {
+      "atomId": "INVENTORY_SLOT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventorySlot",
+      "role": "INVENTORY_SLOT"
+    },
+    {
+      "atomId": "TOOLTIP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTooltip",
+      "role": "CONTEXT_TOOLTIP"
+    },
+    {
+      "atomId": "MODAL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateModal",
+      "role": "MODAL_DIALOG"
+    },
+    {
+      "atomId": "TAB_BUTTON",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTabButton",
+      "role": "TAB_NAVIGATION"
+    },
+    {
+      "atomId": "QUEST_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateQuestCard",
+      "role": "QUEST_SUMMARY"
+    },
+    {
+      "atomId": "CURRENCY_CHIP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCurrencyChip",
+      "role": "CURRENCY_READOUT"
+    },
+    {
+      "atomId": "BAR_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateProgressBar",
+      "role": "GENERIC_PROGRESS_READOUT"
+    },
+    {
+      "atomId": "MOBILE_ACTION_BUTTON",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMobileActionButton",
+      "role": "MOBILE_TOUCH_ACTION"
     }
   ]
 }
