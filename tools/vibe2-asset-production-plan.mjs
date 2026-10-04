@@ -511,11 +511,31 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   };
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
   const sourceExt=/\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
-  const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
-  const assetIdSet=new Set(assetIds);
+  const sourceIdentityCandidates=new Map();
+  const addSourceIdentity=(value,assetId,field)=>{
+    const marker=clean(value),id=clean(assetId);
+    if(!id||marker.length<4||!/^[A-Za-z0-9][A-Za-z0-9._:\/-]{3,127}$/.test(marker))return;
+    if(!sourceIdentityCandidates.has(marker))sourceIdentityCandidates.set(marker,[]);
+    sourceIdentityCandidates.get(marker).push({assetId:id,field});
+  };
+  for(const asset of next.assets){
+    addSourceIdentity(asset?.id,asset?.id,'id');
+    addSourceIdentity(asset?.assetId,asset?.id,'assetId');
+    addSourceIdentity(asset?.atomId,asset?.id,'atomId');
+  }
+  const sourceIdentityMap=new Map();
+  let ambiguousSourceIdentityMarkerCount=0;
+  for(const [marker,candidates] of sourceIdentityCandidates){
+    const direct=candidates.filter(row=>row.field==='id');
+    const pool=direct.length?direct:candidates;
+    const assetIds=[...new Set(pool.map(row=>row.assetId))];
+    if(assetIds.length!==1){ambiguousSourceIdentityMarkerCount++;continue;}
+    sourceIdentityMap.set(marker,{assetId:assetIds[0],fields:[...new Set(pool.filter(row=>row.assetId===assetIds[0]).map(row=>row.field))]});
+  }
+  const sourceIdentitySet=new Set(sourceIdentityMap.keys());
   const assetIdTokenPattern=/[A-Za-z0-9][A-Za-z0-9._:\/-]{3,127}/g;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
-  let sourceFilesScanned=0,sourceBytesScanned=0,sourceTokenCandidatesScanned=0,sourceExactAssetIdTokenHits=0;
+  let sourceFilesScanned=0,sourceBytesScanned=0,sourceTokenCandidatesScanned=0,sourceExactIdentityTokenHits=0,sourceExactAssetIdTokenHits=0,sourceAliasTokenHits=0;
   for(const gameRootName of gameRoots){
     const gameRoot=path.join(repoRoot,gameRootName);
     let gameDirs=[];
@@ -566,11 +586,15 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           const seenInFile=new Set();
           for(const match of content.matchAll(assetIdTokenPattern)){
             sourceTokenCandidatesScanned++;
-            const assetId=match[0];
-            if(!assetIdSet.has(assetId)||seenInFile.has(assetId))continue;
-            seenInFile.add(assetId);
-            sourceExactAssetIdTokenHits++;
-            addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+            const marker=match[0],identity=sourceIdentityMap.get(marker);
+            if(!sourceIdentitySet.has(marker)||!identity)continue;
+            const evidenceKey=marker+'|'+identity.assetId;
+            if(seenInFile.has(evidenceKey))continue;
+            seenInFile.add(evidenceKey);
+            sourceExactIdentityTokenHits++;
+            if(identity.fields.includes('id'))sourceExactAssetIdTokenHits++;
+            else sourceAliasTokenHits++;
+            addConsumption(identity.assetId,gameId,'SOURCE_IDENTITY_MARKER_'+identity.fields.join('_').toUpperCase(),relativeSource);
           }
         }
       }
@@ -619,18 +643,25 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
     sourceConsumptionCoveragePct,
-    sourceScanStrategy:'SINGLE_PASS_ASSET_ID_TOKEN_SET',
+    sourceScanStrategy:'SINGLE_PASS_REGISTRY_IDENTITY_TOKEN_SET',
+    sourceIdentityFields:Object.freeze(['id','assetId','atomId']),
+    sourceIdentityMarkerCount:sourceIdentityMap.size,
+    ambiguousSourceIdentityMarkerCount,
     sourceFilesScanned,
     sourceBytesScanned,
     sourceTokenCandidatesScanned,
+    sourceExactIdentityTokenHits,
     sourceExactAssetIdTokenHits,
-    naiveAssetIdFileComparisonUpperBound:sourceFilesScanned*assetIds.length,
+    sourceAliasTokenHits,
+    naiveIdentityFileComparisonUpperBound:sourceFilesScanned*sourceIdentityMap.size,
+    naiveAssetIdFileComparisonUpperBound:sourceFilesScanned*next.assets.length,
     perFileAssetIdLoopEliminated:true,
+    ambiguousAliasesDoNotCountAsConsumption:true,
     sourceScanComplexity:'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)',
     bottleneckState:repositoryAssetBottleneckState,
     bottleneckActions:repositoryAssetBottleneckActions,
     bottleneckScope:'INTERNAL_ASSET_SEARCH_AND_SOURCE_CONSUMPTION_ONLY',
-    sourceConsumptionEvidenceMode:'EXACT_ASSET_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
+    sourceConsumptionEvidenceMode:'EXACT_REGISTRY_ID_ASSET_ID_OR_ATOM_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
     sourceConsumptionDoesNotPromoteProductionVerification:true
   };
 
