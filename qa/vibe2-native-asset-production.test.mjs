@@ -64,6 +64,17 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.applicationCoverage.noArtificialFamilyUseCap,true);
   assert.equal(a.applicationCoverage.noArtificialGameplaySignalCoverageCap,true);
   assert.equal(a.applicationCoverage.noArtificialCombinationCap,true);
+  assert.equal(a.applicationCoverage.applicableSelectionCoverageTargetPct,100);
+  assert.equal(a.applicationCoverage.allApplicableSelectionsRequireDisposition,true);
+  assert.equal(a.applicationCoverage.silentDropForbidden,true);
+  assert.equal(a.applicationCoverage.blankPresentationForbiddenWhenCompatibleInternalAssetExists,true);
+  assert.equal(a.applicationCoverage.defaultPrimitiveForbiddenWhenCompatibleInternalAssetExists,true);
+  assert.equal(a.applicationCoverage.emptyUiSurfaceForbiddenWhenCompatibleUiAssetExists,true);
+  assert.equal(a.applicationCoverage.silentAudioGapForbiddenWhenCompatibleAudioRoleExists,true);
+  assert.equal(a.applicationCoverage.staticMotionGapForbiddenWhenCompatibleMotionExists,true);
+  assert.equal(a.applicationCoverage.missingVfxFeedbackForbiddenWhenCompatibleVfxExists,true);
+  assert.ok(a.applicationCoverage.mandatoryDispositionIds.includes('common-sword'));
+  assert.deepEqual(a.applicationCoverage.allowedDispositions,['APPLIED','HARD_BLOCKED','CARRY_FORWARD_NEXT_BUILD_UP']);
   assert.equal(a.applicationCoverage.contextBudgetIsNotUsageCap,true);
   assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
   assert.equal(a.synchronization.selectedSubsetOnly,true);
@@ -102,6 +113,10 @@ test('Vibe source loads only selected internal asset API context with hard bound
   assert.match(source,/Internal quality score is NOT a usage gate/);
   assert.match(source,/leaving a blank\/default\/primitive presentation/);
   assert.match(source,/NO artificial asset-count, family-count, gameplay-signal, or combination cap/);
+  assert.match(source,/Every applicable selected asset or flow requirement MUST receive one explicit disposition/);
+  assert.match(source,/Silent dropping is forbidden/);
+  assert.match(source,/Blank\/default\/primitive presentation is forbidden when a safe compatible internal asset exists/);
+  assert.match(source,/Carry-forward remains eligible and must be reconsidered next cycle until applicable coverage reaches 100%/);
   assert.match(source,/Context\/API batching is only synchronization optimization and MUST NOT become a usage cap/);
   assert.match(source,/explicit signal matrix is a FLOOR, not a ceiling/i);
   assert.match(source,/Unknown source events may use the generic presentation fallback/i);
