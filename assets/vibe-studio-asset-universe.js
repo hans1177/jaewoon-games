@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:6,
+  version:7,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1482,6 +1482,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'ATTACH_LICENSE_VERIFIED_FREE_SOURCE_CANDIDATES_TO_WORKLIST',
     'KEEP_FREE_SOURCE_CANDIDATES_METADATA_ONLY_UNTIL_SELECTED',
     'ACQUIRE_SELECTED_FREE_SOURCE_ON_DEMAND',
+    'OVERLAY_SOURCE_BOUND_REFERENCE_IMAGE_IDEAS_FOR_CURRENT_TASK',
     'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
@@ -1503,6 +1504,18 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
   freeSourceCandidateLimitPerAction:8,
   freeSourceCatalogSufficiencyCount:12,
+  referenceImageIdeaOverlay:Object.freeze({
+    enabled:true,
+    priority:'CURRENT_TASK_BEFORE_PERSISTED_GENERIC_VOLUME_ACTIONS',
+    taskLocalOnly:true,
+    persistentRegistryStorageForbidden:true,
+    rawImagePersistentLearningForbidden:true,
+    sourceBoundObservationRequired:true,
+    directCopyForbidden:true,
+    unseenGeometryAndMotionRemainCreativeProposals:true,
+    productionPromotionAutomatic:false,
+    producedAssetMayEnterCatalogOnlyAfterNormalAssetQA:true
+  }),
   reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
   freeOriginalVolumePolicy:Object.freeze({
     priority:'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING',
@@ -1928,6 +1941,7 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN',
     'REBUILD_UI_SUBSYSTEM_DEPTH',
     'READ_PERSISTED_NEXT_VOLUME_ACTIONS',
+    'OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS',
     'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
     'FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS',
     'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
