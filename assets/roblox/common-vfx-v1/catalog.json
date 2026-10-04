@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-vfx-v1",
   "family": "VFX",
   "platform": "ROBLOX",
@@ -30,5 +30,65 @@
       "factory": "CreateShapeBurst",
       "role": "BURST_FEEDBACK"
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "HIT",
+      "CRITICAL",
+      "BLOCK",
+      "PARRY",
+      "DODGE",
+      "HEAL",
+      "BUFF",
+      "DEBUFF",
+      "STATUS",
+      "LOOT_COMMON",
+      "LOOT_RARE",
+      "LOOT_LEGENDARY",
+      "UPGRADE",
+      "CRAFT",
+      "DISMANTLE",
+      "QUEST_UPDATE",
+      "INTERACTION",
+      "ENVIRONMENT",
+      "WEATHER",
+      "DESTRUCTION",
+      "BOSS",
+      "MOBILE_DENSITY"
+    ],
+    "currentDeclaredComponents": [
+      "IMPACT_FLASH",
+      "TRAIL_SHORT",
+      "SHAPE_BURST"
+    ],
+    "currentAssetCount": 3,
+    "missingComponentCandidates": [
+      "HIT",
+      "CRITICAL",
+      "BLOCK",
+      "PARRY",
+      "DODGE",
+      "HEAL",
+      "BUFF",
+      "DEBUFF",
+      "STATUS",
+      "LOOT_COMMON",
+      "LOOT_RARE",
+      "LOOT_LEGENDARY",
+      "UPGRADE",
+      "CRAFT",
+      "DISMANTLE",
+      "QUEST_UPDATE",
+      "INTERACTION",
+      "ENVIRONMENT",
+      "WEATHER",
+      "DESTRUCTION",
+      "BOSS",
+      "MOBILE_DENSITY"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
