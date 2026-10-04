@@ -7,6 +7,102 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function hash(s=''){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
 function pick(seed,a,n=0){return a.length?a[(seed+n)%a.length]:null}
 const ARCHETYPES=Object.freeze({melee:{stance:'forward-weighted',move:['grounded-step','weapon-counterbalance'],attack:['commit-windup','body-rotation','heavy-follow-through']},ranged:{stance:'open-aim',move:['light-step','aim-stabilize'],attack:['aim-settle','release-snap','recoil-settle']},healer:{stance:'protected-center',move:['calm-glide','hand-focus'],attack:['gather','channel','release-wave']},insect:{stance:'low-alert',move:['alternating-leg-rhythm','antenna-scan','body-stabilize'],attack:['prey-lock','thorax-drive','snap-back']},flying:{stance:'hover',move:['bank','lift-response','wing-cycle'],attack:['target-dip','burst','recover-altitude']},heavy:{stance:'wide-grounded',move:['weight-shift','slow-settle'],attack:['large-anticipation','mass-drive','long-recovery']},magic:{stance:'focus-ready',move:['robe-or-part-lag','focus-hand'],attack:['sigil-prep','charge','cast-release']}});
+
+export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
+  version:1,
+  status:'ACTIVE_MACHINE_READABLE_INTERNAL_CHARACTER_CUSTOMIZATION',
+  target:'AAA_DEEP_RPG_CHARACTER_CREATOR_BREADTH_WITH_ORIGINAL_ASSETS',
+  referenceUse:'SYSTEM_BREADTH_AND_EXPRESSION_PRINCIPLES_ONLY',
+  protectedExpressionCopyForbidden:true,
+  exactThirdPartyFaceHairTattooOutfitUiCopyForbidden:true,
+  sharedAssetPoolForPlayerAndNpc:true,
+  npcUsesSameMorphPartMaterialAndMotionGrammar:true,
+  generatedCombinationSpaceIsNotAuthoredAssetCount:true,
+  targetMinimums:Object.freeze({
+    BODY_ARCHETYPE:12,
+    HEAD_BASE:48,
+    FACE_MORPH_CONTROL:28,
+    SKIN_TONE_FAMILY:32,
+    SKIN_DETAIL:24,
+    EYE_COLOR:32,
+    EYE_SHAPE:20,
+    BROW_STYLE:20,
+    HAIR_STYLE:48,
+    HAIR_COLOR:32,
+    HAIR_HIGHLIGHT:24,
+    HAIR_GRAYING:12,
+    FACIAL_HAIR:24,
+    SCAR:24,
+    TATTOO_OR_BODY_MARK:32,
+    MAKEUP:32,
+    PIERCING:24,
+    AGE_PRESENTATION:12,
+    SPECIES_PART:32,
+    CLOTHING_LAYER_VARIANT:60,
+    ACCESSORY:48,
+    EXPRESSION_SET:24,
+    GAIT_IDENTITY:24,
+    VOICE_PRESENTATION:12
+  }),
+  bodyAxes:Object.freeze([
+    'HEIGHT_PRESENTATION','VISUAL_MASS','SHOULDER_WIDTH','TORSO_LENGTH','TORSO_DEPTH','PELVIS_WIDTH',
+    'ARM_LENGTH','LEG_LENGTH','HAND_FOOT_SCALE','HEAD_BODY_RATIO','POSTURE','ASYMMETRY'
+  ]),
+  faceAxes:Object.freeze([
+    'HEAD_BASE','FACE_WIDTH','FACE_LENGTH','FOREHEAD','BROW_HEIGHT','BROW_ANGLE','EYE_SPACING','EYE_SIZE','EYE_TILT',
+    'NOSE_BRIDGE','NOSE_LENGTH','NOSE_WIDTH','CHEEKBONE','CHEEK_FULLNESS','MOUTH_WIDTH','LIP_VOLUME','PHILTRUM',
+    'JAW_WIDTH','JAW_DEPTH','CHIN_WIDTH','CHIN_PROJECTION','EAR_SIZE','EAR_ANGLE','LEFT_RIGHT_ASYMMETRY'
+  ]),
+  surfaceAxes:Object.freeze([
+    'SKIN_TONE','UNDERTONE','FRECKLES','VITILIGO_OR_PIGMENT_PATTERN','BLEMISH','SCAR','TATTOO_OR_BODY_MARK',
+    'MAKEUP_EYE','MAKEUP_LIP','MAKEUP_FACE','ROUGHNESS','WEATHERING','AGE_LINES'
+  ]),
+  eyeHairAxes:Object.freeze([
+    'LEFT_EYE_COLOR','RIGHT_EYE_COLOR','HETEROCHROMIA','IRIS_PATTERN','SCLERA_TINT','BROW_STYLE',
+    'HAIR_STYLE','HAIR_TEXTURE','HAIR_LENGTH','HAIR_PRIMARY_COLOR','HAIR_HIGHLIGHT','HAIR_GRAYING',
+    'FACIAL_HAIR_STYLE','FACIAL_HAIR_COLOR'
+  ]),
+  speciesAxes:Object.freeze([
+    'EAR_SHAPE','HORN_SHAPE','HORN_COLOR','TAIL_SHAPE','CREST','SHELL_OR_SCALE_REGION','FANG_OR_TUSK','SPECIES_APPENDAGE'
+  ]),
+  outfitAxes:Object.freeze([
+    'HEAD','HAIR','FACE','EAR','NECK','TORSO_BASE','TORSO_INNER','TORSO_OUTER','SHOULDER','ARM',
+    'GLOVE','WAIST','BELT','HIP','LEG_INNER','LEG_OUTER','BOOT','BACK','CAPE','PIERCING','ACCESSORY','SPECIES_PART'
+  ]),
+  npcContextAxes:Object.freeze([
+    'REGION','CULTURE','OCCUPATION','FACTION','SOCIAL_CLASS','WEALTH','AGE_BAND','CLIMATE','DAMAGE_WEAR','PERSONAL_HISTORY'
+  ]),
+  presentationAxes:Object.freeze([
+    'EXPRESSION_SET','IDLE_PERSONALITY','GAIT_IDENTITY','GESTURE_FAMILY','VOICE_PRESENTATION','EQUIPMENT_CARRY_STYLE'
+  ]),
+  npcPopulationRules:Object.freeze({
+    colorOnlyDuplicateForbidden:true,
+    faceSwapCloneForbidden:true,
+    minimumDistinctIdentityAxesPerNearbyPair:5,
+    sameHeadHairOutfitCombinationReuseLimitPerLocalCrowd:1,
+    regionAndOccupationMayBiasSelectionButDoNotHardLockEligibility:true,
+    heroNpcGetsCloseupDetailPriority:true,
+    backgroundNpcMayUseLodButMustKeepDistinctSilhouette:true,
+    deterministicRecipeFromStableSeed:true,
+    speciesPartCompatibilityRequired:true,
+    gameplayStatsUnaffected:true
+  }),
+  production:Object.freeze({
+    preferExistingMorphPartRigAndMaterialLibrary:true,
+    licensedFreeSourceAdaptationBeforeNewAuthoring:true,
+    photoObservationMaySeedVisibleFormAndSurfaceIdeas:true,
+    unseenGeometryAndMotionRemainCreativeProposals:true,
+    editableDccSourceRequiredForNewMorphs:true,
+    platformNativeVariantsRequired:true,
+    mobileLodRequired:true,
+    runtimeVerificationRequiredBeforeProductionPromotion:true
+  }),
+  gameplayAuthority:false,
+  balanceAuthority:false,
+  saveAuthority:false,
+  networkAuthority:false
+});
+
 export function inferVibeCharacterArchetypes({role='',species='',weapon='',traits=[]}={}){const t=`${role} ${species} ${weapon} ${(traits||[]).join(' ')}`.toLowerCase(),out=[];if(/sword|melee|warrior|검|전사/.test(t))out.push('melee');if(/bow|gun|ranged|archer|활|궁수|총/.test(t))out.push('ranged');if(/heal|support|힐|치유/.test(t))out.push('healer');if(/insect|mantis|ant|bee|spider|scorpion|벌레|사마귀|개미|벌|거미|전갈/.test(t))out.push('insect');if(/fly|wing|bird|bee|날개|비행|새/.test(t))out.push('flying');if(/heavy|giant|tank|boss|거대|중갑|보스/.test(t))out.push('heavy');if(/magic|mage|staff|wizard|마법|지팡이/.test(t))out.push('magic');return Object.freeze(out.length?uniq(out):['melee'])}
 
 // 키/몸무게는 게임 스탯이 아니라 시각적 신체 정체성이다. 기존 collision/game-scale은 그대로 보존한다.
@@ -109,8 +205,126 @@ export function createVibeCharacterAssetMorphPlan(character={},index=0){
     rule:'use authored part/morph ranges and real mesh-rig-material construction; never arbitrary whole-sprite scaling or color-only completion'
   });
 }
+
+const VIBE_CUSTOM_BODY_ARCHETYPES=Object.freeze(['SLENDER','COMPACT','BALANCED','ATHLETIC','BROAD','HEAVY','TALL','SHORT','STRONG','LEAN','MATURE','ELDER_POSTURE']);
+const VIBE_CUSTOM_HEAD_FAMILIES=Object.freeze(['ANGULAR','ROUND','LONG','SQUARE','SOFT','SHARP','HEART','DIAMOND','BROAD_CHEEKBONE','NARROW_JAW','HEAVY_JAW','HIGH_BROW']);
+const VIBE_CUSTOM_HAIR_FAMILIES=Object.freeze(['CROPPED','SHORT_LAYERED','SIDE_PART','SWEPT','BOB','SHOULDER','LONG_STRAIGHT','LONG_WAVY','CURLY','COILY','BRAIDED','MULTI_BRAID','PONYTAIL','BUN','TOPKNOT','HALF_UP','SHAVED_SIDE','UNDERCUT','MOHAWK','MESSY','LOOSE_TIED','NONE']);
+const VIBE_CUSTOM_FACIAL_HAIR=Object.freeze(['NONE','STUBBLE','MOUSTACHE','GOATEE','SHORT_BEARD','FULL_BEARD','BRAIDED_BEARD','SIDEBURNS']);
+const VIBE_CUSTOM_MARKS=Object.freeze(['NONE','FRECKLES','VITILIGO_PATTERN','SCAR_LIGHT','SCAR_HEAVY','TATTOO_FINE','TATTOO_BOLD','CULTURAL_MARK','BLEMISH','WEATHERED']);
+const VIBE_CUSTOM_ACCESSORIES=Object.freeze(['NONE','EAR_STUD','EAR_RING','MULTI_EAR','NOSE_RING','BROW_RING','NECK_CHARM','HAIR_ORNAMENT','HEADBAND','SPECTACLE_OR_LENS','ROLE_BADGE','PERSONAL_TOKEN']);
+function normalizedSeedValue(seed,offset=0){return ((seed+Math.imul(offset+1,2654435761))>>>0)/4294967295;}
+export function createVibeCharacterCustomizationRecipe(character={},index=0){
+  const seed=hash(`${character.name||'character'}|${character.species||'humanoid'}|${character.role||''}|${character.region||''}|custom|${index}`);
+  const identity=createVibeMotionIdentity(character,index);
+  const value=offset=>Math.round(normalizedSeedValue(seed,offset)*1000)/1000;
+  const speciesKey=String(character.species||'humanoid').toUpperCase();
+  const leftEye=pick(seed,['BROWN','AMBER','HAZEL','GREEN','BLUE','GRAY','DARK','PALE','GOLDEN','FANTASY_ACCENT'],31);
+  const heterochromia=value(32)>.82;
+  const elfLike=/ELF|FAE/.test(speciesKey);
+  const horned=/TIEFLING|DEMON|DEVIL|DRACON|HORN|BEAST/.test(speciesKey);
+  const tailed=/TIEFLING|DEMON|DEVIL|DRACON|BEAST|FELINE|LIZARD/.test(speciesKey);
+  const recipe=Object.freeze({
+    recipeId:`CUSTOM_${String(seed).toUpperCase()}`,
+    character:character.name||`character-${index+1}`,
+    species:String(character.species||'humanoid').toUpperCase(),
+    region:String(character.region||'').toUpperCase()||null,
+    role:String(character.role||'').toUpperCase()||null,
+    body:Object.freeze({
+      archetype:pick(seed,VIBE_CUSTOM_BODY_ARCHETYPES,1),
+      heightPresentation:value(2),visualMass:value(3),shoulderWidth:value(4),torsoLength:value(5),torsoDepth:value(6),
+      pelvisWidth:value(7),armLength:value(8),legLength:value(9),handFootScale:value(10),headBodyRatio:value(11),
+      posture:identity.body.posture,asymmetry:value(12)
+    }),
+    head:Object.freeze({
+      baseFamily:pick(seed,VIBE_CUSTOM_HEAD_FAMILIES,13),
+      faceWidth:value(14),faceLength:value(15),forehead:value(16),browHeight:value(17),browAngle:value(18),
+      eyeSpacing:value(19),eyeSize:value(20),eyeTilt:value(21),noseBridge:value(22),noseLength:value(23),noseWidth:value(24),
+      cheekbone:value(25),cheekFullness:value(26),mouthWidth:value(27),lipVolume:value(28),jawWidth:value(29),
+      jawDepth:value(30),chinProjection:value(31),earScale:value(33)
+    }),
+    eyes:Object.freeze({
+      leftColor:leftEye,
+      rightColor:heterochromia?pick(seed,['BROWN','AMBER','HAZEL','GREEN','BLUE','GRAY','DARK','PALE','GOLDEN','FANTASY_ACCENT'],34):leftEye,
+      heterochromia,
+      irisPattern:pick(seed,['CLEAR','RINGED','RADIAL','SOFT_MOTTLED'],35)
+    }),
+    hair:Object.freeze({
+      style:pick(seed,VIBE_CUSTOM_HAIR_FAMILIES,36),
+      texture:pick(seed,['STRAIGHT','WAVY','CURLY','COILY','MIXED'],37),
+      primaryColor:pick(seed,['BLACK','DARK_BROWN','BROWN','AUBURN','BLONDE','PLATINUM','GRAY','WHITE','FANTASY_ACCENT'],38),
+      highlight:pick(seed,['NONE','SUBTLE','STRONG','TIP','UNDERLAYER'],39),
+      graying:pick(seed,['NONE','TEMPLE','STREAK','PARTIAL','FULL'],40),
+      facialHair:pick(seed,VIBE_CUSTOM_FACIAL_HAIR,41)
+    }),
+    surface:Object.freeze({
+      toneFamily:pick(seed,['NEUTRAL_LIGHT','NEUTRAL_MEDIUM','NEUTRAL_DARK','WARM_LIGHT','WARM_MEDIUM','WARM_DARK','COOL_LIGHT','COOL_MEDIUM','COOL_DARK','FANTASY_TONE'],42),
+      detail:pick(seed,VIBE_CUSTOM_MARKS,43),
+      agePresentation:pick(seed,['YOUNG_ADULT','ADULT','MATURE','WEATHERED','ELDER'],44),
+      makeupEye:pick(seed,['NONE','LIGHT','LINED','SMOKED','CEREMONIAL'],45),
+      makeupLip:pick(seed,['NONE','NATURAL','TINT','DARK','CEREMONIAL'],46)
+    }),
+    speciesParts:Object.freeze({
+      ear:elfLike?pick(seed,['POINTED','LONG','NOTCHED'],47):pick(seed,['STANDARD','ROUND','NOTCHED'],47),
+      horn:horned?pick(seed,['SHORT','CURVED','SWEPT','BRANCHED','ASYMMETRIC'],48):'NONE',
+      tail:tailed?pick(seed,['THIN','HEAVY','TUFTED','SPIKED'],49):'NONE',
+      accentColor:pick(seed,['NATURAL','DARK','LIGHT','WARM','COOL','FANTASY_ACCENT'],50),
+      compatibilityChecked:true
+    }),
+    accessory:pick(seed,VIBE_CUSTOM_ACCESSORIES,51),
+    outfit:Object.freeze({
+      fit:identity.equipment.fit,
+      wear:identity.equipment.wear,
+      carry:identity.equipment.carry,
+      layerTheme:pick(seed,['TRAVEL','WORK','CIVILIAN','SCHOLAR','MERCHANT','GUARD','WARRIOR','NOBLE','RITUAL','SURVIVAL'],52)
+    }),
+    presentation:Object.freeze({
+      gait:identity.physical.walk,
+      idle:identity.physical.idle,
+      expressionFamily:pick(seed,['CALM','WARM','GUARDED','PROUD','STERN','PLAYFUL','WEARY','ALERT'],53),
+      gestureFamily:pick(seed,['RESTRAINED','OPEN','FORMAL','WORKING','COMBAT_READY','NERVOUS','CONFIDENT'],54)
+    }),
+    referenceVisibleFeatures:Object.freeze(character.referenceVisibleFeatures&&typeof character.referenceVisibleFeatures==='object'?{...character.referenceVisibleFeatures}:{}),
+    state:'PREPARED_SEMANTIC_CUSTOMIZATION_RECIPE',
+    productionVerified:false,
+    gameplayAuthority:false
+  });
+  return recipe;
+}
+export function createVibeNpcCustomizationPopulation({count=64,seed='npc-population',roles=[],regions=[],species=[]}={}){
+  const total=Math.max(1,Math.min(512,Number(count)||64));
+  const rolePool=roles.length?roles:['CIVILIAN','MERCHANT','WORKER','GUARD','SCHOLAR','TRAVELER','ARTISAN','FARMER'];
+  const regionPool=regions.length?regions:['UNIVERSAL'];
+  const speciesPool=species.length?species:['humanoid'];
+  const recipes=Array.from({length:total},(_,index)=>createVibeCharacterCustomizationRecipe({
+    name:`${seed}-${index+1}`,
+    role:rolePool[index%rolePool.length],
+    region:regionPool[Math.floor(index/rolePool.length)%regionPool.length],
+    species:speciesPool[index%speciesPool.length]
+  },index));
+  const identityKeys=recipes.map(row=>JSON.stringify([
+    row.body.archetype,row.head.baseFamily,row.eyes.leftColor,row.eyes.rightColor,row.hair.style,row.hair.primaryColor,
+    row.surface.detail,row.surface.agePresentation,row.speciesParts.ear,row.speciesParts.horn,row.accessory,row.outfit.layerTheme,
+    row.presentation.expressionFamily,row.presentation.gestureFamily
+  ]));
+  const unique=uniq(identityKeys).length;
+  return Object.freeze({
+    version:1,
+    seed:String(seed),
+    total,
+    unique,
+    diversityPercent:Math.round(unique/total*100),
+    cloneRatePercent:Math.round((total-unique)/total*100),
+    recipes:Object.freeze(recipes),
+    target:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.target,
+    sameAssetPoolAsPlayerCustomization:true,
+    colorOnlyDuplicateForbidden:true,
+    productionVerified:false,
+    gameplayAuthority:false
+  });
+}
+
 export function createVibePopulationPhysicalDiversity(characters=[]){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=rows.map(x=>JSON.stringify([x.body.heightCm,x.body.weightKg,x.body.frame,x.body.proportions,x.body.posture,x.physical.walk.cadence,x.physical.walk.armSwing,x.appearance.face.shape,x.appearance.surface])),unique=uniq(keys).length,score=Math.round(unique/Math.max(1,rows.length)*100);return Object.freeze({score,unique,total:rows.length,cloneRate:Math.round((rows.length-unique)/Math.max(1,rows.length)*100),pass:score>=80})}
 export function createVibePhysicalDiversityGate({characters=[]}={}){const rows=characters.map((c,i)=>createVibeMotionIdentity(c,i)),issues=[];for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const a=rows[i],b=rows[j],same=[a.body.frame===b.body.frame,a.body.proportions.limbs===b.body.proportions.limbs,a.body.posture===b.body.posture,a.physical.walk.cadence===b.physical.walk.cadence,a.physical.walk.armSwing===b.physical.walk.armSwing,a.appearance.face.shape===b.appearance.face.shape].filter(Boolean).length;if(same>=5)issues.push(`${a.name}:${b.name}:physical-clone`)}return Object.freeze({pass:!issues.length,issues:Object.freeze(issues),rule:'major characters must differ across several body appearance and gait axes, not only palette'})}
 export function scoreVibeMotionOriginality(characters=[]){const signatures=characters.map((c,i)=>createVibeMotionIdentity(c,i)),keys=signatures.map(s=>JSON.stringify([s.archetypes,s.body,s.signature.move,s.signature.attack,s.physical.walk])),unique=uniq(keys).length,score=Math.round((unique/Math.max(1,characters.length))*100);return Object.freeze({score,unique,total:characters.length,duplicates:characters.length-unique,needsDiversification:score<80})}
-export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){const plans=characters.map((c,i)=>{const identity=createVibeMotionIdentity(c,i),events=eventMap[c.name]||['idle','move','attack','hit','death'];return Object.freeze({character:c.name,identity,persona:createVibeCharacterPersona(c,i),assetMorph:createVibeCharacterAssetMorphPlan(c,i),signatureMove:createVibeSignatureMove(c,i),gameplayLinks:createVibeGameplayMotionLinks({events,character:c,index:i})})});return Object.freeze({version:4,plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true})})}
-if(typeof window!=='undefined'){Object.assign(window,{inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}
+export function planVibeCharacterIdentityAutopilot({characters=[],eventMap={}}={}){const plans=characters.map((c,i)=>{const identity=createVibeMotionIdentity(c,i),events=eventMap[c.name]||['idle','move','attack','hit','death'];return Object.freeze({character:c.name,identity,persona:createVibeCharacterPersona(c,i),assetMorph:createVibeCharacterAssetMorphPlan(c,i),customization:createVibeCharacterCustomizationRecipe(c,i),signatureMove:createVibeSignatureMove(c,i),gameplayLinks:createVibeGameplayMotionLinks({events,character:c,index:i})})});return Object.freeze({version:5,customizationBreadth:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,plans:Object.freeze(plans.map(row=>Object.freeze({...row,behaviorBrain:resolveVibeCharacterBehaviorIntent({persona:row.persona,context:{}})}))),physicalDiversity:createVibePopulationPhysicalDiversity(characters),personaDiversity:createVibePopulationPersonaDiversity(characters),diversityGate:createVibePhysicalDiversityGate({characters}),originality:scoreVibeMotionOriginality(characters),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',deterministic:true,eventDriven:true,gameplayLinked:true,noRuleMutation:true,avoidGenericMotion:true,variationMustPreserveTiming:true,noWholeSpriteScaleHack:true,playerAndNpcShareCustomizationAssetPool:true,colorOnlyNpcCloneForbidden:true})})}
+if(typeof window!=='undefined'){Object.assign(window,{inferJaewoonVibeCharacterArchetypes:inferVibeCharacterArchetypes,createJaewoonVibeBodyIdentity:createVibeBodyIdentity,createJaewoonVibeAppearanceIdentity:createVibeAppearanceIdentity,createJaewoonVibeEquipmentFitIdentity:createVibeEquipmentFitIdentity,createJaewoonVibeGaitIdentity:createVibeGaitIdentity,createJaewoonVibePhysicalActionLanguage:createVibePhysicalActionLanguage,createJaewoonVibeMotionIdentity:createVibeMotionIdentity,createJaewoonVibeGameplayMotionLinks:createVibeGameplayMotionLinks,createJaewoonVibeSignatureMove:createVibeSignatureMove,createJaewoonVibeCharacterAssetMorphPlan:createVibeCharacterAssetMorphPlan,createJaewoonVibeCharacterCustomizationRecipe:createVibeCharacterCustomizationRecipe,createJaewoonVibeNpcCustomizationPopulation:createVibeNpcCustomizationPopulation,createJaewoonVibePopulationPhysicalDiversity:createVibePopulationPhysicalDiversity,createJaewoonVibePhysicalDiversityGate:createVibePhysicalDiversityGate,scoreJaewoonVibeMotionOriginality:scoreVibeMotionOriginality,createJaewoonVibeCharacterPersona:createVibeCharacterPersona,resolveJaewoonVibeCharacterBehaviorIntent:resolveVibeCharacterBehaviorIntent,createJaewoonVibePopulationPersonaDiversity:createVibePopulationPersonaDiversity,planJaewoonVibeCharacterIdentityAutopilot:planVibeCharacterIdentityAutopilot})}

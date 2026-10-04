@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:4,
+  version:7,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1479,6 +1479,10 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'REBUILD_COMPANY_SEED_DEMAND',
     'REBUILD_REFERENCE_BREADTH_PROFILE_GAPS',
     'FILTER_IDEAS_ALREADY_PRESENT_BY_ID_ATOM_OR_ROLE',
+    'ATTACH_LICENSE_VERIFIED_FREE_SOURCE_CANDIDATES_TO_WORKLIST',
+    'KEEP_FREE_SOURCE_CANDIDATES_METADATA_ONLY_UNTIL_SELECTED',
+    'ACQUIRE_SELECTED_FREE_SOURCE_ON_DEMAND',
+    'OVERLAY_SOURCE_BOUND_REFERENCE_IMAGE_IDEAS_FOR_CURRENT_TASK',
     'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
@@ -1498,11 +1502,35 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
+  freeSourceCandidateLimitPerAction:8,
+  freeSourceCatalogSufficiencyCount:12,
+  referenceImageIdeaOverlay:Object.freeze({
+    enabled:true,
+    priority:'CURRENT_TASK_BEFORE_PERSISTED_GENERIC_VOLUME_ACTIONS',
+    taskLocalOnly:true,
+    persistentRegistryStorageForbidden:true,
+    rawImagePersistentLearningForbidden:true,
+    sourceBoundObservationRequired:true,
+    directCopyForbidden:true,
+    unseenGeometryAndMotionRemainCreativeProposals:true,
+    productionPromotionAutomatic:false,
+    producedAssetMayEnterCatalogOnlyAfterNormalAssetQA:true
+  }),
   reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
   freeOriginalVolumePolicy:Object.freeze({
     priority:'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING',
-    purpose:'FILL_VOLUME_FASTER_THEN_SPEND_MORE_CYCLES_ON_QUALITY',
+    purpose:'ON_DEMAND_GAP_FILL_WHILE_PRIMARY_WORK_FOCUSES_ON_QUALITY_AND_AUTOMATION_DETAIL',
     allowed:'CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED',
+    sourceCatalogMode:'SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION',
+    bulkPrefetchForbidden:true,
+    speculativeDownloadForbidden:true,
+    automaticAcquisitionMode:'SELECTED_WORKLIST_ACTION_ONLY',
+    acquireOnlyWhen:Object.freeze([
+      'ACTIVE_WORKLIST_ACTION_REQUIRES_SOURCE',
+      'NO_SUITABLE_EXISTING_INTERNAL_ASSET',
+      'NO_ACCEPTABLE_DERIVED_OR_RECOMBINED_INTERNAL_VARIANT'
+    ]),
+    reuseDownloadedSourceAcrossFutureCompatibleActions:true,
     commercialUseRequired:true,
     derivativeModificationRequired:true,
     provenanceRequired:true,
@@ -1592,7 +1620,7 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[]}={}){
   const depth=auditCommonLibrarySystemDepth({assets});
   const seedIdeas=seedPlan?.ideas||[];
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
@@ -1600,6 +1628,37 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const domains=[];
+  const freeSourceCategoriesByDomain=Object.freeze({
+    BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
+    CREATURE:Object.freeze(['CREATURE']),
+    MOTION:Object.freeze(['MOTION']),
+    UI:Object.freeze(['UI']),
+    WORLD_PROP:Object.freeze(['PROP']),
+    ENVIRONMENT:Object.freeze(['ENVIRONMENT','MATERIAL','PROP']),
+    ITEM:Object.freeze(['PROP','WEAPON']),
+    SKILL:Object.freeze(['VFX','MOTION']),
+    VFX:Object.freeze(['VFX']),
+    PRESENTATION:Object.freeze(['UI','VFX','AUDIO']),
+    CHARACTER_GEAR:Object.freeze(['CHARACTER','PROP']),
+    WEAPON:Object.freeze(['WEAPON','PROP']),
+    AUDIO:Object.freeze(['AUDIO']),
+    FOLIAGE:Object.freeze(['ENVIRONMENT','PROP']),
+    MATERIAL:Object.freeze(['MATERIAL','ENVIRONMENT'])
+  });
+  const eligibleFreeSources=(externalSources||[]).filter(source=>
+    /LICENSE_VERIFIED/.test(upper(source?.status))
+    &&source?.volumeAdaptationEligible===true
+    &&source?.commercialUseAllowed===true
+    &&source?.derivativesAllowed===true
+  ).map(source=>Object.freeze({
+    id:text(source?.id),
+    categories:Object.freeze(uniq([source?.category,...(Array.isArray(source?.categories)?source.categories:[])]).map(upper)),
+    sourcePriority:Number(source?.sourcePriority||0)
+  })).filter(source=>source.id).sort((a,b)=>b.sourcePriority-a.sourcePriority||a.id.localeCompare(b.id));
+  const freeSourceIdsForDomain=domain=>{
+    const allowed=freeSourceCategoriesByDomain[upper(domain)]||[];
+    return eligibleFreeSources.filter(source=>source.categories.some(category=>allowed.includes(category))).map(source=>source.id);
+  };
   const normalizeIdentity=value=>upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   const existingIdentityTokens=new Set();
   const addExistingIdentity=value=>{
@@ -1777,14 +1836,24 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount})))
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
+    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96);
-  const nextVolumeActions=nextVolumeActionRows.map((row,index)=>Object.freeze({
-    ...row,
-    worklistOrder:index+1,
-    resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
-  }));
+  const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
+  const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
+    const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
+    return Object.freeze({
+      ...row,
+      freeSourceAvailable,
+      freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
+      freeSourceAcquisitionMode:freeSourceAvailable?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_AVAILABLE',
+      bulkPrefetchAllowed:false,
+      speculativeDownloadAllowed:false,
+      acquireExternalOnlyAfterInternalReuseFailure:true,
+      worklistOrder:index+1,
+      resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
+    });
+  });
   return Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1804,6 +1873,12 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeActionConsumption:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,
     reuseResolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,
     freeOriginalVolumePolicy:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy,
+    eligibleFreeSourceCount:eligibleFreeSources.length,
+    freeSourceCandidateLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,
+    freeSourceCatalogSufficiencyCount:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount,
+    freeSourceCatalogReady,
+    freeSourceCatalogExpansionMode:freeSourceCatalogReady?'PAUSED_UNTIL_REAL_COVERAGE_GAP':'TARGETED_GAP_ONLY',
+    primaryAttention:freeSourceCatalogReady?'QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL':'TARGETED_SOURCE_GAP_AND_QUALITY',
     ideaDeduplication:Object.freeze({
       fields:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.ideaDeduplicationFields,
       existingIdentityCount:existingIdentityTokens.size,
@@ -1866,6 +1941,7 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN',
     'REBUILD_UI_SUBSYSTEM_DEPTH',
     'READ_PERSISTED_NEXT_VOLUME_ACTIONS',
+    'OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS',
     'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
     'FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS',
     'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
@@ -2306,7 +2382,10 @@ export function createSurvivalWildlifeAssetProfile({species='BEAR',platform='ROB
 }
 
 export const CLOTHING_LAYER_SLOTS=Object.freeze([
-  'HEAD','HAIR','FACE','NECK','TORSO_INNER','TORSO_OUTER','SHOULDER','ARM','GLOVE','BELT','LEG','BOOT','BACK','CAPE','ACCESSORY'
+  'HEAD','HAIR','FACE','EAR','PIERCING','NECK',
+  'TORSO_BASE','TORSO_INNER','TORSO_OUTER','SHOULDER',
+  'ARM_UPPER','ARM_LOWER','GLOVE','WAIST','BELT','HIP',
+  'LEG_INNER','LEG_OUTER','BOOT','BACK','CAPE','ACCESSORY','SPECIES_PART','TAIL_OR_APPENDAGE'
 ]);
 
 export const ASSET_STYLE_FAMILIES=Object.freeze([
@@ -2344,7 +2423,7 @@ export const ASSET_DNA_FIELDS=Object.freeze([
 ]);
 
 export const DEFAULT_COVERAGE_BASELINES=Object.freeze({
-  CHARACTER:Object.freeze({BODY:5,FACE:10,HAIR:12,CLOTHING:20,ARMOR:12,ACCESSORY:12}),
+  CHARACTER:Object.freeze({BODY_ARCHETYPE:12,HEAD_BASE:48,FACE_MORPH:28,SKIN_TONE:32,SKIN_DETAIL:24,EYE:32,BROW:20,HAIR:48,FACIAL_HAIR:24,SCAR_TATTOO_MAKEUP:40,PIERCING_ACCESSORY:32,SPECIES_PART:32,CLOTHING:60,ARMOR:36,EXPRESSION:24,GAIT_IDENTITY:24}),
   CREATURE:Object.freeze({BODY_PLAN:36,SPECIES:60,RIG:20,MUTATION:24,MOTION:12,SIGNATURE:12}),
   BUILDING:Object.freeze({MODULAR_EXTERIOR:30,INTERIOR:16,STRUCTURAL:12,NAVIGATION:5,PROP_SOCKET:10}),
   ENVIRONMENT:Object.freeze({BIOME:18,TERRAIN:16,VEGETATION:30,ROCK:16,LANDMARK:10,WEATHER:10,PROP_DENSITY:8}),
@@ -2731,7 +2810,7 @@ export function createStyleBible(input={}){
 
 // 커마 제작: 모델별로 선언된 범위와 연결점만 사용한다. 이 계획은 실제 편집·검증 결과가 아니다.
 export const ASSET_CUSTOMIZATION_AXES=Object.freeze(Object.fromEntries(Object.entries({
-  CHARACTER:['FACE','BODY_PROPORTION','HAIR','EXPRESSION','CLOTHING','ACCESSORY','SURFACE_WEAR'],
+  CHARACTER:['FACE','BODY_PROPORTION','HAIR','EXPRESSION','CLOTHING','ACCESSORY','SURFACE_WEAR','BODY_ARCHETYPE','HEAD_BASE','FACE_MORPH','EYE_SHAPE','EYE_COLOR','HETEROCHROMIA','BROW','SKIN_TONE','SKIN_DETAIL','AGE_PRESENTATION','HAIR_STYLE','HAIR_COLOR','HAIR_HIGHLIGHT','HAIR_GRAYING','FACIAL_HAIR','SCAR','TATTOO_OR_BODY_MARK','MAKEUP','PIERCING','SPECIES_PART','GAIT_IDENTITY'],
   CREATURE:['BODY_PLAN','HEAD','LIMB_PROPORTION','HORN_TEETH_CLAW','SKIN','SIGNATURE_ORGAN','SURFACE_WEAR'],
   BUILDING:['WALL','DOOR','WINDOW','ROOF','ROOM_LAYOUT','JOINT_DETAIL','LOCAL_DAMAGE','SURFACE_WEAR'],
   ENVIRONMENT:['TERRAIN_PROFILE','ROCK_FORM','TREE_BRANCH','FOLIAGE_DENSITY','GROUND_COVER','WETNESS','LANDMARK'],
@@ -4155,10 +4234,17 @@ export function buildLibraryHeatmap({coverageReport={},signalsByKey={}}={}){
 function externalCandidatesForGap(gap={},externalSources=[]){
   const family=upper(gap.family);
   return (externalSources||[]).filter(src=>{
-    const category=upper(src.category);
-    const status=upper(src.status);
-    return /LICENSE_VERIFIED/.test(status)&&(category===family||(family==='BUILDING'&&['ENVIRONMENT','PROP'].includes(category))||(family==='MATERIAL'&&['VFX','ENVIRONMENT'].includes(category)));
-  });
+    const categories=uniq([src?.category,...(Array.isArray(src?.categories)?src.categories:[])]).map(upper);
+    const status=upper(src?.status);
+    const categoryMatch=categories.includes(family)
+      ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
+      ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
+    return /LICENSE_VERIFIED/.test(status)&&categoryMatch;
+  }).sort((a,b)=>
+    Number(b?.volumeAdaptationEligible===true)-Number(a?.volumeAdaptationEligible===true)
+    ||Number(b?.sourcePriority||0)-Number(a?.sourcePriority||0)
+    ||text(a?.id).localeCompare(text(b?.id))
+  );
 }
 
 function semanticSeedId(gap={},index=0){
@@ -4190,6 +4276,12 @@ export function buildAutonomousAssetGapFillPlan({
     actions.push(Object.freeze({
       family:gap.family,subfamily:gap.subfamily,missingSlots:gap.missingSlots,priorityScore:gap.priorityScore,
       route,sourceIds:Object.freeze(sourceIds),semanticSeeds:Object.freeze(semanticSeeds),
+      acquisitionMode:route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_REQUIRED',
+      bulkPrefetchAllowed:false,
+      speculativeDownloadAllowed:false,
+      acquireOnlyWhenSelected:route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET',
+      adaptAfterAcquisition:route==='ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET',
+      reuseAcquiredSourceWhenCompatible:true,
       preparedState:'PREPARED_SEMANTIC',
       preparedMayClaimVerified:false,
       nativeRuntimeConsumerRequiredBeforePromotion:true

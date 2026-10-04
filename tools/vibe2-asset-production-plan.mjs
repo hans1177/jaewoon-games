@@ -11,6 +11,7 @@ import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySema
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
+import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -479,7 +480,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     assets:next.assets,
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
-    audioRoleIds
+    audioRoleIds,
+    externalSources:next.externalSources||[]
   });
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
@@ -554,6 +556,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     volumeActionConsumption:libraryPlan.volumeActionConsumption,
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
     freeOriginalVolumePolicy:libraryPlan.freeOriginalVolumePolicy,
+    referenceImageIdeaOverlay:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay,
+    eligibleFreeSourceCount:libraryPlan.eligibleFreeSourceCount,
+    freeSourceCandidateLimitPerAction:libraryPlan.freeSourceCandidateLimitPerAction,
+    freeSourceCatalogSufficiencyCount:libraryPlan.freeSourceCatalogSufficiencyCount,
+    freeSourceCatalogReady:libraryPlan.freeSourceCatalogReady,
+    freeSourceCatalogExpansionMode:libraryPlan.freeSourceCatalogExpansionMode,
+    primaryAttention:libraryPlan.primaryAttention,
     ideaDeduplication:libraryPlan.ideaDeduplication,
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     referenceBreadthProfiles:Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES),
@@ -586,6 +595,47 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     wrapperCreated:false,
     shadowSystemCreated:false
   };
+
+  next.characterNpcCustomization={
+    ...(next.characterNpcCustomization||{}),
+    version:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.version,
+    status:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.status,
+    contract:'assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT',
+    target:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.target,
+    referenceUse:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.referenceUse,
+    protectedExpressionCopyForbidden:true,
+    exactThirdPartyFaceHairTattooOutfitUiCopyForbidden:true,
+    sharedAssetPoolForPlayerAndNpc:true,
+    npcUsesSameMorphPartMaterialAndMotionGrammar:true,
+    generatedCombinationSpaceIsNotAuthoredAssetCount:true,
+    targetMinimums:{...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.targetMinimums},
+    bodyAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.bodyAxes],
+    faceAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.faceAxes],
+    surfaceAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.surfaceAxes],
+    eyeHairAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.eyeHairAxes],
+    speciesAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.speciesAxes],
+    outfitAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.outfitAxes],
+    npcContextAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.npcContextAxes],
+    presentationAxes:[...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.presentationAxes],
+    npcPopulationRules:{...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.npcPopulationRules},
+    production:{...VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT.production},
+    referenceImageIdeaIntegration:{
+      enabled:true,
+      sourceBoundObservationRequired:true,
+      taskLocalWorklistOnly:true,
+      persistentRawImageLearningForbidden:true,
+      visibleFeaturesMaySeedCustomizationIdeas:true,
+      unseenGeometryAndMotionRemainCreativeProposals:true,
+      directReferenceCopyForbidden:true
+    },
+    productionVerified:false,
+    runtimeVerificationRequired:true,
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    saveAuthority:false,
+    networkAuthority:false
+  };
+
 
   const comparableKeys=unique([...Object.keys(original),...Object.keys(next)]).filter(key=>key!=='version'&&key!=='updatedAt').sort();
   const changedSections=comparableKeys.filter(key=>JSON.stringify(original[key])!==JSON.stringify(next[key]));
@@ -1667,6 +1717,136 @@ function normalizeFlowAssetRequirements(requirements=[]){
   })).filter(row=>row.family));
 }
 
+
+function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterCustomizationRequested=false}={}){
+  const requestText=clean(request).toUpperCase();
+  const normalizeDomain=value=>{
+    const token=clean(value).toUpperCase();
+    if(['PROP','WORLD_PROP','WORLDPROP'].includes(token))return'WORLD_PROP';
+    if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','UI','ITEM','MATERIAL','VFX','MOTION','PRESENTATION','CHARACTER_GEAR'].includes(token))return token;
+    return'';
+  };
+  const inferredDomain=characterCustomizationRequested?'CHARACTER'
+    :/BUILDING|HOUSE|CASTLE|건물|집|성|하우징/.test(requestText)?'BUILDING'
+    :/CREATURE|MONSTER|ANIMAL|몬스터|동물|몹|생물/.test(requestText)?'CREATURE'
+    :/WEAPON|SWORD|GUN|무기|검|총|창|활/.test(requestText)?'WEAPON'
+    :/\bUI\b|HUD|MENU|인벤토리|메뉴|버튼/.test(requestText)?'UI'
+    :/PROP|FURNITURE|소품|가구|상자/.test(requestText)?'WORLD_PROP'
+    :'ENVIRONMENT';
+  const axisMaps=Object.freeze({
+    CHARACTER:Object.freeze({
+      SILHOUETTE:Object.freeze(['BODY_ARCHETYPE','HEAD_BASE']),
+      PROPORTIONS:Object.freeze(['BODY_PROPORTION','FACE_MORPH']),
+      MATERIAL_REGIONS:Object.freeze(['SKIN_TONE','SKIN_DETAIL','CLOTHING']),
+      PALETTE:Object.freeze(['SKIN_TONE','EYE_COLOR','HAIR_COLOR']),
+      CONSTRUCTION_DETAILS:Object.freeze(['HAIR_STYLE','PIERCING_ACCESSORY','CLOTHING_LAYER']),
+      STYLE_LANGUAGE:Object.freeze(['EXPRESSION','GAIT_IDENTITY']),
+      IDENTITY_ANCHORS:Object.freeze(['SCAR_TATTOO_MAKEUP','SPECIES_PART'])
+    }),
+    BUILDING:Object.freeze({
+      SILHOUETTE:Object.freeze(['MASSING_FAMILY','ROOF_PROFILE','FACADE_PROFILE']),
+      PROPORTIONS:Object.freeze(['FLOOR_HEIGHT_RATIO','BAY_SPACING','ENTRY_SCALE']),
+      MATERIAL_REGIONS:Object.freeze(['WALL_ROOF_TRIM_SPLIT','FOUNDATION_MATERIAL_ZONE']),
+      PALETTE:Object.freeze(['ARCHITECTURE_PALETTE_VARIANT','ACCENT_CONTRAST']),
+      CONSTRUCTION_DETAILS:Object.freeze(['FOUNDATION_WALL_ROOF_JOINERY','WINDOW_DOOR_TRIM','DAMAGE_REPAIR_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['BUILDING_THEME_GRAMMAR','REGIONAL_ARCHITECTURE_VARIANT']),
+      IDENTITY_ANCHORS:Object.freeze(['LANDMARK_ACCENT','SIGNAGE_PROP_SOCKET'])
+    }),
+    CREATURE:Object.freeze({
+      SILHOUETTE:Object.freeze(['BODY_PLAN_VARIANT','HEAD_APPENDAGE_PROFILE','TAIL_WING_HORN_PROFILE']),
+      PROPORTIONS:Object.freeze(['TORSO_LIMB_RATIO','HEAD_BODY_RATIO','SIZE_AGE_VARIANT']),
+      MATERIAL_REGIONS:Object.freeze(['SKIN_FUR_SCALE_SHELL_ZONES','ARMOR_SOFT_TISSUE_SPLIT']),
+      PALETTE:Object.freeze(['BIOME_SURFACE_VARIANT','ELITE_BOSS_PALETTE_ACCENT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['JOINT_ARTICULATION','MOUTH_EYE_CLAW_DETAIL','RIG_CONTACT_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['SPECIES_STYLE_LANGUAGE','LOCOMOTION_WEIGHT_LANGUAGE']),
+      IDENTITY_ANCHORS:Object.freeze(['SPECIES_SIGNATURE_PART','ELITE_BOSS_ORNAMENT'])
+    }),
+    WEAPON:Object.freeze({
+      SILHOUETTE:Object.freeze(['WEAPON_PROFILE_FAMILY','BLADE_HEAD_SHAFT_PROFILE']),
+      PROPORTIONS:Object.freeze(['GRIP_REACH_RATIO','HEAD_BLADE_WEIGHT_RATIO']),
+      MATERIAL_REGIONS:Object.freeze(['GRIP_GUARD_BLADE_MATERIAL_SPLIT','EDGE_CORE_TRIM_SPLIT']),
+      PALETTE:Object.freeze(['MATERIAL_TIER_PALETTE','FACTION_ACCENT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['FASTENER_JOINERY','GRIP_SOCKET','DAMAGE_WEAR_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['WEAPON_THEME_LANGUAGE','ERA_TECH_DETAIL']),
+      IDENTITY_ANCHORS:Object.freeze(['SIGNATURE_ORNAMENT','IMPACT_TRAIL_SOCKET'])
+    }),
+    UI:Object.freeze({
+      SILHOUETTE:Object.freeze(['PANEL_CARD_SHAPE_LANGUAGE','ICON_SILHOUETTE_FAMILY']),
+      PROPORTIONS:Object.freeze(['INFORMATION_HIERARCHY_RATIO','CONTROL_DENSITY_SPACING']),
+      MATERIAL_REGIONS:Object.freeze(['SURFACE_DEPTH_LAYER','BORDER_FILL_ICON_REGION']),
+      PALETTE:Object.freeze(['VALUE_CONTRAST_SYSTEM','STATE_COLOR_LANGUAGE']),
+      CONSTRUCTION_DETAILS:Object.freeze(['PRESSED_SELECTED_DISABLED_STATES','TOUCH_TARGET_FEEDBACK','SMALL_SIZE_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['UI_GRAMMAR_VARIANT','TYPOGRAPHY_SPACING_LANGUAGE']),
+      IDENTITY_ANCHORS:Object.freeze(['SIGNATURE_FRAME_MOTIF','ICON_MOTIF_FAMILY'])
+    }),
+    ENVIRONMENT:Object.freeze({
+      SILHOUETTE:Object.freeze(['HORIZON_PROFILE','LANDMARK_MASSING','FOREGROUND_MIDGROUND_BACKGROUND_DEPTH']),
+      PROPORTIONS:Object.freeze(['OPEN_CLOSED_SPACE_RATIO','VERTICALITY_RATIO','LANDMARK_SCALE']),
+      MATERIAL_REGIONS:Object.freeze(['GROUND_ROCK_WATER_VEGETATION_ZONES','BUILT_NATURAL_SPLIT']),
+      PALETTE:Object.freeze(['ATMOSPHERE_LIGHTING_PALETTE','WEATHER_TIME_VARIANT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['TERRAIN_TRANSITION','SET_DRESSING_CLUSTER','SETTLEMENT_EDGE_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['BIOME_STYLE_LANGUAGE','WORLD_DENSITY_LANGUAGE']),
+      IDENTITY_ANCHORS:Object.freeze(['LANDMARK_TYPE_FAMILY','DISCOVERY_ROUTE_CUE'])
+    }),
+    WORLD_PROP:Object.freeze({
+      SILHOUETTE:Object.freeze(['PROP_PROFILE_FAMILY','FUNCTION_READABLE_SHAPE']),
+      PROPORTIONS:Object.freeze(['HANDLE_BODY_BASE_RATIO','INTERACTION_SCALE']),
+      MATERIAL_REGIONS:Object.freeze(['STRUCTURE_SURFACE_TRIM_SPLIT','CONTACT_WEAR_ZONE']),
+      PALETTE:Object.freeze(['PROP_THEME_PALETTE','STATE_ACCENT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['HINGE_FASTENER_HANDLE_DETAIL','INTERACTION_STATE_VARIANT','DAMAGE_REPAIR_VARIANT']),
+      STYLE_LANGUAGE:Object.freeze(['PROP_THEME_LANGUAGE','SET_DRESSING_VARIANT']),
+      IDENTITY_ANCHORS:Object.freeze(['INTERACTION_AFFORDANCE','SIGNATURE_FUNCTION_PART'])
+    })
+  });
+  const fallbackMap=Object.freeze({
+    SILHOUETTE:Object.freeze(['PRIMARY_FORM_VARIATION']),
+    PROPORTIONS:Object.freeze(['PROPORTION_VARIATION']),
+    MATERIAL_REGIONS:Object.freeze(['MATERIAL_REGION_VARIATION']),
+    PALETTE:Object.freeze(['PALETTE_VARIATION']),
+    CONSTRUCTION_DETAILS:Object.freeze(['CONSTRUCTION_DETAIL_VARIATION']),
+    STYLE_LANGUAGE:Object.freeze(['STYLE_LANGUAGE_VARIATION']),
+    IDENTITY_ANCHORS:Object.freeze(['IDENTITY_ANCHOR_VARIATION'])
+  });
+  const rows=[];
+  for(const study of studies||[]){
+    if(!study?.observation?.valid||!study?.request?.sourceId)continue;
+    const explicitDomains=unique([
+      study?.domainHint,
+      ...(Array.isArray(study?.domainHints)?study.domainHints:[])
+    ]).map(normalizeDomain).filter(Boolean);
+    const domains=characterCustomizationRequested?['CHARACTER']:(explicitDomains.length?explicitDomains:[inferredDomain]);
+    for(const domain of domains){
+      const map=axisMaps[domain]||fallbackMap;
+      for(const [featureKey,axes] of Object.entries(map)){
+        if(!clean(study.observation?.features?.[featureKey]))continue;
+        for(const axis of axes){
+          const sourceToken=clean(study.request.sourceId).toUpperCase().replace(/[^A-Z0-9]+/g,'_');
+          rows.push(freeze({
+            kind:'REFERENCE_IMAGE_IDEA',
+            domain,
+            ideaId:['REFERENCE',sourceToken,domain,axis].join('_'),
+            referenceSourceId:clean(study.request.sourceId),
+            referenceSourceHash:clean(study.request.sourceHash)||null,
+            referenceImageRef:clean(study.request.imageRef)||null,
+            referenceFeature:featureKey,
+            referenceFeatureSummary:clean(study.observation.features[featureKey]),
+            customizationAxis:axis,
+            priority:285,
+            sourceBound:true,
+            verifiedAgainstSource:study.observation.verifiedAgainstSource===true,
+            ideaOnly:true,
+            directCopyForbidden:true,
+            sourceImagePersistentLearningForbidden:true,
+            unseenGeometryAndMotionRemainCreativeProposals:true,
+            productionVerified:false
+          }));
+        }
+      }
+    }
+  }
+  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,96));
+}
+
 export function buildVibeAssetProductionPlan({
   task={},
   target='',
@@ -1689,7 +1869,8 @@ export function buildVibeAssetProductionPlan({
     assets:companyRegistry?.assets||[],
     seedPlan:executionSeedPlan,
     uiAtomIds:(executionUiCatalog.atoms||[]).map(row=>row.atomId),
-    audioRoleIds:collectCommonCatalogAudioRoles(executionCatalogs)
+    audioRoleIds:collectCommonCatalogAudioRoles(executionCatalogs),
+    externalSources:companyRegistry?.externalSources||[]
   });
   const persistedWorklistFresh=
     Number(libraryAutomation.lastCatalogSynchronizedVersion)===Number(companyRegistry?.version)
@@ -1715,6 +1896,12 @@ export function buildVibeAssetProductionPlan({
     persistentWorklistField:clean(executionLibraryPlan.persistentWorklistField||libraryAutomation.persistentWorklistField)||'internalAssetLibraryAutomation.nextVolumeActions',
     reuseResolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
     freeOriginalVolumePolicy:freeze({...libraryAutomation.freeOriginalVolumePolicy,...executionLibraryPlan.freeOriginalVolumePolicy}),
+    eligibleFreeSourceCount:Number(executionLibraryPlan.eligibleFreeSourceCount||0),
+    freeSourceCandidateLimitPerAction:Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8),
+    freeSourceCatalogSufficiencyCount:Number(executionLibraryPlan.freeSourceCatalogSufficiencyCount||libraryAutomation.freeSourceCatalogSufficiencyCount||12),
+    freeSourceCatalogReady:executionLibraryPlan.freeSourceCatalogReady===true,
+    freeSourceCatalogExpansionMode:clean(executionLibraryPlan.freeSourceCatalogExpansionMode||libraryAutomation.freeSourceCatalogExpansionMode)||'TARGETED_GAP_ONLY',
+    primaryAttention:clean(executionLibraryPlan.primaryAttention||libraryAutomation.primaryAttention)||'TARGETED_SOURCE_GAP_AND_QUALITY',
     qualityUpPolicy:freeze({
       ...(libraryAutomation.qualityUpPolicy||{}),
       ...(executionLibraryPlan.qualityUpPolicy||{}),
@@ -1743,6 +1930,7 @@ export function buildVibeAssetProductionPlan({
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,companyRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
+  const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
   const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
   const survivalWildlifeRequested=/(?:gravewood|그레이브우드|생존|survival|야생동물|동물|wildlife|animal|곰|bear|멧돼지|boar|사슴|deer|elk|엘크|moose|무스|bison|들소|wolf|늑대|fox|여우|rabbit|토끼|raccoon|너구리|squirrel|다람쥐|beaver|비버|badger|오소리|goat|염소|turkey|칠면조|crow|까마귀)/i.test(request);
   const requestedWildlifeSpecies=/멧돼지|boar/i.test(request)?'BOAR'
@@ -1895,8 +2083,79 @@ export function buildVibeAssetProductionPlan({
     const observation=row?.observation?bindVibeReferenceImageObservation({
       request,observation:row.observation,verifiedAgainstSource:row.verifiedAgainstSource===true
     }):null;
-    return freeze({request,observation});
+    return freeze({
+      request,
+      observation,
+      domainHint:row?.domain||row?.assetFamily||row?.family||row?.category||null,
+      domainHints:freezeList(Array.isArray(row?.domains)?row.domains:Array.isArray(row?.categories)?row.categories:[])
+    });
   }));
+  const referenceDrivenAssetIdeas=buildReferenceDrivenAssetIdeaWorklist({
+    studies:referenceImageStudies,
+    request,
+    characterCustomizationRequested
+  });
+  const taskLocalReferenceVolumeActions=freezeList(referenceDrivenAssetIdeas.map((idea,index)=>{
+    const domain=idea.domain==='PROP'?'WORLD_PROP':idea.domain;
+    const freeSourceCandidateIds=unique(
+      activeNextVolumeActions
+        .filter(row=>clean(row?.domain).toUpperCase()===clean(domain).toUpperCase())
+        .flatMap(row=>row?.freeSourceCandidateIds||[])
+    ).slice(0,Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8));
+    return freeze({
+      kind:'REFERENCE_IMAGE_VOLUME',
+      domain,
+      ideaId:idea.ideaId,
+      source:'REFERENCE_IMAGE_OBSERVATION',
+      role:idea.customizationAxis||idea.referenceFeature||null,
+      referenceSourceId:idea.referenceSourceId,
+      referenceSourceHash:idea.referenceSourceHash,
+      referenceImageRef:idea.referenceImageRef,
+      referenceFeature:idea.referenceFeature,
+      referenceFeatureSummary:idea.referenceFeatureSummary,
+      customizationAxis:idea.customizationAxis,
+      priority:Number(idea.priority||285),
+      sourceBound:idea.sourceBound===true,
+      verifiedAgainstSource:idea.verifiedAgainstSource===true,
+      taskLocalOnly:true,
+      persistToCentralWorklist:false,
+      directCopyForbidden:true,
+      sourceImagePersistentLearningForbidden:true,
+      unseenGeometryAndMotionRemainCreativeProposals:true,
+      productionVerified:false,
+      freeSourceCandidateIds:freezeList(freeSourceCandidateIds),
+      freeSourceAvailable:freeSourceCandidateIds.length>0,
+      resolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
+      referenceWorklistOrder:index+1
+    });
+  }));
+  const effectiveNextVolumeActions=freezeList(
+    executionLibraryPlan.focusPhase==='VOLUME_UP'
+      ?[
+        ...taskLocalReferenceVolumeActions,
+        ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
+      ].slice(0,96).map((row,index)=>freeze({...row,worklistOrder:index+1}))
+      :[]
+  );
+  const effectiveInternalLibraryEvolution=freeze({
+    ...internalLibraryEvolution,
+    nextVolumeActions:effectiveNextVolumeActions,
+    activeNextVolumeAction:effectiveNextVolumeActions[0]||null,
+    worklistSource:taskLocalReferenceVolumeActions.length
+      ?'TASK_REFERENCE_IMAGE_OVERLAY_ON_'+internalLibraryEvolution.worklistSource
+      :internalLibraryEvolution.worklistSource,
+    taskLocalReferenceActionCount:taskLocalReferenceVolumeActions.length,
+    referenceImageObservationOverlay:taskLocalReferenceVolumeActions.length>0,
+    referenceImageIdeasPersisted:false,
+    rawReferenceImagePersisted:false
+  });
+  const npcCustomizationPopulation=characterCustomizationRequested?createVibeNpcCustomizationPopulation({
+    count:Number(task.npcCustomization?.previewCount||task.characterCustomization?.npcPreviewCount||48),
+    seed:clean(task.gameId||task.characterCustomization?.seed||'npc-population'),
+    roles:Array.isArray(task.npcCustomization?.roles)?task.npcCustomization.roles:Array.isArray(task.npcRoles)?task.npcRoles:[],
+    regions:Array.isArray(task.npcCustomization?.regions)?task.npcCustomization.regions:Array.isArray(task.regions)?task.regions:[],
+    species:Array.isArray(task.npcCustomization?.species)?task.npcCustomization.species:Array.isArray(task.species)?task.species:[]
+  }):null;
   const selector=planAssetApplication({
     prompt:request,
     manifest:manifestInput,
@@ -1953,8 +2212,11 @@ export function buildVibeAssetProductionPlan({
     for(const subfamily of Object.keys(subs)){
       const key=family+':'+subfamily;
       const externalReady=(companyRegistry?.externalSources||[]).some(row=>{
-        const cat=clean(row.category).toUpperCase();
-        return /LICENSE_VERIFIED/.test(clean(row.status).toUpperCase())&&(cat===family||(family==='BUILDING'&&['ENVIRONMENT','PROP'].includes(cat))||(family==='MATERIAL'&&['VFX','ENVIRONMENT'].includes(cat)));
+        const categories=unique([row?.category,...(Array.isArray(row?.categories)?row.categories:[])]).map(value=>clean(value).toUpperCase());
+        const categoryMatch=categories.includes(family)
+          ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
+          ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
+        return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
       });
       const verifiedReuse=(companyRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
       universeSignals[key]={
@@ -2169,7 +2431,7 @@ export function buildVibeAssetProductionPlan({
     presetId:clean(selector.prototypePreset?.id)||null,
     productionProfile:selector.production||null,
     commercialDistillation,
-    internalLibraryEvolution,
+    internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     flowAssetLoadout:freeze({
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
@@ -2225,7 +2487,14 @@ export function buildVibeAssetProductionPlan({
       minimumQuality:studioUniversePlan?.customization?.minimumQuality||null,
       singleImageAccepted:true,missingTextBriefAllowed:true,
       unseenGeometryIsCreativeProposal:true,stillImageDoesNotProveMotion:true,
-      pixelObservationRequired:true,generatedAsset:false,runtimeVerified:false
+      pixelObservationRequired:true,
+      ideaWorklist:referenceDrivenAssetIdeas,
+      volumeWorklistOverlay:taskLocalReferenceVolumeActions,
+      volumeWorklistOverlayCount:taskLocalReferenceVolumeActions.length,
+      volumeWorklistOverlayConsumesBeforePersistentActions:true,
+      ideaWorklistIsTaskLocal:true,
+      ideaWorklistPersistenceForbidden:true,
+      generatedAsset:false,runtimeVerified:false
     }),
     styleBible:assetSynchronization?.document?.styleBible||studioUniversePlan?.styleBible||null,
     motionStyle:assetSynchronization?.document?deriveMotionStyleVariant({style:assetSynchronization.document.motionStyle.profileKey,modifiers:assetSynchronization.document.motionStyle.modifiers}):motionStyle,
@@ -2237,6 +2506,16 @@ export function buildVibeAssetProductionPlan({
       executionLane:clean(companyLibrary?.executionLane)||null,
       reusableProductionTarget:freeze(companyLibrary?.reusableProductionTarget||companyRegistry?.universalCoverage?.reusableProductionTargets||{}),
       platformProfile:resolvedTarget.toUpperCase(),
+      characterNpcCustomization:freeze({
+        enabled:true,
+        requested:characterCustomizationRequested,
+        contract:VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,
+        npcPopulationPreview:npcCustomizationPopulation,
+        referenceDrivenIdeaCount:referenceDrivenAssetIdeas.filter(row=>row.domain==='CHARACTER').length,
+        playerAndNpcShareAssetPool:true,
+        productionVerified:false,
+        gameplayAuthority:false
+      }),
       baseArchetypes:freezeList(companyLibrary?.characterPreparation?.baseArchetypes||[]),
       modularParts:freezeList(companyLibrary?.characterPreparation?.modularParts||[]),
       weaponPacks:freezeList(unique([...(companyLibrary?.actionMotionLibrary?.weaponPacks||[]),...(companyRegistry?.duelCombatMotion?.weaponFamilies||[])])),
@@ -2657,7 +2936,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
-    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용하며, 그대로 복제하지 않고 회사 스타일·플랫폼에 맞게 수정한다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다.`:'',
+    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
@@ -2673,7 +2952,8 @@ export function assetProductionGuidance(plan={}){
     plan.precisionProduction?`[PRECISION PRODUCTION CHAIN] ${JSON.stringify(plan.precisionProduction)}. 검사 결과를 보고서로 끝내지 않는다. 현재 소스와 실제 화면에서 결함을 찾고 정확한 수정 범위를 만든 뒤, 같은 작업에서 editable source와 native derivative를 실제 제작하고 기존 게임 책임 위치에 적용한다. 디테일은 GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 순으로 제작하며 실루엣/구조/재질/접촉을 각각 해결한다. 소품 수나 랜덤 노이즈로 디테일을 대신하지 말고 기능·접촉·날씨·손상 원인을 가진 디테일만 만든다. 제작 성공 후 바로 적용 단계로 넘어가며 검사나 수정 계획만 제출하고 멈추지 않는다. 제작 도구가 없을 때만 정확한 AUTHORING 단계와 필요한 원본을 남기고 완료를 주장하지 않는다.`:'',
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
     plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
-    plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰한다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
+    plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰하고 검증된 관찰에서 나온 task-local 아이디어를 현재 VOLUME_UP worklist 앞에 우선 배치한다. 중앙 registry에는 원본 사진·관찰·임시 아이디어를 영속 저장하지 않는다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
+    plan.companyGraphicsLibrary?.characterNpcCustomization?.requested?`[CHARACTER NPC CUSTOMIZATION] ${JSON.stringify(plan.companyGraphicsLibrary.characterNpcCustomization)}. 플레이어와 NPC는 같은 체형·머리·얼굴·피부·눈·헤어·수염·흉터·문신·화장·피어싱·종족 파츠·의상·액세서리·표정·보행 자산 풀을 공유한다. NPC는 지역/직업/계층/연령/기후/개인 이력으로 조합 편향만 주고 색상만 다른 복제 NPC를 만들지 않는다. 사진 레퍼런스는 보이는 형태와 재질 아이디어만 source-bound로 사용하고 고유 얼굴·의상·UI를 직접 복제하지 않는다.`:'',
     plan.assetSynchronization?`[UNITY / WEB SHARED VISUAL DOCUMENT] status=${plan.assetSynchronization.status}; issues=${plan.assetSynchronization.issues.join('|')||'NONE'}; document=${JSON.stringify(plan.assetSynchronization.document)}; applications=${JSON.stringify(plan.assetSynchronization.applications)}; motions=${JSON.stringify(plan.assetSynchronization.motions)}. 같은 gameId/revision/sourceHash의 커마·스타일·UI·아이콘·동작 설정을 기존 자산 저장소와 작업주문으로 공유한다. SYNC_CONFLICT면 재조회하며 부분 적용하지 않는다. 플랫폼 변형이나 연결점이 없으면 AUTHORING_REQUIRED로 제작하고 문서만으로 동기화 완료를 주장하지 않는다.`:'',
     plan.assetSynchronization?'Unity는 기존 Renderer/SkinnedMeshRenderer/Animator/UI에, 일반 Web은 기존 glTF/렌더러/AnimationMixer 또는 Canvas/DOM/UI 책임 함수에 연결한다. Unity WebGL은 Unity와 같은 C# 프로젝트·프리팹·Animator를 사용한다. 엔진별 morph 축척·재질·리그·LOD는 선언된 platformVariants로 변환한다. 공격 이벤트·클립 길이·저장·권한은 보존하고 같은 정면/측면/후면/동작 프레임·아이콘 크기에서 두 플랫폼을 비교한다.':'',
     plan.assetCustomization?`[CUSTOMIZABLE ASSET AUTHORING] 제작 순서=${plan.assetCustomization.workflow.join('→')}; 초기 조립 ${plan.assetCustomization.effort.quickAssemblyPercent}%, 디테일·모션 마감 ${plan.assetCustomization.effort.detailAndMotionPercent}%, 화면 비교·런타임 검수 ${plan.assetCustomization.effort.comparisonAndRuntimeQaPercent}%. 작업시간은 계획 비율이며 경과시간이나 부품 수만으로 품질을 통과시키지 않는다.`:'',

@@ -95,7 +95,7 @@ import {
   buildBaseMaterialRotationPlan,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
-import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
+import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
@@ -253,12 +253,224 @@ test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.deepEqual([...STUDIO_ASSET_FAMILIES],['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
   assert.ok(CREATURE_BODY_PLANS.length>=30);
   assert.ok(CREATURE_SPECIES.length>=50);
-  assert.equal(CLOTHING_LAYER_SLOTS.length,15);
+  assert.equal(CLOTHING_LAYER_SLOTS.length,24);
   assert.ok(BIOME_FAMILIES.length>=18);
   assert.ok(BUILDING_THEMES.length>=12);
   for(const style of ['INK_WASH','WATERCOLOR','NOIR','TOON_NOIR','SOLARPUNK','BIOPUNK','RETRO_FUTURISM','COZY','PAPER_CRAFT','VOXEL','DREAMCORE','HISTORICAL_EAST_ASIAN','SPACE_OPERA','UNDERWATER_FANTASY','DESERT_FANTASY','MYTHIC_NORDIC']){
     assert.ok(createStudioAssetUniversePlan({styleFamily:style}).styleFamilies.includes(style),style);
   }
+});
+
+test('deep RPG character customization breadth drives player and NPC variety without gameplay authority',()=>{
+  const contract=VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT;
+  assert.equal(contract.version,1);
+  assert.equal(contract.sharedAssetPoolForPlayerAndNpc,true);
+  assert.equal(contract.protectedExpressionCopyForbidden,true);
+  assert.equal(contract.exactThirdPartyFaceHairTattooOutfitUiCopyForbidden,true);
+  assert.ok(contract.targetMinimums.HEAD_BASE>=48);
+  assert.ok(contract.targetMinimums.FACE_MORPH_CONTROL>=28);
+  assert.ok(contract.targetMinimums.HAIR_STYLE>=48);
+  assert.ok(contract.targetMinimums.CLOTHING_LAYER_VARIANT>=60);
+  assert.equal(contract.npcPopulationRules.colorOnlyDuplicateForbidden,true);
+  assert.equal(contract.npcPopulationRules.speciesPartCompatibilityRequired,true);
+  assert.equal(contract.production.photoObservationMaySeedVisibleFormAndSurfaceIdeas,true);
+  assert.equal(contract.production.runtimeVerificationRequiredBeforeProductionPromotion,true);
+  assert.equal(contract.gameplayAuthority,false);
+
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.BODY_ARCHETYPE,12);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.HEAD_BASE,48);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.FACE_MORPH,28);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.HAIR,48);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.CLOTHING,60);
+
+  const recipe=createVibeCharacterCustomizationRecipe({name:'qa-hero',species:'elflike',role:'scholar',region:'coast'},7);
+  assert.equal(recipe.productionVerified,false);
+  assert.equal(recipe.gameplayAuthority,false);
+  assert.equal(recipe.speciesParts.horn,'NONE');
+  assert.equal(recipe.speciesParts.tail,'NONE');
+  assert.ok(['POINTED','LONG','NOTCHED'].includes(recipe.speciesParts.ear));
+  assert.ok(recipe.head.faceWidth>=0&&recipe.head.faceWidth<=1);
+  assert.ok(recipe.hair.style);
+
+  const population=createVibeNpcCustomizationPopulation({
+    count:48,
+    seed:'qa-npc-population',
+    roles:['MERCHANT','GUARD','ARTISAN','SCHOLAR'],
+    regions:['COAST','MOUNTAIN','CITY'],
+    species:['humanoid','elflike']
+  });
+  assert.equal(population.total,48);
+  assert.equal(population.unique,48);
+  assert.equal(population.diversityPercent,100);
+  assert.equal(population.cloneRatePercent,0);
+  assert.equal(population.sameAssetPoolAsPlayerCustomization,true);
+  assert.equal(population.productionVerified,false);
+  assert.ok(population.recipes.every(row=>row.speciesParts.compatibilityChecked===true));
+});
+
+test('reference image observations become task-local character customization ideas without persistent copy claims',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const sourceId='qa-character-reference';
+  const imageRef='conversation://qa-character-reference.png';
+  const sourceHash='0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'reference-character-customization-test',
+      goal:'캐릭터 NPC 커스터마이징 사진 참고 제작',
+      imageToAsset:true,
+      characterCustomization:{npcPreviewCount:12},
+      referenceImages:[{
+        sourceId,
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef,
+        sourceHash,
+        purpose:'ASSET_CREATION',
+        observation:{
+          sourceId,imageRef,sourceHash,
+          SILHOUETTE:'broad shoulder narrow waist readable head shape',
+          PROPORTIONS:'long legs compact torso',
+          MATERIAL_REGIONS:'skin hair cloth metal accessory',
+          PALETTE:'warm skin dark hair muted cloth',
+          CONSTRUCTION_DETAILS:'layered hair collar piercing belt',
+          STYLE_LANGUAGE:'stylized realistic fantasy',
+          IDENTITY_ANCHORS:'asymmetric brow scar ear accessory',
+          UNSEEN_REGIONS:'creative proposal required',
+          MOTION_DESIGN:'creative proposal required'
+        },
+        verifiedAgainstSource:true
+      }]
+    },
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(plan.imageAssetCreation.enabled,true);
+  assert.equal(plan.imageAssetCreation.ideaWorklistIsTaskLocal,true);
+  assert.equal(plan.imageAssetCreation.ideaWorklistPersistenceForbidden,true);
+  assert.ok(plan.imageAssetCreation.ideaWorklist.length>=8);
+  assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.domain==='CHARACTER'));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.directCopyForbidden===true&&row.productionVerified===false));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.some(row=>row.customizationAxis==='BODY_ARCHETYPE'));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.some(row=>row.customizationAxis==='SCAR_TATTOO_MAKEUP'));
+  assert.equal(plan.imageAssetCreation.volumeWorklistOverlayConsumesBeforePersistentActions,true);
+  assert.equal(plan.imageAssetCreation.volumeWorklistOverlayCount,plan.imageAssetCreation.ideaWorklist.length);
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.every(row=>row.kind==='REFERENCE_IMAGE_VOLUME'));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.every(row=>row.taskLocalOnly===true&&row.persistToCentralWorklist===false));
+  assert.equal(plan.internalLibraryEvolution.referenceImageObservationOverlay,true);
+  assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
+  assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
+  assert.equal(plan.internalLibraryEvolution.taskLocalReferenceActionCount,plan.imageAssetCreation.ideaWorklist.length);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceHash,sourceHash);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceImageRef,imageRef);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].referenceFeatureSummary.length>0);
+  assert.match(plan.internalLibraryEvolution.worklistSource,/^TASK_REFERENCE_IMAGE_OVERLAY_ON_/);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.requested,true);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.playerAndNpcShareAssetPool,true);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.npcPopulationPreview.total,12);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.productionVerified,false);
+});
+
+test('building reference image expands into detailed task-local building volume ideas',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const sourceId='qa-building-reference';
+  const imageRef='conversation://qa-building-reference.png';
+  const sourceHash='abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789';
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'reference-building-volume-test',
+      goal:'건물 사진 보고 내부자산 아이디어 제작',
+      imageToAsset:true,
+      referenceImages:[{
+        sourceId,
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef,
+        sourceHash,
+        domain:'BUILDING',
+        purpose:'ASSET_CREATION',
+        observation:{
+          sourceId,imageRef,sourceHash,
+          SILHOUETTE:'stepped massing with a tall roof and readable facade rhythm',
+          PROPORTIONS:'two-story mass with narrow bays and oversized entry',
+          MATERIAL_REGIONS:'stone foundation timber wall dark roof metal trim',
+          PALETTE:'warm wood cool stone dark roof bright accent',
+          CONSTRUCTION_DETAILS:'exposed beams deep window trim roof brackets repair patches',
+          STYLE_LANGUAGE:'stylized frontier settlement architecture',
+          IDENTITY_ANCHORS:'asymmetric tower corner banner and entry canopy',
+          UNSEEN_REGIONS:'creative proposal required',
+          MOTION_DESIGN:'creative proposal required'
+        },
+        verifiedAgainstSource:true
+      }]
+    },
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  const ideas=plan.imageAssetCreation.ideaWorklist;
+  assert.ok(ideas.length>=16);
+  assert.ok(ideas.every(row=>row.domain==='BUILDING'));
+  for(const axis of ['MASSING_FAMILY','ROOF_PROFILE','FACADE_PROFILE','FLOOR_HEIGHT_RATIO','BAY_SPACING','FOUNDATION_WALL_ROOF_JOINERY','WINDOW_DOOR_TRIM','LANDMARK_ACCENT']){
+    assert.ok(ideas.some(row=>row.customizationAxis===axis),axis);
+  }
+  assert.equal(plan.imageAssetCreation.volumeWorklistOverlayConsumesBeforePersistentActions,true);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].domain,'BUILDING');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceHash,sourceHash);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceImageRef,imageRef);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].referenceFeatureSummary.length>0);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].freeSourceCandidateIds.includes('kenney-modular-buildings'));
+  assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
+  assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
+});
+
+test('one mixed reference image can seed multiple internal asset domains without copying the scene',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const sourceId='qa-mixed-harbor-reference';
+  const imageRef='conversation://qa-mixed-harbor-reference.png';
+  const sourceHash='1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'reference-mixed-scene-volume-test',
+      goal:'항구 사진 보고 건물 소품 환경 내부자산 아이디어 제작',
+      imageToAsset:true,
+      referenceImages:[{
+        sourceId,
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef,
+        sourceHash,
+        domains:['BUILDING','WORLD_PROP','ENVIRONMENT'],
+        purpose:'ASSET_CREATION',
+        observation:{
+          sourceId,imageRef,sourceHash,
+          SILHOUETTE:'pier warehouse lighthouse crates and layered coast horizon',
+          PROPORTIONS:'low warehouse long pier tall lighthouse small cargo props',
+          MATERIAL_REGIONS:'wood stone rope cloth metal water vegetation',
+          PALETTE:'weathered timber pale stone deep water muted sail accents',
+          CONSTRUCTION_DETAILS:'dock posts rope knots warehouse beams crate handles seawall joints',
+          STYLE_LANGUAGE:'stylized maritime trade settlement',
+          IDENTITY_ANCHORS:'lighthouse harbor crane market flags',
+          UNSEEN_REGIONS:'creative proposal required',
+          MOTION_DESIGN:'creative proposal required'
+        },
+        verifiedAgainstSource:true
+      }]
+    },
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  const domains=new Set(plan.imageAssetCreation.ideaWorklist.map(row=>row.domain));
+  assert.ok(domains.has('BUILDING'));
+  assert.ok(domains.has('WORLD_PROP'));
+  assert.ok(domains.has('ENVIRONMENT'));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.directCopyForbidden===true));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.some(row=>row.domain==='WORLD_PROP'&&row.freeSourceAvailable===true));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.some(row=>row.domain==='ENVIRONMENT'&&row.freeSourceAvailable===true));
+  assert.equal(plan.imageAssetCreation.ideaWorklistPersistenceForbidden,true);
+  assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
 });
 
 test('survival wildlife catalog includes forest animals with distinct visual profiles',()=>{
@@ -655,11 +867,24 @@ test('heatmap and autonomous gap fill prioritize real gaps without false promoti
     coverageReport:coverage,
     verifiedAssets:[],
     repositoryAssets:[],
-    externalSources:[{id:'licensed-creature-pack',category:'CREATURE',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE'}],
+    externalSources:[
+      {id:'legacy-creature-pack',category:'CREATURE',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourcePriority:999},
+      {id:'cc0-multi-pack',category:'PROP',categories:['CREATURE','BUILDING'],status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0',volumeAdaptationEligible:true,sourcePriority:10}
+    ],
     signalsByKey:{'CREATURE:SPECIES':{activeGameDemand:true}}
   });
   const creature=fill.actions.find(x=>x.family==='CREATURE');
+  const building=fill.actions.find(x=>x.family==='BUILDING');
   assert.equal(creature.route,'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET');
+  assert.equal(creature.sourceIds[0],'cc0-multi-pack');
+  assert.ok(creature.sourceIds.includes('legacy-creature-pack'));
+  assert.equal(building.route,'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET');
+  assert.equal(building.sourceIds[0],'cc0-multi-pack');
+  assert.equal(creature.acquisitionMode,'ON_DEMAND_SELECTED_ACTION_ONLY');
+  assert.equal(creature.bulkPrefetchAllowed,false);
+  assert.equal(creature.speculativeDownloadAllowed,false);
+  assert.equal(creature.acquireOnlyWhenSelected,true);
+  assert.equal(creature.reuseAcquiredSourceWhenCompatible,true);
   assert.equal(creature.preparedMayClaimVerified,false);
   assert.equal(creature.nativeRuntimeConsumerRequiredBeforePromotion,true);
   assert.ok(creature.semanticSeeds.length>0);
@@ -788,6 +1013,38 @@ test('full studio asset universe plan exposes coverage heatmap and 24h gap fill'
   assert.ok(plan.coverage.missingSlotCount>0);
   assert.ok(plan.heatmap.highestPriorityGap);
   assert.ok(plan.gapFill.actions.length>0);
+});
+
+
+test('company free source registry expands high-priority volume domains without false runtime verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const expected=[
+    'kenney-modular-buildings','kenney-building-kit','quaternius-ultimate-buildings','quaternius-medieval-village',
+    'quaternius-modular-medieval-buildings','quaternius-ultimate-fantasy-rts','kenney-furniture-kit',
+    'quaternius-ultimate-modular-ruins','kenney-ui-pack','kenney-ui-audio','kenney-interface-sounds',
+    'kenney-rpg-audio','kenney-impact-sounds','kenney-nature-kit','quaternius-ultimate-nature',
+    'poly-haven-cc0-library','kenney-city-kit-roads','kenney-city-kit-industrial'
+  ];
+  assert.ok(registry.externalSources.length>=28);
+  for(const id of expected){
+    const row=registry.externalSources.find(source=>source.id===id);
+    assert.ok(row,id);
+    assert.equal(row.license,'CC0',id);
+    assert.equal(row.volumeAdaptationEligible,true,id);
+    assert.equal(row.commercialUseAllowed,true,id);
+    assert.equal(row.derivativesAllowed,true,id);
+    assert.equal(row.promotionRequiresRuntimeConsumer,true,id);
+    assert.notEqual(row.productionVerified,true,id);
+  }
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-modular-buildings').categories.includes('BUILDING'));
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-furniture-kit').categories.includes('PROP'));
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-ui-pack').categories.includes('UI'));
+  assert.ok(registry.externalSources.find(row=>row.id==='kenney-rpg-audio').categories.includes('AUDIO'));
+  assert.ok(registry.externalSources.find(row=>row.id==='poly-haven-cc0-library').categories.includes('MATERIAL'));
+  assert.equal(registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
+  assert.equal(registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,18);
+  assert.ok(registry.internalAssetLibraryAutomation.nextVolumeActions.some(row=>row.domain==='BUILDING'&&row.freeSourceCandidateIds.includes('kenney-modular-buildings')));
 });
 
 test('natural language concept inference covers full preset families and concept axes',async()=>{
@@ -3525,17 +3782,27 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
       };
     });
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
-  const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId)});
+  const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,4);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,7);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,8);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.enabled,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.taskLocalOnly,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.rawImagePersistentLearningForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.referenceImageIdeaOverlay.directCopyForbidden,true);
   assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.productionRuntimeVerificationSeparateFromInternalQuality,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.sourceCatalogMode,'SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.bulkPrefetchForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.speculativeDownloadForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.automaticAcquisitionMode,'SELECTED_WORKLIST_ACTION_ONLY');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.commercialUseRequired,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.derivativeModificationRequired,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.provenanceRequired,true);
@@ -3555,6 +3822,16 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(plan.nextVolumeActions.length>0);
     assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
     assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
+    assert.ok(plan.nextVolumeActions.some(row=>row.freeSourceAvailable===true));
+    assert.ok(plan.nextVolumeActions.every(row=>Array.isArray(row.freeSourceCandidateIds)));
+    assert.ok(plan.nextVolumeActions.every(row=>row.bulkPrefetchAllowed===false));
+    assert.ok(plan.nextVolumeActions.every(row=>row.speculativeDownloadAllowed===false));
+    assert.ok(plan.nextVolumeActions.filter(row=>row.freeSourceAvailable).every(row=>row.freeSourceAcquisitionMode==='ON_DEMAND_SELECTED_ACTION_ONLY'));
+    const buildingAction=plan.nextVolumeActions.find(row=>row.domain==='BUILDING');
+    assert.ok(buildingAction?.freeSourceCandidateIds.includes('kenney-modular-buildings'));
+    assert.ok(buildingAction?.freeSourceCandidateIds.includes('quaternius-ultimate-buildings'));
+    const audioAction=plan.nextVolumeActions.find(row=>row.domain==='AUDIO');
+    assert.deepEqual(audioAction?.freeSourceCandidateIds,['kenney-ui-audio','kenney-interface-sounds','kenney-rpg-audio','kenney-impact-sounds']);
     assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
     assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
   }
@@ -3589,6 +3866,11 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
   assert.equal(plan.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(plan.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.equal(plan.eligibleFreeSourceCount,18);
+  assert.equal(plan.freeSourceCatalogSufficiencyCount,12);
+  assert.equal(plan.freeSourceCatalogReady,true);
+  assert.equal(plan.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
+  assert.equal(plan.primaryAttention,'QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL');
   assert.equal(plan.qualityUpPolicy.selection,'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST');
   assert.equal(plan.qualityUpPolicy.workingBandMin,980);
   assert.equal(plan.qualityUpPolicy.target,1000);
@@ -3631,7 +3913,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,4);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,7);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -3705,7 +3987,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,4);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,7);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -3743,10 +4025,18 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,4);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,7);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
+  assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,18);
+  assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogSufficiencyCount,12);
+  assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogReady,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
+  assert.equal(result.registry.internalAssetLibraryAutomation.primaryAttention,'QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL');
+  assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.enabled,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.taskLocalOnly,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);

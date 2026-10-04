@@ -1,5 +1,5 @@
 {
-  "version": 76,
+  "version": 84,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -73,7 +73,13 @@
     "allInternalAssetsComposableAcrossExistingFlowStages": true,
     "internalAssetConsumerStageAccess": "ALL_EXISTING_FLOW_STAGES",
     "compositionUsesExistingAssetUniverseOnly": true,
-    "compositionMayNotCreateFlowPipelineWrapperOrShadowSystem": true
+    "compositionMayNotCreateFlowPipelineWrapperOrShadowSystem": true,
+    "externalSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
+    "externalSourceBulkPrefetchForbidden": true,
+    "externalSourceSpeculativeDownloadForbidden": true,
+    "externalSourceOnDemandAcquisition": true,
+    "externalSourceAcquisitionOnlyAfterInternalReuseFailure": true,
+    "qualityAndAutomationDetailPrimaryAttention": true
   },
   "platformPacks": [
     {
@@ -50662,8 +50668,13 @@
         "GLTF",
         "RETARGETABLE"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kaykit-adventurers",
@@ -50686,8 +50697,13 @@
         "GLTF",
         "KAYKIT_MOTION_COMPATIBLE"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-universal-animation-library",
@@ -50713,8 +50729,13 @@
         "GLB",
         "RETARGETABLE_HUMANOID"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-universal-animation-library-2",
@@ -50741,8 +50762,13 @@
         "GLB",
         "RETARGETABLE_HUMANOID"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-universal-base-characters",
@@ -50767,8 +50793,13 @@
         "GLTF",
         "ANIMATION_FRIENDLY_TOPOLOGY"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-ultimate-animated-animals",
@@ -50793,8 +50824,13 @@
         "GLTF",
         "QUADRUPED_REFERENCE"
       ],
-      "acquisition": "ON_DEMAND",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "quaternius-bestiary-dungeon-monsters",
@@ -50820,7 +50856,9 @@
       ],
       "acquisition": "ON_DEMAND",
       "rawRedistributionAllowed": false,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false
     },
     {
       "id": "adobe-mixamo",
@@ -50841,9 +50879,12 @@
         "HUMANOID_ANIMATION_LIBRARY",
         "FBX_DOWNLOAD"
       ],
-      "acquisition": "MANUAL_ACCOUNT_REQUIRED",
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
       "rawRedistributionAllowed": false,
-      "promotionRequiresRuntimeConsumer": true
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": false
     },
     {
       "id": "kenney-mini-forest",
@@ -50867,8 +50908,13 @@
         "FOREST",
         "BASE_CAMP"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     },
     {
       "id": "kenney-mini-dungeon",
@@ -50895,8 +50941,727 @@
         "CHARACTER_RIGS",
         "DUNGEON"
       ],
-      "acquisition": "PRIORITY_NOW",
-      "promotionRequiresRuntimeConsumer": true
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-modular-buildings",
+      "name": "Kenney Modular Buildings",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "PROP",
+        "ENVIRONMENT"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/modular-buildings",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/modular-buildings",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D",
+        "100_FILES",
+        "MODULAR_BUILDINGS",
+        "VARIATIONS"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 100,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-building-kit",
+      "name": "Kenney Building Kit",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/building-kit",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/building-kit",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D",
+        "80_FILES",
+        "BUILDING_STRUCTURE",
+        "ANIMATION"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 98,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "quaternius-ultimate-buildings",
+      "name": "Quaternius Ultimate Buildings Pack",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "PROP",
+        "ENVIRONMENT"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimatetexturedbuildings.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatetexturedbuildings.html",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "76_MODELS",
+        "MODULAR_BUILDINGS",
+        "PALETTE_VARIANTS",
+        "FBX",
+        "OBJ",
+        "BLEND"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 100,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "quaternius-medieval-village",
+      "name": "Quaternius Medieval Village Pack",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "PROP",
+        "ENVIRONMENT"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "44_MODELS",
+        "BUILDINGS",
+        "PROPS",
+        "FBX",
+        "OBJ",
+        "BLEND"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 96,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "quaternius-modular-medieval-buildings",
+      "name": "Quaternius Modular Medieval Building Pack",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/modularmedievalbuildings.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/modularmedievalbuildings.html",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "30_MODELS",
+        "MODULAR_BUILDING_PARTS",
+        "FBX",
+        "OBJ",
+        "BLEND"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 95,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "quaternius-ultimate-fantasy-rts",
+      "name": "Quaternius Ultimate Fantasy RTS",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "ENVIRONMENT",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimatefantasyrts.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatefantasyrts.html",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "128_MODELS",
+        "BUILDING_EVOLUTION_STAGES",
+        "NATURE",
+        "FBX",
+        "OBJ",
+        "GLTF",
+        "BLEND"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 94,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-furniture-kit",
+      "name": "Kenney Furniture Kit",
+      "category": "PROP",
+      "categories": [
+        "PROP",
+        "BUILDING"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/furniture-kit",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/furniture-kit",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D",
+        "140_FILES",
+        "FURNITURE",
+        "INTERIOR_PROPS"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 100,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "quaternius-ultimate-modular-ruins",
+      "name": "Quaternius Ultimate Modular Ruins Pack",
+      "category": "PROP",
+      "categories": [
+        "PROP",
+        "BUILDING",
+        "ENVIRONMENT"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimatemodularruins.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatemodularruins.html",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "90_MODELS",
+        "MODULAR_RUINS",
+        "DUNGEON_PROPS",
+        "FBX",
+        "OBJ",
+        "BLEND"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 96,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-ui-pack",
+      "name": "Kenney UI Pack",
+      "category": "UI",
+      "categories": [
+        "UI"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-pack",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/ui-pack",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "430_FILES",
+        "BUTTONS",
+        "PANELS",
+        "SLIDERS",
+        "INTERFACE"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 100,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-ui-audio",
+      "name": "Kenney UI Audio",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/ui-audio",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/ui-audio",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "50_AUDIO_FILES",
+        "BUTTON",
+        "SWITCH",
+        "CLICK"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 100,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-interface-sounds",
+      "name": "Kenney Interface Sounds",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/interface-sounds",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "100_AUDIO_FILES",
+        "INTERFACE",
+        "CLICK",
+        "BUTTON"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 99,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-rpg-audio",
+      "name": "Kenney RPG Audio",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/rpg-audio",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/rpg-audio",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "50_AUDIO_FILES",
+        "FOLEY",
+        "FOOTSTEP",
+        "WEAPON"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 98,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-impact-sounds",
+      "name": "Kenney Impact Sounds",
+      "category": "AUDIO",
+      "categories": [
+        "AUDIO"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/impact-sounds",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/impact-sounds",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "130_AUDIO_FILES",
+        "IMPACT",
+        "FOLEY"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 97,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-nature-kit",
+      "name": "Kenney Nature Kit",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "PROP",
+        "MATERIAL"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/nature-kit",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D",
+        "330_FILES",
+        "TREES",
+        "ROCKS",
+        "FOLIAGE"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 100,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "quaternius-ultimate-nature",
+      "name": "Quaternius Ultimate Nature Pack",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://quaternius.com/packs/ultimatenature.html",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://quaternius.com/packs/ultimatenature.html",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY"
+      ],
+      "platformResearchTargets": [
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "150_MODELS",
+        "NATURE",
+        "FBX",
+        "OBJ",
+        "BLEND"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 98,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "poly-haven-cc0-library",
+      "name": "Poly Haven CC0 Asset Library",
+      "category": "MATERIAL",
+      "categories": [
+        "MATERIAL",
+        "ENVIRONMENT",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Poly Haven",
+      "creator": "Poly Haven",
+      "sourceUrl": "https://polyhaven.com/",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://polyhaven.com/license",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "PBR_TEXTURES",
+        "3D_MODELS",
+        "HDRI",
+        "CC0_LIBRARY"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 96,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-city-kit-roads",
+      "name": "Kenney City Kit Roads",
+      "category": "ENVIRONMENT",
+      "categories": [
+        "ENVIRONMENT",
+        "PROP",
+        "BUILDING"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/city-kit-roads",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/city-kit-roads",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D",
+        "90_FILES",
+        "ROADS",
+        "SIGNS",
+        "TRAFFIC_LIGHTS"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 94,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "kenney-city-kit-industrial",
+      "name": "Kenney City Kit Industrial",
+      "category": "BUILDING",
+      "categories": [
+        "BUILDING",
+        "ENVIRONMENT",
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/city-kit-industrial",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/city-kit-industrial",
+      "verifiedAt": "2026-10-04",
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "capabilities": [
+        "3D",
+        "40_FILES",
+        "FACTORY",
+        "WAREHOUSE",
+        "ENERGY"
+      ],
+      "acquisition": "ON_DEMAND_SELECTED_WORKLIST_ACTION",
+      "volumeAdaptationEligible": true,
+      "sourcePriority": 93,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true,
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
     }
   ],
   "unarmedCombat": {
@@ -55047,7 +55812,8 @@
       "BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN",
       "REBUILD_UI_SUBSYSTEM_DEPTH",
       "READ_PERSISTED_NEXT_VOLUME_ACTIONS",
-      "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS"
+      "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS",
+      "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS"
     ],
     "postBindingChecks": [
       "RECORD_SOURCE_FILES",
@@ -55521,7 +56287,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 4,
+    "version": 7,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56141,7 +56907,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 76,
+    "lastCatalogSynchronizedVersion": 84,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -56447,6 +57213,17 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 1,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56465,6 +57242,17 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 2,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56483,6 +57271,17 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 3,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56501,6 +57300,17 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 65,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 4,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56519,6 +57329,21 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 5,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56537,6 +57362,21 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 6,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56555,6 +57395,21 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 7,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56573,6 +57428,21 @@
         "priority": 300,
         "targetMin": 120,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 8,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56591,6 +57461,12 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 9,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56609,6 +57485,12 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 10,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56627,6 +57509,12 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 11,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56645,6 +57533,12 @@
         "priority": 300,
         "targetMin": 180,
         "currentCount": 24,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 12,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56663,6 +57557,21 @@
         "priority": 300,
         "targetMin": 140,
         "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 13,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56681,6 +57590,21 @@
         "priority": 300,
         "targetMin": 140,
         "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 14,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56699,6 +57623,12 @@
         "priority": 300,
         "targetMin": 200,
         "currentCount": 61,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 15,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56717,6 +57647,18 @@
         "priority": 300,
         "targetMin": 100,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-ui-pack",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 16,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56735,6 +57677,18 @@
         "priority": 300,
         "targetMin": 100,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-ui-pack",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 17,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56753,6 +57707,18 @@
         "priority": 300,
         "targetMin": 100,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-ui-pack",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 18,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56771,6 +57737,21 @@
         "priority": 300,
         "targetMin": 80,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 19,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56789,6 +57770,21 @@
         "priority": 300,
         "targetMin": 80,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 20,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56807,6 +57803,21 @@
         "priority": 300,
         "targetMin": 80,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 21,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56825,6 +57836,21 @@
         "priority": 300,
         "targetMin": 160,
         "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 22,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56843,6 +57869,21 @@
         "priority": 300,
         "targetMin": 160,
         "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 23,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56861,6 +57902,21 @@
         "priority": 300,
         "targetMin": 160,
         "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 24,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56879,6 +57935,21 @@
         "priority": 300,
         "targetMin": 160,
         "currentCount": 38,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 25,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56897,6 +57968,21 @@
         "priority": 280,
         "targetMin": 140,
         "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 26,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56915,6 +58001,21 @@
         "priority": 280,
         "targetMin": 36,
         "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 27,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56933,6 +58034,12 @@
         "priority": 262,
         "targetMin": 200,
         "currentCount": 61,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 28,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56951,6 +58058,12 @@
         "priority": 262,
         "targetMin": 180,
         "currentCount": 20,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 29,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56969,6 +58082,14 @@
         "priority": 262,
         "targetMin": 340,
         "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 30,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -56987,6 +58108,12 @@
         "priority": 262,
         "targetMin": 120,
         "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 31,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57005,6 +58132,21 @@
         "priority": 262,
         "targetMin": 80,
         "currentCount": 20,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 32,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57023,6 +58165,21 @@
         "priority": 256,
         "targetMin": 140,
         "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 33,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57041,6 +58198,21 @@
         "priority": 256,
         "targetMin": 140,
         "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 34,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57059,6 +58231,21 @@
         "priority": 238,
         "targetMin": 96,
         "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 35,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57077,6 +58264,21 @@
         "priority": 238,
         "targetMin": 36,
         "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 36,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57095,6 +58297,21 @@
         "priority": 238,
         "targetMin": 140,
         "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 37,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57113,6 +58330,21 @@
         "priority": 238,
         "targetMin": 140,
         "currentCount": 40,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 38,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57131,6 +58363,12 @@
         "priority": 238,
         "targetMin": 200,
         "currentCount": 61,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 39,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57149,6 +58387,18 @@
         "priority": 238,
         "targetMin": 100,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-audio",
+          "kenney-ui-pack",
+          "kenney-interface-sounds",
+          "kenney-rpg-audio",
+          "kenney-impact-sounds"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 40,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57167,6 +58417,14 @@
         "priority": 238,
         "targetMin": 340,
         "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 41,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57185,6 +58443,12 @@
         "priority": 238,
         "targetMin": 120,
         "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 42,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57203,6 +58467,21 @@
         "priority": 232,
         "targetMin": 96,
         "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 43,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57221,6 +58500,21 @@
         "priority": 232,
         "targetMin": 40,
         "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village",
+          "quaternius-ultimate-modular-ruins",
+          "kenney-city-kit-roads"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 44,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57239,6 +58533,14 @@
         "priority": 232,
         "targetMin": 340,
         "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 45,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57257,6 +58559,21 @@
         "priority": 226,
         "targetMin": 96,
         "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 46,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57275,6 +58592,21 @@
         "priority": 226,
         "targetMin": 96,
         "currentCount": 18,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 47,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57293,6 +58625,21 @@
         "priority": 226,
         "targetMin": 140,
         "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-furniture-kit",
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "kenney-building-kit",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 48,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57311,6 +58658,21 @@
         "priority": 226,
         "targetMin": 40,
         "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village",
+          "quaternius-ultimate-modular-ruins",
+          "kenney-city-kit-roads"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 49,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57329,6 +58691,21 @@
         "priority": 226,
         "targetMin": 40,
         "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village",
+          "quaternius-ultimate-modular-ruins",
+          "kenney-city-kit-roads"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 50,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57347,6 +58724,21 @@
         "priority": 226,
         "targetMin": 40,
         "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-modular-buildings",
+          "kenney-nature-kit",
+          "quaternius-ultimate-buildings",
+          "quaternius-ultimate-nature",
+          "poly-haven-cc0-library",
+          "quaternius-medieval-village",
+          "quaternius-ultimate-modular-ruins",
+          "kenney-city-kit-roads"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 51,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57365,6 +58757,12 @@
         "priority": 226,
         "targetMin": 200,
         "currentCount": 61,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 52,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57383,6 +58781,14 @@
         "priority": 226,
         "targetMin": 340,
         "currentCount": 204,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 53,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57401,6 +58807,12 @@
         "priority": 226,
         "targetMin": 120,
         "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 54,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57419,6 +58831,12 @@
         "priority": 226,
         "targetMin": 120,
         "currentCount": 27,
+        "freeSourceCandidateIds": [],
+        "freeSourceAvailable": false,
+        "freeSourceAcquisitionMode": "NOT_AVAILABLE",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 55,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57438,6 +58856,14 @@
         "priority": 210,
         "targetMin": 14,
         "currentCount": 4,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 56,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57457,6 +58883,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 8,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 57,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57476,6 +58910,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 58,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57495,6 +58937,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 11,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 59,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57514,6 +58964,14 @@
         "priority": 210,
         "targetMin": 30,
         "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 60,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57533,6 +58991,14 @@
         "priority": 210,
         "targetMin": 14,
         "currentCount": 6,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 61,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57552,6 +59018,14 @@
         "priority": 210,
         "targetMin": 14,
         "currentCount": 6,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 62,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57571,6 +59045,14 @@
         "priority": 210,
         "targetMin": 32,
         "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 63,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57590,6 +59072,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 12,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 64,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57609,6 +59099,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 65,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57628,6 +59126,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 66,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57647,6 +59153,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 67,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57666,6 +59180,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 17,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 68,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57685,6 +59207,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 13,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 69,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57704,6 +59234,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 70,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57723,6 +59261,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 71,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57742,6 +59288,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 9,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 72,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57761,6 +59315,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 73,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57780,6 +59342,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 13,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 74,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57799,6 +59369,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 17,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 75,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57818,6 +59396,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 76,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57837,6 +59423,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 77,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57856,6 +59450,14 @@
         "priority": 210,
         "targetMin": 14,
         "currentCount": 4,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 78,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57875,6 +59477,14 @@
         "priority": 210,
         "targetMin": 14,
         "currentCount": 4,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 79,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57894,6 +59504,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 80,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57913,6 +59531,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 81,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57932,6 +59558,14 @@
         "priority": 210,
         "targetMin": 30,
         "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 82,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57951,6 +59585,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 83,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57970,6 +59612,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 9,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 84,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -57989,6 +59639,14 @@
         "priority": 210,
         "targetMin": 20,
         "currentCount": 3,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 85,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58008,6 +59666,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 86,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58027,6 +59693,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 16,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 87,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58046,6 +59720,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 16,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 88,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58065,6 +59747,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 1,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 89,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58084,6 +59774,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 19,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 90,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58103,6 +59801,14 @@
         "priority": 210,
         "targetMin": 24,
         "currentCount": 19,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 91,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58122,6 +59828,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 9,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 92,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58141,6 +59855,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 7,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 93,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58160,6 +59882,14 @@
         "priority": 210,
         "targetMin": 32,
         "currentCount": 25,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 94,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58179,6 +59909,14 @@
         "priority": 210,
         "targetMin": 18,
         "currentCount": 14,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 95,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58198,6 +59936,14 @@
         "priority": 210,
         "targetMin": 16,
         "currentCount": 7,
+        "freeSourceCandidateIds": [
+          "kenney-ui-pack"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
         "worklistOrder": 96,
         "resolutionOrder": [
           "REUSE_EXISTING",
@@ -58239,8 +59985,18 @@
     "productionRuntimeVerificationSeparateFromInternalQuality": true,
     "freeOriginalVolumePolicy": {
       "priority": "AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING",
-      "purpose": "FILL_VOLUME_FASTER_THEN_SPEND_MORE_CYCLES_ON_QUALITY",
+      "purpose": "ON_DEMAND_GAP_FILL_WHILE_PRIMARY_WORK_FOCUSES_ON_QUALITY_AND_AUTOMATION_DETAIL",
       "allowed": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
+      "sourceCatalogMode": "SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION",
+      "bulkPrefetchForbidden": true,
+      "speculativeDownloadForbidden": true,
+      "automaticAcquisitionMode": "SELECTED_WORKLIST_ACTION_ONLY",
+      "acquireOnlyWhen": [
+        "ACTIVE_WORKLIST_ACTION_REQUIRES_SOURCE",
+        "NO_SUITABLE_EXISTING_INTERNAL_ASSET",
+        "NO_ACCEPTABLE_DERIVED_OR_RECOMBINED_INTERNAL_VARIANT"
+      ],
+      "reuseDownloadedSourceAcrossFutureCompatibleActions": true,
       "commercialUseRequired": true,
       "derivativeModificationRequired": true,
       "provenanceRequired": true,
@@ -58248,6 +60004,224 @@
       "directProtectedCommercialGameAssetCopyForbidden": true,
       "nativeAdaptationRequired": true,
       "runtimeVerificationRequiredBeforeProductionPromotion": true
+    },
+    "eligibleFreeSourceCount": 18,
+    "freeSourceCandidateLimitPerAction": 8,
+    "freeSourceCatalogSufficiencyCount": 12,
+    "freeSourceCatalogReady": true,
+    "freeSourceCatalogExpansionMode": "PAUSED_UNTIL_REAL_COVERAGE_GAP",
+    "primaryAttention": "QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL",
+    "referenceImageIdeaOverlay": {
+      "enabled": true,
+      "priority": "CURRENT_TASK_BEFORE_PERSISTED_GENERIC_VOLUME_ACTIONS",
+      "taskLocalOnly": true,
+      "persistentRegistryStorageForbidden": true,
+      "rawImagePersistentLearningForbidden": true,
+      "sourceBoundObservationRequired": true,
+      "directCopyForbidden": true,
+      "unseenGeometryAndMotionRemainCreativeProposals": true,
+      "productionPromotionAutomatic": false,
+      "producedAssetMayEnterCatalogOnlyAfterNormalAssetQA": true
     }
+  },
+  "characterNpcCustomization": {
+    "version": 1,
+    "status": "ACTIVE_MACHINE_READABLE_INTERNAL_CHARACTER_CUSTOMIZATION",
+    "contract": "assets/vibe-character-identity-director.js#VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT",
+    "target": "AAA_DEEP_RPG_CHARACTER_CREATOR_BREADTH_WITH_ORIGINAL_ASSETS",
+    "referenceUse": "SYSTEM_BREADTH_AND_EXPRESSION_PRINCIPLES_ONLY",
+    "protectedExpressionCopyForbidden": true,
+    "exactThirdPartyFaceHairTattooOutfitUiCopyForbidden": true,
+    "sharedAssetPoolForPlayerAndNpc": true,
+    "npcUsesSameMorphPartMaterialAndMotionGrammar": true,
+    "generatedCombinationSpaceIsNotAuthoredAssetCount": true,
+    "targetMinimums": {
+      "BODY_ARCHETYPE": 12,
+      "HEAD_BASE": 48,
+      "FACE_MORPH_CONTROL": 28,
+      "SKIN_TONE_FAMILY": 32,
+      "SKIN_DETAIL": 24,
+      "EYE_COLOR": 32,
+      "EYE_SHAPE": 20,
+      "BROW_STYLE": 20,
+      "HAIR_STYLE": 48,
+      "HAIR_COLOR": 32,
+      "HAIR_HIGHLIGHT": 24,
+      "HAIR_GRAYING": 12,
+      "FACIAL_HAIR": 24,
+      "SCAR": 24,
+      "TATTOO_OR_BODY_MARK": 32,
+      "MAKEUP": 32,
+      "PIERCING": 24,
+      "AGE_PRESENTATION": 12,
+      "SPECIES_PART": 32,
+      "CLOTHING_LAYER_VARIANT": 60,
+      "ACCESSORY": 48,
+      "EXPRESSION_SET": 24,
+      "GAIT_IDENTITY": 24,
+      "VOICE_PRESENTATION": 12
+    },
+    "bodyAxes": [
+      "HEIGHT_PRESENTATION",
+      "VISUAL_MASS",
+      "SHOULDER_WIDTH",
+      "TORSO_LENGTH",
+      "TORSO_DEPTH",
+      "PELVIS_WIDTH",
+      "ARM_LENGTH",
+      "LEG_LENGTH",
+      "HAND_FOOT_SCALE",
+      "HEAD_BODY_RATIO",
+      "POSTURE",
+      "ASYMMETRY"
+    ],
+    "faceAxes": [
+      "HEAD_BASE",
+      "FACE_WIDTH",
+      "FACE_LENGTH",
+      "FOREHEAD",
+      "BROW_HEIGHT",
+      "BROW_ANGLE",
+      "EYE_SPACING",
+      "EYE_SIZE",
+      "EYE_TILT",
+      "NOSE_BRIDGE",
+      "NOSE_LENGTH",
+      "NOSE_WIDTH",
+      "CHEEKBONE",
+      "CHEEK_FULLNESS",
+      "MOUTH_WIDTH",
+      "LIP_VOLUME",
+      "PHILTRUM",
+      "JAW_WIDTH",
+      "JAW_DEPTH",
+      "CHIN_WIDTH",
+      "CHIN_PROJECTION",
+      "EAR_SIZE",
+      "EAR_ANGLE",
+      "LEFT_RIGHT_ASYMMETRY"
+    ],
+    "surfaceAxes": [
+      "SKIN_TONE",
+      "UNDERTONE",
+      "FRECKLES",
+      "VITILIGO_OR_PIGMENT_PATTERN",
+      "BLEMISH",
+      "SCAR",
+      "TATTOO_OR_BODY_MARK",
+      "MAKEUP_EYE",
+      "MAKEUP_LIP",
+      "MAKEUP_FACE",
+      "ROUGHNESS",
+      "WEATHERING",
+      "AGE_LINES"
+    ],
+    "eyeHairAxes": [
+      "LEFT_EYE_COLOR",
+      "RIGHT_EYE_COLOR",
+      "HETEROCHROMIA",
+      "IRIS_PATTERN",
+      "SCLERA_TINT",
+      "BROW_STYLE",
+      "HAIR_STYLE",
+      "HAIR_TEXTURE",
+      "HAIR_LENGTH",
+      "HAIR_PRIMARY_COLOR",
+      "HAIR_HIGHLIGHT",
+      "HAIR_GRAYING",
+      "FACIAL_HAIR_STYLE",
+      "FACIAL_HAIR_COLOR"
+    ],
+    "speciesAxes": [
+      "EAR_SHAPE",
+      "HORN_SHAPE",
+      "HORN_COLOR",
+      "TAIL_SHAPE",
+      "CREST",
+      "SHELL_OR_SCALE_REGION",
+      "FANG_OR_TUSK",
+      "SPECIES_APPENDAGE"
+    ],
+    "outfitAxes": [
+      "HEAD",
+      "HAIR",
+      "FACE",
+      "EAR",
+      "NECK",
+      "TORSO_BASE",
+      "TORSO_INNER",
+      "TORSO_OUTER",
+      "SHOULDER",
+      "ARM",
+      "GLOVE",
+      "WAIST",
+      "BELT",
+      "HIP",
+      "LEG_INNER",
+      "LEG_OUTER",
+      "BOOT",
+      "BACK",
+      "CAPE",
+      "PIERCING",
+      "ACCESSORY",
+      "SPECIES_PART"
+    ],
+    "npcContextAxes": [
+      "REGION",
+      "CULTURE",
+      "OCCUPATION",
+      "FACTION",
+      "SOCIAL_CLASS",
+      "WEALTH",
+      "AGE_BAND",
+      "CLIMATE",
+      "DAMAGE_WEAR",
+      "PERSONAL_HISTORY"
+    ],
+    "presentationAxes": [
+      "EXPRESSION_SET",
+      "IDLE_PERSONALITY",
+      "GAIT_IDENTITY",
+      "GESTURE_FAMILY",
+      "VOICE_PRESENTATION",
+      "EQUIPMENT_CARRY_STYLE"
+    ],
+    "npcPopulationRules": {
+      "colorOnlyDuplicateForbidden": true,
+      "faceSwapCloneForbidden": true,
+      "minimumDistinctIdentityAxesPerNearbyPair": 5,
+      "sameHeadHairOutfitCombinationReuseLimitPerLocalCrowd": 1,
+      "regionAndOccupationMayBiasSelectionButDoNotHardLockEligibility": true,
+      "heroNpcGetsCloseupDetailPriority": true,
+      "backgroundNpcMayUseLodButMustKeepDistinctSilhouette": true,
+      "deterministicRecipeFromStableSeed": true,
+      "speciesPartCompatibilityRequired": true,
+      "gameplayStatsUnaffected": true
+    },
+    "production": {
+      "preferExistingMorphPartRigAndMaterialLibrary": true,
+      "licensedFreeSourceAdaptationBeforeNewAuthoring": true,
+      "photoObservationMaySeedVisibleFormAndSurfaceIdeas": true,
+      "unseenGeometryAndMotionRemainCreativeProposals": true,
+      "editableDccSourceRequiredForNewMorphs": true,
+      "platformNativeVariantsRequired": true,
+      "mobileLodRequired": true,
+      "runtimeVerificationRequiredBeforeProductionPromotion": true
+    },
+    "referenceImageIdeaIntegration": {
+      "enabled": true,
+      "sourceBoundObservationRequired": true,
+      "taskLocalWorklistOnly": true,
+      "persistentRawImageLearningForbidden": true,
+      "visibleFeaturesMaySeedCustomizationIdeas": true,
+      "unseenGeometryAndMotionRemainCreativeProposals": true,
+      "directReferenceCopyForbidden": true
+    },
+    "productionVerified": false,
+    "runtimeVerificationRequired": true,
+    "gameplayAuthority": false,
+    "balanceAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
