@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-world-props-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -24,7 +24,9 @@
       "reusableWorldHousingProps38": true,
       "settlementLifeProps": true,
       "loreAndResourcePresentation": true,
-      "interactionRoleMetadataSynced": true
+      "interactionRoleMetadataSynced": true,
+      "interactionSoundRoleMetadataSynced": true,
+      "machineLifePropSoundRoleCoverage": true
     }
   },
   "runtimeQuality": {
@@ -33,5 +35,11 @@
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
   },
-  "sourceAssetCount": 38
+  "sourceAssetCount": 38,
+  "soundRoleLinkage": {
+    "itemCount": 38,
+    "audioPlaybackAuthority": false,
+    "actualAudioAssetsNotClaimed": true,
+    "variationRequired": true
+  }
 }
