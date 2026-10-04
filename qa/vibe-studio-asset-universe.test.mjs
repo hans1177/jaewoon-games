@@ -2288,3 +2288,100 @@ test('generic weapon requirement can choose company-common tool base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-sword');
 });
+
+
+test('company-common character gear pack provides eight reusable visual equipment pieces',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-character-gear-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonCharacterGear.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['CLOTH_TUNIC','LEATHER_VEST','IRON_CHESTPLATE','CLOTH_HOOD','IRON_HELMET','LEATHER_GLOVES','LEATHER_BOOTS','TRAVEL_CLOAK'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  const materials=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
+  const allowed=new Set(['SmoothPlastic','Plastic','Neon','Wood','WoodPlanks','Marble','Slate','Concrete','Granite','Brick','Pebble','Cobblestone','CorrodedMetal','DiamondPlate','Foil','Metal','Grass','Sand','Fabric','Ice','Glacier','Snow','Sandstone','Mud','Ground','CrackedLava','Basalt','Asphalt','Salt','Limestone','Pavement','Air','Water']);
+  assert.equal(materials.every(value=>allowed.has(value)),true);
+
+  assert.ok(source.includes('function RobloxCommonCharacterGear.Create(id,options)'));
+  assert.ok(source.includes('function RobloxCommonCharacterGear.CreateViewport(id,options)'));
+  assert.ok(source.includes('anchor.Name="VisualAnchor"'));
+  assert.ok(source.includes('BodyPlanCompatibilityRequired",true'));
+  assert.ok(source.includes('CompanyCommonBase",true'));
+  assert.equal(catalog.family,'CHARACTER');
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.bodyPlanCompatibilityRequired,true);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.staticAuthoringChecklist.checks.validRobloxMaterialEnums,true);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDefense\s*=/,/\bMaxHealth\s*=/,/\bMoveSpeed\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common character gear registry preserves equipment gameplay save and network authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-character-gear-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.family,'CHARACTER');
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.gameplayAuthority,false);
+  assert.equal(pack.bodyPlanCompatibilityRequired,true);
+
+  const expected=[
+    ['CLOTH_TUNIC','TORSO_GEAR','LIGHT_TORSO'],
+    ['LEATHER_VEST','TORSO_GEAR','MEDIUM_TORSO'],
+    ['IRON_CHESTPLATE','TORSO_GEAR','HEAVY_TORSO'],
+    ['CLOTH_HOOD','HEAD_GEAR','LIGHT_HEAD'],
+    ['IRON_HELMET','HEAD_GEAR','HEAVY_HEAD'],
+    ['LEATHER_GLOVES','HAND_GEAR','HAND'],
+    ['LEATHER_BOOTS','FOOT_GEAR','FOOT'],
+    ['TRAVEL_CLOAK','BACK_GEAR','BACK']
+  ];
+  for(const [assetId,subfamily,gearRole] of expected){
+    const id='roblox-common-character-gear-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'CHARACTER');
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.gearRole,gearRole);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.bodyPlanCompatibilityRequired,true);
+    assert.equal(row.bindingHint.visualAnchor,'VisualAnchor');
+    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
+
+test('generic character gear requirement can choose company-common base',()=>{
+  const registryAsset={
+    id:'common-character-helmet',family:'CHARACTER',subfamily:'HEAD_GEAR',platform:'ROBLOX',status:'REPO_ASSET',
+    companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['HEAVY_HEAD']
+  };
+  const gameOnly={
+    id:'game-only-helmet',family:'CHARACTER',subfamily:'HEAD_GEAR',platform:'ROBLOX',status:'REPO_ASSET',tags:['HEAVY_HEAD']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'CHARACTER',subfamily:'HEAD_GEAR',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-character-helmet');
+});

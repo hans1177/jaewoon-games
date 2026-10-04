@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "packId": "roblox-common-character-gear-v1",
+  "title": "Roblox 회사 공용 방어구/의상 8종 v1",
+  "platform": "ROBLOX",
+  "family": "CHARACTER",
+  "subfamily": "GEAR_PACK",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "styleAdaptationRequiredPerGame": true,
+  "bodyPlanCompatibilityRequired": true,
+  "automaticCrossGameReuseAllowed": true,
+  "crossGameReuseRequiresCompatibilityPass": true,
+  "gameplayAuthority": false,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "intendedConsumerGameIds": [
+    "survival",
+    "daechung-rpg",
+    "monster-adventure",
+    "village-dungeons",
+    "seed-action-survival-rogu-echoes-of-the-lost-star"
+  ],
+  "items": [
+    {
+      "assetId": "CLOTH_TUNIC",
+      "name": "천 상의",
+      "subfamily": "TORSO_GEAR",
+      "gearRole": "LIGHT_TORSO",
+      "familyRootId": "GEAR_TUNIC"
+    },
+    {
+      "assetId": "LEATHER_VEST",
+      "name": "가죽 조끼",
+      "subfamily": "TORSO_GEAR",
+      "gearRole": "MEDIUM_TORSO",
+      "familyRootId": "GEAR_VEST"
+    },
+    {
+      "assetId": "IRON_CHESTPLATE",
+      "name": "철 흉갑",
+      "subfamily": "TORSO_GEAR",
+      "gearRole": "HEAVY_TORSO",
+      "familyRootId": "GEAR_CHESTPLATE"
+    },
+    {
+      "assetId": "CLOTH_HOOD",
+      "name": "천 후드",
+      "subfamily": "HEAD_GEAR",
+      "gearRole": "LIGHT_HEAD",
+      "familyRootId": "GEAR_HOOD"
+    },
+    {
+      "assetId": "IRON_HELMET",
+      "name": "철 투구",
+      "subfamily": "HEAD_GEAR",
+      "gearRole": "HEAVY_HEAD",
+      "familyRootId": "GEAR_HELMET"
+    },
+    {
+      "assetId": "LEATHER_GLOVES",
+      "name": "가죽 장갑",
+      "subfamily": "HAND_GEAR",
+      "gearRole": "HAND",
+      "familyRootId": "GEAR_GLOVES"
+    },
+    {
+      "assetId": "LEATHER_BOOTS",
+      "name": "가죽 장화",
+      "subfamily": "FOOT_GEAR",
+      "gearRole": "FOOT",
+      "familyRootId": "GEAR_BOOTS"
+    },
+    {
+      "assetId": "TRAVEL_CLOAK",
+      "name": "여행 망토",
+      "subfamily": "BACK_GEAR",
+      "gearRole": "BACK",
+      "familyRootId": "GEAR_CLOAK"
+    }
+  ]
+}
