@@ -77,6 +77,34 @@ local PRESETS = table.freeze({
       VOID_PURPLE = table.freeze({material = Enum.Material.Neon, color = Color3.fromRGB(151, 105, 220), reflectance = 0.04}),
     }),
   }),
+  BRICK = table.freeze({
+    defaultVariant = "RED",
+    variants = table.freeze({
+      RED = table.freeze({material = Enum.Material.Brick, color = Color3.fromRGB(142, 86, 67), reflectance = 0.00}),
+      DARK = table.freeze({material = Enum.Material.Brick, color = Color3.fromRGB(88, 66, 58), reflectance = 0.00}),
+      PALE = table.freeze({material = Enum.Material.Brick, color = Color3.fromRGB(176, 145, 121), reflectance = 0.00}),
+      WEATHERED = table.freeze({material = Enum.Material.Brick, color = Color3.fromRGB(122, 104, 92), reflectance = 0.00}),
+    }),
+  }),
+  ICE = table.freeze({
+    defaultVariant = "CLEAR_BLUE",
+    variants = table.freeze({
+      CLEAR_BLUE = table.freeze({material = Enum.Material.Ice, color = Color3.fromRGB(151, 206, 229), reflectance = 0.10}),
+      PALE = table.freeze({material = Enum.Material.Ice, color = Color3.fromRGB(205, 232, 239), reflectance = 0.12}),
+      DEEP = table.freeze({material = Enum.Material.Glacier, color = Color3.fromRGB(107, 164, 201), reflectance = 0.08}),
+      FROSTED = table.freeze({material = Enum.Material.Snow, color = Color3.fromRGB(226, 235, 237), reflectance = 0.02}),
+    }),
+  }),
+  ASPHALT = table.freeze({
+    defaultVariant = "ROAD",
+    variants = table.freeze({
+      ROAD = table.freeze({material = Enum.Material.Asphalt, color = Color3.fromRGB(65, 68, 70), reflectance = 0.00}),
+      DARK = table.freeze({material = Enum.Material.Asphalt, color = Color3.fromRGB(42, 45, 47), reflectance = 0.00}),
+      WORN = table.freeze({material = Enum.Material.Asphalt, color = Color3.fromRGB(89, 88, 83), reflectance = 0.00}),
+      PALE = table.freeze({material = Enum.Material.Pavement, color = Color3.fromRGB(128, 126, 119), reflectance = 0.00}),
+    }),
+  }),
+
 })
 
 local function clamp(value, minValue, maxValue)
@@ -182,10 +210,10 @@ end
 
 function RobloxCommonMaterials.Audit()
   return table.freeze({
-    version = 2,
+    version = 3,
     packId = "roblox-common-materials-v1",
-    atoms = table.freeze({"WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL"}),
-    atomCount = 8,
+    atoms = table.freeze({"WOOD", "STONE", "METAL", "GLASS", "FABRIC", "LEATHER_LIKE", "GROUND", "MAGIC_CRYSTAL", "BRICK", "ICE", "ASPHALT"}),
+    atomCount = 11,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
