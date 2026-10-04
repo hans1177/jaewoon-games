@@ -63,14 +63,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T21:58:12.094Z",
+      "updatedAt": "2026-10-04T22:03:21.504Z",
       "robloxSourceCommit": "56dffef02fd6c5ddd4e03f002b67881cc46e84ed",
       "robloxSourceBootstrapPassedAt": "2026-10-04T21:40:16.158Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T21:45:34.766Z",
@@ -1612,7 +1612,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-amusement-tycoon-37131116107",
       "unitySourceCommit": "1e59c94ee019ad8ab915868d07013e58953d6324",
-      "unityBuildRunId": 37223629771,
+      "unityBuildRunId": 37237962137,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -1670,7 +1670,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T18:28:00.219Z"
+        "verifiedAt": "2026-10-04T22:03:21.504Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -1697,8 +1697,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -1721,8 +1721,8 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
-          "independentQa": true,
-          "regression": true
+          "independentQa": false,
+          "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
@@ -49232,7 +49232,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T22:02:13.997Z",
+  "updatedAt": "2026-10-04T22:03:23.350Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
