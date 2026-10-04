@@ -3526,7 +3526,14 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId)});
 
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,3);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.productionRuntimeVerificationSeparateFromInternalQuality,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.hardMaximum,null);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.overSoftLimitBlocksUse,false);
   assert.equal(plan.hardMaximum,null);
@@ -3542,6 +3549,8 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(plan.nextVolumeActions.length>0);
     assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
     assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
+    assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
+    assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING'])));
   }
 
   for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
@@ -3572,10 +3581,38 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.HOUSING_SANDBOX.includes('STRUCTURAL_SUPPORT_OVERLAY'));
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.ENVIRONMENT.includes('COSMIC_ANOMALY_HORIZON'));
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
+  assert.equal(plan.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
+  assert.equal(plan.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+  assert.equal(plan.qualityUpPolicy.selection,'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST');
+  assert.equal(plan.qualityUpPolicy.workingBandMin,980);
+  assert.equal(plan.qualityUpPolicy.target,1000);
+  assert.equal(plan.qualityUpPolicy.productionRuntimeVerificationSeparate,true);
+
+  const foliagePool=COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.FOLIAGE;
+  const dedupPlan=buildInternalAssetLibraryAutomationPlan({
+    assets:[...registry.assets,{
+      id:foliagePool[0],
+      family:'FOLIAGE',
+      category:'ENVIRONMENT',
+      assetId:foliagePool[1],
+      atomId:'FOLIAGE_DISTINCT_VARIATION_01',
+      role:foliagePool[2],
+      subfamily:'TEST_EXISTING_IDENTITY'
+    }],
+    seedPlan:{ideas:[]},
+    uiAtomIds:ui.atoms.map(row=>row.atomId)
+  });
+  const foliage=dedupPlan.domains.find(row=>row.domain==='FOLIAGE');
+  assert.ok(foliage);
+  assert.ok(foliage.suggestedIdeas.some(row=>row.source==='LOOSE_VOLUME_TARGET'));
+  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===foliagePool[0]),false);
+  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===foliagePool[1]),false);
+  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===foliagePool[2]),false);
+  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_01'),false);
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,2);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,3);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -3649,7 +3686,17 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,3);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
+    assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
+    assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.nextVolumeActions,first.automationPlan.nextVolumeActions);
+    assert.equal(first.registry.internalAssetLibraryAutomation.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
+    assert.equal(first.registry.internalAssetLibraryAutomation.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']);
+    assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.workingBandMin,980);
+    assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.target,1000);
+    assert.equal(first.registry.internalAssetLibraryAutomation.productionRuntimeVerificationSeparateFromInternalQuality,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoDelete,false);
     assert.equal(first.registry.internalAssetLibraryAutomation.hardMaximum,null);
     assert.equal(first.registry.internalAssetLibraryAutomation.overSoftLimitBlocksUse,false);
@@ -3677,5 +3724,17 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,3);
+  assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
+  assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
+  assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
+  assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.schedulerCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.queueCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.pipelineCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.wrapperCreated,false);
+  assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
 });
 
