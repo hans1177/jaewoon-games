@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-vfx-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -66,5 +66,68 @@
     ],
     "productionVerified": false,
     "runtimeVerificationRequired": true
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "FEEDBACK_STATES",
+      "READABILITY_SCALE",
+      "STYLE_COHERENCE",
+      "PERFORMANCE_LOD"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "MATERIAL_SURFACE": 84,
+      "COLOR_LIGHTING": 93,
+      "STYLE_COHERENCE": 90,
+      "DETAIL_FINISH": 89,
+      "READABILITY_SCALE": 92,
+      "MOTION_RIG": 90,
+      "FEEDBACK_STATES": 95,
+      "MODULAR_REUSE": 96,
+      "VARIATION_BREADTH": 94,
+      "PERFORMANCE_LOD": 91,
+      "ACCESSIBILITY_INPUT": 86,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 95
+    },
+    "expectedScore": 913.1,
+    "expectedGrade": "COMMERCIAL_READY",
+    "evidenceBasis": {
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "sourceAssetCount": 27,
+      "sourceLineCount": 531,
+      "sourceFunctionCount": 35,
+      "tweenUsageCount": 16,
+      "trailReferenceCount": 10,
+      "parryFeedbackAtomCount": 5,
+      "mobileDensityVariant": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "ACTUAL_GAME_CAMERA_READABILITY_UNVERIFIED",
+      "ACTUAL_EVENT_TIMING_FIT_UNVERIFIED",
+      "ACTUAL_MOBILE_FRAME_COST_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
   }
 }
