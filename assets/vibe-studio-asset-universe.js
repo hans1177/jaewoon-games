@@ -40,6 +40,71 @@ export const STUDIO_ASSET_QUALITY_GRADES=Object.freeze([
   Object.freeze({min:70,id:'PROTOTYPE'}),
   Object.freeze({min:0,id:'REPAIR_REQUIRED'})
 ]);
+
+export const INTERNAL_ASSET_AUDIT_VERSION=1;
+export const INTERNAL_ASSET_AUDIT_MAX=1000;
+export const INTERNAL_ASSET_AUDIT_PASS=880;
+export const INTERNAL_ASSET_AUDIT_GRADES=Object.freeze([
+  Object.freeze({min:980,id:'MASTERPIECE'}),
+  Object.freeze({min:950,id:'ELITE'}),
+  Object.freeze({min:920,id:'HERO'}),
+  Object.freeze({min:880,id:'COMMERCIAL_READY'}),
+  Object.freeze({min:840,id:'HIGH_QUALITY'}),
+  Object.freeze({min:800,id:'DEVELOPMENT_READY'}),
+  Object.freeze({min:700,id:'PROTOTYPE'}),
+  Object.freeze({min:0,id:'REPAIR_REQUIRED'})
+]);
+export const INTERNAL_ASSET_AUDIT_WEIGHTS=Object.freeze({
+  IDENTITY_SILHOUETTE:80,
+  FORM_STRUCTURE:70,
+  MATERIAL_SURFACE:70,
+  COLOR_LIGHTING:50,
+  STYLE_COHERENCE:70,
+  DETAIL_FINISH:70,
+  READABILITY_SCALE:60,
+  MOTION_RIG:60,
+  FEEDBACK_STATES:50,
+  UI_UX_SYSTEM:60,
+  MODULAR_REUSE:70,
+  VARIATION_BREADTH:60,
+  PERFORMANCE_LOD:60,
+  ACCESSIBILITY_INPUT:50,
+  PROVENANCE_MAINTAINABILITY:50,
+  INTEGRATION_READINESS:70
+});
+export const INTERNAL_ASSET_AUDIT_AXIS_APPLICABILITY=Object.freeze({
+  CHARACTER:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  CREATURE:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  BUILDING:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  ENVIRONMENT:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  WEAPON:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  SKILL:Object.freeze(['IDENTITY_SILHOUETTE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  MATERIAL:Object.freeze(['MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  AUDIO:Object.freeze(['STYLE_COHERENCE','DETAIL_FINISH','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  VFX:Object.freeze(['IDENTITY_SILHOUETTE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  UI:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  MOTION:Object.freeze(['IDENTITY_SILHOUETTE','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  PROP:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS'])
+});
+export const INTERNAL_ASSET_FAMILY_EXPECTATIONS=Object.freeze({
+  CHARACTER:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:88,FORM_STRUCTURE:85,DETAIL_FINISH:82,MOTION_RIG:82,STYLE_COHERENCE:82}),expectations:Object.freeze(['distinct silhouette at gameplay camera','anatomy/proportion hierarchy','face/hands/feet or equivalent identity detail','material separation','rig and deformation readiness','idle/locomotion/action/hit/death coverage','equipment/socket compatibility','LOD and mobile readability'])}),
+  CREATURE:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:90,FORM_STRUCTURE:86,DETAIL_FINISH:82,MOTION_RIG:84,STYLE_COHERENCE:82}),expectations:Object.freeze(['species-readable body plan','head/mouth/eye/appendage identity','locomotion-specific articulation','attack contact readability','hit/death presentation','surface/material breakup','variants beyond color-only identity','LOD and mobile silhouette'])}),
+  BUILDING:Object.freeze({critical:Object.freeze({FORM_STRUCTURE:86,STYLE_COHERENCE:84,DETAIL_FINISH:80,MODULAR_REUSE:82,PERFORMANCE_LOD:80}),expectations:Object.freeze(['modular exterior grammar','door/window/roof/foundation compatibility','interior when gameplay exposes it','collision/nav proxy readiness','prop sockets','material family variants','landmark readability','LOD'])}),
+  ENVIRONMENT:Object.freeze({critical:Object.freeze({STYLE_COHERENCE:86,DETAIL_FINISH:82,READABILITY_SCALE:84,MODULAR_REUSE:80,PERFORMANCE_LOD:82}),expectations:Object.freeze(['terrain/biome language','foreground-midground-background depth','landmark route readability','vegetation and rock families','set dressing density','weather/light compatibility','streaming/LOD','mobile clutter control'])}),
+  WEAPON:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:88,DETAIL_FINISH:84,MODULAR_REUSE:82,READABILITY_SCALE:82}),expectations:Object.freeze(['equipped model','world/drop model','inventory icon','crafting icon when craftable','grip/socket map','material variants','damage-state presentation when applicable','LOD'])}),
+  SKILL:Object.freeze({critical:Object.freeze({FEEDBACK_STATES:90,READABILITY_SCALE:86,STYLE_COHERENCE:84,PERFORMANCE_LOD:82}),expectations:Object.freeze(['cast anticipation','telegraph','travel/area presentation','impact','reaction','icon','audio role','mobile density variant'])}),
+  MATERIAL:Object.freeze({critical:Object.freeze({MATERIAL_SURFACE:92,STYLE_COHERENCE:84,DETAIL_FINISH:84,VARIATION_BREADTH:82}),expectations:Object.freeze(['base material','roughness/specular response','edge/wear logic','platform variant','weathering variant','damage variant when applicable','tile/scale consistency','style-lock compatibility'])}),
+  AUDIO:Object.freeze({critical:Object.freeze({STYLE_COHERENCE:84,DETAIL_FINISH:84,VARIATION_BREADTH:82,PROVENANCE_MAINTAINABILITY:90}),expectations:Object.freeze(['event role','variation set','mix priority','loop seam when looping','distance behavior','mobile budget','ducking/overlap policy','license/provenance'])}),
+  VFX:Object.freeze({critical:Object.freeze({FEEDBACK_STATES:90,READABILITY_SCALE:86,STYLE_COHERENCE:84,PERFORMANCE_LOD:84}),expectations:Object.freeze(['event binding','anticipation/impact/recovery readability','shape language','density tiers','mobile cap','pooling readiness','occlusion/clutter safety','color-blind readable cues when gameplay relevant'])}),
+  UI:Object.freeze({critical:Object.freeze({UI_UX_SYSTEM:90,ACCESSIBILITY_INPUT:90,FEEDBACK_STATES:86,VARIATION_BREADTH:84,READABILITY_SCALE:88,STYLE_COHERENCE:84}),expectations:Object.freeze(['HUD','inventory','character sheet','equipment','minimap','dialogue/helper','NPC interaction','quest','party','crafting','shop','notification','status effects','hotbar','interaction prompt','touch/keyboard/gamepad states','empty/loading/disabled/selected/error states'])}),
+  MOTION:Object.freeze({critical:Object.freeze({MOTION_RIG:94,VARIATION_BREADTH:84,DETAIL_FINISH:86,READABILITY_SCALE:82}),expectations:Object.freeze(['idle','walk','jog/run','start/stop','turn','jump/land','attack','hit','death','blend/interrupt','contact consistency','speed sync','motion LOD'])}),
+  PROP:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:84,DETAIL_FINISH:82,MODULAR_REUSE:84,READABILITY_SCALE:80}),expectations:Object.freeze(['world model','interaction state','inventory icon when item','crafting icon when craftable','drop model when collectible','collision proxy','material variants','LOD'])})
+});
+export const COMMON_UI_SURFACE_EXPECTATIONS=Object.freeze([
+  'HUD','NAVIGATION','INVENTORY','EQUIPMENT','CHARACTER_SHEET','MINIMAP','DIALOGUE','AI_DIALOGUE_HELPER','NPC_INTERACTION',
+  'QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR','INTERACTION_PROMPT','TOOLTIP','MODAL'
+]);
+
 export const STUDIO_ASSET_CRITICS=Object.freeze({
   ART_DIRECTOR:Object.freeze(['WORLD_STYLE_COHERENCE','COLOR_LIGHTING','ORIGINALITY_IDENTITY']),
   MODEL_CRITIC:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','DETAIL_DENSITY']),
@@ -75,7 +140,7 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   MATERIAL:Object.freeze(['BASE_MATERIAL','PLATFORM_VARIANT','WEATHERING_VARIANT','DAMAGE_VARIANT_WHEN_APPLICABLE']),
   AUDIO:Object.freeze(['SOURCE_ASSET','EVENT_BINDING','VARIATION_SET','MOBILE_BUDGET_VARIANT']),
   VFX:Object.freeze(['SOURCE_EFFECT','GAMEPLAY_EVENT_BINDING','MOBILE_BUDGET_VARIANT','LOD_OR_DENSITY_VARIANT']),
-  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
+  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','CHARACTER_SHEET','EQUIPMENT_COMPONENT','MINIMAP_COMPONENT','DIALOGUE_COMPONENT','AI_DIALOGUE_HELPER','NPC_INTERACTION_COMPONENT','QUEST_COMPONENT','PARTY_COMPONENT','CRAFTING_COMPONENT','SHOP_COMPONENT','NOTIFICATION_COMPONENT','STATUS_EFFECT_COMPONENT','HOTBAR_COMPONENT','INTERACTION_PROMPT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
   MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
@@ -390,6 +455,93 @@ export function scoreStudioAssetQuality120({asset={},evidence={}}={}){
     lowScoreMayBindWhenNoBetterSafeCompatibleAsset:true,
     productionVerified,
     productionVerificationIndependentFromQualityScore:true
+  });
+}
+
+
+function internalAssetAuditMetric(value){
+  const n=Number(value);
+  if(!Number.isFinite(n))return 0;
+  if(n>1)return clamp(n/100,0,1);
+  return clamp(n,0,1);
+}
+function internalAssetAuditGrade(score=0){
+  return INTERNAL_ASSET_AUDIT_GRADES.find(row=>Number(score)>=row.min)?.id||'REPAIR_REQUIRED';
+}
+function internalAssetAuditEvidenceValue(source={},axis=''){
+  if(source[axis]!==undefined)return source[axis];
+  const aliases={
+    IDENTITY_SILHOUETTE:['identitySilhouette','identity','silhouette','distinctIdentity'],
+    FORM_STRUCTURE:['formStructure','form','structure','modelingStructure','anatomy'],
+    MATERIAL_SURFACE:['materialSurface','material','surface','texture'],
+    COLOR_LIGHTING:['colorLighting','color','lighting'],
+    STYLE_COHERENCE:['styleCoherence','style','worldFit'],
+    DETAIL_FINISH:['detailFinish','detail','finish'],
+    READABILITY_SCALE:['readabilityScale','readability','cameraReadability','scaleReadability'],
+    MOTION_RIG:['motionRig','motion','rig','animation'],
+    FEEDBACK_STATES:['feedbackStates','feedback','states','stateCoverage'],
+    UI_UX_SYSTEM:['uiUxSystem','ui','ux','uiUx','uiSystem'],
+    MODULAR_REUSE:['modularReuse','modular','reuse','modularity'],
+    VARIATION_BREADTH:['variationBreadth','variation','breadth','variantCoverage'],
+    PERFORMANCE_LOD:['performanceLod','performance','lod','mobilePerformance'],
+    ACCESSIBILITY_INPUT:['accessibilityInput','accessibility','input','touch','inputCoverage'],
+    PROVENANCE_MAINTAINABILITY:['provenanceMaintainability','provenance','maintainability','sourceQuality'],
+    INTEGRATION_READINESS:['integrationReadiness','integration','bindingReadiness','applicationReadiness']
+  };
+  for(const key of aliases[axis]||[])if(source[key]!==undefined)return source[key];
+  return 0;
+}
+export function scoreInternalAssetAudit1000({asset={},evidence={}}={}){
+  const source={...(asset?.internalAuditEvidence||{}),...(evidence||{})};
+  const family=upper(asset?.family||asset?.category);
+  const configured=Array.isArray(asset?.internalAuditAxes)&&asset.internalAuditAxes.length
+    ?uniq(asset.internalAuditAxes.map(upper)).filter(axis=>INTERNAL_ASSET_AUDIT_WEIGHTS[axis]!==undefined)
+    :(INTERNAL_ASSET_AUDIT_AXIS_APPLICABILITY[family]||Object.freeze(Object.keys(INTERNAL_ASSET_AUDIT_WEIGHTS)));
+  const excluded=new Set((asset?.internalAuditNotApplicableAxes||source.notApplicableAxes||[]).map(upper));
+  const applicableAxes=configured.filter(axis=>!excluded.has(axis));
+  const normalized={};
+  let earned=0,applicableWeight=0;
+  for(const axis of applicableAxes){
+    const weight=INTERNAL_ASSET_AUDIT_WEIGHTS[axis]||0;
+    const value=internalAssetAuditMetric(internalAssetAuditEvidenceValue(source,axis));
+    normalized[axis]=value;
+    earned+=weight*value;
+    applicableWeight+=weight;
+  }
+  const score=applicableWeight>0?Math.round((earned/applicableWeight)*INTERNAL_ASSET_AUDIT_MAX*10)/10:0;
+  const blockers=[];
+  const minimumAxis=family==='UI'?0.72:0.68;
+  for(const [axis,value] of Object.entries(normalized)){
+    if(value<minimumAxis)blockers.push('AXIS_BELOW_FLOOR:'+axis+':'+Math.round(value*100));
+  }
+  const globalCritical={STYLE_COHERENCE:80,READABILITY_SCALE:78,PROVENANCE_MAINTAINABILITY:80};
+  const familyCritical=INTERNAL_ASSET_FAMILY_EXPECTATIONS[family]?.critical||{};
+  for(const [axis,min] of Object.entries({...globalCritical,...familyCritical})){
+    if(normalized[axis]!==undefined&&normalized[axis]*100<min)blockers.push('HARD_GATE:'+axis+':'+Math.round(normalized[axis]*100)+'<'+min);
+  }
+  const measuredAxisCount=Object.values(normalized).filter(value=>value>0).length;
+  if(measuredAxisCount<Math.max(5,Math.ceil(applicableAxes.length*.8)))blockers.push('INSUFFICIENT_AUDIT_EVIDENCE');
+  const pass=score>=INTERNAL_ASSET_AUDIT_PASS&&blockers.length===0;
+  return Object.freeze({
+    version:INTERNAL_ASSET_AUDIT_VERSION,
+    assetId:text(asset?.id)||null,
+    family:family||null,
+    score,maxScore:INTERNAL_ASSET_AUDIT_MAX,
+    grade:internalAssetAuditGrade(score),
+    pass,
+    minimumPassScore:INTERNAL_ASSET_AUDIT_PASS,
+    axes:Object.freeze(normalized),
+    applicableAxes:freezeList(applicableAxes),
+    applicableWeight,
+    measuredAxisCount,
+    blockers:freezeList(blockers),
+    expectations:freezeList(INTERNAL_ASSET_FAMILY_EXPECTATIONS[family]?.expectations||[]),
+    studioRequired:false,
+    nativeRuntimeRequired:false,
+    productionPromotionIndependent:true,
+    productionRuntimeVerificationUntouched:true,
+    continualImprovementRequired:true,
+    nextQualityTargets:freezeList([920,950,980,1000].filter(value=>value>score))
   });
 }
 
