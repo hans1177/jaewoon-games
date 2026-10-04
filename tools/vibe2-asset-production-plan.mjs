@@ -465,6 +465,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
   const next=JSON.parse(JSON.stringify(original));
   next.assets=Array.isArray(next.assets)?next.assets:[];
+  const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
+  const fingerprint=catalogFingerprint(catalogs);
+  const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
 
   const licenseBlockedForSync=asset=>{
     const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
@@ -482,19 +485,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       sourcePathGroups.get(relative).push(clean(asset?.id));
     }
     const exists=Boolean(relative&&fs.existsSync(path.join(repoRoot,relative)));
-    const wasMissing=asset?.repositoryPathState==='MISSING_SOURCE_REVIEW';
     if(!exists){
       if(clean(asset?.id))missingRepositoryAssetIds.push(clean(asset.id));
-      asset.repositoryPathState='MISSING_SOURCE_REVIEW';
-      asset.automaticSearchEligible=false;
-      asset.automaticDeletionForbidden=true;
       continue;
     }
     repositoryPathPresentCount++;
-    if(wasMissing){
-      asset.repositoryPathState='PRESENT';
-      asset.automaticSearchEligible=true;
-    }
     if(asset?.catalogActive!==false&&asset?.referenceOnly!==true&&asset?.automaticSearchEligible!==false&&!licenseBlockedForSync(asset)){
       automaticSearchEligibleCount++;
     }
@@ -601,18 +596,20 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     }
   }
   const detectedConsumerGameIds=new Set();
+  const sourceConsumerRows=[];
   let sourceConsumerAssetCount=0,sourceConsumerBindingCount=0;
   for(const asset of next.assets){
-    const byGame=consumptionByAssetId.get(clean(asset?.id));
+    const assetId=clean(asset?.id),byGame=consumptionByAssetId.get(assetId);
     if(!byGame)continue;
     sourceConsumerAssetCount++;
     const detected=[...byGame.keys()].sort();
     for(const gameId of detected)detectedConsumerGameIds.add(gameId);
     sourceConsumerBindingCount+=detected.length;
-    asset.consumerGameIds=unique([...(Array.isArray(asset.consumerGameIds)?asset.consumerGameIds:[]),...detected]).sort();
-    asset.detectedSourceConsumerGameIds=detected;
-    asset.sourceConsumptionEvidence=detected.map(gameId=>({gameId,evidence:[...byGame.get(gameId)].sort()}));
-    asset.sourceConsumptionIsRuntimeVerification=false;
+    sourceConsumerRows.push(Object.freeze({
+      assetId,
+      consumerGameIds:Object.freeze(detected),
+      evidence:Object.freeze(detected.flatMap(gameId=>[...byGame.get(gameId)].sort().map(item=>gameId+':'+item)))
+    }));
   }
   const searchCoveragePct=next.assets.length?Math.round((automaticSearchEligibleCount/next.assets.length)*1000)/10:0;
   const sourceConsumptionCoveragePct=automaticSearchEligibleCount?Math.round((sourceConsumerAssetCount/automaticSearchEligibleCount)*1000)/10:0;
@@ -640,8 +637,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sharedSourcePathGroupCount:[...sourcePathGroups.values()].filter(ids=>ids.length>1).length,
     sharedSourcePathRowsAreNotAutomaticDuplicates:true,
     sourceConsumerAssetCount,
+    sourceConsumerAssetIds:Object.freeze(sourceConsumerRows.map(row=>row.assetId).sort()),
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
+    sourceConsumerEvidenceSample:Object.freeze(sourceConsumerRows.slice(0,32)),
     sourceConsumptionCoveragePct,
     sourceScanStrategy:'SINGLE_PASS_QUOTED_REGISTRY_IDENTITY_SET',
     sourceIdentityFields:Object.freeze(['id','assetId','atomId']),
@@ -665,12 +664,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     bottleneckActions:repositoryAssetBottleneckActions,
     bottleneckScope:'INTERNAL_ASSET_SEARCH_AND_SOURCE_CONSUMPTION_ONLY',
     sourceConsumptionEvidenceMode:'EXACT_QUOTED_REGISTRY_ID_ASSET_ID_OR_ATOM_ID_OR_EXACT_PROJECT_PATH_BINDING',
+    sourceConsumptionObservationOnly:true,
+    sourceConsumptionDoesNotMutateAssetRows:true,
+    missingRepositoryPathDisposition:'MISSING_SOURCE_REVIEW',
+    missingRepositoryAssetsAutomaticSearchExcluded:true,
     sourceConsumptionDoesNotPromoteProductionVerification:true
   };
 
-  const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
-  const fingerprint=catalogFingerprint(catalogs);
-  const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
   const synchronizedCount=(packId,fallback=0)=>{
     const row=syncRows.find(item=>item.packId===packId);
     return row?Number(row.count||0):Number(fallback||0);
