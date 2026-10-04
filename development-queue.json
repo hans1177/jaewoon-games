@@ -28382,7 +28382,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T00:59:51.049Z",
+      "updatedAt": "2026-10-04T01:30:13.316Z",
       "robloxSourceCommit": "9472bd4b844466429db623f3319252e3d488efda",
       "robloxSourceBootstrapPassedAt": "2026-10-03T19:55:05.534Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T00:59:51.049Z",
@@ -28452,18 +28452,18 @@
       "presentationFirstPass": null,
       "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": "development/unity-tech-seed-action-survival-rogu-echoes-of-the-lost-star-36773180555",
-      "unitySourceCommit": "3d6828a8d5630f47b94a720cf8489224af780c4f",
-      "unityBuildRunId": 37018466576,
+      "unityCandidateBranch": "development/unity-tech-seed-action-survival-rogu-echoes-of-the-lost-star-37165708927",
+      "unitySourceCommit": "566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0",
+      "unityBuildRunId": 37167263307,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
-        "sourceRevision": "3d6828a8d5630f47b94a720cf8489224af780c4f",
+        "sourceRevision": "566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0",
         "artifactIdentity": null,
-        "sourceRootTreeSha": "ea381518a699ad3d1a3e2a2da167a43c2b6679a9",
+        "sourceRootTreeSha": "d05aed7d004cf8f382f5a0988faf571528196844",
         "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
         "singleRuntimeSessionF1ThroughF8": true,
         "f9RuntimeReplayRequired": false,
@@ -28512,7 +28512,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-02T14:18:06.532Z"
+        "verifiedAt": "2026-10-04T01:30:13.316Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -28524,9 +28524,9 @@
       "unityExecutionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "3d6828a8d5630f47b94a720cf8489224af780c4f",
-        "sourceRootTreeSha": "ea381518a699ad3d1a3e2a2da167a43c2b6679a9",
-        "sourceFingerprint": "fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378",
+        "sourceRevision": "566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0",
+        "sourceRootTreeSha": "d05aed7d004cf8f382f5a0988faf571528196844",
+        "sourceFingerprint": "978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -28548,15 +28548,15 @@
       "executionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "3d6828a8d5630f47b94a720cf8489224af780c4f",
-        "sourceRootTreeSha": "ea381518a699ad3d1a3e2a2da167a43c2b6679a9",
-        "sourceFingerprint": "fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378",
+        "sourceRevision": "566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0",
+        "sourceRootTreeSha": "d05aed7d004cf8f382f5a0988faf571528196844",
+        "sourceFingerprint": "978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
-        "independentQaPassed": true,
+        "independentQaPassed": false,
         "multiplayerPassed": true,
-        "regressionPassed": true,
+        "regressionPassed": false,
         "rawStageResults": {
           "runtime": false,
           "independentQa": false,
@@ -28565,9 +28565,9 @@
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "F9_RELEASE_REGRESSION",
-        "failureStage": null,
-        "failureSignature": null
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "F0_SOURCE_INTEGRITY",
+        "failureSignature": "d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152"
       },
       "resumeStage": "F0_SOURCE_INTEGRITY",
       "failureCount": 1,
@@ -31952,7 +31952,11 @@
             }
           }
         ]
-      }
+      },
+      "unityMobilePerformancePassed": false,
+      "unityMobilePerformanceEvidence": null,
+      "unityGeneratedAssetRuntimeBindingPassed": false,
+      "unityAssetRuntimeBindingEvidence": null
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -57150,7 +57154,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T01:28:43.889Z",
+  "updatedAt": "2026-10-04T01:30:15.362Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
