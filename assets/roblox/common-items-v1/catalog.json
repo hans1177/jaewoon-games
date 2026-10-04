@@ -125,5 +125,31 @@
         "EQUIPPED_VISUAL_WHEN_APPLICABLE"
       ]
     }
+  ],
+  "graphicsPresentationContractVersion": 1,
+  "graphicsReferencePolicy": "ABSTRACT_GOTY_PRINCIPLES_ONLY_NO_DIRECT_COPY",
+  "graphicsPresentationStandardsRef": "assets/vibe-studio-asset-universe.js#GRAPHICS_FAMILY_PRESENTATION_STANDARD",
+  "graphicsIterationPolicy": {
+    "studioRequiredForInternalUse": false,
+    "passIsTerminal": false,
+    "existingAndCommonAssetFirst": true,
+    "adaptBeforeReject": true,
+    "preserveStrongAxes": true,
+    "improveWeakestPresentationAxisFirst": true,
+    "targetProgression": [
+      880,
+      920,
+      950,
+      980,
+      1000
+    ]
+  },
+  "presentationIntegrationRoles": [],
+  "referencePrinciples": [
+    "SUBJECT_BACKGROUND_SEPARATION",
+    "MATERIAL_LIGHTING_DEPTH",
+    "MOTION_OR_CINEMATIC_READABILITY",
+    "ACCESSIBILITY_PRESERVES_PRESENTATION_QUALITY",
+    "DENSE_DETAIL_WITH_CLEAR_HIERARCHY"
   ]
 }
