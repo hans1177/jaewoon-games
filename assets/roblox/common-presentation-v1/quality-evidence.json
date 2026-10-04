@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-presentation-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -15,7 +15,9 @@
     "loadingElements": 6,
     "introModes": 5,
     "genreBackgrounds": 7,
-    "variationFields": 6
+    "variationFields": 6,
+    "accessibilityElements": 3,
+    "presentationComponentCount": 14
   },
   "qualityAxes": {
     "STYLE_COHERENCE": 96,
@@ -32,5 +34,19 @@
   },
   "productionVerified": false,
   "verifiedCompanyReusable": false,
-  "runtimeVerificationState": "PENDING_STUDIO"
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "accessibilityRecovery": {
+    "inputSkipHint": true,
+    "reducedMotionIntro": true,
+    "failureRecoveryState": true,
+    "skipAuthority": false,
+    "recoveryAuthority": false,
+    "runtimeVerificationRequired": true
+  },
+  "volumeUp": {
+    "priorComponentCount": 11,
+    "currentComponentCount": 14,
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  }
 }
