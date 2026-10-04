@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "packId": "roblox-common-presentation-v1",
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 96,
+      "FORM_STRUCTURE": 97,
+      "MATERIAL_SURFACE": 93,
+      "COLOR_LIGHTING": 96,
+      "STYLE_COHERENCE": 97,
+      "DETAIL_FINISH": 95,
+      "READABILITY_SCALE": 99,
+      "MOTION_RIG": 93,
+      "FEEDBACK_STATES": 98,
+      "UI_UX_SYSTEM": 99,
+      "MODULAR_REUSE": 98,
+      "VARIATION_BREADTH": 98,
+      "PERFORMANCE_LOD": 94,
+      "ACCESSIBILITY_INPUT": 99,
+      "PROVENANCE_MAINTAINABILITY": 97,
+      "INTEGRATION_READINESS": 98
+    }
+  },
+  "detailedChecks": {
+    "loading": [
+      "brand mark",
+      "status text",
+      "progress",
+      "tips",
+      "activity indicator",
+      "theme background",
+      "no fake load authority"
+    ],
+    "menus": [
+      "main menu",
+      "top bar",
+      "side nav",
+      "search/filter",
+      "breadcrumb",
+      "footer input hints",
+      "pause",
+      "settings",
+      "inventory",
+      "character",
+      "map",
+      "quest log",
+      "codex"
+    ],
+    "cinematics": [
+      "letterbox",
+      "speaker subtitle",
+      "offscreen direction",
+      "skip prompt",
+      "chapter card",
+      "scene transition",
+      "boss title",
+      "region title",
+      "choice strip"
+    ],
+    "accessibility": [
+      "speaker name",
+      "subtitle background",
+      "offscreen direction",
+      "reduced motion",
+      "camera-shake scaling request",
+      "touch/keyboard/gamepad hint surfaces"
+    ],
+    "impact": [
+      "anticipation",
+      "contact pose",
+      "contact VFX",
+      "reaction",
+      "camera impulse request",
+      "surface response",
+      "residue",
+      "audio role",
+      "recovery"
+    ],
+    "skill": [
+      "icon",
+      "cast anticipation",
+      "telegraph",
+      "shape",
+      "trail",
+      "impact",
+      "reaction",
+      "status",
+      "residue",
+      "audio",
+      "mobile density"
+    ]
+  },
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "sourceAssetCount": 26,
+  "cinematicProfileCount": 8,
+  "shotGrammarCount": 11
+}
