@@ -57,9 +57,137 @@ function phaseArc(flowDNA){
 }
 function pickModes(seed,items,min=2,max=3){const count=Math.min(items.length,min+(seed%Math.max(1,max-min+1)));return rotate(items,seed%items.length).slice(0,count);}
 
+const FLOW_ASSET_ROLE_MAP=Object.freeze({
+  HUB_AND_SPOKE:[['ENVIRONMENT','LANDMARK'],['UI','MAP'],['PROP','INTERACTIVE']],
+  EXPEDITION:[['ENVIRONMENT','BIOME'],['MOTION','TRAVERSAL'],['PROP','RESOURCE']],
+  EXTRACTION_RISK_RETURN:[['UI','STATUS'],['VFX','STATUS'],['AUDIO','UI']],
+  BRANCHING_RUN:[['UI','MAP'],['UI','ICON'],['VFX','STATUS']],
+  DEFENSE_PREP_AND_PRESSURE:[['UI','HUD'],['ENVIRONMENT','LANDMARK'],['VFX','IMPACT'],['MOTION','COMBAT']],
+  PRODUCTION_NETWORK:[['BUILDING','MODULAR_EXTERIOR'],['PROP','CRAFTING'],['UI','INVENTORY']],
+  DISCOVERY_AND_ABILITY_GATING:[['ENVIRONMENT','LANDMARK'],['UI','MAP'],['SKILL','VFX'],['VFX','IMPACT']],
+  BRANCHING_NARRATIVE:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME'],['AUDIO','UI']],
+  INFILTRATION_AND_ESCAPE:[['ENVIRONMENT','BIOME'],['MOTION','TRAVERSAL'],['AUDIO','ENVIRONMENT'],['VFX','STATUS']],
+  SANDBOX_SELF_DIRECTED:[['BUILDING','MODULAR_EXTERIOR'],['PROP','INTERACTIVE'],['UI','INVENTORY']],
+  BOSS_LEARN_ADAPT:[['CREATURE','SIGNATURE'],['MOTION','COMBAT'],['VFX','BOSS'],['AUDIO','BOSS'],['UI','BOSS']],
+  LIFE_SCHEDULE:[['CHARACTER','BODY'],['MOTION','ACTING'],['PROP','FURNITURE'],['UI','HUD']],
+  OPERATIONS_CRISIS:[['UI','STATUS'],['VFX','STATUS'],['AUDIO','UI']],
+  TERRITORY_CONTROL:[['UI','MAP'],['ENVIRONMENT','LANDMARK'],['VFX','STATUS']],
+  PUZZLE_DISCOVERY:[['PROP','INTERACTIVE'],['UI','ICON'],['VFX','IMPACT'],['AUDIO','UI']],
+});
+
+function baselineText(baseline={}){
+  const content=baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline;
+  return [
+    content?.identity,content?.playerFantasy,content?.coreFun,content?.progressionDirection,
+    ...(Array.isArray(content?.coreLoop)?content.coreLoop:[]),
+    ...(Array.isArray(content?.signatureSystems)?content.signatureSystems.flatMap(row=>[row?.name,row?.purpose,row?.playerChoice]):[]),
+  ].map(clean).filter(Boolean).join(' ');
+}
+function assetRequirement(family,subfamily,{flowRoles=[],phases=[],reason='FLOW_ROLE'}={}){
+  return Object.freeze({
+    family,subfamily,required:true,priority:'FLOW_CRITICAL',
+    flowRoles:Object.freeze(uniq(flowRoles)),phases:Object.freeze(uniq(phases)),reason,
+    resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    allowedReuseModes:Object.freeze(['USE_AS_IS','LIGHT_THEME_ADAPT','STYLE_ADAPT','RECOMBINE_PARTS','NATIVE_REAUTHOR_BASE']),
+    assetIdPinned:false,gameplayAuthority:false,balanceAuthority:false,saveAuthority:false,
+  });
+}
+export function buildFlowAssetRequirements({architecture={},genre='',baseline={}}={}){
+  const keyed=new Map();
+  const add=(family,subfamily,meta={})=>{
+    const key=`${family}:${subfamily}`,prev=keyed.get(key);
+    const next=assetRequirement(family,subfamily,{
+      flowRoles:[...(prev?.flowRoles||[]),...(meta.flowRoles||[])],
+      phases:[...(prev?.phases||[]),...(meta.phases||[])],
+      reason:prev?.reason||meta.reason||'FLOW_ROLE'
+    });
+    keyed.set(key,next);
+  };
+  const phaseByFlow=new Map();
+  for(const row of Array.isArray(architecture.phaseArc)?architecture.phaseArc:[]){
+    const flow=clean(row?.dominantFlow).toUpperCase();
+    if(!flow)continue;
+    if(!phaseByFlow.has(flow))phaseByFlow.set(flow,[]);
+    phaseByFlow.get(flow).push(clean(row?.phase).toUpperCase());
+  }
+  for(const flow of uniq(architecture.flowDNA||[]).map(value=>value.toUpperCase())){
+    for(const [family,subfamily] of FLOW_ASSET_ROLE_MAP[flow]||[])add(family,subfamily,{flowRoles:[flow],phases:phaseByFlow.get(flow)||[],reason:'FLOW_DNA'});
+  }
+  const semantic=(genre+' '+baselineText(baseline)).toUpperCase();
+  if(/COMBAT|FIGHT|ATTACK|BATTLE|전투|공격|디펜스|DEFEN/.test(semantic)){
+    add('MOTION','COMBAT',{reason:'SEMANTIC_COMBAT'});
+    add('VFX','IMPACT',{reason:'SEMANTIC_COMBAT'});
+    add('AUDIO','HIT',{reason:'SEMANTIC_COMBAT'});
+  }
+  if(/BOSS|보스/.test(semantic)){add('CREATURE','SIGNATURE',{reason:'SEMANTIC_BOSS'});add('UI','BOSS',{reason:'SEMANTIC_BOSS'});}
+  if(/QUEST|STORY|NPC|DIALOG|서사|스토리|퀘스트|대화/.test(semantic)){add('CHARACTER','BODY',{reason:'SEMANTIC_NARRATIVE'});add('MOTION','ACTING',{reason:'SEMANTIC_NARRATIVE'});}
+  if(/INVENTORY|EQUIP|CRAFT|SHOP|인벤토리|장비|제작|상점/.test(semantic)){add('UI','INVENTORY',{reason:'SEMANTIC_SYSTEM_UI'});add('PROP','INTERACTIVE',{reason:'SEMANTIC_SYSTEM_UI'});}
+  if(/WEAPON|SWORD|SPEAR|AXE|HAMMER|BOW|GUN|무기|검|창|도끼|망치|활|총/.test(semantic))add('WEAPON','MELEE',{reason:'SEMANTIC_WEAPON'});
+  if(/SKILL|MAGIC|SPELL|ABILITY|스킬|마법|주문/.test(semantic)){add('SKILL','VFX',{reason:'SEMANTIC_SKILL'});add('MOTION','SKILL',{reason:'SEMANTIC_SKILL'});}
+  if(/WORLD|REGION|MAP|FOREST|DUNGEON|CITY|VILLAGE|지역|맵|숲|던전|도시|마을/.test(semantic)){add('ENVIRONMENT','BIOME',{reason:'SEMANTIC_WORLD'});add('ENVIRONMENT','LANDMARK',{reason:'SEMANTIC_WORLD'});}
+  if(/WEATHER|RAIN|SNOW|STORM|FOG|날씨|비|눈|폭풍|안개/.test(semantic)){add('ENVIRONMENT','WEATHER',{reason:'SEMANTIC_WEATHER'});add('VFX','WEATHER',{reason:'SEMANTIC_WEATHER'});add('AUDIO','WEATHER',{reason:'SEMANTIC_WEATHER'});}
+  add('UI','HUD',{reason:'BASE_PLAYER_READABILITY'});
+  return Object.freeze([...keyed.values()]);
+}
+function buildQualityGrowthContract({architecture={},genre='',baseline={}}={}){
+  const text=baselineText(baseline),phaseNames=(architecture.phaseArc||[]).map(row=>clean(row?.phase).toUpperCase()).filter(Boolean);
+  return Object.freeze({
+    version:1,target:'AWARD_CALIBER_SYSTEMIC_GAME_COMPLETENESS',
+    playerPromise:clean((baseline?.content||baseline)?.playerFantasy)||clean((baseline?.content||baseline)?.identity)||`${clean(genre)||'GAME'} 플레이어가 반복할 이유와 성장 결과를 매 세션 확인한다.`,
+    funDrivers:Object.freeze([
+      'CORE_ACTION_HAS_IMMEDIATE_READABLE_RESPONSE',
+      'CHOICES_CHANGE_RISK_REWARD_ROUTE_OR_SYSTEM_STATE',
+      'MASTERY_OPENS_NEW_ACTION_COMBINATIONS_NOT_ONLY_BIGGER_NUMBERS',
+      'WORLD_OR_OPPONENT_RESPONSE_CREATES_ADAPTATION',
+    ]),
+    balanceRules:Object.freeze([
+      'NO_SINGLE_DOMINANT_STRATEGY_WITHOUT_CONTEXTUAL_COUNTERPRESSURE',
+      'POWER_GROWTH_AND_CHALLENGE_GROWTH_ARE_CHECKED_TOGETHER',
+      'FAILURE_COST_PRESERVES_RECOVERY_AND_NEXT_DECISION',
+      'ECONOMY_HAS_DECLARED_SOURCES_SINKS_AND_NO_FREE_INFINITE_LOOP',
+      'LATE_GAME_DIFFICULTY_CHANGES_DECISION_STRUCTURE_NOT_ONLY_HP_DAMAGE',
+    ]),
+    pacing:Object.freeze({
+      EARLY:'teach core agency, first success, first meaningful choice, first recoverable risk',
+      MID:'open parallel goals, new system interaction, route/playstyle divergence, new pressure type',
+      LATE:'combine mastered systems, high-stakes choice, distinct encounter or terminal structure, replay hook',
+      phases:Object.freeze(phaseNames)
+    }),
+    expansionRules:Object.freeze([
+      'ADD_NEW_ENEMY_OR_ACTOR_BEHAVIOR_ROLE',
+      'ADD_NEW_SPACE_ROUTE_OR_REGIONAL_RULE',
+      'ADD_NEW_OBJECTIVE_INTERACTION_OR_INFORMATION_LAYER',
+      'ADD_NEW_STRATEGY_BUILD_OR_PLAYSTYLE_OUTCOME',
+      'CONNECT_NEW_CONTENT_TO_EXISTING_PROGRESSION_ECONOMY_AND_WORLD_STATE',
+      'REPETITION_RESKIN_AND_STAT_ONLY_VARIANTS_DO_NOT_COUNT_AS_DEPTH',
+    ]),
+    completionCriteria:Object.freeze([
+      'FIRST_5_MINUTES_READABLE_AND_PLAYABLE',
+      '15_TO_25_MINUTES_OPENS_NEW_DECISION_SPACE',
+      '30_PLUS_MINUTES_HAS_SYSTEM_COMBINATION_AND_LONG_GOAL_WITHOUT_PADDING',
+      'FAIL_RETRY_RECOVERY_SAVE_AND_SOFTLOCK_PATHS_ARE_DEFINED',
+      'MOBILE_INPUT_READABILITY_AND_PERFORMANCE_REMAIN_PLAYABLE',
+      'CONTENT_HAS_EARLY_MID_LATE_ROLE_DIFFERENTIATION',
+    ]),
+    codingGrowthContract:Object.freeze({
+      dataDrivenExtensionPreferred:true,
+      stableIdsForExpandableContent:true,
+      existingResponsibilityFunctionsFirst:true,
+      duplicateGameplayAuthorityForbidden:true,
+      saveMigrationRequiredWhenPersistedShapeChanges:true,
+      extensionPoints:Object.freeze(['CONTENT_DEFINITIONS','ENCOUNTER_OR_WAVE_DEFINITIONS','REGION_OR_ROUTE_RULES','PROGRESSION_REWARD_TABLES','PRESENTATION_ASSET_BINDINGS']),
+    }),
+    sourceHint:text||null,
+  });
+}
+
 export function buildGameFlowArchitecture({gameId='',genre='',baseline={},inventory=[]}={}){
   const explicit=explicitArchitecture(baseline);
-  if(explicit)return{version:Number(explicit.version||1),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE',...explicit};
+  if(explicit){
+    const base={version:Number(explicit.version||1),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE',...explicit};
+    const assetRequirements=buildFlowAssetRequirements({architecture:base,genre,baseline});
+    return{...base,assetFlow:base.assetFlow||{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:base,genre,baseline})};
+  }
   const seed=stableInt(`${gameId}|${genre}|${(inventory||[]).map(x=>`${x?.path||''}:${x?.label||''}`).join('|')}`),flowDNA=chooseFlowDNA({gameId,genre,baseline});
   const returnModes=['HUB_RETURN','CONTINUOUS_FORWARD','EXTRACTION_DECISION','MULTI_BASE_ROTATION'];
   const failureModes=['HARD_FAILURE_RETRY','PARTIAL_RESOURCE_LOSS','WORLD_STATE_SETBACK','RELATIONSHIP_OR_ACCESS_COST','TIME_OR_OPPORTUNITY_COST','FORCED_ROUTE_CHANGE'];
@@ -67,8 +195,8 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
   const riskTypes=['ENEMY_PRESSURE','RESOURCE_SCARCITY','TIME_PRESSURE','SPACE_OR_ROUTE_DENIAL','ECONOMY_OR_MAINTENANCE_PRESSURE','INFORMATION_UNCERTAINTY'];
   const playstyles=['DIRECT_COMBAT','ECONOMY_AND_BUILD','EXPLORATION_AND_DISCOVERY','SOCIAL_OR_QUEST','STEALTH_OR_AVOIDANCE','TACTICAL_CONTROL'];
   const informationModes=['MAP_DISCOVERY','NPC_KNOWLEDGE','SCOUTING_OR_SENSOR','ITEM_OR_ABILITY_REVEAL','CAUSE_AND_EFFECT_LEARNING'];
-  return{
-    version:1,source:'DERIVED_GAME_FLOW_ARCHITECT',gameId:clean(gameId),genre:genreKey(genre),
+  const architecture={
+    version:2,source:'DERIVED_GAME_FLOW_ARCHITECT',gameId:clean(gameId),genre:genreKey(genre),
     flowDNA,
     phaseArc:phaseArc(flowDNA),
     transitionEvents:[
@@ -95,6 +223,8 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
     endingModel:{required:true,multipleOutcomeCapable:true,contract:'WHEN DESIGN HAS BRANCHING_OR_WORLD_STATE ENDING OR TERMINAL STATE MUST REFLECT ACCUMULATED CHOICES_OR_WORLD_STATE'},
     diversityRules:{minFlowArchetypes:2,maxFlowArchetypes:4,phaseDominantFlowMustChange:true,parallelGoalThreadsMin:3,failureModesMin:2,victoryModesMin:2,worldReactionRequired:true,regionalRuleDifferenceRequired:true,sameMacroLoopAcrossAllPhasesForbidden:true,renameOnlyVariationForbidden:true},
   };
+  const assetRequirements=buildFlowAssetRequirements({architecture,genre,baseline});
+  return{...architecture,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:buildQualityGrowthContract({architecture,genre,baseline})};
 }
 
 export function evaluateGameFlowArchitecture(architecture={}){
@@ -109,5 +239,14 @@ export function evaluateGameFlowArchitecture(architecture={}){
   if(architecture.regionalRuleVariation?.required!==true)blockers.push('REGIONAL_RULE_VARIATION_REQUIRED');
   if(architecture.tensionRhythm?.required!==true)blockers.push('TENSION_RHYTHM_REQUIRED');
   if(architecture.informationProgression?.required!==true)blockers.push('INFORMATION_PROGRESSION_REQUIRED');
-  return{pass:blockers.length===0,blockers,flowArchetypeCount:dna.length,phaseFlowCount:phaseFlows.length};
+  const assetRequirements=architecture.assetFlow?.requirements||[];
+  if(!Array.isArray(assetRequirements)||assetRequirements.length<3)blockers.push('FLOW_ASSET_REQUIREMENTS_REQUIRED');
+  if(assetRequirements.some(row=>row?.assetIdPinned===true||row?.gameplayAuthority===true||row?.balanceAuthority===true||row?.saveAuthority===true))blockers.push('FLOW_ASSET_AUTHORITY_OR_PINNING_FORBIDDEN');
+  const quality=architecture.qualityGrowthContract||{};
+  if((quality.funDrivers||[]).length<3)blockers.push('FLOW_FUN_DRIVERS_REQUIRED');
+  if((quality.balanceRules||[]).length<4)blockers.push('FLOW_BALANCE_RULES_REQUIRED');
+  if((quality.expansionRules||[]).length<4)blockers.push('FLOW_EXPANSION_RULES_REQUIRED');
+  if((quality.completionCriteria||[]).length<4)blockers.push('FLOW_COMPLETION_CRITERIA_REQUIRED');
+  if(quality.codingGrowthContract?.dataDrivenExtensionPreferred!==true)blockers.push('FLOW_CODING_GROWTH_CONTRACT_REQUIRED');
+  return{pass:blockers.length===0,blockers,flowArchetypeCount:dna.length,phaseFlowCount:phaseFlows.length,flowAssetRequirementCount:assetRequirements.length};
 }
