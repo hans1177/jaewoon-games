@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "packId": "roblox-common-vfx-v1",
+  "family": "VFX",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+  "themeAdaptationRequiredPerGame": true,
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayAuthority": false,
+  "atoms": [
+    {
+      "atomId": "IMPACT_FLASH",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateImpactFlash",
+      "role": "IMPACT_CONFIRMATION"
+    },
+    {
+      "atomId": "TRAIL_SHORT",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "AttachShortTrail",
+      "role": "FAST_MOTION_TRAIL"
+    },
+    {
+      "atomId": "SHAPE_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateShapeBurst",
+      "role": "BURST_FEEDBACK"
+    }
+  ]
+}
