@@ -221,6 +221,376 @@ export const SEED_ACTION_SURVIVAL_ROGUE_INTERNAL_ASSET_IDEAS=Object.freeze({
   saveAuthority:false,
   networkAuthority:false
 });
+
+export const COMPANY_COMMON_SEED_ASSET_IDEA_AXES=Object.freeze({
+  version:1,
+  scope:'ALL_COMPANY_COMMON_SEEDS',
+  sourcePattern:'artbook-submissions/seed-*/current.json',
+  gameplaySignals:Object.freeze([
+    'ACTION_COMBAT','SURVIVAL','ROGUELITE_RUN','RPG_PROGRESSION','PUZZLE','CASUAL_SHORT_RUN','IDLE_GROWTH',
+    'TYCOON_SIM','SOCIAL_ROLEPLAY','HORROR','DEFENSE','NARRATIVE','EXPLORATION','SANDBOX_HOUSING',
+    'COZY_FARMING','COOP_MULTIPLAYER'
+  ]),
+  worldThemes:Object.freeze([
+    'CELESTIAL_COSMIC','NATURAL_WILDERNESS','SETTLEMENT_SOCIAL','INDUSTRIAL_MACHINE',
+    'FANTASY_RUINS','HORROR_INTERIOR','ABSTRACT_COLOR','FORTRESS_LANES','UNIVERSAL_STYLE_ADAPTIVE'
+  ]),
+  stateAxes:Object.freeze([
+    'BASE','TIME_OF_DAY','WEATHER','SEASON','CELESTIAL_EVENT','DISASTER','REGIONAL_VARIANT',
+    'WET_DRY','DIRT_MUD','SNOW_FROST','HEAT_COLD','DAMAGE_WEAR','CORROSION','POWERED_UNPOWERED',
+    'ACTIVE_INACTIVE','LOCKED_UNLOCKED','COMMON_RARE_LEGENDARY','UPGRADE_STAGE','MOBILE_LOW_DENSITY'
+  ]),
+  assetDomains:Object.freeze([
+    'UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT',
+    'BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO'
+  ]),
+  crossFamilyCompositionRequired:true,
+  gameplayAuthority:false,
+  balanceAuthority:false,
+  saveAuthority:false,
+  networkAuthority:false
+});
+
+const COMPANY_COMMON_SEED_SIGNAL_RULES=Object.freeze([
+  Object.freeze({id:'ACTION_COMBAT',keywords:Object.freeze(['ACTION','COMBAT','BOSS','ENEMY','SKILL','WEAPON','전투','보스','적 ','스킬','무기'])}),
+  Object.freeze({id:'SURVIVAL',keywords:Object.freeze(['SURVIVAL','SURVIVE','RESOURCE','THREAT','생존','자원','위협'])}),
+  Object.freeze({id:'ROGUELITE_RUN',keywords:Object.freeze(['ROGUELITE','ROGUE','WAVE','BUILD SELECTION','RUN RESULT','런','웨이브','빌드'])}),
+  Object.freeze({id:'RPG_PROGRESSION',keywords:Object.freeze(['RPG','LEVEL','EQUIPMENT','QUEST','HERO','SKILL GROWTH','레벨','장비','퀘스트','영웅','성장'])}),
+  Object.freeze({id:'PUZZLE',keywords:Object.freeze(['PUZZLE','BOARD','GRID','MATCH','COMBO','퍼즐','보드','연쇄'])}),
+  Object.freeze({id:'CASUAL_SHORT_RUN',keywords:Object.freeze(['CASUAL','ONE HAND','ONE-HAND','SHORT SESSION','QUICK RETRY','캐주얼','한 손','짧은','재도전'])}),
+  Object.freeze({id:'IDLE_GROWTH',keywords:Object.freeze(['IDLE','OFFLINE','AUTO BATTLE','방치','오프라인','자동 전투'])}),
+  Object.freeze({id:'TYCOON_SIM',keywords:Object.freeze(['TYCOON','SIMULATOR','SIMULATION','INCOME','PRODUCTION','FOUNDRY','타이쿤','경영','수익','생산'])}),
+  Object.freeze({id:'SOCIAL_ROLEPLAY',keywords:Object.freeze(['ROLEPLAY','SOCIAL','AVATAR','JOB','VEHICLE','SHARED SOCIAL','역할놀이','아바타','직업','차량','사회'])}),
+  Object.freeze({id:'HORROR',keywords:Object.freeze(['HORROR','DREAD','ESCAPE','CHASE','DARK','공포','탈출','추격','어둠'])}),
+  Object.freeze({id:'DEFENSE',keywords:Object.freeze(['DEFENSE','TOWER','LANE','BASTION','DEFENDER','디펜스','타워','보루','방어'])}),
+  Object.freeze({id:'NARRATIVE',keywords:Object.freeze(['STORY','NARRATIVE','ENDING','DIALOGUE','CHARACTER RELATIONSHIP','스토리','서사','엔딩','대화'])}),
+  Object.freeze({id:'EXPLORATION',keywords:Object.freeze(['EXPLORE','EXPLORATION','WORLD AREA','REGION','TRAVEL','DISCOVER','탐험','지역','여행','발견'])}),
+  Object.freeze({id:'SANDBOX_HOUSING',keywords:Object.freeze(['HOUSING','HOME CUSTOMIZATION','PLACEMENT','CONSTRUCTION','BUILD MODE','SANDBOX','집 꾸미기','배치','건설'])}),
+  Object.freeze({id:'COZY_FARMING',keywords:Object.freeze(['COZY','FARM','FARMING','CROP','COOKING','ANIMAL HOME','농사','농장','작물','요리'])}),
+  Object.freeze({id:'COOP_MULTIPLAYER',keywords:Object.freeze(['COOP','MULTIPLAYER','OTHER PLAYERS','SHARED OBJECTIVE','GROUP ACTIVITY','협동','멀티','다른 플레이어'])})
+]);
+
+const COMPANY_COMMON_SEED_WORLD_RULES=Object.freeze([
+  Object.freeze({id:'CELESTIAL_COSMIC',keywords:Object.freeze(['STAR','CELESTIAL','CRYSTAL','SHARD','ECHO','REALM','별','천상','수정','파편','메아리'])}),
+  Object.freeze({id:'NATURAL_WILDERNESS',keywords:Object.freeze(['SURVIVAL','FOREST','WILDERNESS','NATURE','RESOURCE','생존','숲','야생','자원'])}),
+  Object.freeze({id:'SETTLEMENT_SOCIAL',keywords:Object.freeze(['HARBOR','SOCIAL','AVATAR','HOME','JOB','VEHICLE','ROLEPLAY','항구','아바타','주거','직업'])}),
+  Object.freeze({id:'INDUSTRIAL_MACHINE',keywords:Object.freeze(['FOUNDRY','TYCOON','MACHINE','PRODUCTION','FACTORY','공장','기계','생산','타이쿤'])}),
+  Object.freeze({id:'FANTASY_RUINS',keywords:Object.freeze(['RPG','FANTASY','ELDORIA','QUEST','MAGIC','ADVENTURE','판타지','퀘스트','마법','모험'])}),
+  Object.freeze({id:'HORROR_INTERIOR',keywords:Object.freeze(['HORROR','LANTERN','DOOR','DARK','ESCAPE','공포','랜턴','문','어둠','탈출'])}),
+  Object.freeze({id:'ABSTRACT_COLOR',keywords:Object.freeze(['CHROMATIC','COLOR','PUZZLE','GRID','MATCH','색채','색','퍼즐','보드'])}),
+  Object.freeze({id:'FORTRESS_LANES',keywords:Object.freeze(['BASTION','DEFENSE','TOWER','LANE','FORTRESS','보루','방어','타워','길목'])})
+]);
+
+const COMPANY_COMMON_SEED_DOMAIN_STATE_DEFAULTS=Object.freeze({
+  UI:Object.freeze(['BASE','ACTIVE_INACTIVE','LOCKED_UNLOCKED','MOBILE_LOW_DENSITY']),
+  ITEM:Object.freeze(['BASE','COMMON_RARE_LEGENDARY','DAMAGE_WEAR','REGIONAL_VARIANT']),
+  WEAPON:Object.freeze(['BASE','UPGRADE_STAGE','DAMAGE_WEAR','COMMON_RARE_LEGENDARY']),
+  CHARACTER_GEAR:Object.freeze(['BASE','REGIONAL_VARIANT','SEASON','DAMAGE_WEAR','UPGRADE_STAGE']),
+  SKILL:Object.freeze(['BASE','COMMON_RARE_LEGENDARY','MOBILE_LOW_DENSITY']),
+  VFX:Object.freeze(['BASE','MOBILE_LOW_DENSITY','WEATHER','CELESTIAL_EVENT']),
+  MOTION:Object.freeze(['BASE','ACTIVE_INACTIVE','DAMAGE_WEAR']),
+  MATERIAL:Object.freeze(['BASE','WET_DRY','DIRT_MUD','SNOW_FROST','HEAT_COLD','DAMAGE_WEAR','CORROSION']),
+  ENVIRONMENT:Object.freeze(['BASE','TIME_OF_DAY','WEATHER','SEASON','CELESTIAL_EVENT','DISASTER','REGIONAL_VARIANT']),
+  BUILDING:Object.freeze(['BASE','REGIONAL_VARIANT','DAMAGE_WEAR','POWERED_UNPOWERED','WEATHER']),
+  WORLD_PROP:Object.freeze(['BASE','ACTIVE_INACTIVE','POWERED_UNPOWERED','DAMAGE_WEAR','WEATHER']),
+  CREATURE:Object.freeze(['BASE','REGIONAL_VARIANT','SEASON','COMMON_RARE_LEGENDARY']),
+  FOLIAGE:Object.freeze(['BASE','SEASON','WEATHER','REGIONAL_VARIANT']),
+  PRESENTATION:Object.freeze(['BASE','TIME_OF_DAY','WEATHER','CELESTIAL_EVENT','MOBILE_LOW_DENSITY']),
+  AUDIO:Object.freeze(['BASE','TIME_OF_DAY','WEATHER','REGIONAL_VARIANT','MOBILE_LOW_DENSITY'])
+});
+
+export const COMPANY_COMMON_SEED_ASSET_IDEA_RECIPES=Object.freeze([
+  Object.freeze({id:'UNIVERSAL_WORLD_STATE',signals:Object.freeze(['ALWAYS']),ideas:Object.freeze([
+    Object.freeze({domain:'ENVIRONMENT',ideaId:'CLIMATE_SKY_DEPTH_STACK',role:'WEATHER_TIME_CELESTIAL_BACKGROUND'}),
+    Object.freeze({domain:'MATERIAL',ideaId:'WEATHER_REACTIVE_SURFACE_SET',role:'WET_SNOW_DIRT_HEAT_COLD_DAMAGE'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'DISTANT_WORLD_EVENT_BACKGROUNDS',role:'FOREGROUND_MIDGROUND_BACKGROUND_EVENT_DEPTH'}),
+    Object.freeze({domain:'VFX',ideaId:'WEATHER_WORLD_EFFECT_LANGUAGE',role:'ENVIRONMENT_WEATHER_EVENT'}),
+    Object.freeze({domain:'AUDIO',ideaId:'BIOME_WEATHER_SOUND_ROLE_MATRIX',role:'WIND_WATER_WILDLIFE_MACHINE_STRUCTURE_CLIMATE'}),
+    Object.freeze({domain:'FOLIAGE',ideaId:'WIND_AND_SEASON_FOLIAGE_VARIANTS',role:'WIND_SEASON_WEATHER_RESPONSE'})
+  ])}),
+  Object.freeze({id:'UNIVERSAL_MOBILE_ACCESSIBILITY',signals:Object.freeze(['ALWAYS']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'ONE_HAND_CONTEXT_ACTION_LAYOUTS',role:'TOUCH_FIRST_CONTEXTUAL_CONTROLS'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'REDUCED_MOTION_FEEDBACK_VARIANTS',role:'ACCESSIBILITY_REDUCED_MOTION'}),
+    Object.freeze({domain:'VFX',ideaId:'MOBILE_EFFECT_DENSITY_TIERS',role:'MOBILE_DENSITY'}),
+    Object.freeze({domain:'AUDIO',ideaId:'MOBILE_AUDIO_PRIORITY_ROLES',role:'MOBILE_BUDGET_VARIANT'})
+  ])}),
+  Object.freeze({id:'COMBAT_READABILITY',signals:Object.freeze(['ACTION_COMBAT']),ideas:Object.freeze([
+    Object.freeze({domain:'WEAPON',ideaId:'WEAPON_IMPACT_SOCKET_VARIANTS',role:'IMPACT_TRAIL_SOCKET'}),
+    Object.freeze({domain:'SKILL',ideaId:'CAST_TELEGRAPH_IMPACT_CHAIN',role:'CAST_TELEGRAPH_TRAVEL_IMPACT'}),
+    Object.freeze({domain:'VFX',ideaId:'CRITICAL_DODGE_COUNTER_LANGUAGE',role:'CRITICAL_DODGE_COUNTER_FEEDBACK'}),
+    Object.freeze({domain:'MOTION',ideaId:'ANTICIPATION_IMPACT_RECOVERY_SET',role:'COMBAT_TIMING_LANGUAGE'}),
+    Object.freeze({domain:'UI',ideaId:'COMBAT_THREAT_COMBO_HUD',role:'THREAT_COMBO_BOSS_READABILITY'}),
+    Object.freeze({domain:'AUDIO',ideaId:'COMBAT_DISTANCE_AUDIO_ROLES',role:'SWING_HIT_BLOCK_SKILL_BOSS'})
+  ])}),
+  Object.freeze({id:'SURVIVAL_WORLD_PRESSURE',signals:Object.freeze(['SURVIVAL']),ideas:Object.freeze([
+    Object.freeze({domain:'WORLD_PROP',ideaId:'CAMP_SURVIVAL_INTERACTION_KIT',role:'CAMP_STORAGE_REPAIR_LIGHT_SIGNAL'}),
+    Object.freeze({domain:'ITEM',ideaId:'FIELD_NAVIGATION_SURVIVAL_ITEMS',role:'REPAIR_SIGNAL_NAVIGATION_RESEARCH'}),
+    Object.freeze({domain:'MOTION',ideaId:'FATIGUE_INJURY_WORK_MOTIONS',role:'FATIGUE_INJURY_CARRY_GATHER_REPAIR'}),
+    Object.freeze({domain:'UI',ideaId:'SURVIVAL_REGION_PRESSURE_HUD',role:'VITALS_WEATHER_REGION_RISK'}),
+    Object.freeze({domain:'CREATURE',ideaId:'WILDLIFE_HABITAT_VARIATION_SET',role:'ECOLOGY_HABITAT_RANK_VARIATION'})
+  ])}),
+  Object.freeze({id:'ROGUELITE_RUN',signals:Object.freeze(['ROGUELITE_RUN']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'REALTIME_BUILD_SELECTION_CARDS',role:'BUILD_SELECTION_ONE_HAND'}),
+    Object.freeze({domain:'ITEM',ideaId:'RUN_TOKEN_SHARD_WORLD_SET',role:'RUN_RESOURCE_WORLD_DROP'}),
+    Object.freeze({domain:'VFX',ideaId:'LOOT_BUILD_UPGRADE_BURST_SET',role:'LOOT_RARITY_UPGRADE'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'WAVE_WARNING_WORLD_BEACONS',role:'WAVE_WARNING_BOSS_ARENA_SIGNAL'}),
+    Object.freeze({domain:'ENVIRONMENT',ideaId:'RUN_PRESSURE_BACKGROUND_STAGES',role:'WAVE_PRESSURE_BACKGROUND'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'RUN_RESULT_META_RETURN_PRESENTATION',role:'RUN_RESULT_META_GROWTH_RETURN'})
+  ])}),
+  Object.freeze({id:'RPG_PROGRESSION',signals:Object.freeze(['RPG_PROGRESSION']),ideas:Object.freeze([
+    Object.freeze({domain:'CHARACTER_GEAR',ideaId:'RPG_SET_IDENTITY_GEAR_LAYERS',role:'SET_IDENTITY_SOCKET_UPGRADE_TRANSMOG'}),
+    Object.freeze({domain:'ITEM',ideaId:'QUEST_RELIC_LORE_ITEM_FAMILIES',role:'QUEST_RELIC_LORE_KEY_TREASURE'}),
+    Object.freeze({domain:'UI',ideaId:'RPG_QUEST_EQUIPMENT_CODEX_SCREENS',role:'QUEST_EQUIPMENT_CODEX_LOADOUT'}),
+    Object.freeze({domain:'ENVIRONMENT',ideaId:'REGION_FACTION_LANDMARK_KIT',role:'REGION_FACTION_DISCOVERY'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'VENDOR_CAMP_SERVICE_PROP_KIT',role:'VENDOR_CAMP_SERVICE_QUEST'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'RPG_BOSS_RELIC_PRESENTATION',role:'CHAPTER_BOSS_RELIC_HERO_MOMENT'})
+  ])}),
+  Object.freeze({id:'PUZZLE_CASCADE',signals:Object.freeze(['PUZZLE']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'PUZZLE_BOARD_GOAL_MOVE_UI',role:'BOARD_GOAL_MOVE_HINT'}),
+    Object.freeze({domain:'VFX',ideaId:'PUZZLE_CASCADE_FEEDBACK_KIT',role:'MATCH_COMBO_CASCADE_CLEAR'}),
+    Object.freeze({domain:'MATERIAL',ideaId:'PUZZLE_TILE_STATE_MATERIALS',role:'TILE_LOCKED_ACTIVE_DAMAGED_SPECIAL'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'PUZZLE_SWITCH_AND_OBSTACLE_PROPS',role:'SWITCH_OBSTACLE_GOAL_OBJECT'}),
+    Object.freeze({domain:'AUDIO',ideaId:'PUZZLE_COMBO_AUDIO_ROLES',role:'MATCH_COMBO_CLEAR_ERROR'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'PUZZLE_LEVEL_TRANSITION_SET',role:'LEVEL_ENTRY_CLEAR_FAIL_RETRY'})
+  ])}),
+  Object.freeze({id:'CASUAL_SHORT_RUN',signals:Object.freeze(['CASUAL_SHORT_RUN']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'CASUAL_ONE_HAND_RUN_HUD',role:'ONE_ACTION_SCORE_DISTANCE_RISK'}),
+    Object.freeze({domain:'VFX',ideaId:'CASUAL_PICKUP_STREAK_VFX',role:'PICKUP_STREAK_REWARD'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'CASUAL_ROUTE_CHOICE_WORLD_PROPS',role:'ROUTE_CHOICE_RISK_REWARD'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'CASUAL_FAST_RETRY_PRESENTATION',role:'FAIL_RESULT_FAST_RETRY'}),
+    Object.freeze({domain:'ITEM',ideaId:'CASUAL_COLLECTION_ITEM_FAMILY',role:'COLLECTIBLE_REWARD'})
+  ])}),
+  Object.freeze({id:'IDLE_GROWTH',signals:Object.freeze(['IDLE_GROWTH']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'OFFLINE_REWARD_GROWTH_UI',role:'OFFLINE_REWARD_FORMATION_UPGRADE'}),
+    Object.freeze({domain:'CHARACTER_GEAR',ideaId:'GROWTH_STAGE_GEAR_VARIANTS',role:'VISIBLE_GROWTH_STAGE'}),
+    Object.freeze({domain:'VFX',ideaId:'ASCENSION_GROWTH_VFX',role:'LEVEL_UP_ASCENSION_UPGRADE'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'IDLE_GROWTH_SHRINE_MACHINE_PROPS',role:'GROWTH_RESOURCE_PRODUCTION'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'RETURN_SUMMARY_PRESENTATION',role:'RETURN_OFFLINE_SUMMARY'})
+  ])}),
+  Object.freeze({id:'TYCOON_MACHINE_LIFECYCLE',signals:Object.freeze(['TYCOON_SIM']),ideas:Object.freeze([
+    Object.freeze({domain:'WORLD_PROP',ideaId:'TYCOON_MACHINE_LIFECYCLE_KIT',role:'PRODUCTION_SERVICE_MACHINE'}),
+    Object.freeze({domain:'BUILDING',ideaId:'TYCOON_SERVICE_BUILDING_TIERS',role:'SERVICE_PRODUCTION_UPGRADE'}),
+    Object.freeze({domain:'UI',ideaId:'TYCOON_QUEUE_CAPACITY_DASHBOARD',role:'QUEUE_CAPACITY_INCOME_MAINTENANCE'}),
+    Object.freeze({domain:'MOTION',ideaId:'STAFF_WORK_REPAIR_MOTION_SET',role:'STAFF_WORK_CARRY_REPAIR_CLEAN'}),
+    Object.freeze({domain:'MATERIAL',ideaId:'MACHINE_WEAR_REPAIR_MATERIALS',role:'CLEAN_WORN_DIRTY_CORRODED_REPAIRED'}),
+    Object.freeze({domain:'AUDIO',ideaId:'TYCOON_MACHINE_AUDIO_ROLES',role:'MACHINE_HUM_TOOL_WORK_WARNING'})
+  ])}),
+  Object.freeze({id:'SOCIAL_ROLEPLAY_LIFE',signals:Object.freeze(['SOCIAL_ROLEPLAY']),ideas:Object.freeze([
+    Object.freeze({domain:'CHARACTER_GEAR',ideaId:'ROLEPLAY_IDENTITY_LIFE_KIT',role:'JOB_ROLE_SOCIAL_OUTFIT'}),
+    Object.freeze({domain:'BUILDING',ideaId:'ROLEPLAY_HOME_SERVICE_BUILDINGS',role:'HOME_JOB_SERVICE_SOCIAL'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'ROLEPLAY_LIFE_PROP_FAMILY',role:'HOME_JOB_VEHICLE_SOCIAL_INTERACTION'}),
+    Object.freeze({domain:'UI',ideaId:'ROLE_JOB_SOCIAL_UI',role:'ROLE_JOB_HOME_SOCIAL_ACTIVITY'}),
+    Object.freeze({domain:'MOTION',ideaId:'SOCIAL_EMOTE_JOB_MOTION_SET',role:'EMOTE_JOB_SOCIAL_INTERACTION'}),
+    Object.freeze({domain:'AUDIO',ideaId:'SOCIAL_SPACE_AMBIENT_ROLES',role:'CITY_HOME_MARKET_VEHICLE_SOCIAL'})
+  ])}),
+  Object.freeze({id:'HORROR_TENSION_ESCALATION',signals:Object.freeze(['HORROR']),ideas:Object.freeze([
+    Object.freeze({domain:'ENVIRONMENT',ideaId:'HORROR_TENSION_ESCALATION_KIT',role:'VISIBILITY_THREAT_SAFEPOINT_ESCALATION'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'INVESTIGATION_KEY_SAFEPOINT_PROPS',role:'INVESTIGATION_KEY_CLUE_SAFEPOINT'}),
+    Object.freeze({domain:'VFX',ideaId:'HORROR_THREAT_FLASH_VFX',role:'THREAT_REVEAL_CHASE_WARNING'}),
+    Object.freeze({domain:'AUDIO',ideaId:'HORROR_DISTANCE_TENSION_AUDIO',role:'DISTANCE_THREAT_STRUCTURE_CREAK_RADIO'}),
+    Object.freeze({domain:'MATERIAL',ideaId:'DAMP_RUST_GRIME_HORROR_MATERIALS',role:'DAMP_DIRT_CORROSION_DAMAGE'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'HORROR_ACCESSIBLE_TRANSITIONS',role:'THREAT_ENTRY_FAIL_SAFE_REDUCED_FLASH'})
+  ])}),
+  Object.freeze({id:'DEFENSE_WAVE_COMMAND',signals:Object.freeze(['DEFENSE']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'DEFENSE_WAVE_COMMAND_KIT',role:'WAVE_BASE_RANGE_UPGRADE_BOSS'}),
+    Object.freeze({domain:'BUILDING',ideaId:'DEFENSE_TOWER_BASE_TIERS',role:'TOWER_DEFENDER_BASE'}),
+    Object.freeze({domain:'VFX',ideaId:'DEFENSE_RANGE_TELEGRAPH_VFX',role:'RANGE_TARGET_WAVE_BOSS_TELEGRAPH'}),
+    Object.freeze({domain:'CREATURE',ideaId:'LANE_ENEMY_RANK_SILHOUETTES',role:'LANE_GRUNT_ELITE_BOSS'}),
+    Object.freeze({domain:'ENVIRONMENT',ideaId:'DEFENSE_LANE_BACKGROUND_PRESSURE',role:'LANE_ROUTE_WAVE_PRESSURE'}),
+    Object.freeze({domain:'AUDIO',ideaId:'DEFENSE_WAVE_BOSS_AUDIO_ROLES',role:'WAVE_START_BASE_HIT_BOSS_WARNING_CLEAR'})
+  ])}),
+  Object.freeze({id:'NARRATIVE_QUEST_WORLD',signals:Object.freeze(['NARRATIVE']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'NARRATIVE_DIALOGUE_HISTORY_UI',role:'DIALOGUE_CHOICE_HISTORY_RELATIONSHIP'}),
+    Object.freeze({domain:'CHARACTER_GEAR',ideaId:'FACTION_STORY_WARDROBE_SET',role:'FACTION_REGION_STORY_ROLE'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'QUEST_LORE_STORY_PROP_SET',role:'QUEST_LORE_CLUE_STORY_OBJECT'}),
+    Object.freeze({domain:'MOTION',ideaId:'DIALOGUE_ACTING_GESTURE_SET',role:'DIALOGUE_REACTION_HANDOFF_CEREMONY'}),
+    Object.freeze({domain:'PRESENTATION',ideaId:'CHAPTER_STORY_TRANSITION_SET',role:'CHAPTER_ENTRY_REVEAL_ENDING'}),
+    Object.freeze({domain:'AUDIO',ideaId:'NARRATIVE_MUSIC_DIALOGUE_ROLES',role:'DIALOGUE_UI_STORY_TRANSITION_REVEAL'})
+  ])}),
+  Object.freeze({id:'EXPLORATION_DISCOVERY',signals:Object.freeze(['EXPLORATION']),ideas:Object.freeze([
+    Object.freeze({domain:'ENVIRONMENT',ideaId:'DISCOVERY_LANDMARK_REGION_KIT',role:'LANDMARK_POI_ROUTE_REGION'}),
+    Object.freeze({domain:'UI',ideaId:'MAP_POI_DISCOVERY_UI',role:'MAP_POI_ROUTE_DISCOVERY'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'FIELD_EXPLORATION_PROP_KIT',role:'SIGNPOST_CAMP_BEACON_RESEARCH'}),
+    Object.freeze({domain:'ITEM',ideaId:'EXPLORATION_TOOL_ITEM_SET',role:'COMPASS_CAMERA_SCANNER_MARKER'}),
+    Object.freeze({domain:'AUDIO',ideaId:'BIOME_DISCOVERY_AUDIO_LAYERS',role:'BIOME_WILDLIFE_WIND_WATER_DISCOVERY'}),
+    Object.freeze({domain:'FOLIAGE',ideaId:'EXPLORATION_FOLIAGE_BIOME_SET',role:'BIOME_ROUTE_LANDMARK_DENSITY'})
+  ])}),
+  Object.freeze({id:'SANDBOX_HOUSING',signals:Object.freeze(['SANDBOX_HOUSING']),ideas:Object.freeze([
+    Object.freeze({domain:'BUILDING',ideaId:'MODULAR_HOUSING_CONSTRUCTION_KIT',role:'FOUNDATION_WALL_WINDOW_DOOR_ROOF_STAIRS'}),
+    Object.freeze({domain:'UI',ideaId:'SANDBOX_PLACEMENT_EDIT_UI',role:'PLACE_ROTATE_MOVE_COPY_DELETE_UNDO'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'HOUSING_FURNITURE_STORAGE_PROP_SET',role:'FURNITURE_STORAGE_LIGHT_DECOR'}),
+    Object.freeze({domain:'MATERIAL',ideaId:'HOUSING_MATERIAL_PALETTE_SET',role:'WALL_FLOOR_ROOF_TRIM_THEME'}),
+    Object.freeze({domain:'MOTION',ideaId:'BUILD_CARRY_PLACE_MOTION_SET',role:'CARRY_BUILD_REPAIR_PLACE'}),
+    Object.freeze({domain:'VFX',ideaId:'PLACEMENT_VALIDATION_VFX',role:'VALID_INVALID_SNAP_SUPPORT'})
+  ])}),
+  Object.freeze({id:'COZY_FARMING_LIFE',signals:Object.freeze(['COZY_FARMING']),ideas:Object.freeze([
+    Object.freeze({domain:'FOLIAGE',ideaId:'SEASONAL_CROP_FOLIAGE_SET',role:'CROP_FLOWER_TREE_SEASON_GROWTH'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'FARM_PROCESSING_LIFE_PROPS',role:'PLOT_PROCESSING_ANIMAL_HOME_STORAGE'}),
+    Object.freeze({domain:'ITEM',ideaId:'FARM_SEED_PRODUCE_ITEM_FAMILIES',role:'SEED_PRODUCE_FEED_INGREDIENT'}),
+    Object.freeze({domain:'UI',ideaId:'FARM_RELATIONSHIP_COLLECTION_UI',role:'PLOT_HARVEST_COLLECTION_RELATIONSHIP'}),
+    Object.freeze({domain:'MOTION',ideaId:'FARM_COOK_CARE_MOTION_SET',role:'PLANT_WATER_HARVEST_FEED_COOK'}),
+    Object.freeze({domain:'MATERIAL',ideaId:'SOIL_WET_SEASON_MATERIAL_SET',role:'SOIL_MUD_WET_DRY_SEASON'}),
+    Object.freeze({domain:'AUDIO',ideaId:'FARM_INSECT_ANIMAL_AUDIO_ROLES',role:'INSECT_BIRD_ANIMAL_TOOL_WATER'})
+  ])}),
+  Object.freeze({id:'COOP_SHARED_ACTION',signals:Object.freeze(['COOP_MULTIPLAYER']),ideas:Object.freeze([
+    Object.freeze({domain:'UI',ideaId:'COOP_PARTY_MARKER_PING_UI',role:'PARTY_MARKER_PING_SHARED_OBJECTIVE'}),
+    Object.freeze({domain:'CHARACTER_GEAR',ideaId:'COOP_ROLE_IDENTITY_GEAR',role:'TEAM_ROLE_IDENTITY'}),
+    Object.freeze({domain:'VFX',ideaId:'REVIVE_SHARED_OBJECTIVE_VFX',role:'REVIVE_PING_SHARED_GOAL'}),
+    Object.freeze({domain:'MOTION',ideaId:'PAIR_REVIVE_CARRY_MOTIONS',role:'PAIR_REVIVE_CARRY_HANDOFF'}),
+    Object.freeze({domain:'WORLD_PROP',ideaId:'COOP_RALLY_WORLD_PROP',role:'RALLY_READY_SHARED_OBJECTIVE'}),
+    Object.freeze({domain:'AUDIO',ideaId:'COOP_PING_TEAM_AUDIO_ROLES',role:'PING_READY_REVIVE_OBJECTIVE'})
+  ])})
+]);
+
+export const COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS=Object.freeze([
+  Object.freeze({id:'ECLIPSE_MARKET_BLACKOUT',signals:Object.freeze(['SOCIAL_ROLEPLAY','TYCOON_SIM','HORROR','RPG_PROGRESSION']),components:Object.freeze(['ECLIPSE_SKY','POWERED_UNPOWERED_BUILDINGS','EMERGENCY_LANTERN_PROPS','OUTAGE_STATUS_UI','GENERATOR_HUM_TO_AMBIENT_HUSH','FLICKER_VFX','SOOT_WET_MATERIAL_VARIANTS'])}),
+  Object.freeze({id:'FLOODED_RUIN_RESEARCH_RUN',signals:Object.freeze(['SURVIVAL','EXPLORATION','RPG_PROGRESSION']),components:Object.freeze(['FLOODED_RUINS','WATER_MUD_SURFACES','SPECIMEN_AND_SCANNER_ITEMS','ROPE_SIGNAL_PROPS','AMPHIBIOUS_CREATURE_VARIANTS','WATER_DISTANCE_AUDIO','DISCOVERY_POI_UI'])}),
+  Object.freeze({id:'AURORA_HARVEST_FESTIVAL',signals:Object.freeze(['COZY_FARMING','SOCIAL_ROLEPLAY','CASUAL_SHORT_RUN']),components:Object.freeze(['AURORA_SKY','SEASONAL_CROPS','MARKET_DECOR','FESTIVAL_OUTFITS','COLLECTION_UI','WIND_INSECT_ANIMAL_AUDIO','REWARD_SPARKLE_VFX'])}),
+  Object.freeze({id:'SANDSTORM_CONVOY_DEFENSE',signals:Object.freeze(['DEFENSE','TYCOON_SIM','SURVIVAL']),components:Object.freeze(['SANDSTORM_VISIBILITY','CONVOY_MACHINE_PROPS','WAVE_BEACONS','DUST_MATERIALS','LANE_THREAT_UI','MACHINE_RATTLE_AUDIO','ELITE_SILHOUETTES'])}),
+  Object.freeze({id:'CRYSTAL_FACTORY_OVERLOAD',signals:Object.freeze(['IDLE_GROWTH','TYCOON_SIM','RPG_PROGRESSION']),components:Object.freeze(['CRYSTAL_MACHINE_PROPS','EMISSIVE_OVERHEAT_MATERIALS','UPGRADE_ASCENSION_VFX','REPAIR_WORK_MOTIONS','OVERLOAD_WARNING_UI','GENERATOR_HUM_AUDIO'])}),
+  Object.freeze({id:'WHITE_NIGHT_BOSS_MIGRATION',signals:Object.freeze(['SURVIVAL','ACTION_COMBAT','DEFENSE']),components:Object.freeze(['WHITE_NIGHT_SKY','MIGRATION_CREATURE_VARIANTS','BOSS_WARNING_BEACONS','DISTANT_WILDLIFE_CALLS','FROST_WET_SURFACES','WAVE_PRESSURE_BACKGROUND'])}),
+  Object.freeze({id:'FOG_TOWN_MEMORY_CASE',signals:Object.freeze(['NARRATIVE','HORROR','SOCIAL_ROLEPLAY']),components:Object.freeze(['FOG_TOWN_BACKGROUND','CLUE_AND_LORE_PROPS','FACTION_WARDROBE','DIALOGUE_HISTORY_UI','STRUCTURE_CREAK_AUDIO','DISCOVERY_REVEAL_VFX'])}),
+  Object.freeze({id:'COLOR_RIFT_PUZZLE_EVENT',signals:Object.freeze(['PUZZLE','CASUAL_SHORT_RUN','RPG_PROGRESSION']),components:Object.freeze(['COLOR_RIFT_BACKGROUND','TILE_STATE_MATERIALS','CASCADE_VFX','COLLECTIBLE_SHARDS','LEVEL_RESULT_UI','COMBO_AUDIO'])}),
+  Object.freeze({id:'RAINED_IN_HOME_DAY',signals:Object.freeze(['SANDBOX_HOUSING','COZY_FARMING','SOCIAL_ROLEPLAY']),components:Object.freeze(['RAIN_WINDOW_BACKGROUND','INTERIOR_EXTERIOR_AUDIO_BLEND','WET_OUTERWEAR_VARIANTS','FURNITURE_INTERACTION_PROPS','WARM_LIGHT_MATERIALS','HOME_ACTIVITY_UI'])}),
+  Object.freeze({id:'ECLIPSE_PILGRIMAGE',signals:Object.freeze(['NARRATIVE','RPG_PROGRESSION','SOCIAL_ROLEPLAY']),components:Object.freeze(['ECLIPSE_SKY','CEREMONIAL_PROPS','PROCESSION_MOTIONS','CEREMONIAL_WARDROBE','AMBIENT_HUSH_AUDIO','CHAPTER_REVEAL_PRESENTATION'])}),
+  Object.freeze({id:'INDUSTRIAL_FREEZE_FAILURE',signals:Object.freeze(['TYCOON_SIM','SURVIVAL']),components:Object.freeze(['FROZEN_MACHINE_PROPS','ICE_CORROSION_MATERIALS','REPAIR_KIT_ITEMS','FAILURE_WARNING_UI','TOOL_WORK_AUDIO','STEAM_FROST_VFX'])}),
+  Object.freeze({id:'RUINED_COAST_SIGNAL_RESCUE',signals:Object.freeze(['EXPLORATION','SURVIVAL','COOP_MULTIPLAYER']),components:Object.freeze(['STORM_COAST_BACKGROUND','PORTABLE_BEACON_PROPS','RADIO_STATIC_AUDIO','RESCUE_CARRY_MOTIONS','TEAM_PING_UI','WET_DAMAGE_MATERIALS'])})
+]);
+
+function companySeedIdeaText(seed={}){
+  const signature=(seed.signatureSystems||[]).flatMap(row=>{
+    if(typeof row==='string')return[row];
+    return [row?.name,row?.purpose,row?.playerChoice].filter(Boolean);
+  });
+  return upper([
+    seed.gameId,seed.gameName,seed.identity,seed.genre,seed.coreFun,
+    ...(seed.coreLoop||[]),...signature,seed.progressionDirection,seed.visualDirection,seed.mobileUx
+  ].filter(Boolean).join(' '));
+}
+
+function detectCompanySeedRuleIds(source,rules){
+  const result=[];
+  for(const rule of rules){
+    if((rule.keywords||[]).some(keyword=>source.includes(upper(keyword))))result.push(rule.id);
+  }
+  return uniq(result);
+}
+
+export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[]}={}){
+  const seedRows=[];
+  const aggregate=new Map();
+  const detectedSignalSet=new Set();
+  const worldThemeSet=new Set();
+  const baseRecipes=COMPANY_COMMON_SEED_ASSET_IDEA_RECIPES.filter(row=>row.signals.includes('ALWAYS'));
+
+  for(const seed of seeds||[]){
+    const source=companySeedIdeaText(seed);
+    const signals=detectCompanySeedRuleIds(source,COMPANY_COMMON_SEED_SIGNAL_RULES);
+    const worldThemes=detectCompanySeedRuleIds(source,COMPANY_COMMON_SEED_WORLD_RULES);
+    if(!worldThemes.length)worldThemes.push('UNIVERSAL_STYLE_ADAPTIVE');
+    for(const id of signals)detectedSignalSet.add(id);
+    for(const id of worldThemes)worldThemeSet.add(id);
+
+    const selected=[
+      ...baseRecipes,
+      ...COMPANY_COMMON_SEED_ASSET_IDEA_RECIPES.filter(row=>row.signals.some(signal=>signals.includes(signal)))
+    ];
+    const recipeIds=[];
+    for(const recipe of selected){
+      recipeIds.push(recipe.id);
+      for(const idea of recipe.ideas){
+        const key=idea.domain+'|'+idea.ideaId;
+        const current=aggregate.get(key)||{
+          ideaId:idea.ideaId,
+          domain:idea.domain,
+          role:idea.role,
+          stateVariants:[...(COMPANY_COMMON_SEED_DOMAIN_STATE_DEFAULTS[idea.domain]||['BASE'])],
+          sourceSeedIds:[],
+          sourceSignals:[],
+          worldThemes:[]
+        };
+        if(seed.gameId&&!current.sourceSeedIds.includes(seed.gameId))current.sourceSeedIds.push(seed.gameId);
+        for(const signal of signals)if(!current.sourceSignals.includes(signal))current.sourceSignals.push(signal);
+        for(const theme of worldThemes)if(!current.worldThemes.includes(theme))current.worldThemes.push(theme);
+        aggregate.set(key,current);
+      }
+    }
+
+    seedRows.push(Object.freeze({
+      gameId:text(seed.gameId)||'UNKNOWN_SEED',
+      gameName:text(seed.gameName||seed.identity),
+      signals:Object.freeze(signals),
+      worldThemes:Object.freeze(worldThemes),
+      recipeIds:Object.freeze(uniq(recipeIds))
+    }));
+  }
+
+  const ideas=[...aggregate.values()].map(row=>Object.freeze({
+    ...row,
+    stateVariants:Object.freeze(uniq(row.stateVariants)),
+    sourceSeedIds:Object.freeze(uniq(row.sourceSeedIds)),
+    sourceSignals:Object.freeze(uniq(row.sourceSignals)),
+    worldThemes:Object.freeze(uniq(row.worldThemes)),
+    combinationKey:[row.domain,row.role,...row.worldThemes.slice(0,2)].join('>'),
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    saveAuthority:false,
+    networkAuthority:false
+  })).sort((a,b)=>a.domain.localeCompare(b.domain)||a.ideaId.localeCompare(b.ideaId));
+
+  const demandMap=new Map();
+  for(const idea of ideas)demandMap.set(idea.domain,(demandMap.get(idea.domain)||0)+idea.sourceSeedIds.length);
+  let gapByDomain=new Map();
+  if((assets||[]).length){
+    const report=auditCommonLibrarySystemDepth({assets});
+    gapByDomain=new Map(report.rows.map(row=>[row.domain,row.missing.length]));
+  }
+  const familyDemand=[...demandMap.entries()].map(([domain,seedDemand])=>{
+    const currentGapCount=gapByDomain.get(domain)||0;
+    return Object.freeze({
+      domain,
+      currentGapCount,
+      seedDemand,
+      priorityScore:currentGapCount*20+seedDemand*5,
+      action:currentGapCount>0?'VOLUME_UP_GAP_FIRST':'EXPAND_COMBINATION_BREADTH'
+    });
+  }).sort((a,b)=>b.priorityScore-a.priorityScore||b.seedDemand-a.seedDemand||a.domain.localeCompare(b.domain));
+
+  const detectedSignals=[...detectedSignalSet].sort();
+  const crossGenreKits=COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS.map(kit=>{
+    const matchedSignals=kit.signals.filter(signal=>detectedSignalSet.has(signal));
+    return Object.freeze({...kit,matchedSignals:Object.freeze(matchedSignals),matchScore:matchedSignals.length});
+  }).filter(kit=>kit.matchScore>=2).sort((a,b)=>b.matchScore-a.matchScore||a.id.localeCompare(b.id));
+
+  return Object.freeze({
+    version:1,
+    scope:'ALL_COMPANY_COMMON_SEEDS',
+    sourcePattern:COMPANY_COMMON_SEED_ASSET_IDEA_AXES.sourcePattern,
+    seedCount:seedRows.length,
+    detectedSignals:Object.freeze(detectedSignals),
+    worldThemes:Object.freeze([...worldThemeSet].sort()),
+    seeds:Object.freeze(seedRows),
+    ideas:Object.freeze(ideas),
+    ideaCount:ideas.length,
+    familyDemand:Object.freeze(familyDemand),
+    crossGenreKits:Object.freeze(crossGenreKits),
+    crossGenreKitCount:crossGenreKits.length,
+    stateAxes:COMPANY_COMMON_SEED_ASSET_IDEA_AXES.stateAxes,
+    volumeBeforeQuality:true,
+    reuseAdaptRecombineBeforeNewAuthoring:true,
+    deterministicMachineReadable:true,
+    eventDrivenOnly:true,
+    schedulerCreated:false,
+    workflowCreated:false,
+    queueCreated:false,
+    pipelineCreated:false,
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    saveAuthority:false,
+    networkAuthority:false
+  });
+}
+
 export const COMMON_PRESENTATION_EXPECTATIONS=Object.freeze({
   loading:Object.freeze(['BRAND_BACKGROUND','LOGO','SPINNER','PROGRESS_BAR','TIP','STATUS_TEXT']),
   introModes:Object.freeze(['SIMPLE_FADE','LOGO_REVEAL','PARTICLE_LIGHT','WORLD_PAN','MINIMAL_CINEMATIC']),
@@ -684,6 +1054,8 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'INTERNAL_ASSET_CHANGED',
     'COMMON_PACK_VERSION_CHANGED',
     'GENRE_EXPECTATION_CHANGED',
+    'COMPANY_COMMON_SEED_SET_CHANGED',
+    'COMPANY_COMMON_SEED_CONTENT_CHANGED',
     'NEW_GAME_ASSET_REQUIREMENT_NOT_COVERED',
     'BEFORE_GAME_ASSET_BINDING',
     'AFTER_RUNTIME_ASSET_FAILURE',
@@ -694,6 +1066,7 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'SEARCH_COMPANY_COMMON_ASSETS',
     'CROSS_PACK_SYSTEM_DEPTH_AUDIT',
     'GENRE_SYSTEM_EXPECTATION_COMPARE',
+    'BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN',
     'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
     'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
     'PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING'
@@ -703,6 +1076,8 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'COMPANY_CROSS_PACK_GAP_AUDIT',
     'REMOVE_GAPS_ALREADY_COVERED_BY_OTHER_COMMON_PACKS',
     'KEEP_ONLY_REAL_COMPANY_WIDE_GAPS',
+    'REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND',
+    'VOLUME_UP_BEFORE_QUALITY_UP',
     'UPDATE_PRIORITY_GAPS',
     'UPDATE_CATALOG_AND_LIBRARY',
     'UPDATE_ASSET_QA'
