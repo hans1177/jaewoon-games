@@ -377,6 +377,130 @@ function RobloxCommonSkillPresentation.AttachTargetMarker(hostPart, options)
   return model, controller
 end
 
+
+function RobloxCommonSkillPresentation.CreateTelegraphLine(options)
+  options = options or {}
+  local parent = options.parent or workspace
+  local cframe = typeof(options.cframe) == "CFrame" and options.cframe or CFrame.new()
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
+  local length = clamp(options.length or 8, 2, 24)
+  local width = clamp(options.width or 1.2, 0.25, 5)
+  local duration = clamp(options.duration or DEFAULT.Duration, 0.15, 2.5)
+
+  local folder = Instance.new("Folder")
+  folder.Name = "CommonTelegraphLine"
+  tag(folder, "TELEGRAPH_LINE")
+  folder.Parent = parent
+
+  local line = neonPart("Line", Vector3.new(width, 0.08, length), color)
+  line.Anchored = true
+  line.Transparency = 0.46
+  line.CFrame = cframe * CFrame.new(0, 0.06, -length * 0.5)
+  line.Parent = folder
+  tag(line, "TELEGRAPH_LINE")
+
+  local edge = neonPart("Edge", Vector3.new(math.max(0.08, width * 0.10), 0.10, length), DEFAULT.Accent)
+  edge.Anchored = true
+  edge.Transparency = 0.28
+  edge.CFrame = cframe * CFrame.new(0, 0.08, -length * 0.5)
+  edge.Parent = folder
+  tag(edge, "TELEGRAPH_LINE")
+
+  folder:SetAttribute("PresentationLength", length)
+  folder:SetAttribute("PresentationWidth", width)
+  folder:SetAttribute("PresentationDuration", duration)
+  if options.autoCleanup ~= false then
+    Debris:AddItem(folder, duration + 0.12)
+  end
+  return folder
+end
+
+function RobloxCommonSkillPresentation.AttachChannelRing(hostPart, options)
+  options = options or {}
+  assert(typeof(hostPart) == "Instance" and hostPart:IsA("BasePart"), "COMMON_CHANNEL_RING_HOST_PART_REQUIRED")
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
+  local scale = clamp(options.scale or 1, 0.4, 3.0)
+
+  local model = Instance.new("Model")
+  model.Name = "CommonChannelRing"
+  tag(model, "CHANNEL_RING")
+  model.Parent = hostPart
+
+  local ring = neonPart("ChannelRing", Vector3.new(0.10, 2.8, 2.8) * scale, color)
+  ring.Shape = Enum.PartType.Cylinder
+  ring.Anchored = false
+  ring.Transparency = 0.34
+  ring.CFrame = hostPart.CFrame * CFrame.Angles(0, 0, math.rad(90))
+  ring.Parent = model
+  tag(ring, "CHANNEL_RING")
+
+  local weld = Instance.new("WeldConstraint")
+  weld.Name = "ChannelRingWeld"
+  weld.Part0 = hostPart
+  weld.Part1 = ring
+  weld.Parent = ring
+
+  model:SetAttribute("OwnsChannelState", false)
+  model:SetAttribute("OwnsCooldownAuthority", false)
+
+  local controller = {}
+  function controller.SetEnabled(enabled)
+    ring.Transparency = enabled == true and 0.34 or 1
+  end
+  function controller.Destroy()
+    if model.Parent then model:Destroy() end
+  end
+  return model, controller
+end
+
+function RobloxCommonSkillPresentation.CreateBeamLink(options)
+  options = options or {}
+  local aPart = options.fromPart
+  local bPart = options.toPart
+  assert(typeof(aPart) == "Instance" and aPart:IsA("BasePart"), "COMMON_BEAM_LINK_FROM_PART_REQUIRED")
+  assert(typeof(bPart) == "Instance" and bPart:IsA("BasePart"), "COMMON_BEAM_LINK_TO_PART_REQUIRED")
+  local color = typeof(options.color) == "Color3" and options.color or DEFAULT.Color
+
+  local a0 = Instance.new("Attachment")
+  a0.Name = "CommonBeamFrom"
+  a0.Parent = aPart
+  tag(a0, "BEAM_LINK")
+
+  local a1 = Instance.new("Attachment")
+  a1.Name = "CommonBeamTo"
+  a1.Parent = bPart
+  tag(a1, "BEAM_LINK")
+
+  local beam = Instance.new("Beam")
+  beam.Name = "CommonBeamLink"
+  beam.Attachment0 = a0
+  beam.Attachment1 = a1
+  beam.FaceCamera = true
+  beam.LightEmission = 0.8
+  beam.LightInfluence = 0
+  beam.Width0 = clamp(options.width0 or 0.22, 0.04, 1.2)
+  beam.Width1 = clamp(options.width1 or 0.12, 0.04, 1.2)
+  beam.Color = ColorSequence.new(color)
+  beam.Transparency = NumberSequence.new(0.12)
+  beam.Parent = aPart
+  tag(beam, "BEAM_LINK")
+
+  beam:SetAttribute("OwnsTargetSelection", false)
+  beam:SetAttribute("OwnsDamageAuthority", false)
+  beam:SetAttribute("OwnsRangeAuthority", false)
+
+  local controller = {}
+  function controller.SetEnabled(enabled)
+    beam.Enabled = enabled == true
+  end
+  function controller.Destroy()
+    if beam.Parent then beam:Destroy() end
+    if a0.Parent then a0:Destroy() end
+    if a1.Parent then a1:Destroy() end
+  end
+  return beam, controller
+end
+
 function RobloxCommonSkillPresentation.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   options = options or {}
@@ -399,16 +523,23 @@ function RobloxCommonSkillPresentation.Create(atomId, options)
   elseif id == "TARGET_MARKER" then
     assert(options.hostPart, "COMMON_TARGET_MARKER_OPTIONS_HOST_PART_REQUIRED")
     return RobloxCommonSkillPresentation.AttachTargetMarker(options.hostPart, options)
+  elseif id == "TELEGRAPH_LINE" then
+    return RobloxCommonSkillPresentation.CreateTelegraphLine(options)
+  elseif id == "CHANNEL_RING" then
+    assert(options.hostPart, "COMMON_CHANNEL_RING_OPTIONS_HOST_PART_REQUIRED")
+    return RobloxCommonSkillPresentation.AttachChannelRing(options.hostPart, options)
+  elseif id == "BEAM_LINK" then
+    return RobloxCommonSkillPresentation.CreateBeamLink(options)
   end
   error("UNKNOWN_COMMON_SKILL_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonSkillPresentation.Audit()
   return table.freeze({
-    version = 2,
+    version = 3,
     packId = "roblox-common-skill-v1",
-    atoms = table.freeze({"CAST_HAND", "TELEGRAPH_CIRCLE", "IMPACT_SMALL", "CAST_AURA", "PROJECTILE_ORB", "AREA_PULSE", "TELEGRAPH_FAN", "TARGET_MARKER"}),
-    atomCount = 8,
+    atoms = table.freeze({"CAST_HAND", "TELEGRAPH_CIRCLE", "IMPACT_SMALL", "CAST_AURA", "PROJECTILE_ORB", "AREA_PULSE", "TELEGRAPH_FAN", "TARGET_MARKER", "TELEGRAPH_LINE", "CHANNEL_RING", "BEAM_LINK"}),
+    atomCount = 11,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     dependencyPackIds = table.freeze({"roblox-common-vfx-v1"}),
