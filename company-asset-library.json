@@ -1,5 +1,5 @@
 {
-  "version": 98,
+  "version": 99,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -571,7 +571,26 @@
         "model": "assets/roblox/world-ghosts/native/mesh/bride.glb",
         "evidence": "assets/roblox/world-ghosts/native/mesh/evidence.json",
         "nativeStudioVerified": false
-      }
+      },
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 879,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PACK_SOURCE_AUDIT",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-gwisin-bride",
@@ -639,7 +658,26 @@
           "editableSource": "assets/roblox/world-ghosts/refine-humanoid-motion.py",
           "runMode": "VERIFY_ONLY"
         }
-      ]
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 884,
+      "internalAuditGrade": "COMMERCIAL_READY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/mesh/evidence.json",
+      "internalAuditScope": "AUTHORED_SKINNED_MESH_OVERRIDE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-mongdal",
@@ -673,7 +711,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-water-gwisin",
@@ -707,7 +764,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-egg-face",
@@ -741,7 +817,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-eoduksini",
@@ -775,7 +870,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-gumiho",
@@ -809,7 +923,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-dokkaebi",
@@ -843,7 +976,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-bulgasari",
@@ -877,7 +1029,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-jangsanbeom",
@@ -911,7 +1082,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-dueoksini",
@@ -945,7 +1135,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-jeoseung",
@@ -979,7 +1188,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-gangcheori",
@@ -1013,7 +1241,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-yurei",
@@ -1047,7 +1294,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-yuki-onna",
@@ -1081,7 +1347,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-rokurokubi",
@@ -1115,7 +1400,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nukekubi",
@@ -1149,7 +1453,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nopperabo",
@@ -1183,7 +1506,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-kuchisake",
@@ -1217,7 +1559,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-oni",
@@ -1251,7 +1612,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-tengu",
@@ -1285,7 +1665,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-kappa",
@@ -1319,7 +1718,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nekomata",
@@ -1353,7 +1771,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-bakeneko",
@@ -1387,7 +1824,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-jorogumo",
@@ -1421,7 +1877,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-tsuchigumo",
@@ -1455,7 +1930,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-karakasa",
@@ -1489,7 +1983,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-chochin",
@@ -1523,7 +2036,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-ittan-momen",
@@ -1557,7 +2089,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nurikabe",
@@ -1591,7 +2142,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-gashadokuro",
@@ -1625,7 +2195,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-ushioni",
@@ -1659,7 +2248,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-wanyudo",
@@ -1693,7 +2301,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-futakuchi",
@@ -1727,7 +2354,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-dodomeki",
@@ -1761,7 +2407,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-akaname",
@@ -1795,7 +2460,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-umibozu",
@@ -1829,7 +2513,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-jiangshi",
@@ -1863,7 +2566,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-huli-jing",
@@ -1897,7 +2619,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-baigujing",
@@ -1931,7 +2672,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nian",
@@ -1965,7 +2725,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-hei-wuchang",
@@ -1999,7 +2778,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-bai-wuchang",
@@ -2033,7 +2831,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-shui-gui",
@@ -2067,7 +2884,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-huapi",
@@ -2101,7 +2937,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-pontianak",
@@ -2135,7 +2990,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-penanggalan",
@@ -2169,7 +3043,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-pocong",
@@ -2203,7 +3096,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-aswang",
@@ -2237,7 +3149,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-krasue",
@@ -2271,7 +3202,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-krahang",
@@ -2305,7 +3255,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-phi-pop",
@@ -2339,7 +3308,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-phi-tai-hong",
@@ -2373,7 +3361,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-mae-nak",
@@ -2407,7 +3414,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-toyol",
@@ -2441,7 +3467,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-orang-minyak",
@@ -2475,7 +3520,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-manananggal",
@@ -2509,7 +3573,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-tikbalang",
@@ -2543,7 +3626,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-kapre",
@@ -2577,7 +3679,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-vetala",
@@ -2611,7 +3732,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-preta",
@@ -2645,7 +3785,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-pishacha",
@@ -2679,7 +3838,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-rakshasa",
@@ -2713,7 +3891,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-churel",
@@ -2747,7 +3944,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-brahmadaitya",
@@ -2781,7 +3997,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-ghoul",
@@ -2815,7 +4050,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-ifrit",
@@ -2849,7 +4103,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-jinn",
@@ -2883,7 +4156,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nasnas",
@@ -2917,7 +4209,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-banshee",
@@ -2951,7 +4262,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-dullahan",
@@ -2985,7 +4315,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-kelpie",
@@ -3019,7 +4368,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-nuckelavee",
@@ -3053,7 +4421,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-redcap",
@@ -3087,7 +4474,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-barghest",
@@ -3121,7 +4527,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-boggart",
@@ -3155,7 +4580,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-strigoi",
@@ -3189,7 +4633,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-moroi",
@@ -3223,7 +4686,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-rusalka",
@@ -3257,7 +4739,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-leshy",
@@ -3291,7 +4792,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-baba-yaga",
@@ -3325,7 +4845,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-mare",
@@ -3359,7 +4898,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-poltergeist",
@@ -3393,7 +4951,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-draugr",
@@ -3427,7 +5004,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-headless-horseman",
@@ -3461,7 +5057,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-tokoloshe",
@@ -3495,7 +5110,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-adze",
@@ -3529,7 +5163,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-asanbosam",
@@ -3563,7 +5216,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-sasabonsam",
@@ -3597,7 +5269,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-popobawa",
@@ -3631,7 +5322,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-impundulu",
@@ -3665,7 +5375,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-la-llorona",
@@ -3699,7 +5428,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-el-silbon",
@@ -3733,7 +5481,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-siguanaba",
@@ -3767,7 +5534,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-cadejo",
@@ -3801,7 +5587,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-chupacabra",
@@ -3835,7 +5640,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-curupira",
@@ -3869,7 +5693,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-boitata",
@@ -3903,7 +5746,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-mapinguari",
@@ -3937,7 +5799,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-pisadeira",
@@ -3971,7 +5852,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-la-sayona",
@@ -4005,7 +5905,26 @@
         "assets/roblox/world-ghosts/GhostSkinFactory.luau",
         "assets/roblox/world-ghosts/GhostSkinMotion.luau"
       ],
-      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2"
+      "rigFormat": "COSMETIC_BODY_PLAN_MOTOR6D_V2",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 861.6,
+      "internalAuditGrade": "HIGH_QUALITY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/build-evidence.json",
+      "internalAuditScope": "PROCEDURAL_FACTORY_SKIN_BASELINE",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-monster-adventure-v1",
@@ -65857,7 +67776,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 98,
+    "lastCatalogSynchronizedVersion": 99,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -66197,24 +68116,24 @@
         "internalReuseCandidateCount": 141,
         "internalReuseCandidatePreview": [
           {
-            "id": "roblox-common-creature-part-aquatic-body",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-gwisin-bride",
+            "quality": 884,
+            "grade": "COMMERCIAL_READY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-core",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-skins-v1",
+            "quality": 879,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-leg-cluster",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-adze",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-biped-torso",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-akaname",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           }
         ],
         "internalReusePreviewLimit": 4,
@@ -66231,8 +68150,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66274,24 +68193,24 @@
         "internalReuseCandidateCount": 141,
         "internalReuseCandidatePreview": [
           {
-            "id": "roblox-common-creature-part-aquatic-body",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-gwisin-bride",
+            "quality": 884,
+            "grade": "COMMERCIAL_READY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-core",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-skins-v1",
+            "quality": 879,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-leg-cluster",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-adze",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-biped-torso",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-akaname",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           }
         ],
         "internalReusePreviewLimit": 4,
@@ -66308,8 +68227,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66351,24 +68270,24 @@
         "internalReuseCandidateCount": 141,
         "internalReuseCandidatePreview": [
           {
-            "id": "roblox-common-creature-part-aquatic-body",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-gwisin-bride",
+            "quality": 884,
+            "grade": "COMMERCIAL_READY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-core",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-skins-v1",
+            "quality": 879,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-leg-cluster",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-adze",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-biped-torso",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-akaname",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           }
         ],
         "internalReusePreviewLimit": 4,
@@ -66385,8 +68304,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66428,24 +68347,24 @@
         "internalReuseCandidateCount": 141,
         "internalReuseCandidatePreview": [
           {
-            "id": "roblox-common-creature-part-aquatic-body",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-gwisin-bride",
+            "quality": 884,
+            "grade": "COMMERCIAL_READY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-core",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-skins-v1",
+            "quality": 879,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-leg-cluster",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-adze",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-biped-torso",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-akaname",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           }
         ],
         "internalReusePreviewLimit": 4,
@@ -66462,8 +68381,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66542,8 +68461,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66618,8 +68537,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66697,8 +68616,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66776,8 +68695,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66855,8 +68774,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -66928,8 +68847,8 @@
           "POWER_TIER",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67009,8 +68928,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67091,8 +69010,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67152,8 +69071,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67209,8 +69128,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67266,8 +69185,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67323,8 +69242,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67397,8 +69316,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67474,8 +69393,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67557,8 +69476,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67640,8 +69559,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67723,8 +69642,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67798,8 +69717,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67880,8 +69799,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -67952,8 +69871,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68026,8 +69945,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68100,8 +70019,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68180,8 +70099,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68249,8 +70168,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68322,8 +70241,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68400,8 +70319,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68469,8 +70388,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68551,8 +70470,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68636,8 +70555,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68721,8 +70640,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68804,8 +70723,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68883,8 +70802,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68953,8 +70872,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69034,8 +70953,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69114,8 +71033,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69193,8 +71112,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69263,8 +71182,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69334,8 +71253,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69418,8 +71337,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69492,8 +71411,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69562,8 +71481,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69642,8 +71561,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69723,8 +71642,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69804,8 +71723,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69885,8 +71804,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69966,8 +71885,8 @@
           "FOREGROUND_MIDGROUND_BACKGROUND",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70047,8 +71966,8 @@
           "FOREGROUND_MIDGROUND_BACKGROUND",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70127,8 +72046,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70205,8 +72124,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70283,8 +72202,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70361,8 +72280,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70433,8 +72352,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70507,8 +72426,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70581,8 +72500,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70655,8 +72574,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70729,8 +72648,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70803,8 +72722,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70877,8 +72796,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70951,8 +72870,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71025,8 +72944,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71099,8 +73018,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71173,8 +73092,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71247,8 +73166,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71321,8 +73240,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71395,8 +73314,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71469,8 +73388,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71543,8 +73462,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71617,8 +73536,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71691,8 +73610,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71765,8 +73684,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71839,8 +73758,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71913,8 +73832,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71987,8 +73906,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72061,8 +73980,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72135,8 +74054,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72209,8 +74128,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72283,8 +74202,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72357,8 +74276,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72431,8 +74350,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72505,8 +74424,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72579,8 +74498,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72653,8 +74572,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72727,8 +74646,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72801,8 +74720,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72875,8 +74794,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72949,8 +74868,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73023,8 +74942,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73097,8 +75016,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73171,8 +75090,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73245,8 +75164,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73319,8 +75238,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73393,8 +75312,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73810,24 +75729,24 @@
         "internalReuseCandidateCount": 141,
         "internalReuseCandidatePreview": [
           {
-            "id": "roblox-common-creature-part-aquatic-body",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-gwisin-bride",
+            "quality": 884,
+            "grade": "COMMERCIAL_READY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-core",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-skins-v1",
+            "quality": 879,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-arachnid-leg-cluster",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-adze",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           },
           {
-            "id": "roblox-common-creature-part-biped-torso",
-            "quality": null,
-            "grade": null
+            "id": "roblox-world-ghost-akaname",
+            "quality": 861.6,
+            "grade": "HIGH_QUALITY"
           }
         ],
         "internalReusePreviewLimit": 4,
@@ -73844,8 +75763,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "5ef22e4a",
-        "qualityFreshnessFingerprint": "d5e552ac",
+        "libraryFreshnessFingerprint": "a5c99103",
+        "qualityFreshnessFingerprint": "9db59c07",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73908,14 +75827,14 @@
     "maintenance": {
       "version": 1,
       "status": "SELF_MAINTENANCE_READY",
-      "inventoryFingerprint": "5ef22e4a",
+      "inventoryFingerprint": "a5c99103",
       "typeRoleFingerprint": "dcc70aba",
-      "qualityFingerprint": "d5e552ac",
+      "qualityFingerprint": "9db59c07",
       "assetCount": 717,
       "packCount": 20,
       "familyCount": 11,
       "typeRoleTokenCount": 1656,
-      "scoredAssetCount": 597,
+      "scoredAssetCount": 698,
       "typeRoleTokens": [
         "AUDIO_ROLE:ANIMAL_YARD",
         "AUDIO_ROLE:BAT_SCATTER",
@@ -76206,10 +78125,10 @@
       ],
       "lastNewTypeRoleTokens": [],
       "lastRemovedTypeRoleTokens": [],
-      "lastChangeFingerprint": "5ef22e4a",
+      "lastChangeFingerprint": "a5c99103",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 98
+      "synchronizedRegistryVersion": 99
     },
     "studioVariationAxes": {
       "BUILDING": [
