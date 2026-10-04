@@ -3530,10 +3530,15 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
-  assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']);
+  assert.deepEqual(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.productionRuntimeVerificationSeparateFromInternalQuality,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.commercialUseRequired,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.derivativeModificationRequired,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.provenanceRequired,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.directProtectedCommercialGameAssetCopyForbidden,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.hardMaximum,null);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.overSoftLimitBlocksUse,false);
   assert.equal(plan.hardMaximum,null);
@@ -3550,7 +3555,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
     assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
     assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
-    assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING'])));
+    assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
   }
 
   for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
@@ -3587,28 +3592,41 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(plan.qualityUpPolicy.workingBandMin,980);
   assert.equal(plan.qualityUpPolicy.target,1000);
   assert.equal(plan.qualityUpPolicy.productionRuntimeVerificationSeparate,true);
+  assert.equal(plan.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
+  assert.equal(plan.freeOriginalVolumePolicy.allowed,'CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED');
 
-  const foliagePool=COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.FOLIAGE;
-  const dedupPlan=buildInternalAssetLibraryAutomationPlan({
-    assets:[...registry.assets,{
-      id:foliagePool[0],
+  const foliagePool=[...new Set([
+    ...COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.FOLIAGE,
+    ...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS.FOLIAGE||[])
+  ])];
+  const dedupAssets=[
+    ...registry.assets,
+    ...foliagePool.map((ideaId,index)=>({
+      id:'dedup-foliage-'+index,
       family:'FOLIAGE',
       category:'ENVIRONMENT',
-      assetId:foliagePool[1],
-      atomId:'FOLIAGE_DISTINCT_VARIATION_01',
-      role:foliagePool[2],
+      assetId:ideaId,
       subfamily:'TEST_EXISTING_IDENTITY'
-    }],
+    })),
+    {
+      id:'dedup-foliage-distinct-01',
+      family:'FOLIAGE',
+      category:'ENVIRONMENT',
+      atomId:'FOLIAGE_DISTINCT_VARIATION_01',
+      subfamily:'TEST_EXISTING_IDENTITY'
+    }
+  ];
+  const dedupPlan=buildInternalAssetLibraryAutomationPlan({
+    assets:dedupAssets,
     seedPlan:{ideas:[]},
     uiAtomIds:ui.atoms.map(row=>row.atomId)
   });
   const foliage=dedupPlan.domains.find(row=>row.domain==='FOLIAGE');
   assert.ok(foliage);
   assert.ok(foliage.suggestedIdeas.some(row=>row.source==='LOOSE_VOLUME_TARGET'));
-  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===foliagePool[0]),false);
-  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===foliagePool[1]),false);
-  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===foliagePool[2]),false);
+  for(const ideaId of foliagePool)assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===ideaId),false,ideaId);
   assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_01'),false);
+  assert.ok(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_02'));
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
@@ -3693,7 +3711,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.nextVolumeActions,first.automationPlan.nextVolumeActions);
     assert.equal(first.registry.internalAssetLibraryAutomation.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
     assert.equal(first.registry.internalAssetLibraryAutomation.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
-    assert.deepEqual(first.registry.internalAssetLibraryAutomation.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']);
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.reuseResolutionOrder,['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.workingBandMin,980);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.target,1000);
     assert.equal(first.registry.internalAssetLibraryAutomation.productionRuntimeVerificationSeparateFromInternalQuality,true);
