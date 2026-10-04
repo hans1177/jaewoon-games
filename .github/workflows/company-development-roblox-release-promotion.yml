@@ -88,6 +88,10 @@ jobs:
     name: deploy exact F0-passed Roblox artifact as private runtime candidate
     needs: release-dedupe
     if: ${{ needs.release-dedupe.outputs.run == 'true' }}
+    # Only the shared publication target write is serialized. Build/F0/runtime/F9/next-cycle work stays parallel.
+    concurrency:
+      group: roblox-publication-target-${{ inputs.game_id }}-${{ inputs.publish_stage || 'validation' }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
