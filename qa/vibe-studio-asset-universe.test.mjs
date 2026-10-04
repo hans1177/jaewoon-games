@@ -9,6 +9,11 @@ import {
   STUDIO_ASSET_FAMILIES,
   STUDIO_ASSET_QUALITY_MAX,
   STUDIO_ASSET_QUALITY_WEIGHTS,
+  INTERNAL_ASSET_AUDIT_MAX,
+  INTERNAL_ASSET_AUDIT_PASS,
+  INTERNAL_ASSET_AUDIT_GRADES,
+  INTERNAL_ASSET_FAMILY_EXPECTATIONS,
+  COMMON_UI_SURFACE_EXPECTATIONS,
   CONCEPT_AXES,
   CREATURE_BODY_PLANS,
   CREATURE_SPECIES,
@@ -27,6 +32,7 @@ import {
   evaluateConceptCompatibility,
   createGameVisualDNA,
   scoreStudioAssetQuality120,
+  scoreInternalAssetAudit1000,
   scoreStudioAssetCandidate,
   buildStudioAssetLoadout,
   buildFutureAssetDemandForecast,
@@ -2627,4 +2633,80 @@ test('generic material requirement can choose company-common base',()=>{
     gameDna:{targetPlatform:'ROBLOX'}
   });
   assert.equal(loadout.selections[0].assetId,'common-glass');
+});
+
+
+test('studio-independent 1000-point internal asset audit uses strict score and hard gates',()=>{
+  assert.equal(INTERNAL_ASSET_AUDIT_MAX,1000);
+  assert.equal(INTERNAL_ASSET_AUDIT_PASS,880);
+  assert.deepEqual(INTERNAL_ASSET_AUDIT_GRADES.slice(0,4).map(row=>[row.id,row.min]),[
+    ['MASTERPIECE',980],['ELITE',950],['HERO',920],['COMMERCIAL_READY',880]
+  ]);
+  const evidence={
+    IDENTITY_SILHOUETTE:95,FORM_STRUCTURE:96,MATERIAL_SURFACE:93,COLOR_LIGHTING:94,
+    STYLE_COHERENCE:95,DETAIL_FINISH:95,READABILITY_SCALE:98,MOTION_RIG:91,
+    FEEDBACK_STATES:97,UI_UX_SYSTEM:98,MODULAR_REUSE:97,VARIATION_BREADTH:98,
+    PERFORMANCE_LOD:93,ACCESSIBILITY_INPUT:98,PROVENANCE_MAINTAINABILITY:96,
+    INTEGRATION_READINESS:97
+  };
+  const result=scoreInternalAssetAudit1000({asset:{id:'common-ui',family:'UI'},evidence});
+  assert.equal(result.studioRequired,false);
+  assert.equal(result.nativeRuntimeRequired,false);
+  assert.equal(result.productionPromotionIndependent,true);
+  assert.equal(result.productionRuntimeVerificationUntouched,true);
+  assert.equal(result.pass,true);
+  assert.equal(result.grade,'ELITE');
+  assert.equal(result.score,956.4);
+  assert.ok(result.expectations.includes('NPC interaction'));
+  assert.ok(result.nextQualityTargets.includes(980));
+
+  const hardFail=scoreInternalAssetAudit1000({
+    asset:{id:'common-ui-hard-fail',family:'UI'},
+    evidence:{...evidence,UI_UX_SYSTEM:89}
+  });
+  assert.ok(hardFail.score>=880);
+  assert.equal(hardFail.pass,false);
+  assert.ok(hardFail.blockers.some(row=>row.startsWith('HARD_GATE:UI_UX_SYSTEM:')));
+  assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('AI/NPC interaction'));
+});
+
+test('common Roblox UI v3 covers AI dialogue NPC interaction core game screens and vector icons',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
+  const icons=fs.readFileSync(path.join(root,'RobloxCommonIcons.luau'),'utf8');
+
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.atoms.length,32);
+  assert.equal(catalog.vectorIconCount,12);
+  assert.equal(catalog.internalAudit.studioRequired,false);
+  assert.equal(catalog.internalAudit.passScore,880);
+  for(const surface of ['INVENTORY','CHARACTER_SHEET','MINIMAP','DIALOGUE','AI_DIALOGUE_HELPER','NPC_INTERACTION','QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR']){
+    assert.ok(catalog.surfaces.includes(surface),surface);
+    assert.ok(COMMON_UI_SURFACE_EXPECTATIONS.includes(surface),surface);
+  }
+  for(const atom of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','DIALOGUE_CHOICE','DIALOGUE_INPUT','TYPING_INDICATOR','DIALOGUE_HISTORY','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','NPC_RELATIONSHIP_CARD','INVENTORY_GRID','EQUIPMENT_SLOT','CHARACTER_SHEET','MINIMAP','QUEST_TRACKER','PARTY_MEMBER_CARD','CRAFTING_RECIPE_CARD','SHOP_ITEM_CARD','NOTIFICATION_TOAST','STATUS_EFFECT_CHIP','HOTBAR']){
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
+    assert.match(source,new RegExp('Create'+atom.toLowerCase().split('_').map(part=>part[0].toUpperCase()+part.slice(1)).join('').replace('Npc','Npc')));
+  }
+  assert.match(source,/OwnsDialogueBranchAuthority", false/);
+  assert.match(source,/OwnsInteractionAuthority", false/);
+  assert.match(source,/OwnsQuestAuthority", false/);
+  assert.match(source,/OwnsTradeAuthority", false/);
+  assert.match(source,/OwnsInventoryAuthority", false/);
+  assert.match(source,/OwnsEquipAuthority", false/);
+  assert.match(source,/OwnsPurchaseAuthority", false/);
+  assert.match(source,/OwnsEconomyAuthority", false/);
+  for(const icon of ['CHAT','AI_SPARK','INVENTORY','CHARACTER','EQUIPMENT','MINIMAP','QUEST','PARTY','CRAFT','SHOP','NOTIFICATION','SETTINGS']){
+    assert.ok(catalog.iconSymbols.includes(icon),icon);
+    assert.match(icons,new RegExp('\\b'+icon+'\\b'));
+  }
+  assert.equal(evidence.sourceAudit.studioRequired,false);
+  assert.equal(evidence.sourceAudit.passScore,880);
+  assert.equal(evidence.sourceAudit.targetGrade,'ELITE');
+  assert.equal(evidence.sourceAssetCount,32);
+  assert.equal(evidence.productionVerified,false);
+  assert.equal(evidence.verifiedCompanyReusable,false);
 });
