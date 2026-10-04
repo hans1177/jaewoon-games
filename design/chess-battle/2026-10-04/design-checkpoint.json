@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-04T13:35:29.099Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 22,
+      "calls": 23,
       "successes": 0,
-      "failures": 22,
-      "timeouts": 11,
+      "failures": 23,
+      "timeouts": 12,
       "jsonFailures": 11,
-      "totalMs": 2157911,
-      "lastMs": 68325,
-      "lastError": "schema required missing: root.systemInterconnections",
-      "updatedAt": "2026-10-04T13:35:17.574Z"
+      "totalMs": 2277918,
+      "lastMs": 120007,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T13:37:29.107Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T12:55:21.116Z",
-  "updatedAt": "2026-10-04T13:35:29.099Z",
+  "updatedAt": "2026-10-04T13:37:29.107Z",
   "lastSuccessfulModelCallAt": "2026-10-04T13:34:01.584Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
