@@ -4171,7 +4171,10 @@ test('catalog-driven company asset registry synchronization is persistent only w
       assets:[
         {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
         {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
-        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false,path:'assets/roblox/common-ui-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'}
+        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false,path:'assets/roblox/common-ui-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'marker-alpha',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'module-marker-alpha',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/TestModule.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'catalog-metadata-marker',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/catalog.json',license:'INTERNAL_COMPANY_ASSET'}
       ],
       commonLibrarySystemDepthAudit:{status:'EXPANDED',scoreIsUsageGate:false,existingAssetsRemainUsable:true,rows:[]}
     },null,2)+'\n');
@@ -4198,8 +4201,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
       gameId:'seed-demo',gameName:'Demo',designCore:{coreFun:'combat survival',coreLoop:['combat','upgrade','boss'],signatureSystems:['action']}
     },null,2)+'\n');
     fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','index.luau'),'return {}\n','utf8');
+    fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','TestModule.luau'),'return {}\n','utf8');
     fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','index.luau'),'return {}\n','utf8');
-    fs.writeFileSync(path.join(root,'roblox-games','demo','shared','GameConfig.luau'),"local assetId = 'roblox-common-vfx-v1'\nlocal moduleName = 'RobloxCommonVFX'\nreturn {assetId=assetId,moduleName=moduleName}\n",'utf8');
+    fs.writeFileSync(path.join(root,'roblox-games','demo','shared','GameConfig.luau'),"local assetId = 'roblox-common-vfx-v1'\nlocal moduleName = 'RobloxCommonVFX'\nlocal nearMissAsset = 'marker-alpha-extra'\nlocal nearMissModule = 'TestModuleHelper'\nlocal metadataWord = 'catalog'\nreturn {assetId=assetId,moduleName=moduleName,nearMissAsset=nearMissAsset,nearMissModule=nearMissModule,metadataWord=metadataWord}\n",'utf8');
 
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
     assert.equal(first.changed,true);
@@ -4264,10 +4268,14 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(repositorySync.uniqueRepositoryPathCount>=2);
     assert.equal(repositorySync.repositoryPathExistenceCheckCount,repositorySync.uniqueRepositoryPathCount);
     assert.ok(repositorySync.uniqueRepositoryPathCount<repositorySync.totalAssetRows);
-    assert.equal(repositorySync.assetIdMatcherMode,'COMPILED_EXACT_TOKEN_REGEX');
+    assert.equal(repositorySync.assetIdMatcherMode,'COMPILED_BOUNDARY_EXACT_TOKEN_REGEX');
     assert.ok(repositorySync.assetIdMatcherTokenCount>=first.registry.assets.length-1);
     assert.ok(repositorySync.sourceFilesScanned>=1);
     assert.ok(repositorySync.sourceBytesScanned>0);
+    assert.equal(repositorySync.moduleMatcherMode,'COMPILED_BOUNDARY_EXACT_MODULE_TOKEN_REGEX');
+    assert.ok(repositorySync.moduleMatcherTokenCount>=2);
+    assert.ok(repositorySync.moduleCandidatePathCount>=2);
+    assert.ok(repositorySync.skippedNonModulePathCount>=1);
     assert.ok(repositorySync.libraryModuleConsumerPathCount>=1);
     assert.ok(repositorySync.libraryModuleConsumerBindingCount>=1);
     assert.ok(repositorySync.libraryModuleConsumerGameIds.includes('demo'));
@@ -4276,6 +4284,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').automaticSearchEligible,true);
     assert.ok(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').detectedSourceConsumerGameIds.includes('demo'));
     assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').sourceConsumptionIsRuntimeVerification,false);
+    assert.deepEqual(first.registry.assets.find(row=>row.id==='marker-alpha').detectedSourceConsumerGameIds,[]);
+    assert.equal(repositorySync.libraryModuleConsumption.some(row=>row.assetPath.endsWith('/TestModule.luau')),false);
+    assert.equal(repositorySync.libraryModuleConsumption.some(row=>row.assetPath.endsWith('/catalog.json')),false);
     assert.equal(first.registry.internalAssetLibraryAutomation.blankAssetForbidden,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.closestCompatibleLibraryAssetRequired,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityScoreBlocksInitialLibraryUse,false);
@@ -4284,7 +4295,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(first.registry.internalAssetLibraryAutomation.volumeHealth.totalDeficit>=0);
     assert.ok(first.registry.internalAssetLibraryAutomation.qualityHealth.scoredAssetCount>=0);
     assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.automaticSearchEligibleCount>=3);
-    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.assetIdMatcherMode,'COMPILED_EXACT_TOKEN_REGEX');
+    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.assetIdMatcherMode,'COMPILED_BOUNDARY_EXACT_TOKEN_REGEX');
+    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.moduleMatcherMode,'COMPILED_BOUNDARY_EXACT_MODULE_TOKEN_REGEX');
+    assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.moduleMatcherTokenCount>=2);
     assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.libraryModuleConsumerPathCount>=1);
     assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.uniqueRepositoryPathCount>=2);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks));
@@ -4345,7 +4358,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.automaticSearchEligibleCount>0);
   assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.uniqueRepositoryPathCount>0);
   assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.repositoryPathExistenceCheckCount,result.registry.internalAssetLibraryAutomation.repositoryAssetSync.uniqueRepositoryPathCount);
-  assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.assetIdMatcherMode,'COMPILED_EXACT_TOKEN_REGEX');
+  assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.assetIdMatcherMode,'COMPILED_BOUNDARY_EXACT_TOKEN_REGEX');
   assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceFilesScanned>0);
   assert.ok(result.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget>0);
   assert.ok(result.registry.internalAssetLibraryAutomation.volumeHealth.completionPercent>=0);
@@ -4353,6 +4366,31 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.volume.totalTarget,result.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget);
   assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.quality.target,1000);
   assert.equal(result.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.sourceConsumptionDoesNotPromoteProductionVerification,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.moduleMatcherMode,'COMPILED_BOUNDARY_EXACT_MODULE_TOKEN_REGEX');
+  assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.moduleMatcherTokenCount>0);
+  console.log('ASSET_MANAGEMENT_HEALTH '+JSON.stringify({
+    registryVersion:result.registry.version,
+    totalAssetRows:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.totalAssetRows,
+    repositoryPathPresentCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.repositoryPathPresentCount,
+    missingRepositoryPathCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.missingRepositoryPathCount,
+    automaticSearchEligibleCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.automaticSearchEligibleCount,
+    sourceConsumerAssetCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceConsumerAssetCount,
+    sourceConsumerBindingCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceConsumerBindingCount,
+    sourceConsumerGameIds:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceConsumerGameIds,
+    libraryModuleConsumerPathCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.libraryModuleConsumerPathCount,
+    libraryModuleConsumerBindingCount:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.libraryModuleConsumerBindingCount,
+    libraryModuleConsumerGameIds:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.libraryModuleConsumerGameIds,
+    sourceFilesScanned:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceFilesScanned,
+    sourceBytesScanned:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceBytesScanned,
+    assetIdMatcherMode:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.assetIdMatcherMode,
+    moduleMatcherMode:result.registry.internalAssetLibraryAutomation.repositoryAssetSync.moduleMatcherMode,
+    volumeCompletionPercent:result.registry.internalAssetLibraryAutomation.volumeHealth.completionPercent,
+    volumeDeficit:result.registry.internalAssetLibraryAutomation.volumeHealth.totalDeficit,
+    qualityScoredAssetCount:result.registry.internalAssetLibraryAutomation.qualityHealth.scoredAssetCount,
+    qualityAverageScore:result.registry.internalAssetLibraryAutomation.qualityHealth.averageScore,
+    qualityBelow880Count:result.registry.internalAssetLibraryAutomation.qualityHealth.below880Count,
+    bottlenecks:result.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks
+  }));
   assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.schedulerCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.queueCreated,false);
