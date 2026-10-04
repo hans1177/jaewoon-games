@@ -369,6 +369,57 @@ test('reference image observations become task-local character customization ide
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.productionVerified,false);
 });
 
+test('building reference image expands into detailed task-local building volume ideas',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const sourceId='qa-building-reference';
+  const imageRef='conversation://qa-building-reference.png';
+  const sourceHash='abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789';
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'reference-building-volume-test',
+      goal:'건물 사진 보고 내부자산 아이디어 제작',
+      imageToAsset:true,
+      referenceImages:[{
+        sourceId,
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef,
+        sourceHash,
+        domain:'BUILDING',
+        purpose:'ASSET_CREATION',
+        observation:{
+          sourceId,imageRef,sourceHash,
+          SILHOUETTE:'stepped massing with a tall roof and readable facade rhythm',
+          PROPORTIONS:'two-story mass with narrow bays and oversized entry',
+          MATERIAL_REGIONS:'stone foundation timber wall dark roof metal trim',
+          PALETTE:'warm wood cool stone dark roof bright accent',
+          CONSTRUCTION_DETAILS:'exposed beams deep window trim roof brackets repair patches',
+          STYLE_LANGUAGE:'stylized frontier settlement architecture',
+          IDENTITY_ANCHORS:'asymmetric tower corner banner and entry canopy',
+          UNSEEN_REGIONS:'creative proposal required',
+          MOTION_DESIGN:'creative proposal required'
+        },
+        verifiedAgainstSource:true
+      }]
+    },
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  const ideas=plan.imageAssetCreation.ideaWorklist;
+  assert.ok(ideas.length>=16);
+  assert.ok(ideas.every(row=>row.domain==='BUILDING'));
+  for(const axis of ['MASSING_FAMILY','ROOF_PROFILE','FACADE_PROFILE','FLOOR_HEIGHT_RATIO','BAY_SPACING','FOUNDATION_WALL_ROOF_JOINERY','WINDOW_DOOR_TRIM','LANDMARK_ACCENT']){
+    assert.ok(ideas.some(row=>row.customizationAxis===axis),axis);
+  }
+  assert.equal(plan.imageAssetCreation.volumeWorklistOverlayConsumesBeforePersistentActions,true);
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].domain,'BUILDING');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].freeSourceCandidateIds.includes('kenney-modular-buildings'));
+  assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
+  assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
+});
+
 test('survival wildlife catalog includes forest animals with distinct visual profiles',()=>{
   for(const species of ['BEAR','BOAR','DEER','ELK','MOOSE','BISON','WOLF','COYOTE','FOX','RABBIT','RACCOON','SQUIRREL','BEAVER','BADGER','MOUNTAIN_GOAT','TURKEY','CROW']){
     assert.ok(SURVIVAL_WILDLIFE_SPECIES.includes(species),species);
