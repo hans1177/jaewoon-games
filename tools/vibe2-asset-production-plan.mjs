@@ -465,6 +465,134 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
   const next=JSON.parse(JSON.stringify(original));
   next.assets=Array.isArray(next.assets)?next.assets:[];
+
+  const licenseBlockedForSync=asset=>{
+    const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
+    return !value||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value)||lower.includes('unknown')||lower.includes('출처 불명')||lower.includes('재배포 제한');
+  };
+  const normalizeRepoPath=value=>clean(value).replace(/^\\/+/, '').replaceAll('\\\\','/');
+  const missingRepositoryAssetIds=[];
+  const sourcePathGroups=new Map();
+  let repositoryPathPresentCount=0;
+  let automaticSearchEligibleCount=0;
+  for(const asset of next.assets){
+    const relative=normalizeRepoPath(asset?.path);
+    if(relative){
+      if(!sourcePathGroups.has(relative))sourcePathGroups.set(relative,[]);
+      sourcePathGroups.get(relative).push(clean(asset?.id));
+    }
+    const exists=Boolean(relative&&fs.existsSync(path.join(repoRoot,relative)));
+    const wasMissing=asset?.repositoryPathState==='MISSING_SOURCE_REVIEW';
+    if(!exists){
+      if(clean(asset?.id))missingRepositoryAssetIds.push(clean(asset.id));
+      asset.repositoryPathState='MISSING_SOURCE_REVIEW';
+      asset.automaticSearchEligible=false;
+      asset.automaticDeletionForbidden=true;
+      continue;
+    }
+    repositoryPathPresentCount++;
+    if(wasMissing){
+      asset.repositoryPathState='PRESENT';
+      asset.automaticSearchEligible=true;
+    }
+    if(asset?.catalogActive!==false&&asset?.referenceOnly!==true&&asset?.automaticSearchEligible!==false&&!licenseBlockedForSync(asset)){
+      automaticSearchEligibleCount++;
+    }
+  }
+
+  const consumptionByAssetId=new Map();
+  const addConsumption=(assetId,gameId,kind,sourcePath)=>{
+    const id=clean(assetId),game=clean(gameId);
+    if(!id||!game)return;
+    if(!consumptionByAssetId.has(id))consumptionByAssetId.set(id,new Map());
+    const byGame=consumptionByAssetId.get(id);
+    if(!byGame.has(game))byGame.set(game,new Set());
+    byGame.get(game).add([kind,sourcePath].filter(Boolean).join(':'));
+  };
+  const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
+  const sourceExt=/\\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
+  const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
+  const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
+  for(const gameRootName of gameRoots){
+    const gameRoot=path.join(repoRoot,gameRootName);
+    let gameDirs=[];
+    try{gameDirs=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory());}catch{continue;}
+    for(const gameDirEntry of gameDirs){
+      const gameId=gameDirEntry.name;
+      const gameDir=path.join(gameRoot,gameId);
+      const projectFile=path.join(gameDir,'default.project.json');
+      if(fs.existsSync(projectFile)){
+        try{
+          const project=JSON.parse(fs.readFileSync(projectFile,'utf8'));
+          const mapped=[];
+          const walkProject=value=>{
+            if(Array.isArray(value)){for(const item of value)walkProject(item);return;}
+            if(!value||typeof value!=='object')return;
+            for(const [key,child] of Object.entries(value)){
+              if(key==='$path'&&typeof child==='string'){
+                const absolute=path.resolve(path.dirname(projectFile),child);
+                const relative=path.relative(repoRoot,absolute).replaceAll('\\','/');
+                if(relative&&!relative.startsWith('..'))mapped.push(relative);
+              }else if(child&&typeof child==='object')walkProject(child);
+            }
+          };
+          walkProject(project);
+          for(const row of assetPathRows){
+            if(mapped.some(mappedPath=>row.path===mappedPath||row.path.startsWith(mappedPath+'/')))addConsumption(row.id,gameId,'PROJECT_PATH_BINDING','default.project.json');
+          }
+        }catch{}
+      }
+      const stack=[gameDir];
+      while(stack.length){
+        const current=stack.pop();
+        let entries=[];
+        try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+        for(const entry of entries){
+          const full=path.join(current,entry.name);
+          if(entry.isDirectory()){stack.push(full);continue;}
+          if(!entry.isFile()||!sourceExt.test(entry.name))continue;
+          let stat=null;
+          try{stat=fs.statSync(full);}catch{continue;}
+          if(!stat||stat.size>2_000_000)continue;
+          let content='';
+          try{content=fs.readFileSync(full,'utf8');}catch{continue;}
+          if(!content)continue;
+          const relativeSource=path.relative(repoRoot,full).replaceAll('\\','/');
+          for(const assetId of assetIds)if(content.includes(assetId))addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+        }
+      }
+    }
+  }
+  const detectedConsumerGameIds=new Set();
+  let sourceConsumerAssetCount=0,sourceConsumerBindingCount=0;
+  for(const asset of next.assets){
+    const byGame=consumptionByAssetId.get(clean(asset?.id));
+    if(!byGame)continue;
+    sourceConsumerAssetCount++;
+    const detected=[...byGame.keys()].sort();
+    for(const gameId of detected)detectedConsumerGameIds.add(gameId);
+    sourceConsumerBindingCount+=detected.length;
+    asset.consumerGameIds=unique([...(Array.isArray(asset.consumerGameIds)?asset.consumerGameIds:[]),...detected]).sort();
+    asset.detectedSourceConsumerGameIds=detected;
+    asset.sourceConsumptionEvidence=detected.map(gameId=>({gameId,evidence:[...byGame.get(gameId)].sort()}));
+    asset.sourceConsumptionIsRuntimeVerification=false;
+  }
+  const repositoryAssetSync={
+    version:1,
+    totalAssetRows:next.assets.length,
+    repositoryPathPresentCount,
+    missingRepositoryPathCount:missingRepositoryAssetIds.length,
+    missingRepositoryAssetIds:Object.freeze([...missingRepositoryAssetIds].sort()),
+    automaticSearchEligibleCount,
+    sharedSourcePathGroupCount:[...sourcePathGroups.values()].filter(ids=>ids.length>1).length,
+    sharedSourcePathRowsAreNotAutomaticDuplicates:true,
+    sourceConsumerAssetCount,
+    sourceConsumerBindingCount,
+    sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
+    sourceConsumptionEvidenceMode:'EXACT_ASSET_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
+    sourceConsumptionDoesNotPromoteProductionVerification:true
+  };
+
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
@@ -588,6 +716,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     autoDelete:false,
     productionPromotionAutomatic:false,
     runtimeVerificationRequired:true,
+    repositoryAssetSync,
+    blankAssetForbidden:true,
+    closestCompatibleLibraryAssetRequired:true,
+    qualityScoreBlocksInitialLibraryUse:false,
+    internalAuditScoreBlocksInitialLibraryUse:false,
     domainPlan:libraryPlan.domains.map(row=>({
       domain:row.domain,currentCount:row.currentCount,minimum:row.minimum,targetMin:row.targetMin,targetMax:row.targetMax,
       baseTargetMin:row.baseTargetMin,referenceTargetMin:row.referenceTargetMin,referenceProfileIds:row.referenceProfileIds,
