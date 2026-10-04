@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g15-af6d295dcb1c",
-  "directiveFingerprint": "af6d295dcb1c3b9323b5e2772c28c35677c646d97b0edc19f8946c81accc2eb1",
-  "previousDirectiveFingerprint": "5905f0b4874bfd1dbab122067a7a837186aa338cd7e9891f18ca430488635131",
-  "forbiddenRepeatFingerprint": "5905f0b4874bfd1dbab122067a7a837186aa338cd7e9891f18ca430488635131",
+  "directiveId": "daechung-rpg-build-up-g16-c38c3253c94e",
+  "directiveFingerprint": "c38c3253c94e68cf728c998428baed0c5c2379e47f572dc79695c9d097389049",
+  "previousDirectiveFingerprint": "af6d295dcb1c3b9323b5e2772c28c35677c646d97b0edc19f8946c81accc2eb1",
+  "forbiddenRepeatFingerprint": "af6d295dcb1c3b9323b5e2772c28c35677c646d97b0edc19f8946c81accc2eb1",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "generation": 15,
+  "generation": 16,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
+  "sourceTreeFingerprint": "5cd0d81f873a0b947f676ee3ebc446a78ae965b46234e9f5597c1d795bf9dc19",
   "designFingerprint": "180b392ae260071d960a586fd46e312d83468098133916a5cd5f62c7bdd7feaa",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 14,
-    "previousSourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
-    "currentSourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
+    "previousGeneration": 15,
+    "previousSourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
+    "currentSourceTreeFingerprint": "5cd0d81f873a0b947f676ee3ebc446a78ae965b46234e9f5597c1d795bf9dc19",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1696,7 +1696,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 236796,
+        "sourceBytes": 236798,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1729,13 +1729,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 4,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
+    "themeDepth": 5,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 5,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1752,7 +1752,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1789,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 140,
+        "score": 122,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -2529,7 +2529,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3a7796a691daf2ccc8dbd340850d167e618e535ac4aa120066f918df411f5fe6",
+      "sourceTreeFingerprint": "5cd0d81f873a0b947f676ee3ebc446a78ae965b46234e9f5597c1d795bf9dc19",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2576,7 +2576,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 16,
+    "nextGeneration": 17,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2641,5 +2641,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T20:30:32.829Z"
+  "generatedAt": "2026-10-04T23:13:21.865Z"
 }
