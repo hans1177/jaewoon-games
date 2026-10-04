@@ -1282,6 +1282,8 @@ test('build-up asset utilization floor evaluates every library family and keeps 
   assert.equal(expectation.assetLibraryApplicableFamiliesRequireActualSourceBinding,true);
   assert.equal(expectation.assetLibraryLowScoreUseAllowed,true);
   assert.equal(expectation.assetLibraryInternalAuditScoreIsUsageGate,false);
+  assert.equal(expectation.assetLibrarySelectedLowScoreAssetUsageIdeaRequired,true);
+  assert.match(expectation.assetLibrarySelectedLowScoreAssetUsageIdeaRule,/EACH_SELECTED_LOW_SCORE_ASSET/);
   assert.equal(expectation.assetLibraryQualityDebtCandidateCount,11);
   assert.equal(expectation.assetLibraryEvaluatedFamilies.length,12);
   assert.ok(expectation.assetLibraryEvaluatedFamilies.includes('AUDIO'));
@@ -1321,6 +1323,7 @@ test('studio BUILD_UP goal carries full-library utilization ideas and low-score 
   assert.match(task.goal,/자산 최대활용 플로어:/);
   assert.match(task.goal,/ALL_CURRENT_LIBRARY_CAPABILITIES_NO_FIXED_IDEA_CAP/);
   assert.match(task.goal,/점수 낮은 안전 자산도/);
+  assert.match(task.goal,/선택된 저점수 자산마다 최소 1개 기존 책임\/상태\/이벤트 활용 아이디어를 매칭/);
   assert.match(task.goal,/고득점 wrong-role보다 저득점 exact-role을 우선/);
   assert.match(task.goal,/낮은 점수만으로 NOT_APPLICABLE 처리하지 않는다/);
   assert.match(task.goal,/현재 게임 소스에 해당 아이디어의 실제 바인딩과 동작이 이미 구현돼 있으면 그 아이디어는 PASS/);
