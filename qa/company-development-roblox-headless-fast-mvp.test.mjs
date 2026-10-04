@@ -138,6 +138,11 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f publish_stage=validation/);
   assert.match(workflow,/ROBLOX_STUDIO_REQUIRED_FOR_F0_CONTINUATION=NO/);
   assert.doesNotMatch(workflow,/run_studio=true/);
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const persistStep=workflow.indexOf("Persist this game's F0 result immediately",validateStart);
+  const handoffStep=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist",persistStep);
+  assert.ok(persistStep>validateStart&&handoffStep>persistStep);
+  assert.doesNotMatch(workflow,/\n  persist:\n/);
 });
 
 test('F0 planner uses central Roblox validation mode and does not require a queue-local robloxValidationMode cache',()=>{
@@ -158,16 +163,22 @@ test('F0 accepts approved non-combat action loops without inventing combat marke
  assert.equal(r.checks.combatOrRound,true);
 });
 
-test('F0 persistence does not serialize the whole job and reapplies evidence after runtime write conflicts',()=>{
+test('F0 persists each matrix game immediately without cohort fan-in and reapplies on runtime conflicts',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  const start=workflow.indexOf('\n  persist:\n');
-  const end=workflow.indexOf('\n      - name: Dispatch exact private Roblox validation directly after F0',start);
-  const block=workflow.slice(start,end);
-  assert.ok(start>=0&&end>start);
-  assert.doesNotMatch(block,/group:\s*company-runtime-writer/);
+  const validateStart=workflow.indexOf('\n  validate:\n');
+  const persistStep=workflow.indexOf("      - name: Persist this game's F0 result immediately",validateStart);
+  const handoffStep=workflow.indexOf("      - name: Dispatch exact private Roblox validation directly after this game's F0 persist",persistStep);
+  assert.ok(validateStart>=0&&persistStep>validateStart&&handoffStep>persistStep);
+  assert.doesNotMatch(workflow,/\n  persist:\n/);
+  assert.doesNotMatch(workflow,/needs:\s*\[plan,\s*validate\]/);
+  const block=workflow.slice(persistStep,handoffStep);
+  assert.match(block,/if: always\(\)/);
+  assert.match(block,/GAME_ID: \$\{\{ matrix\.gameId \}\}/);
+  assert.match(block,/SOURCE_REVISION: \$\{\{ matrix\.sourceRevision \}\}/);
   assert.match(block,/ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT=/);
   assert.match(block,/ROBLOX_F0_PERSIST_CONFLICT_RETRY=/);
   assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(block,/ROBLOX_F0_PER_GAME_PERSIST=PASS:/);
   assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
@@ -189,15 +200,16 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
   assert.match(planBlock,/ROBLOX_F0_PLAN_BATCH_DEDUPED_NEWER=/);
   assert.match(planBlock,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
   assert.doesNotMatch(workflow,/max-parallel:\s*[1-9][0-9]*/);
-  const persistStart=workflow.indexOf('\n  persist:\n');
-  const persistBlock=workflow.slice(persistStart);
-  assert.match(persistBlock,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(workflow,/\n  persist:\n/);
+  const perGamePersist=workflow.indexOf("Persist this game's F0 result immediately");
+  const perGameHandoff=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist");
+  assert.ok(perGamePersist>validateStart&&perGameHandoff>perGamePersist);
 });
 
 
 test('F0 hands exact game ids directly to private validation without Studio dependency',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  assert.match(workflow,/name: Dispatch exact private Roblox validation directly after F0/);
+  assert.match(workflow,/name: Dispatch exact private Roblox validation directly after this game's F0 persist/);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DISPATCHED:/);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
@@ -208,7 +220,7 @@ test('F0 hands exact game ids directly to private validation without Studio depe
 
 test('F0 private validation handoff stays dedicated and noncanonical before F9',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  const start=workflow.indexOf('Dispatch exact private Roblox validation directly after F0');
+  const start=workflow.indexOf("Dispatch exact private Roblox validation directly after this game's F0 persist");
   assert.ok(start>0);
   const block=workflow.slice(start);
   assert.match(block,/ROBLOX_F0_PRIVATE_VALIDATION_TARGET=DEDICATED_NONCANONICAL/);
