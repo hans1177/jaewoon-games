@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-04T00:22:24.412Z",
+  "updatedAt": "2026-10-04T00:38:48.302Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -185,15 +185,16 @@
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"18141713083918f873f7b25fa0dea966f00f44ab\",\"artifactIdentity\":\"sha256:770b048e243116420715883b03834b3dcf07b174c5d6feb8d0a48555316c543b\",\"artifactRunId\":37008589565,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":3,\"workflowRunId\":37008814079,\"publishedAt\":\"2026-10-02T12:48:07.853Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"e2b3b809861bed8c53ccf9e11326d09f8ea9f402\",\"artifactIdentity\":\"sha256:8031e52fd5f3275e2fc563567413fb123f0746952daa2fc83f665e9adf4846da\",\"artifactRunId\":37017024515,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":4,\"workflowRunId\":37017259600,\"publishedAt\":\"2026-10-02T14:04:36.336Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37019555949,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37019977166,\"publishedAt\":\"2026-10-02T14:28:38.016Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37140416031,\"publishedAt\":\"2026-10-03T17:26:54.017Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":5,\"workflowRunId\":37140416031,\"publishedAt\":\"2026-10-03T17:26:54.017Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
+        "{\"version\":2,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"artifactIdentity\":\"sha256:ea03b17b1547dc7d667d9330cf57d21a993dd55b1907ae47f40fd5e47239bd13\",\"artifactRunId\":37139004255,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":35,\"workflowRunId\":37163328866,\"publishedAt\":\"2026-10-04T00:16:26.807Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"ae0d35a20ad2d842f788b93a1bf6987a5c3c351f\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-23T11:54:41.174Z",
-      "updatedAt": "2026-10-03T20:28:54.134Z",
-      "occurrenceCount": 323,
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 324,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -2834,8 +2835,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 424
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 425
     },
     {
       "id": "bug-46d41aa4fc4f5afdde9b",
@@ -3506,8 +3507,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 417
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 418
     },
     {
       "id": "bug-aa87cf98c12c15604b1c",
@@ -3608,8 +3609,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T10:38:43.210Z",
-      "updatedAt": "2026-10-03T20:12:44.530Z",
-      "occurrenceCount": 108
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 109
     },
     {
       "id": "bug-e2cc3ec7845deaeffcb4",
@@ -5038,8 +5039,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 272
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 273
     },
     {
       "id": "bug-fd76025ae58f67c545ad",
@@ -5061,8 +5062,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 272
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 273
     },
     {
       "id": "bug-90de0bdb99f218cbda83",
@@ -5085,8 +5086,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 153
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 154
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5109,8 +5110,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 153
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 154
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -5179,8 +5180,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 153
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 154
     },
     {
       "id": "bug-f516510d1b674c9f0600",
@@ -5203,8 +5204,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 153
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 154
     },
     {
       "id": "bug-af160e0477c6c79bfed3",
@@ -5227,8 +5228,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 272
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 273
     },
     {
       "id": "bug-a8d2b957fc2b22115227",
@@ -5251,8 +5252,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 272
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 273
     },
     {
       "id": "bug-2c14b904d6aeb3e17198",
@@ -5321,8 +5322,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 147
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 148
     },
     {
       "id": "bug-e775cd1958cd4f0f247c",
@@ -5345,8 +5346,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 147
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 148
     },
     {
       "id": "bug-c2d3a1169668b0efacd1",
@@ -5369,8 +5370,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 221
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 222
     },
     {
       "id": "bug-ab4cd36474b0527e2ece",
@@ -5393,8 +5394,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 221
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 222
     },
     {
       "id": "bug-1c6129dad74bac44976e",
@@ -5509,8 +5510,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 152
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 153
     },
     {
       "id": "bug-ad9dae5e09804b30a45f",
@@ -5533,8 +5534,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 152
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 153
     },
     {
       "id": "bug-4591ef62527e5cb1e58b",
@@ -5605,8 +5606,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 152
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 153
     },
     {
       "id": "bug-ed88b9a0af2e14105e09",
@@ -5629,8 +5630,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 152
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 153
     },
     {
       "id": "bug-9bbef74d19fb4096288d",
@@ -5653,8 +5654,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:45:47.680Z",
-      "updatedAt": "2026-10-03T20:12:44.530Z",
-      "occurrenceCount": 22
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 23
     },
     {
       "id": "bug-dcd7e7bec026fb1e8fe9",
@@ -5713,7 +5714,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5722,8 +5724,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:49:42.055Z",
-      "updatedAt": "2026-10-03T16:31:19.080Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-83f9304dbad3b4ee26bf",
@@ -5745,8 +5747,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:49:42.055Z",
-      "updatedAt": "2026-10-03T20:28:54.134Z",
-      "occurrenceCount": 28
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 29
     },
     {
       "id": "bug-591d59999cca3b3f949c",
@@ -5768,8 +5770,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 133
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 134
     },
     {
       "id": "bug-c2f825be7c318eb119f7",
@@ -5791,8 +5793,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 133
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 134
     },
     {
       "id": "bug-77b2b4cecf5a663c0e0b",
@@ -5814,8 +5816,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 78
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 79
     },
     {
       "id": "bug-fcd7e3b7410acdcb39be",
@@ -5837,8 +5839,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-04T00:22:24.408Z",
-      "occurrenceCount": 78
+      "updatedAt": "2026-10-04T00:38:48.299Z",
+      "occurrenceCount": 79
     }
   ]
 }
