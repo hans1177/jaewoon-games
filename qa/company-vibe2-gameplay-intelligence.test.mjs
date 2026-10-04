@@ -551,3 +551,57 @@ test('patch plan converts flow asset roles into existing selector apply adapt an
   assert.ok(plan.forbidden.includes('PIN_INTERNAL_ASSET_ID_IN_FLOW_CONTRACT'));
   assert.ok(plan.forbidden.includes('ASSET_LAYER_OWNS_GAMEPLAY_BALANCE_SAVE_OR_NETWORK'));
 });
+
+test('survival flow composes crafting housing gathering inventory and ecology as one connected system bundle',()=>{
+  const baseline={content:{
+    identity:'현실 야생 생존에서 채집하고 제작해 거점을 확장하며 위험한 지역을 탐험한다.',
+    playerFantasy:'자원을 읽고 도구를 만들고 집을 지어 더 먼 야생을 버틴다.',
+    coreFun:'채집 위치와 위험을 판단하고 제작과 건축으로 다음 탐험 가능성을 넓힌다.',
+    coreLoop:['채집 지역을 선택한다','자원을 모아 도구와 장비를 제작한다','거점과 하우징을 확장한다','새 지역의 위협과 생태에 대응한다'],
+    progressionDirection:'새 제작법과 거점 기능이 새로운 지역과 생존 전략을 연다.'
+  }};
+  const flow=buildGameFlowArchitecture({gameId:'survival-system-bundle',genre:'ACTION_SURVIVAL_ROGUELITE',baseline,inventory});
+  const ids=new Set(flow.systemBlueprint.requiredSystems.map(row=>row.id));
+  for(const id of ['SURVIVAL_VITALS','GATHERING_RESOURCE','INVENTORY_EQUIPMENT','CRAFTING','HOUSING_BUILDING','EXPLORATION_REGION','THREAT_ECOLOGY'])assert.ok(ids.has(id),id);
+  assert.ok(flow.systemBlueprint.interconnectionChains.includes('GATHERING_RESOURCE->CRAFTING->HOUSING_BUILDING'));
+  assert.ok(flow.systemBlueprint.libraryReusePolicy.knownReusableLibraries.includes('assets/crafting-recipes.js'));
+  assert.ok(flow.systemBlueprint.libraryReusePolicy.knownReusableLibraries.includes('assets/inventory-equipment.js'));
+  assert.ok(flow.assetFlow.requirements.some(row=>row.family==='BUILDING'&&row.subfamily==='MODULAR_EXTERIOR'));
+  assert.ok(flow.assetFlow.requirements.some(row=>row.family==='PROP'&&row.subfamily==='CRAFTING'));
+  assert.ok(flow.assetFlow.requirements.some(row=>row.family==='PROP'&&row.subfamily==='RESOURCE'));
+  assert.equal(evaluateGameFlowArchitecture(flow).pass,true);
+});
+
+test('RPG flow composes companions NPC quests items skills economy crafting and world consequences',()=>{
+  const baseline={content:{
+    identity:'동료와 여행하며 NPC 의뢰와 지역 문제를 해결하고 장비와 아이템을 제작하는 모험 RPG',
+    playerFantasy:'동료와 관계를 쌓고 퀘스트 선택과 전투 빌드로 세계를 바꾼다.',
+    coreFun:'NPC와 대화해 목표를 얻고 동료와 전투하며 아이템을 얻어 제작과 스킬 빌드를 바꾼다.',
+    coreLoop:['NPC와 동료에게서 목표를 얻는다','지역을 탐험하고 전투한다','아이템과 보상을 비교하고 제작한다','관계와 지역 상태가 바뀐 다음 선택으로 이어진다'],
+    progressionDirection:'스킬 장비 동료 관계와 지역 접근이 서로 연결되어 새로운 선택을 연다.'
+  }};
+  const flow=buildGameFlowArchitecture({gameId:'rpg-system-bundle',genre:'STORY_COMPLETE_RPG',baseline,inventory});
+  const ids=new Set(flow.systemBlueprint.requiredSystems.map(row=>row.id));
+  for(const id of ['NPC_INTERACTION','QUEST_DIALOGUE','COMPANION_PARTY','INVENTORY_EQUIPMENT','ITEM_LOOT','SKILL_BUILD','ECONOMY_SHOP','TARGETING_COMBAT','CRAFTING'])assert.ok(ids.has(id),id);
+  assert.ok(flow.systemBlueprint.interconnectionChains.some(chain=>chain.includes('COMPANION_PARTY->SOCIAL_RELATIONSHIP->QUEST_DIALOGUE')));
+  for(const file of ['assets/quest-dialogue.js','assets/inventory-equipment.js','assets/crafting-recipes.js','assets/economy-loot-shop.js','assets/skill-effects.js','assets/targeting-system.js'])assert.ok(flow.systemBlueprint.libraryReusePolicy.knownReusableLibraries.includes(file),file);
+  assert.ok(flow.systemBlueprint.awardCaliberPrinciples.length>=8);
+  assert.equal(flow.systemBlueprint.expansionPolicy.contentBundlesMustConnectAtLeastTwoSystems,true);
+  assert.equal(evaluateGameFlowArchitecture(flow).pass,true);
+});
+
+test('patch plan converts required genre systems into existing-owner implementation tasks',()=>{
+  const baseline={content:{
+    identity:'Survival crafting housing game',
+    coreFun:'Gather craft build survive',
+    coreLoop:['gather resources','craft tools','build housing','survive threats']
+  }};
+  const gameplaySketch=deriveGameplaySketch({gameId:'genre-system-plan',genre:'ACTION_SURVIVAL_ROGUELITE',baseline,inventory});
+  const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis:analyzeExistingGameSource(''),inventory});
+  const ids=new Set(plan.tasks.map(row=>row.id));
+  for(const id of ['IMPLEMENT_CONCEPT_MATCHED_SYSTEM_BUNDLE','REUSE_EXISTING_SYSTEM_LIBRARIES_WHEN_COMPATIBLE','CONNECT_SYSTEMS_INTO_CAUSAL_GAMEPLAY_CHAINS','IMPLEMENT_SYSTEM_CRAFTING','IMPLEMENT_SYSTEM_HOUSING_BUILDING','VERIFY_SYSTEM_BUNDLE_DEPTH_AND_ANTI_CHECKLIST'])assert.ok(ids.has(id),id);
+  assert.equal(plan.version,5);
+  assert.equal(plan.systemBlueprint.profile,'ACTION_SURVIVAL_ROGUELITE');
+  assert.ok(plan.forbidden.includes('DUPLICATE_SHADOW_INVENTORY_CRAFTING_QUEST_ECONOMY_OR_COMPANION_SYSTEM'));
+  assert.equal(plan.verificationOrder[1],'CONCEPT_SYSTEM_BUNDLE');
+});
