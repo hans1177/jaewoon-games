@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-monster-adventure-v1",
   "gameId": "monster-adventure",
   "createdForCurrentRobloxNeed": true,
@@ -38,5 +38,70 @@
   "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
   "gameplayAuthority": false,
   "originalAssetsImmutable": true,
-  "externalAssetDependency": false
+  "externalAssetDependency": false,
+  "sourceAudit": {
+    "type": "PACK_LEVEL_STATIC_3D_SOURCE_AUTHORING_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scopeFamilies": [
+      "CREATURE"
+    ],
+    "scoreIsPackBaselineNotPerAssetRuntimeProof": true,
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 92,
+      "FORM_STRUCTURE": 90,
+      "MATERIAL_SURFACE": 86,
+      "COLOR_LIGHTING": 88,
+      "STYLE_COHERENCE": 90,
+      "DETAIL_FINISH": 86,
+      "READABILITY_SCALE": 91,
+      "MOTION_RIG": 35,
+      "FEEDBACK_STATES": 50,
+      "MODULAR_REUSE": 72,
+      "VARIATION_BREADTH": 90,
+      "PERFORMANCE_LOD": 84,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 80
+    },
+    "expectedScore": 813.9,
+    "expectedGrade": "DEVELOPMENT_READY",
+    "auditPass": false,
+    "hardGateFailures": [
+      "MOTION_RIG:35<84_CREATURE"
+    ],
+    "evidenceBasis": {
+      "sourceAssetCount": 9,
+      "objSourceCount": 9,
+      "totalPackBytes": 393848,
+      "heroAssetCount": 3,
+      "distinctSpeciesCount": 9,
+      "gameplayAuthority": false,
+      "sourceFiles": [
+        "assets/roblox/monster-adventure-v1/catalog.json",
+        "assets/roblox/monster-adventure-v1/quality-evidence.json",
+        "assets/roblox/monster-adventure-v1/preview.svg"
+      ]
+    },
+    "limitations": [
+      "NATIVE_CREATURE_RIG_MISSING",
+      "LOCOMOTION_ATTACK_HIT_DEATH_RUNTIME_UNVERIFIED",
+      "MOBILE_LOD_RUNTIME_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "lowScoreDoesNotBlockInternalUse": true,
+    "newAuthoringMayFillVerifiedGaps": true,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
