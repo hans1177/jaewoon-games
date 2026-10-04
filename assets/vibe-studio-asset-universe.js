@@ -1462,7 +1462,7 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:3,
+  version:4,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
