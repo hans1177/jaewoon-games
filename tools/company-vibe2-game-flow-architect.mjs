@@ -316,6 +316,10 @@ function assetRequirement(family,subfamily,{flowRoles=[],systemRoles=[],phases=[
     family,subfamily,required:required!==false,priority:required===false?'FLOW_EXPANSION':'FLOW_CRITICAL',
     flowRoles:Object.freeze(uniq(flowRoles)),systemRoles:Object.freeze(uniq(systemRoles)),phases:Object.freeze(uniq(phases)),reason,
     resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    libraryEligibility:'CROSS_GENRE_COMPATIBLE_ASSETS',
+    genreRestriction:false,
+    crossGenreReuseAllowed:true,
+    genreUse:'PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE',
     allowedReuseModes:Object.freeze(['USE_AS_IS','LIGHT_THEME_ADAPT','STYLE_ADAPT','RECOMBINE_PARTS','NATIVE_REAUTHOR_BASE']),
     assetIdPinned:false,gameplayAuthority:false,balanceAuthority:false,saveAuthority:false,
   });
