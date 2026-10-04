@@ -2959,7 +2959,7 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
 });
 
 
-test('common UI v5 adds deep item inventory equipment crafting trade and codex components',()=>{
+test('common UI v6 preserves deep item inventory equipment crafting trade and codex components',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
