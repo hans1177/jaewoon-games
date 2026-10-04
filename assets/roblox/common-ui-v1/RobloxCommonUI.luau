@@ -1874,6 +1874,296 @@ function RobloxCommonUI.CreateInputHint(options)
   return root,label
 end
 
+
+-- 아이템/인벤토리/장비 시스템 깊이 v5
+local function deepSystemPanel(options, atomId, role, defaultTitle, defaultRows)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or role,
+    size=options.size or UDim2.fromOffset(460,360),
+    theme=theme
+  })
+  tag(root,atomId)
+  commonText(inner,"Title",options.title or defaultTitle,UDim2.fromOffset(14,10),UDim2.new(1,-28,0,34),theme.Text,20,true)
+  local rows=options.rows or defaultRows or {}
+  local list=Instance.new("Frame")
+  list.Name="Rows";list.Position=UDim2.fromOffset(14,54);list.Size=UDim2.new(1,-28,1,-68);list.BackgroundTransparency=1;list.Parent=inner
+  commonList(list,false,6)
+  local labels={}
+  for i,rowText in ipairs(rows) do
+    local row=Instance.new("Frame");row.Name="Row"..i;row.Size=UDim2.new(1,0,0,38);row.BackgroundColor3=theme.Panel;row.BackgroundTransparency=0.18;row.BorderSizePixel=0;row.LayoutOrder=i;row.Parent=list;corner(row,8)
+    local label=commonText(row,"Label",tostring(rowText),UDim2.fromOffset(10,0),UDim2.new(1,-20,1,0),i==1 and theme.Accent or theme.Text,13,i==1)
+    labels[i]=label
+  end
+  root:SetAttribute("PresentationRole",role)
+  root:SetAttribute("OwnsItemAuthority",false)
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsEquipAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=inner,list=list,labels=labels}
+end
+
+function RobloxCommonUI.CreateItemDetailPanel(options)
+  options=options or {}
+  return deepSystemPanel(options,"ITEM_DETAIL_PANEL","ITEM_DETAIL_PANEL",options.itemName or "아이템 상세",{
+    options.rarityText or "희귀도 · 상태 · 신규 여부",
+    options.categoryText or "분류 · 무게 · 수량 · 가치",
+    "효과 / 조건 / 장착 위치",
+    "획득처 / 사용처 / 제작 연결",
+    "세트 / 소켓 / 강화 경로"
+  })
+end
+
+function RobloxCommonUI.CreateItemComparePanel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,parts=deepSystemPanel(options,"ITEM_COMPARE_PANEL","ITEM_COMPARE_PANEL","아이템 비교",{"현재 장비 ↔ 선택 아이템","주요 수치 변화","효과/세트 변화","요구조건","무게/가치 변화"})
+  local delta=commonText(parts.inner,"Delta",options.deltaText or "▲ 개선  ·  ▼ 감소  ·  = 동일",UDim2.new(0,14,1,-34),UDim2.new(1,-28,0,24),theme.Positive,12,true)
+  delta.TextXAlignment=Enum.TextXAlignment.Right
+  return root,parts
+end
+
+function RobloxCommonUI.CreateItemContextMenu(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({name=options.name or "ItemContextMenu",size=options.size or UDim2.fromOffset(250,360),theme=theme})
+  tag(root,"ITEM_CONTEXT_MENU")
+  local holder=Instance.new("Frame");holder.Name="Actions";holder.Position=UDim2.fromOffset(10,10);holder.Size=UDim2.new(1,-20,1,-20);holder.BackgroundTransparency=1;holder.Parent=inner;commonList(holder,false,6)
+  local actions=options.actions or {"사용","장착","퀵슬롯","즐겨찾기","잠금","분할","이동","판매","버리기","상세보기"}
+  local buttons={}
+  for i,label in ipairs(actions) do
+    local b=RobloxCommonUI.CreateTabButton({name="Action"..i,text=tostring(label),size=UDim2.new(1,0,0,42),theme=theme})
+    b.LayoutOrder=i;b.Parent=holder;b:SetAttribute("ContextActionIndex",i);buttons[i]=b
+  end
+  root:SetAttribute("PresentationRole","ITEM_CONTEXT_MENU");root:SetAttribute("OwnsItemActionAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateStackSplitDialog(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateModal({name=options.name or "StackSplitDialog",title=options.title or "수량 나누기",body="",size=options.size or UDim2.fromOffset(420,250),theme=theme})
+  tag(root,"STACK_SPLIT_DIALOG")
+  local value=commonText(root,"Amount",tostring(options.amount or 1),UDim2.new(0.5,-70,0.44,0),UDim2.fromOffset(140,46),theme.Text,24,true);value.TextXAlignment=Enum.TextXAlignment.Center
+  local minus=RobloxCommonUI.CreateTabButton({text="−",size=UDim2.fromOffset(54,46),theme=theme});minus.Position=UDim2.new(0.5,-138,0.44,0);minus.Parent=root
+  local plus=RobloxCommonUI.CreateTabButton({text="+",size=UDim2.fromOffset(54,46),theme=theme});plus.Position=UDim2.new(0.5,84,0.44,0);plus.Parent=root
+  root:SetAttribute("OwnsStackAuthority",false)
+  return root,{minus=minus,plus=plus,value=value}
+end
+
+function RobloxCommonUI.CreateMultiSelectBar(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "MultiSelectBar";root.Size=options.size or UDim2.new(1,0,0,58);root.BackgroundColor3=theme.Panel;root.BorderSizePixel=0;tag(root,"MULTI_SELECT_BAR");corner(root,10);stroke(root,theme.Border,1,0.18)
+  commonText(root,"Count",options.countText or "0개 선택",UDim2.fromOffset(12,0),UDim2.new(0.28,-12,1,0),theme.Text,13,true)
+  local actions=commonText(root,"Actions",options.actionsText or "이동 · 판매 · 잠금 · 분해",UDim2.new(0.28,0,0,0),UDim2.new(0.72,-12,1,0),theme.Accent,12,true);actions.TextXAlignment=Enum.TextXAlignment.Right
+  root:SetAttribute("OwnsMultiSelectAction",false)
+  return root
+end
+
+function RobloxCommonUI.CreateItemStateBadges(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "ItemStateBadges";root.Size=options.size or UDim2.new(1,0,0,34);root.BackgroundTransparency=1;tag(root,"ITEM_STATE_BADGES")
+  local layout=commonList(root,true,6);layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
+  local states=options.states or {"NEW","FAVORITE","LOCKED","EQUIPPED","QUEST"}
+  local badges={}
+  for i,state in ipairs(states) do
+    local b=commonText(root,"Badge"..i,tostring(state),UDim2.new(),UDim2.fromOffset(76,30),i==1 and theme.Accent or theme.Text,10,true)
+    b.BackgroundColor3=theme.PanelRaised;b.BackgroundTransparency=0.08;corner(b,8);b.TextXAlignment=Enum.TextXAlignment.Center;b.LayoutOrder=i;badges[i]=b
+  end
+  root:SetAttribute("ColorOnlyStateForbidden",true)
+  return root,badges
+end
+
+function RobloxCommonUI.CreateInventoryContainerPanel(options)
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"INVENTORY_CONTAINER_PANEL","INVENTORY_CONTAINER_PANEL",options.title or "컨테이너",{"가방 / 주머니 / 퀘스트함","현재 수량 / 최대 수량","무게 / 정렬 / 필터","컨테이너 간 이동"})
+  root:SetAttribute("NestedContainerPresentation",true)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateInventoryWeightMeter(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateProgressBar({name=options.name or "InventoryWeightMeter",label=options.label or "무게",value=options.value or 0,size=options.size or UDim2.fromOffset(300,42),theme=theme})
+  tag(root,"INVENTORY_WEIGHT_METER");root:SetAttribute("PresentationRole","INVENTORY_WEIGHT_METER");root:SetAttribute("OwnsWeightValue",false)
+  return root
+end
+
+function RobloxCommonUI.CreateInventoryCapacityMeter(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateProgressBar({name=options.name or "InventoryCapacityMeter",label=options.label or "칸",value=options.value or 0,size=options.size or UDim2.fromOffset(300,42),theme=theme})
+  tag(root,"INVENTORY_CAPACITY_METER");root:SetAttribute("PresentationRole","INVENTORY_CAPACITY_METER");root:SetAttribute("OwnsCapacityValue",false)
+  return root
+end
+
+function RobloxCommonUI.CreateStashScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"STASH_SCREEN","STASH_SCREEN")
+  local left=RobloxCommonUI.CreateInventoryGrid({name="PlayerInventory",columns=5,slotCount=options.inventorySlots or 25,size=UDim2.new(0.49,-6,1,-58),theme=theme});left.Position=UDim2.fromOffset(0,58);left.Parent=body
+  local right=RobloxCommonUI.CreateInventoryGrid({name="StashInventory",columns=5,slotCount=options.stashSlots or 30,size=UDim2.new(0.49,-6,1,-58),theme=theme});right.Position=UDim2.new(0.51,6,0,58);right.Parent=body
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.45,0,0,48),placeholder="보관함 검색",theme=theme});search.Parent=body
+  root:SetAttribute("OwnsStorageAuthority",false)
+  return root,{player=left,stash=right,search=search}
+end
+
+function RobloxCommonUI.CreateLootWindow(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,parts=deepSystemPanel(options,"LOOT_WINDOW","LOOT_WINDOW",options.title or "획득 가능",{"아이템 1","아이템 2","아이템 3","아이템 4"})
+  local take=RobloxCommonUI.CreatePrimaryButton({text=options.takeAllText or "모두 획득",size=UDim2.fromOffset(160,46),theme=theme});take.AnchorPoint=Vector2.new(1,1);take.Position=UDim2.new(1,-16,1,-16);take.Parent=parts.inner
+  root:SetAttribute("OwnsLootAuthority",false)
+  return root,{takeAll=take,parts=parts}
+end
+
+function RobloxCommonUI.CreateLootFeed(options)
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"LOOT_FEED","LOOT_FEED","최근 획득",options.rows or {"신규 · 회복 포션 ×2","희귀 · 강화 파편 ×1","재료 · 철괴 ×4"})
+  root.Size=options.size or UDim2.fromOffset(330,190)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateQuickSlotBar(options)
+  options=options or {}
+  local root,holder,slots=RobloxCommonUI.CreateHotbar({name=options.name or "QuickSlotBar",slotCount=options.slotCount or 4,size=options.size or UDim2.fromOffset(280,70),theme=options.theme})
+  tag(root,"QUICK_SLOT_BAR");root:SetAttribute("PresentationRole","QUICK_SLOT_BAR");root:SetAttribute("OwnsUseAuthority",false)
+  return root,holder,slots
+end
+
+function RobloxCommonUI.CreateRadialMenu(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame");root.Name=options.name or "RadialMenu";root.Size=options.size or UDim2.fromOffset(360,360);root.BackgroundTransparency=1;tag(root,"RADIAL_MENU")
+  local center=Instance.new("Frame");center.Name="Center";center.AnchorPoint=Vector2.new(0.5,0.5);center.Position=UDim2.fromScale(0.5,0.5);center.Size=UDim2.fromOffset(92,92);center.BackgroundColor3=theme.Panel;center.BorderSizePixel=0;center.Parent=root;corner(center,46);stroke(center,theme.Border,1.5,0.10)
+  commonText(center,"CenterLabel",options.centerText or "퀵 액션",UDim2.new(),UDim2.fromScale(1,1),theme.Text,12,true).TextXAlignment=Enum.TextXAlignment.Center
+  local actions=options.actions or {"사용","장비","스킬","지도","도감","제작","상점","취소"}
+  local buttons={}
+  for i,label in ipairs(actions) do
+    local angle=math.rad((i-1)*360/#actions-90)
+    local b=RobloxCommonUI.CreateTabButton({text=tostring(label),size=UDim2.fromOffset(82,46),theme=theme})
+    b.AnchorPoint=Vector2.new(0.5,0.5);b.Position=UDim2.new(0.5,math.cos(angle)*125,0.5,math.sin(angle)*125);b.Parent=root;b:SetAttribute("RadialIndex",i);buttons[i]=b
+  end
+  root:SetAttribute("OwnsActionAuthority",false)
+  return root,buttons
+end
+
+function RobloxCommonUI.CreateLoadoutPresetPanel(options)
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"LOADOUT_PRESET_PANEL","LOADOUT_PRESET_PANEL","로드아웃",options.rows or {"프리셋 1 · 균형","프리셋 2 · 공격","프리셋 3 · 생존","프리셋 4 · 탐험"})
+  root:SetAttribute("OwnsLoadoutAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateEquipmentComparePanel(options)
+  return deepSystemPanel(options,"EQUIPMENT_COMPARE_PANEL","EQUIPMENT_COMPARE_PANEL","장비 비교",{"착용 중","선택 장비","주요 수치 변화","세트/효과 변화","요구조건 / 무게"})
+end
+
+function RobloxCommonUI.CreateSetBonusPanel(options)
+  local root,parts=deepSystemPanel(options,"SET_BONUS_PANEL","SET_BONUS_PANEL","세트 효과",{"2세트 효과","3세트 효과","4세트 효과","현재 활성 효과"})
+  root:SetAttribute("OwnsSetBonusAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateSocketEnchantPanel(options)
+  local root,parts=deepSystemPanel(options,"SOCKET_ENCHANT_PANEL","SOCKET_ENCHANT_PANEL","소켓 / 인챈트",{"빈 소켓","장착된 룬","장착된 보석","스탯 요구조건","세트/영역 시너지"})
+  root:SetAttribute("OwnsEnchantAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateUpgradePanel(options)
+  local root,parts=deepSystemPanel(options,"UPGRADE_PANEL","UPGRADE_PANEL","강화",{"현재 단계 → 다음 단계","필요 재료","변경되는 수치","해금 효과","외형 단계"})
+  root:SetAttribute("OwnsUpgradeAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateRepairPanel(options)
+  local root,parts=deepSystemPanel(options,"REPAIR_PANEL","REPAIR_PANEL","수리",{"현재 상태","수리 후 상태","필요 재화/재료","일괄 수리"})
+  root:SetAttribute("OwnsRepairAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateDismantlePanel(options)
+  local root,parts=deepSystemPanel(options,"DISMANTLE_PANEL","DISMANTLE_PANEL","분해",{"선택 아이템","예상 반환 재료","보호/잠금 상태","다중 선택 분해"})
+  root:SetAttribute("OwnsDismantleAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCraftingTree(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"CRAFTING_TREE","CRAFTING_TREE")
+  local nodes=options.nodes or {"기초 재료","중간 부품","장비","강화","특수 제작"}
+  local built={}
+  for i,label in ipairs(nodes) do
+    local n=RobloxCommonUI.CreateQuestCard({name="CraftNode"..i,title=tostring(label),description=i==1 and "시작 노드" or "선행 제작 필요",size=UDim2.fromOffset(170,88),theme=theme})
+    n.Position=UDim2.new(0.08+(i-1)*0.18,0,0.22+((i%2)*0.28),0);n.Parent=body;n:SetAttribute("CraftTreeNodeIndex",i);built[i]=n
+  end
+  root:SetAttribute("OwnsRecipeUnlockAuthority",false)
+  return root,built
+end
+
+function RobloxCommonUI.CreateRecipeDetailPanel(options)
+  local root,parts=deepSystemPanel(options,"RECIPE_DETAIL_PANEL","RECIPE_DETAIL_PANEL","제작법 상세",{"결과 아이템","필요 재료","보유/부족 수량","대체 재료","제작대/조건","추적 여부"})
+  root:SetAttribute("OwnsCraftAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateMaterialTracker(options)
+  local root,parts=deepSystemPanel(options,"MATERIAL_TRACKER","MATERIAL_TRACKER","재료 추적",{"철괴 3 / 5","약초 8 / 8","강화 파편 1 / 2","획득처 표시"})
+  root:SetAttribute("OwnsMaterialTrackingAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateBuySellPanel(options)
+  local root,parts=deepSystemPanel(options,"BUY_SELL_PANEL","BUY_SELL_PANEL","거래",{"구매 탭 / 판매 탭","선택 상품","수량","현재 재화","가격 비교","장바구니"})
+  root:SetAttribute("OwnsTradeAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateBuybackPanel(options)
+  local root,parts=deepSystemPanel(options,"BUYBACK_PANEL","BUYBACK_PANEL","되사기",{"최근 판매 아이템","판매 가격","되사기 가격","판매 시간/세션"})
+  root:SetAttribute("OwnsTradeAuthority",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateCodexScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"CODEX_SCREEN","CODEX_SCREEN")
+  local nav=RobloxCommonUI.CreateSideNavigation({name="CodexCategories",items=options.categories or {"아이템","장비","몬스터","지역","인물","기록"},size=UDim2.new(0.26,-8,1,0),theme=theme});nav.Parent=body
+  local detail=Instance.new("Frame");detail.Name="CodexDetail";detail.Position=UDim2.new(0.26,8,0,0);detail.Size=UDim2.new(0.74,-8,1,0);detail.BackgroundColor3=theme.PanelInset;detail.BorderSizePixel=0;detail.Parent=body;corner(detail,theme.Corner)
+  commonText(detail,"Title",options.entryTitle or "발견한 항목",UDim2.fromOffset(16,12),UDim2.new(1,-32,0,38),theme.Text,20,true)
+  commonText(detail,"Body",options.entryBody or "설명 · 획득처 · 관련 제작 · 관련 퀘스트",UDim2.fromOffset(16,56),UDim2.new(1,-32,1,-72),theme.MutedText,14,false)
+  root:SetAttribute("OwnsDiscoveryAuthority",false)
+  return root,{nav=nav,detail=detail}
+end
+
+function RobloxCommonUI.CreateCollectionProgress(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateProgressBar({name=options.name or "CollectionProgress",label=options.label or "수집률",value=options.value or 0,size=options.size or UDim2.fromOffset(320,44),theme=theme})
+  tag(root,"COLLECTION_PROGRESS");root:SetAttribute("OwnsCollectionProgress",false)
+  return root
+end
+
+function RobloxCommonUI.CreateRecentItemsPanel(options)
+  local root,parts=deepSystemPanel(options,"RECENT_ITEMS_PANEL","RECENT_ITEMS_PANEL","최근 획득",options and options.rows or {"방금 획득","새 아이템","새 제작법","새 도감 항목"})
+  root:SetAttribute("OwnsAcquisitionHistory",false)
+  return root,parts
+end
+
+function RobloxCommonUI.CreateItemSourceUsagePanel(options)
+  local root,parts=deepSystemPanel(options,"ITEM_SOURCE_USAGE_PANEL","ITEM_SOURCE_USAGE_PANEL","획득처 / 사용처",{"획득 지역","획득 대상","제작 재료 사용처","강화 사용처","퀘스트/상점 연결"})
+  root:SetAttribute("OwnsSourceTruthAuthority",false)
+  return root,parts
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
@@ -1984,13 +2274,73 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateLockedState(options)
   elseif id == "INPUT_HINT" then
     return RobloxCommonUI.CreateInputHint(options)
+  elseif id == "ITEM_DETAIL_PANEL" then
+    return RobloxCommonUI.CreateItemDetailPanel(options)
+  elseif id == "ITEM_COMPARE_PANEL" then
+    return RobloxCommonUI.CreateItemComparePanel(options)
+  elseif id == "ITEM_CONTEXT_MENU" then
+    return RobloxCommonUI.CreateItemContextMenu(options)
+  elseif id == "STACK_SPLIT_DIALOG" then
+    return RobloxCommonUI.CreateStackSplitDialog(options)
+  elseif id == "MULTI_SELECT_BAR" then
+    return RobloxCommonUI.CreateMultiSelectBar(options)
+  elseif id == "ITEM_STATE_BADGES" then
+    return RobloxCommonUI.CreateItemStateBadges(options)
+  elseif id == "INVENTORY_CONTAINER_PANEL" then
+    return RobloxCommonUI.CreateInventoryContainerPanel(options)
+  elseif id == "INVENTORY_WEIGHT_METER" then
+    return RobloxCommonUI.CreateInventoryWeightMeter(options)
+  elseif id == "INVENTORY_CAPACITY_METER" then
+    return RobloxCommonUI.CreateInventoryCapacityMeter(options)
+  elseif id == "STASH_SCREEN" then
+    return RobloxCommonUI.CreateStashScreen(options)
+  elseif id == "LOOT_WINDOW" then
+    return RobloxCommonUI.CreateLootWindow(options)
+  elseif id == "LOOT_FEED" then
+    return RobloxCommonUI.CreateLootFeed(options)
+  elseif id == "QUICK_SLOT_BAR" then
+    return RobloxCommonUI.CreateQuickSlotBar(options)
+  elseif id == "RADIAL_MENU" then
+    return RobloxCommonUI.CreateRadialMenu(options)
+  elseif id == "LOADOUT_PRESET_PANEL" then
+    return RobloxCommonUI.CreateLoadoutPresetPanel(options)
+  elseif id == "EQUIPMENT_COMPARE_PANEL" then
+    return RobloxCommonUI.CreateEquipmentComparePanel(options)
+  elseif id == "SET_BONUS_PANEL" then
+    return RobloxCommonUI.CreateSetBonusPanel(options)
+  elseif id == "SOCKET_ENCHANT_PANEL" then
+    return RobloxCommonUI.CreateSocketEnchantPanel(options)
+  elseif id == "UPGRADE_PANEL" then
+    return RobloxCommonUI.CreateUpgradePanel(options)
+  elseif id == "REPAIR_PANEL" then
+    return RobloxCommonUI.CreateRepairPanel(options)
+  elseif id == "DISMANTLE_PANEL" then
+    return RobloxCommonUI.CreateDismantlePanel(options)
+  elseif id == "CRAFTING_TREE" then
+    return RobloxCommonUI.CreateCraftingTree(options)
+  elseif id == "RECIPE_DETAIL_PANEL" then
+    return RobloxCommonUI.CreateRecipeDetailPanel(options)
+  elseif id == "MATERIAL_TRACKER" then
+    return RobloxCommonUI.CreateMaterialTracker(options)
+  elseif id == "BUY_SELL_PANEL" then
+    return RobloxCommonUI.CreateBuySellPanel(options)
+  elseif id == "BUYBACK_PANEL" then
+    return RobloxCommonUI.CreateBuybackPanel(options)
+  elseif id == "CODEX_SCREEN" then
+    return RobloxCommonUI.CreateCodexScreen(options)
+  elseif id == "COLLECTION_PROGRESS" then
+    return RobloxCommonUI.CreateCollectionProgress(options)
+  elseif id == "RECENT_ITEMS_PANEL" then
+    return RobloxCommonUI.CreateRecentItemsPanel(options)
+  elseif id == "ITEM_SOURCE_USAGE_PANEL" then
+    return RobloxCommonUI.CreateItemSourceUsagePanel(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 4,
+    version = 5,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -2006,10 +2356,19 @@ function RobloxCommonUI.Audit()
       "INVENTORY_FULL_SCREEN", "EQUIPMENT_FULL_SCREEN", "CHARACTER_DETAIL_SCREEN", "MAP_FULL_SCREEN",
       "QUEST_LOG", "CRAFTING_FULL_SCREEN", "SHOP_FULL_SCREEN", "CONFIRM_DIALOG",
       "POPUP_PANEL", "LOADING_STATE", "EMPTY_STATE", "FAILURE_STATE",
-      "LOCKED_STATE", "INPUT_HINT"
+      "LOCKED_STATE", "INPUT_HINT",
+      "ITEM_DETAIL_PANEL", "ITEM_COMPARE_PANEL", "ITEM_CONTEXT_MENU", "STACK_SPLIT_DIALOG",
+      "MULTI_SELECT_BAR", "ITEM_STATE_BADGES", "INVENTORY_CONTAINER_PANEL", "INVENTORY_WEIGHT_METER",
+      "INVENTORY_CAPACITY_METER", "STASH_SCREEN", "LOOT_WINDOW", "LOOT_FEED",
+      "QUICK_SLOT_BAR", "RADIAL_MENU", "LOADOUT_PRESET_PANEL", "EQUIPMENT_COMPARE_PANEL",
+      "SET_BONUS_PANEL", "SOCKET_ENCHANT_PANEL", "UPGRADE_PANEL", "REPAIR_PANEL",
+      "DISMANTLE_PANEL", "CRAFTING_TREE", "RECIPE_DETAIL_PANEL", "MATERIAL_TRACKER",
+      "BUY_SELL_PANEL", "BUYBACK_PANEL", "CODEX_SCREEN", "COLLECTION_PROGRESS",
+      "RECENT_ITEMS_PANEL", "ITEM_SOURCE_USAGE_PANEL"
     }),
-    atomCount = 54,
-    fullScreenSurfaceCount = 15,
+    atomCount = 84,
+    fullScreenSurfaceCount = 17,
+    deepSystemComponentCount = 30,
     stateSurfaceCount = 4,
     companyCommonBase = true,
     themeAdaptationRequiredPerGame = true,
