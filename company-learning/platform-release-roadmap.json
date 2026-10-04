@@ -26520,7 +26520,11 @@
           "VIBE_SYSTEM_CAPABILITY_EVOLUTION",
           "OWNER_REQUESTED_DIRECT_GAME_SOURCE_EVOLUTION",
           "VERIFY_VIBE_SOURCE_GROWTH_QUALITY_WHEN_MODIFYING_SYSTEM_OR_GAME_SOURCE"
-        ]
+        ],
+        "bottleneckOverflowAssist": true,
+        "bottleneckOverflowAssistIsSecondary": true,
+        "vibeRemainsPrimaryOwner": true,
+        "absenceMayNotBlockVibe": true
       },
       "owner": {
         "normalOperationsOwner": false,
@@ -26585,6 +26589,40 @@
       "batchCrossGameParallelismPreserved": true,
       "unrelatedInvalidCandidateMayNotFailRequestedGameRun": true,
       "exactGameFailureRoutesToExactGameStageRepair": true
+    },
+    "chatgptOverflowBottleneckAssist": {
+      "version": 1,
+      "enabled": true,
+      "role": "SECONDARY_ON_DEMAND_BOTTLENECK_REPAIR_ASSIST",
+      "primaryOwnerRemains": "VIBE2_VIBE3_EXISTING_SYSTEM_AI",
+      "normalOperationsOwner": false,
+      "normalApprovalDependency": false,
+      "automaticBackgroundInvocationAssumed": false,
+      "activation": [
+        "ACTIVE_CHATGPT_REPOSITORY_WORK_SESSION",
+        "OWNER_REQUESTS_BOTTLENECK_HELP",
+        "REPEATED_SAME_FAILURE_SIGNATURE",
+        "PERSISTENT_QUEUE_OR_RUNNER_BACKLOG",
+        "STUCK_GAME_STAGE_AFTER_EXISTING_VIBE_CAUSAL_REPAIR",
+        "SHARED_CAUSE_BLOCKS_MULTIPLE_GAMES",
+        "SOURCE_GROWTH_OR_HANDOFF_FAILURE_REPEATS"
+      ],
+      "assistActions": [
+        "READ_CURRENT_MAIN_AND_CENTRAL_FOUR_DOCUMENTS",
+        "INSPECT_ACTIONS_RUNTIME_AND_QUEUE_EVIDENCE",
+        "IDENTIFY_CAUSAL_BOTTLENECK",
+        "REPAIR_EXISTING_RESPONSIBLE_SYSTEM_OR_GAME_SOURCE",
+        "IMPROVE_VIBE_DETAIL_CHAIN_WHEN_CAUSALLY_REQUIRED",
+        "ADD_OR_ADJUST_REGRESSION_QA_FOR_THE_EXACT_CAUSE",
+        "RETURN_CONTROL_TO_VIBE_AUTONOMOUS_LOOP"
+      ],
+      "vibeContinuesWhenChatgptAbsent": true,
+      "unrelatedGamesContinueDuringAssist": true,
+      "noNewPipelineWorkflowWrapperOrShadowManager": true,
+      "mayNotChangeLockedF0F9Sequence": true,
+      "mayNotBypassSecurityQaRuntimeOrReleaseGates": true,
+      "mayNotExpandWritableAuthority": true,
+      "assistOutcomeMustReturnToExistingVibeLoop": true
     }
   }
 }
