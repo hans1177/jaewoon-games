@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "packId": "roblox-common-ui-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -104,7 +104,9 @@
     "housing": "건축 목록·배치 고스트·스냅·안정성·티어·유효성",
     "sandbox": "이동·회전·복사·삭제·그리드/스냅·재질·블루프린트·되돌리기",
     "management": "소유/권한·수리·철거·유지/부식·침대/리스폰·방 상태",
-    "settlement": "가구·정착지 요약·농사·동물·가공 설비"
+    "settlement": "가구·정착지 요약·농사·동물·가공 설비",
+    "parry": "공격예고·가드·완벽패링·가드붕괴·반격가능을 색상 외 형태/텍스트/VFX와 연결",
+    "worldInteraction": "소품 조사·읽기·열기·앉기·침대·채집·보관·조명 등 컨텍스트 상호작용"
   },
   "legacyStaticAuthoringChecklist": {
     "score": 100,
@@ -123,7 +125,7 @@
   "internalAuditDoesNotRequireStudio": true,
   "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 108,
+  "sourceAssetCount": 169,
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
@@ -131,6 +133,8 @@
     "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit."
   },
   "fullScreenSurfaceCount": 15,
-  "deepSystemComponentCount": 54,
-  "housingSandboxComponentCount": 24
+  "deepSystemComponentCount": 115,
+  "housingSandboxComponentCount": 24,
+  "parryPresentationComponentCount": 5,
+  "worldInteractionComponentCount": 10
 }
