@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g13-da737453d4a4",
-  "directiveFingerprint": "da737453d4a459b9db61e00a35de6f570fbfaa9d59a8e6d8ed1b20b21cb12e7e",
-  "previousDirectiveFingerprint": "06754771c6e0567c12bebb5d274678ec5073dc8d364b5a5a66f516fc3c5f47d6",
-  "forbiddenRepeatFingerprint": "06754771c6e0567c12bebb5d274678ec5073dc8d364b5a5a66f516fc3c5f47d6",
+  "directiveId": "daechung-rpg-build-up-g14-5905f0b4874b",
+  "directiveFingerprint": "5905f0b4874bfd1dbab122067a7a837186aa338cd7e9891f18ca430488635131",
+  "previousDirectiveFingerprint": "da737453d4a459b9db61e00a35de6f570fbfaa9d59a8e6d8ed1b20b21cb12e7e",
+  "forbiddenRepeatFingerprint": "da737453d4a459b9db61e00a35de6f570fbfaa9d59a8e6d8ed1b20b21cb12e7e",
   "gameId": "daechung-rpg",
-  "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 13,
+  "gameName": "대충 RPG",
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
-  "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
+  "sourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
+  "designFingerprint": "180b392ae260071d960a586fd46e312d83468098133916a5cd5f62c7bdd7feaa",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
     "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
@@ -68,7 +68,7 @@
       }
     ],
     "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
-    "multiplayerMode": "SINGLE_OR_COOP",
+    "multiplayerMode": "COOP",
     "preserve": [
       "CORE_IDENTITY",
       "APPROVED_RULE_SEMANTICS",
@@ -547,17 +547,17 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "fbe7afd96078ee627c7367072e1f87159c461a0c160841ce11f58d413868d98a",
-    "currentSourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
+    "currentSourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1729,13 +1729,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 2,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1754,7 +1754,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
@@ -1789,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 176,
+        "score": 158,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -2529,11 +2529,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
+      "sourceTreeFingerprint": "dfdb90bf14e06f2c7719099d3be35a79e8b7860d0fd6f0f5281af080cf558293",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2576,7 +2576,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2641,5 +2641,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T16:36:35.577Z"
+  "generatedAt": "2026-10-04T17:25:08.568Z"
 }
