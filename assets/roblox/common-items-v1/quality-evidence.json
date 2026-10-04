@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-items-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -73,5 +73,71 @@
       "SPECIMEN_COLLECT",
       "CAMP_DEPLOY"
     ]
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "DETAIL_FINISH",
+      "MODULAR_REUSE",
+      "READABILITY_SCALE"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 90,
+      "FORM_STRUCTURE": 88,
+      "MATERIAL_SURFACE": 86,
+      "COLOR_LIGHTING": 88,
+      "STYLE_COHERENCE": 87,
+      "DETAIL_FINISH": 86,
+      "READABILITY_SCALE": 90,
+      "FEEDBACK_STATES": 82,
+      "UI_UX_SYSTEM": 90,
+      "MODULAR_REUSE": 96,
+      "VARIATION_BREADTH": 92,
+      "PERFORMANCE_LOD": 88,
+      "ACCESSIBILITY_INPUT": 82,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 94
+    },
+    "expectedScore": 892.4,
+    "expectedGrade": "COMMERCIAL_READY",
+    "evidenceBasis": {
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "sourceAssetCount": 40,
+      "sourceLineCount": 809,
+      "sourceFunctionCount": 30,
+      "nativeInstanceConstructionCount": 7,
+      "materialReferenceCount": 111,
+      "attributeBindingCount": 32,
+      "worldDropViewportIdentityShared": true,
+      "inventoryRoleCoverageCount": 14,
+      "utilityGadgetCount": 16,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "ACTUAL_GAME_CAMERA_SCALE_UNVERIFIED",
+      "EQUIPPED_SOCKET_FIT_REQUIRES_CONSUMER_BINDING",
+      "TOUCH_AND_GAMEPAD_ITEM_ACTION_FLOW_NOT_RUNTIME_VERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
   }
 }
