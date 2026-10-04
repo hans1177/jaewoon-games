@@ -10,10 +10,55 @@ import {
   assembleRobloxTechnicalEvidence,
   validateRobloxReleaseEvidence,
   createRobloxPlacePublishPlan,createRobloxRuntimeCandidatePublishPlan,
+  assertRobloxLatestPublishCandidate,
   publishRobloxPlace,
 } from '../tools/vibe3-roblox-platform.mjs';
 
 const contract=createRobloxPlatformContract();
+
+test('publish gate blocks only current-source gameplay quality repair',()=>{
+  const revision='a'.repeat(40);
+  const previousRevision='b'.repeat(40);
+  const artifact='sha256:'+'c'.repeat(64);
+  const base={
+    robloxSourceCommit:revision,
+    robloxBuildSourceRevision:revision,
+    robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{
+      sourcePreflightPassed:true,
+      f0SourceIntegrityPassed:true,
+      sourceRevision:revision,
+      artifactIdentity:artifact,
+    },
+  };
+  assert.doesNotThrow(()=>assertRobloxLatestPublishCandidate({
+    item:{...base,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:previousRevision},
+    sourceRevision:revision,
+    artifactIdentity:artifact,
+    sourceTree:'tree-current',
+    latestSourceTree:'tree-current',
+    publishStage:'validation',
+  }));
+  assert.throws(()=>assertRobloxLatestPublishCandidate({
+    item:{...base,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision},
+    sourceRevision:revision,
+    artifactIdentity:artifact,
+    sourceTree:'tree-current',
+    latestSourceTree:'tree-current',
+    publishStage:'validation',
+  }),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({
+    item:{...base,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:null},
+    sourceRevision:revision,
+    artifactIdentity:artifact,
+    sourceTree:'tree-current',
+    latestSourceTree:'tree-current',
+    publishStage:'validation',
+  }),/ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED/);
+});
 test('static candidate promotion requires exact compiled contracts without inventing runtime proof',()=>{
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
   const binding={pass:true,sourceRevision:revision,artifactIdentity:artifact};
