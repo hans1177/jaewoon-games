@@ -50,5 +50,97 @@
   "officialLuauCompiled": true,
   "nativeStudioVerified": false,
   "artVerified": false,
-  "gameplayVerified": false
+  "gameplayVerified": false,
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG",
+      "STYLE_COHERENCE"
+    ],
+    "hardGateFailures": [
+      "DETAIL_FINISH:76<82_CREATURE",
+      "MOTION_RIG:76<84_CREATURE"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 94,
+      "FORM_STRUCTURE": 90,
+      "MATERIAL_SURFACE": 82,
+      "COLOR_LIGHTING": 88,
+      "STYLE_COHERENCE": 92,
+      "DETAIL_FINISH": 76,
+      "READABILITY_SCALE": 90,
+      "MOTION_RIG": 76,
+      "FEEDBACK_STATES": 78,
+      "MODULAR_REUSE": 95,
+      "VARIATION_BREADTH": 98,
+      "PERFORMANCE_LOD": 86,
+      "PROVENANCE_MAINTAINABILITY": 96,
+      "INTEGRATION_READINESS": 88
+    },
+    "expectedScore": 879,
+    "expectedGrade": "HIGH_QUALITY",
+    "evidenceBasis": {
+      "skinCount": 100,
+      "bodyFormCount": 27,
+      "proceduralMotionStates": 6,
+      "proceduralAuditSamples": 3600,
+      "officialLuauCompiled": true,
+      "nativePackageArtifacts": [
+        "assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx",
+        "assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx"
+      ],
+      "authoredSkinnedMeshCount": 1,
+      "authoredSkinnedMeshId": "gwisin-bride",
+      "authoredSkinnedMeshBones": 80,
+      "authoredSkinnedMeshClips": 6,
+      "authoredSkinnedMeshValidatorErrors": 0,
+      "authoredSkinnedMeshValidatorWarnings": 0,
+      "projectOriginalSource": true,
+      "gameplayAuthority": false
+    },
+    "childBaselines": {
+      "proceduralSkin": {
+        "score": 861.6,
+        "grade": "HIGH_QUALITY",
+        "scope": "99_FACTORY_GENERATED_SKINS",
+        "hardGateFailures": [
+          "DETAIL_FINISH",
+          "MOTION_RIG"
+        ]
+      },
+      "authoredMeshOverrides": {
+        "gwisin-bride": {
+          "score": 884,
+          "grade": "COMMERCIAL_READY",
+          "evidenceRef": "assets/roblox/world-ghosts/native/mesh/evidence.json",
+          "runtimeVerified": false
+        }
+      }
+    },
+    "limitations": [
+      "99_OF_100_SKINS_ARE_PROCEDURAL_FACTORY_ASSEMBLIES_NOT_AUTHORED_SKINNED_MESHES",
+      "ACTUAL_ROBLOX_STUDIO_IMPORT_AND_PLAYBACK_UNVERIFIED",
+      "MOBILE_RUNTIME_COST_UNVERIFIED",
+      "PROCEDURAL_MOTION_IS_NOT_EQUIVALENT_TO_PUBLISHED_NATIVE_ANIMATION_CLIPS",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
