@@ -1,9 +1,9 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-environment-v1",
   "family": "ENVIRONMENT",
   "platform": "ROBLOX",
-  "title": "Roblox 회사 공용 환경/배경 10바이옴 베이스 v1",
+  "title": "Roblox 회사 공용 환경/배경 10바이옴 + 장면조합 12종 v3",
   "license": "project-original",
   "companyCommonBase": true,
   "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -31,9 +31,13 @@
     "CLIFF",
     "WATER",
     "LANDMARK",
-    "SET_DRESSING"
+    "SET_DRESSING",
+    "TERRAIN_COMPOSITION",
+    "VILLAGE_CLUSTER",
+    "RUIN_CLUSTER",
+    "DISCOVERY_POI"
   ],
-  "recipeCount": 80,
+  "recipeCount": 92,
   "detailTiers": [
     "LOW",
     "MEDIUM",
@@ -116,16 +120,31 @@
       "CLIFF",
       "WATER",
       "LANDMARK",
-      "SET_DRESSING"
+      "SET_DRESSING",
+      "TERRAIN_COMPOSITION",
+      "VILLAGE_CLUSTER",
+      "RUIN_CLUSTER",
+      "DISCOVERY_POI",
+      "ROLLING_HILLS",
+      "RIDGE_PASS",
+      "RIVER_VALLEY",
+      "TERRACED_HILLS",
+      "MEADOW_BASIN",
+      "FOREST_EDGE",
+      "VILLAGE_HILL",
+      "VILLAGE_CROSSROADS",
+      "FARM_HAMLET",
+      "CLIFF_SETTLEMENT",
+      "COAST_VILLAGE",
+      "RUINED_HIGHLAND",
+      "INTERIOR_EXTERIOR_TRANSITION"
     ],
-    "currentAssetCount": 10,
+    "currentAssetCount": 22,
     "missingComponentCandidates": [
       "WEATHER",
       "SKY_ATMOSPHERE",
       "LIGHTING_PRESET",
-      "STREAMING_LOD",
-      "INTERIOR_EXTERIOR_TRANSITION",
-      "DISCOVERY_POI"
+      "STREAMING_LOD"
     ],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
@@ -144,5 +163,75 @@
     "queueExcluded": true,
     "schedulerExcluded": true,
     "deploymentExcluded": true
+  },
+  "terrainCompositions": [
+    "ROLLING_HILLS",
+    "RIDGE_PASS",
+    "RIVER_VALLEY",
+    "TERRACED_HILLS",
+    "MEADOW_BASIN",
+    "FOREST_EDGE",
+    "VILLAGE_HILL",
+    "VILLAGE_CROSSROADS",
+    "FARM_HAMLET",
+    "CLIFF_SETTLEMENT",
+    "COAST_VILLAGE",
+    "RUINED_HIGHLAND"
+  ],
+  "backgroundCompositionContract": {
+    "layers": [
+      "FOREGROUND",
+      "MIDGROUND",
+      "BACKGROUND_1",
+      "BACKGROUND_2",
+      "BACKGROUND_3"
+    ],
+    "principles": [
+      "SILHOUETTE_DEPTH",
+      "PATH_TO_LANDMARK",
+      "LANDMARK_READABILITY",
+      "VILLAGE_CLUSTER_VARIATION",
+      "POI_DISCOVERY_CUE"
+    ],
+    "terrainForms": [
+      "HILL",
+      "RIDGE",
+      "VALLEY",
+      "BASIN",
+      "PLATEAU",
+      "TERRACE",
+      "MEADOW",
+      "CLIFF",
+      "RIVER",
+      "BANK",
+      "BEACH"
+    ],
+    "settlementCompositions": [
+      "VILLAGE_HILL",
+      "VILLAGE_CROSSROADS",
+      "FARM_HAMLET",
+      "CLIFF_SETTLEMENT",
+      "COAST_VILLAGE"
+    ],
+    "gameplayAuthority": false,
+    "collisionAuthority": false,
+    "navigationAuthority": false,
+    "spawnAuthority": false
+  },
+  "environmentInteractionPresentation": {
+    "roles": [
+      "SIT",
+      "INSPECT",
+      "GATHER",
+      "HARVEST",
+      "CLIMB",
+      "READ",
+      "OPEN",
+      "TOGGLE",
+      "PUSH",
+      "CARRY"
+    ],
+    "metadataOnly": true,
+    "interactionAuthority": false
   }
 }
