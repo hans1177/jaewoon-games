@@ -351,187 +351,6 @@
       "marketingThumbnail": "assets/roblox-thumbnails/daechung-rpg.svg"
     },
     {
-      "id": "horror-escape-room",
-      "name": "심야 대탈출",
-      "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
-      "genre": [
-        "술래잡기",
-        "몬스터",
-        "비대칭 멀티"
-      ],
-      "image": "assets/roblox-thumbnails/horror-escape-room.svg",
-      "webPath": "/web-games/horror-escape-room/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": true,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
-      },
-      "playModes": [
-        "SINGLE_WITH_AI",
-        "ASYMMETRIC_MULTIPLAYER"
-      ],
-      "multiplayerSupported": true,
-      "soloPlayable": true,
-      "ownerDirectDevelopment": true,
-      "catalogOrder": 3,
-      "updatedAt": "2026-09-22T19:15:00+09:00",
-      "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 3,
-      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
-      "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
-      "releaseStrategy": "FAST_MVP",
-      "releasePrimaryPlatform": "ROBLOX",
-      "robloxValidationMode": "HEADLESS_FAST_MVP",
-      "robloxStudioExecutionAllowed": false,
-      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
-      "robloxProjectPath": "roblox-games/horror-escape-room",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "술래잡기",
-          "몬스터",
-          "비대칭 멀티"
-        ],
-        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
-        "subgenre": "",
-        "playMode": "HYBRID",
-        "playModeLabel": "혼합",
-        "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-10-04T23:46:44.608Z",
-        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 3,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "horror-escape-room",
-          "name": "심야 대탈출",
-          "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
-          "genres": [
-            "술래잡기",
-            "몬스터",
-            "비대칭 멀티"
-          ],
-          "image": "assets/roblox-thumbnails/horror-escape-room.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_DEVELOPMENT",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/horror-escape-room/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": "roblox-games/horror-escape-room"
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "술래잡기",
-              "몬스터",
-              "비대칭 멀티"
-            ],
-            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
-            "subgenre": "",
-            "playMode": "HYBRID",
-            "playModeLabel": "혼합",
-            "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-10-04T23:46:44.608Z",
-            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "nameEnglish": "Midnight Escape",
-      "internationalTitle": "Midnight Escape",
-      "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
-    },
-    {
       "id": "wild-survival",
       "name": "야생 생존",
       "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
@@ -563,7 +382,7 @@
         "UNITY"
       ],
       "homepageDisplayMode": "WEB_PUBLISHED",
-      "catalogOrder": 4,
+      "catalogOrder": 3,
       "updatedAt": "2026-10-04T14:38:00+09:00",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -591,7 +410,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 4,
+        "catalogOrder": 3,
         "authority": "company-runtime",
         "identity": {
           "gameId": "wild-survival",
@@ -743,7 +562,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 4,
         "authority": "company-runtime",
         "identity": {
           "gameId": "amusement-tycoon",
@@ -842,7 +661,7 @@
           }
         }
       },
-      "catalogOrder": 5,
+      "catalogOrder": 4,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -906,7 +725,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 5,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -1003,7 +822,7 @@
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 5,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1015,6 +834,187 @@
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
       "homepageDisplayMode": "WEB_PUBLISHED"
+    },
+    {
+      "id": "horror-escape-room",
+      "name": "심야 대탈출",
+      "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
+      "genre": [
+        "술래잡기",
+        "몬스터",
+        "비대칭 멀티"
+      ],
+      "image": "assets/roblox-thumbnails/horror-escape-room.svg",
+      "webPath": "/web-games/horror-escape-room/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "playModes": [
+        "SINGLE_WITH_AI",
+        "ASYMMETRIC_MULTIPLAYER"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "ownerDirectDevelopment": true,
+      "catalogOrder": 6,
+      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 3,
+      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
+      "visualArtPass": "STYLIZED_ROBLOX_V1",
+      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "술래잡기",
+          "몬스터",
+          "비대칭 멀티"
+        ],
+        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+        "subgenre": "",
+        "playMode": "HYBRID",
+        "playModeLabel": "혼합",
+        "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+        "updatedAt": "2026-10-04T23:51:46.131Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 6,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "horror-escape-room",
+          "name": "심야 대탈출",
+          "description": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
+          "genres": [
+            "술래잡기",
+            "몬스터",
+            "비대칭 멀티"
+          ],
+          "image": "assets/roblox-thumbnails/horror-escape-room.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_DEVELOPMENT",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/horror-escape-room/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": "roblox-games/horror-escape-room"
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "술래잡기",
+              "몬스터",
+              "비대칭 멀티"
+            ],
+            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+            "subgenre": "",
+            "playMode": "HYBRID",
+            "playModeLabel": "혼합",
+            "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
+            "updatedAt": "2026-10-04T23:51:46.131Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "nameEnglish": "Midnight Escape",
+      "internationalTitle": "Midnight Escape",
+      "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
     },
     {
       "id": "line-defense",
