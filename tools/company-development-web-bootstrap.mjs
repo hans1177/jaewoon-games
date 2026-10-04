@@ -258,6 +258,7 @@ function priorityDevelopmentContext(context={}){
       failureModel:flow?.failureModel||null,
       victoryModel:flow?.victoryModel||null,
       qualityGrowthContract:flow?.qualityGrowthContract||null,
+      systemBlueprint:flow?.systemBlueprint||null,
       assetFlow:flow?.assetFlow||null
     },
     repairLoop:{
