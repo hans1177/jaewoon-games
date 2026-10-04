@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "packId": "roblox-survival-core-world-v1",
+  "targetGameId": "survival",
+  "sourceOfTruth": "roblox-games/survival/shared/GameConfig.luau#StudioAssets.Families",
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "materialLibrary": "survival-core-world.mtl",
+  "modular": true,
+  "gameplayAuthority": false,
+  "assets": [
+    {
+      "atomId": "TREE_TRUNK_THICK",
+      "file": "tree_trunk_thick.obj",
+      "family": "ENVIRONMENT",
+      "role": "THICK_RESOURCE_TREE_TRUNK",
+      "vertices": 526,
+      "faces": 363,
+      "id": "tree_trunk_thick",
+      "source": "tree_trunk_thick.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "TREE_CROWN_ROUND",
+      "file": "tree_crown_round.obj",
+      "family": "ENVIRONMENT",
+      "role": "ROUND_RESOURCE_TREE_CANOPY",
+      "vertices": 868,
+      "faces": 728,
+      "id": "tree_crown_round",
+      "source": "tree_crown_round.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "ROCK_MEDIUM",
+      "file": "rock_medium.obj",
+      "family": "ENVIRONMENT",
+      "role": "MEDIUM_RESOURCE_ROCK",
+      "vertices": 292,
+      "faces": 247,
+      "id": "rock_medium",
+      "source": "rock_medium.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "ROAD_DIRT",
+      "file": "road_dirt.obj",
+      "family": "ENVIRONMENT",
+      "role": "DIRT_TRAVEL_PATH",
+      "vertices": 848,
+      "faces": 688,
+      "id": "road_dirt",
+      "source": "road_dirt.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "FOUNDATION_RECT",
+      "file": "foundation_rect.obj",
+      "family": "BUILDING",
+      "role": "RECTANGULAR_SURVIVAL_FOUNDATION",
+      "vertices": 104,
+      "faces": 78,
+      "id": "foundation_rect",
+      "source": "foundation_rect.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "WALL_SOLID",
+      "file": "wall_solid.obj",
+      "family": "BUILDING",
+      "role": "SOLID_TIMBER_WALL",
+      "vertices": 112,
+      "faces": 80,
+      "id": "wall_solid",
+      "source": "wall_solid.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DOOR_SINGLE",
+      "file": "door_single.obj",
+      "family": "BUILDING",
+      "role": "SINGLE_SURVIVAL_DOOR",
+      "vertices": 212,
+      "faces": 156,
+      "id": "door_single",
+      "source": "door_single.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "ROOF_GABLE",
+      "file": "roof_gable.obj",
+      "family": "BUILDING",
+      "role": "GABLE_SURVIVAL_ROOF",
+      "vertices": 190,
+      "faces": 103,
+      "id": "roof_gable",
+      "source": "roof_gable.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CHEST",
+      "file": "chest.obj",
+      "family": "PROP",
+      "role": "RESOURCE_CHEST",
+      "vertices": 212,
+      "faces": 168,
+      "id": "chest",
+      "source": "chest.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "CRATE",
+      "file": "crate.obj",
+      "family": "PROP",
+      "role": "RESOURCE_CRATE",
+      "vertices": 120,
+      "faces": 82,
+      "id": "crate",
+      "source": "crate.obj",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LAMP",
+      "file": "lamp.obj",
+      "family": "PROP",
+      "role": "SURVIVAL_LANTERN_LAMP",
+      "vertices": 616,
+      "faces": 446,
+      "id": "lamp",
+      "source": "lamp.obj",
+      "productionVerified": false
+    }
+  ]
+}
