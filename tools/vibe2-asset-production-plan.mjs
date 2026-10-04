@@ -523,8 +523,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   };
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
   const sourceExt=/\\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
-  const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
+  const assetIds=unique(next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4)).sort((a,b)=>b.length-a.length||a.localeCompare(b));
+  const escapeRegex=value=>String(value).replace(/[|\\{}()[\]^$+*?.-]/g,'\\  const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
+  const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);');
+  const assetIdMatcher=assetIds.length?new RegExp(assetIds.map(escapeRegex).join('|'),'g'):null;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
+  const modulePathRows=[...sourcePathGroups.keys()].map(assetPath=>({assetPath,moduleToken:path.basename(assetPath).replace(/\.[^.]+$/,'')})).filter(row=>row.moduleToken.length>=4);
+  let sourceFilesScanned=0,sourceBytesScanned=0;
   for(const gameRootName of gameRoots){
     const gameRoot=path.join(repoRoot,gameRootName);
     let gameDirs=[];
@@ -569,8 +574,15 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           let content='';
           try{content=fs.readFileSync(full,'utf8');}catch{continue;}
           if(!content)continue;
+          sourceFilesScanned++;
+          sourceBytesScanned+=Buffer.byteLength(content,'utf8');
           const relativeSource=path.relative(repoRoot,full).replaceAll('\\','/');
-          for(const assetId of assetIds)if(content.includes(assetId))addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+          if(assetIdMatcher){
+            assetIdMatcher.lastIndex=0;
+            const matchedIds=new Set(content.match(assetIdMatcher)||[]);
+            for(const assetId of matchedIds)addConsumption(assetId,gameId,'SOURCE_ID_MARKER',relativeSource);
+          }
+          for(const row of modulePathRows)if(content.includes(row.moduleToken))addLibraryModuleConsumption(row.assetPath,gameId,'SOURCE_MODULE_MARKER',relativeSource);
         }
       }
     }
