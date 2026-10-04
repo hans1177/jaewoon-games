@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-survival-core-world-v1",
   "gameId": "survival",
   "staticAuthoringChecklist": {
@@ -29,5 +29,68 @@
   "runtimeVerificationState": "PENDING_STUDIO",
   "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
   "gameplayAuthority": false,
-  "externalAssetDependency": false
+  "externalAssetDependency": false,
+  "sourceAudit": {
+    "type": "PACK_LEVEL_STATIC_3D_SOURCE_AUTHORING_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scopeFamilies": [
+      "ENVIRONMENT",
+      "BUILDING",
+      "PROP"
+    ],
+    "scoreIsPackBaselineNotPerAssetRuntimeProof": true,
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 86,
+      "FORM_STRUCTURE": 88,
+      "MATERIAL_SURFACE": 83,
+      "COLOR_LIGHTING": 82,
+      "STYLE_COHERENCE": 87,
+      "DETAIL_FINISH": 84,
+      "READABILITY_SCALE": 89,
+      "MODULAR_REUSE": 91,
+      "VARIATION_BREADTH": 76,
+      "PERFORMANCE_LOD": 90,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 90
+    },
+    "expectedScore": 869.1,
+    "expectedGrade": "HIGH_QUALITY",
+    "auditPass": false,
+    "hardGateFailures": [],
+    "evidenceBasis": {
+      "sourceAssetCount": 11,
+      "objSourceCount": 11,
+      "totalPackBytes": 161587,
+      "materialFile": "survival-core-world.mtl",
+      "modular": true,
+      "gameplayAuthority": false,
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/catalog.json",
+        "assets/roblox/survival-core-world-v1/quality-evidence.json",
+        "assets/roblox/survival-core-world-v1/preview.svg"
+      ]
+    },
+    "limitations": [
+      "PACK_LEVEL_SCORE_BELOW_880_PASS_FLOOR",
+      "ACTUAL_ROBLOX_BINDING_UNVERIFIED",
+      "COLLISION_NAV_AND_INTERACTION_RUNTIME_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "lowScoreDoesNotBlockInternalUse": true,
+    "newAuthoringMayFillVerifiedGaps": true,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
