@@ -1277,6 +1277,26 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   });
 }
 
+function normalizeFlowAssetRequirements(requirements=[]){
+  return freezeList((Array.isArray(requirements)?requirements:[]).map(row=>freeze({
+    ...(row&&typeof row==='object'?row:{}),
+    family:clean(row?.family).toUpperCase(),
+    subfamily:clean(row?.subfamily).toUpperCase(),
+    required:row?.required!==false,
+    resolution:clean(row?.resolution)||'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    libraryEligibility:'CROSS_GENRE_COMPATIBLE_ASSETS',
+    genreRestriction:false,
+    crossGenreReuseAllowed:true,
+    genreUse:'PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE',
+    assetIdPinned:false,
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    progressionAuthority:false,
+    saveAuthority:false,
+    networkingAuthority:false
+  })).filter(row=>row.family));
+}
+
 export function buildVibeAssetProductionPlan({
   task={},
   target='',
@@ -1288,6 +1308,7 @@ export function buildVibeAssetProductionPlan({
 }={}){
   const targetResolution=resolveAssetProductionTarget({target,task,repoRoot});
   const resolvedTarget=targetResolution.target;
+  const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
   const currentCustomizationDocument=(companyRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
@@ -1534,7 +1555,7 @@ export function buildVibeAssetProductionPlan({
     gameId:clean(task.gameId),
     worldDna:task.worldDna||task.mapDna||{},
     languages:task.visualLanguages||{},
-    requirements:Array.isArray(task.assetRequirements)?task.assetRequirements:[],
+    requirements:flowAssetRequirements,
     usageByAsset:task.assetUsageById||{},
     futureGameDemands:Array.isArray(task.futureGameDemands)?task.futureGameDemands:[],
     usageEvents:Array.isArray(task.assetUsageEvents)?task.assetUsageEvents:[],
@@ -1724,7 +1745,7 @@ export function buildVibeAssetProductionPlan({
     presetId:clean(selector.prototypePreset?.id)||null,
     productionProfile:selector.production||null,
     commercialDistillation,
-    flowAssetRequirements:freezeList(Array.isArray(task.assetRequirements)?task.assetRequirements:[]),
+    flowAssetRequirements,
     flowAssetLoadout:freeze({
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
       complete:studioUniversePlan?.loadout?.complete===true,
