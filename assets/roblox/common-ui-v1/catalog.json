@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -360,9 +360,289 @@
         "SELECTED",
         "COOLDOWN"
       ]
+    },
+    {
+      "atomId": "MAIN_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMainMenu",
+      "role": "MAIN_MENU",
+      "surface": "MENU",
+      "states": [
+        "DEFAULT",
+        "CONTINUE_AVAILABLE",
+        "NEW_GAME",
+        "OFFLINE_NOTICE"
+      ]
+    },
+    {
+      "atomId": "TOP_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTopBar",
+      "role": "TOP_BAR",
+      "surface": "NAVIGATION",
+      "states": [
+        "DEFAULT",
+        "BUSY",
+        "SYNCING",
+        "OFFLINE"
+      ]
+    },
+    {
+      "atomId": "SIDE_NAVIGATION",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSideNavigation",
+      "role": "SIDE_NAVIGATION",
+      "surface": "NAVIGATION",
+      "states": [
+        "DEFAULT",
+        "SELECTED",
+        "LOCKED",
+        "BADGE"
+      ]
+    },
+    {
+      "atomId": "PAUSE_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePauseMenu",
+      "role": "PAUSE_MENU",
+      "surface": "PAUSE",
+      "states": [
+        "DEFAULT",
+        "UNSAVED_NOTICE",
+        "BLOCKED_ACTION"
+      ]
+    },
+    {
+      "atomId": "SETTINGS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSettingsPanel",
+      "role": "SETTINGS_PANEL",
+      "surface": "SETTINGS",
+      "states": [
+        "DEFAULT",
+        "CHANGED",
+        "RESTART_REQUIRED",
+        "ACCESSIBILITY_PRESET"
+      ]
+    },
+    {
+      "atomId": "SEARCH_FIELD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSearchField",
+      "role": "SEARCH_FIELD",
+      "surface": "SEARCH_FILTER_SORT",
+      "states": [
+        "DEFAULT",
+        "FOCUSED",
+        "QUERY",
+        "NO_RESULT"
+      ]
+    },
+    {
+      "atomId": "FILTER_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFilterBar",
+      "role": "FILTER_BAR",
+      "surface": "SEARCH_FILTER_SORT",
+      "states": [
+        "DEFAULT",
+        "SELECTED",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "SORT_CONTROL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSortControl",
+      "role": "SORT_CONTROL",
+      "surface": "SEARCH_FILTER_SORT",
+      "states": [
+        "DEFAULT",
+        "OPEN",
+        "SELECTED"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_FULL_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryFullScreen",
+      "role": "INVENTORY_FULL_SCREEN",
+      "surface": "INVENTORY_FULL",
+      "states": [
+        "DEFAULT",
+        "SEARCH",
+        "FILTERED",
+        "EMPTY",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "EQUIPMENT_FULL_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEquipmentFullScreen",
+      "role": "EQUIPMENT_FULL_SCREEN",
+      "surface": "EQUIPMENT_FULL",
+      "states": [
+        "DEFAULT",
+        "SLOT_SELECTED",
+        "LOCKED",
+        "COMPARE"
+      ]
+    },
+    {
+      "atomId": "CHARACTER_DETAIL_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCharacterDetailScreen",
+      "role": "CHARACTER_DETAIL_SCREEN",
+      "surface": "CHARACTER_DETAIL",
+      "states": [
+        "DEFAULT",
+        "STATUS",
+        "EFFECTS",
+        "PROGRESS"
+      ]
+    },
+    {
+      "atomId": "MAP_FULL_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMapFullScreen",
+      "role": "MAP_FULL_SCREEN",
+      "surface": "MAP_FULL",
+      "states": [
+        "DEFAULT",
+        "POI_SELECTED",
+        "UNDISCOVERED",
+        "DANGER",
+        "PARTY"
+      ]
+    },
+    {
+      "atomId": "QUEST_LOG",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateQuestLog",
+      "role": "QUEST_LOG",
+      "surface": "QUEST_LOG",
+      "states": [
+        "ACTIVE",
+        "COMPLETE",
+        "FAILED",
+        "LOCKED",
+        "EMPTY"
+      ]
+    },
+    {
+      "atomId": "CRAFTING_FULL_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCraftingFullScreen",
+      "role": "CRAFTING_FULL_SCREEN",
+      "surface": "CRAFTING_FULL",
+      "states": [
+        "CRAFTABLE",
+        "MISSING_MATERIAL",
+        "LOCKED",
+        "QUEUE",
+        "SEARCH",
+        "FILTERED"
+      ]
+    },
+    {
+      "atomId": "SHOP_FULL_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateShopFullScreen",
+      "role": "SHOP_FULL_SCREEN",
+      "surface": "SHOP_FULL",
+      "states": [
+        "AVAILABLE",
+        "OWNED",
+        "SOLD_OUT",
+        "LOCKED",
+        "INSUFFICIENT_FUNDS",
+        "SEARCH"
+      ]
+    },
+    {
+      "atomId": "CONFIRM_DIALOG",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateConfirmDialog",
+      "role": "CONFIRM_DIALOG",
+      "surface": "MODAL",
+      "states": [
+        "DEFAULT",
+        "DANGER",
+        "IRREVERSIBLE_WARNING"
+      ]
+    },
+    {
+      "atomId": "POPUP_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePopupPanel",
+      "role": "POPUP_PANEL",
+      "surface": "MODAL",
+      "states": [
+        "INFO",
+        "REWARD",
+        "HELP",
+        "DETAIL"
+      ]
+    },
+    {
+      "atomId": "LOADING_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLoadingState",
+      "role": "LOADING_STATE",
+      "surface": "STATE_FEEDBACK",
+      "states": [
+        "LOADING"
+      ]
+    },
+    {
+      "atomId": "EMPTY_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEmptyState",
+      "role": "EMPTY_STATE",
+      "surface": "STATE_FEEDBACK",
+      "states": [
+        "EMPTY"
+      ]
+    },
+    {
+      "atomId": "FAILURE_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFailureState",
+      "role": "FAILURE_STATE",
+      "surface": "STATE_FEEDBACK",
+      "states": [
+        "ERROR",
+        "RETRY"
+      ]
+    },
+    {
+      "atomId": "LOCKED_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateLockedState",
+      "role": "LOCKED_STATE",
+      "surface": "STATE_FEEDBACK",
+      "states": [
+        "LOCKED",
+        "REQUIREMENT"
+      ]
+    },
+    {
+      "atomId": "INPUT_HINT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInputHint",
+      "role": "INPUT_HINT",
+      "surface": "INPUT_HINT",
+      "states": [
+        "TOUCH",
+        "KEYBOARD_MOUSE",
+        "GAMEPAD",
+        "AUTO"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·AI/NPC 상호작용 32종 v3",
+  "title": "Roblox 회사 공용 UI·AI/NPC·전체 메뉴 시스템 v4",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -413,7 +693,23 @@
     "HOTBAR",
     "INTERACTION_PROMPT",
     "TOOLTIP",
-    "MODAL"
+    "MODAL",
+    "MAIN_MENU",
+    "TOP_BAR",
+    "SIDE_NAVIGATION",
+    "PAUSE",
+    "SETTINGS",
+    "SEARCH_FILTER_SORT",
+    "INVENTORY_FULL",
+    "EQUIPMENT_FULL",
+    "CHARACTER_DETAIL",
+    "MAP_FULL",
+    "QUEST_LOG",
+    "CRAFTING_FULL",
+    "SHOP_FULL",
+    "STATE_FEEDBACK",
+    "INPUT_HINT",
+    "SCREEN_TRANSITION"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -429,7 +725,13 @@
     "LOCKED",
     "EMPTY",
     "LOADING",
-    "ERROR"
+    "ERROR",
+    "SYNCING",
+    "OFFLINE",
+    "NO_RESULT",
+    "RETRY",
+    "UNSAVED_NOTICE",
+    "RESTART_REQUIRED"
   ],
   "iconSource": "RobloxCommonIcons.luau",
   "iconSymbols": [
@@ -449,7 +751,7 @@
   "iconAssetDependency": false,
   "vectorIconCount": 12,
   "continuationContract": {
-    "version": 2,
+    "version": 3,
     "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
     "infrastructureMutationAllowed": false,
     "flowMutationAllowed": false,
@@ -534,6 +836,52 @@
       ],
       "gameplayAuthority": false
     },
-    "adaptationBeforeRejectionPreferred": true
-  }
+    "adaptationBeforeRejectionPreferred": true,
+    "machineReadableSelectionRequired": true,
+    "commonUiFullScreenReusePreferred": true,
+    "gotyReferenceRule": "REFERENCE_INFORMATION_ARCHITECTURE_VISUAL_HIERARCHY_NAVIGATION_DEPTH_STATE_EXPRESSION_ACCESSIBILITY_INPUT_SWITCHING_AND_TRANSITION_PRINCIPLES_ONLY_NO_COPY",
+    "gameSpecificVariationFields": [
+      "LOGO",
+      "COLOR",
+      "BACKGROUND",
+      "COPY",
+      "INTENSITY",
+      "DURATION"
+    ]
+  },
+  "navigationContract": {
+    "version": 1,
+    "principles": [
+      "PRIMARY_ACTIONS_VISIBLE_WITHOUT_DEEP_NESTING",
+      "GLOBAL_BACK_STACK_PRESERVED",
+      "TOP_BAR_CONTEXT_ALWAYS_READABLE",
+      "SIDE_NAV_FOR_MAJOR_SYSTEMS",
+      "SEARCH_FILTER_SORT_COLOCATED",
+      "MOBILE_FIRST_TOUCH_TARGETS",
+      "GAMEPAD_FOCUS_PATH_EXPLICIT",
+      "INPUT_MODE_HINT_SWAPS_WITH_ACTIVE_DEVICE"
+    ],
+    "maxRecommendedDepth": 3,
+    "fullScreenSystemDepth": 1,
+    "destructiveActionsRequireConfirmation": true,
+    "colorOnlyStateForbidden": true,
+    "focusLossOnTransitionForbidden": true
+  },
+  "fullScreenSurfaceIds": [
+    "MAIN_MENU",
+    "PAUSE_MENU",
+    "SETTINGS_PANEL",
+    "INVENTORY_FULL_SCREEN",
+    "EQUIPMENT_FULL_SCREEN",
+    "CHARACTER_DETAIL_SCREEN",
+    "MAP_FULL_SCREEN",
+    "QUEST_LOG",
+    "CRAFTING_FULL_SCREEN",
+    "SHOP_FULL_SCREEN",
+    "CONFIRM_DIALOG",
+    "POPUP_PANEL",
+    "LOADING_STATE",
+    "FAILURE_STATE",
+    "LOCKED_STATE"
+  ]
 }
