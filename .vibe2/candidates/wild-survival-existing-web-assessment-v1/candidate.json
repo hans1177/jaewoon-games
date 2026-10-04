@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function draw(){",
+      "replace": "function draw(){\n  const w=innerWidth,h=innerHeight,p=S.player,camX=clamp(p.x-w/2,0,WORLD.w-w),camY=clamp(p.y-h/2,0,WORLD.h-h);\n  ctx.clearRect(0,0,w,h);\n  ctx.fillStyle='#657c54';ctx.fillRect(0,0,w,h);\n  ctx.save();ctx.translate(-camX,-camY);\n  ctx.fillStyle='#79825e';ctx.fillRect(0,WORLD.riverY-420,WORLD.w,360);\n  ctx.fillStyle='#52718a';ctx.fillRect(0,WORLD.riverY,WORLD.w,WORLD.riverH);\n  ctx.fillStyle='#a8a17a';ctx.fillRect(0,WORLD.riverY-18,WORLD.w,18);ctx.fillRect(0,WORLD.riverY+WORLD.riverH,WORLD.w,18);\n  ctx.fillStyle='#777867';ctx.beginPath();ctx.ellipse(2850,420,470,260,0,0,Math.PI*2);ctx.fill();\n  for(const r of resources){\n    if(r.amount<=0)continue;\n    if(r.x<camX-50||r.x>camX+w+50||r.y<camY-50||r.y>camY+h+50)continue;\n    if(r.type==='tree')tree(r.x,r.y);\n    if(r.type==='stone'){ctx.fillStyle='#70756e';ctx.beginPath();ctx.ellipse(r.x,r.y,16,11,-.3,0,Math.PI*2);ctx.fill()}\n    if(r.type==='fiber'){ctx.strokeStyle='#b4b26c';ctx.lineWidth=3;for(let n=-2;n<=2;n++){ctx.beginPath();ctx.moveTo(r.x+n*3,r.y+12);ctx.lineTo(r.x+n*4,r.y-10);ctx.stroke()}}\n    if(r.type==='berry'){ctx.fillStyle='#355b36';ctx.beginPath();ctx.arc(r.x,r.y,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8b3040';for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(r.x-7+n*5,r.y-2+(n%2)*6,2.5,0,Math.PI*2);ctx.fill()}}\n  }\n  if(S.camp.shelter>0){\n    ctx.fillStyle=S.camp.shelter===2?'#5a4936':'#6c5d43';\n    ctx.beginPath();\n    ctx.moveTo(2850,420);\n    ctx.lineTo(2850+470,420+260);\n    ctx.fill();\n    ctx.fillStyle='#777867';\n    ctx.beginPath();\n    ctx.moveTo(2850,420);\n    ctx.lineTo(2850+470,420+260);\n    ctx.fill();\n  }\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
