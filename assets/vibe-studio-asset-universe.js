@@ -4155,10 +4155,17 @@ export function buildLibraryHeatmap({coverageReport={},signalsByKey={}}={}){
 function externalCandidatesForGap(gap={},externalSources=[]){
   const family=upper(gap.family);
   return (externalSources||[]).filter(src=>{
-    const category=upper(src.category);
-    const status=upper(src.status);
-    return /LICENSE_VERIFIED/.test(status)&&(category===family||(family==='BUILDING'&&['ENVIRONMENT','PROP'].includes(category))||(family==='MATERIAL'&&['VFX','ENVIRONMENT'].includes(category)));
-  });
+    const categories=uniq([src?.category,...(Array.isArray(src?.categories)?src.categories:[])]).map(upper);
+    const status=upper(src?.status);
+    const categoryMatch=categories.includes(family)
+      ||(family==='BUILDING'&&categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))
+      ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
+    return /LICENSE_VERIFIED/.test(status)&&categoryMatch;
+  }).sort((a,b)=>
+    Number(b?.volumeAdaptationEligible===true)-Number(a?.volumeAdaptationEligible===true)
+    ||Number(b?.sourcePriority||0)-Number(a?.sourcePriority||0)
+    ||text(a?.id).localeCompare(text(b?.id))
+  );
 }
 
 function semanticSeedId(gap={},index=0){
