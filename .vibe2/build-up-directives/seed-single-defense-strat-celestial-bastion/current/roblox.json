@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g15-b93ab41cb55e",
-  "directiveFingerprint": "b93ab41cb55efc09f61fad91a7454d04c990e84fff58b22c17e70bbd7812ff6d",
-  "previousDirectiveFingerprint": "24da4594aae00ae7a104ddf7895e8fa3f481b02cde053522bde7befb18803257",
-  "forbiddenRepeatFingerprint": "24da4594aae00ae7a104ddf7895e8fa3f481b02cde053522bde7befb18803257",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g16-380b371f8f70",
+  "directiveFingerprint": "380b371f8f70f392e00d15436bd5ac26a6295c9bcad1b01911ee4af94a35cee5",
+  "previousDirectiveFingerprint": "b93ab41cb55efc09f61fad91a7454d04c990e84fff58b22c17e70bbd7812ff6d",
+  "forbiddenRepeatFingerprint": "b93ab41cb55efc09f61fad91a7454d04c990e84fff58b22c17e70bbd7812ff6d",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 15,
+  "generation": 16,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+  "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
   "designFingerprint": "6de468c40ad6a0372eb03c7c03158edb5d66b9d400becd715c91289ce4ef36d9",
   "gameIdentityAndNonNegotiables": {
     "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
@@ -56,8 +56,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 170,
-      "progression": 177,
+      "combat": 172,
+      "progression": 191,
       "ai": 40,
       "save": 66,
       "multiplayer": 30,
@@ -69,12 +69,12 @@
       "audio": 1,
       "audioDynamics": 17,
       "ui": 56,
-      "uiFlow": 36,
+      "uiFlow": 38,
       "entryFlow": 10,
       "loadingFlow": 0,
       "input": 59,
       "map": 152,
-      "landmark": 75,
+      "landmark": 79,
       "interaction": 29,
       "inventory": 2,
       "equipment": 0,
@@ -97,7 +97,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 254
+        "score": 252
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -354,9 +354,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 14,
-    "previousSourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
-    "currentSourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+    "previousGeneration": 15,
+    "previousSourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+    "currentSourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1526,8 +1526,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99540,
-        "largestFileBytes": 43735,
+        "sourceBytes": 128800,
+        "largestFileBytes": 43705,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1558,16 +1558,16 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
+    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+    "themeDepth": 1,
+    "selectedThemeReason": "3 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
@@ -1576,7 +1576,6 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1586,7 +1585,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1597,20 +1597,18 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
@@ -1618,22 +1616,22 @@
     },
     "scoredThemes": [
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 66,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
-      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 54,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
           "SYSTEM_CONNECTION"
+        ]
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 48,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
         ]
       },
       {
@@ -1667,13 +1665,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
+      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
+      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
+      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
+      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
+      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
+      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -2366,7 +2364,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f1c4fe2fd5ab8ecc8efe6f564e3fb0f89362b37bc9bec237aaeac734dc6f9aa2",
+      "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2413,7 +2411,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 16,
+    "nextGeneration": 17,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2485,5 +2483,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T07:47:26.420Z"
+  "generatedAt": "2026-10-04T07:57:07.763Z"
 }
