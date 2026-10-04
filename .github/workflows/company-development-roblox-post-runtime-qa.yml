@@ -405,6 +405,7 @@ jobs:
                 &&studio.sourceRevision===sourceRevision
                 &&studio.artifactIdentity===artifactIdentity
                 &&Number(studio.candidateVersionNumber)===Number(c.versionNumber)
+                &&studio.targetEngineRuntimeUsageMatched===true
               ));
             if(exactReusable){
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
@@ -830,6 +831,7 @@ jobs:
                 &&priorStudio.sourceRevision===sourceRevision
                 &&priorStudio.artifactIdentity===artifactIdentity
                 &&Number(priorStudio.candidateVersionNumber)===Number(candidate.versionNumber)
+                &&priorStudio.targetEngineRuntimeUsageMatched===true
               ));
             const exactStudioRuntimeEvidenceReusable=
               exactStudioInternalValidation
@@ -1080,6 +1082,49 @@ jobs:
               }
               console.log(`ROBLOX_FOUNDATION_PERMISSION_BLOCKED=${item.gameId}:requiredScope=${requiredScope}:HTTP_${Number(engineProbe.status)||0}`);
               pending++;
+              continue;
+            }
+
+            const exactStudioAssetRuntimeUsage=Boolean(
+              !studioAssetBindingRequired||(
+                engineProbe?.engineExecuted===true
+                &&engineProbe?.exactPlace===true
+                &&engineProbe?.exactVersion===true
+                &&engineProbe?.studioAssetSelectionMatched===true
+                &&engineProbe?.studioAssetRuntimeUsageMatched===true
+              )
+            );
+            if(studioAssetBindingRequired&&!exactStudioAssetRuntimeUsage){
+              item.robloxStudioAssetRuntimeBindingPassed=false;
+              item.robloxStudioAssetRuntimeBindingEvidence={
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                targetEngineExecuted:engineProbe?.engineExecuted===true,
+                targetEngineExactPlace:engineProbe?.exactPlace===true,
+                targetEngineExactVersion:engineProbe?.exactVersion===true,
+                targetEngineSelectionMatched:engineProbe?.studioAssetSelectionMatched===true,
+                targetEngineRuntimeUsageMatched:false,
+                expectedStudioAssetAtoms:engineProbe?.expectedStudioAssetAtoms||[],
+                observedStudioAssetAtoms:engineProbe?.observedStudioAssetAtoms||[],
+                expectedStudioAssetRuntimeFamilies:engineProbe?.expectedStudioAssetRuntimeFamilies||[],
+                observedStudioAssetRuntimeFamilies:engineProbe?.observedStudioAssetRuntimeFamilies||[],
+                observedStudioAssetRuntimeAtoms:engineProbe?.observedStudioAssetRuntimeAtoms||[],
+                marker:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING',
+                authority:'roblox-open-cloud-native-asset-usage-v2',
+                verifiedAt:null,
+              };
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_STUDIO_ASSET_RUNTIME_USAGE_NOT_OBSERVED';
+              item.routingBlockers=['roblox-studio-asset-runtime-native-usage-missing'];
+              item.updatedAt=stamp;
+              changed=true;
+              pending++;
+              console.log('ROBLOX_STUDIO_ASSET_RUNTIME_USAGE_PENDING='+item.gameId+':version='+Number(candidate.versionNumber));
               continue;
             }
 
@@ -1369,7 +1414,8 @@ jobs:
               &&engineProbe?.engineExecuted===true
               &&engineProbe?.exactPlace===true
               &&engineProbe?.exactVersion===true
-              &&engineProbe?.studioAssetSelectionMatched===true;
+              &&engineProbe?.studioAssetSelectionMatched===true
+              &&engineProbe?.studioAssetRuntimeUsageMatched===true;
             item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
             item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
               version:1,
@@ -1387,8 +1433,12 @@ jobs:
               targetEngineStudioAssetApplied:engineProbe?.studioAssetApplied===true,
               targetEngineStudioAssetBindingVersion:Number(engineProbe?.studioAssetBindingVersion||0),
               targetEngineSelectionMatched:engineProbe?.studioAssetSelectionMatched===true,
+              targetEngineRuntimeUsageMatched:engineProbe?.studioAssetRuntimeUsageMatched===true,
               expectedStudioAssetAtoms:engineProbe?.expectedStudioAssetAtoms||[],
               observedStudioAssetAtoms:engineProbe?.observedStudioAssetAtoms||[],
+              expectedStudioAssetRuntimeFamilies:engineProbe?.expectedStudioAssetRuntimeFamilies||[],
+              observedStudioAssetRuntimeFamilies:engineProbe?.observedStudioAssetRuntimeFamilies||[],
+              observedStudioAssetRuntimeAtoms:engineProbe?.observedStudioAssetRuntimeAtoms||[],
               actualPlatformRuntime:true,
               marker:studioAssetRuntimeBindingPassed?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING',
               authority:'roblox-exact-runtime-studio-asset-binding-v1',
