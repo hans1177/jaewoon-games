@@ -163,6 +163,24 @@ test('SINGLE multiplayerMode metadata key does not create a false multiplayer re
   assert.equal(result.requiredCapabilities.includes('MULTIPLAYER'),false);
 });
 
+test('single-player battle title wording does not create a multiplayer requirement',()=>{
+  const baseline={content:{
+    identity:'골목 군단 대전은 골목길에서 적의 침공을 막는 실시간 라인 디펜스 게임이다.',
+    coreLoop:['유닛을 배치한다','적을 처치해 자원을 얻는다','웨이브를 클리어한다'],
+    multiplayerMode:'SINGLE'
+  }};
+  const result=evaluateRobloxGameplayProductReadiness({
+    gameId:'line-defense',
+    baseline,
+    config:'local Config={Genre="Strategy",PlayMode="SINGLE",MobileFirst=true} return Config',
+    server:'local function startRound() end\nlocal function finishRound() end',
+    client:mobileClient,
+    project
+  });
+  assert.equal(result.designPlayMode,'SINGLE');
+  assert.equal(result.requiredCapabilities.includes('MULTIPLAYER'),false);
+});
+
 test('4v4 design cannot be classified as non multiplayer',()=>{
   const baseline={content:{identity:'4v4 infection chase',coreLoop:['4v4 round','infect opponents'],multiplayerMode:'COMPETITIVE'}};
   const result=evaluateRobloxGameplayProductReadiness({
