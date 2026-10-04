@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-skill-v1",
   "family": "SKILL",
   "platform": "ROBLOX",
@@ -33,6 +33,108 @@
       "factory": "CreateImpactSmall",
       "role": "SMALL_IMPACT_PRESENTATION",
       "reuses": "roblox-common-vfx-impact-flash"
+    },
+    {
+      "atomId": "PROJECTILE_ORB",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateProjectileOrb",
+      "role": "PROJECTILE"
+    },
+    {
+      "atomId": "SKILL_TRAIL",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachSkillTrail",
+      "role": "TRAIL"
+    },
+    {
+      "atomId": "AREA_FIELD",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateAreaField",
+      "role": "AREA"
+    },
+    {
+      "atomId": "CHANNEL_RING",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateChannelRing",
+      "role": "CHANNEL"
+    },
+    {
+      "atomId": "BEAM_LINE",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateBeamLine",
+      "role": "BEAM"
+    },
+    {
+      "atomId": "SUMMON_MARKER",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateSummonMarker",
+      "role": "SUMMON"
+    },
+    {
+      "atomId": "DASH_STREAK",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "AttachDashStreak",
+      "role": "DASH"
+    },
+    {
+      "atomId": "SHIELD_SHELL",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateShieldShell",
+      "role": "SHIELD"
+    },
+    {
+      "atomId": "HEAL_FIELD",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateHealField",
+      "role": "HEAL"
+    },
+    {
+      "atomId": "AURA_RING",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateAuraRing",
+      "role": "AURA"
+    },
+    {
+      "atomId": "STATUS_APPLY_MARK",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateStatusApplyMark",
+      "role": "STATUS_APPLY"
+    },
+    {
+      "atomId": "STATUS_CLEANSE_BURST",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateStatusCleanseBurst",
+      "role": "STATUS_CLEANSE"
+    },
+    {
+      "atomId": "INTERRUPT_FLASH",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateInterruptFlash",
+      "role": "INTERRUPT"
+    },
+    {
+      "atomId": "SKILL_ICON_BADGE",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateSkillIconBadge",
+      "role": "ICON"
+    },
+    {
+      "atomId": "AUDIO_ROLE_MARKER",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateAudioRoleMarker",
+      "role": "AUDIO_ROLE"
+    },
+    {
+      "atomId": "CAMERA_ROLE_MARKER",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateCameraRoleMarker",
+      "role": "CAMERA_ROLE"
+    },
+    {
+      "atomId": "MOBILE_DENSITY_VARIANT",
+      "source": "RobloxCommonSkillPresentation.luau",
+      "factory": "CreateMobileDensityVariant",
+      "role": "MOBILE_DENSITY"
     }
   ],
   "systemDepthContract": {
@@ -61,11 +163,53 @@
     ],
     "currentDeclaredComponents": [
       "CAST_HAND",
+      "CAST_ORIGIN_PRESENTATION",
       "TELEGRAPH_CIRCLE",
-      "IMPACT_SMALL"
+      "AREA_TELEGRAPH_PRESENTATION",
+      "IMPACT_SMALL",
+      "SMALL_IMPACT_PRESENTATION",
+      "PROJECTILE_ORB",
+      "PROJECTILE",
+      "SKILL_TRAIL",
+      "TRAIL",
+      "AREA_FIELD",
+      "AREA",
+      "CHANNEL_RING",
+      "CHANNEL",
+      "BEAM_LINE",
+      "BEAM",
+      "SUMMON_MARKER",
+      "SUMMON",
+      "DASH_STREAK",
+      "DASH",
+      "SHIELD_SHELL",
+      "SHIELD",
+      "HEAL_FIELD",
+      "HEAL",
+      "AURA_RING",
+      "AURA",
+      "STATUS_APPLY_MARK",
+      "STATUS_APPLY",
+      "STATUS_CLEANSE_BURST",
+      "STATUS_CLEANSE",
+      "INTERRUPT_FLASH",
+      "INTERRUPT",
+      "SKILL_ICON_BADGE",
+      "ICON",
+      "AUDIO_ROLE_MARKER",
+      "AUDIO_ROLE",
+      "CAMERA_ROLE_MARKER",
+      "CAMERA_ROLE",
+      "MOBILE_DENSITY_VARIANT",
+      "MOBILE_DENSITY"
     ],
-    "currentAssetCount": 3,
-    "missingComponentCandidates": [
+    "currentAssetCount": 20,
+    "missingComponentCandidates": [],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false,
+    "volumeUpPhase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "presentationOnlyRoles": [
       "CAST",
       "TELEGRAPH",
       "PROJECTILE",
@@ -86,10 +230,7 @@
       "AUDIO_ROLE",
       "CAMERA_ROLE",
       "MOBILE_DENSITY"
-    ],
-    "qualityScoreIsNotUsageGate": true,
-    "existingAssetsRemainUsable": true,
-    "gameplayAuthority": false
+    ]
   },
   "internalAssetStandard": {
     "version": 1,
@@ -103,5 +244,21 @@
     "schedulerExcluded": true,
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "title": "Roblox 회사 공용 스킬 연출 20종 v3",
+  "seedCompositionContract": {
+    "version": 1,
+    "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "compatibleKits": [
+      "CRYSTAL_FACTORY_OVERLOAD",
+      "WHITE_NIGHT_BOSS_MIGRATION",
+      "COLOR_RIFT_PUZZLE_EVENT",
+      "SANDSTORM_CONVOY_DEFENSE",
+      "FOG_TOWN_MEMORY_CASE"
+    ],
+    "vfxDependencyReuseRequiredWhenCompatible": true,
+    "audioPlaybackAuthority": false,
+    "cameraAuthority": false,
+    "gameplayAuthority": false
   }
 }
