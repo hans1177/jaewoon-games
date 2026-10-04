@@ -1480,7 +1480,7 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:10,
+  version:11,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1711,6 +1711,112 @@ function internalAssetMaintenanceQuality(asset={}){
   const audit=scoreInternalAssetAudit1000({asset});
   return audit?.measuredAxisCount>0?Number(audit.score):null;
 }
+export const INTERNAL_ASSET_QUALITY_REPAIR_AXIS_ACTIONS=Object.freeze({
+  IDENTITY_SILHOUETTE:Object.freeze(['STRENGTHEN_PRIMARY_SECONDARY_TERTIARY_SHAPES','CHECK_NEGATIVE_SPACE_AND_ROLE_READABILITY','COMPARE_GAME_CAMERA_MID_RANGE_AND_CLOSEUP','REMOVE_COLOR_ONLY_IDENTITY_DEPENDENCE']),
+  FORM_STRUCTURE:Object.freeze(['REPAIR_CONSTRUCTION_AND_ANATOMICAL_LOGIC','FIX_JOINT_ATTACHMENT_INTERSECTION_AND_FLOATING_PARTS','CLARIFY_LOAD_OR_FORCE_PATHS','VERIFY_FUNCTIONAL_PROPORTIONS_AND_PIVOTS']),
+  MATERIAL_SURFACE:Object.freeze(['SEPARATE_MATERIAL_CLASSES_BY_ROUGHNESS_RESPONSE','ADD_CAUSE_BASED_EDGE_CAVITY_AND_CONTACT_WEAR','FIX_TEXTURE_SCALE_AND_SURFACE_DIRECTION','PRESERVE_STYLE_LOCK_WHILE_IMPROVING_MICROSURFACE']),
+  COLOR_LIGHTING:Object.freeze(['REBUILD_VALUE_HIERARCHY_FOR_ROLE_READABILITY','CHECK_CONTACT_SHADOW_AND_KEY_FILL_BALANCE','SEPARATE_FOCAL_ACCENT_FROM_BACKGROUND_VALUES','VERIFY_DAY_NIGHT_AND_BRIGHT_DARK_SCENE_READABILITY']),
+  STYLE_COHERENCE:Object.freeze(['MATCH_CURRENT_SHAPE_MATERIAL_LINE_AND_LIGHT_LANGUAGE','REMOVE_SAMPLE_PACK_OR_MIXED_STYLE_ARTIFACTS','PRESERVE_IDENTITY_WHILE_ADAPTING_TO_CURRENT_STYLE_AXES']),
+  DETAIL_FINISH:Object.freeze(['FOCUS_DETAIL_ON_HERO_CONTACT_AND_CAMERA_VISIBLE_REGIONS','FIX_SEAMS_CLIPPING_FLOATING_EDGES_AND_UNFINISHED_JOINTS','ADD_FUNCTIONAL_FASTENERS_CONTACTS_AND_LOCAL_HISTORY','AVOID_UNIFORM_NOISE_OR_RANDOM_DETAIL']),
+  READABILITY_SCALE:Object.freeze(['VERIFY_GAME_CAMERA_SILHOUETTE','VERIFY_SMALL_MOBILE_SCREEN_READABILITY','REBALANCE_DETAIL_BY_DISTANCE','KEEP_CRITICAL_ROLE_CUES_THROUGH_LOD']),
+  MOTION_RIG:Object.freeze(['FIX_WEIGHT_TRANSFER_CENTER_OF_MASS_AND_ARCS','LOCK_FOOT_HAND_WEAPON_AND_TARGET_CONTACTS','REMOVE_ROOT_SNAP_FOOT_SLIDE_AND_RIGID_GLIDE','POLISH_ANTICIPATION_CONTACT_RECOVERY_AND_TRANSITIONS']),
+  FEEDBACK_STATES:Object.freeze(['ADD_MISSING_STATE_VARIANTS_FROM_EXISTING_ROLE','SEPARATE_IDLE_ACTIVE_SUCCESS_FAILURE_DAMAGE_OR_SELECTION_STATES','ENSURE_STATE_CHANGE_READS_WITHOUT_COLOR_ONLY_DEPENDENCE']),
+  UI_UX_SYSTEM:Object.freeze(['REPAIR_INFORMATION_HIERARCHY_AND_FOCUS_ORDER','COMPLETE_EMPTY_LOADING_DISABLED_SELECTED_ERROR_SUCCESS_STATES','VERIFY_TOUCH_GAMEPAD_KEYBOARD_FOCUS_AND_BACKSTACK','CHECK_SMALL_SIZE_TEXT_ICON_AND_CONTROL_READABILITY']),
+  MODULAR_REUSE:Object.freeze(['ADD_CLEAR_SOCKETS_PIVOTS_AND_SNAP_BOUNDARIES','SEPARATE_REUSABLE_PARTS_WITH_STABLE_IDENTITY','VERIFY_RECOMBINATION_WITHOUT_SEAMS_OR_ROLE_BREAKAGE','PRESERVE_PARENT_LINEAGE_FOR_DERIVED_VARIANTS']),
+  VARIATION_BREADTH:Object.freeze(['ADD_ROLE_STATE_REGION_RARITY_OR_DAMAGE_VARIANTS_BEYOND_HUE','AVOID_DUPLICATE_SILHOUETTE_AND_ATOM_BUNDLES','BUILD_DISTINCT_VARIANTS_FROM_EXISTING_COMPATIBLE_PARTS']),
+  PERFORMANCE_LOD:Object.freeze(['BUILD_OR_REPAIR_DISTANCE_LOD_AND_MOBILE_BUDGET_VARIANTS','REDUCE_OFFSCREEN_OVERDRAW_AND_UNSEEN_DETAIL','PRESERVE_SILHOUETTE_CONTACT_AND_FEEDBACK_AT_LOWER_COST','VERIFY_STREAMING_POOLING_OR_DENSITY_WHEN_APPLICABLE']),
+  ACCESSIBILITY_INPUT:Object.freeze(['ADD_SHAPE_TEXT_OR_TIMING_REDUNDANCY_TO_COLOR_CUES','SUPPORT_REDUCED_MOTION_OR_FLASH_WHEN_APPLICABLE','VERIFY_TOUCH_TARGET_GAMEPAD_FOCUS_AND_INPUT_HINTS']),
+  PROVENANCE_MAINTAINABILITY:Object.freeze(['PRESERVE_EDITABLE_SOURCE_HASH_LINEAGE_AND_PARENT_REFERENCE','KEEP_DERIVATION_STEPS_REPRODUCIBLE','REMOVE_UNTRACEABLE_OR_AMBIGUOUS_SOURCE_DEPENDENCE']),
+  INTEGRATION_READINESS:Object.freeze(['COMPLETE_REQUIRED_OUTPUTS_SOCKETS_COLLISION_BINDINGS_AND_NAMING','VERIFY_PLATFORM_NATIVE_IMPORT_AND_REFERENCE_PATHS','KEEP_WORLD_EQUIPPED_DROP_ICON_OR_STATE_LINEAGE_CONSISTENT'])
+});
+
+export const INTERNAL_ASSET_QUALITY_FAMILY_DETAIL_FOCUS=Object.freeze({
+  CHARACTER:Object.freeze(['FACE_HANDS_FEET_OR_EQUIVALENT_IDENTITY_DETAIL','LAYERED_CLOTHING_ATTACHMENT_AND_CLIPPING','RIG_DEFORMATION_SHOULDER_HIP_HAND_FOOT','HAIR_ACCESSORY_SECONDARY_MOTION','GAME_CAMERA_AND_CLOSEUP_IDENTITY']),
+  CREATURE:Object.freeze(['SPECIES_BODY_PLAN_AND_PROPORTION','HEAD_MOUTH_EYE_HORN_CLAW_APPENDAGE_IDENTITY','SPECIES_GAIT_AND_WEIGHT_TRANSFER','ATTACK_CONTACT_HIT_STAGGER_DEATH','SURFACE_BREAKUP_AND_REGION_VARIANTS']),
+  BUILDING:Object.freeze(['FOUNDATION_WALL_DOOR_WINDOW_ROOF_GRAMMAR','CORNERS_WEDGES_STAIRS_RAILINGS_AND_TRIM','INTERIOR_EXTERIOR_CONTINUITY','PROP_SOCKETS_COLLISION_NAVIGATION','LANDMARK_READABILITY_DAMAGE_REPAIR_AND_LOD']),
+  ENVIRONMENT:Object.freeze(['FOREGROUND_MIDGROUND_BACKGROUND_DEPTH','LANDMARK_ROUTE_AND_POI_READABILITY','VEGETATION_ROCK_PROP_DENSITY_WITH_NEGATIVE_SPACE','WEATHER_TIME_SEASON_SURFACE_RESPONSE','STREAMING_LOD_AND_MOBILE_CLUTTER']),
+  WEAPON:Object.freeze(['GRIP_SOCKET_HAND_ALIGNMENT','BLADE_HEAD_HANDLE_GUARD_PROPORTION','EQUIPPED_WORLD_DROP_INVENTORY_ICON_LINEAGE','MATERIAL_DAMAGE_WEAR_AND_RARITY_ORNAMENT','ATTACK_CONTACT_TRAIL_IMPACT_PAIRING']),
+  SKILL:Object.freeze(['CAST_ANTICIPATION','TELEGRAPH','TRAVEL_OR_AREA_BODY','IMPACT_AND_REACTION','RECOVERY_ICON_AUDIO_CAMERA_AND_MOBILE_DENSITY']),
+  MATERIAL:Object.freeze(['REAL_WORLD_OR_STYLIZED_SCALE','ROUGHNESS_SPECULAR_NORMAL_RESPONSE','EDGE_CAVITY_CONTACT_WEAR','DRY_WET_FROZEN_CORRODED_VARIANTS','PLATFORM_COST_AND_TILING']),
+  AUDIO:Object.freeze(['VARIATION_SET_AND_REPEAT_DEDUP','NEAR_FAR_DISTANCE_BANDS','LOOP_SEAM_AND_TRANSITION','MIX_PRIORITY_DUCKING_AND_OVERLAP','MOBILE_BUDGET_AND_PROVENANCE']),
+  VFX:Object.freeze(['ANTICIPATION_CONTACT_AFTEREFFECT','SHAPE_LANGUAGE_AND_ROLE_SILHOUETTE','INTENSITY_AND_DENSITY_TIERS','OVERDRAW_OCCLUSION_AND_MOBILE_CAP','COLOR_BLIND_READABLE_CUE_REDUNDANCY']),
+  UI:Object.freeze(['INFORMATION_HIERARCHY','STATE_MATRIX','TOUCH_GAMEPAD_KEYBOARD_NAVIGATION','SMALL_SIZE_ICON_TYPOGRAPHY_READABILITY','ACCESSIBILITY_ERROR_RECOVERY_AND_CONTEXT']),
+  MOTION:Object.freeze(['KEY_POSE_AND_LINE_OF_ACTION','WEIGHT_TRANSFER_AND_FOOT_PLANT','HAND_WEAPON_TARGET_CONTACT','START_STOP_TURN_TRANSITION_INTERRUPT','REACTION_DIRECTION_STRENGTH_SECONDARY_MOTION_AND_LOD']),
+  PROP:Object.freeze(['FUNCTIONAL_SILHOUETTE_AND_PROPORTION','INTERACTION_STATE_AND_MOVING_PARTS','COLLISION_PIVOT_SOCKET_AND_CONTACT','MATERIAL_WEAR_AND_LOCAL_HISTORY','WORLD_DROP_ICON_OR_CRAFT_VARIANT_AND_LOD'])
+});
+
+function internalAssetQualityDomain(family=''){
+  const key=upper(family);
+  if(key==='CHARACTER')return'CHARACTER_GEAR';
+  if(key==='PROP')return'WORLD_PROP';
+  return key;
+}
+
+export function createInternalAssetQualityRepairBlueprint({asset={},audit=null,referenceAssets=[]}={}){
+  const family=upper(asset?.family||asset?.category);
+  const currentAudit=audit||scoreInternalAssetAudit1000({asset});
+  const declaredScore=Number(asset?.internalAuditScore);
+  const currentScore=Number.isFinite(declaredScore)?clamp(declaredScore,0,INTERNAL_ASSET_AUDIT_MAX):Number(currentAudit?.score||0);
+  const measuredAxes=currentAudit?.axes||{};
+  const critical=INTERNAL_ASSET_FAMILY_EXPECTATIONS[family]?.critical||{};
+  const rankedMeasured=Object.entries(measuredAxes)
+    .map(([axis,value])=>({axis,value:Number(value||0),weight:Number(INTERNAL_ASSET_AUDIT_WEIGHTS[axis]||0)}))
+    .sort((a,b)=>a.value-b.value||b.weight-a.weight||a.axis.localeCompare(b.axis));
+  const fallbackAxes=Object.entries(critical)
+    .map(([axis,min])=>({axis,value:null,targetPercent:Number(min||0),weight:Number(INTERNAL_ASSET_AUDIT_WEIGHTS[axis]||0)}))
+    .sort((a,b)=>b.weight-a.weight||b.targetPercent-a.targetPercent||a.axis.localeCompare(b.axis));
+  const axisCandidates=(rankedMeasured.length?rankedMeasured:fallbackAxes).slice(0,3);
+  const strongAxes=rankedMeasured.filter(row=>row.value>=.9).map(row=>row.axis);
+  const familyFocus=INTERNAL_ASSET_QUALITY_FAMILY_DETAIL_FOCUS[family]||Object.freeze([]);
+  const targetAxes=axisCandidates.map((row,index)=>Object.freeze({
+    order:index+1,
+    axis:row.axis,
+    currentPercent:row.value===null?null:Math.round(row.value*100),
+    minimumPercent:Number(critical[row.axis]||0)||null,
+    actions:freezeList(INTERNAL_ASSET_QUALITY_REPAIR_AXIS_ACTIONS[row.axis]||[]),
+    familyFocus:freezeList(familyFocus),
+    preserveOtherStrongAxes:true
+  }));
+  const references=(referenceAssets||[])
+    .filter(row=>text(row?.id)!==text(asset?.id)&&upper(row?.family||row?.category)===family)
+    .map(row=>({id:text(row?.id),quality:internalAssetMaintenanceQuality(row),grade:text(row?.internalAuditGrade)||null}))
+    .filter(row=>row.id&&row.quality!==null&&row.quality>=currentScore)
+    .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
+    .slice(0,5)
+    .map(row=>Object.freeze(row));
+  const domain=internalAssetQualityDomain(family);
+  const variationAxes=INTERNAL_ASSET_STUDIO_VARIATION_AXES[domain]||Object.freeze([]);
+  return Object.freeze({
+    version:1,
+    assetId:text(asset?.id)||null,
+    family,
+    currentScore,
+    currentGrade:text(asset?.internalAuditGrade)||currentAudit?.grade||null,
+    targetScore:INTERNAL_ASSET_AUDIT_MAX,
+    actionMode:currentScore>=INTERNAL_ASSET_AUDIT_MAX?'REAUDIT_CURRENT_MASTER':'REPAIR_WEAKEST_AXES',
+    targetAxes:Object.freeze(targetAxes),
+    preserveStrongAxes:freezeList(strongAxes),
+    referenceDonorCandidates:Object.freeze(references),
+    studioVariationAxes:freezeList(variationAxes),
+    familyDetailFocus:freezeList(familyFocus),
+    qualityLoop:freezeList(['INSPECT_CURRENT_ASSET','ISOLATE_WEAKEST_AXIS','LOCK_STRONG_AXES','REPAIR_SMALLEST_CAUSAL_SCOPE','COMPARE_SAME_CAMERA_LIGHTING_DISTANCE_ACTION','RUN_ASSET_QA','RESCORE_INTERNAL_AUDIT','CONTINUE_TO_NEXT_WEAKEST_AXIS']),
+    comparisonContract:Object.freeze({
+      sameCamera:true,
+      sameLighting:true,
+      sameDistance:true,
+      sameActionOrPoseWhenApplicable:true,
+      gameCameraFirst:true,
+      mobileReadabilityRequired:true,
+      regressionOnPreviouslyStrongAxesForbidden:true
+    }),
+    oneAndDoneCompletionForbidden:true,
+    fullRebuildDefault:false,
+    continuousReauditRequired:true,
+    quality1000IsPermanentCompletion:false,
+    reopenTriggers:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract.reopenTriggers,
+    productionVerificationIndependent:true
+  });
+}
 export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null}={}){
   const rows=(assets||[]).map(asset=>{
     const family=upper(asset?.family||asset?.category);
@@ -1764,6 +1870,15 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
     .slice(0,64)
     .map(row=>Object.freeze({...row}));
+  const assetById=new Map((assets||[]).map(asset=>[text(asset?.id||asset?.assetId||asset?.atomId),asset]));
+  const qualityEvolutionQueue=qualityRows
+    .slice()
+    .sort((a,b)=>Number(a.quality)-Number(b.quality)||a.id.localeCompare(b.id))
+    .slice(0,64)
+    .map(row=>createInternalAssetQualityRepairBlueprint({
+      asset:assetById.get(row.id)||{id:row.id,family:row.family,internalAuditScore:row.quality,internalAuditGrade:row.grade},
+      referenceAssets:assets
+    }));
   const prior=previous&&typeof previous==='object'?previous:{};
   const priorReady=Boolean(text(prior.inventoryFingerprint));
   const priorTokens=new Set(Array.isArray(prior.typeRoleTokens)?prior.typeRoleTokens:[]);
@@ -1796,6 +1911,9 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     staleRowIds:Object.freeze(staleRowIds.slice(0,192)),
     semanticDuplicateReviewGroups:Object.freeze(semanticDuplicateReviewGroups),
     qualityDonorCandidates:Object.freeze(donorCandidates),
+    qualityEvolutionQueue:Object.freeze(qualityEvolutionQueue),
+    qualityEvolutionCandidateCount:qualityEvolutionQueue.length,
+    weakestFirstContinuousQuality:true,
     refreshRequired:refreshReasons.length>0,
     refreshReasons:Object.freeze(refreshReasons),
     currentLibraryAlwaysWins:true,
