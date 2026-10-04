@@ -2471,3 +2471,94 @@ test('generic inventory UI requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-inventory-slot');
 });
+
+
+test('company-common creature parts pack provides eight reusable visual modules',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-creature-parts-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonCreatureParts.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['BIPED_TORSO','QUADRUPED_TORSO','INSECT_THORAX','WING_PAIR','TAIL_LONG','HORN_PAIR','SHELL_BACK','TENTACLE_CLUSTER'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  const materials=[...new Set([...source.matchAll(/Enum\.Material\.([A-Za-z0-9_]+)/g)].map(match=>match[1]))];
+  const allowed=new Set(['SmoothPlastic','Plastic','Neon','Wood','WoodPlanks','Marble','Slate','Concrete','Granite','Brick','Pebble','Cobblestone','CorrodedMetal','DiamondPlate','Foil','Metal','Grass','Sand','Fabric','Ice','Glacier','Snow','Sandstone','Mud','Ground','CrackedLava','Basalt','Asphalt','Salt','Limestone','Pavement','Air','Water','Glass','Rock']);
+  assert.equal(materials.length>0,true);
+  assert.equal(materials.every(value=>allowed.has(value)),true);
+
+  assert.ok(source.includes('function RobloxCommonCreatureParts.Create(id,options)'));
+  assert.ok(source.includes('function RobloxCommonCreatureParts.CreateViewport(id,options)'));
+  assert.ok(source.includes('anchor.Name="CreatureVisualAnchor"'));
+  assert.ok(source.includes('BodyPlanCompatibilityRequired",true'));
+  assert.ok(source.includes('RigBindingState","AUTHORING_REQUIRED"'));
+  assert.equal(catalog.family,'CREATURE');
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.bodyPlanCompatibilityRequired,true);
+  assert.equal(catalog.rigBindingState,'AUTHORING_REQUIRED');
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.staticAuthoringChecklist.checks.validRobloxMaterialEnums,true);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bHealth\s*=/,/\bMoveSpeed\s*=/,/\bHitbox\s*=/,/\bDropRate\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common creature registry preserves gameplay and rig verification authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-creature-parts-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.family,'CREATURE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.rigBindingState,'AUTHORING_REQUIRED');
+  assert.equal(pack.bodyPlanCompatibilityRequired,true);
+
+  const expected=[
+    ['BIPED_TORSO','TORSO_BIPED','BODY_CORE'],
+    ['QUADRUPED_TORSO','TORSO_QUADRUPED','BODY_CORE'],
+    ['INSECT_THORAX','THORAX_INSECT','BODY_CORE'],
+    ['WING_PAIR','WING_PAIR','APPENDAGE'],
+    ['TAIL_LONG','TAIL_LONG','APPENDAGE'],
+    ['HORN_PAIR','HORN_PAIR','HEAD_APPENDAGE'],
+    ['SHELL_BACK','SHELL_BACK','BACK_ARMOR_VISUAL'],
+    ['TENTACLE_CLUSTER','TENTACLE_CLUSTER','APPENDAGE']
+  ];
+  for(const [assetId,subfamily,creatureRole] of expected){
+    const id='roblox-common-creature-part-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'CREATURE');
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.creatureRole,creatureRole);
+    assert.equal(row.bodyPlanCompatibilityRequired,true);
+    assert.equal(row.rigBindingState,'AUTHORING_REQUIRED');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
+
+test('generic creature torso requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-biped-torso',family:'CREATURE',subfamily:'TORSO_BIPED',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['BODY_CORE']};
+  const gameOnly={id:'game-only-biped-torso',family:'CREATURE',subfamily:'TORSO_BIPED',platform:'ROBLOX',status:'REPO_ASSET',tags:['BODY_CORE']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'CREATURE',subfamily:'TORSO_BIPED',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-biped-torso');
+});
