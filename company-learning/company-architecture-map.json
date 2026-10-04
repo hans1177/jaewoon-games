@@ -6859,6 +6859,21 @@
       "batchParallelismMax": 8,
       "unrelatedGameRuntimeCandidateMayNotEnterRequestedCandidateSet": true,
       "requestedRunCrossGameStateMutationForbidden": true
+    },
+    "chatgptOverflowBottleneckAssist": {
+      "mode": "SECONDARY_ON_DEMAND",
+      "primaryBottleneckOwner": "VIBE2_VIBE3_EXISTING_SYSTEM_AI",
+      "normalCriticalPath": false,
+      "automaticBackgroundInvocationAssumed": false,
+      "assistScope": [
+        "BOTTLENECK_ROOT_CAUSE_ANALYSIS",
+        "EXISTING_RESPONSIBLE_SYSTEM_REPAIR",
+        "VIBE_DETAIL_CHAIN_EVOLUTION",
+        "OWNER_REQUESTED_GAME_SOURCE_EVOLUTION"
+      ],
+      "handback": "EXISTING_VIBE_AUTONOMOUS_LOOP",
+      "vibeContinuesWithoutAssist": true,
+      "noShadowManagerTopology": true
     }
   }
 }

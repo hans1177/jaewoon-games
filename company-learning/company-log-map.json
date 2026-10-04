@@ -3044,6 +3044,22 @@
       "requestedGameOnly": true,
       "batchMarker": "ALL_PENDING_PARALLEL_BATCH",
       "unrelatedGameFailureMayNotFailRequestedRun": true
+    },
+    "chatgptOverflowBottleneckAssist": {
+      "role": "SECONDARY_ON_DEMAND",
+      "primaryOwner": "VIBE2_VIBE3_EXISTING_SYSTEM_AI",
+      "normalOperationsDependency": false,
+      "normalApprovalDependency": false,
+      "evidenceRequiredWhenAssistExecutes": [
+        "CURRENT_MAIN_SHA",
+        "CENTRAL_FOUR_DOCUMENT_HASHES",
+        "BOTTLENECK_FAILURE_SIGNATURE_OR_QUEUE_EVIDENCE",
+        "RESPONSIBLE_SYSTEM_OR_FILES",
+        "REPAIR_REVISION",
+        "TARGETED_QA_RESULT",
+        "RETURN_TO_VIBE_LOOP"
+      ],
+      "vibeContinuesWhenChatgptAbsent": true
     }
   }
 }
