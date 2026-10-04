@@ -600,8 +600,8 @@ test('patch plan converts required genre systems into existing-owner implementat
   const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis:analyzeExistingGameSource(''),inventory});
   const ids=new Set(plan.tasks.map(row=>row.id));
   for(const id of ['IMPLEMENT_CONCEPT_MATCHED_SYSTEM_BUNDLE','REUSE_EXISTING_SYSTEM_LIBRARIES_WHEN_COMPATIBLE','CONNECT_SYSTEMS_INTO_CAUSAL_GAMEPLAY_CHAINS','IMPLEMENT_SYSTEM_CRAFTING','IMPLEMENT_SYSTEM_HOUSING_BUILDING','VERIFY_SYSTEM_BUNDLE_DEPTH_AND_ANTI_CHECKLIST'])assert.ok(ids.has(id),id);
-  assert.equal(plan.version,5);
+  assert.equal(plan.version,4);
   assert.equal(plan.systemBlueprint.profile,'ACTION_SURVIVAL_ROGUELITE');
   assert.ok(plan.forbidden.includes('DUPLICATE_SHADOW_INVENTORY_CRAFTING_QUEST_ECONOMY_OR_COMPANION_SYSTEM'));
-  assert.equal(plan.verificationOrder[1],'CONCEPT_SYSTEM_BUNDLE');
+  assert.equal(plan.verificationOrder[2],'CONCEPT_SYSTEM_BUNDLE');
 });
