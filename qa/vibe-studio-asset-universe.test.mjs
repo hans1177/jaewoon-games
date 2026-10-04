@@ -2997,7 +2997,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,54);
+  assert.equal(registry.version,56);
   assert.equal(audit.status,'STARTED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3099,7 +3099,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,54);
+  assert.equal(registry.version,56);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
