@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-motion-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -16,7 +16,9 @@
       "animatorPreviewPath": 10,
       "noGameplayRootMotionAuthority": 10,
       "blockRaiseHoldParryGuardBreakCounterReady": true,
-      "gameplayTimingDamageStaminaAuthorityFalse": true
+      "gameplayTimingDamageStaminaAuthorityFalse": true,
+      "locomotionTraversalDefenseUtilityRecoverySocialCoverage": true,
+      "rootMotionGameplayMovementCombatTimingAuthorityFalse": true
     }
   },
   "quality120": {
@@ -30,12 +32,26 @@
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayMovementAuthority": false,
   "rootMotionOwned": false,
-  "sourceAssetCount": 16,
+  "sourceAssetCount": 33,
   "parryPresentation": {
     "states": 5,
     "gameplayTimingAuthority": false,
     "damageAuthority": false,
     "staminaAuthority": false,
     "nativeRuntimeVerificationRequired": true
+  },
+  "motionVariety": {
+    "atomCount": 33,
+    "groups": [
+      "locomotion",
+      "traversal",
+      "defense",
+      "utility",
+      "recovery",
+      "social"
+    ],
+    "rootMotionAuthority": false,
+    "gameplayMovementAuthority": false,
+    "combatTimingAuthority": false
   }
 }
