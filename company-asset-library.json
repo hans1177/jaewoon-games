@@ -1,5 +1,5 @@
 {
-  "version": 79,
+  "version": 80,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -56145,7 +56145,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 4,
+    "version": 5,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56765,7 +56765,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 78,
+    "lastCatalogSynchronizedVersion": 80,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -59469,7 +59469,8 @@
       "nativeAdaptationRequired": true,
       "runtimeVerificationRequiredBeforeProductionPromotion": true
     },
-    "eligibleFreeSourceCount": 18
+    "eligibleFreeSourceCount": 18,
+    "freeSourceCandidateLimitPerAction": 8
   },
   "characterNpcCustomization": {
     "version": 1,
@@ -59642,6 +59643,7 @@
       "heroNpcGetsCloseupDetailPriority": true,
       "backgroundNpcMayUseLodButMustKeepDistinctSilhouette": true,
       "deterministicRecipeFromStableSeed": true,
+      "speciesPartCompatibilityRequired": true,
       "gameplayStatsUnaffected": true
     },
     "production": {
