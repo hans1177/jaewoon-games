@@ -1239,8 +1239,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     clean(recipe?.type)
   ]).map(value=>clean(value).toLowerCase()).filter(Boolean));
   const explicitRecipeHasUntyped=explicitRecipeRows.some(recipe=>!(Array.isArray(recipe?.types)&&recipe.types.length)&&!clean(recipe?.type));
+  const explicitAuthoringTypes=new Set(unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean)));
   const dccCapableTypes=unique(decisions
-    .filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind)))
+    .filter(row=>row?.required!==false&&(needsAuthoring(row)||explicitAuthoringTypes.has(clean(row.type).toLowerCase()))&&(row.directAuthoring||[]).some(kind=>NATIVE_DCC_AUTHORING.includes(kind)))
     .map(row=>clean(row.type).toLowerCase()));
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
@@ -1397,6 +1398,9 @@ function companyManifestAssets(registry={},repoRoot=process.cwd()){
       const relative=clean(asset.path).replace(/^\//,'');
       const fileExists=Boolean(relative&&fs.existsSync(path.join(repoRoot,relative)));
       const companyVerified=asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase());
+      const platformVariantPath=Object.values(asset?.platformVariants||{}).some(variant=>clean(variant?.path));
+      const nativeReferenceAvailable=Boolean(fileExists||clean(asset?.robloxAssetId)||platformVariantPath);
+      const companyInternalSearchable=companyVerified||nativeReferenceAvailable;
       return{
         ...asset,
         id:clean(asset.id),
@@ -1404,9 +1408,9 @@ function companyManifestAssets(registry={},repoRoot=process.cwd()){
         types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category||asset.family).toUpperCase()]||[]),
         tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category),clean(asset.family),clean(asset.subfamily)].filter(Boolean),
         platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
-        downloaded:fileExists,
+        downloaded:companyVerified?asset.downloaded!==false:nativeReferenceAvailable,
         companyVerified,
-        companyInternalSearchable:fileExists,
+        companyInternalSearchable,
         productionVerified:asset.productionVerified===true,
         verifiedCompanyReusable:asset.verifiedCompanyReusable===true,
         source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
@@ -1737,6 +1741,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const roleMatches=roleTokens.filter(token=>tags.some(tag=>tag.includes(token)||token.includes(tag))).length;
   const compatibilityScore=
     (lane==='A_SAME_GAME_BOUND'?50:lane==='B_NATIVE_READY'?40:lane==='C_MINIMAL_ADAPT'?25:0)
+    +(asset.sameGameExistingRoblox===true?15:0)
     +(asset.productionVerified===true?8:0)
     +(asset.companyVerified===true?4:0)
     +Math.min(20,roleMatches*6)
@@ -1980,16 +1985,16 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
   const approximateLibraryCandidates=freezeList(reuseCandidates.filter(asset=>asset.approximateLibraryFallback===true));
   const decisionOrder=unique([
-    'BIND_CLOSEST_EXISTING_LIBRARY_ASSET_FIRST',
+    'COMPARE_TARGET_GAME_QUALITY',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     approximateLibraryCandidates.length?'REUSE_CLOSEST_COMPATIBLE_LIBRARY_ASSET_WITH_STYLE_ADAPTATION':'',
-    'OPEN_VISUAL_DEBT_AFTER_BINDING',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
     postDownloadComparison.required?'POST_DOWNLOAD_COMPARE_EXTERNAL_TO_INTERNAL':'',
-    directAuthoring.length?'VIBE_DIRECT_AUTHOR_ONLY_IF_LIBRARY_TRULY_EMPTY':'',
-    'AUTHORING_GENERATOR_REQUEST_ONLY_IF_NO_COMPATIBLE_LIBRARY_ASSET_EXISTS'
+    'OPEN_VISUAL_DEBT_AFTER_INITIAL_BINDING',
+    directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
+    'AUTHORING_GENERATOR_REQUEST'
   ]);
   const motionReusePlan=type==='animation'?freeze({
     studioProduction:['roblox','unity'].includes(target)?createMotionDirectorPlan({platform:target.toUpperCase()}).studioProduction:null,
@@ -2061,15 +2066,15 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
     directAuthoring,
     decisionOrder:freezeList(decisionOrder),
     qualitySelection:freeze({
-      requiredBeforeSourcePreference:false,
+      requiredBeforeSourcePreference:true,
       companyOwnershipIsNotQualityEvidence:true,
       compareCandidateIds:freezeList([...reuseCandidates,...externalCandidates].map(asset=>asset.id)),
       requiredChecks:freezeList(type==='animation'
         ?['GAME_STYLE_FIT','RIG_AND_JOINT_COMPATIBILITY','FOOT_SLIDING_AND_CONTACT','TRANSITION_AND_INTERRUPT','ACTUAL_CLIP_PLAYBACK','MULTIPLAYER_SYNC']
         :['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SCALE_COHERENCE','TARGET_RUNTIME_AND_MOBILE_PERFORMANCE']),
-      selectionState:'LIBRARY_BOUND_VISUAL_DEBT_REVIEW',
-      selectedAssetId:preferredCandidateId,
-      sourcePreferenceOnlyAfterQualityPass:false,
+      selectionState:postDownloadComparison.required?postDownloadComparison.status:'TARGET_GAME_REVIEW_REQUIRED',
+      selectedAssetId:null,
+      sourcePreferenceOnlyAfterQualityPass:true,
       initialLibraryBindingMustNotWaitForQualityScore:true,
       postDownloadInternalComparisonRequired:postDownloadComparison.required,
       conceptFitReferenceOnly:true,
@@ -2992,6 +2997,7 @@ export function buildVibeAssetProductionPlan({
       closestCompatibleLibraryFallbackRequired:true,
       qualityScoreBlocksInitialLibraryUse:false,
       internalAuditScoreBlocksInitialLibraryUse:false,
+      newAuthoringOnlyAfterReusableCandidateFailure:true,
       newAuthoringOnlyWhenNoCompatibleLibraryCandidateExists:true,
       visualVerificationAndVisualQualitySeparated:true,
       detailInvestmentPriority:freezeList(['SCREEN_SPACE_OCCUPANCY','PLAYER_DWELL_TIME','INTERACTION_FREQUENCY','HERO_BOSS_SIGNATURE_ROLE','CAMERA_PROXIMITY','GAMEPLAY_READABILITY'])
