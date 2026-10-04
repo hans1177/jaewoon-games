@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "packId": "roblox-common-motion-v1",
+  "family": "MOTION",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "compatibleGameScope": "ALL_ROBLOX_GAMES_WITH_COMPATIBLE_R15_RIG",
+  "compatibleRig": "R15",
+  "sourceType": "KEYFRAME_SEQUENCE_SOURCE",
+  "persistentAnimationUploadRequiredForProduction": true,
+  "rootMotionOwned": false,
+  "gameplayMovementAuthority": false,
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "atoms": [
+    {
+      "atomId": "IDLE_RELAXED",
+      "priority": "Idle",
+      "looped": true,
+      "duration": 3.2,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "WALK",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 1,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "JOG",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.78,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "RUN",
+      "priority": "Movement",
+      "looped": true,
+      "duration": 0.6,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "START",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.42,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "STOP",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.45,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "TURN_90",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.55,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "JUMP_START",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.38,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "LAND",
+      "priority": "Movement",
+      "looped": false,
+      "duration": 0.48,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "HIT_FRONT",
+      "priority": "Action",
+      "looped": false,
+      "duration": 0.52,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    },
+    {
+      "atomId": "DEATH_FRONT",
+      "priority": "Action4",
+      "looped": false,
+      "duration": 1.65,
+      "source": "RobloxCommonMotion.luau",
+      "productionVerified": false
+    }
+  ]
+}

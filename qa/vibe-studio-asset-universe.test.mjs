@@ -1805,3 +1805,91 @@ test('company-common material registry exposes reusable physics-preserving atoms
     assert.equal(row.bindingHint.preserveCollisionTouchQueryAndGameplayAuthority,true);
   }
 });
+
+
+test('company-common R15 motion pack covers current reusable motion atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-motion-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonMotion.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const survivalConfig=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
+  const expected=['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'];
+
+  assert.equal(catalog.atoms.length,11);
+  assert.equal(catalog.compatibleRig,'R15');
+  assert.equal(catalog.rootMotionOwned,false);
+  assert.equal(catalog.gameplayMovementAuthority,false);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+
+  for(const atom of expected){
+    assert.ok(source.includes(atom),atom+':source');
+    assert.ok(survivalConfig.includes(atom),atom+':config');
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
+
+  for(const joint of [
+    'HumanoidRootPart','LowerTorso','UpperTorso','Head',
+    'LeftUpperArm','LeftLowerArm','LeftHand','RightUpperArm','RightLowerArm','RightHand',
+    'LeftUpperLeg','LeftLowerLeg','LeftFoot','RightUpperLeg','RightLowerLeg','RightFoot'
+  ]){
+    assert.ok(source.includes('name = "'+joint+'"'),joint);
+  }
+
+  assert.ok(source.includes('Instance.new("KeyframeSequence")'));
+  assert.ok(source.includes('Instance.new("Keyframe")'));
+  assert.ok(source.includes('Instance.new("Pose")'));
+  assert.ok(source.includes('RegisterKeyframeSequence(sequence)'));
+  assert.ok(source.includes('animator:LoadAnimation(animation)'));
+  assert.ok(source.includes('RootMotionOwned", false'));
+  assert.ok(source.includes('GameplayMovementAuthority", false'));
+
+  for(const forbidden of [
+    /WalkSpeed\s*=/,
+    /JumpPower\s*=/,
+    /HumanoidRootPart\.CFrame\s*=/,
+    /PivotTo\(/,
+    /MoveTo\(/,
+    /TakeDamage\(/,
+    /RemoteEvent/,
+    /FireServer\(/,
+    /DataStoreService/
+  ]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common motion registry supports cross-game R15 reuse without false production verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-motion-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.compatibleRig,'R15');
+  assert.equal(pack.automaticCrossGameReuseAllowed,true);
+  assert.equal(pack.crossGameReuseRequiresCompatibilityPass,true);
+  assert.equal(pack.rootMotionOwned,false);
+  assert.equal(pack.gameplayMovementAuthority,false);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const atoms=['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'];
+  for(const atom of atoms){
+    const id='roblox-common-motion-'+atom.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atom);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'MOTION');
+    assert.equal(row.subfamily,atom);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.compatibleRig,'R15');
+    assert.equal(row.bindingHint.persistentAnimationUploadRequiredForProduction,true);
+    assert.equal(row.bindingHint.preserveGameplayMovementDamageSaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
