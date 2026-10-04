@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "packId": "roblox-common-presentation-v1",
+  "family": "UI",
+  "subfamily": "PRESENTATION",
+  "platform": "ROBLOX",
+  "title": "Roblox 회사 공용 로딩/인트로 프레젠테이션 v1",
+  "license": "project-original",
+  "companyCommonBase": true,
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "source": "RobloxCommonPresentation.luau",
+  "loadingElements": [
+    "BRAND_BACKGROUND",
+    "LOGO",
+    "SPINNER",
+    "PROGRESS_BAR",
+    "TIP",
+    "STATUS_TEXT"
+  ],
+  "introModes": [
+    "SIMPLE_FADE",
+    "LOGO_REVEAL",
+    "PARTICLE_LIGHT",
+    "WORLD_PAN",
+    "MINIMAL_CINEMATIC"
+  ],
+  "genreBackgrounds": [
+    "SURVIVAL",
+    "RPG",
+    "DEFENSE",
+    "CASUAL",
+    "PUZZLE",
+    "HORROR",
+    "STRATEGY"
+  ],
+  "gameSpecificVariationFields": [
+    "LOGO",
+    "COLOR",
+    "BACKGROUND",
+    "COPY",
+    "INTENSITY",
+    "DURATION"
+  ],
+  "introContract": {
+    "defaultComplexity": "SHORT_PREMIUM_GRAPHIC_PRESENTATION",
+    "complexCutsceneRequired": false,
+    "cameraAuthority": false,
+    "gameplayAuthority": false,
+    "skipOrTimingAuthority": "GAME_CODE",
+    "worldPanIsVisualRequestOnly": true
+  },
+  "machineTags": [
+    "COMMON_PRESENTATION",
+    "LOADING",
+    "INTRO",
+    "BRAND",
+    "SPINNER",
+    "PROGRESS",
+    "TIP",
+    "STATE_TEXT",
+    "REUSABLE"
+  ]
+}
