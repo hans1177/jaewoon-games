@@ -84,6 +84,7 @@ export const VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT=Object.freeze({
     heroNpcGetsCloseupDetailPriority:true,
     backgroundNpcMayUseLodButMustKeepDistinctSilhouette:true,
     deterministicRecipeFromStableSeed:true,
+    speciesPartCompatibilityRequired:true,
     gameplayStatsUnaffected:true
   }),
   production:Object.freeze({
@@ -216,8 +217,12 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
   const seed=hash(`${character.name||'character'}|${character.species||'humanoid'}|${character.role||''}|${character.region||''}|custom|${index}`);
   const identity=createVibeMotionIdentity(character,index);
   const value=offset=>Math.round(normalizedSeedValue(seed,offset)*1000)/1000;
+  const speciesKey=String(character.species||'humanoid').toUpperCase();
   const leftEye=pick(seed,['BROWN','AMBER','HAZEL','GREEN','BLUE','GRAY','DARK','PALE','GOLDEN','FANTASY_ACCENT'],31);
   const heterochromia=value(32)>.82;
+  const elfLike=/ELF|FAE/.test(speciesKey);
+  const horned=/TIEFLING|DEMON|DEVIL|DRACON|HORN|BEAST/.test(speciesKey);
+  const tailed=/TIEFLING|DEMON|DEVIL|DRACON|BEAST|FELINE|LIZARD/.test(speciesKey);
   const recipe=Object.freeze({
     recipeId:`CUSTOM_${String(seed).toUpperCase()}`,
     character:character.name||`character-${index+1}`,
@@ -259,10 +264,11 @@ export function createVibeCharacterCustomizationRecipe(character={},index=0){
       makeupLip:pick(seed,['NONE','NATURAL','TINT','DARK','CEREMONIAL'],46)
     }),
     speciesParts:Object.freeze({
-      ear:pick(seed,['STANDARD','POINTED','LONG','ROUND','NOTCHED'],47),
-      horn:pick(seed,['NONE','SHORT','CURVED','SWEPT','BRANCHED','ASYMMETRIC'],48),
-      tail:pick(seed,['NONE','THIN','HEAVY','TUFTED','SPIKED'],49),
-      accentColor:pick(seed,['NATURAL','DARK','LIGHT','WARM','COOL','FANTASY_ACCENT'],50)
+      ear:elfLike?pick(seed,['POINTED','LONG','NOTCHED'],47):pick(seed,['STANDARD','ROUND','NOTCHED'],47),
+      horn:horned?pick(seed,['SHORT','CURVED','SWEPT','BRANCHED','ASYMMETRIC'],48):'NONE',
+      tail:tailed?pick(seed,['THIN','HEAVY','TUFTED','SPIKED'],49):'NONE',
+      accentColor:pick(seed,['NATURAL','DARK','LIGHT','WARM','COOL','FANTASY_ACCENT'],50),
+      compatibilityChecked:true
     }),
     accessory:pick(seed,VIBE_CUSTOM_ACCESSORIES,51),
     outfit:Object.freeze({
