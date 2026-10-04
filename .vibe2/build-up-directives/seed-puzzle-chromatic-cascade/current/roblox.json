@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g5-cf1f39226389",
-  "directiveFingerprint": "cf1f392263896591b533867c411a98aba294b16f0b439e8dd07d33d2dc5d7e68",
-  "previousDirectiveFingerprint": "7e7b069cea0fafe7f35c7a1320351b960179008fe37108733584be9e376a034c",
-  "forbiddenRepeatFingerprint": "7e7b069cea0fafe7f35c7a1320351b960179008fe37108733584be9e376a034c",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g6-058286654ca0",
+  "directiveFingerprint": "058286654ca03bcc6e9d72f563d85c8548b54581c04c13397a480601c4ca6c91",
+  "previousDirectiveFingerprint": "cf1f392263896591b533867c411a98aba294b16f0b439e8dd07d33d2dc5d7e68",
+  "forbiddenRepeatFingerprint": "cf1f392263896591b533867c411a98aba294b16f0b439e8dd07d33d2dc5d7e68",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 5,
+  "generation": 6,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
+  "sourceTreeFingerprint": "843a4c1c8df27d875031b97a13b0bb0aad450843c19448d825861492a589574d",
   "designFingerprint": "491530ac1f5db9c62af2793e2ee12a69b743f3c5da0750f0b2628d384ed75efb",
   "gameIdentityAndNonNegotiables": {
     "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
@@ -250,31 +250,19 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 4,
-    "previousSourceTreeFingerprint": "37c485002d5d9eacecfe370ea4f563241b57c7d4797d91f6b45a5e4c55a02d7a",
-    "currentSourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
+    "previousGeneration": 5,
+    "previousSourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
+    "currentSourceTreeFingerprint": "843a4c1c8df27d875031b97a13b0bb0aad450843c19448d825861492a589574d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
-    "blockers": [
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
-    ],
-    "runtimeObserved": true,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1422,7 +1410,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1467,8 +1455,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 6,
-    "selectedThemeReason": "1 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=REGRESSION; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "1 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1476,11 +1464,12 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 6,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1521,7 +1510,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 102,
+        "score": 84,
         "gapDomains": [
           "SYSTEM_CONNECTION"
         ]
@@ -1872,9 +1861,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
-      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2034,9 +2023,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
-      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/default.project.json"
     ],
     "sourceAnchors": [
@@ -2183,9 +2172,9 @@
     "gameId": "seed-puzzle-chromatic-cascade",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
-      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/default.project.json"
     ],
     "impact": {
@@ -2263,16 +2252,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "843a4c1c8df27d875031b97a13b0bb0aad450843c19448d825861492a589574d",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2283,8 +2272,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2315,7 +2304,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 6,
+    "nextGeneration": 7,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2388,5 +2377,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T02:04:53.102Z"
+  "generatedAt": "2026-10-04T02:57:29.710Z"
 }

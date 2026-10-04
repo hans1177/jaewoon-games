@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g4-5086c05cca05",
-  "directiveFingerprint": "5086c05cca054bca366a9856ca0195e4090e135092aff062be06de08365d05f8",
-  "previousDirectiveFingerprint": "90d5bee797b4abf3d294eeb96916ea891e4887a8577d715a47344120da617c85",
-  "forbiddenRepeatFingerprint": "90d5bee797b4abf3d294eeb96916ea891e4887a8577d715a47344120da617c85",
+  "directiveId": "fantasy-survival-build-up-g5-ca92680943c1",
+  "directiveFingerprint": "ca92680943c1928c4408f872e1e7658303933c5109347d7319e774ff43688559",
+  "previousDirectiveFingerprint": "5086c05cca054bca366a9856ca0195e4090e135092aff062be06de08365d05f8",
+  "forbiddenRepeatFingerprint": "5086c05cca054bca366a9856ca0195e4090e135092aff062be06de08365d05f8",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 4,
+  "generation": 5,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "21eb1a080b5a05023e22138348ae740072ebafce8f483cf60ec5acb55ef8654f",
+  "sourceTreeFingerprint": "100e678cc6110441e9c03fb69c54baa37db39f2eb8c3f07473b4cd9be1fc0676",
   "designFingerprint": "c73a53e121ef51a605007aa1df16ee39732f54300166fd6e453eb97497f1f07e",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -250,37 +250,19 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 3,
-    "previousSourceTreeFingerprint": "f5d6ddfb83250df1f0e32e6d1bbdad8474e19bc71b92a90c062c2de5746a9285",
-    "currentSourceTreeFingerprint": "21eb1a080b5a05023e22138348ae740072ebafce8f483cf60ec5acb55ef8654f",
+    "previousGeneration": 4,
+    "previousSourceTreeFingerprint": "21eb1a080b5a05023e22138348ae740072ebafce8f483cf60ec5acb55ef8654f",
+    "currentSourceTreeFingerprint": "100e678cc6110441e9c03fb69c54baa37db39f2eb8c3f07473b4cd9be1fc0676",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
-    "blockers": [
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-      "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-      "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "GENERIC_SCOPE_HANDLER_SKELETON"
-    ],
-    "runtimeObserved": true,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1433,7 +1415,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1445,7 +1427,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 115205,
+        "sourceBytes": 85846,
         "largestFileBytes": 42955,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1478,20 +1460,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=REGRESSION; previousCoverage=4; uncoveredBefore=6.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 5,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1531,7 +1514,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 166,
+        "score": 148,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -1883,9 +1866,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2045,9 +2028,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2194,9 +2177,9 @@
     "gameId": "fantasy-survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/fantasy-survival/client/Game.client.luau",
-      "roblox-games/fantasy-survival/server/Game.server.luau",
       "roblox-games/fantasy-survival/shared/GameConfig.luau",
+      "roblox-games/fantasy-survival/server/Game.server.luau",
+      "roblox-games/fantasy-survival/client/Game.client.luau",
       "roblox-games/fantasy-survival/default.project.json"
     ],
     "impact": {
@@ -2274,16 +2257,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "21eb1a080b5a05023e22138348ae740072ebafce8f483cf60ec5acb55ef8654f",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "100e678cc6110441e9c03fb69c54baa37db39f2eb8c3f07473b4cd9be1fc0676",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2294,8 +2277,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2326,7 +2309,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 5,
+    "nextGeneration": 6,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2396,5 +2379,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T02:42:42.529Z"
+  "generatedAt": "2026-10-04T03:04:30.162Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g6-5c7eec1b85f7",
-  "directiveFingerprint": "5c7eec1b85f779e3de2398122c6e11409415a76ef78e3f684076e86e2563bae5",
-  "previousDirectiveFingerprint": "b5147e8d76e112d5e9900f9487a7c51ecad51598828919274a815a9651db93cc",
-  "forbiddenRepeatFingerprint": "b5147e8d76e112d5e9900f9487a7c51ecad51598828919274a815a9651db93cc",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g7-547a0d2dae8c",
+  "directiveFingerprint": "547a0d2dae8cbfa666ae16ac71a3091f6ff4235fdb5afc911557b05919711f53",
+  "previousDirectiveFingerprint": "5c7eec1b85f779e3de2398122c6e11409415a76ef78e3f684076e86e2563bae5",
+  "forbiddenRepeatFingerprint": "5c7eec1b85f779e3de2398122c6e11409415a76ef78e3f684076e86e2563bae5",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "07c00b36bdfc272cadf53f6a242668cd23598f73eec976742c5363392a6c713e",
+  "sourceTreeFingerprint": "be7a8973f2dbe3d0e4a88a660caefe9115bdb93d220142dafd93a09bb2cb4d39",
   "designFingerprint": "6de468c40ad6a0372eb03c7c03158edb5d66b9d400becd715c91289ce4ef36d9",
   "gameIdentityAndNonNegotiables": {
     "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
@@ -56,8 +56,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 78,
-      "progression": 132,
+      "combat": 76,
+      "progression": 118,
       "ai": 19,
       "save": 49,
       "multiplayer": 13,
@@ -69,12 +69,12 @@
       "audio": 1,
       "audioDynamics": 17,
       "ui": 56,
-      "uiFlow": 32,
+      "uiFlow": 30,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 59,
       "map": 93,
-      "landmark": 6,
+      "landmark": 2,
       "interaction": 29,
       "inventory": 2,
       "equipment": 0,
@@ -93,7 +93,7 @@
     "topFiles": [
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 250
+        "score": 252
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
@@ -250,9 +250,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "9ae6679bfaab0ae8676de314959b1e13f288e956548ca3d7804c5d0d84334909",
-    "currentSourceTreeFingerprint": "07c00b36bdfc272cadf53f6a242668cd23598f73eec976742c5363392a6c713e",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "07c00b36bdfc272cadf53f6a242668cd23598f73eec976742c5363392a6c713e",
+    "currentSourceTreeFingerprint": "be7a8973f2dbe3d0e4a88a660caefe9115bdb93d220142dafd93a09bb2cb4d39",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -262,7 +262,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1422,8 +1422,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 110054,
-        "largestFileBytes": 43620,
+        "sourceBytes": 80794,
+        "largestFileBytes": 43650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1455,8 +1455,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1466,7 +1466,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1475,6 +1475,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -1508,18 +1509,13 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 210,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
-      },
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 66,
-        "gapDomains": []
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1552,6 +1548,11 @@
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 12,
+        "gapDomains": []
+      },
+      {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": -94,
         "gapDomains": []
       }
     ],
@@ -1859,9 +1860,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2021,9 +2022,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceAnchors": [
@@ -2170,9 +2171,9 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "impact": {
@@ -2250,12 +2251,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "07c00b36bdfc272cadf53f6a242668cd23598f73eec976742c5363392a6c713e",
+      "sourceTreeFingerprint": "be7a8973f2dbe3d0e4a88a660caefe9115bdb93d220142dafd93a09bb2cb4d39",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2270,8 +2271,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2302,7 +2303,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2374,5 +2375,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T02:18:15.985Z"
+  "generatedAt": "2026-10-04T03:00:41.259Z"
 }

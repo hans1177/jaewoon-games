@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g5-770a225022e4",
-  "directiveFingerprint": "770a225022e4b90d442cf0da3cfcf5d3cda537f2d30d8c22f33915931ff3e008",
-  "previousDirectiveFingerprint": "e84057921fd82304816ebbf73147f52a750b0b5c688ea69bab550d72ec3aeaad",
-  "forbiddenRepeatFingerprint": "e84057921fd82304816ebbf73147f52a750b0b5c688ea69bab550d72ec3aeaad",
+  "directiveId": "daechung-rpg-build-up-g6-c62b0aeedd87",
+  "directiveFingerprint": "c62b0aeedd87fec4910c455c2b74215a457a6f14e20b9091eef69f53c946f558",
+  "previousDirectiveFingerprint": "770a225022e4b90d442cf0da3cfcf5d3cda537f2d30d8c22f33915931ff3e008",
+  "forbiddenRepeatFingerprint": "770a225022e4b90d442cf0da3cfcf5d3cda537f2d30d8c22f33915931ff3e008",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 5,
+  "generation": 6,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
+  "sourceTreeFingerprint": "dae67355bd13afc43c13911ae78ec96672c10352c7516048c7a198da4818c093",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 4,
-    "previousSourceTreeFingerprint": "ceb29bb8d463ee15473278186eacf68895ba012665594f81fc9898dbdeda539a",
-    "currentSourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
+    "previousGeneration": 5,
+    "previousSourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
+    "currentSourceTreeFingerprint": "dae67355bd13afc43c13911ae78ec96672c10352c7516048c7a198da4818c093",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1729,8 +1729,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1740,9 +1740,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 7
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1783,7 +1784,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 146,
+        "score": 128,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2523,7 +2524,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f8b81fa8992f028c5cd9843d0d4e3836b0d96f78027ba9b364b2ef6ad8ccf8cc",
+      "sourceTreeFingerprint": "dae67355bd13afc43c13911ae78ec96672c10352c7516048c7a198da4818c093",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2570,7 +2571,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 6,
+    "nextGeneration": 7,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2635,5 +2636,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:38:46.244Z"
+  "generatedAt": "2026-10-04T03:00:41.307Z"
 }
