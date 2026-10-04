@@ -22321,14 +22321,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T21:45:34.766Z",
+      "updatedAt": "2026-10-04T21:46:51.535Z",
       "robloxSourceCommit": "8a1086684adf6b0034ddd364b62c78e6fd2e213e",
       "robloxSourceBootstrapPassedAt": "2026-10-04T20:23:03.099Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T21:45:34.766Z",
@@ -22392,18 +22392,18 @@
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-04T21:42:35.819Z",
+      "robloxFoundationF0PassedAt": "2026-10-04T21:46:51.535Z",
       "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T21:37:45.904Z",
+        "checkedAt": "2026-10-04T21:42:39.396Z",
         "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "sourceRevision": "8a1086684adf6b0034ddd364b62c78e6fd2e213e",
         "artifactIdentity": "sha256:80c1f0f7b3f2eaea80503dcc8f479f4200595872fd12af15562ce9cfbbf3e4c3",
         "rebuiltArtifactIdentity": "sha256:80c1f0f7b3f2eaea80503dcc8f479f4200595872fd12af15562ce9cfbbf3e4c3",
-        "artifactRunId": 37236161808,
+        "artifactRunId": 37236334143,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -22577,12 +22577,12 @@
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T21:37:45.904Z",
+        "checkedAt": "2026-10-04T21:42:39.396Z",
         "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "sourceRevision": "8a1086684adf6b0034ddd364b62c78e6fd2e213e",
         "artifactIdentity": "sha256:80c1f0f7b3f2eaea80503dcc8f479f4200595872fd12af15562ce9cfbbf3e4c3",
         "rebuiltArtifactIdentity": "sha256:80c1f0f7b3f2eaea80503dcc8f479f4200595872fd12af15562ce9cfbbf3e4c3",
-        "artifactRunId": 37236161808,
+        "artifactRunId": 37236334143,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -22785,7 +22785,7 @@
       "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:worker-result-missing"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -49232,7 +49232,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T21:46:41.262Z",
+  "updatedAt": "2026-10-04T21:46:51.535Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
