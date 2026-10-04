@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g7-78058aac073d",
-  "directiveFingerprint": "78058aac073d0c227594d3f4f5ded54c8ef08defb69ff025d24021d1f5f6a71a",
+  "directiveId": "bug-defense-build-up-g7-14254ac85aee",
+  "directiveFingerprint": "14254ac85aee5adace6c23a824acf62b2ee2f1a186ec9cc6b9c9015f15295995",
   "previousDirectiveFingerprint": "372aa072e1a99f40f784ba52100ccdb31cc3d3df15bd9388ba449962fb096f42",
   "forbiddenRepeatFingerprint": "372aa072e1a99f40f784ba52100ccdb31cc3d3df15bd9388ba449962fb096f42",
   "gameId": "bug-defense",
@@ -363,8 +363,8 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -2370,8 +2370,8 @@
       "sourceTreeFingerprint": "1e9e3afdf2d4f65931c81ae0737c68da30dc78b122313763546704325cfd104b",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2486,5 +2486,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T05:22:46.700Z"
+  "generatedAt": "2026-10-04T05:25:47.711Z"
 }
