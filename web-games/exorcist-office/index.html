@@ -45,21 +45,25 @@ shadow:{name:'그림자귀',danger:2,maxHp:155,damage:13,speed:104,reward:520,co
 grudge:{name:'원한귀',danger:3,maxHp:210,damage:17,speed:88,reward:850,color:'#a95a63',pattern:'멀리서 원념탄을 날린다.',weakness:'원념탄을 피한 뒤 빠르게 약화',special:'orb'},
 weeper:{name:'울음귀',danger:4,maxHp:270,damage:21,speed:92,reward:1350,color:'#7390a8',pattern:'울음 파동으로 느려지게 한다.',weakness:'결계 사용 중 울음 파동 무효',special:'fear'},
 devourer:{name:'굶주린 악귀',danger:5,maxHp:360,damage:27,speed:118,reward:2200,color:'#8d4343',pattern:'체력이 낮을수록 빨라진다.',weakness:'거리 유지 후 빈틈에 공격',special:'rage'},
-breaker:{name:'봉인 파괴자',danger:6,maxHp:500,damage:34,speed:100,reward:3800,color:'#8d6a3f',pattern:'저주탄과 돌진을 섞어 공격한다.',weakness:'결계로 큰 공격을 막고 봉인',special:'boss'}};
+breaker:{name:'봉인 파괴자',danger:6,maxHp:500,damage:34,speed:100,reward:3800,color:'#8d6a3f',pattern:'저주탄과 돌진을 섞어 공격한다.',weakness:'결계로 큰 공격을 막고 봉인',special:'boss'},
+mirror:{name:'거울귀',danger:7,maxHp:620,damage:38,speed:108,reward:5200,color:'#879bb8',pattern:'거울 잔상 뒤에서 세 갈래 원념탄을 쏜다.',weakness:'결계로 탄막을 막은 뒤 본체를 압박',special:'mirror'},
+reaper:{name:'사신귀',danger:8,maxHp:820,damage:45,speed:112,reward:7600,color:'#66506e',pattern:'거리를 벌리면 순식간에 돌진해 큰 피해를 준다.',weakness:'돌진 직전에 결계를 펼치고 반격',special:'reaper'}};
 const MISSIONS=[
 {id:'m1',level:1,name:'폐가의 발소리',site:'외곽 폐가',ghost:'wanderer',reward:300,bg:'#1d2729'},
 {id:'m2',level:1,name:'원룸의 검은 그림자',site:'오래된 원룸',ghost:'shadow',reward:520,bg:'#22202c'},
 {id:'m3',level:2,name:'야간 학교의 비명',site:'폐교',ghost:'grudge',reward:850,bg:'#282323'},
 {id:'m4',level:2,name:'빈 병동의 울음',site:'폐병원',ghost:'weeper',reward:1350,bg:'#1f2928'},
 {id:'m5',level:3,name:'터널 실종 사건',site:'산길 터널',ghost:'devourer',reward:2200,bg:'#1c1c20'},
-{id:'m6',level:4,name:'무너진 봉인',site:'폐사찰',ghost:'breaker',reward:3800,bg:'#29231b'}];
-const OFFICE_UPGRADES=[{level:1,next:2,cost:900,label:'사무소 2층 확장',desc:'위험도 3~4 의뢰가 열린다.'},{level:2,next:3,cost:2600,label:'별관 증축',desc:'위험도 5 의뢰가 열린다.'},{level:3,next:4,cost:6000,label:'대형 퇴마 본부',desc:'최상급 위험도 6 의뢰가 열린다.'}];
+{id:'m6',level:4,name:'무너진 봉인',site:'폐사찰',ghost:'breaker',reward:3800,bg:'#29231b'},
+{id:'m7',level:5,name:'거울방의 실종자',site:'폐백화점 거울관',ghost:'mirror',reward:5200,bg:'#202632'},
+{id:'m8',level:6,name:'장례식장의 검은 낫',site:'폐장례식장',ghost:'reaper',reward:7600,bg:'#231d27'}];
+const OFFICE_UPGRADES=[{level:1,next:2,cost:900,label:'사무소 2층 확장',desc:'위험도 3~4 의뢰가 열린다.'},{level:2,next:3,cost:2600,label:'별관 증축',desc:'위험도 5 의뢰가 열린다.'},{level:3,next:4,cost:6000,label:'대형 퇴마 본부',desc:'위험도 6 의뢰가 열린다.'},{level:4,next:5,cost:9000,label:'특수 퇴마 대응실',desc:'위험도 7 거울귀 의뢰가 열린다.'},{level:5,next:6,cost:14000,label:'최상급 봉인 본부',desc:'위험도 8 사신귀 의뢰가 열린다.'}];
 const ROOMS={talisman:{cost:650,name:'부적 제작실',desc:'봉인 재사용 대기시간 감소'},archive:{cost:1100,name:'영안 기록실',desc:'본 귀신의 공격 패턴 즉시 기록'},training:{cost:1500,name:'수련실',desc:'최대 체력 +20, 공격력 +4'}};
 let W=innerWidth,H=innerHeight,dpr=1,running=false,last=0,activeMission=null,player=null,ghost=null,projectiles=[],effects=[],clues=[],cam={x:0,y:0},keys=new Set(),input={up:false,down:false,left:false,right:false},toastTimer=0,save=defaultSave();
 function defaultSave(){return{money:0,officeLevel:1,clears:0,rooms:{talisman:false,archive:false,training:false},seen:{},exorcised:{},history:[]}}
 try{save={...defaultSave(),...JSON.parse(localStorage.getItem(SAVE_KEY)||'{}')};save.rooms={...defaultSave().rooms,...save.rooms};save.seen=save.seen||{};save.exorcised=save.exorcised||{};save.history=Array.isArray(save.history)?save.history.slice(0,8):[]}catch{}
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch{}}
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}function norm(dx,dy){const l=Math.hypot(dx,dy)||1;return{x:dx/l,y:dy/l,d:l}}function money(n){return Math.floor(n).toLocaleString('ko-KR')+'원'}function danger(n){return '★'.repeat(n)+'☆'.repeat(6-n)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}function norm(dx,dy){const l=Math.hypot(dx,dy)||1;return{x:dx/l,y:dy/l,d:l}}function money(n){return Math.floor(n).toLocaleString('ko-KR')+'원'}function danger(n){return '★'.repeat(n)+'☆'.repeat(Math.max(0,8-n))}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1450)}
 function resize(){dpr=Math.min(devicePixelRatio||1,1.7);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}addEventListener('resize',resize);resize();
 function pushHistory(success){save.history.unshift({mission:activeMission.name,site:activeMission.site,ghost:GHOSTS[ghost.type].name,reward:success?activeMission.reward:0,success:!!success,at:Date.now()});save.history=save.history.slice(0,8)}
@@ -78,10 +82,12 @@ function useWard(){if(!running||!player.alive)return;if(player.wardCd>0)return t
 function hurtPlayer(amount){if(!player.alive)return;if(player.wardTime>0){effects.push({x:player.x,y:player.y,life:.25,max:.25,type:'block'});return}player.hp-=amount;player.flash=.18;effects.push({x:player.x,y:player.y,life:.22,max:.22,type:'hurt'});if(player.hp<=0){player.hp=0;player.alive=false;failMission()}}
 function completeMission(){running=false;const g=GHOSTS[ghost.type];save.money+=activeMission.reward;save.clears++;save.exorcised[ghost.type]=Number(save.exorcised[ghost.type]||0)+1;save.seen[ghost.type]=save.seen[ghost.type]||Date.now();pushHistory(true);persist();$('controls').classList.add('hidden');$('hud').classList.add('hidden');$('missionBanner').classList.add('hidden');$('resultTitle').textContent='퇴마 성공';$('resultDesc').textContent=g.name+' 봉인 완료. 보상 '+money(activeMission.reward)+'을 받았어. 사무소를 확장하면 더 어려운 의뢰가 열린다.';$('result').classList.remove('hidden')}
 function failMission(){running=false;pushHistory(false);$('controls').classList.add('hidden');$('hud').classList.add('hidden');$('missionBanner').classList.add('hidden');$('resultTitle').textContent='의뢰 실패';$('resultDesc').textContent='귀신에게 쓰러졌어. 보상은 없지만 본 귀신은 도감에 남아.';$('result').classList.remove('hidden');persist()}
-function spawnOrb(){const n=norm(player.x-ghost.x,player.y-ghost.y);projectiles.push({x:ghost.x,y:ghost.y,vx:n.x*250,vy:n.y*250,r:8,life:4,damage:ghost.damage+4})}
+function spawnOrb(angleOffset=0,speed=250,bonus=4){const n=norm(player.x-ghost.x,player.y-ghost.y),cs=Math.cos(angleOffset),sn=Math.sin(angleOffset),vx=n.x*cs-n.y*sn,vy=n.x*sn+n.y*cs;projectiles.push({x:ghost.x,y:ghost.y,vx:vx*speed,vy:vy*speed,r:8,life:4,damage:ghost.damage+bonus})}
 function ghostAi(dt){if(!ghost.alive||ghost.weakened)return;const g=GHOSTS[ghost.type],d=dist(player,ghost),n=norm(player.x-ghost.x,player.y-ghost.y);ghost.attackCd=Math.max(0,ghost.attackCd-dt);ghost.specialCd=Math.max(0,ghost.specialCd-dt);
 if(g.special==='blink'&&ghost.specialCd<=0&&d>150&&d<520){ghost.x=clamp(player.x-n.x*85+Math.random()*50-25,40,WORLD.w-40);ghost.y=clamp(player.y-n.y*85+Math.random()*50-25,40,WORLD.h-40);ghost.specialCd=4.5;effects.push({x:ghost.x,y:ghost.y,life:.5,max:.5,type:'blink'})}
 else if((g.special==='orb'||g.special==='boss')&&ghost.specialCd<=0&&d<600){spawnOrb();ghost.specialCd=g.special==='boss'?2.8:3.8}
+else if(g.special==='mirror'&&ghost.specialCd<=0&&d<650){const a=Math.random()*TAU;ghost.x=clamp(player.x+Math.cos(a)*170,40,WORLD.w-40);ghost.y=clamp(player.y+Math.sin(a)*170,40,WORLD.h-40);spawnOrb(-.24,270,5);spawnOrb(0,270,5);spawnOrb(.24,270,5);ghost.specialCd=4.4;effects.push({x:ghost.x,y:ghost.y,life:.55,max:.55,type:'blink'})}
+else if(g.special==='reaper'&&ghost.specialCd<=0&&d>90&&d<520){const step=Math.min(235,Math.max(0,d-52));ghost.x=clamp(ghost.x+n.x*step,40,WORLD.w-40);ghost.y=clamp(ghost.y+n.y*step,40,WORLD.h-40);ghost.specialCd=3.7;effects.push({x:ghost.x,y:ghost.y,life:.45,max:.45,type:'pulse'});if(dist(player,ghost)<74){hurtPlayer(Math.round(ghost.damage*1.35));ghost.attackCd=1.25}}
 else if(g.special==='fear'&&ghost.specialCd<=0&&d<230){if(player.wardTime<=0){player.slowTime=2.5;hurtPlayer(6)}ghost.specialCd=5;effects.push({x:ghost.x,y:ghost.y,life:.65,max:.65,type:'pulse'})}
 let sp=ghost.speed;if(g.special==='rage'&&ghost.hp<ghost.maxHp*.45)sp*=1.35;if(d>54){ghost.x+=n.x*sp*dt;ghost.y+=n.y*sp*dt}if(d<62&&ghost.attackCd<=0){hurtPlayer(ghost.damage);ghost.attackCd=g.special==='rage'?.75:1.15}}
 function updateProjectiles(dt){for(const p of projectiles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.life>0&&Math.hypot(p.x-player.x,p.y-player.y)<p.r+player.r){hurtPlayer(p.damage);p.life=0}}projectiles=projectiles.filter(p=>p.life>0)}
