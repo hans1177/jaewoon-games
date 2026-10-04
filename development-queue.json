@@ -14010,14 +14010,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T01:54:40.116Z",
+      "updatedAt": "2026-10-04T02:03:51.450Z",
       "robloxSourceCommit": "731582bfaa7ee366004c45ab33649f5da1c8707a",
       "robloxSourceBootstrapPassedAt": "2026-10-04T01:38:03.797Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -20186,7 +20186,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-village-dungeons-37133197766",
       "unitySourceCommit": "f7020e73f8a1f138e7ee26fcaf9418ef856d607c",
-      "unityBuildRunId": 37167160411,
+      "unityBuildRunId": 37169432996,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -20244,7 +20244,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T01:20:58.332Z"
+        "verifiedAt": "2026-10-04T02:03:51.450Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -59816,7 +59816,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T02:03:46.202Z",
+  "updatedAt": "2026-10-04T02:03:53.652Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
