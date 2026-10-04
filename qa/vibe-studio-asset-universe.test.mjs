@@ -2928,7 +2928,7 @@ test('company library system depth audit covers every common asset domain withou
   }
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,169);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-motion-v1').motionCount,61);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,24);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,40);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-building-v1').itemCount,20);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-world-props-v1').itemCount,38);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-environment-v1').environmentStateCount,14);
