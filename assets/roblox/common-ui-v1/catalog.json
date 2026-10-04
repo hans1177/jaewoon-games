@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 8,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -1354,9 +1354,629 @@
         "NO_FUEL",
         "QUEUE"
       ]
+    },
+    {
+      "atomId": "AI_COMPANION_STATUS_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAiCompanionStatusCard",
+      "role": "AI_COMPANION_STATUS_CARD",
+      "surface": "AI_COMPANION",
+      "states": [
+        "FOLLOWING",
+        "WAITING",
+        "BUSY",
+        "DOWNED",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "COMPANION_COMMAND_WHEEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionCommandWheel",
+      "role": "COMPANION_COMMAND_WHEEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "OPEN",
+        "SELECTED",
+        "LOCKED",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "COMPANION_ORDER_QUEUE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionOrderQueue",
+      "role": "COMPANION_ORDER_QUEUE",
+      "surface": "AI_COMPANION",
+      "states": [
+        "EMPTY",
+        "ACTIVE",
+        "QUEUED",
+        "PAUSED"
+      ]
+    },
+    {
+      "atomId": "COMPANION_ROLE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionRolePanel",
+      "role": "COMPANION_ROLE_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "COMBAT",
+        "GATHER",
+        "SCOUT",
+        "CRAFT",
+        "SUPPORT"
+      ]
+    },
+    {
+      "atomId": "COMPANION_FORMATION_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionFormationPanel",
+      "role": "COMPANION_FORMATION_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "CLOSE",
+        "NORMAL",
+        "FAR",
+        "LEFT",
+        "RIGHT",
+        "REAR"
+      ]
+    },
+    {
+      "atomId": "COMPANION_COMBAT_STANCE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionCombatStancePanel",
+      "role": "COMPANION_COMBAT_STANCE_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "DEFENSIVE",
+        "BALANCED",
+        "AGGRESSIVE",
+        "PROTECT",
+        "FOCUS_TARGET"
+      ]
+    },
+    {
+      "atomId": "COMPANION_TARGET_PING_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionTargetPingCard",
+      "role": "COMPANION_TARGET_PING_CARD",
+      "surface": "AI_COMPANION",
+      "states": [
+        "ATTACK",
+        "MOVE",
+        "INTERACT",
+        "DANGER",
+        "INTEREST"
+      ]
+    },
+    {
+      "atomId": "COMPANION_HELP_REQUEST",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionHelpRequest",
+      "role": "COMPANION_HELP_REQUEST",
+      "surface": "AI_COMPANION",
+      "states": [
+        "REQUESTED",
+        "ACKNOWLEDGED",
+        "UNAVAILABLE",
+        "RESOLVED"
+      ]
+    },
+    {
+      "atomId": "COMPANION_REVIVE_RESCUE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionReviveRescuePanel",
+      "role": "COMPANION_REVIVE_RESCUE_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "DOWNED",
+        "RESCUE_AVAILABLE",
+        "IN_PROGRESS",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "COMPANION_INVENTORY_HANDOFF",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionInventoryHandoff",
+      "role": "COMPANION_INVENTORY_HANDOFF",
+      "surface": "AI_COMPANION",
+      "states": [
+        "TRANSFER",
+        "FULL",
+        "LOCKED",
+        "QUEST_BOUND"
+      ]
+    },
+    {
+      "atomId": "COMPANION_GIFT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionGiftPanel",
+      "role": "COMPANION_GIFT_PANEL",
+      "surface": "NPC_RELATIONSHIP",
+      "states": [
+        "AVAILABLE",
+        "LOCKED",
+        "REACTION_HINT",
+        "CONFIRM"
+      ]
+    },
+    {
+      "atomId": "COMPANION_RELATIONSHIP_DETAIL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionRelationshipDetail",
+      "role": "COMPANION_RELATIONSHIP_DETAIL",
+      "surface": "NPC_RELATIONSHIP",
+      "states": [
+        "NEUTRAL",
+        "FRIENDLY",
+        "TRUSTED",
+        "HOSTILE",
+        "SPECIAL"
+      ]
+    },
+    {
+      "atomId": "NPC_MEMORY_SUMMARY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcMemorySummary",
+      "role": "NPC_MEMORY_SUMMARY",
+      "surface": "NPC_MEMORY",
+      "states": [
+        "RECENT",
+        "PROMISE",
+        "PERSON",
+        "PLACE",
+        "UNRESOLVED"
+      ]
+    },
+    {
+      "atomId": "NPC_TOPIC_BROWSER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcTopicBrowser",
+      "role": "NPC_TOPIC_BROWSER",
+      "surface": "NPC_DIALOGUE_DEEP",
+      "states": [
+        "CURRENT_EVENT",
+        "PLACE",
+        "PERSON",
+        "QUEST",
+        "RUMOR",
+        "PERSONAL"
+      ]
+    },
+    {
+      "atomId": "NPC_CONTEXT_REACTION",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcContextReaction",
+      "role": "NPC_CONTEXT_REACTION",
+      "surface": "NPC_DIALOGUE_DEEP",
+      "states": [
+        "WEATHER",
+        "TIME",
+        "COMBAT",
+        "REGION",
+        "PLAYER_STATE",
+        "RECENT_EVENT"
+      ]
+    },
+    {
+      "atomId": "NPC_SCHEDULE_AVAILABILITY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcScheduleAvailability",
+      "role": "NPC_SCHEDULE_AVAILABILITY",
+      "surface": "NPC_SERVICE",
+      "states": [
+        "AVAILABLE",
+        "BUSY",
+        "TRAVELING",
+        "SLEEPING",
+        "SPECIAL_EVENT"
+      ]
+    },
+    {
+      "atomId": "NPC_SERVICE_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcServiceMenu",
+      "role": "NPC_SERVICE_MENU",
+      "surface": "NPC_SERVICE",
+      "states": [
+        "TRADE",
+        "REPAIR",
+        "CRAFT",
+        "HEAL",
+        "TRAIN",
+        "INFO",
+        "STORAGE"
+      ]
+    },
+    {
+      "atomId": "NPC_QUEST_HANDOFF",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcQuestHandoff",
+      "role": "NPC_QUEST_HANDOFF",
+      "surface": "NPC_QUEST",
+      "states": [
+        "ACTIVE",
+        "TURN_IN",
+        "MISSING",
+        "COMPLETE",
+        "REWARD_PREVIEW"
+      ]
+    },
+    {
+      "atomId": "NPC_RECRUIT_DISMISS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcRecruitDismissPanel",
+      "role": "NPC_RECRUIT_DISMISS_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "RECRUITABLE",
+        "PARTY_FULL",
+        "RECRUITED",
+        "DISMISS_WARNING"
+      ]
+    },
+    {
+      "atomId": "NPC_RUMOR_KNOWLEDGE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcRumorKnowledgePanel",
+      "role": "NPC_RUMOR_KNOWLEDGE_PANEL",
+      "surface": "NPC_DIALOGUE_DEEP",
+      "states": [
+        "RUMOR",
+        "REGION_INFO",
+        "DANGER_INFO",
+        "PERSON_INFO",
+        "UNCERTAIN"
+      ]
+    },
+    {
+      "atomId": "NPC_CAMP_ACTIVITY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcCampActivityPanel",
+      "role": "NPC_CAMP_ACTIVITY_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "REST",
+        "GUARD",
+        "CRAFT",
+        "COOK",
+        "TALK",
+        "HAUL"
+      ]
+    },
+    {
+      "atomId": "PARTY_TACTICS_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePartyTacticsPanel",
+      "role": "PARTY_TACTICS_PANEL",
+      "surface": "PARTY_DEEP",
+      "states": [
+        "TARGET_PRIORITY",
+        "RANGE",
+        "FOCUS",
+        "PROTECT",
+        "RETREAT"
+      ]
+    },
+    {
+      "atomId": "COMPANION_EQUIPMENT_SUMMARY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCompanionEquipmentSummary",
+      "role": "COMPANION_EQUIPMENT_SUMMARY",
+      "surface": "AI_COMPANION",
+      "states": [
+        "WEAPON",
+        "ARMOR",
+        "UTILITY",
+        "SET_EFFECT",
+        "RESTRICTION"
+      ]
+    },
+    {
+      "atomId": "AI_COMPANION_AUTONOMY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAiCompanionAutonomyPanel",
+      "role": "AI_COMPANION_AUTONOMY_PANEL",
+      "surface": "AI_COMPANION",
+      "states": [
+        "AUTONOMY",
+        "DANGER_AVOID",
+        "HELP_PRIORITY",
+        "RESOURCE_INTERACT",
+        "DIALOGUE_PARTICIPATE"
+      ]
+    },
+    {
+      "atomId": "MOUNT_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountInteractionPrompt",
+      "role": "MOUNT_INTERACTION_PROMPT",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "LOCKED",
+        "TOO_FAR"
+      ]
+    },
+    {
+      "atomId": "MOUNT_STATUS_HUD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountStatusHud",
+      "role": "MOUNT_STATUS_HUD",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "RIDING",
+        "SPRINTING",
+        "EXHAUSTED",
+        "INJURED"
+      ]
+    },
+    {
+      "atomId": "MOUNT_STAMINA_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountStaminaMeter",
+      "role": "MOUNT_STAMINA_METER",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "NORMAL",
+        "LOW",
+        "EMPTY",
+        "RECOVERING"
+      ]
+    },
+    {
+      "atomId": "RIDE_SEAT_SELECTOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRideSeatSelector",
+      "role": "RIDE_SEAT_SELECTOR",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "DRIVER",
+        "PASSENGER",
+        "CARGO",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "PASSENGER_LIST",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePassengerList",
+      "role": "PASSENGER_LIST",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "FULL",
+        "OFFLINE"
+      ]
+    },
+    {
+      "atomId": "BOARDING_PROGRESS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBoardingProgress",
+      "role": "BOARDING_PROGRESS",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "BOARDING",
+        "READY",
+        "BLOCKED",
+        "CANCELLED"
+      ]
+    },
+    {
+      "atomId": "DISEMBARK_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDisembarkPrompt",
+      "role": "DISEMBARK_PROMPT",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "SAFE",
+        "UNSAFE",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "SEAT_SWITCH_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSeatSwitchPanel",
+      "role": "SEAT_SWITCH_PANEL",
+      "surface": "MOUNT_SEATING",
+      "states": [
+        "AVAILABLE",
+        "OCCUPIED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "MOUNT_COMMAND_WHEEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountCommandWheel",
+      "role": "MOUNT_COMMAND_WHEEL",
+      "surface": "MOUNT_COMMAND",
+      "states": [
+        "FOLLOW",
+        "WAIT",
+        "COME",
+        "FLEE",
+        "STAY"
+      ]
+    },
+    {
+      "atomId": "MOUNT_INVENTORY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountInventoryPanel",
+      "role": "MOUNT_INVENTORY_PANEL",
+      "surface": "MOUNT_CARGO",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "FULL",
+        "OVERWEIGHT"
+      ]
+    },
+    {
+      "atomId": "MOUNT_EQUIPMENT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountEquipmentPanel",
+      "role": "MOUNT_EQUIPMENT_PANEL",
+      "surface": "MOUNT_CARGO",
+      "states": [
+        "SADDLE",
+        "REINS",
+        "BAGS",
+        "LIGHT",
+        "ARMOR"
+      ]
+    },
+    {
+      "atomId": "VEHICLE_DAMAGE_STATUS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateVehicleDamageStatus",
+      "role": "VEHICLE_DAMAGE_STATUS",
+      "surface": "MOUNT_STATUS",
+      "states": [
+        "GOOD",
+        "DAMAGED",
+        "CRITICAL",
+        "BROKEN"
+      ]
+    },
+    {
+      "atomId": "FUEL_ENERGY_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFuelEnergyMeter",
+      "role": "FUEL_ENERGY_METER",
+      "surface": "MOUNT_STATUS",
+      "states": [
+        "FULL",
+        "NORMAL",
+        "LOW",
+        "EMPTY"
+      ]
+    },
+    {
+      "atomId": "CARGO_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCargoPanel",
+      "role": "CARGO_PANEL",
+      "surface": "MOUNT_CARGO",
+      "states": [
+        "EMPTY",
+        "LOADED",
+        "FULL",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "TRAVEL_ROUTE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTravelRoutePanel",
+      "role": "TRAVEL_ROUTE_PANEL",
+      "surface": "TRAVEL",
+      "states": [
+        "ROUTE",
+        "REROUTE",
+        "BLOCKED",
+        "ARRIVAL"
+      ]
+    },
+    {
+      "atomId": "DESTINATION_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDestinationCard",
+      "role": "DESTINATION_CARD",
+      "surface": "TRAVEL",
+      "states": [
+        "UNKNOWN",
+        "DISCOVERED",
+        "SELECTED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "TRAVEL_PROGRESS_HUD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTravelProgressHud",
+      "role": "TRAVEL_PROGRESS_HUD",
+      "surface": "TRAVEL",
+      "states": [
+        "DEPARTING",
+        "TRAVELING",
+        "NEAR_DESTINATION",
+        "ARRIVED"
+      ]
+    },
+    {
+      "atomId": "MOUNT_RECALL_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountRecallPanel",
+      "role": "MOUNT_RECALL_PANEL",
+      "surface": "MOUNT_COMMAND",
+      "states": [
+        "AVAILABLE",
+        "CALLING",
+        "ARRIVING",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "MOUNT_WHISTLE_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountWhistleState",
+      "role": "MOUNT_WHISTLE_STATE",
+      "surface": "MOUNT_COMMAND",
+      "states": [
+        "READY",
+        "SENT",
+        "ACKNOWLEDGED",
+        "COOLDOWN"
+      ]
+    },
+    {
+      "atomId": "TERRAIN_ACCESS_WARNING",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTerrainAccessWarning",
+      "role": "TERRAIN_ACCESS_WARNING",
+      "surface": "TRAVEL",
+      "states": [
+        "PASSABLE",
+        "DIFFICULT",
+        "BLOCKED",
+        "SPECIAL_REQUIREMENT"
+      ]
+    },
+    {
+      "atomId": "VEHICLE_CONTROL_HINTS",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateVehicleControlHints",
+      "role": "VEHICLE_CONTROL_HINTS",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "TOUCH",
+        "KEYBOARD_MOUSE",
+        "GAMEPAD"
+      ]
+    },
+    {
+      "atomId": "MOUNT_SPEED_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMountSpeedState",
+      "role": "MOUNT_SPEED_STATE",
+      "surface": "MOUNT_RIDE",
+      "states": [
+        "STOPPED",
+        "WALK",
+        "RUN",
+        "SPRINT"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·아이템·하우징·샌드박스 시스템 108종 v6",
+  "title": "Roblox 회사 공용 UI·아이템·하우징·AI동료/NPC·탑승 시스템 154종 v8",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -1448,7 +2068,20 @@
     "HOUSING_MANAGEMENT",
     "HOUSING_DECOR",
     "SETTLEMENT",
-    "FARMING"
+    "FARMING",
+    "AI_COMPANION",
+    "NPC_RELATIONSHIP",
+    "NPC_MEMORY",
+    "NPC_DIALOGUE_DEEP",
+    "NPC_SERVICE",
+    "NPC_QUEST",
+    "PARTY_DEEP",
+    "MOUNT_RIDE",
+    "MOUNT_SEATING",
+    "MOUNT_COMMAND",
+    "MOUNT_CARGO",
+    "MOUNT_STATUS",
+    "TRAVEL"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -1490,7 +2123,7 @@
   "iconAssetDependency": false,
   "vectorIconCount": 12,
   "continuationContract": {
-    "version": 5,
+    "version": 6,
     "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
     "infrastructureMutationAllowed": false,
     "flowMutationAllowed": false,
@@ -1588,7 +2221,9 @@
       "DURATION"
     ],
     "deepSystemComponentCoverageRequired": true,
-    "housingSandboxCoverageRequired": true
+    "housingSandboxCoverageRequired": true,
+    "aiNpcInteractionCoverageRequired": true,
+    "mountTravelCoverageRequired": true
   },
   "navigationContract": {
     "version": 1,
@@ -1627,7 +2262,7 @@
   ],
   "deepSystemContract": {
     "version": 1,
-    "componentCount": 54,
+    "componentCount": 100,
     "requiredFlows": [
       "PICKUP>NEW_STATE>DETAIL>USE_OR_EQUIP",
       "DETAIL>COMPARE>SET_SOCKET_UPGRADE",
@@ -1652,7 +2287,9 @@
     "gameplayAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false,
-    "housingSandboxComponentCount": 24
+    "housingSandboxComponentCount": 24,
+    "aiNpcInteractionComponentCount": 24,
+    "mountTravelComponentCount": 22
   },
   "housingSandboxContract": {
     "version": 1,
@@ -1687,5 +2324,49 @@
     "schedulerExcluded": true,
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "aiNpcInteractionContract": {
+    "version": 1,
+    "componentCount": 24,
+    "requiredFlows": [
+      "NPC>TOPIC_OR_CONTEXT_REACTION>DIALOGUE_OR_SERVICE",
+      "NPC>QUEST_HANDOFF>PROGRESS_OR_REWARD_PREVIEW",
+      "NPC>RECRUIT>COMPANION_STATUS>COMMAND_OR_ROLE",
+      "COMPANION>FORMATION_COMBAT_STANCE>TARGET_OR_HELP",
+      "COMPANION>DOWNED>RESCUE_OR_REVIVE_PRESENTATION",
+      "COMPANION>INVENTORY_HANDOFF_OR_GIFT>RELATIONSHIP_PRESENTATION",
+      "NPC>MEMORY_SUMMARY>RUMOR_KNOWLEDGE>CONTEXT_REACTION",
+      "CAMP>ACTIVITY>PARTY_TACTICS"
+    ],
+    "aiDecisionAuthority": false,
+    "memoryTruthAuthority": false,
+    "dialogueTruthAuthority": false,
+    "relationshipAuthority": false,
+    "questAuthority": false,
+    "combatAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
+  },
+  "mountTravelContract": {
+    "version": 1,
+    "componentCount": 22,
+    "requiredFlows": [
+      "APPROACH>MOUNT_PROMPT>BOARDING>SEAT>RIDING_HUD",
+      "RIDING>STAMINA_SPEED_DAMAGE_OR_FUEL_STATUS",
+      "RIDE>PASSENGERS>SEAT_SWITCH>DISEMBARK",
+      "MOUNT>COMMAND_OR_RECALL>ARRIVAL_STATE",
+      "MOUNT_OR_VEHICLE>CARGO_OR_EQUIPMENT>TRANSFER",
+      "DESTINATION>ROUTE>TRAVEL_PROGRESS>ARRIVAL",
+      "ROUTE>TERRAIN_ACCESS_WARNING>REROUTE_OR_BLOCKED"
+    ],
+    "movementAuthority": false,
+    "physicsAuthority": false,
+    "speedAuthority": false,
+    "seatAuthority": false,
+    "mountOwnershipAuthority": false,
+    "fuelAuthority": false,
+    "cargoAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
