@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-world-props-v1",
   "title": "Roblox 회사 공용 월드·하우징·정착지 소품 24종 v3",
   "platform": "ROBLOX",
@@ -26,56 +26,64 @@
       "name": "표지판",
       "subfamily": "SIGNPOST",
       "worldRole": "WAYFINDING",
-      "familyRootId": "WORLD_SIGN"
+      "familyRootId": "WORLD_SIGN",
+      "interactionRole": "READ"
     },
     {
       "assetId": "WOOD_FENCE",
       "name": "나무 울타리",
       "subfamily": "FENCE",
       "worldRole": "BOUNDARY",
-      "familyRootId": "WORLD_FENCE"
+      "familyRootId": "WORLD_FENCE",
+      "interactionRole": "INSPECT_OR_VAULT"
     },
     {
       "assetId": "WALL_TORCH",
       "name": "벽 횃불",
       "subfamily": "TORCH",
       "worldRole": "LIGHTING_PROP",
-      "familyRootId": "WORLD_LIGHT"
+      "familyRootId": "WORLD_LIGHT",
+      "interactionRole": "TOGGLE_LIGHT"
     },
     {
       "assetId": "WOOD_BARREL",
       "name": "나무통",
       "subfamily": "BARREL",
       "worldRole": "SET_DRESSING",
-      "familyRootId": "WORLD_CONTAINER"
+      "familyRootId": "WORLD_CONTAINER",
+      "interactionRole": "OPEN_OR_INSPECT"
     },
     {
       "assetId": "BENCH",
       "name": "벤치",
       "subfamily": "BENCH",
       "worldRole": "SEATING_PROP",
-      "familyRootId": "WORLD_FURNITURE"
+      "familyRootId": "WORLD_FURNITURE",
+      "interactionRole": "SIT"
     },
     {
       "assetId": "TABLE",
       "name": "테이블",
       "subfamily": "TABLE",
       "worldRole": "SURFACE_PROP",
-      "familyRootId": "WORLD_FURNITURE"
+      "familyRootId": "WORLD_FURNITURE",
+      "interactionRole": "INSPECT_OR_PLACE"
     },
     {
       "assetId": "MARKET_STALL",
       "name": "시장 가판대",
       "subfamily": "MARKET_STALL",
       "worldRole": "VENDOR_PROP",
-      "familyRootId": "WORLD_STALL"
+      "familyRootId": "WORLD_STALL",
+      "interactionRole": "SHOP_OR_INSPECT"
     },
     {
       "assetId": "STONE_WELL",
       "name": "돌우물",
       "subfamily": "WELL",
       "worldRole": "LANDMARK_PROP",
-      "familyRootId": "WORLD_WELL"
+      "familyRootId": "WORLD_WELL",
+      "interactionRole": "DRAW_WATER_OR_INSPECT"
     },
     {
       "assetId": "BED_SINGLE",
@@ -83,7 +91,8 @@
       "subfamily": "BED",
       "worldRole": "HOUSING_BED",
       "familyRootId": "WORLD_FURNITURE",
-      "propKind": "BED"
+      "propKind": "BED",
+      "interactionRole": "SLEEP_OR_BIND_RESPAWN"
     },
     {
       "assetId": "WARDROBE",
@@ -91,7 +100,8 @@
       "subfamily": "WARDROBE",
       "worldRole": "HOUSING_STORAGE",
       "familyRootId": "WORLD_FURNITURE",
-      "propKind": "WARDROBE"
+      "propKind": "WARDROBE",
+      "interactionRole": "OPEN_STORAGE_OR_OUTFIT"
     },
     {
       "assetId": "SHELF",
@@ -99,7 +109,8 @@
       "subfamily": "SHELF",
       "worldRole": "DISPLAY_STORAGE",
       "familyRootId": "WORLD_FURNITURE",
-      "propKind": "SHELF"
+      "propKind": "SHELF",
+      "interactionRole": "OPEN_STORAGE_OR_INSPECT"
     },
     {
       "assetId": "WORKBENCH",
@@ -107,7 +118,8 @@
       "subfamily": "WORKBENCH",
       "worldRole": "CRAFT_STATION",
       "familyRootId": "WORLD_CRAFT_STATION",
-      "propKind": "WORKBENCH"
+      "propKind": "WORKBENCH",
+      "interactionRole": "CRAFT"
     },
     {
       "assetId": "CRAFT_TABLE",
@@ -115,7 +127,8 @@
       "subfamily": "CRAFT_STATION",
       "worldRole": "CRAFT_STATION",
       "familyRootId": "WORLD_CRAFT_STATION",
-      "propKind": "CRAFT_TABLE"
+      "propKind": "CRAFT_TABLE",
+      "interactionRole": "CRAFT"
     },
     {
       "assetId": "COOKING_HEARTH",
@@ -123,7 +136,8 @@
       "subfamily": "COOKING",
       "worldRole": "COOKING_STATION",
       "familyRootId": "WORLD_COOKING",
-      "propKind": "HEARTH"
+      "propKind": "HEARTH",
+      "interactionRole": "COOK"
     },
     {
       "assetId": "STORAGE_CABINET",
@@ -131,7 +145,8 @@
       "subfamily": "STORAGE",
       "worldRole": "STORAGE",
       "familyRootId": "WORLD_STORAGE",
-      "propKind": "CABINET"
+      "propKind": "CABINET",
+      "interactionRole": "OPEN_STORAGE"
     },
     {
       "assetId": "PLANTER_BOX",
@@ -139,7 +154,8 @@
       "subfamily": "PLANTER",
       "worldRole": "FARMING_DECOR",
       "familyRootId": "WORLD_GARDEN",
-      "propKind": "PLANTER"
+      "propKind": "PLANTER",
+      "interactionRole": "PLANT_OR_INSPECT"
     },
     {
       "assetId": "CROP_PLOT",
@@ -147,7 +163,8 @@
       "subfamily": "CROP_PLOT",
       "worldRole": "FARMING_PLOT_VISUAL",
       "familyRootId": "WORLD_GARDEN",
-      "propKind": "CROP_PLOT"
+      "propKind": "CROP_PLOT",
+      "interactionRole": "PLANT_OR_HARVEST"
     },
     {
       "assetId": "ANIMAL_TROUGH",
@@ -155,7 +172,8 @@
       "subfamily": "ANIMAL_TROUGH",
       "worldRole": "ANIMAL_HOUSING_VISUAL",
       "familyRootId": "WORLD_ANIMAL_HOME",
-      "propKind": "TROUGH"
+      "propKind": "TROUGH",
+      "interactionRole": "FEED"
     },
     {
       "assetId": "FLOOR_LAMP",
@@ -163,7 +181,8 @@
       "subfamily": "LIGHT_SOURCE",
       "worldRole": "HOUSING_LIGHT",
       "familyRootId": "WORLD_LIGHT",
-      "propKind": "FLOOR_LAMP"
+      "propKind": "FLOOR_LAMP",
+      "interactionRole": "TOGGLE_LIGHT"
     },
     {
       "assetId": "WALL_SWITCH",
@@ -171,7 +190,8 @@
       "subfamily": "INTERACTIVE_SWITCH",
       "worldRole": "INTERACTION_CONTROL_VISUAL",
       "familyRootId": "WORLD_CONTROL",
-      "propKind": "SWITCH"
+      "propKind": "SWITCH",
+      "interactionRole": "TOGGLE"
     },
     {
       "assetId": "LEVER_CONTROL",
@@ -179,7 +199,8 @@
       "subfamily": "DOOR_CONTROL",
       "worldRole": "INTERACTION_CONTROL_VISUAL",
       "familyRootId": "WORLD_CONTROL",
-      "propKind": "LEVER"
+      "propKind": "LEVER",
+      "interactionRole": "USE_CONTROL"
     },
     {
       "assetId": "NOTICE_BOARD",
@@ -187,7 +208,8 @@
       "subfamily": "QUEST_PROP",
       "worldRole": "QUEST_DISPLAY",
       "familyRootId": "WORLD_QUEST_PROP",
-      "propKind": "NOTICE"
+      "propKind": "NOTICE",
+      "interactionRole": "READ"
     },
     {
       "assetId": "RUG",
@@ -195,7 +217,8 @@
       "subfamily": "DECORATION",
       "worldRole": "HOUSING_DECOR",
       "familyRootId": "WORLD_DECOR",
-      "propKind": "RUG"
+      "propKind": "RUG",
+      "interactionRole": "INSPECT"
     },
     {
       "assetId": "DECOR_STATUE",
@@ -203,7 +226,8 @@
       "subfamily": "DECORATION",
       "worldRole": "HOUSING_DECOR",
       "familyRootId": "WORLD_DECOR",
-      "propKind": "STATUE"
+      "propKind": "STATUE",
+      "interactionRole": "INSPECT"
     }
   ],
   "systemDepthContract": {
@@ -313,5 +337,51 @@
     "queueExcluded": true,
     "schedulerExcluded": true,
     "deploymentExcluded": true
+  },
+  "interactionPresentationContract": {
+    "version": 1,
+    "actions": [
+      "INSPECT",
+      "READ",
+      "OPEN",
+      "STORAGE",
+      "SIT",
+      "SLEEP",
+      "BIND_RESPAWN",
+      "CRAFT",
+      "COOK",
+      "PLANT",
+      "HARVEST",
+      "FEED",
+      "TOGGLE",
+      "SHOP",
+      "PLACE",
+      "VAULT",
+      "DRAW_WATER",
+      "USE_CONTROL"
+    ],
+    "states": [
+      "AVAILABLE",
+      "FOCUSED",
+      "IN_USE",
+      "BLOCKED",
+      "LOCKED",
+      "EMPTY",
+      "FULL",
+      "COOLDOWN",
+      "RESULT"
+    ],
+    "promptInputModes": [
+      "TOUCH",
+      "KEYBOARD_MOUSE",
+      "GAMEPAD"
+    ],
+    "colorOnlyStateForbidden": true,
+    "interactionAuthority": false,
+    "storageAuthority": false,
+    "craftingAuthority": false,
+    "farmingAuthority": false,
+    "respawnAuthority": false,
+    "economyAuthority": false
   }
 }
