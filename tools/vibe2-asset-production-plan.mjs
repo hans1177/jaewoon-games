@@ -606,19 +606,39 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     asset.sourceConsumptionEvidence=detected.map(gameId=>({gameId,evidence:[...byGame.get(gameId)].sort()}));
     asset.sourceConsumptionIsRuntimeVerification=false;
   }
+  const libraryModuleConsumerGameIds=new Set();
+  let libraryModuleConsumerPathCount=0,libraryModuleConsumerBindingCount=0;
+  const libraryModuleConsumption=[...libraryModuleConsumptionByPath.entries()].map(([assetPath,byGame])=>{
+    libraryModuleConsumerPathCount++;
+    const gameIds=[...byGame.keys()].sort();
+    for(const gameId of gameIds)libraryModuleConsumerGameIds.add(gameId);
+    libraryModuleConsumerBindingCount+=gameIds.length;
+    return Object.freeze({assetPath,assetRowCount:(sourcePathGroups.get(assetPath)||[]).length,gameIds:Object.freeze(gameIds),evidence:Object.freeze(gameIds.map(gameId=>Object.freeze({gameId,evidence:Object.freeze([...byGame.get(gameId)].sort())})))});
+  }).sort((a,b)=>b.gameIds.length-a.gameIds.length||a.assetPath.localeCompare(b.assetPath));
   const repositoryAssetSync={
-    version:1,
+    version:2,
     totalAssetRows:next.assets.length,
     repositoryPathPresentCount,
     missingRepositoryPathCount:missingRepositoryAssetIds.length,
     missingRepositoryAssetIds:Object.freeze([...missingRepositoryAssetIds].sort()),
     automaticSearchEligibleCount,
+    uniqueRepositoryPathCount:repositoryPathExistsCache.size,
+    repositoryPathExistenceCheckCount:repositoryPathExistsCache.size,
     sharedSourcePathGroupCount:[...sourcePathGroups.values()].filter(ids=>ids.length>1).length,
     sharedSourcePathRowsAreNotAutomaticDuplicates:true,
+    assetIdMatcherMode:'COMPILED_EXACT_TOKEN_REGEX',
+    assetIdMatcherTokenCount:assetIds.length,
+    sourceFilesScanned,
+    sourceBytesScanned,
     sourceConsumerAssetCount,
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
-    sourceConsumptionEvidenceMode:'EXACT_ASSET_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
+    libraryModuleConsumerPathCount,
+    libraryModuleConsumerBindingCount,
+    libraryModuleConsumerGameIds:Object.freeze([...libraryModuleConsumerGameIds].sort()),
+    libraryModuleConsumption:Object.freeze(libraryModuleConsumption.slice(0,96)),
+    sourceConsumptionEvidenceMode:'EXACT_ASSET_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING_PLUS_LIBRARY_MODULE_MARKER',
+    exactAssetConsumptionSeparatedFromModuleConsumption:true,
     sourceConsumptionDoesNotPromoteProductionVerification:true
   };
   const synchronizedCount=(packId,fallback=0)=>{
