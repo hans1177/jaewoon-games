@@ -45201,8 +45201,8 @@
       },
       "robloxProjectPath": "roblox-games/seed-single-defense-strat-celestial-bastion",
       "unityProjectPath": "unity-games/seed-single-defense-strat-celestial-bastion",
-      "targetSourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
-      "sourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
+      "targetSourcePath": "roblox-games/seed-single-defense-strat-celestial-bastion",
+      "sourcePath": "roblox-games/seed-single-defense-strat-celestial-bastion",
       "designBaselineSource": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -45240,17 +45240,17 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T05:38:22.288Z",
-      "robloxSourceCommit": "f9d4b286aa2a9bcbdadc78527d97aa88a965789b",
-      "robloxSourceBootstrapPassedAt": "2026-10-04T05:29:10.338Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-04T05:33:02.171Z",
+      "updatedAt": "2026-10-04T05:38:58.316Z",
+      "robloxSourceCommit": "44d5dc46189fc06837ba40de3562aa564df6b5c6",
+      "robloxSourceBootstrapPassedAt": "2026-10-04T05:38:58.316Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -45300,9 +45300,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -48604,6 +48604,14 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
+      },
+      "robloxHeadlessPassedAt": null,
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "f9d4b286aa2a9bcbdadc78527d97aa88a965789b",
+        "newSourceRevision": "44d5dc46189fc06837ba40de3562aa564df6b5c6",
+        "invalidatedAt": "2026-10-04T05:38:58.316Z"
       }
     },
     {
@@ -59007,7 +59015,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T05:38:22.288Z",
+  "updatedAt": "2026-10-04T05:38:58.316Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
