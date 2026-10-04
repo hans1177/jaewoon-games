@@ -760,6 +760,8 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
   const familySignals=robloxAssetFamilySignals(fullText);
+  const runtimeTaggedFamilies=new Set([...fullText.matchAll(/SetAttribute\s*\(\s*["']StudioAssetFamily["']\s*,\s*["']([A-Z][A-Z0-9_]*)["']/g)].map(match=>clean(match[1])));
+  const runtimeTaggedAtoms=new Set([...fullText.matchAll(/SetAttribute\s*\(\s*["']StudioAssetAtom["']\s*,\s*["']([A-Z][A-Z0-9_]*)["']/g)].map(match=>clean(match[1])));
   require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));
   require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
@@ -769,14 +771,24 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   if(universalRequired){
     for(const family of UNIVERSAL_ASSET_FAMILIES){
       const status=familyStatus[family];
-      if(status==='APPLIED')require('ROBLOX_ASSET_FAMILY_APPLIED_'+family,familySignals[family]===true);
+      if(status==='APPLIED'){
+        require('ROBLOX_ASSET_FAMILY_APPLIED_'+family,familySignals[family]===true);
+        require('ROBLOX_ASSET_FAMILY_RUNTIME_TAG_'+family,runtimeTaggedFamilies.has(family));
+        const selectedFamilyAtoms=(loadout?.families?.[family]||[]).map(clean).filter(Boolean);
+        require('ROBLOX_ASSET_FAMILY_RUNTIME_ATOM_'+family,selectedFamilyAtoms.some(atom=>runtimeTaggedAtoms.has(atom)));
+      }
       if(status==='NOT_APPLICABLE'&&familySignals[family]===true)require('ROBLOX_ASSET_FAMILY_NOT_APPLICABLE_VALID_'+family,false);
     }
     require('ROBLOX_MAP_ENVIRONMENT_ASSET_APPLIED',familyStatus.ENVIRONMENT==='APPLIED'&&familySignals.ENVIRONMENT===true);
     require('ROBLOX_MAP_PROP_ASSET_APPLIED',familyStatus.PROP==='APPLIED'&&familySignals.PROP===true);
     if(familySignals.BUILDING===true)require('ROBLOX_MAP_BUILDING_ASSET_APPLIED',familyStatus.BUILDING==='APPLIED');
   }
-  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable&&(!universalRequired||allFamiliesAccounted));
+  const appliedFamilies=UNIVERSAL_ASSET_FAMILIES.filter(family=>familyStatus[family]==='APPLIED');
+  const appliedFamiliesRuntimeTagged=!universalRequired||(
+    appliedFamilies.length>0
+    &&appliedFamilies.every(family=>runtimeTaggedFamilies.has(family))
+  );
+  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable&&(!universalRequired||allFamiliesAccounted)&&appliedFamiliesRuntimeTagged);
   if(issues.length)throw new Error(`ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:${issues.join('|')}`);
   return{
     status:'STATIC_PASS',checks,selectedAtomCount:atoms.length,runtimeStillRequired:true,
@@ -784,6 +796,9 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
     selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
     universalAssetFirst:universalRequired,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
+    sourceRuntimeTaggedFamilies:Object.freeze([...runtimeTaggedFamilies].sort()),
+    sourceRuntimeTaggedAtoms:Object.freeze([...runtimeTaggedAtoms].sort()),
+    appliedFamiliesRuntimeTagged:universalRequired?appliedFamiliesRuntimeTagged:null,
     mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
 }
