@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-vfx-v1/RobloxCommonVFX.luau
--- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 8종
+-- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 27종
 -- 원칙: 시각 표현만 소유한다. 데미지/히트박스/쿨다운/이동/네트워크 권한은 게임 코드가 소유한다.
 
 local TweenService = game:GetService("TweenService")
@@ -305,6 +305,143 @@ function RobloxCommonVFX.CreateCounterReadyPulse(options)
   })
 end
 
+
+function RobloxCommonVFX.CreateCriticalBurst(options)
+  return createCombatPulse("CRITICAL_BURST",options,{
+    role="CRITICAL",duration=0.36,ringSize=2.0,expand=3.3,coreSize=0.62,coreExpand=3.0,shards=10,distance=3.8,shardLength=1.10,
+    color=Color3.fromRGB(255,244,180),accent=Color3.fromRGB(255,154,76)
+  })
+end
+
+function RobloxCommonVFX.CreateDodgeEvasionPulse(options)
+  return createCombatPulse("DODGE_EVASION_PULSE",options,{
+    role="DODGE",duration=0.26,ringSize=1.5,expand=3.6,coreSize=0.22,coreExpand=1.8,shards=4,distance=2.8,shardLength=1.35,
+    color=Color3.fromRGB(205,239,255),accent=Color3.fromRGB(103,190,255),ringTransparency=0.42,coreTransparency=0.40
+  })
+end
+
+function RobloxCommonVFX.CreateHealPulse(options)
+  return createCombatPulse("HEAL_PULSE",options,{
+    role="HEAL",duration=0.54,ringSize=1.8,expand=2.8,coreSize=0.50,coreExpand=2.5,shards=6,distance=2.5,vertical=0.35,shardLength=0.65,
+    color=Color3.fromRGB(201,255,217),accent=Color3.fromRGB(84,221,147)
+  })
+end
+
+function RobloxCommonVFX.CreateBuffPulse(options)
+  return createCombatPulse("BUFF_PULSE",options,{
+    role="BUFF",duration=0.46,ringSize=1.7,expand=2.7,coreSize=0.44,coreExpand=2.3,shards=8,distance=2.9,vertical=0.18,shardLength=0.78,
+    color=Color3.fromRGB(224,244,255),accent=Color3.fromRGB(112,176,255)
+  })
+end
+
+function RobloxCommonVFX.CreateDebuffPulse(options)
+  return createCombatPulse("DEBUFF_PULSE",options,{
+    role="DEBUFF",duration=0.52,ringSize=1.8,expand=2.3,coreSize=0.48,coreExpand=2.4,shards=7,distance=2.4,vertical=-0.04,shardLength=0.82,
+    color=Color3.fromRGB(230,193,255),accent=Color3.fromRGB(153,89,207)
+  })
+end
+
+function RobloxCommonVFX.CreateStatusPulse(options)
+  return createCombatPulse("STATUS_PULSE",options,{
+    role="STATUS",duration=0.42,ringSize=1.45,expand=2.4,coreSize=0.34,coreExpand=2.0,shards=5,distance=2.1,shardLength=0.62,
+    color=Color3.fromRGB(233,236,244),accent=Color3.fromRGB(146,161,188)
+  })
+end
+
+function RobloxCommonVFX.CreateLootCommonBurst(options)
+  return createCombatPulse("LOOT_COMMON_BURST",options,{
+    role="LOOT_COMMON",duration=0.34,ringSize=1.4,expand=2.5,coreSize=0.36,coreExpand=2.0,shards=5,distance=2.3,vertical=0.25,shardLength=0.58,
+    color=Color3.fromRGB(235,240,245),accent=Color3.fromRGB(171,185,196)
+  })
+end
+
+function RobloxCommonVFX.CreateLootRareBurst(options)
+  return createCombatPulse("LOOT_RARE_BURST",options,{
+    role="LOOT_RARE",duration=0.42,ringSize=1.7,expand=2.9,coreSize=0.44,coreExpand=2.4,shards=8,distance=3.0,vertical=0.28,shardLength=0.82,
+    color=Color3.fromRGB(205,231,255),accent=Color3.fromRGB(89,155,255)
+  })
+end
+
+function RobloxCommonVFX.CreateLootLegendaryBurst(options)
+  return createCombatPulse("LOOT_LEGENDARY_BURST",options,{
+    role="LOOT_LEGENDARY",duration=0.56,ringSize=2.0,expand=3.4,coreSize=0.58,coreExpand=2.8,shards=12,distance=4.1,vertical=0.35,shardLength=1.05,
+    color=Color3.fromRGB(255,244,187),accent=Color3.fromRGB(255,170,70)
+  })
+end
+
+function RobloxCommonVFX.CreateUpgradeBurst(options)
+  return createCombatPulse("UPGRADE_BURST",options,{
+    role="UPGRADE",duration=0.50,ringSize=1.9,expand=3.0,coreSize=0.50,coreExpand=2.6,shards=9,distance=3.4,vertical=0.30,shardLength=0.92,
+    color=Color3.fromRGB(221,255,236),accent=Color3.fromRGB(96,224,178)
+  })
+end
+
+function RobloxCommonVFX.CreateCraftSparks(options)
+  return createCombatPulse("CRAFT_SPARKS",options,{
+    role="CRAFT",duration=0.40,ringSize=1.35,expand=2.2,coreSize=0.30,coreExpand=1.8,shards=10,distance=2.6,vertical=0.40,shardLength=0.54,
+    color=Color3.fromRGB(255,225,175),accent=Color3.fromRGB(239,139,65)
+  })
+end
+
+function RobloxCommonVFX.CreateDismantleShards(options)
+  return createCombatPulse("DISMANTLE_SHARDS",options,{
+    role="DISMANTLE",duration=0.44,ringSize=1.45,expand=2.6,coreSize=0.30,coreExpand=1.7,shards=9,distance=3.1,vertical=0.12,shardLength=0.95,
+    color=Color3.fromRGB(216,225,236),accent=Color3.fromRGB(111,132,158)
+  })
+end
+
+function RobloxCommonVFX.CreateQuestUpdatePulse(options)
+  return createCombatPulse("QUEST_UPDATE_PULSE",options,{
+    role="QUEST_UPDATE",duration=0.38,ringSize=1.55,expand=2.6,coreSize=0.38,coreExpand=2.0,shards=6,distance=2.5,vertical=0.24,shardLength=0.68,
+    color=Color3.fromRGB(255,247,203),accent=Color3.fromRGB(91,199,202)
+  })
+end
+
+function RobloxCommonVFX.CreateInteractionPulse(options)
+  return createCombatPulse("INTERACTION_PULSE",options,{
+    role="INTERACTION",duration=0.34,ringSize=1.35,expand=2.3,coreSize=0.28,coreExpand=1.8,shards=4,distance=1.9,shardLength=0.52,
+    color=Color3.fromRGB(232,245,255),accent=Color3.fromRGB(111,190,226)
+  })
+end
+
+function RobloxCommonVFX.CreateEnvironmentMotePulse(options)
+  return createCombatPulse("ENVIRONMENT_MOTE_PULSE",options,{
+    role="ENVIRONMENT",duration=0.72,ringSize=1.9,expand=2.4,coreSize=0.24,coreExpand=1.7,shards=8,distance=3.8,vertical=0.42,shardLength=0.46,
+    color=Color3.fromRGB(222,238,224),accent=Color3.fromRGB(124,173,131),ringTransparency=0.48,coreTransparency=0.42
+  })
+end
+
+function RobloxCommonVFX.CreateWeatherGustPulse(options)
+  return createCombatPulse("WEATHER_GUST_PULSE",options,{
+    role="WEATHER",duration=0.62,ringSize=2.1,expand=3.1,coreSize=0.18,coreExpand=1.4,shards=7,distance=4.5,vertical=0.08,shardLength=1.35,
+    color=Color3.fromRGB(220,234,242),accent=Color3.fromRGB(154,186,204),ringTransparency=0.58,coreTransparency=0.62
+  })
+end
+
+function RobloxCommonVFX.CreateDestructionBurst(options)
+  return createCombatPulse("DESTRUCTION_BURST",options,{
+    role="DESTRUCTION",duration=0.50,ringSize=1.8,expand=2.8,coreSize=0.52,coreExpand=2.8,shards=12,distance=4.0,vertical=0.22,shardLength=1.20,
+    color=Color3.fromRGB(224,198,161),accent=Color3.fromRGB(146,116,87)
+  })
+end
+
+function RobloxCommonVFX.CreateBossWarningPulse(options)
+  return createCombatPulse("BOSS_WARNING_PULSE",options,{
+    role="BOSS",duration=0.68,ringSize=2.6,expand=3.4,coreSize=0.48,coreExpand=2.7,shards=8,distance=4.6,vertical=0.18,shardLength=1.20,
+    color=Color3.fromRGB(255,211,188),accent=Color3.fromRGB(221,72,72),ringTransparency=0.26,coreTransparency=0.24
+  })
+end
+
+function RobloxCommonVFX.CreateMobileDensityPulse(options)
+  options=options or {}
+  local lowDensity=options.lowDensity~=false
+  return createCombatPulse("MOBILE_DENSITY_PULSE",options,{
+    role="MOBILE_DENSITY",duration=lowDensity and 0.28 or 0.38,ringSize=1.3,expand=2.2,coreSize=0.26,coreExpand=1.7,
+    shards=lowDensity and 2 or 5,distance=lowDensity and 1.7 or 2.4,shardLength=lowDensity and 0.42 or 0.62,
+    color=Color3.fromRGB(225,238,248),accent=Color3.fromRGB(124,174,209),ringTransparency=0.44,coreTransparency=0.38
+  })
+end
+
 function RobloxCommonVFX.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "IMPACT_FLASH" then
@@ -324,16 +461,59 @@ function RobloxCommonVFX.Create(atomId, options)
     return RobloxCommonVFX.CreateAttackTelegraphPulse(options)
   elseif id == "COUNTER_READY_PULSE" then
     return RobloxCommonVFX.CreateCounterReadyPulse(options)
+  elseif id == "CRITICAL_BURST" then
+    return RobloxCommonVFX.CreateCriticalBurst(options)
+  elseif id == "DODGE_EVASION_PULSE" then
+    return RobloxCommonVFX.CreateDodgeEvasionPulse(options)
+  elseif id == "HEAL_PULSE" then
+    return RobloxCommonVFX.CreateHealPulse(options)
+  elseif id == "BUFF_PULSE" then
+    return RobloxCommonVFX.CreateBuffPulse(options)
+  elseif id == "DEBUFF_PULSE" then
+    return RobloxCommonVFX.CreateDebuffPulse(options)
+  elseif id == "STATUS_PULSE" then
+    return RobloxCommonVFX.CreateStatusPulse(options)
+  elseif id == "LOOT_COMMON_BURST" then
+    return RobloxCommonVFX.CreateLootCommonBurst(options)
+  elseif id == "LOOT_RARE_BURST" then
+    return RobloxCommonVFX.CreateLootRareBurst(options)
+  elseif id == "LOOT_LEGENDARY_BURST" then
+    return RobloxCommonVFX.CreateLootLegendaryBurst(options)
+  elseif id == "UPGRADE_BURST" then
+    return RobloxCommonVFX.CreateUpgradeBurst(options)
+  elseif id == "CRAFT_SPARKS" then
+    return RobloxCommonVFX.CreateCraftSparks(options)
+  elseif id == "DISMANTLE_SHARDS" then
+    return RobloxCommonVFX.CreateDismantleShards(options)
+  elseif id == "QUEST_UPDATE_PULSE" then
+    return RobloxCommonVFX.CreateQuestUpdatePulse(options)
+  elseif id == "INTERACTION_PULSE" then
+    return RobloxCommonVFX.CreateInteractionPulse(options)
+  elseif id == "ENVIRONMENT_MOTE_PULSE" then
+    return RobloxCommonVFX.CreateEnvironmentMotePulse(options)
+  elseif id == "WEATHER_GUST_PULSE" then
+    return RobloxCommonVFX.CreateWeatherGustPulse(options)
+  elseif id == "DESTRUCTION_BURST" then
+    return RobloxCommonVFX.CreateDestructionBurst(options)
+  elseif id == "BOSS_WARNING_PULSE" then
+    return RobloxCommonVFX.CreateBossWarningPulse(options)
+  elseif id == "MOBILE_DENSITY_PULSE" then
+    return RobloxCommonVFX.CreateMobileDensityPulse(options)
   end
   error("UNKNOWN_COMMON_VFX_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonVFX.Audit()
   return table.freeze({
-    version = 2,
+    version = 3,
     packId = "roblox-common-vfx-v1",
-    atoms = table.freeze({"IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "BLOCK_IMPACT", "PARRY_PERFECT_FLASH", "GUARD_BREAK_BURST", "ATTACK_TELEGRAPH_PULSE", "COUNTER_READY_PULSE"}),
-    atomCount = 8,
+    atoms = table.freeze({
+      "IMPACT_FLASH", "TRAIL_SHORT", "SHAPE_BURST", "BLOCK_IMPACT", "PARRY_PERFECT_FLASH", "GUARD_BREAK_BURST", "ATTACK_TELEGRAPH_PULSE", "COUNTER_READY_PULSE",
+      "CRITICAL_BURST", "DODGE_EVASION_PULSE", "HEAL_PULSE", "BUFF_PULSE", "DEBUFF_PULSE", "STATUS_PULSE",
+      "LOOT_COMMON_BURST", "LOOT_RARE_BURST", "LOOT_LEGENDARY_BURST", "UPGRADE_BURST", "CRAFT_SPARKS", "DISMANTLE_SHARDS",
+      "QUEST_UPDATE_PULSE", "INTERACTION_PULSE", "ENVIRONMENT_MOTE_PULSE", "WEATHER_GUST_PULSE", "DESTRUCTION_BURST", "BOSS_WARNING_PULSE", "MOBILE_DENSITY_PULSE"
+    }),
+    atomCount = 27,
     companyCommonBase = true,
     compatibleGameScope = "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
     gameplayAuthority = false,
@@ -343,6 +523,7 @@ function RobloxCommonVFX.Audit()
     productionVerified = false,
     runtimeVerificationRequired = true,
     mobileBurstCap = 12,
+    mobileDensityVariantAvailable = true,
   })
 end
 
