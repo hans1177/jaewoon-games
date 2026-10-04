@@ -2385,3 +2385,89 @@ test('generic character gear requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-character-helmet');
 });
+
+
+test('company-common UI v2 preserves old atoms and adds eight reusable components',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-ui-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonUI.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
+  const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
+  assert.equal(catalog.version,2);
+  assert.equal(catalog.atoms.length,11);
+  for(const id of [...oldIds,...newIds]){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
+  }
+
+  assert.ok(source.includes('function RobloxCommonUI.CreateInventorySlot(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateTooltip(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateModal(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateTabButton(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateQuestCard(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
+  assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
+  assert.ok(source.includes('atomCount = 11'));
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  assert.ok(source.includes('button:SetAttribute("OwnsInventoryAuthority", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsQuestProgress", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsRewardAuthority", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsEconomyAuthority", false)'));
+  assert.ok(source.includes('root:SetAttribute("OwnsProgressValue", false)'));
+  assert.ok(source.includes('button:SetAttribute("OwnsGameplayAction", false)'));
+  assert.ok(source.includes('button:SetAttribute("OwnsRemoteAuthority", false)'));
+
+  for(const forbidden of [/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/InvokeServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common UI v2 registry exposes eleven unverified reusable atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
+  assert.ok(pack);
+  assert.equal(pack.assetCount,11);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  const atoms=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH','INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
+  for(const atomId of atoms){
+    const id='roblox-common-ui-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'UI');
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
+  }
+
+  for(const atomId of ['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON']){
+    const id='roblox-common-ui-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.equal(row.bindingHint.preserveGameplayHealthInputInventoryQuestRewardEconomyProgressSaveAndNetworkAuthority,true);
+  }
+});
+
+test('generic inventory UI requirement can choose company-common base',()=>{
+  const registryAsset={id:'common-inventory-slot',family:'UI',subfamily:'INVENTORY_SLOT',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['INVENTORY_SLOT']};
+  const gameOnly={id:'game-only-inventory-slot',family:'UI',subfamily:'INVENTORY_SLOT',platform:'ROBLOX',status:'REPO_ASSET',tags:['INVENTORY_SLOT']};
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'UI',subfamily:'INVENTORY_SLOT',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-inventory-slot');
+});
