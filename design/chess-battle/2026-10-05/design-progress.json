@@ -9,21 +9,21 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-10-04T17:02:25.246Z",
+  "lastSuccessfulModelCallAt": "2026-10-04T17:05:54.262Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 22,
-      "successes": 4,
-      "failures": 18,
+      "calls": 25,
+      "successes": 5,
+      "failures": 20,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 72486,
-      "lastMs": 3453,
+      "totalMs": 80385,
+      "lastMs": 2904,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T17:03:45.251Z"
+      "updatedAt": "2026-10-04T17:05:57.167Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-04T16:48:11.149Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 18,
+      "calls": 19,
       "successes": 0,
-      "failures": 18,
+      "failures": 19,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 156092,
-      "lastMs": 8751,
+      "totalMs": 159417,
+      "lastMs": 3325,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-04T17:03:50.548Z"
+      "updatedAt": "2026-10-04T17:05:57.588Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 8,
+      "calls": 9,
       "successes": 0,
-      "failures": 8,
-      "timeouts": 4,
+      "failures": 9,
+      "timeouts": 5,
       "jsonFailures": 4,
-      "totalMs": 832574,
-      "lastMs": 65394,
-      "lastError": "schema required missing: root.systemInterconnections",
-      "updatedAt": "2026-10-04T17:03:37.699Z"
+      "totalMs": 952576,
+      "lastMs": 120002,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T17:05:50.551Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T17:03:50.548Z"
+  "updatedAt": "2026-10-04T17:05:57.588Z"
 }
