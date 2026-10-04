@@ -119,12 +119,15 @@ export const COMMON_ENVIRONMENT_BIOME_EXPECTATIONS=Object.freeze([
 
 export const COMMON_ENVIRONMENT_ROLE_EXPECTATIONS=Object.freeze([
   'BIOME_KIT','TERRAIN','GROUND_DETAIL','PATH_ROAD','CLIFF','WATER','LANDMARK','SET_DRESSING',
-  'TERRAIN_COMPOSITION','VILLAGE_CLUSTER','RUIN_CLUSTER','DISCOVERY_POI','FOREGROUND','MIDGROUND','BACKGROUND'
+  'TERRAIN_COMPOSITION','VILLAGE_CLUSTER','RUIN_CLUSTER','DISCOVERY_POI','FOREGROUND','MIDGROUND','BACKGROUND',
+  'BACKGROUND_LAYER','INTERACTION_PRESENTATION'
 ]);
 
 export const COMMON_TERRAIN_COMPOSITION_EXPECTATIONS=Object.freeze([
   'ROLLING_HILLS','RIDGE_PASS','RIVER_VALLEY','TERRACED_HILLS','MEADOW_BASIN','FOREST_EDGE',
-  'VILLAGE_HILL','VILLAGE_CROSSROADS','FARM_HAMLET','CLIFF_SETTLEMENT','COAST_VILLAGE','RUINED_HIGHLAND'
+  'VILLAGE_HILL','VILLAGE_CROSSROADS','FARM_HAMLET','CLIFF_SETTLEMENT','COAST_VILLAGE','RUINED_HIGHLAND',
+  'MOUNTAIN_FOOT','RIVER_TOWN','SNOW_HAMLET','OASIS_SETTLEMENT','WETLAND_HAMLET','CAVE_OUTPOST',
+  'CITY_OUTSKIRTS','RUIN_VALLEY','ISLAND_TERRACES','FOREST_GULLY','DESERT_ESCARPMENT','SNOW_BASIN'
 ]);
 
 export const COMMON_CREATURE_ECOLOGY_EXPECTATIONS=Object.freeze({
@@ -206,7 +209,9 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS=Object.freeze({
     required:Object.freeze([
       'IDLE','WALK','JOG','RUN','SPRINT','START','STOP','TURN','JUMP','LAND','CROUCH','CLIMB','SWIM','DODGE','ROLL',
       'BLOCK','PARRY','LIGHT_ATTACK','HEAVY_ATTACK','RANGED_ATTACK','CAST','CHANNEL','INTERACT','GATHER','CRAFT','CARRY',
-      'EQUIP','UNEQUIP','USE_CONSUMABLE','HIT_FRONT','HIT_BACK','DOWNED','REVIVE','DEATH','EMOTE','BLEND','MOTION_LOD'
+      'EQUIP','UNEQUIP','USE_CONSUMABLE','HIT_FRONT','HIT_BACK','DOWNED','REVIVE','DEATH','EMOTE','BLEND','MOTION_LOD',
+      'SIT_STAND','LEAN','OPEN_CLOSE','PICK_PLACE','PUSH_PULL','DIALOGUE_GESTURE','NPC_WORK','COOK','FARM','FISH',
+      'BED','LADDER_ENTRY_EXIT','SLOPE','FATIGUE','INJURY'
     ])
   }),
   MATERIAL:Object.freeze({
@@ -222,7 +227,9 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS=Object.freeze({
       'FOREST','SNOW','DESERT','SWAMP','CAVE','COAST','VILLAGE','CITY','RUINS','DUNGEON',
       'TERRAIN','GROUND_DETAIL','PATH_ROAD','CLIFF','WATER','LANDMARK','SET_DRESSING','HILL','RIDGE','VALLEY',
       'VILLAGE_CLUSTER','BACKGROUND_LAYER','PROP_INTERACTION','WEATHER','SKY_ATMOSPHERE',
-      'LIGHTING_PRESET','STREAMING_LOD','INTERIOR_EXTERIOR_TRANSITION','DISCOVERY_POI'
+      'LIGHTING_PRESET','STREAMING_LOD','INTERIOR_EXTERIOR_TRANSITION','DISCOVERY_POI',
+      'BASIN','PLATEAU','TERRACE','GULLY','CREEK','ROAD_GRID','ESCARPMENT','WETLAND_ISLAND','CAVE_FLOOR',
+      'BACKGROUND_PARALLAX','SETTLEMENT_VARIATION'
     ])
   }),
   BUILDING:Object.freeze({
@@ -238,7 +245,8 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS=Object.freeze({
     required:Object.freeze([
       'CONTAINER','CHEST','CRATE','BARREL','FURNITURE','LIGHT_SOURCE','SIGNPOST','FENCE','MARKET','CRAFT_STATION',
       'WORKBENCH','COOKING','STORAGE','INTERACTIVE_SWITCH','DOOR_CONTROL','LORE_COLLECTIBLE','DESTRUCTIBLE',
-      'RESOURCE_NODE','QUEST_PROP','DECORATION','INTERACTION_ROLE','INTERACTION_STATE','COLLISION_PROXY','LOD'
+      'RESOURCE_NODE','QUEST_PROP','DECORATION','INTERACTION_ROLE','INTERACTION_STATE','COLLISION_PROXY','LOD',
+      'CART','SETTLEMENT_LIFE','FLAG','TENT','FIREWOOD','FARM_TOOL','RUIN_DEBRIS','CONSTRUCTION_TRACE'
     ])
   }),
   CREATURE:Object.freeze({
@@ -404,7 +412,22 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
   MOTION:Object.freeze({
     TURN:Object.freeze(['TURN_90']),
     JUMP:Object.freeze(['JUMP_START']),
-    DEATH:Object.freeze(['DEATH_FRONT'])
+    DEATH:Object.freeze(['DEATH_FRONT']),
+    SIT_STAND:Object.freeze(['SIT_DOWN','STAND_UP']),
+    LEAN:Object.freeze(['LEAN_WALL_IDLE']),
+    OPEN_CLOSE:Object.freeze(['OPEN_DOOR','OPEN_CONTAINER']),
+    PICK_PLACE:Object.freeze(['PICKUP_GROUND','PLACE_GROUND']),
+    PUSH_PULL:Object.freeze(['PUSH_OBJECT','PULL_OBJECT']),
+    DIALOGUE_GESTURE:Object.freeze(['TALK_GESTURE']),
+    NPC_WORK:Object.freeze(['NPC_WORK_LOOP']),
+    COOK:Object.freeze(['COOK_LOOP']),
+    FARM:Object.freeze(['FARM_TEND']),
+    FISH:Object.freeze(['FISH_CAST']),
+    BED:Object.freeze(['BED_LIE_DOWN']),
+    LADDER_ENTRY_EXIT:Object.freeze(['LADDER_ENTER','LADDER_EXIT']),
+    SLOPE:Object.freeze(['SLOPE_ASCEND','SLOPE_DESCEND']),
+    FATIGUE:Object.freeze(['FATIGUED_IDLE']),
+    INJURY:Object.freeze(['INJURED_WALK'])
   }),
   ENVIRONMENT:Object.freeze({
     PATH_ROAD:Object.freeze(['PATH_ROAD','ROAD_DIRT']),
@@ -413,8 +436,19 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
     RIDGE:Object.freeze(['RIDGE_PASS','RUINED_HIGHLAND']),
     VALLEY:Object.freeze(['RIVER_VALLEY','MEADOW_BASIN']),
     VILLAGE_CLUSTER:Object.freeze(['VILLAGE_HILL','VILLAGE_CROSSROADS','FARM_HAMLET','CLIFF_SETTLEMENT','COAST_VILLAGE']),
-    BACKGROUND_LAYER:Object.freeze(['TERRAIN_COMPOSITION','BACKGROUND']),
-    PROP_INTERACTION:Object.freeze(['SET_DRESSING','WORLD_PROP_INTERACTION'])
+    BACKGROUND_LAYER:Object.freeze(['TERRAIN_COMPOSITION','BACKGROUND','BACKGROUND_1','BACKGROUND_2','BACKGROUND_3','BACKGROUND_4','BACKGROUND_5']),
+    PROP_INTERACTION:Object.freeze(['SET_DRESSING','WORLD_PROP_INTERACTION','INTERACTION_PRESENTATION']),
+    BASIN:Object.freeze(['MEADOW_BASIN','SNOW_BASIN']),
+    PLATEAU:Object.freeze(['RUINED_HIGHLAND']),
+    TERRACE:Object.freeze(['TERRACED_HILLS','ISLAND_TERRACES']),
+    GULLY:Object.freeze(['FOREST_GULLY']),
+    CREEK:Object.freeze(['FOREST_GULLY']),
+    ROAD_GRID:Object.freeze(['CITY_OUTSKIRTS']),
+    ESCARPMENT:Object.freeze(['DESERT_ESCARPMENT']),
+    WETLAND_ISLAND:Object.freeze(['WETLAND_HAMLET']),
+    CAVE_FLOOR:Object.freeze(['CAVE_OUTPOST']),
+    BACKGROUND_PARALLAX:Object.freeze(['BACKGROUND_LAYER','BACKGROUND_5']),
+    SETTLEMENT_VARIATION:Object.freeze(['RIVER_TOWN','SNOW_HAMLET','OASIS_SETTLEMENT','WETLAND_HAMLET','CAVE_OUTPOST','CITY_OUTSKIRTS'])
   }),
   BUILDING:Object.freeze({
     FOUNDATION:Object.freeze(['FOUNDATION_RECT','FOUNDATION_TRIANGLE','FENCE_FOUNDATION']),
@@ -2752,8 +2786,8 @@ function commonDepthTokens(assets=[]){
     const token=upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
     if(token)tokens.add(token);
   };
-  const fields=['id','assetId','family','category','subfamily','type','itemRole','toolRole','gearRole','buildingRole','worldRole','role','biomeId','familyRootId','atomId','packId','snapClass','stabilityRole'];
-  const arrays=['tags','machineTags','capabilities','presentationRoles','motionStates','environmentRoles','biomes','loadingElements','introModes','inventoryCategories','uiSurfaces'];
+  const fields=['id','assetId','family','category','subfamily','type','itemRole','toolRole','gearRole','buildingRole','worldRole','role','biomeId','familyRootId','atomId','packId','snapClass','stabilityRole','interactionRole','propKind'];
+  const arrays=['tags','machineTags','capabilities','presentationRoles','motionStates','environmentRoles','biomes','loadingElements','introModes','inventoryCategories','uiSurfaces','terrainCompositions','backgroundLayers'];
   for(const asset of assets||[]){
     for(const field of fields)add(asset?.[field]);
     for(const field of arrays)for(const value of asset?.[field]||[])add(value);
