@@ -1248,3 +1248,89 @@ test('horror lore pack is registered for automatic game binding without false ve
     assert.equal(row.bindingHint.preservePromptRewardSaveAuthority,true);
   }
 });
+
+
+test('survival core world pack matches current StudioAssets atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','survival-core-world-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const config=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
+  const mtl=fs.readFileSync(path.join(packDir,'survival-core-world.mtl'),'utf8');
+  const materials=new Set(mtl.split(/\r?\n/).filter(line=>line.startsWith('newmtl ')).map(line=>line.slice(7).trim()));
+  const expected=[
+    ['ENVIRONMENT','TREE_TRUNK_THICK','tree_trunk_thick',500,300],
+    ['ENVIRONMENT','TREE_CROWN_ROUND','tree_crown_round',800,650],
+    ['ENVIRONMENT','ROCK_MEDIUM','rock_medium',250,200],
+    ['ENVIRONMENT','ROAD_DIRT','road_dirt',800,600],
+    ['BUILDING','FOUNDATION_RECT','foundation_rect',90,70],
+    ['BUILDING','WALL_SOLID','wall_solid',100,70],
+    ['BUILDING','DOOR_SINGLE','door_single',180,130],
+    ['BUILDING','ROOF_GABLE','roof_gable',160,90],
+    ['PROP','CHEST','chest',180,140],
+    ['PROP','CRATE','crate',100,70],
+    ['PROP','LAMP','lamp',550,400]
+  ];
+  assert.equal(catalog.assets.length,11);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(catalog.authoringQualityTarget,100);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  for(const [family,atomId,fileId,minVertices,minFaces] of expected){
+    assert.ok(config.includes(atomId),atomId+':config');
+    const source=fs.readFileSync(path.join(packDir,fileId+'.obj'),'utf8');
+    const lines=source.split(/\r?\n/);
+    const vertices=lines.filter(line=>line.startsWith('v ')).length;
+    const faces=lines.filter(line=>line.startsWith('f ')).length;
+    const groups=lines.filter(line=>line.startsWith('g ')).length;
+    const used=[...new Set(lines.filter(line=>line.startsWith('usemtl ')).map(line=>line.slice(7).trim()))];
+    assert.ok(vertices>=minVertices,fileId+':vertices='+vertices);
+    assert.ok(faces>=minFaces,fileId+':faces='+faces);
+    assert.ok(groups>=5,fileId+':semantic-groups');
+    assert.equal(used.filter(mat=>!materials.has(mat)).length,0,fileId+':materials');
+    const row=catalog.assets.find(asset=>asset.atomId===atomId);
+    assert.ok(row,atomId+':catalog');
+    assert.equal(row.family,family,atomId+':family');
+    assert.equal(row.source,fileId+'.obj',atomId+':source');
+    assert.equal(row.vertices,vertices,atomId+':catalog-vertices');
+    assert.equal(row.faces,faces,atomId+':catalog-faces');
+  }
+});
+
+test('survival core world pack is registered for automatic atom binding without false verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-survival-core-world-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.qualityTarget,100);
+  assert.equal(pack.authoringChecklistScore,100);
+  const expected=[
+    ['ENVIRONMENT','TREE_TRUNK_THICK','tree_trunk_thick'],
+    ['ENVIRONMENT','TREE_CROWN_ROUND','tree_crown_round'],
+    ['ENVIRONMENT','ROCK_MEDIUM','rock_medium'],
+    ['ENVIRONMENT','ROAD_DIRT','road_dirt'],
+    ['BUILDING','FOUNDATION_RECT','foundation_rect'],
+    ['BUILDING','WALL_SOLID','wall_solid'],
+    ['BUILDING','DOOR_SINGLE','door_single'],
+    ['BUILDING','ROOF_GABLE','roof_gable'],
+    ['PROP','CHEST','chest'],['PROP','CRATE','crate'],['PROP','LAMP','lamp']
+  ];
+  for(const [family,atomId,fileId] of expected){
+    const row=registry.assets.find(asset=>asset.id==='roblox-survival-'+fileId);
+    assert.ok(row,atomId);
+    assert.equal(row.status,'REPO_ASSET');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.qualityScoreBlocksBinding,false);
+    assert.equal(row.bindingHint.gameId,'survival');
+    assert.equal(row.bindingHint.family,family);
+    assert.equal(row.bindingHint.atomId,atomId);
+    assert.equal(row.bindingHint.preserveGameplayBalanceSaveAndNetworkAuthority,true);
+  }
+});
