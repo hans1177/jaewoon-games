@@ -22179,14 +22179,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T18:20:45.861Z",
+      "updatedAt": "2026-10-04T18:27:28.684Z",
       "robloxSourceCommit": "2b7d5927f8bc24d4eb55deb3a65d1ac656a85bca",
       "robloxSourceBootstrapPassedAt": "2026-10-04T18:09:52.031Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T18:10:55.305Z",
@@ -22864,7 +22864,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-action-survival-rogu-echoes-of-the-lost-star-37165708927",
       "unitySourceCommit": "566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0",
-      "unityBuildRunId": 37220257667,
+      "unityBuildRunId": 37223606674,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -22922,7 +22922,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T17:30:20.443Z"
+        "verifiedAt": "2026-10-04T18:27:28.684Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -50030,7 +50030,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T18:24:04.941Z",
+  "updatedAt": "2026-10-04T18:27:31.159Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
