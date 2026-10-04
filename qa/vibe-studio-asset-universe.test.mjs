@@ -3242,7 +3242,7 @@ test('common presentation v1 provides reusable loading and five short intro mode
 });
 
 test('Vibe loadout returns machine-readable discovery and use contract from existing canonical asset selector',()=>{
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,3);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,4);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.enabled,true);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.newPipelineCreated,false);
   const asset={
@@ -4205,10 +4205,10 @@ test('catalog-driven company asset registry synchronization is persistent only w
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
       assets:[
-        {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
-        {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
-        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false,path:'assets/roblox/common-ui-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
-        {id:'marker-alpha',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/index.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false,path:'assets/roblox/common-vfx-v1/RobloxCommonVFX.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false,path:'assets/roblox/common-vfx-v1/RobloxCommonVFX.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false,path:'assets/roblox/common-ui-v1/RobloxCommonUI.luau',license:'INTERNAL_COMPANY_ASSET'},
+        {id:'marker-alpha',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/RobloxCommonVFX.luau',license:'INTERNAL_COMPANY_ASSET'},
         {id:'module-marker-alpha',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/TestModule.luau',license:'INTERNAL_COMPANY_ASSET'},
         {id:'catalog-metadata-marker',family:'VFX',category:'VFX',productionVerified:false,path:'assets/roblox/common-vfx-v1/catalog.json',license:'INTERNAL_COMPANY_ASSET'}
       ],
@@ -4236,9 +4236,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
     fs.writeFileSync(path.join(root,'artbook-submissions','seed-demo','current.json'),JSON.stringify({
       gameId:'seed-demo',gameName:'Demo',designCore:{coreFun:'combat survival',coreLoop:['combat','upgrade','boss'],signatureSystems:['action']}
     },null,2)+'\n');
-    fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','index.luau'),'return {}\n','utf8');
+    fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','RobloxCommonVFX.luau'),'return {}\n','utf8');
     fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','TestModule.luau'),'return {}\n','utf8');
-    fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','index.luau'),'return {}\n','utf8');
+    fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','RobloxCommonUI.luau'),'return {}\n','utf8');
     fs.writeFileSync(path.join(root,'roblox-games','demo','shared','GameConfig.luau'),"local assetId = 'roblox-common-vfx-v1'\nlocal moduleName = 'RobloxCommonVFX'\nlocal nearMissAsset = 'marker-alpha-extra'\nlocal nearMissModule = 'TestModuleHelper'\nlocal metadataWord = 'catalog'\nreturn {assetId=assetId,moduleName=moduleName,nearMissAsset=nearMissAsset,nearMissModule=nearMissModule,metadataWord=metadataWord}\n",'utf8');
 
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
