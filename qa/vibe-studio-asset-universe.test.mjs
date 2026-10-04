@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
@@ -22,6 +23,12 @@ import {
   SEED_ACTION_SURVIVAL_ROGUE_INTERNAL_ASSET_IDEAS,
   COMPANY_COMMON_SEED_ASSET_IDEA_AXES,
   COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS,
+  COMMON_LIBRARY_LOOSE_VOLUME_BANDS,
+  COMMON_UI_SUBSYSTEM_VOLUME_BANDS,
+  COMMON_UI_SUBSYSTEM_IDEA_POOLS,
+  COMMON_LIBRARY_AUTOMATED_IDEA_POOLS,
+  INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,
+  buildInternalAssetLibraryAutomationPlan,
   createCompanySeedAssetIdeationPlan,
   COMMON_PRESENTATION_EXPECTATIONS,
   COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS,
@@ -85,6 +92,7 @@ import {
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
+import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
@@ -3477,4 +3485,140 @@ test('foliage system depth is complete after company-seed volume-up',()=>{
   }
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.foliageCount,18);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-foliage-v1').productionVerified,false);
+});
+
+
+test('internal asset library automation uses loose bands and concrete UI subsystem idea pools',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const ui=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
+  const seedRoot=path.join(root,'artbook-submissions');
+  const seeds=fs.readdirSync(seedRoot,{withFileTypes:true})
+    .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-')&&fs.existsSync(path.join(seedRoot,entry.name,'current.json')))
+    .map(entry=>{
+      const value=JSON.parse(fs.readFileSync(path.join(seedRoot,entry.name,'current.json'),'utf8'));
+      return{
+        gameId:value.gameId||entry.name,
+        gameName:value.gameName||value.designCore?.identity||value.content?.identity,
+        identity:value.designCore?.identity||value.content?.identity,
+        coreFun:value.designCore?.coreFun,
+        coreLoop:value.designCore?.coreLoop||value.content?.coreLoop||[],
+        signatureSystems:value.designCore?.signatureSystems||value.content?.signatureSystems||[],
+        progressionDirection:value.designCore?.progressionDirection||value.content?.progressionDirection,
+        visualDirection:value.designCore?.visualDirection||value.content?.visualDirection,
+        mobileUx:value.designCore?.mobileUx
+      };
+    });
+  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
+  const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId)});
+
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.hardMaximum,null);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.overSoftLimitBlocksUse,false);
+  assert.equal(plan.hardMaximum,null);
+  assert.equal(plan.overSoftLimitBlocksUse,false);
+  assert.equal(plan.automaticDeletion,false);
+  assert.equal(plan.productionPromotionAutomatic,false);
+  assert.equal(plan.runtimeVerificationRequired,true);
+
+  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    const row=plan.domains.find(item=>item.domain===domain);
+    assert.ok(row,domain);
+    assert.equal(row.hardMaximum,null,domain);
+    assert.ok(row.targetMax>row.targetMin,domain);
+    assert.ok(COMMON_LIBRARY_LOOSE_VOLUME_BANDS[domain],domain);
+  }
+
+  for(const subsystem of ['INVENTORY_ITEM_MANAGEMENT','MENU_NAVIGATION','COMBAT_HUD','HOUSING_SANDBOX','FARMING_SETTLEMENT','ACCESSIBILITY_INPUT','MOBILE_ONE_HAND']){
+    const row=plan.uiSubsystems.find(item=>item.subsystem===subsystem);
+    assert.ok(row,subsystem);
+    assert.equal(row.hardMaximum,null,subsystem);
+    assert.ok(COMMON_UI_SUBSYSTEM_VOLUME_BANDS[subsystem],subsystem);
+    assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS[subsystem].length>=10,subsystem);
+    if(row.currentCount<row.targetMin){
+      assert.ok(row.suggestedIdeas.length>0,subsystem);
+      assert.ok(row.suggestedIdeas.some(idea=>idea.source==='UI_SUBSYSTEM_IDEA_POOL'),subsystem);
+    }
+  }
+
+  for(const domain of ['ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
+    assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain].length>=10,domain);
+  }
+  assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.INVENTORY_ITEM_MANAGEMENT.includes('SMART_SORT_PREVIEW'));
+  assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.COMBAT_HUD.includes('BOSS_PHASE_STRIP'));
+  assert.ok(COMMON_UI_SUBSYSTEM_IDEA_POOLS.HOUSING_SANDBOX.includes('STRUCTURAL_SUPPORT_OVERLAY'));
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.ENVIRONMENT.includes('COSMIC_ANOMALY_HORIZON'));
+  assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
+});
+
+test('catalog-driven company asset registry synchronization is persistent only when requested and idempotent',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-asset-registry-sync-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets','roblox','common-vfx-v1'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','roblox','common-ui-v1'),{recursive:true});
+    fs.mkdirSync(path.join(root,'artbook-submissions','seed-demo'),{recursive:true});
+
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {id:'roblox-common-vfx-v1',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,productionVerified:false},
+        {id:'roblox-common-vfx-old-effect',packId:'roblox-common-vfx-v1',family:'VFX',category:'VFX',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',atomId:'OLD_EFFECT',subfamily:'OLD_EFFECT',productionVerified:false},
+        {id:'roblox-common-ui-v1',packId:'roblox-common-ui-v1',family:'UI',category:'UI',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',assetCount:1,componentCount:1,productionVerified:false}
+      ],
+      commonLibrarySystemDepthAudit:{status:'EXPANDED',scoreIsUsageGate:false,existingAssetsRemainUsable:true,rows:[]}
+    },null,2)+'\n');
+
+    fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','catalog.json'),JSON.stringify({
+      version:4,packId:'roblox-common-vfx-v1',family:'VFX',platform:'ROBLOX',title:'VFX demo',productionVerified:false,
+      atoms:[
+        {atomId:'IMPACT_FLASH',factory:'CreateImpactFlash',role:'HIT'},
+        {atomId:'WEATHER_GUST_PULSE',factory:'CreateWeatherGustPulse',role:'WEATHER'}
+      ],
+      systemDepthContract:{currentDeclaredComponents:['HIT','WEATHER']}
+    },null,2)+'\n');
+
+    fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),JSON.stringify({
+      version:9,packId:'roblox-common-ui-v1',family:'UI',platform:'ROBLOX',title:'UI demo',productionVerified:false,
+      atoms:[
+        {atomId:'INVENTORY_SLOT',factory:'CreateInventorySlot',role:'INVENTORY'},
+        {atomId:'MAIN_MENU',factory:'CreateMainMenu',role:'MENU'}
+      ],
+      deepSystemContract:{componentCount:2}
+    },null,2)+'\n');
+
+    fs.writeFileSync(path.join(root,'artbook-submissions','seed-demo','current.json'),JSON.stringify({
+      gameId:'seed-demo',gameName:'Demo',designCore:{coreFun:'combat survival',coreLoop:['combat','upgrade','boss'],signatureSystems:['action']}
+    },null,2)+'\n');
+
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(first.changed,true);
+    assert.equal(first.persisted,true);
+    assert.equal(first.persistError,null);
+    assert.equal(first.discoveredCatalogCount,2);
+    assert.equal(first.seedCount,1);
+    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount,2);
+    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,2);
+    assert.ok(first.registry.assets.some(row=>row.id==='roblox-common-vfx-impact-flash'));
+    assert.ok(first.registry.assets.some(row=>row.id==='roblox-common-vfx-weather-gust-pulse'));
+    const stale=first.registry.assets.find(row=>row.id==='roblox-common-vfx-old-effect');
+    assert.ok(stale);
+    assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
+    assert.equal(stale.automaticDeletionForbidden,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.autoDelete,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.hardMaximum,null);
+    assert.equal(first.registry.internalAssetLibraryAutomation.overSoftLimitBlocksUse,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.workflowCreated,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.schedulerCreated,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.queueCreated,false);
+    assert.equal(first.registry.internalAssetLibraryAutomation.pipelineCreated,false);
+
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(second.changed,false);
+    assert.equal(second.persisted,false);
+    assert.equal(second.registry.version,first.registry.version);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
