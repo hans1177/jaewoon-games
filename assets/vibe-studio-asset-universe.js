@@ -1218,8 +1218,10 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
   const conceptQa=evaluateConceptCompatibility({asset,concept});
   const platform=upper(gameDna?.platform||gameDna?.PLATFORM_VARIANT||asset.platformVariant||asset.platform);
   const targetPlatform=upper(gameDna?.targetPlatform||gameDna?.platform);
+  const companyCommonBase=asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE';
   let score=assetSourceTier(row)*20;
   if(conceptQa.pass)score+=25; else score-=45;
+  if(companyCommonBase&&conceptQa.pass)score+=6;
   if(targetPlatform&&(!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE'))score+=15;
   if(usage.runtimePass===true)score+=20;
   score+=Math.min(20,Math.max(0,Number(usage.gameConsumerCount)||0)*4);
@@ -1237,12 +1239,15 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
     conceptPass:conceptQa.pass,
     platformCompatible:!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE',
     quality120,
+    companyCommonBase,
+    commonBasePreferenceApplied:companyCommonBase&&conceptQa.pass,
     qualityScoreBlocksBinding:false,
     lowQualityMayBindWhenNoBetterSafeCompatibleAsset:true,
     rejected:Boolean(!conceptQa.pass||usage.lockedOut===true),
     reasons:Object.freeze([
       row.verified?'VERIFIED_RUNTIME_OR_COMPANY':'UNVERIFIED_OR_PREPARED',
       conceptQa.pass?'CONCEPT_COMPATIBLE':'CONCEPT_MISMATCH',
+      companyCommonBase&&conceptQa.pass?'COMPANY_COMMON_BASE_REUSE_PREFERRED_WHEN_EQUIVALENT':'',
       quality120.score<100?'QUALITY_DEBT_KEEP_IMPROVING':'QUALITY_COMMERCIAL_TARGET_REACHED',
       usage.runtimeFailure===true?'VERIFIED_RUNTIME_FAILURE':''
     ].filter(Boolean))
