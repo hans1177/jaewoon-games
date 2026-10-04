@@ -12,15 +12,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 45,
+      "calls": 46,
       "successes": 9,
-      "failures": 36,
+      "failures": 37,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 144847,
-      "lastMs": 14873,
+      "totalMs": 146238,
+      "lastMs": 1391,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T19:09:32.144Z"
+      "updatedAt": "2026-10-04T19:11:45.957Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-04T19:10:10.949Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 17,
+      "calls": 18,
       "successes": 0,
-      "failures": 17,
+      "failures": 18,
       "timeouts": 12,
-      "jsonFailures": 5,
-      "totalMs": 1853784,
-      "lastMs": 120008,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T19:09:13.410Z"
+      "jsonFailures": 6,
+      "totalMs": 1942331,
+      "lastMs": 88547,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T19:11:39.497Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T17:49:56.763Z",
-  "updatedAt": "2026-10-04T19:10:10.949Z",
+  "updatedAt": "2026-10-04T19:11:45.957Z",
   "lastSuccessfulModelCallAt": "2026-10-04T19:09:17.270Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
