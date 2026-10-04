@@ -1,6 +1,6 @@
 {
-  "version": 31,
-  "updatedAt": "2026-09-26",
+  "version": 32,
+  "updatedAt": "2026-10-04",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -4179,6 +4179,166 @@
       "catalogOrder": 26,
       "selectedPlatform": "UNITY",
       "homepageDisplayMode": "WEB_PUBLISHED"
+    },
+    {
+      "id": "wild-survival",
+      "name": "야생 생존",
+      "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
+      "genre": [
+        "생존",
+        "오픈월드",
+        "채집",
+        "현실"
+      ],
+      "image": "assets/title-survival.svg",
+      "webPath": "/web-games/wild-survival/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · 현실 야생 생존 플레이어블",
+      "homepageRecentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "catalogOrder": 27,
+      "updatedAt": "2026-10-04T14:26:00+09:00",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "생존",
+          "오픈월드",
+          "채집",
+          "현실"
+        ],
+        "genreLabel": "생존 · 오픈월드 · 채집 · 현실",
+        "subgenre": "현실 야생 생존",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+        "updatedAt": "2026-10-04T14:26:00+09:00",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 27,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "wild-survival",
+          "name": "야생 생존",
+          "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
+          "genres": [
+            "생존",
+            "오픈월드",
+            "채집",
+            "현실"
+          ],
+          "image": "assets/title-survival.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/title-survival.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · 현실 야생 생존 플레이어블"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/wild-survival/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · 현실 야생 생존 플레이어블",
+          "recentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "생존",
+              "오픈월드",
+              "채집",
+              "현실"
+            ],
+            "genreLabel": "생존 · 오픈월드 · 채집 · 현실",
+            "subgenre": "현실 야생 생존",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+            "updatedAt": "2026-10-04T14:26:00+09:00",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
