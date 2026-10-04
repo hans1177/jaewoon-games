@@ -524,8 +524,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const gameRoots=['roblox-games','unity-games','web-games','godot-games'];
   const sourceExt=/\\.(?:lua|luau|js|mjs|cjs|ts|tsx|jsx|html|css|gd|tscn|cs|uxml|uss|shader)$/i;
   const assetIds=unique(next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4)).sort((a,b)=>b.length-a.length||a.localeCompare(b));
-  const escapeRegex=value=>String(value).replace(/[|\\{}()[\]^$+*?.-]/g,'\\  const assetIds=next.assets.map(asset=>clean(asset?.id)).filter(id=>id.length>=4);
-  const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);');
+  const regexSpecialChars='\\^$.*+?()[]{}|';
+  const escapeRegex=value=>String(value).split('').map(ch=>regexSpecialChars.includes(ch)?'\\\\'+ch:ch).join('');
   const assetIdMatcher=assetIds.length?new RegExp(assetIds.map(escapeRegex).join('|'),'g'):null;
   const assetPathRows=next.assets.map(asset=>({id:clean(asset?.id),path:normalizeRepoPath(asset?.path)})).filter(row=>row.id&&row.path);
   const modulePathRows=[...sourcePathGroups.keys()].map(assetPath=>({assetPath,moduleToken:path.basename(assetPath).replace(/\.[^.]+$/,'')})).filter(row=>row.moduleToken.length>=4);
