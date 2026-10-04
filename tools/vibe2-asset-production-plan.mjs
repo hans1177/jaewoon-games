@@ -1775,6 +1775,105 @@ function normalizeFlowAssetRequirements(requirements=[]){
   })).filter(row=>row.family));
 }
 
+const FLOW_ASSET_DETAIL_APPLICATION_PROFILES=Object.freeze({
+  CHARACTER:Object.freeze({
+    sourceSignals:Object.freeze(['PLAYER_STATE','NPC_ROLE','EQUIP_STATE','FACTION_IDENTITY','EMOTION_STATE']),
+    composition:Object.freeze(['SILHOUETTE','MATERIAL','ACCESSORY','IDLE_LOCOMOTION','INTERACTION_REACTION']),
+    detailUse:'기존 플레이어/NPC 상태를 읽어 실루엣·장비·재질·자세·보행·상호작용 반응을 역할별로 묶고 색상만 다른 복제 캐릭터를 피한다.'
+  }),
+  CREATURE:Object.freeze({
+    sourceSignals:Object.freeze(['ENEMY_ROLE','REGION_VARIANT','THREAT_TIER','BOSS_PHASE','HIT_DEATH_STATE']),
+    composition:Object.freeze(['BODY_PLAN','REGION_VARIANT','LOCOMOTION','TELEGRAPH','HIT_DEATH_REACTION']),
+    detailUse:'기존 AI 역할과 body plan을 보존한 채 지역형·정예형·보스형 실루엣, 이동, 공격 예고, 피격·사망 반응을 같은 계보로 구성한다.'
+  }),
+  BUILDING:Object.freeze({
+    sourceSignals:Object.freeze(['ZONE_ROLE','INTERIOR_FUNCTION','DOOR_LOCK_STATE','DAMAGE_STATE','WEATHER_STATE']),
+    composition:Object.freeze(['EXTERIOR_GRAMMAR','INTERIOR_FUNCTION','ENTRY_TRANSITION','SET_DRESSING','WEATHER_WEAR']),
+    detailUse:'건물 역할과 동선에 맞춰 외형 문법→입구/문→실내 기능→소품→사용 흔적·날씨 반응 순으로 적용하고 장식만 많은 빈 건물을 피한다.'
+  }),
+  ENVIRONMENT:Object.freeze({
+    sourceSignals:Object.freeze(['BIOME_REGION','LANDMARK_STATE','DAY_NIGHT','WEATHER','SAFE_DANGER_ZONE']),
+    composition:Object.freeze(['FOREGROUND','MIDGROUND','BACKGROUND','LANDMARK','TERRAIN_SURFACE','STATE_BLEND']),
+    detailUse:'전경·중경·배경과 랜드마크를 이동/전투 가독성에 연결하고 시간·날씨·안전/위험 상태에 따라 표면, 가시성, 바람, 배경 깊이를 함께 전이한다.'
+  }),
+  WEAPON:Object.freeze({
+    sourceSignals:Object.freeze(['EQUIP_STATE','ATTACK_PHASE','COMBO_STATE','PROJECTILE_STATE','HIT_RESULT']),
+    composition:Object.freeze(['SOCKET_STANCE','ANTICIPATION','TRAVEL_TRAIL','CONTACT','RECOVERY']),
+    detailUse:'장착 소켓/자세를 먼저 맞춘 뒤 공격 예고→이동/궤적→충돌→회복 순으로 기존 판정 이벤트에 표현을 붙이고 데미지·쿨다운은 건드리지 않는다.'
+  }),
+  SKILL:Object.freeze({
+    sourceSignals:Object.freeze(['CAST','CHARGE','RELEASE','IMPACT','STATUS_EFFECT']),
+    composition:Object.freeze(['CAST_MOTION','CORE_VFX','TRAVEL_OR_AREA','IMPACT_FEEDBACK','STATUS_READABILITY']),
+    detailUse:'스킬 문법(PROJECTILE/BEAM/AOE/SUMMON/BUFF/DEBUFF/HEAL/TELEPORT 등)에 따라 시전→충전→방출→충돌→상태 피드백을 연결한다.'
+  }),
+  MATERIAL:Object.freeze({
+    sourceSignals:Object.freeze(['RARITY','DAMAGE_WEAR','WEATHER','FACTION','STATE_CHANGE']),
+    composition:Object.freeze(['BASE_SURFACE','ROLE_ACCENT','WEAR_MASK','WEATHER_RESPONSE','STATE_EMISSIVE']),
+    detailUse:'재질을 단순 색 교체로 쓰지 말고 역할·희귀도·마모·날씨·상태 변화가 읽히도록 표면/거칠기/강조/발광을 기존 상태에 맞춰 조합한다.'
+  }),
+  AUDIO:Object.freeze({
+    sourceSignals:Object.freeze(['REGION','DISTANCE','DAY_NIGHT','WEATHER','COMBAT_INTENSITY','INTERACTION']),
+    composition:Object.freeze(['BED','NEAR_LOOP','DISTANT_LOOP','SCATTER','ONE_SHOT','INTERACTION_SOURCE']),
+    detailUse:'검증된 실제 음원이 있을 때만 BED+NEAR_LOOP+DISTANT_LOOP+SCATTER+ONE_SHOT+INTERACTION_SOURCE를 거리·지역·시간·날씨·전투 강도로 블렌드하고 반복 dedupe/occlusion/mobile budget을 적용한다.'
+  }),
+  VFX:Object.freeze({
+    sourceSignals:Object.freeze(['TELEGRAPH','IMPACT','STATUS','WEATHER','REWARD_MILESTONE']),
+    composition:Object.freeze(['PRE_SIGNAL','CORE_SHAPE','CONTACT_BURST','LINGER','READABILITY_FADE']),
+    detailUse:'예고→핵심 형상→접촉 버스트→잔상/상태→가독성 페이드 순서로 실제 이벤트에 연결하고 파티클 존재만으로 완료 처리하지 않는다.'
+  }),
+  UI:Object.freeze({
+    sourceSignals:Object.freeze(['HUD_STATE','EQUIP_STATE','COOLDOWN_READY','REWARD_ERROR','MAP_OBJECTIVE']),
+    composition:Object.freeze(['PRIMARY_STATE','CONTEXT_ACTION','FEEDBACK','ERROR_RECOVERY','MOBILE_SAFE_AREA']),
+    detailUse:'HUD/인벤토리/장착/쿨다운/보상·오류/맵 목표를 기존 상태에 직접 연결하고, 확인·취소·오류·보상 반응과 모바일 safe-area/터치 가독성을 함께 적용한다.'
+  }),
+  MOTION:Object.freeze({
+    sourceSignals:Object.freeze(['IDLE','LOCOMOTION','ATTACK','HIT','DEATH','TRAVERSAL','INTERACTION']),
+    composition:Object.freeze(['POSE_IDENTITY','TRANSITION','CONTACT','REACTION','RECOVERY']),
+    detailUse:'idle/이동/전투/피격/사망/이동기/상호작용 사이 전환과 접촉점을 실제 상태 이벤트에 맞춰 연결하고 root-only 정적 이동을 최종 모션으로 쓰지 않는다.'
+  }),
+  PROP:Object.freeze({
+    sourceSignals:Object.freeze(['INTERACTION','RESOURCE_STATE','CRAFTING','MACHINE_STATE','DOOR_GATE_STATE']),
+    composition:Object.freeze(['FUNCTION_SHAPE','CONTACT_POINT','STATE_VARIANT','USE_MOTION','LOCAL_FEEDBACK']),
+    detailUse:'소품은 기능형 실루엣→접촉점→상태 변형→사용 동작→로컬 피드백 순으로 기존 상호작용에 붙이고 의미 없는 균일 랜덤 배치를 피한다.'
+  })
+});
+
+function buildFlowAssetApplicationIdeas({requirements=[],loadout={}}={}){
+  const selections=Array.isArray(loadout?.selections)?loadout.selections:[];
+  return freezeList((requirements||[]).map((requirement,index)=>{
+    const family=clean(requirement?.family).toUpperCase(),subfamily=clean(requirement?.subfamily).toUpperCase();
+    const selection=selections.find(row=>clean(row?.family).toUpperCase()===family&&clean(row?.subfamily).toUpperCase()===subfamily)
+      ||selections.find(row=>clean(row?.family).toUpperCase()===family)
+      ||null;
+    const profile=FLOW_ASSET_DETAIL_APPLICATION_PROFILES[family]||Object.freeze({
+      sourceSignals:Object.freeze(['EXISTING_STATE_OR_EVENT']),
+      composition:Object.freeze(['ROLE_MATCH','STATE_BINDING','PLAYER_FEEDBACK']),
+      detailUse:'현재 게임 책임 소스의 실제 상태/이벤트에 선택 자산을 역할 맞춤으로 직접 연결하고 새 게임 규칙은 만들지 않는다.'
+    });
+    const assetId=clean(selection?.assetId);
+    return freeze({
+      id:'FLOW_ASSET_USE_'+String(index+1).padStart(2,'0')+'_'+family+'_'+(subfamily||'GENERAL'),
+      state:assetId?'READY':'UNRESOLVED',
+      family,subfamily:subfamily||null,assetId:assetId||null,
+      applicationMode:clean(selection?.applicationMode)||null,
+      replacementAction:clean(selection?.replacementAction)||null,
+      sourceFiles:freezeList(selection?.sourceFiles||[]),
+      sourceSignals:profile.sourceSignals,
+      composition:profile.composition,
+      detailUse:profile.detailUse,
+      applicationRule:'SUGGEST_AND_APPLY_IN_EXISTING_RESPONSIBLE_SOURCE_IF_MISSING',
+      existingVerifiedAction:'PASS_AND_SKIP_DUPLICATE_IMPLEMENTATION',
+      acceptance:freezeList([
+        'ACTUAL_EXISTING_RESPONSIBLE_SOURCE_BINDING',
+        'PLAYER_VISIBLE_OR_AUDIBLE_STATE_DELTA',
+        'NO_PRIMITIVE_OR_MARKER_ONLY_COMPLETION',
+        'NO_GAMEPLAY_BALANCE_SAVE_NETWORK_AUTHORITY_CHANGE'
+      ]),
+      fakeAssetForbidden:true
+    });
+  }));
+}
+
 
 function inferStyleExpressionOverridesFromText(value=''){
   const source=clean(value).toUpperCase();
@@ -2426,6 +2525,10 @@ export function buildVibeAssetProductionPlan({
   const baseMaterialLoadout=buildComposableBaseMaterialLoadout({
     companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request
   });
+  const flowAssetApplicationIdeas=buildFlowAssetApplicationIdeas({
+    requirements:flowAssetRequirements,
+    loadout:studioUniversePlan?.loadout||{}
+  });
   const motionStyle=deriveMotionStyleVariant({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
     styles:requestedConcept.styles,modifiers:task.motionStyleModifiers||{}
@@ -2603,6 +2706,8 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     flowAssetRequirementSource,
+    flowAssetApplicationIdeas,
+    flowAssetApplicationIdeaMode:'SUGGEST_AND_APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING',
     flowAssetLoadout:freeze({
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
       complete:studioUniversePlan?.loadout?.complete===true,
@@ -3112,6 +3217,7 @@ export function assetProductionGuidance(plan={}){
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 권장 볼륨과 필수 role이 충족되는 즉시 QUALITY_UP_1000 최약 내부감사 축 개선으로 자동 전환한다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] source=${plan.flowAssetRequirementSource||'UNKNOWN'}; ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
+    plan.flowAssetApplicationIdeas?.length?`[FLOW-DRIVEN ASSET APPLICATION IDEAS] mode=${plan.flowAssetApplicationIdeaMode}; ${JSON.stringify(plan.flowAssetApplicationIdeas)}. READY 항목은 단순 추천 문서가 아니라 현재 게임의 기존 상태/이벤트/책임 함수에 실제 적용하는 구현 입력이다. 이미 동일 역할이 실제 소스에 바인딩되어 검증된 항목은 PASS 후 중복 구현하지 말고 다음 미적용 항목으로 진행한다. UNRESOLVED는 가짜 assetId/음원/팩을 만들지 말고 기존 gap-fill/authoring 경로에 남긴다. detailUse와 sourceSignals/composition을 사용해 역할·상태·거리·지역·시간·날씨·전투 단계 등 현재 게임 문맥에 맞는 디테일 활용을 구현한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
     plan.studioQuality120?.maxScore?`[STUDIO ASSET QUALITY 120] ${JSON.stringify(plan.studioQuality120)}. 120점은 최고 품질 목표이지 게임 연결 허가선이 아니다. 안전·권리·플랫폼 호환을 만족하는 대안이 없으면 100점 미만, 85점 미만 자산도 현재 게임에 실제 연결해 사용하고 Visual Debt를 열어 둔 채 같은 자산을 최약점부터 개선한다. 점수만 낮다는 이유로 빈 primitive나 무자산 상태를 유지하지 않는다. Hero 자산은 전체 게임 품질 기준점으로 먼저 끌어올리고, UI/HUD/인벤토리/아이콘·아이템 월드모델/드랍/장착/제작 아이콘·캐릭터·몬스터·환경·건물·무기·재질·모션·VFX·오디오를 같은 Asset DNA 계보로 묶는다. 매 사이클 weakestAxis/weakestCritic을 우선 수정하고 강한 축은 보존한다. 120점이어도 새로운 검증된 결함이나 더 좋은 제작법이 생기면 계속 진화한다. production-verified는 점수와 별개이며 실제 대상 게임 런타임·바인딩·모바일 성능·회귀·권리 증거가 모두 있어야 한다. positive learning은 검증된 실제 결과만 기존 학습 모터에 넣는다.`:'',
     plan.applyFirstSummary?.enabled?`[APPLY USABLE ASSETS FIRST] ${JSON.stringify(plan.applyFirstSummary)}. 먼저 현재 게임/회사/저장소에서 target-compatible하고 실제 경로 또는 native binding이 있는 자산을 게임에 적용한다. 적용 후 실제 게임 카메라에서 품질을 확인하고 부족한 부위만 derived variant로 조형·재질·리그·LOD를 보강해 재적용한다. 사용 가능한 자산이 목표 품질에 도달할 수 있는데 새 자산부터 만들지 않는다. 품질이 부족하면 SILHOUETTE/PROPORTION/STRUCTURE/FACE_HANDS_FEET/MATERIAL/RIG/SOCKET/MOTION/LOD/UI_STATE 같은 축으로 분해하고 강한 축은 유지한다. 다른 호환 자산은 전체 대체뿐 아니라 파츠·리그·재질·모션 기증자로 사용해 derived variant를 재조립한다. GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 디테일 바닥을 채우고, 랜덤 소품/노이즈/텍스처 과밀로 디테일을 가장하지 않는다. 핵심 형태나 구조 품질이 부분 보강으로 회복 불가능할 때만 전체 신규 제작으로 넘어간다.`:'' ,
