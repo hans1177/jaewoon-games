@@ -15,6 +15,32 @@ local BIOMES = table.freeze({
   CITY={ground=Color3.fromRGB(80,84,91),secondary=Color3.fromRGB(101,106,114),rock=Color3.fromRGB(104,108,116),water=Color3.fromRGB(55,96,120),landmark="CLOCK_TOWER",dress={"BOLLARD","PLANTER","STREET_LAMP","BENCH","SIGNAGE","UTILITY_BOX"}},
   RUINS={ground=Color3.fromRGB(102,94,72),secondary=Color3.fromRGB(119,110,84),rock=Color3.fromRGB(121,116,99),water=Color3.fromRGB(63,101,107),landmark="BROKEN_GATE",dress={"COLUMN","RUBBLE","CARVED_STONE","BROKEN_WALL","ALTAR","VINE_CLUSTER"}},
   DUNGEON={ground=Color3.fromRGB(53,50,54),secondary=Color3.fromRGB(72,65,62),rock=Color3.fromRGB(88,82,79),water=Color3.fromRGB(48,76,82),landmark="SEALED_DOOR",dress={"CHAIN","BRAZIER_BASE","BROKEN_CRATE","PILLAR","RUBBLE","WALL_RELIEF"}}
+
+local COMPOSITIONS=table.freeze({
+  ROLLING_HILLS={biome="FOREST",terrain={"HILL","HILL","HILL","MEADOW"},background="LAYERED_HILLS",poi="HILLTOP"},
+  RIDGE_PASS={biome="SNOW",terrain={"RIDGE","RIDGE","PASS","CLIFF"},background="MOUNTAIN_RIDGE",poi="PASS_GATE"},
+  RIVER_VALLEY={biome="FOREST",terrain={"HILL","VALLEY","RIVER","BANK"},background="VALLEY_DEPTH",poi="RIVER_CROSSING"},
+  TERRACED_HILLS={biome="VILLAGE",terrain={"TERRACE","TERRACE","TERRACE","PATH"},background="FARM_HILLS",poi="TERRACE_LOOKOUT"},
+  MEADOW_BASIN={biome="FOREST",terrain={"BASIN","MEADOW","HILL","HILL"},background="BASIN_RING",poi="MEADOW_CENTER"},
+  FOREST_EDGE={biome="FOREST",terrain={"MEADOW","FOREST_EDGE","HILL","PATH"},background="TREE_WALL",poi="FOREST_GATE"},
+  VILLAGE_HILL={biome="VILLAGE",terrain={"HILL","VILLAGE_CLUSTER","PATH","TERRACE"},background="HILL_VILLAGE",poi="VILLAGE_CENTER"},
+  VILLAGE_CROSSROADS={biome="VILLAGE",terrain={"CROSSROADS","VILLAGE_CLUSTER","VILLAGE_CLUSTER","MEADOW"},background="OPEN_COUNTRYSIDE",poi="CROSSROADS_SQUARE"},
+  FARM_HAMLET={biome="VILLAGE",terrain={"FARM_FIELD","VILLAGE_CLUSTER","CROP_TERRACE","PATH"},background="FARM_COUNTRYSIDE",poi="HAMLET_CENTER"},
+  CLIFF_SETTLEMENT={biome="COAST",terrain={"CLIFF","TERRACE","VILLAGE_CLUSTER","STAIR_PATH"},background="CLIFF_DEPTH",poi="CLIFF_LOOKOUT"},
+  COAST_VILLAGE={biome="COAST",terrain={"BEACH","VILLAGE_CLUSTER","HILL","WATER_EDGE"},background="SEA_HORIZON",poi="HARBOR"},
+  RUINED_HIGHLAND={biome="RUINS",terrain={"PLATEAU","RIDGE","RUIN_CLUSTER","CLIFF"},background="HIGH_MOUNTAINS",poi="RUIN_CROWN"}
+})
+
+local INTERACTION_ROLE_BY_DRESS=table.freeze({
+  LOG="SIT_OR_INSPECT",STUMP="SIT_OR_INSPECT",FALLEN_BRANCH="GATHER_VISUAL",FERN="INSPECT_VISUAL",
+  FLOWER_PATCH="GATHER_OR_INSPECT",MOSS_ROCK="CLIMB_OR_INSPECT",SNOW_DRIFT="TRACK_OR_INSPECT",
+  ICE_CHUNK="HARVEST_OR_INSPECT",DRY_SHRUB="GATHER_VISUAL",BONE_PILE="INSPECT_VISUAL",CACTUS_FORM="HARVEST_OR_INSPECT",
+  ROOT="CLIMB_OR_INSPECT",REED="GATHER_VISUAL",CRYSTAL="HARVEST_OR_INSPECT",CAVE_POOL="INSPECT_VISUAL",
+  DRIFTWOOD="GATHER_OR_CARRY_VISUAL",SHELL_CLUSTER="GATHER_VISUAL",TIDE_POOL="INSPECT_VISUAL",
+  CART="PUSH_OR_INSPECT",BARREL="OPEN_OR_INSPECT",LAMP="TOGGLE_VISUAL",BENCH="SIT_VISUAL",SIGNPOST="READ_VISUAL",
+  PLANTER="INSPECT_VISUAL",UTILITY_BOX="INSPECT_OR_TOGGLE",ALTAR="INSPECT_VISUAL",CHAIN="INSPECT_VISUAL"
+})
+
 })
 
 local function tag(instance, biomeId, role)
@@ -51,6 +77,8 @@ local function dressCluster(parent,biomeId,recipe,origin,index)
   local base=makePart(parent,recipe.."_"..index,Vector3.new(2+(index%3),1+(index%2),2+(index%3)),origin+offset,BIOMES[biomeId].secondary,Enum.Material.Slate)
   base.Orientation=Vector3.new(0,angle,index%2==0 and 0 or 8)
   tag(base,biomeId,"SET_DRESSING:"..recipe)
+  base:SetAttribute("InteractionPresentationRole",INTERACTION_ROLE_BY_DRESS[recipe] or "INSPECT_VISUAL")
+  base:SetAttribute("OwnsInteractionAuthority",false)
   return base
 end
 
@@ -102,16 +130,120 @@ function CommonEnvironment.GetBiomeProfile(biomeId)
   return BIOMES[string.upper(tostring(biomeId or ""))]
 end
 
+
+local function terrainMass(parent,biomeId,name,position,size,color,material,shape,rotation)
+  local p=makePart(parent,name,size,position,color,material)
+  if shape=="BALL" then p.Shape=Enum.PartType.Ball end
+  if rotation then p.Orientation=rotation end
+  tag(p,biomeId,"TERRAIN_COMPOSITION:"..name)
+  p:SetAttribute("OwnsCollisionAuthority",false)
+  p:SetAttribute("OwnsNavigationAuthority",false)
+  return p
+end
+
+local function addVillageCluster(root,biomeId,origin,scale,index,profile)
+  local cluster=Instance.new("Folder")
+  cluster.Name="VillageCluster"..index
+  cluster.Parent=root
+  tag(cluster,biomeId,"VILLAGE_CLUSTER")
+  local offsets={Vector3.new(-6,0,-4),Vector3.new(4,0,-2),Vector3.new(-1,0,5)}
+  for i,off in ipairs(offsets) do
+    local size=Vector3.new(5+(i%2)*2,3.8+i*0.6,4.5)*scale
+    local base=terrainMass(cluster,biomeId,"HouseMass"..i,origin+off*scale+Vector3.new(0,size.Y/2,0),size,profile.secondary,Enum.Material.WoodPlanks,nil,Vector3.new(0,(i-2)*12,0))
+    base:SetAttribute("BackgroundArchitectureOnly",true)
+    base:SetAttribute("OwnsDoorOrInteriorAuthority",false)
+  end
+  return cluster
+end
+
+function CommonEnvironment.CreateTerrainComposition(compositionId,options)
+  options=options or {}
+  compositionId=string.upper(tostring(compositionId or "ROLLING_HILLS"))
+  local recipe=COMPOSITIONS[compositionId]
+  assert(recipe,"UNKNOWN_ENVIRONMENT_COMPOSITION:"..compositionId)
+  local biomeId=string.upper(tostring(options.biomeId or recipe.biome))
+  local profile=BIOMES[biomeId] or BIOMES[recipe.biome]
+  local origin=options.origin or Vector3.new()
+  local scale=math.clamp(tonumber(options.scale) or 1,0.35,4)
+
+  local root=Instance.new("Folder")
+  root.Name=options.name or ("EnvironmentComposition_"..compositionId)
+  tag(root,biomeId,"TERRAIN_COMPOSITION")
+  root:SetAttribute("CompositionId",compositionId)
+  root:SetAttribute("BackgroundLanguage",recipe.background)
+  root:SetAttribute("DiscoveryPoiRole",recipe.poi)
+  root:SetAttribute("ForegroundMidgroundBackgroundRequired",true)
+  root:SetAttribute("OwnsSpawnAuthority",false)
+  root:SetAttribute("OwnsCollisionAuthority",false)
+  root:SetAttribute("OwnsNavigationAuthority",false)
+
+  local layers={foreground={},midground={},background={}}
+  local villageIndex=0
+  for i,kind in ipairs(recipe.terrain) do
+    local x=(-18+(i-1)*12)*scale
+    local z=((i%2==0) and 7 or -6)*scale
+    if kind=="HILL" or kind=="BASIN" or kind=="PLATEAU" or kind=="MEADOW" or kind=="BEACH" or kind=="FARM_FIELD" or kind=="CROP_TERRACE" or kind=="TERRACE" then
+      local height=kind=="HILL" and 8 or kind=="PLATEAU" and 6 or kind=="TERRACE" and 3.5 or 2.2
+      local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,height*0.30,z),Vector3.new(18,10,15)*scale,profile.ground,Enum.Material.Ground,"BALL")
+      mass.Size=Vector3.new(18*scale,height*scale,15*scale)
+      table.insert(i<=2 and layers.foreground or layers.midground,mass)
+    elseif kind=="RIDGE" or kind=="CLIFF" then
+      local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,6*scale,z),Vector3.new(16,12,7)*scale,profile.rock,Enum.Material.Rock,nil,Vector3.new(0,i*13,kind=="RIDGE" and 8 or 2))
+      table.insert(layers.midground,mass)
+    elseif kind=="VALLEY" or kind=="PASS" or kind=="PATH" or kind=="STAIR_PATH" or kind=="CROSSROADS" then
+      local width=kind=="CROSSROADS" and 20 or 8
+      local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,0.12,z),Vector3.new(width,0.35,24)*scale,profile.secondary,Enum.Material.Slate,nil,Vector3.new(0,i*7,0))
+      table.insert(layers.foreground,mass)
+    elseif kind=="RIVER" or kind=="WATER_EDGE" then
+      local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,0.08,z),Vector3.new(9,0.25,28)*scale,profile.water,Enum.Material.Glass,nil,Vector3.new(0,i*8,0))
+      mass.Transparency=0.28
+      table.insert(layers.foreground,mass)
+    elseif kind=="BANK" or kind=="FOREST_EDGE" then
+      local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,1.2*scale,z),Vector3.new(14,2.5,16)*scale,profile.secondary,Enum.Material.Ground)
+      table.insert(layers.midground,mass)
+    elseif kind=="VILLAGE_CLUSTER" then
+      villageIndex+=1
+      table.insert(layers.midground,addVillageCluster(root,biomeId,origin+Vector3.new(x,0,z),scale,villageIndex,profile))
+    elseif kind=="RUIN_CLUSTER" then
+      local cluster=Instance.new("Folder");cluster.Name="RuinCluster";cluster.Parent=root;tag(cluster,biomeId,"RUIN_CLUSTER")
+      for r=1,4 do terrainMass(cluster,biomeId,"RuinMass"..r,origin+Vector3.new(x+(r-2)*3,2+r*0.7,z+(r%2)*4),Vector3.new(2.2,4+r,2.2)*scale,profile.rock,Enum.Material.Slate,nil,Vector3.new(0,r*19,0)) end
+      table.insert(layers.midground,cluster)
+    end
+  end
+
+  for i=1,3 do
+    local back=terrainMass(root,biomeId,"BackgroundLayer"..i,origin+Vector3.new((i-2)*28*scale,10+i*4,-42*scale),Vector3.new(36,12+i*6,10)*scale,profile.rock,Enum.Material.Slate,nil,Vector3.new(0,(i-2)*9,0))
+    back.Transparency=0.18+i*0.08
+    back:SetAttribute("DepthLayer","BACKGROUND_"..i)
+    table.insert(layers.background,back)
+  end
+
+  local poi=terrainMass(root,biomeId,"PoiMarker_"..recipe.poi,origin+Vector3.new(0,1.5*scale,0),Vector3.new(1.2,3,1.2)*scale,profile.secondary,Enum.Material.Neon)
+  poi.Transparency=0.70
+  poi:SetAttribute("DiscoveryPoiRole",recipe.poi)
+  poi:SetAttribute("OwnsDiscoveryAuthority",false)
+
+  return root,layers
+end
+
+function CommonEnvironment.ListCompositions()
+  local ids={}
+  for id in pairs(COMPOSITIONS) do table.insert(ids,id) end
+  table.sort(ids)
+  return table.freeze(ids)
+end
+
 function CommonEnvironment.Audit()
   local ids={}
   for id in pairs(BIOMES) do table.insert(ids,id) end
   table.sort(ids)
   return table.freeze({
-    version=1,
+    version=2,
     packId="roblox-common-environment-v1",
     biomes=table.freeze(ids),
     biomeCount=#ids,
-    roles=table.freeze({"BIOME_KIT","TERRAIN","GROUND_DETAIL","PATH_ROAD","CLIFF","WATER","LANDMARK","SET_DRESSING"}),
+    roles=table.freeze({"BIOME_KIT","TERRAIN","GROUND_DETAIL","PATH_ROAD","CLIFF","WATER","LANDMARK","SET_DRESSING","TERRAIN_COMPOSITION","VILLAGE_CLUSTER","RUIN_CLUSTER","DISCOVERY_POI"}),
+    compositionCount=#CommonEnvironment.ListCompositions(),
     gameSpecificVariationFields=table.freeze({"PALETTE","MATERIAL","VEGETATION_MIX","WEATHERING","DENSITY","LANDMARK_DETAIL","LIGHTING"}),
     gameplayAuthority=false,
     productionVerified=false
