@@ -555,6 +555,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     volumeActionConsumption:libraryPlan.volumeActionConsumption,
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
     freeOriginalVolumePolicy:libraryPlan.freeOriginalVolumePolicy,
+    eligibleFreeSourceCount:libraryPlan.eligibleFreeSourceCount,
+    freeSourceCandidateLimitPerAction:libraryPlan.freeSourceCandidateLimitPerAction,
     ideaDeduplication:libraryPlan.ideaDeduplication,
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     referenceBreadthProfiles:Object.keys(INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES),
@@ -1718,6 +1720,7 @@ export function buildVibeAssetProductionPlan({
     reuseResolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
     freeOriginalVolumePolicy:freeze({...libraryAutomation.freeOriginalVolumePolicy,...executionLibraryPlan.freeOriginalVolumePolicy}),
     eligibleFreeSourceCount:Number(executionLibraryPlan.eligibleFreeSourceCount||0),
+    freeSourceCandidateLimitPerAction:Number(executionLibraryPlan.freeSourceCandidateLimitPerAction||libraryAutomation.freeSourceCandidateLimitPerAction||8),
     qualityUpPolicy:freeze({
       ...(libraryAutomation.qualityUpPolicy||{}),
       ...(executionLibraryPlan.qualityUpPolicy||{}),
