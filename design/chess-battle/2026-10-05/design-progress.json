@@ -15,15 +15,15 @@
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 4,
+      "calls": 5,
       "successes": 1,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 10155,
-      "lastMs": 1074,
+      "totalMs": 12906,
+      "lastMs": 2751,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T16:19:06.421Z"
+      "updatedAt": "2026-10-04T16:19:08.098Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -114,15 +114,15 @@
       "updatedAt": "2026-10-04T16:16:51.829Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 26372,
-      "lastMs": 13607,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-04T16:17:01.166Z"
+      "totalMs": 56891,
+      "lastMs": 19045,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-04T16:19:24.392Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 1,
@@ -137,5 +137,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T16:19:06.421Z"
+  "updatedAt": "2026-10-04T16:19:24.393Z"
 }
