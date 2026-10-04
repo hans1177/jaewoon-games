@@ -1498,7 +1498,19 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
-  reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']),
+  reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
+  freeOriginalVolumePolicy:Object.freeze({
+    priority:'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING',
+    purpose:'FILL_VOLUME_FASTER_THEN_SPEND_MORE_CYCLES_ON_QUALITY',
+    allowed:'CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED',
+    commercialUseRequired:true,
+    derivativeModificationRequired:true,
+    provenanceRequired:true,
+    sourceLineageRequired:true,
+    directProtectedCommercialGameAssetCopyForbidden:true,
+    nativeAdaptationRequired:true,
+    runtimeVerificationRequiredBeforeProductionPromotion:true
+  }),
   reuseAdaptRecombineBeforeNewAuthoring:true,
   deleteExistingAssetAutomatically:false,
   productionPromotionAutomatically:false,
@@ -1791,6 +1803,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     persistentWorklistField:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,
     volumeActionConsumption:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,
     reuseResolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,
+    freeOriginalVolumePolicy:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy,
     ideaDeduplication:Object.freeze({
       fields:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.ideaDeduplicationFields,
       existingIdentityCount:existingIdentityTokens.size,
