@@ -577,18 +577,38 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     asset.sourceConsumptionEvidence=detected.map(gameId=>({gameId,evidence:[...byGame.get(gameId)].sort()}));
     asset.sourceConsumptionIsRuntimeVerification=false;
   }
+  const searchCoveragePct=next.assets.length?Math.round((automaticSearchEligibleCount/next.assets.length)*1000)/10:0;
+  const sourceConsumptionCoveragePct=automaticSearchEligibleCount?Math.round((sourceConsumerAssetCount/automaticSearchEligibleCount)*1000)/10:0;
+  const repositoryAssetBottleneckState=automaticSearchEligibleCount===0
+    ?'SEARCH_BLOCKED'
+    :detectedConsumerGameIds.size===0
+      ?'CONSUMPTION_EVIDENCE_MISSING'
+      :missingRepositoryAssetIds.length
+        ?'HEALTHY_WITH_STALE_PATH_REVIEW'
+        :'HEALTHY';
+  const repositoryAssetBottleneckActions=Object.freeze([
+    ...(automaticSearchEligibleCount===0?['REPAIR_INTERNAL_ASSET_SEARCH_ELIGIBILITY']:[]),
+    ...(detectedConsumerGameIds.size===0?['AUDIT_GAME_SOURCE_LIBRARY_BINDING']:[]),
+    ...(missingRepositoryAssetIds.length?['REVIEW_MISSING_REPOSITORY_ASSET_PATHS']:[]),
+    ...(automaticSearchEligibleCount>0&&detectedConsumerGameIds.size>0?['CONTINUE_AUTOMATIC_LIBRARY_CONSUMPTION']:[])
+  ]);
   const repositoryAssetSync={
-    version:1,
+    version:2,
     totalAssetRows:next.assets.length,
     repositoryPathPresentCount,
     missingRepositoryPathCount:missingRepositoryAssetIds.length,
     missingRepositoryAssetIds:Object.freeze([...missingRepositoryAssetIds].sort()),
     automaticSearchEligibleCount,
+    searchCoveragePct,
     sharedSourcePathGroupCount:[...sourcePathGroups.values()].filter(ids=>ids.length>1).length,
     sharedSourcePathRowsAreNotAutomaticDuplicates:true,
     sourceConsumerAssetCount,
     sourceConsumerBindingCount,
     sourceConsumerGameIds:Object.freeze([...detectedConsumerGameIds].sort()),
+    sourceConsumptionCoveragePct,
+    bottleneckState:repositoryAssetBottleneckState,
+    bottleneckActions:repositoryAssetBottleneckActions,
+    bottleneckScope:'INTERNAL_ASSET_SEARCH_AND_SOURCE_CONSUMPTION_ONLY',
     sourceConsumptionEvidenceMode:'EXACT_ASSET_ID_SOURCE_MARKER_OR_EXACT_PROJECT_PATH_BINDING',
     sourceConsumptionDoesNotPromoteProductionVerification:true
   };
