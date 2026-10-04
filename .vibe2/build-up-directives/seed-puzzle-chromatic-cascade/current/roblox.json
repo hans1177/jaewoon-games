@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g4-7e7b069cea0f",
-  "directiveFingerprint": "7e7b069cea0fafe7f35c7a1320351b960179008fe37108733584be9e376a034c",
-  "previousDirectiveFingerprint": "e7d14afbe3b1f2298f1163b367934f319868a3e59cd7c9efa55a2dd3ad2cde37",
-  "forbiddenRepeatFingerprint": "e7d14afbe3b1f2298f1163b367934f319868a3e59cd7c9efa55a2dd3ad2cde37",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g5-cf1f39226389",
+  "directiveFingerprint": "cf1f392263896591b533867c411a98aba294b16f0b439e8dd07d33d2dc5d7e68",
+  "previousDirectiveFingerprint": "7e7b069cea0fafe7f35c7a1320351b960179008fe37108733584be9e376a034c",
+  "forbiddenRepeatFingerprint": "7e7b069cea0fafe7f35c7a1320351b960179008fe37108733584be9e376a034c",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 4,
+  "generation": 5,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "37c485002d5d9eacecfe370ea4f563241b57c7d4797d91f6b45a5e4c55a02d7a",
+  "sourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
   "designFingerprint": "491530ac1f5db9c62af2793e2ee12a69b743f3c5da0750f0b2628d384ed75efb",
   "gameIdentityAndNonNegotiables": {
     "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
@@ -250,19 +250,121 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 3,
-    "previousSourceTreeFingerprint": "3f6db3c84e504fa0ae8bce7f4bd6f026d3111b2bbe0469cf45f4bb36cd27c23b",
-    "currentSourceTreeFingerprint": "37c485002d5d9eacecfe370ea4f563241b57c7d4797d91f6b45a5e4c55a02d7a",
+    "previousGeneration": 4,
+    "previousSourceTreeFingerprint": "37c485002d5d9eacecfe370ea4f563241b57c7d4797d91f6b45a5e4c55a02d7a",
+    "currentSourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
-    "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
-    "runtimeObserved": false,
+    "studioQualityFailure": {
+      "sourceRevision": "a707c150a76463a44b0b830b9726f706f0ababfb",
+      "artifactIdentity": "sha256:8348776e2af7b3ea18ca5043c76ed3e96ac309d851e76148b2141def6bb9e4a8",
+      "authority": "roblox-f0-gameplay-product-readiness-failure",
+      "workflowRunId": 37168152051,
+      "testedAt": "2026-10-04T01:54:40.116Z",
+      "repairSurfaces": [
+        "CORE_GAMEPLAY",
+        "WORLD_MAP",
+        "PROGRESSION_CONTENT"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P0",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        },
+        {
+          "id": "GENERIC_SCOPE_HANDLER_SKELETON",
+          "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+          "priority": "P1",
+          "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+          "observed": "{\"version\":1,\"gameId\":\"seed-puzzle-chromatic-cascade\",\"pass\":false,\"blockers\":[\"MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE\",\"MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW\",\"MISSING_GAMEPLAY_CAPABILITY:WORLD\",\"MISSING_GAMEPLAY_CAPABILITY:PROGRESSION\",\"MISSING_GAMEPLAY_CAPABILITY:INFECTION\",\"CORE_LOOP_STEP_UNIMPLEMENTED:0\",\"CORE_LOOP_STEP_UNIMPLEMENTED:1\",\"CORE_LOOP_STEP_UNIMPLEMENTED:2\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:0\",\"SIGNATURE_SYSTEM_UNIMPLEMENTED:1\",\"GENERIC_SCOPE_HANDLER_SKELETON\"],\"requiredCapabilities\":[\"CORE_GAMEPLAY_STATE\",\"SESSION_FLOW\",\"WORLD\",\"PROGRESSION\",\"INFECTION\",\"MOBILE_UI\",\"SAVE\"],\"implementedCapabilities\":{\"CORE_GAMEPLAY_STATE\":false,\"SESSION_FLOW\":false,\"WORLD\":false,\"PROGRESSION\":false,\"INFECTION\":false,\"MOBILE_UI\":true,\"SAVE\":true},\"coreLoopTrace\":[{\"index\":0,\"step\":\"보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"step\":\"색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":2,\"step\":\"연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다.\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"signatureSystemTrace\":[{\"index\":0,\"name\":\"색채 주파수 튜너 (Chromatic Frequency Tuner)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false},{\"index\":1,\"name\":\"연쇄 기폭 장치 (Cascade Detonator)\",\"capabilities\":[\"CORE_GAMEPLAY_STATE\"],\"pass\":false}],\"placeholderDebt\":{\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"studioQualitySheet\":{\"Core\":\"MISSING\",\"Content\":\"N/A\",\"World\":\"MISSING\",\"Combat\":\"N/A\",\"AI\":\"N/A\",\"Progression\":\"MISSING\",\"UI\":\"POLISHED\",\"Graphics\":\"ROUGH\",\"Motion\":\"POLISHED\",\"Audio\":\"MISSING\",\"Mobile\":\"POLISHED\",\"Performance\":\"MISSING\",\"Runtime\":\"N/A\"},\"studioReadiness\":{\"ai\":{\"applicable\":false,\"signalCount\":0,\"pass\":true},\"combatFeel\":{\"applicable\":false,\"signalCount\":1,\"pass\":true},\"worldTopology\":{\"applicable\":true,\"signalCount\":1,\"pass\":false},\"firstTenMinutes\":{\"signalCount\":3,\"pass\":false},\"midLateGame\":{\"applicable\":true,\"signalCount\":2,\"pass\":false},\"systemConnections\":{\"rows\":[],\"pass\":true},\"placeholder\":{\"pass\":true,\"primitiveConstructionCount\":0,\"meshConstructionCount\":0,\"likelyPrimitiveHeavy\":false,\"genericScopeHandlerCount\":6,\"meaningfulGameplayFunctionCount\":0},\"criticalGaps\":[\"WORLD_TOPOLOGY_AND_LANDMARKS\",\"FIRST_10_MINUTES_FLOW\",\"MID_LATE_GAME_DEPTH\"],\"f9SourceQualityReady\":false},\"runtimeRequirements\":{\"worldRequired\":true,\"minimumBasePartCount\":5,\"spawnRequired\":true,\"landmarkRequired\":true,\"objectiveRequired\":false,\"serverBootRequired\":true,\"simulationRequired\":true,\"actualPlayRequired\":true},\"designFingerprint\":\"c2297e1b6c4ef59fb0d0dd7ff452eb4f99a6515ce86e6334cdf317312f2d6297\",\"antiSkeletonPassed\":false,\"designGenre\":\"Puzzle\",\"sourceGenre\":\"Puzzle\",\"designPlayMode\":\"SINGLE\",\"sourcePlayMode\":\"SINGLE\"}"
+        }
+      ]
+    },
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1410,7 +1512,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1422,7 +1524,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 108984,
+        "sourceBytes": 79632,
         "largestFileBytes": 43324,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1455,8 +1557,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=REGRESSION; previousCoverage=5; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1464,11 +1566,12 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 5,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 6,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1508,7 +1611,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "SYSTEM_CONNECTION"
         ]
@@ -1859,9 +1962,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2021,9 +2124,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/default.project.json"
     ],
     "sourceAnchors": [
@@ -2170,9 +2273,9 @@
     "gameId": "seed-puzzle-chromatic-cascade",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+      "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
       "roblox-games/seed-puzzle-chromatic-cascade/default.project.json"
     ],
     "impact": {
@@ -2250,16 +2353,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "37c485002d5d9eacecfe370ea4f563241b57c7d4797d91f6b45a5e4c55a02d7a",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "f6967aaf20dd3cfd4c40dba21133489382fbd0c5c2709b6b9cd8586f29e911e5",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2270,8 +2373,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2302,7 +2405,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 5,
+    "nextGeneration": 6,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2375,5 +2478,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:42:29.259Z"
+  "generatedAt": "2026-10-04T02:04:53.102Z"
 }

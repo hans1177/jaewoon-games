@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g3-336f197522e4",
-  "directiveFingerprint": "336f197522e4890ac49afc43595e62dab806a5d09918bbf904d52ebf745f4789",
+  "directiveId": "bug-defense-build-up-g3-673433476994",
+  "directiveFingerprint": "673433476994bfc6556569bd457d8ea55daf3e3c4c0fcc0a652e2431d6537686",
   "previousDirectiveFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
   "forbiddenRepeatFingerprint": "703cfc9d5541e01e150fc7bc46e2ea9728801429f87e7ed6f7cea4cfdffd69de",
   "gameId": "bug-defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
+  "sourceTreeFingerprint": "1c823aedc334b5bc9ee34d04916524307cf59b941bd5018f583a1d9ceb658d59",
   "designFingerprint": "b777a30851e67b1b07440b483d12aa7ca6d97f22da5a51fa1a648cdc58102545",
   "gameIdentityAndNonNegotiables": {
     "identity": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.",
@@ -56,32 +56,32 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 205,
-      "progression": 203,
+      "combat": 207,
+      "progression": 207,
       "ai": 49,
       "save": 55,
-      "multiplayer": 13,
+      "multiplayer": 25,
       "animation": 28,
-      "motionStates": 172,
+      "motionStates": 174,
       "gameFeel": 28,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 17,
       "ui": 57,
-      "uiFlow": 35,
+      "uiFlow": 37,
       "entryFlow": 24,
       "loadingFlow": 0,
       "input": 59,
-      "map": 140,
+      "map": 141,
       "landmark": 60,
       "interaction": 29,
       "inventory": 2,
       "equipment": 3,
       "settings": 1,
       "feedback": 67,
-      "session": 101,
-      "content": 178,
+      "session": 103,
+      "content": 181,
       "choice": 16,
       "connection": 0,
       "performance": 22,
@@ -93,15 +93,15 @@
     "topFiles": [
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "score": 475
+        "score": 496
       },
       {
         "file": "roblox-games/bug-defense/shared/GameConfig.luau",
-        "score": 251
+        "score": 252
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "score": 142
+        "score": 148
       },
       {
         "file": "roblox-games/bug-defense/default.project.json",
@@ -111,7 +111,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 284,
+        "line": 311,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "context": "local function damageEnemy(player, enemy, amount)",
@@ -119,7 +119,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 360,
+        "line": 387,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player, enemyKind, wave, index)",
@@ -127,7 +127,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 400,
+        "line": 427,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
         "context": "local function spawnBoss(player, wave)",
@@ -135,7 +135,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 608,
+        "line": 635,
         "kind": "FUNCTION",
         "symbol": "reviewDefenseState",
         "context": "local function reviewDefenseState(player)",
@@ -143,7 +143,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 356,
+        "line": 359,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -151,7 +151,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 555,
+        "line": 582,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "context": "local function attackEnemy(player)",
@@ -159,7 +159,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 314,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "runEnemyAI",
         "context": "local function runEnemyAI(player, enemy)",
@@ -167,7 +167,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 182,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "getSession",
         "context": "local function getSession(player)",
@@ -175,7 +175,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 375,
+        "line": 388,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -183,7 +183,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 220,
+        "line": 247,
         "kind": "FUNCTION",
         "symbol": "finishWave",
         "context": "local function finishWave(player, reason)",
@@ -207,7 +207,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 196,
+        "line": 223,
         "kind": "FUNCTION",
         "symbol": "countModels",
         "context": "local function countModels(models)",
@@ -215,7 +215,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 206,
+        "line": 233,
         "kind": "FUNCTION",
         "symbol": "clearEnemies",
         "context": "local function clearEnemies(session)",
@@ -223,7 +223,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 236,
+        "line": 263,
         "kind": "FUNCTION",
         "symbol": "retryWave",
         "context": "local function retryWave(player, reason)",
@@ -231,7 +231,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 432,
+        "line": 459,
         "kind": "FUNCTION",
         "symbol": "analyzeWaveStrategy",
         "context": "local function analyzeWaveStrategy(player)",
@@ -239,7 +239,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 447,
+        "line": 474,
         "kind": "FUNCTION",
         "symbol": "createPredatorTower",
         "context": "local function createPredatorTower(player)",
@@ -247,7 +247,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 569,
+        "line": 596,
         "kind": "FUNCTION",
         "symbol": "useCombatSkill",
         "context": "local function useCombatSkill(player)",
@@ -255,7 +255,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 591,
+        "line": 618,
         "kind": "FUNCTION",
         "symbol": "prepareNextWave",
         "context": "local function prepareNextWave(player)",
@@ -263,7 +263,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 176,
+        "line": 179,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -271,7 +271,15 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 267,
+        "line": 113,
+        "kind": "FUNCTION",
+        "symbol": "broadcastMultiplayerSync",
+        "context": "local function broadcastMultiplayerSync(changedPlayer)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/bug-defense/server/Game.server.luau",
+        "line": 294,
         "kind": "FUNCTION",
         "symbol": "findTargetEnemy",
         "context": "local function findTargetEnemy(player)",
@@ -279,7 +287,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 408,
+        "line": 435,
         "kind": "FUNCTION",
         "symbol": "startWave",
         "context": "local function startWave(player)",
@@ -287,7 +295,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 602,
+        "line": 629,
         "kind": "FUNCTION",
         "symbol": "prepareDefenseObjective",
         "context": "local function prepareDefenseObjective(player)",
@@ -295,7 +303,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 768,
+        "line": 801,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -319,7 +327,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 23,
+        "line": 25,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(atom)",
@@ -327,23 +335,15 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 253,
+        "line": 256,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
         "score": 50
       },
       {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 35,
-        "kind": "FUNCTION",
-        "symbol": "readNumber",
-        "context": "local function readNumber(player, name, fallback)",
-        "score": 50
-      },
-      {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 106,
+        "line": 109,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -356,7 +356,7 @@
     "previousFocus": "STABILITY",
     "previousGeneration": 2,
     "previousSourceTreeFingerprint": "9e12efda726a161ae595855be281ea66b68909412114dfa294b7730382443054",
-    "currentSourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
+    "currentSourceTreeFingerprint": "1c823aedc334b5bc9ee34d04916524307cf59b941bd5018f583a1d9ceb658d59",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1532,8 +1532,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 127405,
-        "largestFileBytes": 43793,
+        "sourceBytes": 129138,
+        "largestFileBytes": 43827,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1978,7 +1978,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 284,
+        "line": 311,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "currentBehavior": "local function damageEnemy(player, enemy, amount)",
@@ -1987,7 +1987,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 360,
+        "line": 387,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "local function spawnEnemy(player, enemyKind, wave, index)",
@@ -1996,7 +1996,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 400,
+        "line": 427,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
         "currentBehavior": "local function spawnBoss(player, wave)",
@@ -2005,7 +2005,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 608,
+        "line": 635,
         "kind": "FUNCTION",
         "symbol": "reviewDefenseState",
         "currentBehavior": "local function reviewDefenseState(player)",
@@ -2014,7 +2014,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 356,
+        "line": 359,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2023,7 +2023,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 555,
+        "line": 582,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "currentBehavior": "local function attackEnemy(player)",
@@ -2032,7 +2032,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 314,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "runEnemyAI",
         "currentBehavior": "local function runEnemyAI(player, enemy)",
@@ -2041,7 +2041,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 182,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "getSession",
         "currentBehavior": "local function getSession(player)",
@@ -2140,7 +2140,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 284,
+        "line": 311,
         "kind": "FUNCTION",
         "symbol": "damageEnemy",
         "context": "local function damageEnemy(player, enemy, amount)",
@@ -2152,7 +2152,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 360,
+        "line": 387,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player, enemyKind, wave, index)",
@@ -2164,7 +2164,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 400,
+        "line": 427,
         "kind": "FUNCTION",
         "symbol": "spawnBoss",
         "context": "local function spawnBoss(player, wave)",
@@ -2176,7 +2176,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 608,
+        "line": 635,
         "kind": "FUNCTION",
         "symbol": "reviewDefenseState",
         "context": "local function reviewDefenseState(player)",
@@ -2188,7 +2188,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 356,
+        "line": 359,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2200,7 +2200,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 555,
+        "line": 582,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "context": "local function attackEnemy(player)",
@@ -2212,7 +2212,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 314,
+        "line": 341,
         "kind": "FUNCTION",
         "symbol": "runEnemyAI",
         "context": "local function runEnemyAI(player, enemy)",
@@ -2224,7 +2224,7 @@
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 182,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "getSession",
         "context": "local function getSession(player)",
@@ -2366,7 +2366,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f7fbc65693f3897dddafd99077e70a0138be429ada01584c8b5c9a1cc06e9178",
+      "sourceTreeFingerprint": "1c823aedc334b5bc9ee34d04916524307cf59b941bd5018f583a1d9ceb658d59",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
@@ -2485,5 +2485,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T01:56:29.093Z"
+  "generatedAt": "2026-10-04T01:58:33.832Z"
 }
