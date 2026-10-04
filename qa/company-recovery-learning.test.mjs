@@ -437,3 +437,70 @@ test('System-AI workflow disables unchanged-main shortcuts for mutation-required
   assert.match(workflow,/source-mutation-sha:/);
   assert.match(workflow,/env\.SOURCE_MUTATION_REQUIRED != 'true'/);
 });
+
+test('same game repeated F0-F9 stage across task generations enters one root-cause recovery',async()=>{
+  const gameQueueInput={tasks:[
+    {
+      id:'demo-f0-a',gameId:'demo',status:'failed',target:'roblox',sourceRoot:'roblox-games/demo',
+      currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',failureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+      responsibleFiles:['roblox-games/demo/server/Game.server.luau'],
+      evidence:['failure-stage:PRIVATE_RUNTIME_CANDIDATE_DEPLOY','failure-cause:ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING']
+    },
+    {
+      id:'demo-f0-b',gameId:'demo',status:'queued',target:'roblox',sourceRoot:'roblox-games/demo',
+      currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',failureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+      responsibleFiles:['roblox-games/demo/server/Game.server.luau'],
+      evidence:['failure-stage:PRIVATE_RUNTIME_CANDIDATE_DEPLOY','failure-cause:ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING']
+    }
+  ]};
+  const escalated=escalateRecoveryCandidates({gameQueueInput});
+  assert.equal(escalated.added.length,1);
+  assert.equal(escalated.queue.tasks.length,1);
+  const recovery=escalated.queue.tasks[0];
+  assert.equal(recovery.gameId,'demo');
+  assert.equal(recovery.failureStage,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+  assert.equal(recovery.failureSignature,'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING');
+  assert.equal(recovery.blastRadius,'flow-stage:2');
+  assert.equal(recovery.recurrenceCount,2);
+  assert.equal(recovery.recoveryOwner,'VIBE2_VIBE3');
+  assert.deepEqual(recovery.relatedTaskIds,['demo-f0-a','demo-f0-b']);
+  assert.ok(recovery.evidence.includes('flow-stage-loop-detected:YES'));
+  assert.ok(recovery.evidence.includes('flow-sequence-order-preserved:YES'));
+
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const dispatched=dispatchRecovery({recoveryInput:escalated.queue,gameQueueInput});
+  const oldTask=dispatched.gameQueue.tasks.find(row=>row.id==='demo-f0-a');
+  const canonical=dispatched.gameQueue.tasks.find(row=>row.id==='demo-f0-b');
+  assert.equal(oldTask.status,'cancelled');
+  assert.equal(oldTask.lastOutcome,'SUPERSEDED_DUPLICATE_FLOW_STAGE_ATTEMPT');
+  assert.equal(canonical.status,'queued');
+  assert.equal(canonical.repairMode,'ROOT_CAUSE_MODE');
+  assert.equal(canonical.gameRepairContract.mode,'ROOT_CAUSE_MODE');
+  assert.ok(canonical.evidence.includes('flow-stage-loop-root-cause:YES'));
+  assert.ok(canonical.evidence.includes('flow-stage-loop-duplicate-queue-amplification:COLLAPSED'));
+});
+
+test('same-stage success checkpoint resets flow-loop recurrence',()=>{
+  const result=escalateRecoveryCandidates({gameQueueInput:{tasks:[
+    {
+      id:'demo-f1-old',gameId:'demo',status:'failed',target:'roblox',sourceRoot:'roblox-games/demo',
+      currentStep:'F1_SERVER_BOOT_PASS',failureSignature:'SERVER_BOOT_TIMEOUT',
+      evidence:['failure-stage:F1_SERVER_BOOT_PASS','failure-cause:SERVER_BOOT_TIMEOUT']
+    },
+    {
+      id:'demo-f1-pass',gameId:'demo',status:'verified',target:'roblox',sourceRoot:'roblox-games/demo',
+      currentStep:'F1_SERVER_BOOT_PASS',
+      evidence:['failure-stage:F1_SERVER_BOOT_PASS']
+    },
+    {
+      id:'demo-f1-new',gameId:'demo',status:'failed',target:'roblox',sourceRoot:'roblox-games/demo',
+      currentStep:'F1_SERVER_BOOT_PASS',failureSignature:'SERVER_BOOT_TIMEOUT',
+      evidence:['failure-stage:F1_SERVER_BOOT_PASS','failure-cause:SERVER_BOOT_TIMEOUT']
+    }
+  ]}});
+  assert.equal(result.added.length,1);
+  assert.equal(result.queue.tasks.length,1);
+  assert.equal(result.queue.tasks[0].blastRadius,'single-task');
+  assert.equal(result.queue.tasks[0].sourceTaskId,'demo-f1-new');
+});
+
