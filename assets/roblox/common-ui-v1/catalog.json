@@ -1674,5 +1674,18 @@
     "ownershipAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false
+  },
+  "internalAssetStandard": {
+    "version": 1,
+    "humanDocument": "assets/ASSET-STANDARD.md",
+    "routineReviewContract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT",
+    "genreExpectations": "assets/vibe-studio-asset-universe.js#COMMON_GENRE_SYSTEM_EXPECTATIONS",
+    "crossPackAudit": "assets/vibe-studio-asset-universe.js#auditCommonLibrarySystemDepth",
+    "companyLibrary": "company-asset-library.json",
+    "flowExcluded": true,
+    "workflowExcluded": true,
+    "queueExcluded": true,
+    "schedulerExcluded": true,
+    "deploymentExcluded": true
   }
 }
