@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-04T22:07:07.484Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
-      "timeouts": 4,
+      "failures": 5,
+      "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 480007,
-      "lastMs": 120001,
+      "totalMs": 600010,
+      "lastMs": 120003,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T21:49:51.326Z"
+      "updatedAt": "2026-10-04T22:09:07.566Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T21:14:24.575Z",
-  "updatedAt": "2026-10-04T22:07:07.484Z",
+  "updatedAt": "2026-10-04T22:09:07.566Z",
   "lastSuccessfulModelCallAt": "2026-10-04T21:47:48.318Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
