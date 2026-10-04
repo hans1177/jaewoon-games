@@ -1,5 +1,5 @@
 {
-  "version": 92,
+  "version": 93,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -56969,7 +56969,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 92,
+    "lastCatalogSynchronizedVersion": 93,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -67764,7 +67764,10 @@
         "survival2-rock",
         "survival2-tree"
       ],
-      "automaticSearchEligibleCount": 713,
+      "missingSearchableRepositoryPathCount": 0,
+      "missingSearchableRepositoryAssetIds": [],
+      "staleReferencePathCount": 4,
+      "automaticSearchEligibleCount": 700,
       "uniqueRepositoryPathCount": 77,
       "repositoryPathExistenceCheckCount": 77,
       "sharedSourcePathGroupCount": 17,
@@ -69923,7 +69926,7 @@
     },
     "assetManagementHealth": {
       "version": 1,
-      "status": "BOTTLENECK_REPAIR_REQUIRED",
+      "status": "VOLUME_MANAGEMENT",
       "volume": {
         "status": "VOLUME_GAPS_REMAIN",
         "volumeReady": false,
@@ -70607,8 +70610,10 @@
         "totalAssetRows": 717,
         "repositoryPathPresentCount": 713,
         "missingRepositoryPathCount": 4,
-        "automaticSearchEligibleCount": 713,
-        "automaticSearchEligiblePercent": 99.4,
+        "missingSearchableRepositoryPathCount": 0,
+        "staleReferencePathCount": 4,
+        "automaticSearchEligibleCount": 700,
+        "automaticSearchEligiblePercent": 97.6,
         "sourceConsumerAssetCount": 101,
         "sourceConsumerBindingCount": 101,
         "sourceConsumerGameCount": 1,
@@ -70635,12 +70640,6 @@
       },
       "bottlenecks": [
         {
-          "id": "MISSING_REPOSITORY_PATHS",
-          "severity": "HIGH",
-          "count": 4,
-          "action": "REPAIR_ASSET_PATH_METADATA_OR_MATERIALIZE_SOURCE"
-        },
-        {
           "id": "VOLUME_DEFICIT",
           "severity": "MEDIUM",
           "count": 1494,
@@ -70651,13 +70650,19 @@
           "severity": "MEDIUM",
           "count": 614,
           "action": "AUDIT_EXISTING_ASSETS_WITH_CURRENT_INTERNAL_1000_CONTRACT"
+        },
+        {
+          "id": "STALE_REFERENCE_PATH_REVIEW",
+          "severity": "LOW",
+          "count": 4,
+          "action": "KEEP_REFERENCE_ROW_REVIEW_ONLY_WITHOUT_BLOCKING_ACTIVE_LIBRARY"
         }
       ],
       "highestPriorityBottleneck": {
-        "id": "MISSING_REPOSITORY_PATHS",
-        "severity": "HIGH",
-        "count": 4,
-        "action": "REPAIR_ASSET_PATH_METADATA_OR_MATERIALIZE_SOURCE"
+        "id": "VOLUME_DEFICIT",
+        "severity": "MEDIUM",
+        "count": 1494,
+        "action": "CONSUME_PRIORITY_VOLUME_WORKLIST"
       },
       "nextAction": {
         "kind": "CONSUME_PRIORITY_WORKLIST_ACTION",
