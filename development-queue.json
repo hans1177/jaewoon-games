@@ -55280,14 +55280,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T06:12:53.437Z",
+      "updatedAt": "2026-10-04T06:14:33.126Z",
       "robloxSourceCommit": "894471019841dc9a92d9b2c7dced238b0d80de70",
       "robloxSourceBootstrapPassedAt": "2026-10-03T14:46:35.672Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T06:08:50.022Z",
@@ -55359,7 +55359,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-survival-37130661155",
       "unitySourceCommit": "cbf2353021018e76bc8adff6bda712a0aa9bb9b5",
-      "unityBuildRunId": 37178963570,
+      "unityBuildRunId": 37181788734,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -55417,7 +55417,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T05:20:28.262Z"
+        "verifiedAt": "2026-10-04T06:14:33.126Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -61418,7 +61418,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T06:13:33.420Z",
+  "updatedAt": "2026-10-04T06:14:35.436Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
