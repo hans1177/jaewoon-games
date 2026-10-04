@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-vfx-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -14,7 +14,9 @@
       "pooledShortLifetimeCleanup": 10,
       "projectOriginalLicenseAndProvenance": 10,
       "automaticCrossGameReuseMetadata": 10,
-      "gameplayAuthorityIsolation": 10
+      "gameplayAuthorityIsolation": 10,
+      "blockParryGuardBreakTelegraphCounterFeedback": true,
+      "gameplayTimingDamageStunAuthorityFalse": true
     }
   },
   "quality120": {
@@ -27,5 +29,12 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 3
+  "sourceAssetCount": 8,
+  "parryFeedback": {
+    "atomCount": 5,
+    "reducedMotionVariantRequired": true,
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "stunAuthority": false
+  }
 }
