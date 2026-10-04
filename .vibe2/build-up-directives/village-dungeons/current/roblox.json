@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g3-1e2b5047ba9e",
-  "directiveFingerprint": "1e2b5047ba9e4982d83bf250e2e60bf437eacd3c2ac4f85fdf9e1b147230d397",
+  "directiveId": "village-dungeons-build-up-g3-84185ee97c26",
+  "directiveFingerprint": "84185ee97c263ba46b6f24047c33bfc19754bec394a455d0252fc7e339b2b11b",
   "previousDirectiveFingerprint": "afcb55075b1212ade702e20ab405cd40c4abd1ab0a9680d490002b3699964546",
   "forbiddenRepeatFingerprint": "afcb55075b1212ade702e20ab405cd40c4abd1ab0a9680d490002b3699964546",
   "gameId": "village-dungeons",
@@ -10,7 +10,7 @@
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
@@ -2059,9 +2059,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2221,9 +2221,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "sourceAnchors": [
@@ -2370,9 +2370,9 @@
     "gameId": "village-dungeons",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/village-dungeons/client/Game.client.luau",
-      "roblox-games/village-dungeons/server/Game.server.luau",
       "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau",
       "roblox-games/village-dungeons/default.project.json"
     ],
     "impact": {
@@ -2451,7 +2451,7 @@
     "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "reason": "current source Studio product-quality failure",
       "runtimeObserved": true
     },
     "baseline": {
@@ -2471,7 +2471,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2574,5 +2574,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T02:12:54.189Z"
+  "generatedAt": "2026-10-04T02:17:17.899Z"
 }
