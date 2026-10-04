@@ -1720,23 +1720,85 @@ function normalizeFlowAssetRequirements(requirements=[]){
 
 function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterCustomizationRequested=false}={}){
   const requestText=clean(request).toUpperCase();
-  const domain=characterCustomizationRequested?'CHARACTER'
+  const normalizeDomain=value=>{
+    const token=clean(value).toUpperCase();
+    if(['PROP','WORLD_PROP','WORLDPROP'].includes(token))return'WORLD_PROP';
+    if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','UI','ITEM','MATERIAL','VFX','MOTION','PRESENTATION','CHARACTER_GEAR'].includes(token))return token;
+    return'';
+  };
+  const inferredDomain=characterCustomizationRequested?'CHARACTER'
     :/BUILDING|HOUSE|CASTLE|건물|집|성|하우징/.test(requestText)?'BUILDING'
     :/CREATURE|MONSTER|ANIMAL|몬스터|동물|몹|생물/.test(requestText)?'CREATURE'
     :/WEAPON|SWORD|GUN|무기|검|총|창|활/.test(requestText)?'WEAPON'
     :/\bUI\b|HUD|MENU|인벤토리|메뉴|버튼/.test(requestText)?'UI'
-    :/PROP|FURNITURE|소품|가구|상자/.test(requestText)?'PROP'
+    :/PROP|FURNITURE|소품|가구|상자/.test(requestText)?'WORLD_PROP'
     :'ENVIRONMENT';
-  const characterMap=Object.freeze({
-    SILHOUETTE:Object.freeze(['BODY_ARCHETYPE','HEAD_BASE']),
-    PROPORTIONS:Object.freeze(['BODY_PROPORTION','FACE_MORPH']),
-    MATERIAL_REGIONS:Object.freeze(['SKIN_TONE','SKIN_DETAIL','CLOTHING']),
-    PALETTE:Object.freeze(['SKIN_TONE','EYE_COLOR','HAIR_COLOR']),
-    CONSTRUCTION_DETAILS:Object.freeze(['HAIR_STYLE','PIERCING_ACCESSORY','CLOTHING_LAYER']),
-    STYLE_LANGUAGE:Object.freeze(['EXPRESSION','GAIT_IDENTITY']),
-    IDENTITY_ANCHORS:Object.freeze(['SCAR_TATTOO_MAKEUP','SPECIES_PART'])
+  const axisMaps=Object.freeze({
+    CHARACTER:Object.freeze({
+      SILHOUETTE:Object.freeze(['BODY_ARCHETYPE','HEAD_BASE']),
+      PROPORTIONS:Object.freeze(['BODY_PROPORTION','FACE_MORPH']),
+      MATERIAL_REGIONS:Object.freeze(['SKIN_TONE','SKIN_DETAIL','CLOTHING']),
+      PALETTE:Object.freeze(['SKIN_TONE','EYE_COLOR','HAIR_COLOR']),
+      CONSTRUCTION_DETAILS:Object.freeze(['HAIR_STYLE','PIERCING_ACCESSORY','CLOTHING_LAYER']),
+      STYLE_LANGUAGE:Object.freeze(['EXPRESSION','GAIT_IDENTITY']),
+      IDENTITY_ANCHORS:Object.freeze(['SCAR_TATTOO_MAKEUP','SPECIES_PART'])
+    }),
+    BUILDING:Object.freeze({
+      SILHOUETTE:Object.freeze(['MASSING_FAMILY','ROOF_PROFILE','FACADE_PROFILE']),
+      PROPORTIONS:Object.freeze(['FLOOR_HEIGHT_RATIO','BAY_SPACING','ENTRY_SCALE']),
+      MATERIAL_REGIONS:Object.freeze(['WALL_ROOF_TRIM_SPLIT','FOUNDATION_MATERIAL_ZONE']),
+      PALETTE:Object.freeze(['ARCHITECTURE_PALETTE_VARIANT','ACCENT_CONTRAST']),
+      CONSTRUCTION_DETAILS:Object.freeze(['FOUNDATION_WALL_ROOF_JOINERY','WINDOW_DOOR_TRIM','DAMAGE_REPAIR_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['BUILDING_THEME_GRAMMAR','REGIONAL_ARCHITECTURE_VARIANT']),
+      IDENTITY_ANCHORS:Object.freeze(['LANDMARK_ACCENT','SIGNAGE_PROP_SOCKET'])
+    }),
+    CREATURE:Object.freeze({
+      SILHOUETTE:Object.freeze(['BODY_PLAN_VARIANT','HEAD_APPENDAGE_PROFILE','TAIL_WING_HORN_PROFILE']),
+      PROPORTIONS:Object.freeze(['TORSO_LIMB_RATIO','HEAD_BODY_RATIO','SIZE_AGE_VARIANT']),
+      MATERIAL_REGIONS:Object.freeze(['SKIN_FUR_SCALE_SHELL_ZONES','ARMOR_SOFT_TISSUE_SPLIT']),
+      PALETTE:Object.freeze(['BIOME_SURFACE_VARIANT','ELITE_BOSS_PALETTE_ACCENT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['JOINT_ARTICULATION','MOUTH_EYE_CLAW_DETAIL','RIG_CONTACT_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['SPECIES_STYLE_LANGUAGE','LOCOMOTION_WEIGHT_LANGUAGE']),
+      IDENTITY_ANCHORS:Object.freeze(['SPECIES_SIGNATURE_PART','ELITE_BOSS_ORNAMENT'])
+    }),
+    WEAPON:Object.freeze({
+      SILHOUETTE:Object.freeze(['WEAPON_PROFILE_FAMILY','BLADE_HEAD_SHAFT_PROFILE']),
+      PROPORTIONS:Object.freeze(['GRIP_REACH_RATIO','HEAD_BLADE_WEIGHT_RATIO']),
+      MATERIAL_REGIONS:Object.freeze(['GRIP_GUARD_BLADE_MATERIAL_SPLIT','EDGE_CORE_TRIM_SPLIT']),
+      PALETTE:Object.freeze(['MATERIAL_TIER_PALETTE','FACTION_ACCENT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['FASTENER_JOINERY','GRIP_SOCKET','DAMAGE_WEAR_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['WEAPON_THEME_LANGUAGE','ERA_TECH_DETAIL']),
+      IDENTITY_ANCHORS:Object.freeze(['SIGNATURE_ORNAMENT','IMPACT_TRAIL_SOCKET'])
+    }),
+    UI:Object.freeze({
+      SILHOUETTE:Object.freeze(['PANEL_CARD_SHAPE_LANGUAGE','ICON_SILHOUETTE_FAMILY']),
+      PROPORTIONS:Object.freeze(['INFORMATION_HIERARCHY_RATIO','CONTROL_DENSITY_SPACING']),
+      MATERIAL_REGIONS:Object.freeze(['SURFACE_DEPTH_LAYER','BORDER_FILL_ICON_REGION']),
+      PALETTE:Object.freeze(['VALUE_CONTRAST_SYSTEM','STATE_COLOR_LANGUAGE']),
+      CONSTRUCTION_DETAILS:Object.freeze(['PRESSED_SELECTED_DISABLED_STATES','TOUCH_TARGET_FEEDBACK','SMALL_SIZE_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['UI_GRAMMAR_VARIANT','TYPOGRAPHY_SPACING_LANGUAGE']),
+      IDENTITY_ANCHORS:Object.freeze(['SIGNATURE_FRAME_MOTIF','ICON_MOTIF_FAMILY'])
+    }),
+    ENVIRONMENT:Object.freeze({
+      SILHOUETTE:Object.freeze(['HORIZON_PROFILE','LANDMARK_MASSING','FOREGROUND_MIDGROUND_BACKGROUND_DEPTH']),
+      PROPORTIONS:Object.freeze(['OPEN_CLOSED_SPACE_RATIO','VERTICALITY_RATIO','LANDMARK_SCALE']),
+      MATERIAL_REGIONS:Object.freeze(['GROUND_ROCK_WATER_VEGETATION_ZONES','BUILT_NATURAL_SPLIT']),
+      PALETTE:Object.freeze(['ATMOSPHERE_LIGHTING_PALETTE','WEATHER_TIME_VARIANT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['TERRAIN_TRANSITION','SET_DRESSING_CLUSTER','SETTLEMENT_EDGE_DETAIL']),
+      STYLE_LANGUAGE:Object.freeze(['BIOME_STYLE_LANGUAGE','WORLD_DENSITY_LANGUAGE']),
+      IDENTITY_ANCHORS:Object.freeze(['LANDMARK_TYPE_FAMILY','DISCOVERY_ROUTE_CUE'])
+    }),
+    WORLD_PROP:Object.freeze({
+      SILHOUETTE:Object.freeze(['PROP_PROFILE_FAMILY','FUNCTION_READABLE_SHAPE']),
+      PROPORTIONS:Object.freeze(['HANDLE_BODY_BASE_RATIO','INTERACTION_SCALE']),
+      MATERIAL_REGIONS:Object.freeze(['STRUCTURE_SURFACE_TRIM_SPLIT','CONTACT_WEAR_ZONE']),
+      PALETTE:Object.freeze(['PROP_THEME_PALETTE','STATE_ACCENT']),
+      CONSTRUCTION_DETAILS:Object.freeze(['HINGE_FASTENER_HANDLE_DETAIL','INTERACTION_STATE_VARIANT','DAMAGE_REPAIR_VARIANT']),
+      STYLE_LANGUAGE:Object.freeze(['PROP_THEME_LANGUAGE','SET_DRESSING_VARIANT']),
+      IDENTITY_ANCHORS:Object.freeze(['INTERACTION_AFFORDANCE','SIGNATURE_FUNCTION_PART'])
+    })
   });
-  const genericMap=Object.freeze({
+  const fallbackMap=Object.freeze({
     SILHOUETTE:Object.freeze(['PRIMARY_FORM_VARIATION']),
     PROPORTIONS:Object.freeze(['PROPORTION_VARIATION']),
     MATERIAL_REGIONS:Object.freeze(['MATERIAL_REGION_VARIATION']),
@@ -1745,34 +1807,41 @@ function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterC
     STYLE_LANGUAGE:Object.freeze(['STYLE_LANGUAGE_VARIATION']),
     IDENTITY_ANCHORS:Object.freeze(['IDENTITY_ANCHOR_VARIATION'])
   });
-  const map=domain==='CHARACTER'?characterMap:genericMap;
   const rows=[];
   for(const study of studies||[]){
     if(!study?.observation?.valid||!study?.request?.sourceId)continue;
-    for(const [featureKey,axes] of Object.entries(map)){
-      if(!clean(study.observation?.features?.[featureKey]))continue;
-      for(const axis of axes){
-        const sourceToken=clean(study.request.sourceId).toUpperCase().replace(/[^A-Z0-9]+/g,'_');
-        rows.push(freeze({
-          kind:'REFERENCE_IMAGE_IDEA',
-          domain,
-          ideaId:['REFERENCE',sourceToken,axis].join('_'),
-          referenceSourceId:clean(study.request.sourceId),
-          referenceFeature:featureKey,
-          customizationAxis:axis,
-          priority:285,
-          sourceBound:true,
-          verifiedAgainstSource:study.observation.verifiedAgainstSource===true,
-          ideaOnly:true,
-          directCopyForbidden:true,
-          sourceImagePersistentLearningForbidden:true,
-          unseenGeometryAndMotionRemainCreativeProposals:true,
-          productionVerified:false
-        }));
+    const explicitDomains=unique([
+      study?.domainHint,
+      ...(Array.isArray(study?.domainHints)?study.domainHints:[])
+    ]).map(normalizeDomain).filter(Boolean);
+    const domains=characterCustomizationRequested?['CHARACTER']:(explicitDomains.length?explicitDomains:[inferredDomain]);
+    for(const domain of domains){
+      const map=axisMaps[domain]||fallbackMap;
+      for(const [featureKey,axes] of Object.entries(map)){
+        if(!clean(study.observation?.features?.[featureKey]))continue;
+        for(const axis of axes){
+          const sourceToken=clean(study.request.sourceId).toUpperCase().replace(/[^A-Z0-9]+/g,'_');
+          rows.push(freeze({
+            kind:'REFERENCE_IMAGE_IDEA',
+            domain,
+            ideaId:['REFERENCE',sourceToken,domain,axis].join('_'),
+            referenceSourceId:clean(study.request.sourceId),
+            referenceFeature:featureKey,
+            customizationAxis:axis,
+            priority:285,
+            sourceBound:true,
+            verifiedAgainstSource:study.observation.verifiedAgainstSource===true,
+            ideaOnly:true,
+            directCopyForbidden:true,
+            sourceImagePersistentLearningForbidden:true,
+            unseenGeometryAndMotionRemainCreativeProposals:true,
+            productionVerified:false
+          }));
+        }
       }
     }
   }
-  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,64));
+  return freezeList(rows.filter((row,index,list)=>list.findIndex(other=>other.ideaId===row.ideaId)===index).slice(0,96));
 }
 
 export function buildVibeAssetProductionPlan({
@@ -2011,7 +2080,12 @@ export function buildVibeAssetProductionPlan({
     const observation=row?.observation?bindVibeReferenceImageObservation({
       request,observation:row.observation,verifiedAgainstSource:row.verifiedAgainstSource===true
     }):null;
-    return freeze({request,observation});
+    return freeze({
+      request,
+      observation,
+      domainHint:row?.domain||row?.assetFamily||row?.family||row?.category||null,
+      domainHints:freezeList(Array.isArray(row?.domains)?row.domains:Array.isArray(row?.categories)?row.categories:[])
+    });
   }));
   const referenceDrivenAssetIdeas=buildReferenceDrivenAssetIdeaWorklist({
     studies:referenceImageStudies,
