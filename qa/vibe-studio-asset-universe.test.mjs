@@ -1076,7 +1076,9 @@ test('company free source registry expands high-priority volume domains without 
     'quaternius-modular-medieval-buildings','quaternius-ultimate-fantasy-rts','kenney-furniture-kit',
     'quaternius-ultimate-modular-ruins','kenney-ui-pack','kenney-ui-audio','kenney-interface-sounds',
     'kenney-rpg-audio','kenney-impact-sounds','kenney-nature-kit','quaternius-ultimate-nature',
-    'poly-haven-cc0-library','kenney-city-kit-roads','kenney-city-kit-industrial'
+    'poly-haven-cc0-library','kenney-city-kit-roads','kenney-city-kit-industrial',
+    'kaykit-character-animations-1-1','quaternius-universal-animation-library',
+    'quaternius-universal-animation-library-2','quaternius-ultimate-animated-animals'
   ];
   assert.ok(registry.externalSources.length>=28);
   for(const id of expected){
@@ -1094,9 +1096,15 @@ test('company free source registry expands high-priority volume domains without 
   assert.ok(registry.externalSources.find(row=>row.id==='kenney-ui-pack').categories.includes('UI'));
   assert.ok(registry.externalSources.find(row=>row.id==='kenney-rpg-audio').categories.includes('AUDIO'));
   assert.ok(registry.externalSources.find(row=>row.id==='poly-haven-cc0-library').categories.includes('MATERIAL'));
+  for(const id of ['kaykit-character-animations-1-1','quaternius-universal-animation-library','quaternius-universal-animation-library-2']){
+    assert.ok(registry.externalSources.find(row=>row.id===id).categories.includes('MOTION'),id);
+  }
+  assert.ok(registry.externalSources.find(row=>row.id==='quaternius-ultimate-animated-animals').categories.includes('CREATURE'));
   assert.equal(registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
-  assert.equal(registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,18);
+  assert.equal(registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,22);
   assert.ok(registry.internalAssetLibraryAutomation.nextVolumeActions.some(row=>row.domain==='BUILDING'&&row.freeSourceCandidateIds.includes('kenney-modular-buildings')));
+  assert.ok(registry.internalAssetLibraryAutomation.nextVolumeActions.some(row=>row.domain==='CREATURE'&&row.freeSourceCandidateIds.includes('quaternius-ultimate-animated-animals')));
+  assert.ok(registry.internalAssetLibraryAutomation.nextVolumeActions.some(row=>row.domain==='MOTION'&&row.freeSourceCandidateIds.includes('kaykit-character-animations-1-1')));
 });
 
 test('natural language concept inference covers full preset families and concept axes',async()=>{
@@ -3889,6 +3897,10 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(buildingAction?.freeSourceCandidateIds.includes('quaternius-ultimate-buildings'));
     const audioAction=plan.nextVolumeActions.find(row=>row.domain==='AUDIO');
     assert.deepEqual(audioAction?.freeSourceCandidateIds,['kenney-ui-audio','kenney-interface-sounds','kenney-rpg-audio','kenney-impact-sounds']);
+    const creatureAction=plan.nextVolumeActions.find(row=>row.domain==='CREATURE');
+    assert.ok(creatureAction?.freeSourceCandidateIds.includes('quaternius-ultimate-animated-animals'));
+    const motionAction=plan.nextVolumeActions.find(row=>row.domain==='MOTION');
+    assert.deepEqual(motionAction?.freeSourceCandidateIds,['kaykit-character-animations-1-1','quaternius-universal-animation-library','quaternius-universal-animation-library-2']);
     assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
     assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
   }
@@ -3923,7 +3935,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS.AUDIO.includes('INTERIOR_EXTERIOR_TRANSITION'));
   assert.equal(plan.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(plan.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
-  assert.equal(plan.eligibleFreeSourceCount,18);
+  assert.equal(plan.eligibleFreeSourceCount,22);
   assert.equal(plan.freeSourceCatalogSufficiencyCount,12);
   assert.equal(plan.freeSourceCatalogReady,true);
   assert.equal(plan.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
@@ -4092,7 +4104,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
-  assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,18);
+  assert.equal(result.registry.internalAssetLibraryAutomation.eligibleFreeSourceCount,22);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogSufficiencyCount,12);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogReady,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.freeSourceCatalogExpansionMode,'PAUSED_UNTIL_REAL_COVERAGE_GAP');
