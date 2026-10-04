@@ -120,10 +120,21 @@
       "lastMs": 19050,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
       "updatedAt": "2026-10-04T21:14:43.784Z"
+    },
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 120002,
+      "lastMs": 120002,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T21:16:43.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T21:14:24.575Z",
-  "updatedAt": "2026-10-04T21:14:43.784Z"
+  "updatedAt": "2026-10-04T21:16:43.787Z"
 }
