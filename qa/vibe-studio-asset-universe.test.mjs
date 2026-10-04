@@ -1973,6 +1973,7 @@ test('expanded common item tool creature and VFX registry mirrors current catalo
     ['assets/roblox/common-items-v1/catalog.json','roblox-common-items-v1','items','roblox-common-item-',40],
     ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
     ['assets/roblox/common-character-gear-v1/catalog.json','roblox-common-character-gear-v1','items','roblox-common-character-gear-',18],
+    ['assets/roblox/common-foliage-v1/catalog.json','roblox-common-foliage-v1','items','roblox-common-foliage-',18],
     ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
     ['assets/roblox/common-skill-v1/catalog.json','roblox-common-skill-v1','atoms','roblox-common-skill-',20],
     ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
@@ -2021,7 +2022,7 @@ test('generic world prop requirement can choose company-common base',()=>{
 });
 
 
-test('company-common foliage pack provides eight reusable environment assets',()=>{
+test('company-common foliage pack provides eighteen reusable environment assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-foliage-v1');
@@ -2029,8 +2030,9 @@ test('company-common foliage pack provides eight reusable environment assets',()
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['GRASS_TUFT','BUSH_ROUND','FERN_CLUSTER','WILDFLOWER_PATCH','TREE_STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE'];
-  assert.equal(catalog.items.length,8);
+  const ids=['GRASS_TUFT','BUSH_ROUND','FERN_CLUSTER','WILDFLOWER_PATCH','TREE_STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE','BROADLEAF_TREE','VINE_CLUSTER','REED_PATCH','MOSS_PATCH','MUSHROOM_CLUSTER','ROOT_CLUSTER','AUTUMN_TREE_VARIANT','WIND_BENT_TREE','BIOME_SHRUB_VARIANT','LOD_FOLIAGE_PROXY'];
+  assert.equal(catalog.items.length,18);
+  assert.equal(quality.sourceAssetCount,18);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
@@ -2925,7 +2927,7 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,66);
+  assert.equal(registry.version,67);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3017,7 +3019,7 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,66);
+  assert.equal(registry.version,67);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3202,7 +3204,7 @@ test('company asset library exposes all-stage composition as an asset contract o
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
-  assert.equal(registry.version,66);
+  assert.equal(registry.version,67);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -3453,4 +3455,26 @@ test('character gear system depth is complete after company-seed volume-up',()=>
   }
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.characterGearCount,18);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-character-gear-v1').productionVerified,false);
+});
+
+
+test('foliage system depth is complete after company-seed volume-up',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-foliage-v1','catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-foliage-v1','quality-evidence.json'),'utf8'));
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  const foliage=report.rows.find(row=>row.domain==='FOLIAGE');
+  assert.ok(foliage);
+  assert.equal(foliage.missing.length,0);
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.items.length,18);
+  assert.equal(quality.sourceAssetCount,18);
+  for(const role of ['BROADLEAF_TREE','VINE','REED','MOSS','MUSHROOM','ROOT','BIOME_VARIANT','SEASON_VARIANT','WIND_VARIANT','LOD']){
+    const found=registry.assets.some(row=>row.packId==='roblox-common-foliage-v1'&&((row.systemRoles||[]).includes(role)||row.subfamily===role||row.environmentRole===role));
+    assert.equal(found,true,role);
+  }
+  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.foliageCount,18);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-foliage-v1').productionVerified,false);
 });
