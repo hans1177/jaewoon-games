@@ -479,7 +479,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     assets:next.assets,
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
-    audioRoleIds
+    audioRoleIds,
+    externalSources:next.externalSources||[]
   });
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
@@ -1689,7 +1690,8 @@ export function buildVibeAssetProductionPlan({
     assets:companyRegistry?.assets||[],
     seedPlan:executionSeedPlan,
     uiAtomIds:(executionUiCatalog.atoms||[]).map(row=>row.atomId),
-    audioRoleIds:collectCommonCatalogAudioRoles(executionCatalogs)
+    audioRoleIds:collectCommonCatalogAudioRoles(executionCatalogs),
+    externalSources:companyRegistry?.externalSources||[]
   });
   const persistedWorklistFresh=
     Number(libraryAutomation.lastCatalogSynchronizedVersion)===Number(companyRegistry?.version)
@@ -1715,6 +1717,7 @@ export function buildVibeAssetProductionPlan({
     persistentWorklistField:clean(executionLibraryPlan.persistentWorklistField||libraryAutomation.persistentWorklistField)||'internalAssetLibraryAutomation.nextVolumeActions',
     reuseResolutionOrder:freezeList(executionLibraryPlan.reuseResolutionOrder||libraryAutomation.reuseResolutionOrder||['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
     freeOriginalVolumePolicy:freeze({...libraryAutomation.freeOriginalVolumePolicy,...executionLibraryPlan.freeOriginalVolumePolicy}),
+    eligibleFreeSourceCount:Number(executionLibraryPlan.eligibleFreeSourceCount||0),
     qualityUpPolicy:freeze({
       ...(libraryAutomation.qualityUpPolicy||{}),
       ...(executionLibraryPlan.qualityUpPolicy||{}),
