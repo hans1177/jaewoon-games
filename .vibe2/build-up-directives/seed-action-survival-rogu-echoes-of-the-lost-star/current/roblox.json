@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g11-6485686ce910",
-  "directiveFingerprint": "6485686ce910b744c1bda7b87cf9db4ab95135348daa4f72adf59cbf366efcbe",
-  "previousDirectiveFingerprint": "0e8f187f6b5a10d206328f069a9ac8a02a065273dad22c414cc17793ec0845ed",
-  "forbiddenRepeatFingerprint": "0e8f187f6b5a10d206328f069a9ac8a02a065273dad22c414cc17793ec0845ed",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g12-31602a005ceb",
+  "directiveFingerprint": "31602a005ceb1bc3248bae022a1c9549e7882a649c43c48e053acda90c4ddd08",
+  "previousDirectiveFingerprint": "6485686ce910b744c1bda7b87cf9db4ab95135348daa4f72adf59cbf366efcbe",
+  "forbiddenRepeatFingerprint": "6485686ce910b744c1bda7b87cf9db4ab95135348daa4f72adf59cbf366efcbe",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 11,
+  "generation": 12,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
+  "sourceTreeFingerprint": "7a279f1a8b4c051e58fe7d852ca8cc11344597753f9be29258562806e5a19437",
   "designFingerprint": "f82191ecfbaafd23f36b80b618d3a6262e90d6bf333e105b4a488bcbb0ac84eb",
   "gameIdentityAndNonNegotiables": {
     "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
@@ -258,17 +258,17 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 10,
-    "previousSourceTreeFingerprint": "a242c595a0335f1d9ced1c94df00282ea6d0dc3c8264e110f06c276b9ee62e62",
-    "currentSourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
+    "previousGeneration": 11,
+    "previousSourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
+    "currentSourceTreeFingerprint": "7a279f1a8b4c051e58fe7d852ca8cc11344597753f9be29258562806e5a19437",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1468,8 +1468,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1479,7 +1479,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1491,6 +1491,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1526,7 +1527,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 192,
+        "score": 174,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2274,11 +2275,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
+      "sourceTreeFingerprint": "7a279f1a8b4c051e58fe7d852ca8cc11344597753f9be29258562806e5a19437",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2321,7 +2322,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 12,
+    "nextGeneration": 13,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2394,5 +2395,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:48:37.126Z"
+  "generatedAt": "2026-10-04T16:36:35.640Z"
 }

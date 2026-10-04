@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g12-06754771c6e0",
-  "directiveFingerprint": "06754771c6e0567c12bebb5d274678ec5073dc8d364b5a5a66f516fc3c5f47d6",
-  "previousDirectiveFingerprint": "a90b32a53a95b4027df2f429e475356f3fa9395d6b6c604e7c9b48c278d05174",
-  "forbiddenRepeatFingerprint": "a90b32a53a95b4027df2f429e475356f3fa9395d6b6c604e7c9b48c278d05174",
+  "directiveId": "daechung-rpg-build-up-g13-da737453d4a4",
+  "directiveFingerprint": "da737453d4a459b9db61e00a35de6f570fbfaa9d59a8e6d8ed1b20b21cb12e7e",
+  "previousDirectiveFingerprint": "06754771c6e0567c12bebb5d274678ec5073dc8d364b5a5a66f516fc3c5f47d6",
+  "forbiddenRepeatFingerprint": "06754771c6e0567c12bebb5d274678ec5073dc8d364b5a5a66f516fc3c5f47d6",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 12,
+  "generation": 13,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "fbe7afd96078ee627c7367072e1f87159c461a0c160841ce11f58d413868d98a",
+  "sourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 11,
-    "previousSourceTreeFingerprint": "dee4dc2d762a9868f0f198b9047f3af7d323329a3707590c046484578f28237b",
-    "currentSourceTreeFingerprint": "fbe7afd96078ee627c7367072e1f87159c461a0c160841ce11f58d413868d98a",
+    "previousGeneration": 12,
+    "previousSourceTreeFingerprint": "fbe7afd96078ee627c7367072e1f87159c461a0c160841ce11f58d413868d98a",
+    "currentSourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1729,13 +1729,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1755,6 +1755,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -1788,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 34,
+        "score": 176,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1804,16 +1805,6 @@
         "gapDomains": []
       },
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 20,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
-      {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
@@ -1827,6 +1818,16 @@
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 14,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": -140,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -2528,7 +2529,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "fbe7afd96078ee627c7367072e1f87159c461a0c160841ce11f58d413868d98a",
+      "sourceTreeFingerprint": "72a962da183805cbf26fd2dd3a4310cc4f2aed87f953ddcb63f2ae781dfd5223",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2575,7 +2576,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 13,
+    "nextGeneration": 14,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2640,5 +2641,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:48:37.052Z"
+  "generatedAt": "2026-10-04T16:36:35.577Z"
 }
