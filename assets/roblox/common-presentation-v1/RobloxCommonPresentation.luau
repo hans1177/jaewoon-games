@@ -24,6 +24,16 @@ local THEME = table.freeze({
   TouchHeight = 48,
 })
 
+local STYLE_PRESETS = table.freeze({
+  CINEMATIC_DARK = table.freeze({Backdrop=Color3.fromRGB(10,13,18),Panel=Color3.fromRGB(24,29,37),PanelRaised=Color3.fromRGB(40,48,60),Accent=Color3.fromRGB(96,151,205),Corner=10}),
+  FANTASY_CARVED = table.freeze({Backdrop=Color3.fromRGB(28,24,21),Panel=Color3.fromRGB(54,45,37),PanelRaised=Color3.fromRGB(74,60,47),Accent=Color3.fromRGB(191,145,72),Corner=8}),
+  SCI_FI_GLASS = table.freeze({Backdrop=Color3.fromRGB(8,18,26),Panel=Color3.fromRGB(19,40,54),PanelRaised=Color3.fromRGB(27,59,78),Accent=Color3.fromRGB(70,199,224),Corner=6}),
+  HORROR_MUTED = table.freeze({Backdrop=Color3.fromRGB(15,15,16),Panel=Color3.fromRGB(31,30,31),PanelRaised=Color3.fromRGB(48,43,43),Accent=Color3.fromRGB(157,65,59),Corner=4}),
+  COZY_SOFT = table.freeze({Backdrop=Color3.fromRGB(44,48,50),Panel=Color3.fromRGB(75,81,79),PanelRaised=Color3.fromRGB(96,104,98),Accent=Color3.fromRGB(174,190,132),Corner=18}),
+  ARCADE_BOLD = table.freeze({Backdrop=Color3.fromRGB(18,21,33),Panel=Color3.fromRGB(38,44,72),PanelRaised=Color3.fromRGB(56,68,108),Accent=Color3.fromRGB(244,127,69),Corner=12}),
+  MINIMAL_LIGHT = table.freeze({Backdrop=Color3.fromRGB(220,225,230),Panel=Color3.fromRGB(242,245,248),PanelRaised=Color3.fromRGB(255,255,255),Border=Color3.fromRGB(163,174,187),Text=Color3.fromRGB(28,33,40),Muted=Color3.fromRGB(92,102,115),Accent=Color3.fromRGB(53,102,176),Corner=12}),
+})
+
 local function cloneTheme(overrides)
   local out = {}
   for key, value in pairs(THEME) do out[key] = value end
@@ -137,6 +147,16 @@ local function horizontalList(parent, padding)
   list.VerticalAlignment = Enum.VerticalAlignment.Center
   list.Parent = parent
   return list
+end
+
+function M.CreateStyleTheme(styleId, overrides)
+  local id=string.upper(tostring(styleId or "CINEMATIC_DARK"))
+  local preset=STYLE_PRESETS[id] or STYLE_PRESETS.CINEMATIC_DARK
+  local merged={}
+  for key,value in pairs(THEME) do merged[key]=value end
+  for key,value in pairs(preset) do if merged[key]~=nil then merged[key]=value end end
+  for key,value in pairs(overrides or {}) do if merged[key]~=nil then merged[key]=value end end
+  return table.freeze(merged)
 end
 
 function M.CreateTheme(overrides)
@@ -774,6 +794,8 @@ function M.Audit()
     version=1,
     packId="roblox-common-presentation-v1",
     atomCount=26,
+    stylePresetCount=7,
+    stylePresets=table.freeze({"CINEMATIC_DARK","FANTASY_CARVED","SCI_FI_GLASS","HORROR_MUTED","COZY_SOFT","ARCADE_BOLD","MINIMAL_LIGHT"}),
     studioRequiredForInternalAudit=false,
     gameplayAuthority=false,
     cameraAuthority=false,
