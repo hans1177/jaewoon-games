@@ -2403,7 +2403,7 @@ test('generic character gear requirement can choose company-common base',()=>{
 });
 
 
-test('company-common UI v3 preserves prior atoms and expands reusable interaction surfaces',()=>{
+test('company-common UI v4 preserves prior atoms and expands reusable interaction surfaces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-ui-v1');
@@ -2413,8 +2413,8 @@ test('company-common UI v3 preserves prior atoms and expands reusable interactio
 
   const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
   const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
-  assert.equal(catalog.version,3);
-  assert.equal(catalog.atoms.length,32);
+  assert.equal(catalog.version,4);
+  assert.equal(catalog.atoms.length,54);
   for(const id of [...oldIds,...newIds]){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2428,7 +2428,7 @@ test('company-common UI v3 preserves prior atoms and expands reusable interactio
   assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
-  assert.ok(source.includes('atomCount = 32'));
+  assert.ok(source.includes('atomCount = 54'));
   for(const id of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','INVENTORY_GRID','CHARACTER_SHEET','MINIMAP','HOTBAR']){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2451,12 +2451,12 @@ test('company-common UI v3 preserves prior atoms and expands reusable interactio
   }
 });
 
-test('company-common UI v2 registry exposes eleven unverified reusable atoms',()=>{
+test('company-common UI v4 registry exposes reusable atoms without production promotion',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
   assert.ok(pack);
-  assert.equal(pack.assetCount,11);
+  assert.equal(pack.assetCount,54);
   assert.equal(pack.companyCommonBase,true);
   assert.equal(pack.productionVerified,false);
   assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
@@ -2691,7 +2691,7 @@ test('studio-independent 1000-point internal asset audit uses strict score and h
   assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('dialogue/helper'));
 });
 
-test('common Roblox UI v3 covers AI dialogue NPC interaction core game screens and vector icons',()=>{
+test('common Roblox UI v4 preserves AI dialogue NPC interaction core game screens and vector icons',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
@@ -2699,8 +2699,8 @@ test('common Roblox UI v3 covers AI dialogue NPC interaction core game screens a
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const icons=fs.readFileSync(path.join(root,'RobloxCommonIcons.luau'),'utf8');
 
-  assert.equal(catalog.version,3);
-  assert.equal(catalog.atoms.length,32);
+  assert.equal(catalog.version,4);
+  assert.equal(catalog.atoms.length,54);
   assert.equal(catalog.vectorIconCount,12);
   assert.equal(catalog.internalAudit.studioRequired,false);
   assert.equal(catalog.internalAudit.passScore,880);
@@ -2726,8 +2726,8 @@ test('common Roblox UI v3 covers AI dialogue NPC interaction core game screens a
   }
   assert.equal(evidence.sourceAudit.studioRequired,false);
   assert.equal(evidence.sourceAudit.passScore,880);
-  assert.equal(evidence.sourceAudit.targetGrade,'ELITE');
-  assert.equal(evidence.sourceAssetCount,32);
+  assert.equal(evidence.sourceAudit.targetGrade,'MASTERPIECE');
+  assert.equal(evidence.sourceAssetCount,54);
   assert.equal(evidence.productionVerified,false);
   assert.equal(evidence.verifiedCompanyReusable,false);
 });
