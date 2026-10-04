@@ -1,5 +1,5 @@
 {
-  "version": 99,
+  "version": 100,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -187,7 +187,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/insect-main-v3.webp",
       "license": "project-original",
-      "note": "실제 repo 자산 · 게임별 변형 기준 참고"
+      "note": "실제 repo 자산 · 게임별 변형 기준 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "insect-war-v2",
@@ -197,7 +200,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/insect-war-v2.webp",
       "license": "project-original",
-      "note": "전투 캐릭터/적 실루엣 참고"
+      "note": "전투 캐릭터/적 실루엣 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "fantasy-rpg-v2",
@@ -207,7 +213,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/fantasy-rpg-v2.webp",
       "license": "project-original",
-      "note": "판타지 캐릭터·환경 방향 참고"
+      "note": "판타지 캐릭터·환경 방향 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "card-rpg-v2",
@@ -217,7 +226,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/card-rpg-v2.webp",
       "license": "project-original",
-      "note": "UI/카드 표현 참고"
+      "note": "UI/카드 표현 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "crystal-v2",
@@ -227,7 +239,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/crystal-v2.webp",
       "license": "project-original",
-      "note": "재질·발광·보상 연출 참고"
+      "note": "재질·발광·보상 연출 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "page-bg-v4",
@@ -237,7 +252,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/page-bg-v4.webp",
       "license": "project-original",
-      "note": "전경/중경/후경 배경 구성 참고"
+      "note": "전경/중경/후경 배경 구성 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "bug-defense-hero",
@@ -247,7 +265,10 @@
       "status": "REPO_ASSET",
       "path": "/godot-games/bug-defense/assets/hero.svg",
       "license": "project-original",
-      "note": "실루엣/파츠 분리 참고"
+      "note": "실루엣/파츠 분리 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "bug-defense-boss",
@@ -257,7 +278,10 @@
       "status": "REPO_ASSET",
       "path": "/godot-games/bug-defense/assets/boss.svg",
       "license": "project-original",
-      "note": "보스 실루엣 참고"
+      "note": "보스 실루엣 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "bug-defense-spider",
@@ -267,7 +291,10 @@
       "status": "REPO_ASSET",
       "path": "/godot-games/bug-defense/assets/spider.svg",
       "license": "project-original",
-      "note": "생물형 실루엣 참고"
+      "note": "생물형 실루엣 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-insect-spider-hd-v1",
@@ -322,7 +349,25 @@
       "note": "직접 제작한 고디테일 거미 GLB 원본. 8다리 독립 관절, 8눈, 송곳니·촉지·방적돌기·갑각·감각모 포함. GLB 구조/스킨/12개 내장 동작 CI 검증 완료. Unity/Roblox 실제 런타임·모바일 성능 검증 전.",
       "viewerPath": "/assets/roblox/world-ghosts/native/spider/view.html",
       "viewerLabel": "3D 모델 · 12모션 보기",
-      "modelDownloadPath": "/assets/roblox/world-ghosts/native/spider/spider.glb"
+      "modelDownloadPath": "/assets/roblox/world-ghosts/native/spider/spider.glb",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 909.6,
+      "internalAuditGrade": "COMMERCIAL_READY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/spider/evidence.json",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "ladybug-sprite",
@@ -332,7 +377,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/logo-sprite-ladybug.svg",
       "license": "project-original",
-      "note": "작은 몬스터/아이콘 실루엣 참고"
+      "note": "작은 몬스터/아이콘 실루엣 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "mantis-sprite",
@@ -342,7 +390,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/logo-sprite-mantis.svg",
       "license": "project-original",
-      "note": "곤충형 관절/실루엣 참고"
+      "note": "곤충형 관절/실루엣 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "dragonfly-sprite",
@@ -352,7 +403,10 @@
       "status": "REPO_ASSET",
       "path": "/assets/logo-sprite-dragonfly.svg",
       "license": "project-original",
-      "note": "비행형 실루엣 참고"
+      "note": "비행형 실루엣 참고",
+      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
+      "productionVerificationSeparate": true
     },
     {
       "id": "survival2-tree",
@@ -417,7 +471,8 @@
       "path": "/assets/roblox/rpg-menu/RPGMenu.luau",
       "sourceFiles": [
         "assets/roblox/rpg-menu/RPGMenu.luau",
-        "assets/roblox/rpg-menu/RPGMenuModel.luau"
+        "assets/roblox/rpg-menu/RPGMenuModel.luau",
+        "assets/roblox/rpg-menu/quality-evidence.json"
       ],
       "license": "project-original",
       "productionVerified": false,
@@ -426,7 +481,25 @@
       "consumerGameIds": [
         "daechung-rpg"
       ],
-      "note": "실제 Luau 코드 자산. 게임별 복제본을 패키지에 고정하고 parity 검사로 일치 확인. 보유 장비·도구·진행 데이터만 표시. 모바일/게임패드 UI 구현, 실제 Studio 검증 전 VERIFIED 아님."
+      "note": "실제 Luau 코드 자산. 게임별 복제본을 패키지에 고정하고 parity 검사로 일치 확인. 보유 장비·도구·진행 데이터만 표시. 모바일/게임패드 UI 구현, 실제 Studio 검증 전 VERIFIED 아님.",
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 882.2,
+      "internalAuditGrade": "COMMERCIAL_READY",
+      "internalAuditEvidenceRef": "assets/roblox/rpg-menu/quality-evidence.json",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-insect-spider-hd",
@@ -509,7 +582,25 @@
           "editableSource": "assets/roblox/world-ghosts/build-spider.py",
           "runMode": "VERIFY_ONLY"
         }
-      ]
+      ],
+      "internalAuditStudioRequired": false,
+      "internalAuditMaxScore": 1000,
+      "internalAuditPassScore": 880,
+      "internalAuditContinualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "internalAuditTargetGrade": "ELITE",
+      "internalAuditTargetScore": 950,
+      "internalAuditScore": 909.6,
+      "internalAuditGrade": "COMMERCIAL_READY",
+      "internalAuditEvidenceRef": "assets/roblox/world-ghosts/native/spider/evidence.json",
+      "internalUseAllowed": true,
+      "lowScoreWouldStillBeUsable": true,
+      "higherCompatibleInternalScoreAutoPreferred": true,
+      "productionVerificationSeparate": true
     },
     {
       "id": "roblox-world-ghost-skins-v1",
@@ -67877,7 +67968,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 99,
+    "lastCatalogSynchronizedVersion": 100,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -68251,8 +68342,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68328,8 +68419,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68405,8 +68496,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68482,8 +68573,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68562,8 +68653,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68638,8 +68729,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68717,8 +68808,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68796,8 +68887,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68875,8 +68966,8 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -68948,8 +69039,8 @@
           "POWER_TIER",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69029,8 +69120,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69111,8 +69202,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69172,8 +69263,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69229,8 +69320,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69286,8 +69377,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69343,8 +69434,8 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69417,8 +69508,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69494,8 +69585,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69577,8 +69668,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69660,8 +69751,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69743,8 +69834,8 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69818,8 +69909,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69900,8 +69991,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -69972,8 +70063,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70046,8 +70137,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70120,8 +70211,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70200,8 +70291,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70269,8 +70360,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70342,8 +70433,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70420,8 +70511,8 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70489,8 +70580,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70571,8 +70662,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70656,8 +70747,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70741,8 +70832,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70824,8 +70915,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70903,8 +70994,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -70973,8 +71064,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71054,8 +71145,8 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71134,8 +71225,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71213,8 +71304,8 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71283,8 +71374,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71354,8 +71445,8 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71438,8 +71529,8 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71512,8 +71603,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71582,8 +71673,8 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71662,8 +71753,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71743,8 +71834,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71824,8 +71915,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71905,8 +71996,8 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -71986,8 +72077,8 @@
           "FOREGROUND_MIDGROUND_BACKGROUND",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72067,8 +72158,8 @@
           "FOREGROUND_MIDGROUND_BACKGROUND",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72147,8 +72238,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72225,8 +72316,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72303,8 +72394,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72381,8 +72472,8 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72453,8 +72544,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72527,8 +72618,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72601,8 +72692,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72675,8 +72766,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72749,8 +72840,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72823,8 +72914,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72897,8 +72988,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -72971,8 +73062,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73045,8 +73136,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73119,8 +73210,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73193,8 +73284,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73267,8 +73358,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73341,8 +73432,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73415,8 +73506,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73489,8 +73580,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73563,8 +73654,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73637,8 +73728,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73711,8 +73802,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73785,8 +73876,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73859,8 +73950,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -73933,8 +74024,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74007,8 +74098,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74081,8 +74172,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74155,8 +74246,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74229,8 +74320,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74303,8 +74394,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74377,8 +74468,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74451,8 +74542,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74525,8 +74616,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74599,8 +74690,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74673,8 +74764,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74747,8 +74838,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74821,8 +74912,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74895,8 +74986,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -74969,8 +75060,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75043,8 +75134,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75117,8 +75208,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75191,8 +75282,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75265,8 +75356,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75339,8 +75430,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75413,8 +75504,8 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75864,8 +75955,8 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "d13608eb",
-        "qualityFreshnessFingerprint": "68d54a2f",
+        "libraryFreshnessFingerprint": "f16813e1",
+        "qualityFreshnessFingerprint": "4dd425ae",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
         "speculativeDownloadAllowed": false,
@@ -75928,14 +76019,14 @@
     "maintenance": {
       "version": 1,
       "status": "SELF_MAINTENANCE_READY",
-      "inventoryFingerprint": "d13608eb",
+      "inventoryFingerprint": "f16813e1",
       "typeRoleFingerprint": "dcc70aba",
-      "qualityFingerprint": "68d54a2f",
+      "qualityFingerprint": "4dd425ae",
       "assetCount": 717,
       "packCount": 20,
       "familyCount": 11,
       "typeRoleTokenCount": 1656,
-      "scoredAssetCount": 698,
+      "scoredAssetCount": 701,
       "typeRoleTokens": [
         "AUDIO_ROLE:ANIMAL_YARD",
         "AUDIO_ROLE:BAT_SCATTER",
@@ -78226,10 +78317,10 @@
       ],
       "lastNewTypeRoleTokens": [],
       "lastRemovedTypeRoleTokens": [],
-      "lastChangeFingerprint": "d13608eb",
+      "lastChangeFingerprint": "f16813e1",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 99
+      "synchronizedRegistryVersion": 100
     },
     "studioVariationAxes": {
       "BUILDING": [
