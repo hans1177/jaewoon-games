@@ -1164,7 +1164,10 @@ test('build-up iteration expectation rises with verified cycles without adding p
         detailDepthLevel:{base:1,stepEveryCycles:1,max:null},
         connectedImprovements:{base:4,stepEveryCycles:2,max:8},
         meaningfulDistinctAxes:{base:2,stepEveryCycles:3,max:5},
-        crossSystemConnections:{base:1,stepEveryCycles:2,max:4}
+        crossSystemConnections:{base:1,stepEveryCycles:2,max:4},
+        activeDetailDimensions:{base:2,stepEveryCycles:1,max:10},
+        playerFacingProofs:{base:1,stepEveryCycles:3,max:4},
+        connectedContentBundles:{base:0,stepEveryCycles:2,max:3}
       }
     }
   },null,2),'utf8');
@@ -1183,6 +1186,7 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.equal(sixth.secondOrderDetailRequired,true);
   assert.ok(sixth.activeDetailDimensions.length>first.activeDetailDimensions.length);
   assert.ok(sixth.minimumPlayerFacingProofs>first.minimumPlayerFacingProofs);
+  assert.ok(sixth.minimumConnectedContentBundles>first.minimumConnectedContentBundles);
   assert.equal(sixth.qualitativeDetailDepthUnbounded,true);
   assert.equal(sixth.queueAmplificationForbidden,true);
   assert.equal(sixth.newWorkflowForbidden,true);
@@ -1220,6 +1224,10 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.match(third.goal,/디테일 렌즈:/);
   assert.ok(third.studioQualityEvolution.qualityExpectation.activeDetailDimensions.length>=4);
   assert.equal(third.studioQualityEvolution.qualityExpectation.qualitativeDetailDepthUnbounded,true);
+  assert.equal(third.studioQualityEvolution.requiredActiveDetailDimensions.min,third.studioQualityEvolution.qualityExpectation.minimumActiveDetailDimensions);
+  assert.equal(third.studioQualityEvolution.requiredPlayerFacingProofs.min,third.studioQualityEvolution.qualityExpectation.minimumPlayerFacingProofs);
+  assert.equal(third.studioQualityEvolution.requiredConnectedContentBundles.min,third.studioQualityEvolution.qualityExpectation.minimumConnectedContentBundles);
+  assert.match(third.goal,/같은 QA\/체크 재통과만 반복/);
   assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
   assert.ok(third.evidence.includes('studio-quality-studio-required:NO'));
 });
