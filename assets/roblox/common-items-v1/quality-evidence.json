@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-items-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -16,7 +16,7 @@
       "automaticCrossGameReuseMetadata": 10,
       "gameplayAuthorityIsolation": 5
     },
-    "itemCount": 24
+    "itemCount": 40
   },
   "quality120": {
     "target": 100,
@@ -28,7 +28,7 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 24,
+  "sourceAssetCount": 40,
   "systemDepth": {
     "inventoryRoleCoverage": [
       "CONSUMABLE",
@@ -53,6 +53,25 @@
       "EQUIPPED_VISUAL_WHEN_APPLICABLE"
     ],
     "gameplayAuthority": false,
-    "target": "DEEP_COMMON_ITEM_PRESENTATION_BASE"
+    "target": "DEEP_COMMON_ITEM_PRESENTATION_BASE",
+    "utilityGadgetCount": 16,
+    "utilityFamilies": [
+      "TRAVERSAL_GRAPPLE",
+      "SCAN_INSPECT",
+      "OBSERVE_ZOOM",
+      "NAVIGATION",
+      "WORLD_MARKER",
+      "CLIMB_ANCHOR",
+      "FISHING",
+      "DIG",
+      "WATER_PLANTS",
+      "PHOTO_RECORD",
+      "SIGNAL_REFLECT",
+      "ROPE_ATTACH",
+      "REPAIR",
+      "WAYPOINT_SIGNAL",
+      "SPECIMEN_COLLECT",
+      "CAMP_DEPLOY"
+    ]
   }
 }
