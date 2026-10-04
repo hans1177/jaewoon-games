@@ -14,7 +14,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}
+  # Deduplicate only the same game on the same source revision; newer cycles stay independent.
+  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
   cancel-in-progress: false
 
 env:
