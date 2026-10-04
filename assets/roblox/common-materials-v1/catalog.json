@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-materials-v1",
   "family": "MATERIAL",
   "platform": "ROBLOX",
@@ -44,6 +44,61 @@
         "DARK",
         "LIGHT",
         "INDUSTRIAL"
+      ]
+    },
+    {
+      "atomId": "GLASS",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "CLEAR",
+        "COOL",
+        "WARM",
+        "SMOKED"
+      ]
+    },
+    {
+      "atomId": "FABRIC",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "NATURAL",
+        "PALE",
+        "DARK",
+        "DYED"
+      ]
+    },
+    {
+      "atomId": "LEATHER_LIKE",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "BROWN",
+        "DARK",
+        "TAN",
+        "WEATHERED"
+      ]
+    },
+    {
+      "atomId": "GROUND",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "EARTH",
+        "MUD",
+        "SAND",
+        "PALE"
+      ]
+    },
+    {
+      "atomId": "MAGIC_CRYSTAL",
+      "source": "RobloxCommonMaterials.luau",
+      "factory": "Apply",
+      "variants": [
+        "ARCANE_BLUE",
+        "HEALING_GREEN",
+        "FIRE_ORANGE",
+        "VOID_PURPLE"
       ]
     }
   ]
