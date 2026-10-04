@@ -1500,6 +1500,10 @@ test('full planner replaces low-value micro work with queued studio packages and
       ?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}
       :row
   )};
+  const directSecond=findStudioContinuousImprovementTask({gameId,name:'Studio Full Queue Repeat',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`},root,working,firstFocus);
+  const directAll=findStudioContinuousImprovementTasks({gameId,name:'Studio Full Queue Repeat',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`},root,working);
+  console.log('DEBUG_STUDIO_DIRECT_SECOND',JSON.stringify(directSecond?{id:directSecond.id,focus:directSecond.studioQualityEvolution?.focusPillar,cycle:directSecond.studioQualityEvolution?.cycle,phase:directSecond.studioQualityEvolution?.phase}:null));
+  console.log('DEBUG_STUDIO_DIRECT_ALL',JSON.stringify(directAll.map(row=>({id:row.id,focus:row.studioQualityEvolution?.focusPillar,cycle:row.studioQualityEvolution?.cycle,phase:row.studioQualityEvolution?.phase}))));
   let second=null;
   for(let i=0;i<12&&!second;i++){
     const result=planVibe2AutonomousTasks({
