@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g7-6c400909bf33",
-  "directiveFingerprint": "6c400909bf33226a773126c0da4d5c8e398fbfc6cea814c500f91fe762835d42",
-  "previousDirectiveFingerprint": "7f767d08a3e0934176fc513194fe0b3d6459af83e10e7629606acc17dd032475",
-  "forbiddenRepeatFingerprint": "7f767d08a3e0934176fc513194fe0b3d6459af83e10e7629606acc17dd032475",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g8-64674b182dc1",
+  "directiveFingerprint": "64674b182dc1e12ebb1b32f887a2959cf54b965259c38f199730fb4139f39fa6",
+  "previousDirectiveFingerprint": "6c400909bf33226a773126c0da4d5c8e398fbfc6cea814c500f91fe762835d42",
+  "forbiddenRepeatFingerprint": "6c400909bf33226a773126c0da4d5c8e398fbfc6cea814c500f91fe762835d42",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
+  "sourceTreeFingerprint": "a7cb67ac6da1d07387a1a3d8e7c9bfdca22d9cbee26a7ad7fe49c4d6306ebab6",
   "designFingerprint": "4f25e622432ac76ed9c051cab2997576c674b80354f8f44a579d880e70b1d43c",
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
@@ -62,14 +62,14 @@
       "save": 49,
       "multiplayer": 13,
       "animation": 28,
-      "motionStates": 112,
+      "motionStates": 113,
       "gameFeel": 22,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 16,
       "ui": 56,
-      "uiFlow": 30,
+      "uiFlow": 31,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 59,
@@ -82,7 +82,7 @@
       "feedback": 72,
       "session": 11,
       "content": 81,
-      "choice": 12,
+      "choice": 15,
       "connection": 0,
       "performance": 16,
       "lighting": 37,
@@ -101,7 +101,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "score": 142
+        "score": 140
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/default.project.json",
@@ -111,7 +111,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -159,7 +159,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -175,7 +175,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 176,
+        "line": 182,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -199,15 +199,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 23,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(atom)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 253,
+        "line": 259,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -215,7 +207,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 106,
+        "line": 112,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -238,32 +230,48 @@
         "score": 42
       },
       {
+        "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
         "line": 188,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationCharacter",
         "context": "local function bindNativeFoundationCharacter(character)",
         "score": 34
+      },
+      {
+        "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "c8e28873dd80839490cfc2790b77a30395e7eeda65533eac7df2e40484575c36",
-    "currentSourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
+    "currentSourceTreeFingerprint": "a7cb67ac6da1d07387a1a3d8e7c9bfdca22d9cbee26a7ad7fe49c4d6306ebab6",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": {
-      "sourceRevision": "2d239bee6140795e5f8fd4fddfd13715c0177487",
-      "artifactIdentity": "sha256:8a66d5a3e9eae9b270a185c60208ed9e156d7b8fc3d9092c17c2cdba18811be6",
+      "sourceRevision": "17542e3b21a3611ceff4ac0552790ab958704dbb",
+      "artifactIdentity": "sha256:27fd27079e8f04d39a6b5e4a4a48d03e01c349da4b3a8dbf739c890ec5521c1e",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37211586289,
-      "testedAt": "2026-10-04T15:26:01.990Z",
+      "workflowRunId": 37213548698,
+      "testedAt": "2026-10-04T15:48:52.854Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "WORLD_MAP",
@@ -371,9 +379,24 @@
         }
       ]
     },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1522,7 +1545,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1534,8 +1557,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 80650,
-        "largestFileBytes": 43716,
+        "sourceBytes": 81442,
+        "largestFileBytes": 43811,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1567,8 +1590,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1578,7 +1601,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1587,6 +1610,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1621,7 +1645,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1980,7 +2004,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2034,7 +2058,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -2142,7 +2166,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2214,7 +2238,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2368,11 +2392,11 @@
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "c6e165529cecbe9d4c21af01ef56b4feb6775d6288a3c39104784015bc67f7ca",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "a7cb67ac6da1d07387a1a3d8e7c9bfdca22d9cbee26a7ad7fe49c4d6306ebab6",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2415,7 +2439,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2488,5 +2512,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:12:11.275Z"
+  "generatedAt": "2026-10-04T15:48:37.234Z"
 }

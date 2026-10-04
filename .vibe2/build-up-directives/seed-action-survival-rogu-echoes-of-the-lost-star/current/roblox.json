@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g10-0e8f187f6b5a",
-  "directiveFingerprint": "0e8f187f6b5a10d206328f069a9ac8a02a065273dad22c414cc17793ec0845ed",
-  "previousDirectiveFingerprint": "44ecdfbf9696420b4a46e606279bc23a1d3f35ffcdfe85e95ab91c5e0f5b6144",
-  "forbiddenRepeatFingerprint": "44ecdfbf9696420b4a46e606279bc23a1d3f35ffcdfe85e95ab91c5e0f5b6144",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g11-6485686ce910",
+  "directiveFingerprint": "6485686ce910b744c1bda7b87cf9db4ab95135348daa4f72adf59cbf366efcbe",
+  "previousDirectiveFingerprint": "0e8f187f6b5a10d206328f069a9ac8a02a065273dad22c414cc17793ec0845ed",
+  "forbiddenRepeatFingerprint": "0e8f187f6b5a10d206328f069a9ac8a02a065273dad22c414cc17793ec0845ed",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 10,
+  "generation": 11,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "a242c595a0335f1d9ced1c94df00282ea6d0dc3c8264e110f06c276b9ee62e62",
+  "sourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
   "designFingerprint": "f82191ecfbaafd23f36b80b618d3a6262e90d6bf333e105b4a488bcbb0ac84eb",
   "gameIdentityAndNonNegotiables": {
     "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
@@ -62,14 +62,14 @@
       "save": 43,
       "multiplayer": 13,
       "animation": 28,
-      "motionStates": 111,
+      "motionStates": 112,
       "gameFeel": 22,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 14,
       "ui": 56,
-      "uiFlow": 30,
+      "uiFlow": 31,
       "entryFlow": 9,
       "loadingFlow": 0,
       "input": 54,
@@ -82,7 +82,7 @@
       "feedback": 67,
       "session": 12,
       "content": 81,
-      "choice": 10,
+      "choice": 13,
       "connection": 0,
       "performance": 16,
       "lighting": 37,
@@ -101,7 +101,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "score": 142
+        "score": 140
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json",
@@ -111,7 +111,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -167,7 +167,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -183,7 +183,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 176,
+        "line": 182,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -199,15 +199,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 23,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(atom)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 253,
+        "line": 259,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -215,7 +207,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 106,
+        "line": 112,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -238,21 +230,37 @@
         "score": 42
       },
       {
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
         "line": 183,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationCharacter",
         "context": "local function bindNativeFoundationCharacter(character)",
         "score": 34
+      },
+      {
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 9,
-    "previousSourceTreeFingerprint": "07686470cae648a438b20dddb8ad649aeacf949fd5718e92d1dd2fbdf3a97e65",
-    "currentSourceTreeFingerprint": "a242c595a0335f1d9ced1c94df00282ea6d0dc3c8264e110f06c276b9ee62e62",
+    "previousGeneration": 10,
+    "previousSourceTreeFingerprint": "a242c595a0335f1d9ced1c94df00282ea6d0dc3c8264e110f06c276b9ee62e62",
+    "currentSourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1427,8 +1435,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 80541,
-        "largestFileBytes": 43648,
+        "sourceBytes": 81335,
+        "largestFileBytes": 43743,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1460,8 +1468,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1471,7 +1479,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1483,6 +1491,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1517,7 +1526,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 192,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1877,7 +1886,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1940,7 +1949,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -2039,7 +2048,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2123,7 +2132,7 @@
       },
       {
         "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2265,7 +2274,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a242c595a0335f1d9ced1c94df00282ea6d0dc3c8264e110f06c276b9ee62e62",
+      "sourceTreeFingerprint": "de06488f1db899b591d7852b2a7ffd7ca263d931a0645c02d7ab80c2203d0e1d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2312,7 +2321,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 11,
+    "nextGeneration": 12,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2385,5 +2394,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:12:11.161Z"
+  "generatedAt": "2026-10-04T15:48:37.126Z"
 }

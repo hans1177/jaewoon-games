@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g7-6a160e97de12",
-  "directiveFingerprint": "6a160e97de1275299c0d15b232880a6d9fa630b1971aee04c18ecf89701a10eb",
-  "previousDirectiveFingerprint": "530e7bf45363669d2e54179a29db36ac5c3c0d3ecc5a119258cc23766f68eef7",
-  "forbiddenRepeatFingerprint": "530e7bf45363669d2e54179a29db36ac5c3c0d3ecc5a119258cc23766f68eef7",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g8-e75837728985",
+  "directiveFingerprint": "e75837728985e5183ca2cdd2836eeee946614ed68594079bc14e1a0e8be3d7e9",
+  "previousDirectiveFingerprint": "6a160e97de1275299c0d15b232880a6d9fa630b1971aee04c18ecf89701a10eb",
+  "forbiddenRepeatFingerprint": "6a160e97de1275299c0d15b232880a6d9fa630b1971aee04c18ecf89701a10eb",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "1051a9bbed6f93666f74a3d298bef24c8daf63a9b53fc1e3ef6e60b1187ec328",
+  "sourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
   "designFingerprint": "ef35a29bbdc82e258294cf850dba5b5e5b90ae0c4b91c74ed85f48a7f1a8a708",
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
@@ -62,14 +62,14 @@
       "save": 49,
       "multiplayer": 13,
       "animation": 28,
-      "motionStates": 115,
+      "motionStates": 116,
       "gameFeel": 22,
       "vfx": 19,
       "camera": 31,
       "audio": 1,
       "audioDynamics": 16,
       "ui": 56,
-      "uiFlow": 30,
+      "uiFlow": 31,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 59,
@@ -82,7 +82,7 @@
       "feedback": 67,
       "session": 10,
       "content": 75,
-      "choice": 12,
+      "choice": 15,
       "connection": 0,
       "performance": 16,
       "lighting": 37,
@@ -101,7 +101,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "score": 142
+        "score": 140
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/default.project.json",
@@ -111,7 +111,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -167,7 +167,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -183,7 +183,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 176,
+        "line": 182,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -199,15 +199,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 23,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(atom)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 253,
+        "line": 259,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -215,7 +207,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 106,
+        "line": 112,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -238,21 +230,37 @@
         "score": 42
       },
       {
+        "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
         "line": 178,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationCharacter",
         "context": "local function bindNativeFoundationCharacter(character)",
         "score": 34
+      },
+      {
+        "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "38cd594b4bf591eff095d4a0ce375aeb8f20e035784244f7bfc8ba1b774abc4a",
-    "currentSourceTreeFingerprint": "1051a9bbed6f93666f74a3d298bef24c8daf63a9b53fc1e3ef6e60b1187ec328",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "1051a9bbed6f93666f74a3d298bef24c8daf63a9b53fc1e3ef6e60b1187ec328",
+    "currentSourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1427,8 +1435,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 79783,
-        "largestFileBytes": 43251,
+        "sourceBytes": 80575,
+        "largestFileBytes": 43346,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1460,20 +1468,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1516,7 +1525,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 102,
+        "score": 84,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -1876,7 +1885,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1939,7 +1948,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -2038,7 +2047,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 356,
+        "line": 362,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2122,7 +2131,7 @@
       },
       {
         "file": "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "line": 375,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2264,7 +2273,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "1051a9bbed6f93666f74a3d298bef24c8daf63a9b53fc1e3ef6e60b1187ec328",
+      "sourceTreeFingerprint": "93c865111cf9207bda29268f93f3958a8efc190df3990e5523a27bbc3029b64a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2311,7 +2320,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2384,5 +2393,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T15:12:11.216Z"
+  "generatedAt": "2026-10-04T15:48:37.176Z"
 }
