@@ -2124,6 +2124,7 @@ function nearestGatherResource(range=AUTO_GATHER_RANGE){
  return best
 }
 function resourceGatherName(n){return n?.kind==='tree'?'나무':n?.kind==='rock'?'돌':n?.kind==='fiber'?'섬유':n?.kind==='iron'?'철광석':n?.kind==='gold'?'화산 금':n?.kind==='essence'?'정수':n?.kind==='crystal'?'수정':n?.kind==='carrot'?'당근':n?.kind==='poisonstone'?'독점석':n?.kind==='swamptree'?'늪 거목':n?.kind==='giantflower'?'거대 꽃':'자원'}
+function equippedAxeId(p=state.player){return ['iron-axe','gold-axe'].find(id=>p?.weapon===id||p?.tool===id)||null}
 function gather(target=null,silent=false){
  const p=state.player,now=performance.now();if(p.downedUntil){if(!silent)showNotice('쓰러진 상태야');return false}if(now<(p.stunnedUntil||0)){if(!silent)showNotice('기절 중');return false}if(state.area!=='surface'){if(!silent)showNotice('지하에는 채집할 자원이 없어');return false}
  let best=null;
@@ -2133,19 +2134,26 @@ function gather(target=null,silent=false){
  }
  if(!best)best=nearestGatherResource();
  if(!best){if(!silent)showNotice('자원 가까이 가');return false}
- const tool=item(p.tool);
+ const axeId=equippedAxeId(p),tool=item(p.tool);
  if(best.kind==='iron'&&!['stone-pick','iron-pick','gold-pick'].includes(p.tool)){if(!silent)showNotice('철은 곡괭이가 필요해');return false}
  if(best.kind==='gold'&&p.tool!=='iron-pick'){if(!silent)showNotice('화산 금은 철 곡괭이로만 캘 수 있어');return false}
  if(best.kind==='crystal'&&!['iron-pick','gold-pick'].includes(p.tool)){if(!silent)showNotice('수정은 철이나 금 곡괭이로만 캘 수 있어');return false}
  if(best.kind==='poisonstone'&&p.tool!=='gold-pick'){if(!silent)showNotice('독점석은 금 곡괭이로만 캘 수 있어');return false}
- if(best.kind==='essence'&&!(p.weapon==='iron-axe'||p.tool==='gold-axe')){if(!silent)showNotice('정수는 철도끼나 금도끼로만 캘 수 있어');return false}
- if(best.kind==='giantflower'&&!(p.weapon==='iron-axe'||p.tool==='gold-axe')){if(!silent)showNotice('거대 꽃은 철도끼나 금도끼가 필요해');return false}
- if(best.kind==='swamptree'&&!['iron-axe','gold-axe'].includes(p.tool)){if(!silent)showNotice('늪 거목은 철 도끼나 금 도끼로만 벨 수 있어');return false}
+ if(best.kind==='essence'&&!axeId){if(!silent)showNotice('정수는 철도끼나 금도끼로만 캘 수 있어');return false}
+ if(best.kind==='giantflower'&&!axeId){if(!silent)showNotice('거대 꽃은 철도끼나 금도끼가 필요해');return false}
+ if(best.kind==='swamptree'&&!axeId){if(!silent)showNotice('늪 거목은 철 도끼나 금 도끼로만 벨 수 있어');return false}
+ if(best.kind==='swamptree'&&multiplayer.connected&&!multiIsHost()){
+  multiSend('resource-gather',{playerId:multiplayer.playerId,nodeId:best.id,kind:'swamptree'});
+  if(!silent)showNotice('늪 거목 벌목 · 호스트와 동기화 중');
+  return true
+ }
  let amount=1;if(tool?.target===best.kind)amount=tool.mult;if(best.kind==='iron'||best.kind==='poisonstone')amount=1;
  best.hp--;
+ if(best.kind==='swamptree'&&best.hp>0&&!silent)showNotice('늪 거목 벌목 · '+best.hp+'/'+best.maxHp);
  if(best.kind==='tree')p.wood+=amount;else if(best.kind==='rock')p.stone+=amount;else if(best.kind==='fiber')p.fiber+=amount;else if(best.kind==='iron')p.ironOre+=amount;else if(best.kind==='gold')p.goldOre+=amount;else if(best.kind==='essence')p.essence+=1;else if(best.kind==='crystal')addMaterial('crystalShard',1);else if(best.kind==='carrot'){addInv('carrot',1);if(Math.random()<.5){addInv('carrot-seed',1);showNotice('당근 씨앗 획득')}}else if(best.kind==='poisonstone')addMaterial('monopolyStone',1);else if(best.kind==='swamptree'){}else if(best.kind==='giantflower')addMaterial('giantPetal',1);
  if(!['carrot','poisonstone','giantflower','crystal'].includes(best.kind))rememberMaterial({tree:'wood',rock:'stone',fiber:'fiber',iron:'ironOre',gold:'goldOre',essence:'essence'}[best.kind]);
  if(best.hp<=0){if(best.kind==='swamptree'){p.wood+=15;rememberMaterial('wood');showNotice('늪 거목 벌목 완료 · 나무 +15')}best.dead=true;best.respawnAt=now+RESOURCE_RESPAWN_MS;if(state.gathering.target===best)state.gathering.target=null;if(state.gathering.manualTarget===best)state.gathering.manualTarget=null;if(best.kind!=='swamptree')showNotice(best.kind==='poisonstone'?'독점석 광맥 고갈 · 독가스가 사라졌다':best.kind==='giantflower'?'거대 꽃을 베었다':'자원 채집 완료')}
+ if(best.kind==='swamptree'&&multiplayer.connected&&multiIsHost())multiplayer.worldAt=0;
  state.dirty=true;updateHud();renderPanel();return true
 }
 function interruptAutoGather(now=performance.now()){
@@ -2465,6 +2473,7 @@ function serializeWorld(){
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0,speedRatio:q.speedRatio||0,nextSlowAt:q.nextSlowAt||0,gasBatchId:q.gasBatchId||null,gasPlayerSpeed:q.gasPlayerSpeed||0})),
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
+  swampTrees:state.swampTrees.map(n=>({id:n.id,kind:'swamptree',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   structures:sharedStructureSnapshot(),
   crops:state.crops.map(c=>({...c})),flowerWebs:state.flowerWebs.map(w=>({id:w.id,x:w.x,y:w.y,r:w.r,hits:w.hits})),snowChests:[...state.snowChests],raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
   weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},
@@ -2480,6 +2489,7 @@ function applyWorldSnapshot(w){
   return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];
+ if(Array.isArray(w.swampTrees))state.swampTrees=w.swampTrees.filter(n=>n&&String(n.kind||'swamptree')==='swamptree'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('swamptree'+i)),kind:'swamptree',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:Math.max(1,Number(n.maxHp)||8),dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(w.structures&&typeof w.structures==='object'){
   state.bench=sharedStructurePos(w.structures.bench);
   state.furnace=sharedStructurePos(w.structures.furnace);
@@ -2499,6 +2509,25 @@ function applyWorldSnapshot(w){
  if(w.raid&&typeof w.raid==='object'){const count=Math.max(0,Math.floor(Number(w.raid.count)||0));state.raid={count,nextAt:Number(w.raid.nextAt)||Date.now()+raidSpawnDelayMs(count+1),active:w.raid.active?{...w.raid.active}:null,warnedFor:state.raid?.warnedFor||0}};
  if(w.weather&&typeof w.weather==='object')setWeather(w.weather.kind,{fromNetwork:true,changedAt:w.weather.changedAt,nextAt:w.weather.nextAt,seed:w.weather.seed});
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
+}
+function hostGatherResource(payload){
+ if(!multiIsHost()||!payload||String(payload.kind||'')!=='swamptree')return;
+ const playerId=String(payload.playerId||''),remote=multiplayer.remote.get(playerId);
+ if(!remote||remote.area!=='surface'||performance.now()-(remote.seenAt||0)>2000)return;
+ const node=state.swampTrees.find(n=>n.id===String(payload.nodeId||''));
+ if(!node||node.dead||dist(Number(remote.x)||0,Number(remote.y)||0,node.x,node.y)>AUTO_GATHER_RANGE+30)return;
+ if(!equippedAxeId(remote))return;
+ node.hp=Math.max(0,node.hp-1);
+ if(node.hp<=0){
+  node.dead=true;node.respawnAt=performance.now()+RESOURCE_RESPAWN_MS;
+  multiSend('resource-loot',{targetId:playerId,kind:'swamptree',wood:15});
+ }
+ state.dirty=true;multiplayer.worldAt=0
+}
+function receiveResourceLoot(payload){
+ if(!payload||payload.targetId!==multiplayer.playerId||String(payload.kind||'')!=='swamptree')return;
+ const wood=Math.max(0,Math.min(100,Math.floor(Number(payload.wood)||0)));if(!wood)return;
+ state.player.wood+=wood;rememberMaterial('wood');state.dirty=true;showNotice('늪 거목 벌목 완료 · 나무 +'+wood);updateHud();saveGame(false)
 }
 function grantRemoteKillReward(payload){
  if(!payload||payload.targetId!==multiplayer.playerId)return;
@@ -2542,7 +2571,7 @@ function multiTick(now){
  if(now>=multiplayer.sendAt){
   multiplayer.sendAt=now+120;
   const p=state.player;
-  multiSend('player-state',{id:multiplayer.playerId,x:p.x,y:p.y,area:state.area,faceX:p.faceX,faceY:p.faceY,weapon:p.weapon,armor:p.armor,torchEquipped:!!(p.torchEquipped&&p.torch&&p.torchDurability>0),hp:p.hp,maxHp:p.maxHp,downedUntil:p.downedUntil||0,pet:petAlive()?{x:state.pet.x,y:state.pet.y,hp:state.pet.hp,maxHp:state.pet.maxHp,mounted:state.pet.mounted}:null})
+  multiSend('player-state',{id:multiplayer.playerId,x:p.x,y:p.y,area:state.area,faceX:p.faceX,faceY:p.faceY,weapon:p.weapon,tool:p.tool,armor:p.armor,torchEquipped:!!(p.torchEquipped&&p.torch&&p.torchDurability>0),hp:p.hp,maxHp:p.maxHp,downedUntil:p.downedUntil||0,pet:petAlive()?{x:state.pet.x,y:state.pet.y,hp:state.pet.hp,maxHp:state.pet.maxHp,mounted:state.pet.mounted}:null})
  }
  if(multiIsHost()&&now>=multiplayer.worldAt){multiplayer.worldAt=now+250;multiSend('world-state',serializeWorld())}
 }
@@ -2567,6 +2596,8 @@ async function connectMultiplayer(rawRoom){
   .on('broadcast',{event:'player-spore'},({payload})=>hostApplyRemoteSpore(payload))
   .on('broadcast',{event:'pet-attack'},({payload})=>hostApplyPetAttack(payload))
   .on('broadcast',{event:'kill-reward'},({payload})=>grantRemoteKillReward(payload))
+  .on('broadcast',{event:'resource-gather'},({payload})=>hostGatherResource(payload))
+  .on('broadcast',{event:'resource-loot'},({payload})=>receiveResourceLoot(payload))
   .on('broadcast',{event:'gift-item'},({payload})=>receiveGiftItem(payload))
   .on('broadcast',{event:'map-ping'},({payload})=>receiveMapPing(payload))
   .on('broadcast',{event:'revive-player'},({payload})=>receiveRevive(payload))
@@ -3204,7 +3235,7 @@ function handleWorldTap(e){
     else openRadioFinalMessage();
     return
    }
-   let gatherTarget=null,gatherTapD=58;for(const n of resourceNodes()){if(n.dead)continue;const d=dist(wx,wy,n.x,n.y);if(d<gatherTapD){gatherTarget=n;gatherTapD=d}}
+   let gatherTarget=null,gatherTapD=Infinity;for(const n of resourceNodes()){if(n.dead)continue;const d=dist(wx,wy,n.x,n.y),tapRange=n.kind==='swamptree'?115:n.kind==='giantflower'?75:58;if(d<tapRange&&d<gatherTapD){gatherTarget=n;gatherTapD=d}}
    if(gatherTarget){state.gathering.manualTarget=gatherTarget;showNotice('채집 대상 지정 · '+resourceGatherName(gatherTarget));return}
    if(dist(wx,wy,SURVIVOR.x,SURVIVOR.y)<65){if(!doubleTapTarget('survivor',now,survivorInteract))showNotice(state.story.treated?'생존자를 한 번 더 눌러 대화':'생존자를 한 번 더 눌러 치료');return}
    if(state.story.labUnlocked&&dist(wx,wy,LAB_STORY_ENTRANCE.x,LAB_STORY_ENTRANCE.y)<90){if(!doubleTapTarget('story-lab-entry',now,enterStoryLab))showNotice('연구소 입구를 한 번 더 눌러 들어가기');return}
