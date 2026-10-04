@@ -1,3 +1,5 @@
+-- 파일명: roblox-games/village-dungeons/client/Game.client.luau
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -26,6 +28,7 @@ end
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local participantCount = 1
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "ApprovedScopeHud"
@@ -354,10 +357,20 @@ for index, action in ipairs(Config.Actions) do
 end
 local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d · 서버 %d명", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1, participantCount)
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
+
+-- 기본 멀티 상태 수신
+remote.OnClientEvent:Connect(function(eventName, snapshot)
+  if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
+  participantCount = math.max(1, math.floor(tonumber(snapshot.ParticipantCount) or 1))
+  gui:SetAttribute("ParticipantCount", participantCount)
+  gui:SetAttribute("MultiplayerSyncAt", os.clock())
+  gui:SetAttribute("MultiplayerSnapshotVersion", tonumber(snapshot.Version) or 1)
+  render()
+end)
 
 if #Config.Actions > 0 then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
