@@ -226,6 +226,20 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS=Object.freeze({
       'SKILL_CAST','SKILL_IMPACT','ITEM_PICKUP','LOOT_RARITY','CRAFT','UPGRADE','ENVIRONMENT_LOOP','WEATHER','BUILDING',
       'BOSS','DIALOGUE_UI','MUSIC_TRANSITION','VARIATION_SET','MOBILE_BUDGET_VARIANT'
     ])
+  }),
+  FOLIAGE:Object.freeze({
+    minimumDepth:4,
+    required:Object.freeze([
+      'GRASS','BUSH','FERN','FLOWER','STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE','BROADLEAF_TREE','VINE','REED',
+      'MOSS','MUSHROOM','ROOT','BIOME_VARIANT','SEASON_VARIANT','WIND_VARIANT','LOD'
+    ])
+  }),
+  PRESENTATION:Object.freeze({
+    minimumDepth:4,
+    required:Object.freeze([
+      'BRAND_BACKGROUND','LOGO','SPINNER','PROGRESS_BAR','TIP','STATUS_TEXT','SIMPLE_FADE','LOGO_REVEAL',
+      'PARTICLE_LIGHT','WORLD_PAN','MINIMAL_CINEMATIC','INPUT_SKIP_HINT','ACCESSIBILITY_REDUCED_MOTION','FAILURE_RECOVERY_STATE'
+    ])
   })
 });
 
@@ -269,6 +283,30 @@ export const COMMON_GENRE_SYSTEM_EXPECTATIONS=Object.freeze({
     'BUILD_ZONE','HOUSING','STORAGE','CRAFT_STATIONS','NPC_BEDS_OR_ASSIGNMENT','LIGHTING','DEFENSE_OPTIONAL','PATHING',
     'RESOURCE_FLOW','SERVICE_BUILDINGS','DECORATION','OWNERSHIP','UPGRADE','OVERVIEW_STATUS'
   ]),
+  ACTION:Object.freeze([
+    'CORE_COMBAT_LOOP','LOCK_OR_TARGET_OPTIONAL','DODGE_OR_EVASION','BLOCK_PARRY_OPTIONAL','COMBO_OR_CHAIN','WEAPON_FEEDBACK',
+    'HIT_REACTION','BOSS_TELEGRAPH','QUICK_ITEM','SKILL_ACCESS','CAMERA_FEEDBACK','MOBILE_INPUT_PARITY'
+  ]),
+  ADVENTURE:Object.freeze([
+    'WORLD_EXPLORATION','MAP_POI','QUEST_OR_OBJECTIVE','INTERACTION_PROMPT','PUZZLE_OPTIONAL','LORE','COLLECTIBLE',
+    'TRAVERSAL','FAST_TRAVEL_OPTIONAL','CODEX','DISCOVERY_FEEDBACK','CONTEXTUAL_TOOL_USE'
+  ]),
+  PUZZLE:Object.freeze([
+    'BOARD_OR_ACTIVE_STATE','VALID_ACTION_FEEDBACK','UNDO_REDO_OPTIONAL','HINT_SYSTEM','STEP_OR_MOVE_COUNT_OPTIONAL',
+    'CLEAR_STATE','FAIL_STATE','RETRY','ACCESSIBILITY','TOUCH_PRECISION','LEVEL_SELECT','PROGRESSION'
+  ]),
+  TYCOON:Object.freeze([
+    'BUILD_MODE','PLACEMENT_VALIDATION','PATH_CONNECTION','CAPACITY','QUEUE','UPGRADE','STAFF','MAINTENANCE','CUSTOMER_STATE',
+    'SATISFACTION','INCOME_EXPENSE','SERVICE_STATUS','OVERVIEW_DASHBOARD','DECORATION'
+  ]),
+  COOP_MULTIPLAYER:Object.freeze([
+    'PARTY','PLAYER_MARKERS','PING','SHARED_OBJECTIVE','REVIVE_OPTIONAL','OWNERSHIP_PERMISSION','LOOT_RULE_PRESENTATION',
+    'TRADE_OPTIONAL','READY_STATE','CONNECTION_STATE','SYNC_FEEDBACK','VOICE_OR_CHAT_OPTIONAL'
+  ]),
+  NARRATIVE:Object.freeze([
+    'DIALOGUE','CHOICES','HISTORY','CHARACTER_RELATIONSHIP','QUEST_STATE','LORE','CODEX','CUTSCENE_SKIP','SUBTITLE',
+    'ACCESSIBILITY','SAVE_CHECKPOINT_PRESENTATION','DECISION_CONSEQUENCE_FEEDBACK'
+  ]),
   DEFENSE:Object.freeze([
     'BASE_HEALTH','WAVE_STATE','PLACEMENT','TOWER_OR_UNIT_CARD','RANGE_PREVIEW','UPGRADE_PATH','SELL_OR_RECYCLE',
     'ENEMY_CODEX','RESOURCE_ECONOMY','BOSS_WARNING','FAST_BUILD_INPUT','PAUSE_OR_SPEED_OPTIONAL'
@@ -277,6 +315,111 @@ export const COMMON_GENRE_SYSTEM_EXPECTATIONS=Object.freeze({
     'LIGHT_OR_VISIBILITY','THREAT_FEEDBACK','INVESTIGATION','LORE','KEY_ITEM','PUZZLE','CHASE_OR_ESCAPE','SAFE_POINT_OPTIONAL',
     'INVENTORY_PRESSURE_OPTIONAL','AUDIO_CUE','OBJECTIVE_TRACKING','ACCESSIBILITY_REDUCED_FLASH_SHAKE'
   ])
+});
+
+
+export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
+  UI:Object.freeze({
+    ITEM_DETAIL:Object.freeze(['ITEM_DETAIL_PANEL']),
+    ITEM_COMPARE:Object.freeze(['ITEM_COMPARE_PANEL']),
+    ITEM_CONTEXT_ACTIONS:Object.freeze(['ITEM_CONTEXT_MENU']),
+    STACK_SPLIT:Object.freeze(['STACK_SPLIT_DIALOG']),
+    MULTI_SELECT:Object.freeze(['MULTI_SELECT_BAR']),
+    FAVORITE_LOCK_NEW_STATE:Object.freeze(['ITEM_STATE_BADGES']),
+    INVENTORY_CONTAINER:Object.freeze(['INVENTORY_CONTAINER_PANEL']),
+    INVENTORY_WEIGHT_CAPACITY:Object.freeze(['INVENTORY_WEIGHT_METER','INVENTORY_CAPACITY_METER']),
+    STASH:Object.freeze(['STASH_SCREEN']),
+    QUICK_SLOT:Object.freeze(['QUICK_SLOT_BAR']),
+    LOADOUT_PRESET:Object.freeze(['LOADOUT_PRESET_PANEL']),
+    EQUIPMENT_COMPARE:Object.freeze(['EQUIPMENT_COMPARE_PANEL']),
+    SET_BONUS:Object.freeze(['SET_BONUS_PANEL']),
+    SOCKET_ENCHANT:Object.freeze(['SOCKET_ENCHANT_PANEL']),
+    UPGRADE:Object.freeze(['UPGRADE_PANEL']),
+    REPAIR:Object.freeze(['REPAIR_PANEL','REPAIR_BUILDING_PANEL']),
+    DISMANTLE:Object.freeze(['DISMANTLE_PANEL']),
+    CRAFT_TREE:Object.freeze(['CRAFTING_TREE']),
+    RECIPE_DETAIL:Object.freeze(['RECIPE_DETAIL_PANEL']),
+    MATERIAL_TRACKING:Object.freeze(['MATERIAL_TRACKER']),
+    BUY_SELL:Object.freeze(['BUY_SELL_PANEL']),
+    BUYBACK:Object.freeze(['BUYBACK_PANEL']),
+    CODEX:Object.freeze(['CODEX_SCREEN']),
+    RECENT_ITEMS:Object.freeze(['RECENT_ITEMS_PANEL']),
+    SOURCE_AND_USAGE:Object.freeze(['ITEM_SOURCE_USAGE_PANEL']),
+    ACCESSIBILITY_INPUT_SWAP:Object.freeze(['INPUT_HINT','SETTINGS_PANEL']),
+    GAMEPAD_FOCUS_PATH:Object.freeze(['INPUT_HINT','SIDE_NAVIGATION'])
+  }),
+  WEAPON:Object.freeze({
+    ONE_HAND_BLADE:Object.freeze(['SWORD']),
+    POLEARM:Object.freeze(['SPEAR']),
+    HAMMER_MACE:Object.freeze(['HAMMER']),
+    MAGIC_FOCUS:Object.freeze(['STAFF']),
+    GATHERING_TOOL:Object.freeze(['PICKAXE','AXE','HAMMER'])
+  }),
+  CHARACTER_GEAR:Object.freeze({
+    HEAD:Object.freeze(['HEAD_GEAR']),
+    CHEST:Object.freeze(['TORSO_GEAR']),
+    HANDS:Object.freeze(['HAND_GEAR']),
+    FEET:Object.freeze(['FOOT_GEAR']),
+    BACK:Object.freeze(['BACK_GEAR'])
+  }),
+  MATERIAL:Object.freeze({
+    LEATHER:Object.freeze(['LEATHER_LIKE']),
+    CRYSTAL:Object.freeze(['MAGIC_CRYSTAL'])
+  }),
+  MOTION:Object.freeze({
+    TURN:Object.freeze(['TURN_90']),
+    JUMP:Object.freeze(['JUMP_START']),
+    DEATH:Object.freeze(['DEATH_FRONT'])
+  }),
+  ENVIRONMENT:Object.freeze({
+    PATH_ROAD:Object.freeze(['PATH_ROAD','ROAD_DIRT']),
+    STREAMING_LOD:Object.freeze(['STREAMING_OR_LOD'])
+  }),
+  BUILDING:Object.freeze({
+    FOUNDATION:Object.freeze(['FOUNDATION_RECT','FOUNDATION_TRIANGLE','FENCE_FOUNDATION']),
+    FLOOR:Object.freeze(['FLOOR_TILE']),
+    WALL_SOLID:Object.freeze(['WALL_SOLID','HALF_WALL']),
+    DOOR:Object.freeze(['DOOR_SINGLE','DOOR_FRAME']),
+    WINDOW:Object.freeze(['WALL_WINDOW','WINDOW_FRAME']),
+    ROOF:Object.freeze(['ROOF_GABLE','ROOF_FLAT','ROOF_SLOPE','ROOF_CORNER']),
+    STAIR:Object.freeze(['STAIRS','STAIRS_STRAIGHT','LADDER']),
+    PILLAR:Object.freeze(['PILLAR','PILLAR_STONE']),
+    EXTERIOR_TRIM:Object.freeze(['WALL_TRIM'])
+  }),
+  WORLD_PROP:Object.freeze({
+    CONTAINER:Object.freeze(['CHEST','CRATE','BARREL','STORAGE','WARDROBE']),
+    FURNITURE:Object.freeze(['BED','BENCH','TABLE','WARDROBE','SHELF']),
+    LIGHT_SOURCE:Object.freeze(['TORCH','WALL_TORCH','FLOOR_LAMP']),
+    MARKET:Object.freeze(['MARKET_STALL']),
+    CRAFT_STATION:Object.freeze(['CRAFT_STATION','WORKBENCH']),
+    COOKING:Object.freeze(['COOKING','COOKING_HEARTH']),
+    STORAGE:Object.freeze(['STORAGE','WARDROBE','SHELF']),
+    DECORATION:Object.freeze(['DECORATION','RUG','DECOR_STATUE'])
+  }),
+  CREATURE:Object.freeze({
+    BIPED:Object.freeze(['TORSO_BIPED','BIPED_TORSO']),
+    QUADRUPED:Object.freeze(['TORSO_QUADRUPED','QUADRUPED_TORSO']),
+    INSECT:Object.freeze(['THORAX_INSECT','INSECT_THORAX']),
+    WING:Object.freeze(['WING_PAIR']),
+    HORN:Object.freeze(['HORN_PAIR']),
+    SHELL:Object.freeze(['SHELL_BACK']),
+    TAIL:Object.freeze(['TAIL_LONG'])
+  }),
+  FOLIAGE:Object.freeze({
+    GRASS:Object.freeze(['GRASS_TUFT']),
+    BUSH:Object.freeze(['BUSH_ROUND']),
+    FERN:Object.freeze(['FERN_CLUSTER']),
+    FLOWER:Object.freeze(['WILDFLOWER_PATCH']),
+    STUMP:Object.freeze(['TREE_STUMP'])
+  }),
+  PRESENTATION:Object.freeze({
+    BRAND_BACKGROUND:Object.freeze(['LOADING_SCREEN','PRESENTATION']),
+    LOGO:Object.freeze(['LOADING_SCREEN','INTRO']),
+    SPINNER:Object.freeze(['LOADING_SCREEN']),
+    PROGRESS_BAR:Object.freeze(['LOADING_SCREEN']),
+    TIP:Object.freeze(['LOADING_SCREEN']),
+    STATUS_TEXT:Object.freeze(['LOADING_SCREEN'])
+  })
 });
 
 export const COMMON_LIBRARY_SYSTEM_DEPTH_REFERENCE_PRINCIPLES=Object.freeze([
@@ -2454,6 +2597,89 @@ function normalizeRegistryAsset(asset={}){
     gameSpecificVariationFields:Object.freeze([...(asset.gameSpecificVariationFields||[])])
   };
 }
+
+function commonDepthDomainMatch(domain,asset={}){
+  const family=upper(asset.family||asset.category);
+  const packId=text(asset.packId);
+  if(domain==='UI')return family==='UI';
+  if(domain==='ITEM')return packId==='roblox-common-items-v1'||Boolean(asset.itemRole);
+  if(domain==='WEAPON')return family==='WEAPON';
+  if(domain==='CHARACTER_GEAR')return packId==='roblox-common-character-gear-v1'||Boolean(asset.gearRole);
+  if(domain==='SKILL')return family==='SKILL';
+  if(domain==='VFX')return family==='VFX';
+  if(domain==='MOTION')return family==='MOTION';
+  if(domain==='MATERIAL')return family==='MATERIAL';
+  if(domain==='ENVIRONMENT')return family==='ENVIRONMENT';
+  if(domain==='BUILDING')return family==='BUILDING';
+  if(domain==='WORLD_PROP')return family==='PROP'&&!asset.itemRole&&(Boolean(asset.worldRole)||packId==='roblox-common-world-props-v1'||packId==='roblox-survival-core-world-v1');
+  if(domain==='CREATURE')return family==='CREATURE';
+  if(domain==='AUDIO')return family==='AUDIO';
+  if(domain==='FOLIAGE')return packId==='roblox-common-foliage-v1'||(family==='ENVIRONMENT'&&['GRASS','BUSH','FERN','FLOWER','STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE'].includes(upper(asset.subfamily)));
+  if(domain==='PRESENTATION')return packId==='roblox-common-presentation-v1'||upper(asset.subfamily)==='PRESENTATION';
+  return false;
+}
+
+function commonDepthTokens(assets=[]){
+  const tokens=new Set();
+  const add=value=>{
+    const token=upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    if(token)tokens.add(token);
+  };
+  const fields=['id','assetId','family','category','subfamily','type','itemRole','toolRole','gearRole','buildingRole','worldRole','role','biomeId','familyRootId','atomId','packId','snapClass','stabilityRole'];
+  const arrays=['tags','machineTags','capabilities','presentationRoles','motionStates','environmentRoles','biomes','loadingElements','introModes','inventoryCategories','uiSurfaces'];
+  for(const asset of assets||[]){
+    for(const field of fields)add(asset?.[field]);
+    for(const field of arrays)for(const value of asset?.[field]||[])add(value);
+    if(asset?.stackProfile)add('STACK_PROFILE');
+    if(asset?.rarityBand)add('RARITY_BAND');
+    if(asset?.sameAssetDnaAcrossWorldEquipDropAndUi===true){
+      add('WORLD_MODEL');add('DROP_MODEL');add('VIEWPORT_ICON');add('EQUIPPED_VISUAL_WHEN_APPLICABLE');
+    }
+    if(text(asset?.packId)==='roblox-common-tools-v1'){
+      add('GRIP_SOCKET');add('WORLD_DROP');add('INVENTORY_ICON');add('CRAFT_ICON');
+    }
+  }
+  return tokens;
+}
+
+export function auditCommonLibrarySystemDepth({assets=[]}={}){
+  const source=(assets||[]).filter(asset=>asset?.companyCommonBase===true||String(asset?.reuseScope||'').includes('COMPANY'));
+  const rows=[];
+  for(const [domain,expectation] of Object.entries(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS)){
+    const candidates=source.filter(asset=>commonDepthDomainMatch(domain,asset));
+    const tokens=commonDepthTokens(candidates);
+    const aliases=COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES[domain]||{};
+    const covered=[];
+    const missing=[];
+    for(const required of expectation.required){
+      const accepted=[required,...(aliases[required]||[])].map(upper);
+      if(accepted.some(token=>tokens.has(token)))covered.push(required);
+      else missing.push(required);
+    }
+    rows.push(Object.freeze({
+      domain,
+      minimumDepth:expectation.minimumDepth,
+      candidateCount:candidates.length,
+      requiredCount:expectation.required.length,
+      coveredCount:covered.length,
+      coveragePercent:expectation.required.length?Math.round(covered.length/expectation.required.length*100):100,
+      covered:Object.freeze(covered),
+      missing:Object.freeze(missing)
+    }));
+  }
+  rows.sort((a,b)=>a.coveragePercent-b.coveragePercent||a.domain.localeCompare(b.domain));
+  return Object.freeze({
+    version:1,
+    rows:Object.freeze(rows),
+    incomplete:Object.freeze(rows.filter(row=>row.missing.length>0)),
+    complete:rows.every(row=>row.missing.length===0),
+    scoreIsUsageGate:false,
+    existingAssetsRemainUsable:true,
+    crossPackCoverage:true,
+    newPipelineCreated:false
+  });
+}
+
 
 export function scanUniversalAssetCoverage({
   assets=[],
