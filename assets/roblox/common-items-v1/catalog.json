@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-items-v1",
   "family": "PROP",
   "platform": "ROBLOX",
@@ -124,6 +124,326 @@
         "VIEWPORT_ICON",
         "EQUIPPED_VISUAL_WHEN_APPLICABLE"
       ]
+    },
+    {
+      "assetId": "MANA_POTION",
+      "name": "마력 포션",
+      "subfamily": "ITEM",
+      "itemRole": "CONSUMABLE",
+      "familyRootId": "POTION_BOTTLE",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "CONSUMABLE",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "ANTIDOTE",
+      "name": "해독제",
+      "subfamily": "ITEM",
+      "itemRole": "CONSUMABLE",
+      "familyRootId": "POTION_BOTTLE",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "CONSUMABLE",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "STAMINA_TONIC",
+      "name": "활력 영약",
+      "subfamily": "ITEM",
+      "itemRole": "CONSUMABLE",
+      "familyRootId": "POTION_BOTTLE",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "CONSUMABLE",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_EPIC",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "UPGRADE_SHARD",
+      "name": "강화 파편",
+      "subfamily": "UPGRADE_MATERIAL",
+      "itemRole": "UPGRADE_MATERIAL",
+      "familyRootId": "CRYSTAL_CLUSTER",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "MATERIAL",
+      "stackProfile": "STACKABLE_LARGE",
+      "rarityBand": "UNCOMMON_TO_LEGENDARY",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "TREASURE_GEM",
+      "name": "보석",
+      "subfamily": "TREASURE",
+      "itemRole": "TREASURE",
+      "familyRootId": "CRYSTAL_CLUSTER",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "TREASURE",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "RARE_TO_LEGENDARY",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "SILVER_INGOT",
+      "name": "은괴",
+      "subfamily": "RESOURCE",
+      "itemRole": "RESOURCE",
+      "familyRootId": "METAL_INGOT",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "MATERIAL",
+      "stackProfile": "STACKABLE_LARGE",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "CLOTH_ROLL",
+      "name": "천 두루마리",
+      "subfamily": "CRAFT_MATERIAL",
+      "itemRole": "CRAFT_MATERIAL",
+      "familyRootId": "CRAFT_ROLL",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "MATERIAL",
+      "stackProfile": "STACKABLE_MEDIUM",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "HERB_BUNDLE",
+      "name": "약초 묶음",
+      "subfamily": "INGREDIENT",
+      "itemRole": "INGREDIENT",
+      "familyRootId": "HERB_CLUSTER",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "INGREDIENT",
+      "stackProfile": "STACKABLE_LARGE",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "COOKED_MEAT",
+      "name": "구운 고기",
+      "subfamily": "FOOD",
+      "itemRole": "FOOD",
+      "familyRootId": "FOOD_PORTION",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "FOOD",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "QUEST_SCROLL",
+      "name": "의뢰 두루마리",
+      "subfamily": "QUEST_ITEM",
+      "itemRole": "QUEST_ITEM",
+      "familyRootId": "DOCUMENT_SCROLL",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "QUEST",
+      "stackProfile": "UNIQUE_OR_STACKABLE",
+      "rarityBand": "QUEST",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "LORE_BOOK",
+      "name": "기록서",
+      "subfamily": "LORE",
+      "itemRole": "LORE",
+      "familyRootId": "LORE_BOOK",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "LORE",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_UNIQUE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "COIN_POUCH",
+      "name": "동전 주머니",
+      "subfamily": "CURRENCY_CONTAINER",
+      "itemRole": "CURRENCY_CONTAINER",
+      "familyRootId": "POUCH",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "CURRENCY",
+      "stackProfile": "CONTAINER",
+      "rarityBand": "COMMON",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "ARROW_BUNDLE",
+      "name": "화살 묶음",
+      "subfamily": "AMMUNITION",
+      "itemRole": "AMMUNITION",
+      "familyRootId": "AMMO_BUNDLE",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "AMMO",
+      "stackProfile": "STACKABLE_LARGE",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "THROWING_BOMB",
+      "name": "투척 폭탄",
+      "subfamily": "THROWABLE",
+      "itemRole": "THROWABLE",
+      "familyRootId": "THROWABLE_BOMB",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "THROWABLE",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "LOCKPICK_SET",
+      "name": "자물쇠 도구",
+      "subfamily": "UTILITY",
+      "itemRole": "UTILITY",
+      "familyRootId": "RELIC_KEY",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "assetId": "SIGNAL_LANTERN",
+      "name": "신호 랜턴",
+      "subfamily": "UTILITY",
+      "itemRole": "UTILITY",
+      "familyRootId": "HAND_LANTERN",
+      "source": "RobloxCommonItems.luau",
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_RARE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     }
-  ]
+  ],
+  "title": "Roblox 회사 공용 아이템 24종 v2",
+  "systemDepthContract": {
+    "inventoryCategories": [
+      "CONSUMABLE",
+      "FOOD",
+      "INGREDIENT",
+      "MATERIAL",
+      "UPGRADE_MATERIAL",
+      "QUEST",
+      "LORE",
+      "KEY_ITEM",
+      "UTILITY",
+      "AMMO",
+      "THROWABLE",
+      "TREASURE",
+      "CURRENCY"
+    ],
+    "requiredMetadata": [
+      "itemRole",
+      "inventoryCategory",
+      "stackProfile",
+      "rarityBand",
+      "familyRootId",
+      "presentationRoles"
+    ],
+    "requiredInventoryStates": [
+      "NEW",
+      "FAVORITE",
+      "LOCKED",
+      "EQUIPPED",
+      "QUEST_BOUND",
+      "INSUFFICIENT_REQUIREMENT",
+      "STACKED",
+      "MAX_STACK",
+      "RECENTLY_ACQUIRED"
+    ],
+    "linkedSystems": [
+      "INVENTORY",
+      "LOOT",
+      "EQUIPMENT",
+      "CRAFTING",
+      "SHOP",
+      "STASH",
+      "CODEX",
+      "QUICK_SLOT"
+    ],
+    "gameplayAuthority": false
+  }
 }
