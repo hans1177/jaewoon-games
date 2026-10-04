@@ -21,6 +21,7 @@ import {
   COMMON_GENRE_SYSTEM_EXPECTATIONS,
   INTERNAL_ASSET_MINIMUM_COVERAGE,
   INTERNAL_ASSET_REUSE_POLICY,
+  INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT,
   INTERNAL_ASSET_ADAPTATION_AXES,
   CONCEPT_AXES,
   CREATURE_BODY_PLANS,
@@ -3163,4 +3164,73 @@ test('expanded genre matrix covers action adventure puzzle tycoon defense horror
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   assert.equal(registry.commonGenreSystemExpectations.version,2);
   assert.equal(Object.keys(registry.commonGenreSystemExpectations.genres).length,16);
+});
+
+
+test('internal asset standards are machine-readable only and exclude flow workflow queue scheduler deployment changes',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+
+  assert.equal(registry.internalAssetStandard.documentationMode,'MACHINE_READABLE_ONLY');
+  assert.equal(Object.hasOwn(registry.internalAssetStandard,'humanDocument'),false);
+  assert.equal(registry.internalAssetStandard.authorityBoundary,'INTERNAL_ASSET_SCOPE_ONLY');
+  assert.equal(registry.internalAssetStandard.flowMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.workflowMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.queueMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.schedulerMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.deploymentMutationAllowed,false);
+  assert.equal(registry.internalAssetStandard.shadowPipelineAllowed,false);
+  assert.equal(registry.internalAssetStandard.wrapperPipelineAllowed,false);
+
+  assert.equal(registry.internalAssetRoutineReview.mode,'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER');
+  assert.equal(registry.internalAssetRoutineReview.scheduleCreated,false);
+  assert.equal(registry.internalAssetRoutineReview.workflowCreated,false);
+  assert.equal(registry.internalAssetRoutineReview.internalScoreIsUsageGate,false);
+  assert.equal(registry.internalAssetRoutineReview.existingAssetsRemainUsable,true);
+
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.documentationMode,'MACHINE_READABLE_ONLY');
+  assert.equal(Object.hasOwn(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT,'humanDocument'),false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.mode,'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER');
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.flowMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.workflowMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.queueMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.schedulerMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.deploymentMutationAllowed,false);
+  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.newPipelineCreated,false);
+
+  assert.equal(fs.existsSync(path.join(root,'assets','ASSET-STANDARD.md')),false);
+});
+
+test('all common asset catalogs bind the machine-readable internal asset standard without a human-document dependency',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const catalogs=[
+    'assets/roblox/common-ui-v1/catalog.json',
+    'assets/roblox/common-items-v1/catalog.json',
+    'assets/roblox/common-tools-v1/catalog.json',
+    'assets/roblox/common-character-gear-v1/catalog.json',
+    'assets/roblox/common-skill-v1/catalog.json',
+    'assets/roblox/common-vfx-v1/catalog.json',
+    'assets/roblox/common-motion-v1/catalog.json',
+    'assets/roblox/common-materials-v1/catalog.json',
+    'assets/roblox/common-environment-v1/catalog.json',
+    'assets/roblox/common-building-v1/catalog.json',
+    'assets/roblox/common-world-props-v1/catalog.json',
+    'assets/roblox/common-creature-parts-v1/catalog.json',
+    'assets/roblox/common-foliage-v1/catalog.json',
+    'assets/roblox/common-presentation-v1/catalog.json'
+  ];
+  for(const relative of catalogs){
+    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
+    assert.ok(catalog.internalAssetStandard,relative);
+    assert.equal(catalog.internalAssetStandard.documentationMode,'MACHINE_READABLE_ONLY',relative);
+    assert.equal(Object.hasOwn(catalog.internalAssetStandard,'humanDocument'),false,relative);
+    assert.equal(catalog.internalAssetStandard.flowExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.workflowExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.queueExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.schedulerExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.deploymentExcluded,true,relative);
+    assert.equal(catalog.internalAssetStandard.companyLibrary,'company-asset-library.json',relative);
+  }
 });
