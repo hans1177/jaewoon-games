@@ -3233,7 +3233,26 @@ export function synchronizeAssetCustomization({document=null,currentDocument=nul
   };
   if(Object.keys(candidate).some(key=>!['schemaVersion','gameId','revision','baseRevision','styleBible','motionStyle','recipes','motionBindings'].includes(key)))issues.push('NON_VISUAL_DOCUMENT_FIELD');
   const bibleKeys=Object.keys(createStyleBible());
-  if(candidate.styleBible&&Object.entries(candidate.styleBible).some(([key,value])=>!bibleKeys.includes(key)||typeof value!=='string'))issues.push('INVALID_STYLE_FIELD');
+  const styleExpressionKeys=new Set(['version','sourceStyleFamily','preset','axes','conceptStyleLockWins','photoReferenceMaySuggestButNotOverrideConceptLock','gameplayAuthority','balanceAuthority','progressionAuthority','saveAuthority','networkAuthority']);
+  const validStyleExpression=value=>{
+    if(!value||typeof value!=='object'||Array.isArray(value))return false;
+    if(Object.keys(value).some(key=>!styleExpressionKeys.has(key)))return false;
+    if(value.version!==1||typeof value.sourceStyleFamily!=='string'||typeof value.preset!=='string')return false;
+    if(!value.axes||typeof value.axes!=='object'||Array.isArray(value.axes))return false;
+    for(const [axis,choice] of Object.entries(value.axes)){
+      if(!INTERNAL_ASSET_STYLE_EXPRESSION_AXES[axis]?.includes(choice))return false;
+    }
+    return value.conceptStyleLockWins===true
+      &&value.photoReferenceMaySuggestButNotOverrideConceptLock===true
+      &&value.gameplayAuthority===false
+      &&value.balanceAuthority===false
+      &&value.progressionAuthority===false
+      &&value.saveAuthority===false
+      &&value.networkAuthority===false;
+  };
+  if(candidate.styleBible&&Object.entries(candidate.styleBible).some(([key,value])=>
+    !bibleKeys.includes(key)||(key==='styleExpression'?!validStyleExpression(value):typeof value!=='string')
+  ))issues.push('INVALID_STYLE_FIELD');
   if(candidate.motionStyle&&(Object.keys(candidate.motionStyle).some(key=>!['profileKey','modifiers'].includes(key))||Object.keys(candidate.motionStyle.modifiers||{}).some(key=>!Object.hasOwn(modifierBounds,key))))issues.push('NON_VISUAL_MOTION_FIELD');
   if(candidate.schemaVersion!==1)issues.push('UNSUPPORTED_SCHEMA_VERSION');
   if(candidate.gameId!==id||(currentDocument&&currentDocument.gameId!==id))issues.push('GAME_ID_MISMATCH');
