@@ -41634,14 +41634,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T14:39:29.177Z",
+      "updatedAt": "2026-10-04T14:47:02.928Z",
       "robloxSourceCommit": "cc3cc9b10a067e8bb6c4c3a48aca648f5bebff4a",
       "robloxSourceBootstrapPassedAt": "2026-10-04T14:16:53.984Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -45128,7 +45128,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-story-complete-rpg-chronicles-of-eldoria-37131116107",
       "unitySourceCommit": "61fe8b387ae13993b031f289c9ff993cb05b35b2",
-      "unityBuildRunId": 37208718715,
+      "unityBuildRunId": 37210028677,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -45186,7 +45186,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T14:25:32.221Z"
+        "verifiedAt": "2026-10-04T14:47:02.928Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -51590,7 +51590,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T14:47:12.836Z",
+  "updatedAt": "2026-10-04T14:47:16.284Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
