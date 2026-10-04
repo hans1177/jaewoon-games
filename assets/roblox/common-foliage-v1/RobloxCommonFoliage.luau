@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 초목/자연 소품 8종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 초목/자연 소품 18종 생성
 -- 원칙: 순수 표현 자산만 제공한다. 이동/채집/드랍/밸런스/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonFoliage = {}
@@ -135,7 +135,47 @@ local Catalog = table.freeze({
 			barkDark = c(57, 49, 43),
 			moss = c(73, 85, 57),
 		}),
+	}),,
+	BROADLEAF_TREE = table.freeze({
+		id="BROADLEAF_TREE", name="활엽수", familyRootId="FOLIAGE_BROADLEAF", family="ENVIRONMENT", subfamily="BROADLEAF_TREE", environmentRole="CANOPY_TREE",
+		systemRoles=table.freeze({"BROADLEAF_TREE"}), silhouette="BRANCHED_TRUNK_ROUND_CANOPY", palette=table.freeze({bark=c(91,66,47), barkLight=c(121,87,58), leaf=c(69,111,62), leafLight=c(101,143,78), leafDark=c(48,80,48)}),
 	}),
+	VINE_CLUSTER = table.freeze({
+		id="VINE_CLUSTER", name="덩굴 군락", familyRootId="FOLIAGE_VINE", family="ENVIRONMENT", subfamily="VINE", environmentRole="CLIMBING_FOLIAGE",
+		systemRoles=table.freeze({"VINE"}), silhouette="HANGING_VINES_LEAF_KNOTS", palette=table.freeze({stem=c(63,91,50), leaf=c(69,112,56), leafLight=c(100,143,72), leafDark=c(43,77,42)}),
+	}),
+	REED_PATCH = table.freeze({
+		id="REED_PATCH", name="갈대 군락", familyRootId="FOLIAGE_REED", family="ENVIRONMENT", subfamily="REED", environmentRole="WETLAND_EDGE",
+		systemRoles=table.freeze({"REED"}), silhouette="TALL_REED_STEMS_SEED_HEADS", palette=table.freeze({stem=c(111,123,72), leaf=c(91,112,61), seed=c(135,105,70)}),
+	}),
+	MOSS_PATCH = table.freeze({
+		id="MOSS_PATCH", name="이끼 군락", familyRootId="FOLIAGE_MOSS", family="ENVIRONMENT", subfamily="MOSS", environmentRole="GROUND_SURFACE",
+		systemRoles=table.freeze({"MOSS"}), silhouette="LOW_IRREGULAR_MOSS_MATS", palette=table.freeze({moss=c(73,105,61), mossLight=c(105,132,75), mossDark=c(49,75,47)}),
+	}),
+	MUSHROOM_CLUSTER = table.freeze({
+		id="MUSHROOM_CLUSTER", name="버섯 군락", familyRootId="FOLIAGE_MUSHROOM", family="ENVIRONMENT", subfamily="MUSHROOM", environmentRole="FOREST_FLOOR",
+		systemRoles=table.freeze({"MUSHROOM"}), silhouette="SMALL_CAP_CLUSTER", palette=table.freeze({stem=c(207,195,165), cap=c(150,87,68), capLight=c(198,128,91), spot=c(226,213,174)}),
+	}),
+	ROOT_CLUSTER = table.freeze({
+		id="ROOT_CLUSTER", name="노출 뿌리 군락", familyRootId="FOLIAGE_ROOT", family="ENVIRONMENT", subfamily="ROOT", environmentRole="ROOT_STRUCTURE",
+		systemRoles=table.freeze({"ROOT"}), silhouette="RADIAL_EXPOSED_ROOTS", palette=table.freeze({bark=c(91,65,45), barkLight=c(126,89,57), moss=c(74,98,56)}),
+	}),
+	AUTUMN_TREE_VARIANT = table.freeze({
+		id="AUTUMN_TREE_VARIANT", name="가을 활엽수 변형", familyRootId="FOLIAGE_SEASON_TREE", family="ENVIRONMENT", subfamily="SEASON_VARIANT", environmentRole="SEASON_VARIANT",
+		systemRoles=table.freeze({"SEASON_VARIANT","BIOME_VARIANT"}), silhouette="BRANCHED_TRUNK_AUTUMN_CANOPY", palette=table.freeze({bark=c(91,65,47), barkLight=c(122,87,58), leaf=c(184,108,54), leafLight=c(222,157,68), leafDark=c(129,73,45)}),
+	}),
+	WIND_BENT_TREE = table.freeze({
+		id="WIND_BENT_TREE", name="바람에 휜 나무", familyRootId="FOLIAGE_WIND_TREE", family="ENVIRONMENT", subfamily="WIND_VARIANT", environmentRole="WIND_VARIANT",
+		systemRoles=table.freeze({"WIND_VARIANT"}), silhouette="LEANING_TRUNK_ONE_SIDED_CANOPY", palette=table.freeze({bark=c(85,64,49), barkLight=c(116,83,58), leaf=c(62,96,62), leafLight=c(89,126,73), leafDark=c(42,70,48)}),
+	}),
+	BIOME_SHRUB_VARIANT = table.freeze({
+		id="BIOME_SHRUB_VARIANT", name="바이옴 관목 변형", familyRootId="FOLIAGE_BIOME_SHRUB", family="ENVIRONMENT", subfamily="BIOME_VARIANT", environmentRole="BIOME_VARIANT",
+		systemRoles=table.freeze({"BIOME_VARIANT"}), silhouette="LOW_DENSE_BIOME_SHRUB", palette=table.freeze({stem=c(88,70,49), leaf=c(83,108,69), leafLight=c(119,138,83), leafDark=c(56,78,52)}),
+	}),
+	LOD_FOLIAGE_PROXY = table.freeze({
+		id="LOD_FOLIAGE_PROXY", name="원거리 식생 프록시", familyRootId="FOLIAGE_LOD", family="ENVIRONMENT", subfamily="LOD", environmentRole="LOD",
+		systemRoles=table.freeze({"LOD"}), silhouette="LOW_PART_TREE_PROXY", palette=table.freeze({bark=c(91,68,50), leaf=c(65,98,61), leafLight=c(89,119,72)}),
+	})
 })
 
 local function makePart(name, size, color, material, shape)
@@ -371,6 +411,113 @@ local function addDeadTree(model, root, row, level)
 	end
 end
 
+
+local function addBroadleafTree(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Trunk",Vector3.new(0.82,5.0,0.82),p.bark,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,2.5,0))
+	for i,data in ipairs({
+		{Vector3.new(0,5.0,0),Vector3.new(3.4,2.7,3.2)},
+		{Vector3.new(-1.0,4.6,0.4),Vector3.new(2.3,2.0,2.2)},
+		{Vector3.new(1.0,4.7,-0.4),Vector3.new(2.2,1.9,2.1)}
+	}) do
+		if i==1 or detail(level,2) then
+			weld(root,makePart("Canopy"..i,data[2],i%2==0 and p.leafLight or p.leaf,Enum.Material.Grass,"BALL"),CFrame.new(data[1]))
+		end
+	end
+	if detail(level,3) then weld(root,makePart("Branch",Vector3.new(0.34,2.1,0.34),p.barkLight,Enum.Material.Wood,"CYLINDER"),CFrame.new(0.7,3.8,0)*CFrame.Angles(0,0,math.rad(-40))) end
+end
+
+local function addVineCluster(model, root, row, level)
+	local p=row.palette
+	local count=level==1 and 3 or level==2 and 5 or 7
+	for i=1,count do
+		local x=(i-(count+1)/2)*0.26
+		local length=1.6+(i%3)*0.45
+		weld(root,makePart("Vine"..i,Vector3.new(0.08,length,0.08),p.stem,Enum.Material.Grass,"CYLINDER"),CFrame.new(x,-length*0.45,0))
+		local leafCount=detail(level,3) and 3 or 2
+		for j=1,leafCount do
+			weld(root,makeWedge("Leaf"..i.."_"..j,Vector3.new(0.22,0.36,0.18),j%2==0 and p.leafLight or p.leaf,Enum.Material.Grass),CFrame.new(x+(j%2==0 and 0.14 or -0.14),-j*0.42,0)*CFrame.Angles(0,math.rad(i*23),math.rad(j%2==0 and 22 or -22)))
+		end
+	end
+end
+
+local function addReedPatch(model, root, row, level)
+	local p=row.palette
+	local count=level==1 and 5 or level==2 and 8 or 12
+	for i=1,count do
+		local angle=math.rad(i*137.5)
+		local radius=0.18+(i%4)*0.16
+		local height=1.5+(i%3)*0.32
+		weld(root,makePart("Stem"..i,Vector3.new(0.06,height,0.06),p.stem,Enum.Material.Grass,"CYLINDER"),CFrame.new(math.cos(angle)*radius,height*0.5,math.sin(angle)*radius))
+		if detail(level,2) then weld(root,makePart("Seed"..i,Vector3.new(0.12,0.38,0.12),p.seed,Enum.Material.Grass,"CYLINDER"),CFrame.new(math.cos(angle)*radius,height+0.14,math.sin(angle)*radius)) end
+	end
+end
+
+local function addMossPatch(model, root, row, level)
+	local p=row.palette
+	local count=level==1 and 3 or level==2 and 5 or 8
+	for i=1,count do
+		local angle=math.rad(i*83)
+		local radius=0.15+(i%4)*0.18
+		local patch=makePart("Moss"..i,Vector3.new(0.7+(i%2)*0.25,0.08,0.55+(i%3)*0.18),i%3==0 and p.mossLight or i%2==0 and p.mossDark or p.moss,Enum.Material.Grass)
+		weld(root,patch,CFrame.new(math.cos(angle)*radius,0.05,math.sin(angle)*radius)*CFrame.Angles(0,angle,0))
+	end
+end
+
+local function addMushroomCluster(model, root, row, level)
+	local p=row.palette
+	local count=level==1 and 3 or level==2 and 5 or 7
+	for i=1,count do
+		local angle=math.rad(i*137.5)
+		local radius=0.15+(i%4)*0.16
+		local h=0.35+(i%3)*0.12
+		weld(root,makePart("Stem"..i,Vector3.new(0.10,h,0.10),p.stem,Enum.Material.SmoothPlastic,"CYLINDER"),CFrame.new(math.cos(angle)*radius,h*0.5,math.sin(angle)*radius))
+		weld(root,makePart("Cap"..i,Vector3.new(0.42,0.18,0.42),i%2==0 and p.capLight or p.cap,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(math.cos(angle)*radius,h,math.sin(angle)*radius))
+		if detail(level,3) then weld(root,makePart("Spot"..i,Vector3.new(0.08,0.05,0.08),p.spot,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(math.cos(angle)*radius,h+0.08,math.sin(angle)*radius)) end
+	end
+end
+
+local function addRootCluster(model, root, row, level)
+	local p=row.palette
+	local count=level==1 and 4 or level==2 and 6 or 8
+	for i=1,count do
+		local angle=math.rad((i-1)*360/count)
+		local length=1.4+(i%3)*0.35
+		weld(root,makeWedge("Root"..i,Vector3.new(0.34,0.28,length),i%2==0 and p.barkLight or p.bark,Enum.Material.Wood),CFrame.new(math.cos(angle)*0.52,0.16,math.sin(angle)*0.52)*CFrame.Angles(0,-angle,0))
+	end
+	if detail(level,3) then weld(root,makePart("Moss",Vector3.new(0.72,0.08,0.52),p.moss,Enum.Material.Grass),CFrame.new(0.15,0.26,-0.12)) end
+end
+
+local function addAutumnTree(model, root, row, level)
+	addBroadleafTree(model,root,row,level)
+end
+
+local function addWindBentTree(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("BentTrunk",Vector3.new(0.70,4.8,0.70),p.bark,Enum.Material.Wood,"CYLINDER"),CFrame.new(-0.55,2.3,0)*CFrame.Angles(0,0,math.rad(-18)))
+	weld(root,makePart("CanopyMain",Vector3.new(3.1,2.1,2.5),p.leaf,Enum.Material.Grass,"BALL"),CFrame.new(0.75,4.45,0))
+	if detail(level,2) then weld(root,makePart("CanopyLee",Vector3.new(1.8,1.4,1.6),p.leafLight,Enum.Material.Grass,"BALL"),CFrame.new(1.75,4.15,0.15)) end
+	if detail(level,3) then weld(root,makePart("CanopyDark",Vector3.new(1.5,1.2,1.5),p.leafDark,Enum.Material.Grass,"BALL"),CFrame.new(0.2,4.8,-0.5)) end
+end
+
+local function addBiomeShrubVariant(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Stem",Vector3.new(0.24,1.0,0.24),p.stem,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,0.5,0))
+	local count=level==1 and 3 or level==2 and 5 or 7
+	for i=1,count do
+		local angle=math.rad(i*137.5)
+		local radius=0.32+(i%3)*0.18
+		weld(root,makePart("LeafCluster"..i,Vector3.new(0.78,0.62,0.72),i%3==0 and p.leafLight or i%2==0 and p.leafDark or p.leaf,Enum.Material.Grass,"BALL"),CFrame.new(math.cos(angle)*radius,0.75+(i%2)*0.25,math.sin(angle)*radius))
+	end
+end
+
+local function addLodFoliageProxy(model, root, row, level)
+	local p=row.palette
+	weld(root,makePart("Trunk",Vector3.new(0.46,3.5,0.46),p.bark,Enum.Material.Wood,"CYLINDER"),CFrame.new(0,1.75,0))
+	weld(root,makePart("Canopy",Vector3.new(2.4,2.0,2.2),p.leaf,Enum.Material.Grass,"BALL"),CFrame.new(0,3.8,0))
+	if detail(level,3) then weld(root,makePart("Highlight",Vector3.new(1.2,0.7,1.0),p.leafLight,Enum.Material.Grass,"BALL"),CFrame.new(0.45,4.2,-0.25)) end
+end
+
 local BUILDERS = table.freeze({
 	GRASS_TUFT = addGrass,
 	BUSH_ROUND = addBush,
@@ -380,6 +527,16 @@ local BUILDERS = table.freeze({
 	FALLEN_LOG = addFallenLog,
 	PINE_TREE = addPine,
 	DEAD_TREE = addDeadTree,
+	BROADLEAF_TREE = addBroadleafTree,
+	VINE_CLUSTER = addVineCluster,
+	REED_PATCH = addReedPatch,
+	MOSS_PATCH = addMossPatch,
+	MUSHROOM_CLUSTER = addMushroomCluster,
+	ROOT_CLUSTER = addRootCluster,
+	AUTUMN_TREE_VARIANT = addAutumnTree,
+	WIND_BENT_TREE = addWindBentTree,
+	BIOME_SHRUB_VARIANT = addBiomeShrubVariant,
+	LOD_FOLIAGE_PROXY = addLodFoliageProxy,
 })
 
 local function applyModelMetadata(model, row, quality)
@@ -387,6 +544,7 @@ local function applyModelMetadata(model, row, quality)
 	model:SetAttribute("StudioAssetSubfamily", row.subfamily)
 	model:SetAttribute("StudioAssetEnvironmentRole", row.environmentRole)
 	model:SetAttribute("StudioAssetSilhouette", row.silhouette)
+	if row.systemRoles then model:SetAttribute("StudioAssetSystemRoles", table.concat(row.systemRoles, ",")) end
 	model:SetAttribute("StudioAssetQualityLevel", quality)
 	model:SetAttribute("StudioAssetQualityTarget", 100)
 	model:SetAttribute("RuntimeVerificationState", "PENDING_STUDIO")
@@ -402,6 +560,7 @@ function RobloxCommonFoliage.List()
 			family = row.family,
 			subfamily = row.subfamily,
 			environmentRole = row.environmentRole,
+			systemRoles = row.systemRoles,
 			silhouette = row.silhouette,
 			productionVerified = false,
 		}))
