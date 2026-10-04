@@ -3902,6 +3902,13 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     const motionAction=plan.nextVolumeActions.find(row=>row.domain==='MOTION');
     assert.deepEqual(motionAction?.freeSourceCandidateIds,['kaykit-character-animations-1-1','quaternius-universal-animation-library','quaternius-universal-animation-library-2']);
     assert.deepEqual(plan.nextVolumeActions.map(row=>row.worklistOrder),plan.nextVolumeActions.map((_,index)=>index+1));
+    const volumePriorityScore=row=>Number(row.priority||0)+Math.max(0,Number(row.targetMin||0)-Number(row.currentCount||0));
+    for(let index=1;index<plan.nextVolumeActions.length;index++){
+      assert.ok(volumePriorityScore(plan.nextVolumeActions[index-1])>=volumePriorityScore(plan.nextVolumeActions[index]));
+    }
+    assert.equal(plan.nextVolumeActions[0].domain,'CREATURE');
+    assert.ok(plan.nextVolumeActions.slice(0,12).some(row=>row.domain==='SKILL'));
+    assert.equal(plan.nextVolumeActions.slice(0,12).some(row=>row.kind==='UI_SUBSYSTEM_VOLUME'),false);
     assert.ok(plan.nextVolumeActions.every(row=>JSON.stringify(row.resolutionOrder)===JSON.stringify(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING'])));
   }
 
