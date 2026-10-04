@@ -8,7 +8,7 @@ local Config = {
   Genre = "RPG",
   Subgenre = "",
   PlayMode = "SINGLE",
-  MultiplayerRequired = false,
+  MultiplayerRequired = false,\n  BasicMultiplayerSupport = true,
   CoopRequired = false,
   CompetitiveRequired = false,
   MinimumParticipants = 1,
