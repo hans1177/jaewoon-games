@@ -96,14 +96,32 @@ export const INTERNAL_ASSET_FAMILY_EXPECTATIONS=Object.freeze({
   MATERIAL:Object.freeze({critical:Object.freeze({MATERIAL_SURFACE:92,STYLE_COHERENCE:84,DETAIL_FINISH:84,VARIATION_BREADTH:82}),expectations:Object.freeze(['base material','roughness/specular response','edge/wear logic','platform variant','weathering variant','damage variant when applicable','tile/scale consistency','style-lock compatibility'])}),
   AUDIO:Object.freeze({critical:Object.freeze({STYLE_COHERENCE:84,DETAIL_FINISH:84,VARIATION_BREADTH:82,PROVENANCE_MAINTAINABILITY:90}),expectations:Object.freeze(['event role','variation set','mix priority','loop seam when looping','distance behavior','mobile budget','ducking/overlap policy','license/provenance'])}),
   VFX:Object.freeze({critical:Object.freeze({FEEDBACK_STATES:90,READABILITY_SCALE:86,STYLE_COHERENCE:84,PERFORMANCE_LOD:84}),expectations:Object.freeze(['event binding','anticipation/impact/recovery readability','shape language','density tiers','mobile cap','pooling readiness','occlusion/clutter safety','color-blind readable cues when gameplay relevant'])}),
-  UI:Object.freeze({critical:Object.freeze({UI_UX_SYSTEM:90,ACCESSIBILITY_INPUT:90,FEEDBACK_STATES:86,VARIATION_BREADTH:84,READABILITY_SCALE:88,STYLE_COHERENCE:84}),expectations:Object.freeze(['HUD','inventory','character sheet','equipment','minimap','dialogue/helper','NPC interaction','quest','party','crafting','shop','notification','status effects','hotbar','interaction prompt','touch/keyboard/gamepad states','empty/loading/disabled/selected/error states'])}),
+  UI:Object.freeze({
+    FULL_SCREEN_SYSTEM:15,SEARCH_FILTER_SORT:3,STATE_FEEDBACK:4,INPUT_MODE_HINT:3,SCREEN_TRANSITION:4,critical:Object.freeze({UI_UX_SYSTEM:90,ACCESSIBILITY_INPUT:90,FEEDBACK_STATES:86,VARIATION_BREADTH:84,READABILITY_SCALE:88,STYLE_COHERENCE:84}),expectations:Object.freeze(['HUD','inventory','character sheet','equipment','minimap','dialogue/helper','NPC interaction','quest','party','crafting','shop','notification','status effects','hotbar','interaction prompt','touch/keyboard/gamepad states','empty/loading/disabled/selected/error states'])}),
   MOTION:Object.freeze({critical:Object.freeze({MOTION_RIG:94,VARIATION_BREADTH:84,DETAIL_FINISH:86,READABILITY_SCALE:82}),expectations:Object.freeze(['idle','walk','jog/run','start/stop','turn','jump/land','attack','hit','death','blend/interrupt','contact consistency','speed sync','motion LOD'])}),
   PROP:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:84,DETAIL_FINISH:82,MODULAR_REUSE:84,READABILITY_SCALE:80}),expectations:Object.freeze(['world model','interaction state','inventory icon when item','crafting icon when craftable','drop model when collectible','collision proxy','material variants','LOD'])})
 });
 export const COMMON_UI_SURFACE_EXPECTATIONS=Object.freeze([
   'HUD','NAVIGATION','INVENTORY','EQUIPMENT','CHARACTER_SHEET','MINIMAP','DIALOGUE','AI_DIALOGUE_HELPER','NPC_INTERACTION',
-  'QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR','INTERACTION_PROMPT','TOOLTIP','MODAL'
+  'QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR','INTERACTION_PROMPT','TOOLTIP','MODAL',
+  'MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE','SETTINGS','SEARCH_FILTER_SORT','INVENTORY_FULL','EQUIPMENT_FULL',
+  'CHARACTER_DETAIL','MAP_FULL','QUEST_LOG','CRAFTING_FULL','SHOP_FULL','STATE_FEEDBACK','INPUT_HINT','SCREEN_TRANSITION'
 ]);
+
+export const COMMON_ENVIRONMENT_BIOME_EXPECTATIONS=Object.freeze([
+  'FOREST','SNOW','DESERT','SWAMP','CAVE','COAST','VILLAGE','CITY','RUINS','DUNGEON'
+]);
+
+export const COMMON_ENVIRONMENT_ROLE_EXPECTATIONS=Object.freeze([
+  'BIOME_KIT','TERRAIN','GROUND_DETAIL','PATH_ROAD','CLIFF','WATER','LANDMARK','SET_DRESSING'
+]);
+
+export const COMMON_PRESENTATION_EXPECTATIONS=Object.freeze({
+  loading:Object.freeze(['BRAND_BACKGROUND','LOGO','SPINNER','PROGRESS_BAR','TIP','STATUS_TEXT']),
+  introModes:Object.freeze(['SIMPLE_FADE','LOGO_REVEAL','PARTICLE_LIGHT','WORLD_PAN','MINIMAL_CINEMATIC']),
+  genreBackgrounds:Object.freeze(['SURVIVAL','RPG','DEFENSE','CASUAL','PUZZLE','HORROR','STRATEGY']),
+  gameSpecificVariationFields:Object.freeze(['LOGO','COLOR','BACKGROUND','COPY','INTENSITY','DURATION'])
+});
 
 export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
   CHARACTER:Object.freeze({
@@ -120,8 +138,8 @@ export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
     EXTERIOR_DETAIL:20,PROP_SOCKET:12,LANDMARK:12,COLLISION_NAV_PROXY:8,MATERIAL_VARIANT:12,LOD_LEVELS:3
   }),
   ENVIRONMENT:Object.freeze({
-    BIOME:20,TERRAIN:18,GROUND_DETAIL:20,TREE:24,SHRUB:18,GRASS:12,FLOWER:12,ROCK:20,
-    WATER:12,LANDMARK:12,PATH_ROAD:12,SET_DRESSING:30,WEATHER:12,SKY_ATMOSPHERE:10,LIGHTING_PRESET:10,
+    BIOME:20,COMMON_BIOME_KIT:10,TERRAIN:18,GROUND_DETAIL:20,TREE:24,SHRUB:18,GRASS:12,FLOWER:12,ROCK:20,
+    WATER:12,LANDMARK:12,PATH_ROAD:12,CLIFF:12,SET_DRESSING:30,WEATHER:12,SKY_ATMOSPHERE:10,LIGHTING_PRESET:10,
     STREAMING_OR_LOD:6
   }),
   WEAPON:Object.freeze({
@@ -166,19 +184,19 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
   CHARACTER:Object.freeze(['PALETTE','MATERIAL','PROPORTION','FACE_HAIR','CLOTHING','ARMOR','ACCESSORY','EQUIPMENT_SOCKET','MOTION_STYLE']),
   CREATURE:Object.freeze(['PALETTE','MATERIAL','BODY_PROPORTION','HEAD','HORN','TAIL','WING','SHELL','APPENDAGE','ARMOR_PLATE','MOTION_STYLE']),
   BUILDING:Object.freeze(['MATERIAL','ROOF','WALL','DOOR','WINDOW','TRIM','SIGNAGE','PROP_SOCKET','SET_DRESSING','WEATHERING']),
-  ENVIRONMENT:Object.freeze(['PALETTE','MATERIAL','VEGETATION_MIX','ROCK_FORM','GROUND_DETAIL','LANDMARK_DETAIL','WEATHER','LIGHTING','SET_DRESSING']),
+  ENVIRONMENT:Object.freeze(['PALETTE','MATERIAL','VEGETATION_MIX','ROCK_FORM','GROUND_DETAIL','PATH_ROAD','CLIFF','WATER','LANDMARK_DETAIL','WEATHER','LIGHTING','SET_DRESSING','DENSITY','LOD']),
   WEAPON:Object.freeze(['PALETTE','MATERIAL','BLADE_OR_HEAD','GRIP','GUARD','ORNAMENT','WEAR','VFX_SOCKET','ICON_PRESENTATION']),
   SKILL:Object.freeze(['PALETTE','SHAPE_LANGUAGE','TELEGRAPH','TRAIL','PROJECTILE','IMPACT','STATUS_PRESENTATION','ICON','AUDIO_ROLE','DENSITY']),
   MATERIAL:Object.freeze(['PALETTE','ROUGHNESS','SPECULAR','NORMAL_DETAIL','WEATHERING','DAMAGE','WET_DRY','EMISSIVE']),
   AUDIO:Object.freeze(['EQ','PITCH_RANGE','VARIATION','LAYERING','DISTANCE','MIX_PRIORITY','LOOP','EVENT_MAPPING']),
   VFX:Object.freeze(['PALETTE','SHAPE_LANGUAGE','PARTICLE_DENSITY','TRAIL','IMPACT','TIMING','LOD','EVENT_MAPPING']),
-  UI:Object.freeze(['THEME','PALETTE','TYPOGRAPHY','ICON','BORDER','CORNER','DEPTH','LAYOUT','SPACING','STATE_VARIANTS','MOTION_FEEDBACK']),
+  UI:Object.freeze(['THEME','PALETTE','TYPOGRAPHY','ICON','BORDER','CORNER','DEPTH','LAYOUT','SPACING','STATE_VARIANTS','MOTION_FEEDBACK','NAVIGATION_DEPTH','INPUT_HINT','SCREEN_TRANSITION','BACKGROUND_MOTIF']),
   MOTION:Object.freeze(['SPEED','AMPLITUDE','POSE_EXAGGERATION','ANTICIPATION','RECOVERY','BLEND','SECONDARY_MOTION','CONTACT']),
   PROP:Object.freeze(['PALETTE','MATERIAL','PROPORTION','DETAIL_PARTS','WEATHERING','INTERACTION_STATE','ICON_PRESENTATION'])
 });
 
 export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
-  version:2,
+  version:3,
   lowScoreUseAllowed:true,
   scoreIsNotUsageGate:true,
   studioRequiredForUse:false,
@@ -187,6 +205,27 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
   preferReuseBeforeNewAuthoring:true,
   preferCompanyCommonBaseWhenQualityComparable:true,
   preservePriorAssetHistory:true,
+  machineReadableDiscovery:Object.freeze({
+    enabled:true,
+    developmentStageAutoDiscovery:true,
+    inspectCompanyLibraryBeforeNewAuthoring:true,
+    inspectExistingGameAssetsBeforeNewAuthoring:true,
+    preferExistingAndCompanyCommonAssets:true,
+    metadataSources:Object.freeze([
+      'company-asset-library.json',
+      'assets/vibe-studio-asset-universe.js',
+      'assets/roblox/*/catalog.json'
+    ]),
+    requiredMetadata:Object.freeze([
+      'id','family','subfamily','platform','status','license','sourceFiles',
+      'companyCommonBase','styleAdaptationRequiredPerGame','gameplayAuthority'
+    ]),
+    selectionOutput:Object.freeze([
+      'assetId','applicationMode','replacementAction','effectiveInternalQuality',
+      'sourceFiles','packId','machineTags','usageContract','gameSpecificVariationFields'
+    ]),
+    newPipelineCreated:false
+  }),
   adaptationModes:Object.freeze([
     'USE_AS_IS',
     'LIGHT_THEME_ADAPT',
@@ -1738,6 +1777,13 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       replacementAction:choice.replacementAction,
       replacementReason:choice.replacementRecommended?'HIGHER_EFFECTIVE_INTERNAL_QUALITY_AFTER_ADAPTATION':null,
       effectiveGain:choice.effectiveGain,
+      packId:picked?.row.packId||null,
+      sourceFiles:picked?.row.sourceFiles||Object.freeze([]),
+      machineTags:picked?.row.machineTags||Object.freeze([]),
+      usageContract:picked?.row.usageContract||null,
+      gameSpecificVariationFields:picked?.row.gameSpecificVariationFields||Object.freeze([]),
+      companyCommonBase:picked?.row.companyCommonBase===true,
+      machineReadableDiscovery:true,
       unresolved:!picked
     }));
   }
@@ -1758,6 +1804,9 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     manualOrLockedChoiceWins:true,
     priorAssetHistoryPreserved:true,
     noEmptySlotDuringReplacement:true,
+    machineReadableDiscovery:true,
+    selectionContractVersion:3,
+    newPipelineCreated:false,
     gameplayAuthority:false
   });
 }
@@ -2227,7 +2276,13 @@ function normalizeRegistryAsset(asset={}){
     platform:upper(asset.platformVariant||asset.platform),
     bodyPlan:upper(asset.bodyPlan),
     species:upper(asset.species),
-    tags:(asset.tags||asset.capabilities||[]).map(upper)
+    tags:(asset.tags||asset.capabilities||asset.machineTags||[]).map(upper),
+    machineTags:(asset.machineTags||asset.tags||asset.capabilities||[]).map(upper),
+    packId:text(asset.packId),
+    sourceFiles:Object.freeze([...(asset.sourceFiles||[])]),
+    companyCommonBase:asset.companyCommonBase===true,
+    usageContract:asset.usageContract||asset.bindingHint||asset.assemblyContract||asset.introContract||null,
+    gameSpecificVariationFields:Object.freeze([...(asset.gameSpecificVariationFields||[])])
   };
 }
 

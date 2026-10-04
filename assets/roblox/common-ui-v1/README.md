@@ -1,4 +1,4 @@
-# Roblox Common UI v3
+# Roblox Common UI v4
 
 회사 공용 Roblox UI·AI/NPC 상호작용 베이스. 게임 로직을 소유하지 않고 표시·레이아웃·상태 피드백만 제공한다.
 
@@ -14,7 +14,7 @@
 - AI/NPC 대화: DIALOGUE_ASSISTANT_BUTTON, DIALOGUE_PANEL, DIALOGUE_CHOICE, DIALOGUE_INPUT, TYPING_INDICATOR, DIALOGUE_HISTORY
 - NPC 관계/행동: NPC_INTERACTION_MENU, NPC_RELATIONSHIP_CARD
 
-총 32종.
+총 54종.
 
 ## 공용 벡터 아이콘
 
@@ -179,3 +179,17 @@ UI는 표현만 담당한다. 실제 대화 진실성, 퀘스트 진행, 보상,
 - 키보드/마우스/게임패드 선택 상태 지원
 - 색상만으로 상태를 구분하지 않음
 - 게임 규칙, HP, 데미지, 인벤토리, 장착, 퀘스트, 보상, 재화, 저장, Remote 권한 없음
+
+
+## 전체 화면 시스템 v4
+
+기존 32종을 보존하고 22종을 추가해 총 54종으로 확장한다.
+
+- 메인 메뉴 / 상단바 / 사이드 내비게이션 / 일시정지 / 설정
+- 검색 / 필터 / 정렬
+- 인벤토리 / 장비 / 캐릭터 / 지도 / 퀘스트 / 제작 / 상점 전체창
+- 확인창 / 팝업
+- 로딩 / 빈 화면 / 실패 / 잠김 상태
+- TOUCH / KEYBOARD_MOUSE / GAMEPAD 입력 힌트 전환
+
+외부 고급 게임은 구조 원리만 참고한다. 특정 게임의 문구·배치·그래픽·고유 표현을 복제하지 않는다.

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-ui-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -8,8 +8,8 @@
     "productionPromotionIndependent": true,
     "maxScore": 1000,
     "passScore": 880,
-    "targetGrade": "ELITE",
-    "targetScore": 950,
+    "targetGrade": "MASTERPIECE",
+    "targetScore": 980,
     "continualImprovementTargets": [
       920,
       950,
@@ -85,7 +85,14 @@
       "text labels not color-only state",
       "disabled locked loading error variants",
       "mobile readability at compact layouts"
-    ]
+    ],
+    "mainMenu": "브랜드/핵심 행동/상태 위계를 한 화면에서 읽고 모바일·패드 포커스를 보존",
+    "navigation": "상단 컨텍스트 + 사이드 주요 시스템 + 최대 3단 탐색 깊이",
+    "searchFilterSort": "검색·필터·정렬을 같은 문맥에서 제공하고 결과 없음/잠김/오류 상태 분리",
+    "fullScreens": "인벤토리·장비·캐릭터·지도·퀘스트·제작·상점의 전체창 공통 골격",
+    "stateFeedback": "로딩·빈화면·실패·잠김을 색상 외 텍스트/형태/행동으로 구분",
+    "inputSwitch": "터치·키보드/마우스·게임패드 힌트와 포커스 경로 지원",
+    "transition": "SIMPLE_FADE 중심, 포커스·뒤로가기 스택·정보 위계 보존"
   },
   "legacyStaticAuthoringChecklist": {
     "score": 100,
@@ -104,11 +111,12 @@
   "internalAuditDoesNotRequireStudio": true,
   "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 32,
+  "sourceAssetCount": 54,
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit."
-  }
+  },
+  "fullScreenSurfaceCount": 15
 }
