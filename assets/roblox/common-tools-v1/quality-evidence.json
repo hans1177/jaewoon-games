@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-tools-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -17,7 +17,10 @@
       "worldAndViewportSharedSource": true,
       "gameplayAuthorityFalse": true,
       "damageAttackSpeedHarvestDurabilitySaveNetworkUntouched": true,
-      "runtimeVerificationNotClaimed": true
+      "runtimeVerificationNotClaimed": true,
+      "reusableWeaponToolVisuals20": true,
+      "combatMotionVfxSkillMetadataLinked": true,
+      "damageHitboxPhysicsAuthorityFalse": true
     }
   },
   "runtimeQuality": {
@@ -25,5 +28,15 @@
     "requiredBeforeProductionVerified": true,
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
+  },
+  "sourceAssetCount": 20,
+  "combatPresentationLink": {
+    "weaponCount": 20,
+    "motionLinked": true,
+    "impactLinked": true,
+    "trailLinked": true,
+    "skillFamilyLinked": true,
+    "physicsFeelLinked": true,
+    "gameplayAuthority": false
   }
 }
