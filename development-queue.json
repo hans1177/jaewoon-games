@@ -18928,14 +18928,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T12:51:13.950Z",
+      "updatedAt": "2026-10-04T12:51:21.969Z",
       "robloxSourceCommit": "5f05a4dfe411f317e30da3cf94f1befcf8b68ce3",
       "robloxSourceBootstrapPassedAt": "2026-10-04T12:48:41.339Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -18944,17 +18944,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "5f05a4dfe411f317e30da3cf94f1befcf8b68ce3",
       "robloxBuildArtifactIdentity": "sha256:760311c247df521edde4fcec0a9c52d3d2b3497a4aa07e96cfc9d2e3b5841edb",
-      "robloxBuildPassedAt": "2026-10-04T12:50:37.622Z",
+      "robloxBuildPassedAt": "2026-10-04T12:51:21.969Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-04T12:50:37.622Z",
+      "robloxBuildPreflightFailedAt": "2026-10-04T12:51:21.969Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-04T12:48:57.668Z",
+        "checkedAt": "2026-10-04T12:49:42.147Z",
         "facts": {
           "pass": false,
           "blockers": [
@@ -31025,7 +31025,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T12:51:13.950Z",
+  "updatedAt": "2026-10-04T12:51:21.969Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -31091,5 +31091,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
