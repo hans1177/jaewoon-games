@@ -15,15 +15,15 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 25,
+      "calls": 27,
       "successes": 5,
-      "failures": 20,
+      "failures": 22,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 62812,
-      "lastMs": 2971,
+      "totalMs": 67976,
+      "lastMs": 3780,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T09:52:10.488Z"
+      "updatedAt": "2026-10-04T09:53:33.533Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-04T09:23:15.149Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 20,
+      "calls": 22,
       "successes": 0,
-      "failures": 20,
+      "failures": 22,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 219459,
-      "lastMs": 12316,
-      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T09:52:19.833Z"
+      "totalMs": 228713,
+      "lastMs": 5009,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-10-04T09:53:34.762Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 9,
+      "calls": 10,
       "successes": 0,
-      "failures": 9,
+      "failures": 10,
       "timeouts": 6,
-      "jsonFailures": 3,
-      "totalMs": 848878,
-      "lastMs": 120007,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T09:52:04.361Z"
+      "jsonFailures": 4,
+      "totalMs": 914738,
+      "lastMs": 65860,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T09:53:25.693Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T09:52:19.833Z"
+  "updatedAt": "2026-10-04T09:53:34.763Z"
 }
