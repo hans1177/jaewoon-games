@@ -444,6 +444,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
+  const synchronizedCount=(packId,fallback=0)=>{
+    const row=syncRows.find(item=>item.packId===packId);
+    return row?Number(row.count||0):Number(fallback||0);
+  };
   const seeds=companySeedRows(repoRoot);
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
   const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
@@ -454,6 +458,26 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   });
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
+  const environmentCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-environment-v1')?.catalog||{};
+
+  if(next.internalAssetCompositionContract){
+    const prior=next.internalAssetCompositionContract;
+    next.internalAssetCompositionContract={
+      ...prior,
+      uiComponentCount:synchronizedCount('roblox-common-ui-v1',prior.uiComponentCount),
+      uiRegistryAtomCount:synchronizedCount('roblox-common-ui-v1',prior.uiRegistryAtomCount),
+      motionAtomCount:synchronizedCount('roblox-common-motion-v1',prior.motionAtomCount),
+      worldPropCount:synchronizedCount('roblox-common-world-props-v1',prior.worldPropCount),
+      itemCount:synchronizedCount('roblox-common-items-v1',prior.itemCount),
+      toolCount:synchronizedCount('roblox-common-tools-v1',prior.toolCount),
+      creaturePartCount:synchronizedCount('roblox-common-creature-parts-v1',prior.creaturePartCount),
+      vfxAtomCount:synchronizedCount('roblox-common-vfx-v1',prior.vfxAtomCount),
+      materialAtomCount:synchronizedCount('roblox-common-materials-v1',prior.materialAtomCount),
+      environmentTerrainCompositionCount:Array.isArray(environmentCatalog.terrainCompositions)?environmentCatalog.terrainCompositions.length:Number(prior.environmentTerrainCompositionCount||0),
+      environmentBackgroundDepthLayers:Array.isArray(environmentCatalog.backgroundCompositionContract?.layers)?environmentCatalog.backgroundCompositionContract.layers.length:Number(prior.environmentBackgroundDepthLayers||0),
+      environmentStateCount:Array.isArray(environmentCatalog.environmentStateContract?.states)?environmentCatalog.environmentStateContract.states.length:Number(prior.environmentStateCount||0)
+    };
+  }
 
   next.companyCommonSeedAssetIdeation={
     ...(next.companyCommonSeedAssetIdeation||{}),
@@ -463,8 +487,6 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourcePattern:'artbook-submissions/seed-*/current.json',
     currentSeedCount:seedPlan.seedCount,
     currentSeedIds:seedPlan.seeds.map(row=>row.gameId),
-    currentDetectedSignals:seedPlan.detectedSignals,
-    currentCrossGenreKitCount:seedPlan.crossGenreKitCount,
     planBuilder:'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan'
   };
 
@@ -489,11 +511,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   };
 
   next.internalAssetLibraryAutomation={
+    ...(next.internalAssetLibraryAutomation||{}),
     version:1,
     contract:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT',
     catalogDiscovery:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.catalogDiscovery,
-    discoveredCatalogCount:catalogs.length,
-    catalogFingerprint:fingerprint,
     countPolicy:libraryPlan.countPolicy,
     hardMaximum:null,
     overSoftLimitAction:libraryPlan.overSoftLimitAction,
@@ -505,15 +526,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     runtimeVerificationRequired:true,
     domainPlan:libraryPlan.domains.map(row=>({
       domain:row.domain,currentCount:row.currentCount,minimum:row.minimum,targetMin:row.targetMin,targetMax:row.targetMax,
-      softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,missingDepthRoles:row.missingDepthRoles,
-      suggestedIdeaIds:row.suggestedIdeas.map(idea=>idea.ideaId)
+      softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,overSoftLimitBlocksUse:false
     })),
     uiSubsystemPlan:libraryPlan.uiSubsystems.map(row=>({
       subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin,targetMax:row.targetMax,
-      softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,suggestedIdeaIds:row.suggestedIdeas.map(idea=>idea.ideaId)
+      softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,overSoftLimitBlocksUse:false
     })),
-    uiCompositionGraph:libraryPlan.uiCompositionGraph,
-    synchronizedPackIds:syncRows.map(row=>row.packId),
     staleRowsAreReviewOnly:true,
     workflowCreated:false,
     schedulerCreated:false,
@@ -526,7 +544,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const beforeComparable=JSON.stringify({...original,version:0,updatedAt:null});
   const afterComparable=JSON.stringify({...next,version:0,updatedAt:null});
   const changed=beforeComparable!==afterComparable;
-  if(changed)next.version=Math.max(0,Number(original.version)||0)+1;
+  if(changed){
+    next.version=Math.max(0,Number(original.version)||0)+1;
+    if(next.internalAssetLibraryAutomation)next.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion=next.version;
+  }
   let persisted=false,persistError=null;
   if(persist&&changed){
     try{

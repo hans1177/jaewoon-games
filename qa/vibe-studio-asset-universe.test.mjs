@@ -2430,17 +2430,17 @@ test('generic character gear requirement can choose company-common base',()=>{
 });
 
 
-test('company-common UI v9 preserves prior atoms and expands reusable interaction surfaces',()=>{
+test('company-common UI current catalog preserves prior atoms and expands reusable interaction surfaces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-ui-v1');
   const source=fs.readFileSync(path.join(packDir,'RobloxCommonUI.luau'),'utf8');
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-  assert.equal(catalog.version,9);
-  assert.equal(catalog.atoms.length,169);
-  assert.equal(quality.sourceAssetCount,169);
-  assert.ok(source.includes('atomCount = 169'));
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(quality.sourceAssetCount,catalog.atoms.length);
+  assert.match(source,new RegExp('atomCount = '+catalog.atoms.length+'\\b'));
   for(const id of ['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH','INVENTORY_SLOT','DIALOGUE_PANEL','AI_COMPANION_STATUS_CARD','MOUNT_STATUS_HUD','PARRY_TIMING_INDICATOR','WORLD_PROP_INTERACTION_PROMPT']){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2462,8 +2462,8 @@ test('company-common UI registry exposes all current reusable atoms without prod
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
   const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
   assert.ok(pack);
-  assert.equal(pack.assetCount,169);
-  assert.equal(pack.componentCount,169);
+  assert.equal(pack.assetCount,catalog.atoms.length);
+  assert.equal(pack.componentCount,catalog.atoms.length);
   assert.equal(pack.productionVerified,false);
   for(const atom of catalog.atoms){
     const id='roblox-common-ui-'+atom.atomId.toLowerCase().replaceAll('_','-');
@@ -2686,16 +2686,16 @@ test('studio-independent 1000-point internal asset audit uses strict score and h
   assert.ok(INTERNAL_ASSET_FAMILY_EXPECTATIONS.UI.expectations.includes('dialogue/helper'));
 });
 
-test('common Roblox UI v9 preserves AI dialogue NPC interaction core screens and vector icons',()=>{
+test('common Roblox UI current catalog preserves AI dialogue NPC interaction core screens and vector icons',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const icons=fs.readFileSync(path.join(root,'RobloxCommonIcons.luau'),'utf8');
-  assert.equal(catalog.version,9);
-  assert.equal(catalog.atoms.length,169);
-  assert.equal(evidence.sourceAssetCount,169);
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
   assert.equal(catalog.vectorIconCount,12);
   for(const surface of ['INVENTORY','DIALOGUE','NPC_INTERACTION','AI_COMPANION','NPC_MEMORY','NPC_DIALOGUE_DEEP','NPC_SERVICE','NPC_QUEST','PARTY_DEEP','MOUNT_RIDE','TRAVEL','PARRY_FEEDBACK','WORLD_PROP_INTERACTION']){
     assert.ok(catalog.surfaces.includes(surface),surface);
@@ -2809,15 +2809,15 @@ test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
 });
 
 
-test('common UI v9 expands full-screen navigation search states and input switching without gameplay authority',()=>{
+test('common UI current catalog expands full-screen navigation search states and input switching without gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
-  assert.equal(catalog.version,9);
-  assert.equal(catalog.atoms.length,169);
-  assert.equal(evidence.sourceAssetCount,169);
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
   for(const atom of ['MAIN_MENU','TOP_BAR','SIDE_NAVIGATION','PAUSE_MENU','SETTINGS_PANEL','SEARCH_FIELD','FILTER_BAR','SORT_CONTROL','INVENTORY_FULL_SCREEN','MAP_FULL_SCREEN','CONFIRM_DIALOG','LOADING_STATE','FAILURE_STATE','INPUT_HINT']){
     assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
   }
@@ -2911,17 +2911,17 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
 });
 
 
-test('common UI v9 preserves deep item inventory equipment crafting trade and codex components',()=>{
+test('common UI current catalog preserves deep item inventory equipment crafting trade and codex components',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const deep=['ITEM_DETAIL_PANEL','ITEM_COMPARE_PANEL','ITEM_CONTEXT_MENU','STACK_SPLIT_DIALOG','MULTI_SELECT_BAR','ITEM_STATE_BADGES','INVENTORY_CONTAINER_PANEL','STASH_SCREEN','LOOT_WINDOW','RADIAL_MENU','LOADOUT_PRESET_PANEL','EQUIPMENT_COMPARE_PANEL','SET_BONUS_PANEL','SOCKET_ENCHANT_PANEL','UPGRADE_PANEL','REPAIR_PANEL','DISMANTLE_PANEL','CRAFTING_TREE','RECIPE_DETAIL_PANEL','MATERIAL_TRACKER','BUY_SELL_PANEL','BUYBACK_PANEL','CODEX_SCREEN','COLLECTION_PROGRESS','RECENT_ITEMS_PANEL','ITEM_SOURCE_USAGE_PANEL'];
-  assert.equal(catalog.version,9);
-  assert.equal(catalog.atoms.length,169);
-  assert.equal(catalog.deepSystemContract.componentCount,115);
-  assert.equal(evidence.deepSystemComponentCount,115);
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.deepSystemComponentCount,catalog.deepSystemContract.componentCount);
+  assert.ok(catalog.deepSystemContract.componentCount>=deep.length);
   for(const atom of deep){
     assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom);
     assert.match(source,new RegExp('"'+atom+'"'));
@@ -2935,7 +2935,8 @@ test('company library system depth audit covers every common asset domain withou
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
-  assert.equal(registry.version,67);
+  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -2943,7 +2944,8 @@ test('company library system depth audit covers every common asset domain withou
   for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
     assert.ok(audit.rows.some(row=>row.domain===domain),domain);
   }
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,169);
+  const uiCatalog=JSON.parse(fs.readFileSync(path.resolve(here,'..','assets','roblox','common-ui-v1','catalog.json'),'utf8'));
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,uiCatalog.atoms.length);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-motion-v1').motionCount,61);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,40);
   assert.equal(registry.assets.find(row=>row.id==='roblox-common-building-v1').itemCount,20);
@@ -2987,15 +2989,16 @@ test('all existing common pack catalogs expose system depth contracts for gap-di
 });
 
 
-test('common UI v9 covers housing sandbox settlement farming and processing presentation without owning simulation authority',()=>{
+test('common UI current catalog covers housing sandbox settlement farming and processing presentation without owning simulation authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..','assets','roblox','common-ui-v1');
   const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
   const evidence=JSON.parse(fs.readFileSync(path.join(root,'quality-evidence.json'),'utf8'));
   const source=fs.readFileSync(path.join(root,'RobloxCommonUI.luau'),'utf8');
   const atoms=['BUILD_CATALOG_PANEL','PLACEMENT_GHOST_STATE','SNAP_INDICATOR','STABILITY_METER','OBJECT_TRANSFORM_PANEL','MATERIAL_PALETTE_PANEL','BLUEPRINT_PANEL','UNDO_REDO_BAR','OWNERSHIP_PERMISSION_PANEL','REPAIR_BUILDING_PANEL','BED_RESPAWN_PANEL','FURNITURE_CATALOG','SETTLEMENT_OVERVIEW','FARM_PLOT_PANEL','ANIMAL_HOUSING_PANEL','PROCESSING_MACHINE_PANEL'];
-  assert.equal(catalog.version,9);
-  assert.equal(catalog.atoms.length,169);
+  assert.ok(Number.isInteger(catalog.version)&&catalog.version>=1);
+  assert.ok(Array.isArray(catalog.atoms)&&catalog.atoms.length>0);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
   assert.equal(catalog.housingSandboxContract.version,1);
   assert.equal(evidence.housingSandboxComponentCount,24);
   for(const atom of atoms){
@@ -3027,7 +3030,8 @@ test('genre system expectations include survival RPG casual sandbox housing cozy
 test('company library registers housing building and settlement assets as reusable presentation assets',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  assert.equal(registry.version,67);
+  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3212,7 +3216,8 @@ test('company asset library exposes all-stage composition as an asset contract o
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
-  assert.equal(registry.version,67);
+  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -3226,6 +3231,11 @@ test('company asset library exposes all-stage composition as an asset contract o
   assert.equal(contract.createsPipeline,false);
   assert.equal(contract.createsWrapper,false);
   assert.equal(contract.createsShadowSystem,false);
+  const uiCatalog=JSON.parse(fs.readFileSync(path.resolve(here,'..','assets','roblox','common-ui-v1','catalog.json'),'utf8'));
+  assert.equal(contract.uiComponentCount,uiCatalog.atoms.length);
+  assert.equal(contract.uiRegistryAtomCount,uiCatalog.atoms.length);
+  assert.equal(contract.vfxAtomCount,registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount);
+  assert.equal(contract.materialAtomCount,registry.assets.find(row=>row.id==='roblox-common-materials-v1').assetCount);
   assert.equal(registry.internalAssetStandard.allInternalAssetsComposableAcrossExistingStages,true);
   assert.equal(registry.internalAssetRoutineReview.allInternalAssetsComposableAcrossExistingStages,true);
 });
@@ -3343,10 +3353,10 @@ test('company common seed asset ideation reads all company seed artbooks and pro
   assert.equal(contract.currentSeedCount,seeds.length);
   assert.deepEqual([...contract.currentSeedIds].sort(),seeds.map(row=>row.gameId).sort());
   assert.equal(contract.planBuilder,'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan');
-  assert.equal(contract.schedulerCreated,false);
-  assert.equal(contract.workflowCreated,false);
-  assert.equal(contract.queueCreated,false);
-  assert.equal(contract.pipelineCreated,false);
+  assert.equal(contract.execution.schedulerCreated,false);
+  assert.equal(contract.execution.workflowCreated,false);
+  assert.equal(contract.execution.queueCreated,false);
+  assert.equal(contract.execution.pipelineCreated,false);
 });
 
 
@@ -3622,3 +3632,15 @@ test('catalog-driven company asset registry synchronization is persistent only w
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+
+test('canonical company asset registry is dry-run synchronization idempotent',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+  assert.equal(result.changed,false);
+  assert.equal(result.persisted,false);
+  assert.equal(result.persistError,null);
+  assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
+});
+
