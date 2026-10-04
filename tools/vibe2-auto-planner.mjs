@@ -2147,8 +2147,13 @@ export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
     `${root}/client/BattleVisual.luau`
   ].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
   if(!candidates.length)return null;
-  const sourceText=candidates.map(relative=>readText(sourceFile(repoRoot,relative))).join('\n');
-  if(/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(sourceText)&&/(?:StudioAssets|StudioAssetAtoms|StudioAssetAtom)/.test(sourceText))return null;
+  const sourceRows=candidates.map(relative=>({relative,text:readText(sourceFile(repoRoot,relative))}));
+  const sourceText=sourceRows.map(row=>row.text).join('\n');
+  const bindingMetadataPresent=/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(sourceText)&&/(?:StudioAssets|StudioAssetAtoms|StudioAssetAtom)/.test(sourceText);
+  const executableText=sourceRows.filter(row=>!/\/shared\/GameConfig\.luau$/i.test(row.relative)).map(row=>row.text).join('\n');
+  const executableAssetBindingPresent=/\bRobloxCommon(?:CharacterGear|CreatureParts|Building|Environment|Foliage|Tools|Items|SkillPresentation|Materials|VFX|UI|Presentation|Motion|WorldProps)\b/.test(executableText);
+  if(bindingMetadataPresent&&executableAssetBindingPresent)return null;
+  const configOnlyAssetBinding=bindingMetadataPresent&&!executableAssetBindingPresent;
   const id=`${project.gameId}-roblox-studio-asset-backfill-v1`;
   if(hasTask(queue,id))return null;
   const goal=`[PRESENTATION_PASS:ASSET_ADAPTATION] [ROBLOX_STUDIO_ASSET_BACKFILL]
@@ -2169,6 +2174,7 @@ local STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION, STUDIO_ASSET_FAM
     'presentation-pass:ASSET_ADAPTATION',
     'roblox-studio-asset-backfill:v1',
     'roblox-studio-asset-selection-handoff:required',
+    ...(configOnlyAssetBinding?['roblox-studio-asset-config-only-binding:REPAIR_REQUIRED']:[]),
     'roblox-studio-asset-planner-source-mutation:forbidden',
     'roblox-studio-asset-vibe-application:required',
     'roblox-studio-asset-static-binding-qa:required',
