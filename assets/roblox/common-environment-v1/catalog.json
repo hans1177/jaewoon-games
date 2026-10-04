@@ -1,9 +1,9 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-environment-v1",
   "family": "ENVIRONMENT",
   "platform": "ROBLOX",
-  "title": "Roblox 회사 공용 환경/배경 10바이옴 + 장면조합 12종 v3",
+  "title": "Roblox 회사 공용 환경/배경 10바이옴 + 장면조합 24종 v4",
   "license": "project-original",
   "companyCommonBase": true,
   "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -35,7 +35,9 @@
     "TERRAIN_COMPOSITION",
     "VILLAGE_CLUSTER",
     "RUIN_CLUSTER",
-    "DISCOVERY_POI"
+    "DISCOVERY_POI",
+    "BACKGROUND_LAYER",
+    "INTERACTION_PRESENTATION"
   ],
   "recipeCount": 92,
   "detailTiers": [
@@ -137,9 +139,43 @@
       "CLIFF_SETTLEMENT",
       "COAST_VILLAGE",
       "RUINED_HIGHLAND",
-      "INTERIOR_EXTERIOR_TRANSITION"
+      "INTERIOR_EXTERIOR_TRANSITION",
+      "MOUNTAIN_FOOT",
+      "RIVER_TOWN",
+      "SNOW_HAMLET",
+      "OASIS_SETTLEMENT",
+      "WETLAND_HAMLET",
+      "CAVE_OUTPOST",
+      "CITY_OUTSKIRTS",
+      "RUIN_VALLEY",
+      "ISLAND_TERRACES",
+      "FOREST_GULLY",
+      "DESERT_ESCARPMENT",
+      "SNOW_BASIN",
+      "HILL",
+      "RIDGE",
+      "VALLEY",
+      "BASIN",
+      "PLATEAU",
+      "TERRACE",
+      "RIVER",
+      "BANK",
+      "BEACH",
+      "GULLY",
+      "CREEK",
+      "ROAD_GRID",
+      "DUNE_RIDGE",
+      "WETLAND_ISLAND",
+      "ROCK_FIELD",
+      "CAVE_FLOOR",
+      "LEDGE",
+      "ESCARPMENT",
+      "BACKGROUND_LAYER",
+      "BACKGROUND_PARALLAX",
+      "PROP_INTERACTION",
+      "SETTLEMENT_VARIATION"
     ],
-    "currentAssetCount": 22,
+    "currentAssetCount": 24,
     "missingComponentCandidates": [
       "WEATHER",
       "SKY_ATMOSPHERE",
@@ -176,7 +212,19 @@
     "FARM_HAMLET",
     "CLIFF_SETTLEMENT",
     "COAST_VILLAGE",
-    "RUINED_HIGHLAND"
+    "RUINED_HIGHLAND",
+    "MOUNTAIN_FOOT",
+    "RIVER_TOWN",
+    "SNOW_HAMLET",
+    "OASIS_SETTLEMENT",
+    "WETLAND_HAMLET",
+    "CAVE_OUTPOST",
+    "CITY_OUTSKIRTS",
+    "RUIN_VALLEY",
+    "ISLAND_TERRACES",
+    "FOREST_GULLY",
+    "DESERT_ESCARPMENT",
+    "SNOW_BASIN"
   ],
   "backgroundCompositionContract": {
     "layers": [
@@ -184,14 +232,19 @@
       "MIDGROUND",
       "BACKGROUND_1",
       "BACKGROUND_2",
-      "BACKGROUND_3"
+      "BACKGROUND_3",
+      "BACKGROUND_4",
+      "BACKGROUND_5"
     ],
     "principles": [
       "SILHOUETTE_DEPTH",
       "PATH_TO_LANDMARK",
       "LANDMARK_READABILITY",
       "VILLAGE_CLUSTER_VARIATION",
-      "POI_DISCOVERY_CUE"
+      "POI_DISCOVERY_CUE",
+      "FIVE_LAYER_DEPTH",
+      "PARALLAX_BAND_METADATA",
+      "TERRAIN_TO_SETTLEMENT_CONTINUITY"
     ],
     "terrainForms": [
       "HILL",
@@ -204,19 +257,36 @@
       "CLIFF",
       "RIVER",
       "BANK",
-      "BEACH"
+      "BEACH",
+      "GULLY",
+      "CREEK",
+      "ROAD_GRID",
+      "DUNE_RIDGE",
+      "WETLAND_ISLAND",
+      "ROCK_FIELD",
+      "CAVE_FLOOR",
+      "LEDGE",
+      "ESCARPMENT"
     ],
     "settlementCompositions": [
       "VILLAGE_HILL",
       "VILLAGE_CROSSROADS",
       "FARM_HAMLET",
       "CLIFF_SETTLEMENT",
-      "COAST_VILLAGE"
+      "COAST_VILLAGE",
+      "RIVER_TOWN",
+      "SNOW_HAMLET",
+      "OASIS_SETTLEMENT",
+      "WETLAND_HAMLET",
+      "CAVE_OUTPOST",
+      "CITY_OUTSKIRTS"
     ],
     "gameplayAuthority": false,
     "collisionAuthority": false,
     "navigationAuthority": false,
-    "spawnAuthority": false
+    "spawnAuthority": false,
+    "backgroundLayerCount": 5,
+    "parallaxMetadata": true
   },
   "environmentInteractionPresentation": {
     "roles": [
