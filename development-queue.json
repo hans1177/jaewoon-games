@@ -16557,8 +16557,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T05:12:43.771Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -16588,27 +16588,27 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-04T07:50:18.991Z",
+      "updatedAt": "2026-10-04T07:58:14.088Z",
       "robloxSourceCommit": "af4758478a227efe9638b70babf66676fca95842",
       "robloxSourceBootstrapPassedAt": "2026-10-04T07:50:18.991Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "8246e39875d8a5ef7c5ee4246bc43cd607fc8cd5",
+      "robloxBuildSourceRevision": "af4758478a227efe9638b70babf66676fca95842",
       "robloxBuildArtifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
-      "robloxBuildPassedAt": "2026-10-04T07:40:37.634Z",
+      "robloxBuildPassedAt": "2026-10-04T07:58:14.088Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-04T07:40:37.634Z",
+      "robloxBuildPreflightPassedAt": "2026-10-04T07:58:14.088Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "cozy-island",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-04T07:40:36.099Z",
-        "sourceRevision": "8246e39875d8a5ef7c5ee4246bc43cd607fc8cd5",
+        "checkedAt": "2026-10-04T07:58:12.176Z",
+        "sourceRevision": "af4758478a227efe9638b70babf66676fca95842",
         "artifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -16628,7 +16628,7 @@
           "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "8246e39875d8a5ef7c5ee4246bc43cd607fc8cd5",
+            "sourceRevision": "af4758478a227efe9638b70babf66676fca95842",
             "artifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -16645,25 +16645,25 @@
             "model": "llama3.2:1b",
             "decision": "PASS",
             "blockers": [],
-            "note": "No concrete build-stage blocker found."
+            "note": "No concrete build-stage blockers found."
           }
         ],
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-04T07:40:37.634Z",
+      "robloxFoundationF0PassedAt": "2026-10-04T07:58:14.088Z",
       "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "cozy-island",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T07:40:36.820Z",
+        "checkedAt": "2026-10-04T07:58:12.744Z",
         "sourcePath": "roblox-games/cozy-island",
-        "sourceRevision": "8246e39875d8a5ef7c5ee4246bc43cd607fc8cd5",
+        "sourceRevision": "af4758478a227efe9638b70babf66676fca95842",
         "artifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
         "rebuiltArtifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
-        "artifactRunId": 37184896060,
+        "artifactRunId": 37185624729,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
@@ -16953,12 +16953,12 @@
         "gameId": "cozy-island",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T07:40:36.820Z",
+        "checkedAt": "2026-10-04T07:58:12.744Z",
         "sourcePath": "roblox-games/cozy-island",
-        "sourceRevision": "8246e39875d8a5ef7c5ee4246bc43cd607fc8cd5",
+        "sourceRevision": "af4758478a227efe9638b70babf66676fca95842",
         "artifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
         "rebuiltArtifactIdentity": "sha256:d5b891a5fc4ad77e4b78c4472a5330b5063903ce8019e6dddd557b44552d0ae2",
-        "artifactRunId": 37184896060,
+        "artifactRunId": 37185624729,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
@@ -17277,7 +17277,7 @@
       "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -57244,7 +57244,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T07:58:06.808Z",
+  "updatedAt": "2026-10-04T07:58:14.088Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
