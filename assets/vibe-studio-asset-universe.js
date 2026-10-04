@@ -102,7 +102,8 @@ export const INTERNAL_ASSET_FAMILY_EXPECTATIONS=Object.freeze({
 });
 export const COMMON_UI_SURFACE_EXPECTATIONS=Object.freeze([
   'HUD','NAVIGATION','INVENTORY','EQUIPMENT','CHARACTER_SHEET','MINIMAP','DIALOGUE','AI_DIALOGUE_HELPER','NPC_INTERACTION',
-  'QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR','INTERACTION_PROMPT','TOOLTIP','MODAL'
+  'QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR','INTERACTION_PROMPT','TOOLTIP','MODAL',
+  'MAIN_MENU','PAUSE_MENU','SETTINGS','SEARCH','FILTER_SORT','MAP_PANEL','JOURNAL','INPUT_HINT','SAVE_STATUS','PROFILE','LOADING','INTRO','SCREEN_TRANSITION'
 ]);
 
 export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
@@ -122,7 +123,7 @@ export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
   ENVIRONMENT:Object.freeze({
     BIOME:20,TERRAIN:18,GROUND_DETAIL:20,TREE:24,SHRUB:18,GRASS:12,FLOWER:12,ROCK:20,
     WATER:12,LANDMARK:12,PATH_ROAD:12,SET_DRESSING:30,WEATHER:12,SKY_ATMOSPHERE:10,LIGHTING_PRESET:10,
-    STREAMING_OR_LOD:6
+    BACKGROUND_PROFILE:14,PRESENTATION_LANDMARK:14,STREAMING_OR_LOD:6
   }),
   WEAPON:Object.freeze({
     MELEE:20,RANGED:12,MAGIC_FOCUS:10,SHIELD:8,THROWN:8,TOOL:12,EQUIPPED_MODEL:20,WORLD_DROP_MODEL:20,
@@ -147,7 +148,8 @@ export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
   UI:Object.freeze({
     ICON:48,FRAME:16,BUTTON:18,HUD:16,INVENTORY:16,EQUIPMENT:12,CHARACTER_SHEET:10,MINIMAP:10,
     DIALOGUE:16,AI_DIALOGUE_HELPER:10,NPC_INTERACTION:16,QUEST:14,PARTY:10,CRAFTING:12,SHOP:12,
-    NOTIFICATION:12,STATUS_EFFECT:16,HOTBAR:10,TOOLTIP:10,MODAL:10,LOADING_ERROR_EMPTY_STATE:18
+    NOTIFICATION:12,STATUS_EFFECT:16,HOTBAR:10,TOOLTIP:10,MODAL:10,LOADING_ERROR_EMPTY_STATE:18,
+    MENU:18,SETTINGS:12,NAVIGATION_BAR:12,SEARCH_FILTER_SORT:12,MAP_PANEL:10,JOURNAL:10,LOADING:8,INTRO:8,SCREEN_TRANSITION:6
   }),
   MOTION:Object.freeze({
     IDLE:12,LOCOMOTION:36,START_STOP:12,TURN:12,TRAVERSAL:24,COMBAT:72,WEAPON_COMBAT:52,
@@ -166,13 +168,13 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
   CHARACTER:Object.freeze(['PALETTE','MATERIAL','PROPORTION','FACE_HAIR','CLOTHING','ARMOR','ACCESSORY','EQUIPMENT_SOCKET','MOTION_STYLE']),
   CREATURE:Object.freeze(['PALETTE','MATERIAL','BODY_PROPORTION','HEAD','HORN','TAIL','WING','SHELL','APPENDAGE','ARMOR_PLATE','MOTION_STYLE']),
   BUILDING:Object.freeze(['MATERIAL','ROOF','WALL','DOOR','WINDOW','TRIM','SIGNAGE','PROP_SOCKET','SET_DRESSING','WEATHERING']),
-  ENVIRONMENT:Object.freeze(['PALETTE','MATERIAL','VEGETATION_MIX','ROCK_FORM','GROUND_DETAIL','LANDMARK_DETAIL','WEATHER','LIGHTING','SET_DRESSING']),
+  ENVIRONMENT:Object.freeze(['PALETTE','MATERIAL','VEGETATION_MIX','ROCK_FORM','GROUND_DETAIL','LANDMARK_DETAIL','WEATHER','LIGHTING','SET_DRESSING','BACKGROUND_DEPTH','FOG','PRESENTATION_LANDMARK']),
   WEAPON:Object.freeze(['PALETTE','MATERIAL','BLADE_OR_HEAD','GRIP','GUARD','ORNAMENT','WEAR','VFX_SOCKET','ICON_PRESENTATION']),
   SKILL:Object.freeze(['PALETTE','SHAPE_LANGUAGE','TELEGRAPH','TRAIL','PROJECTILE','IMPACT','STATUS_PRESENTATION','ICON','AUDIO_ROLE','DENSITY']),
   MATERIAL:Object.freeze(['PALETTE','ROUGHNESS','SPECULAR','NORMAL_DETAIL','WEATHERING','DAMAGE','WET_DRY','EMISSIVE']),
   AUDIO:Object.freeze(['EQ','PITCH_RANGE','VARIATION','LAYERING','DISTANCE','MIX_PRIORITY','LOOP','EVENT_MAPPING']),
   VFX:Object.freeze(['PALETTE','SHAPE_LANGUAGE','PARTICLE_DENSITY','TRAIL','IMPACT','TIMING','LOD','EVENT_MAPPING']),
-  UI:Object.freeze(['THEME','PALETTE','TYPOGRAPHY','ICON','BORDER','CORNER','DEPTH','LAYOUT','SPACING','STATE_VARIANTS','MOTION_FEEDBACK']),
+  UI:Object.freeze(['THEME','PALETTE','TYPOGRAPHY','ICON','BORDER','CORNER','DEPTH','LAYOUT','SPACING','STATE_VARIANTS','MOTION_FEEDBACK','MENU_DEPTH','INPUT_HINTS','LOADING_STATE','INTRO_TIMING','REDUCED_MOTION']),
   MOTION:Object.freeze(['SPEED','AMPLITUDE','POSE_EXAGGERATION','ANTICIPATION','RECOVERY','BLEND','SECONDARY_MOTION','CONTACT']),
   PROP:Object.freeze(['PALETTE','MATERIAL','PROPORTION','DETAIL_PARTS','WEATHERING','INTERACTION_STATE','ICON_PRESENTATION'])
 });
@@ -404,13 +406,13 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   CHARACTER:Object.freeze(['WORLD_MODEL','RIG','MATERIAL_SET','MOTION_SET','PORTRAIT_OR_ICON','LOD0','LOD1','LOD2']),
   CREATURE:Object.freeze(['WORLD_MODEL','BODY_PLAN_RIG','MATERIAL_SET','SPECIES_MOTION_SET','ICON','LOD0','LOD1','LOD2']),
   BUILDING:Object.freeze(['WORLD_MODEL','MODULAR_PARTS','INTERIOR_WHEN_APPLICABLE','MATERIAL_SET','COLLISION_NAV_PROXY','LOD0','LOD1','LOD2']),
-  ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','LOD_OR_STREAMING_VARIANTS']),
+  ENVIRONMENT:Object.freeze(['TERRAIN_OR_KIT','LANDMARK','SET_DRESSING','MATERIAL_SET','PLACEMENT_RULES','PRESENTATION_BACKGROUND','BACKGROUND_LAYERS','LOD_OR_STREAMING_VARIANTS']),
   WEAPON:Object.freeze(['EQUIPPED_MODEL','WORLD_DROP_MODEL','INVENTORY_ICON','CRAFTING_ICON_WHEN_CRAFTABLE','MATERIAL_SET','GRIP_SOCKET_MAP','LOD0','LOD1','LOD2']),
   SKILL:Object.freeze(['CAST_PRESENTATION','PROJECTILE_OR_AREA_VISUAL','IMPACT_PRESENTATION','ICON','AUDIO_ROLE','REACTION_PRESENTATION']),
   MATERIAL:Object.freeze(['BASE_MATERIAL','PLATFORM_VARIANT','WEATHERING_VARIANT','DAMAGE_VARIANT_WHEN_APPLICABLE']),
   AUDIO:Object.freeze(['SOURCE_ASSET','EVENT_BINDING','VARIATION_SET','MOBILE_BUDGET_VARIANT']),
   VFX:Object.freeze(['SOURCE_EFFECT','GAMEPLAY_EVENT_BINDING','MOBILE_BUDGET_VARIANT','LOD_OR_DENSITY_VARIANT']),
-  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','CHARACTER_SHEET','EQUIPMENT_COMPONENT','MINIMAP_COMPONENT','DIALOGUE_COMPONENT','AI_DIALOGUE_HELPER','NPC_INTERACTION_COMPONENT','QUEST_COMPONENT','PARTY_COMPONENT','CRAFTING_COMPONENT','SHOP_COMPONENT','NOTIFICATION_COMPONENT','STATUS_EFFECT_COMPONENT','HOTBAR_COMPONENT','INTERACTION_PROMPT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
+  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','MAIN_MENU','PAUSE_MENU','SETTINGS_PANEL','NAVIGATION_BARS','SEARCH_FILTER_SORT','INVENTORY_COMPONENT','CHARACTER_SHEET','EQUIPMENT_COMPONENT','MINIMAP_COMPONENT','MAP_PANEL','JOURNAL_PANEL','DIALOGUE_COMPONENT','AI_DIALOGUE_HELPER','NPC_INTERACTION_COMPONENT','QUEST_COMPONENT','PARTY_COMPONENT','CRAFTING_COMPONENT','SHOP_COMPONENT','NOTIFICATION_COMPONENT','STATUS_EFFECT_COMPONENT','HOTBAR_COMPONENT','LOADING_SCREEN','INTRO_PRESENTATION','SCREEN_TRANSITION','INTERACTION_PROMPT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
   MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
@@ -594,13 +596,13 @@ export const DEFAULT_COVERAGE_BASELINES=Object.freeze({
   CHARACTER:Object.freeze({BODY:5,FACE:10,HAIR:12,CLOTHING:20,ARMOR:12,ACCESSORY:12}),
   CREATURE:Object.freeze({BODY_PLAN:36,SPECIES:60,RIG:20,MUTATION:24,MOTION:12,SIGNATURE:12}),
   BUILDING:Object.freeze({MODULAR_EXTERIOR:30,INTERIOR:16,STRUCTURAL:12,NAVIGATION:5,PROP_SOCKET:10}),
-  ENVIRONMENT:Object.freeze({BIOME:18,TERRAIN:16,VEGETATION:30,ROCK:16,LANDMARK:10,WEATHER:10,PROP_DENSITY:8}),
+  ENVIRONMENT:Object.freeze({BIOME:18,TERRAIN:16,VEGETATION:30,ROCK:16,LANDMARK:10,WEATHER:10,PROP_DENSITY:8,BACKGROUND:14}),
   WEAPON:Object.freeze({MELEE:16,RANGED:8,MAGIC_FOCUS:6,SHIELD:5,THROWN:5}),
   SKILL:Object.freeze({CAST_MOTION:14,VFX:16,PROJECTILE:10,IMPACT:16,AUDIO:14,CAMERA:8,REACTION:12}),
   MATERIAL:Object.freeze({SURFACE:16,STYLE_VARIANT:6}),
   AUDIO:Object.freeze({FOOTSTEP:14,CREATURE_VOCAL:20,ATTACK:14,HIT:14,WEAPON:14,ENVIRONMENT:14,UI:10,MAGIC:14,BOSS:10,BUILDING:10,WEATHER:10}),
   VFX:Object.freeze({CAST:16,TRAIL:14,IMPACT:20,STATUS:16,ENVIRONMENT:16,WEATHER:10,DESTRUCTION:10,BOSS:10}),
-  UI:Object.freeze({ICON:30,FRAME:10,BUTTON:10,HUD:12,INVENTORY:10,MAP:10,STATUS:14,BOSS:8}),
+  UI:Object.freeze({ICON:30,FRAME:10,BUTTON:10,HUD:12,INVENTORY:10,MAP:10,STATUS:14,BOSS:8,MENU:18,SETTINGS:12,NAVIGATION:12,LOADING:8,INTRO:8,JOURNAL:8}),
   MOTION:Object.freeze({
     LOCOMOTION:32,TRAVERSAL:20,COMBAT:64,WEAPON_COMBAT:44,SKILL:24,DEFENSE:20,
     REACTION:24,SURVIVAL_CRAFTING:24,INTERACTION_UTILITY:20,PAIR:8,ACTING:12,DEATH:8
@@ -1712,6 +1714,8 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     }):null;
     selections.push(Object.freeze({
       family,subfamily,required:requirement.required!==false,
+      recommended:requirement.recommended===true,
+      flowStageRecommended:requirement.flowStageRecommended===true,
       assetId:picked?.row.id||null,
       score:scored?.score??null,
       sourceTier:scored?.sourceTier??0,
@@ -1727,6 +1731,10 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       directBindingReady:scored?.directBindingReady===true,
       adaptationReady:scored?.adaptationReady===true,
       adaptationAxes:scored?.adaptationAxes||Object.freeze([]),
+      flowStageUse:freezeList(picked?.asset?.flowStageUse||picked?.asset?.developmentStages||[]),
+      stageRoles:picked?.asset?.stageRoles||picked?.asset?.defaultStageRoles||null,
+      presentationRoles:freezeList(picked?.asset?.presentationRoles||picked?.asset?.presentationUse||[]),
+      sourcePackId:text(picked?.asset?.packId||picked?.asset?.sourcePackId)||null,
       lowQualityFallback:Boolean(picked&&Number(scored?.internalAuditScore||0)<INTERNAL_ASSET_AUDIT_PASS),
       qualityScoreBlocksBinding:false,
       internalAuditScoreBlocksBinding:false,
@@ -2491,7 +2499,21 @@ export function createStudioAssetUniversePlan({
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
   const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
-  const effectiveRequirements=inferredRequirements.map(requirement=>{
+  const targetPlatform=upper(platform);
+  const defaultPresentationRecommendations=['ROBLOX','UNITY'].includes(targetPlatform)?[
+    {family:'UI',subfamily:'MENU',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'SETTINGS',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'NAVIGATION',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'LOADING',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'INTRO',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'INVENTORY',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'MAP',required:false,recommended:true,flowStageRecommended:true},
+    {family:'UI',subfamily:'JOURNAL',required:false,recommended:true,flowStageRecommended:true},
+    {family:'ENVIRONMENT',subfamily:'BACKGROUND',required:false,recommended:true,flowStageRecommended:true}
+  ]:[];
+  const requirementKeys=new Set(inferredRequirements.map(row=>upper(row.family)+':'+upper(row.subfamily)));
+  const recommendedPresentationRequirements=defaultPresentationRecommendations.filter(row=>!requirementKeys.has(row.family+':'+row.subfamily));
+  const effectiveRequirements=[...inferredRequirements,...recommendedPresentationRequirements].map(requirement=>{
     if(text(requirement.currentAssetId))return requirement;
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
     const current=combinedAssets.find(asset=>{
@@ -2530,6 +2552,8 @@ export function createStudioAssetUniversePlan({
     conceptCoherence,
     gameVisualDna:visualDna,
     loadout,
+    defaultPresentationRecommendations:freezeList(defaultPresentationRecommendations),
+    recommendedPresentationRequirements:freezeList(recommendedPresentationRequirements),
     futureDemand,
     usageFeedback,
     baseMaterialRotation,
