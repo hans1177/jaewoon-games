@@ -12,18 +12,18 @@
   "lastSuccessfulModelCallAt": "2026-10-04T18:04:58.615Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 10,
+      "calls": 12,
       "successes": 2,
-      "failures": 8,
+      "failures": 10,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 31791,
-      "lastMs": 3237,
+      "totalMs": 37011,
+      "lastMs": 3603,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T18:05:01.854Z"
+      "updatedAt": "2026-10-04T18:07:03.260Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-04T17:50:07.661Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 8,
+      "calls": 10,
       "successes": 0,
-      "failures": 8,
+      "failures": 10,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 64108,
-      "lastMs": 6394,
+      "totalMs": 75843,
+      "lastMs": 6834,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T18:05:05.011Z"
+      "updatedAt": "2026-10-04T18:07:06.491Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 360004,
-      "lastMs": 120002,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T18:04:54.246Z"
+      "jsonFailures": 1,
+      "totalMs": 473554,
+      "lastMs": 113550,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T18:06:58.562Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T18:05:05.011Z"
+  "updatedAt": "2026-10-04T18:07:06.492Z"
 }
