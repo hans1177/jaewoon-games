@@ -40,6 +40,341 @@ export const STUDIO_ASSET_QUALITY_GRADES=Object.freeze([
   Object.freeze({min:70,id:'PROTOTYPE'}),
   Object.freeze({min:0,id:'REPAIR_REQUIRED'})
 ]);
+
+export const INTERNAL_ASSET_AUDIT_VERSION=1;
+export const INTERNAL_ASSET_AUDIT_MAX=1000;
+export const INTERNAL_ASSET_AUDIT_PASS=880;
+export const INTERNAL_ASSET_AUDIT_GRADES=Object.freeze([
+  Object.freeze({min:980,id:'MASTERPIECE'}),
+  Object.freeze({min:950,id:'ELITE'}),
+  Object.freeze({min:920,id:'HERO'}),
+  Object.freeze({min:880,id:'COMMERCIAL_READY'}),
+  Object.freeze({min:840,id:'HIGH_QUALITY'}),
+  Object.freeze({min:800,id:'DEVELOPMENT_READY'}),
+  Object.freeze({min:700,id:'PROTOTYPE'}),
+  Object.freeze({min:0,id:'REPAIR_REQUIRED'})
+]);
+export const INTERNAL_ASSET_AUDIT_WEIGHTS=Object.freeze({
+  IDENTITY_SILHOUETTE:80,
+  FORM_STRUCTURE:70,
+  MATERIAL_SURFACE:70,
+  COLOR_LIGHTING:50,
+  STYLE_COHERENCE:70,
+  DETAIL_FINISH:70,
+  READABILITY_SCALE:60,
+  MOTION_RIG:60,
+  FEEDBACK_STATES:50,
+  UI_UX_SYSTEM:60,
+  MODULAR_REUSE:70,
+  VARIATION_BREADTH:60,
+  PERFORMANCE_LOD:60,
+  ACCESSIBILITY_INPUT:50,
+  PROVENANCE_MAINTAINABILITY:50,
+  INTEGRATION_READINESS:70
+});
+export const INTERNAL_ASSET_AUDIT_AXIS_APPLICABILITY=Object.freeze({
+  CHARACTER:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  CREATURE:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  BUILDING:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  ENVIRONMENT:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  WEAPON:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  SKILL:Object.freeze(['IDENTITY_SILHOUETTE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  MATERIAL:Object.freeze(['MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  AUDIO:Object.freeze(['STYLE_COHERENCE','DETAIL_FINISH','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  VFX:Object.freeze(['IDENTITY_SILHOUETTE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  UI:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  MOTION:Object.freeze(['IDENTITY_SILHOUETTE','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','MOTION_RIG','FEEDBACK_STATES','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS']),
+  PROP:Object.freeze(['IDENTITY_SILHOUETTE','FORM_STRUCTURE','MATERIAL_SURFACE','COLOR_LIGHTING','STYLE_COHERENCE','DETAIL_FINISH','READABILITY_SCALE','FEEDBACK_STATES','UI_UX_SYSTEM','MODULAR_REUSE','VARIATION_BREADTH','PERFORMANCE_LOD','ACCESSIBILITY_INPUT','PROVENANCE_MAINTAINABILITY','INTEGRATION_READINESS'])
+});
+export const INTERNAL_ASSET_FAMILY_EXPECTATIONS=Object.freeze({
+  CHARACTER:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:88,FORM_STRUCTURE:85,DETAIL_FINISH:82,MOTION_RIG:82,STYLE_COHERENCE:82}),expectations:Object.freeze(['distinct silhouette at gameplay camera','anatomy/proportion hierarchy','face/hands/feet or equivalent identity detail','material separation','rig and deformation readiness','idle/locomotion/action/hit/death coverage','equipment/socket compatibility','LOD and mobile readability'])}),
+  CREATURE:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:90,FORM_STRUCTURE:86,DETAIL_FINISH:82,MOTION_RIG:84,STYLE_COHERENCE:82}),expectations:Object.freeze(['species-readable body plan','head/mouth/eye/appendage identity','locomotion-specific articulation','attack contact readability','hit/death presentation','surface/material breakup','variants beyond color-only identity','LOD and mobile silhouette'])}),
+  BUILDING:Object.freeze({critical:Object.freeze({FORM_STRUCTURE:86,STYLE_COHERENCE:84,DETAIL_FINISH:80,MODULAR_REUSE:82,PERFORMANCE_LOD:80}),expectations:Object.freeze(['modular exterior grammar','door/window/roof/foundation compatibility','interior when gameplay exposes it','collision/nav proxy readiness','prop sockets','material family variants','landmark readability','LOD'])}),
+  ENVIRONMENT:Object.freeze({critical:Object.freeze({STYLE_COHERENCE:86,DETAIL_FINISH:82,READABILITY_SCALE:84,MODULAR_REUSE:80,PERFORMANCE_LOD:82}),expectations:Object.freeze(['terrain/biome language','foreground-midground-background depth','landmark route readability','vegetation and rock families','set dressing density','weather/light compatibility','streaming/LOD','mobile clutter control'])}),
+  WEAPON:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:88,DETAIL_FINISH:84,MODULAR_REUSE:82,READABILITY_SCALE:82}),expectations:Object.freeze(['equipped model','world/drop model','inventory icon','crafting icon when craftable','grip/socket map','material variants','damage-state presentation when applicable','LOD'])}),
+  SKILL:Object.freeze({critical:Object.freeze({FEEDBACK_STATES:90,READABILITY_SCALE:86,STYLE_COHERENCE:84,PERFORMANCE_LOD:82}),expectations:Object.freeze(['cast anticipation','telegraph','travel/area presentation','impact','reaction','icon','audio role','mobile density variant'])}),
+  MATERIAL:Object.freeze({critical:Object.freeze({MATERIAL_SURFACE:92,STYLE_COHERENCE:84,DETAIL_FINISH:84,VARIATION_BREADTH:82}),expectations:Object.freeze(['base material','roughness/specular response','edge/wear logic','platform variant','weathering variant','damage variant when applicable','tile/scale consistency','style-lock compatibility'])}),
+  AUDIO:Object.freeze({critical:Object.freeze({STYLE_COHERENCE:84,DETAIL_FINISH:84,VARIATION_BREADTH:82,PROVENANCE_MAINTAINABILITY:90}),expectations:Object.freeze(['event role','variation set','mix priority','loop seam when looping','distance behavior','mobile budget','ducking/overlap policy','license/provenance'])}),
+  VFX:Object.freeze({critical:Object.freeze({FEEDBACK_STATES:90,READABILITY_SCALE:86,STYLE_COHERENCE:84,PERFORMANCE_LOD:84}),expectations:Object.freeze(['event binding','anticipation/impact/recovery readability','shape language','density tiers','mobile cap','pooling readiness','occlusion/clutter safety','color-blind readable cues when gameplay relevant'])}),
+  UI:Object.freeze({critical:Object.freeze({UI_UX_SYSTEM:90,ACCESSIBILITY_INPUT:90,FEEDBACK_STATES:86,VARIATION_BREADTH:84,READABILITY_SCALE:88,STYLE_COHERENCE:84}),expectations:Object.freeze(['HUD','inventory','character sheet','equipment','minimap','dialogue/helper','NPC interaction','quest','party','crafting','shop','notification','status effects','hotbar','interaction prompt','touch/keyboard/gamepad states','empty/loading/disabled/selected/error states'])}),
+  MOTION:Object.freeze({critical:Object.freeze({MOTION_RIG:94,VARIATION_BREADTH:84,DETAIL_FINISH:86,READABILITY_SCALE:82}),expectations:Object.freeze(['idle','walk','jog/run','start/stop','turn','jump/land','attack','hit','death','blend/interrupt','contact consistency','speed sync','motion LOD'])}),
+  PROP:Object.freeze({critical:Object.freeze({IDENTITY_SILHOUETTE:84,DETAIL_FINISH:82,MODULAR_REUSE:84,READABILITY_SCALE:80}),expectations:Object.freeze(['world model','interaction state','inventory icon when item','crafting icon when craftable','drop model when collectible','collision proxy','material variants','LOD'])})
+});
+export const COMMON_UI_SURFACE_EXPECTATIONS=Object.freeze([
+  'HUD','NAVIGATION','INVENTORY','EQUIPMENT','CHARACTER_SHEET','MINIMAP','DIALOGUE','AI_DIALOGUE_HELPER','NPC_INTERACTION',
+  'QUEST','PARTY','CRAFTING','SHOP','NOTIFICATION','STATUS_EFFECT','HOTBAR','INTERACTION_PROMPT','TOOLTIP','MODAL'
+]);
+
+export const INTERNAL_ASSET_MINIMUM_COVERAGE=Object.freeze({
+  CHARACTER:Object.freeze({
+    BODY_ARCHETYPE:8,FACE:16,HAIR:20,SKIN_OR_SURFACE:12,CLOTHING_INNER:12,CLOTHING_OUTER:16,
+    ARMOR:16,FOOTWEAR:10,ACCESSORY:20,PORTRAIT_OR_ICON:12,EQUIPMENT_SOCKET:12,DAMAGE_STATE:4,
+    RIG_PROFILE:6,LOD_LEVELS:3
+  }),
+  CREATURE:Object.freeze({
+    BODY_PLAN:40,SPECIES:80,HEAD_VARIANT:24,APPENDAGE:32,SURFACE_VARIANT:20,RIG_PROFILE:24,
+    LOCOMOTION_SET:24,ATTACK_SET:32,HIT_DEATH_SET:24,BOSS_SIGNATURE:16,MUTATION:32,LOD_LEVELS:3
+  }),
+  BUILDING:Object.freeze({
+    FOUNDATION:12,WALL:18,DOOR:12,WINDOW:12,ROOF:16,STAIR:8,FLOOR:12,INTERIOR_KIT:16,
+    EXTERIOR_DETAIL:20,PROP_SOCKET:12,LANDMARK:12,COLLISION_NAV_PROXY:8,MATERIAL_VARIANT:12,LOD_LEVELS:3
+  }),
+  ENVIRONMENT:Object.freeze({
+    BIOME:20,TERRAIN:18,GROUND_DETAIL:20,TREE:24,SHRUB:18,GRASS:12,FLOWER:12,ROCK:20,
+    WATER:12,LANDMARK:12,PATH_ROAD:12,SET_DRESSING:30,WEATHER:12,SKY_ATMOSPHERE:10,LIGHTING_PRESET:10,
+    STREAMING_OR_LOD:6
+  }),
+  WEAPON:Object.freeze({
+    MELEE:20,RANGED:12,MAGIC_FOCUS:10,SHIELD:8,THROWN:8,TOOL:12,EQUIPPED_MODEL:20,WORLD_DROP_MODEL:20,
+    INVENTORY_ICON:24,CRAFTING_ICON:16,GRIP_SOCKET_MAP:16,MATERIAL_VARIANT:16,DAMAGE_VARIANT:8,LOD_LEVELS:3
+  }),
+  SKILL:Object.freeze({
+    CAST:20,TELEGRAPH:20,PROJECTILE:14,AREA:14,TRAIL:16,IMPACT:24,REACTION:16,STATUS:16,
+    ICON:24,AUDIO_ROLE:20,CAMERA_ROLE:12,MOBILE_DENSITY_VARIANT:12
+  }),
+  MATERIAL:Object.freeze({
+    BASE_SURFACE:24,ROUGHNESS_RESPONSE:16,SPECULAR_RESPONSE:12,WEATHERING:16,DAMAGE:12,
+    WET_DRY:10,DIRT_MUD:10,EMISSIVE:10,TRANSPARENT:8,PLATFORM_VARIANT:12,STYLE_VARIANT:12
+  }),
+  AUDIO:Object.freeze({
+    FOOTSTEP:16,CREATURE_VOCAL:24,ATTACK:18,HIT:18,WEAPON:18,ENVIRONMENT:18,UI:16,MAGIC:18,
+    BOSS:12,BUILDING:12,WEATHER:12,DIALOGUE_UI:10,VARIATION_SET:16,MOBILE_BUDGET_VARIANT:10
+  }),
+  VFX:Object.freeze({
+    CAST:18,TELEGRAPH:18,TRAIL:16,IMPACT:24,STATUS:18,ENVIRONMENT:18,WEATHER:12,DESTRUCTION:12,
+    BOSS:12,REWARD:12,UI_FEEDBACK:12,MOBILE_DENSITY_VARIANT:12
+  }),
+  UI:Object.freeze({
+    ICON:48,FRAME:16,BUTTON:18,HUD:16,INVENTORY:16,EQUIPMENT:12,CHARACTER_SHEET:10,MINIMAP:10,
+    DIALOGUE:16,AI_DIALOGUE_HELPER:10,NPC_INTERACTION:16,QUEST:14,PARTY:10,CRAFTING:12,SHOP:12,
+    NOTIFICATION:12,STATUS_EFFECT:16,HOTBAR:10,TOOLTIP:10,MODAL:10,LOADING_ERROR_EMPTY_STATE:18
+  }),
+  MOTION:Object.freeze({
+    IDLE:12,LOCOMOTION:36,START_STOP:12,TURN:12,TRAVERSAL:24,COMBAT:72,WEAPON_COMBAT:52,
+    SKILL:28,DEFENSE:24,REACTION:28,SURVIVAL_CRAFTING:28,INTERACTION_UTILITY:24,PAIR:10,
+    ACTING:18,DEATH:12,BLEND_TRANSITION:20,MOTION_LOD:8
+  }),
+  PROP:Object.freeze({
+    FURNITURE:30,CONTAINER:16,CRAFTING:18,DECORATION:36,RESOURCE:18,INTERACTIVE:20,DESTRUCTION:12,
+    INVENTORY_ICON:20,CRAFTING_ICON:16,DROP_MODEL:18,COLLISION_PROXY:16,MATERIAL_VARIANT:20,LOD_LEVELS:3
+  })
+});
+
+
+
+export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
+  CHARACTER:Object.freeze(['PALETTE','MATERIAL','PROPORTION','FACE_HAIR','CLOTHING','ARMOR','ACCESSORY','EQUIPMENT_SOCKET','MOTION_STYLE']),
+  CREATURE:Object.freeze(['PALETTE','MATERIAL','BODY_PROPORTION','HEAD','HORN','TAIL','WING','SHELL','APPENDAGE','ARMOR_PLATE','MOTION_STYLE']),
+  BUILDING:Object.freeze(['MATERIAL','ROOF','WALL','DOOR','WINDOW','TRIM','SIGNAGE','PROP_SOCKET','SET_DRESSING','WEATHERING']),
+  ENVIRONMENT:Object.freeze(['PALETTE','MATERIAL','VEGETATION_MIX','ROCK_FORM','GROUND_DETAIL','LANDMARK_DETAIL','WEATHER','LIGHTING','SET_DRESSING']),
+  WEAPON:Object.freeze(['PALETTE','MATERIAL','BLADE_OR_HEAD','GRIP','GUARD','ORNAMENT','WEAR','VFX_SOCKET','ICON_PRESENTATION']),
+  SKILL:Object.freeze(['PALETTE','SHAPE_LANGUAGE','TELEGRAPH','TRAIL','PROJECTILE','IMPACT','STATUS_PRESENTATION','ICON','AUDIO_ROLE','DENSITY']),
+  MATERIAL:Object.freeze(['PALETTE','ROUGHNESS','SPECULAR','NORMAL_DETAIL','WEATHERING','DAMAGE','WET_DRY','EMISSIVE']),
+  AUDIO:Object.freeze(['EQ','PITCH_RANGE','VARIATION','LAYERING','DISTANCE','MIX_PRIORITY','LOOP','EVENT_MAPPING']),
+  VFX:Object.freeze(['PALETTE','SHAPE_LANGUAGE','PARTICLE_DENSITY','TRAIL','IMPACT','TIMING','LOD','EVENT_MAPPING']),
+  UI:Object.freeze(['THEME','PALETTE','TYPOGRAPHY','ICON','BORDER','CORNER','DEPTH','LAYOUT','SPACING','STATE_VARIANTS','MOTION_FEEDBACK']),
+  MOTION:Object.freeze(['SPEED','AMPLITUDE','POSE_EXAGGERATION','ANTICIPATION','RECOVERY','BLEND','SECONDARY_MOTION','CONTACT']),
+  PROP:Object.freeze(['PALETTE','MATERIAL','PROPORTION','DETAIL_PARTS','WEATHERING','INTERACTION_STATE','ICON_PRESENTATION'])
+});
+
+export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
+  version:2,
+  lowScoreUseAllowed:true,
+  scoreIsNotUsageGate:true,
+  studioRequiredForUse:false,
+  studioRequiredForAudit:false,
+  studioRequiredForReplacement:false,
+  preferReuseBeforeNewAuthoring:true,
+  preferCompanyCommonBaseWhenQualityComparable:true,
+  preservePriorAssetHistory:true,
+  adaptationModes:Object.freeze([
+    'USE_AS_IS',
+    'LIGHT_THEME_ADAPT',
+    'STYLE_ADAPT',
+    'RECOMBINE_PARTS',
+    'NATIVE_REAUTHOR_BASE',
+    'KEEP_CURRENT_AND_ITERATE'
+  ]),
+  hardBlockers:Object.freeze([
+    'EXPLICIT_INTERNAL_USE_FORBIDDEN',
+    'SECURITY_BLOCKED',
+    'CORRUPT_SOURCE',
+    'LICENSE_FORBIDDEN'
+  ]),
+  replacement:Object.freeze({
+    minimumEffectiveGain:10,
+    higherCompatibleEffectiveQualityPreferred:true,
+    currentAssetMayRemainUntilAdaptationReady:true,
+    noEmptySlotDuringReplacement:true,
+    manualOrGameLockWins:true,
+    studioNotRequired:true
+  })
+});
+
+function internalLicenseForbidden(value=''){
+  const license=upper(value);
+  if(!license)return false;
+  return /(?:^|[^A-Z0-9])NC(?:[^A-Z0-9]|$)/.test(license)
+    ||license.includes('NONCOMMERCIAL')
+    ||license.includes('NO-COMMERCIAL')
+    ||license.includes('COPYRIGHT_UNKNOWN')
+    ||license.includes('출처 불명');
+}
+
+export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},usage={}}={}){
+  const row=normalizeRegistryAsset(asset);
+  const family=upper(requirement.family||row.family);
+  const requestedSubfamily=upper(requirement.subfamily);
+  const concept=gameDna?.concept||createConceptProfile({styleFamily:row.styleFamily||'STYLIZED_FANTASY'});
+  const conceptQa=evaluateConceptCompatibility({asset,concept});
+  const targetPlatform=upper(gameDna?.targetPlatform||gameDna?.platform);
+  const platformCompatible=!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE';
+  const familyCompatible=!family||row.family===family;
+  const roleCompatible=!requestedSubfamily||row.subfamily===requestedSubfamily||row.tags.includes(requestedSubfamily);
+  const hardBlockers=[];
+  if(asset?.internalUseForbidden===true)hardBlockers.push('EXPLICIT_INTERNAL_USE_FORBIDDEN');
+  if(usage?.securityBlocked===true||asset?.securityBlocked===true)hardBlockers.push('SECURITY_BLOCKED');
+  if(usage?.corruptSource===true||asset?.corruptSource===true)hardBlockers.push('CORRUPT_SOURCE');
+  if(internalLicenseForbidden(asset?.license||asset?.policy))hardBlockers.push('LICENSE_FORBIDDEN');
+  if(usage?.lockedOut===true)hardBlockers.push('EXPLICIT_INTERNAL_USE_FORBIDDEN');
+
+  const audit=scoreInternalAssetAudit1000({asset,evidence:usage.internalAuditEvidence||usage.internalAudit||{}});
+  const declared=Number(
+    usage.internalAuditScore!==undefined?usage.internalAuditScore:
+    asset?.internalAuditScore!==undefined?asset.internalAuditScore:
+    Number.NaN
+  );
+  const baseQuality=Number.isFinite(declared)
+    ?clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX)
+    :audit.measuredAxisCount>0?audit.score:0;
+
+  const axes=INTERNAL_ASSET_ADAPTATION_AXES[row.family]||Object.freeze([]);
+  const declaredAxes=uniq(asset?.adaptationAxes||asset?.adaptationCapabilities||[]);
+  const adaptationAxes=declaredAxes.length?declaredAxes:axes;
+  const provenanceAvailable=Boolean(asset?.sourceHash||asset?.contentHash||asset?.sha256||asset?.sourceFiles?.length||asset?.path);
+  const canStyleAdapt=familyCompatible&&adaptationAxes.length>0;
+  const canRecombine=familyCompatible&&adaptationAxes.length>=3;
+  const canNativeReauthor=!platformCompatible&&provenanceAvailable&&familyCompatible;
+
+  let mode='USE_AS_IS';
+  let adaptationPenalty=0;
+  const adaptationReasons=[];
+  if(!familyCompatible){
+    mode='KEEP_CURRENT_AND_ITERATE';
+    adaptationPenalty+=220;
+    adaptationReasons.push('FAMILY_MISMATCH');
+  }else if(!roleCompatible){
+    mode=canRecombine?'RECOMBINE_PARTS':'KEEP_CURRENT_AND_ITERATE';
+    adaptationPenalty+=canRecombine?80:180;
+    adaptationReasons.push('ROLE_RECOMBINE_REQUIRED');
+  }else if(!platformCompatible){
+    mode=canNativeReauthor?'NATIVE_REAUTHOR_BASE':'KEEP_CURRENT_AND_ITERATE';
+    adaptationPenalty+=canNativeReauthor?70:200;
+    adaptationReasons.push('PLATFORM_REAUTHOR_REQUIRED');
+  }else if(!conceptQa.pass){
+    mode=canStyleAdapt?'STYLE_ADAPT':'KEEP_CURRENT_AND_ITERATE';
+    adaptationPenalty+=canStyleAdapt?45:160;
+    adaptationReasons.push('STYLE_ADAPT_REQUIRED');
+  }else if(asset?.themeAdaptationRequiredPerGame===true||asset?.styleAdaptationRequiredPerGame===true){
+    mode='LIGHT_THEME_ADAPT';
+    adaptationPenalty+=15;
+    adaptationReasons.push('GAME_THEME_ADAPT_REQUIRED');
+  }
+
+  const reuseBonus=(asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE')?18:0;
+  const versatilityBonus=Math.min(40,adaptationAxes.length*4);
+  const usageConfidenceBonus=(usage.runtimePass===true?20:0)
+    +Math.min(20,Math.max(0,Number(usage.gameConsumerCount)||0)*4)
+    +Math.min(10,Math.max(0,Number(usage.usageCount)||0));
+  const observedFailurePenalty=(usage.runtimeFailure===true?160:0)
+    +Math.min(120,Math.max(0,Number(usage.verifiedFailureCount)||0)*30)
+    +(usage.identityFailure===true?90:0)
+    +(usage.styleFailure===true?90:0)
+    +(usage.navigationFailure===true?90:0)
+    +(usage.mobileBudgetFailure===true?70:0);
+  const effectiveQuality=Math.round(clamp(
+    baseQuality-adaptationPenalty-observedFailurePenalty+reuseBonus+versatilityBonus+usageConfidenceBonus,
+    0,INTERNAL_ASSET_AUDIT_MAX
+  )*10)/10;
+  const usable=hardBlockers.length===0&&familyCompatible&&(roleCompatible||canRecombine);
+  const directBindingReady=usable&&platformCompatible&&conceptQa.pass&&roleCompatible;
+  const adaptationReady=usable&&!directBindingReady&&mode!=='KEEP_CURRENT_AND_ITERATE';
+
+  return Object.freeze({
+    assetId:row.id,
+    family:row.family,
+    requestedFamily:family||null,
+    requestedSubfamily:requestedSubfamily||null,
+    baseQuality,
+    effectiveQuality,
+    internalAudit:audit,
+    mode,
+    usable,
+    directBindingReady,
+    adaptationReady,
+    studioRequired:false,
+    nativeRuntimeRequiredForInternalUse:false,
+    conceptCompatible:conceptQa.pass,
+    platformCompatible,
+    familyCompatible,
+    roleCompatible,
+    adaptationAxes:freezeList(adaptationAxes),
+    adaptationPenalty,
+    observedFailurePenalty,
+    usageConfidenceBonus,
+    adaptationReasons:freezeList(adaptationReasons),
+    hardBlockers:freezeList(hardBlockers),
+    lowScoreUseAllowed:true,
+    scoreIsNotUsageGate:true,
+    provenanceAvailable
+  });
+}
+
+export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],gameDna={},requirement={},usageByAsset={}}={}){
+  const lockedAssetId=text(requirement.lockedAssetId||requirement.manualAssetId||requirement.gameLockedAssetId);
+  const rows=(candidates||[]).map(asset=>({
+    asset,
+    reuse:evaluateInternalAssetReuse({asset,gameDna,requirement,usage:usageByAsset[text(asset?.id)]||{}})
+  })).filter(row=>row.reuse.usable&&!row.reuse.hardBlockers.length)
+    .sort((a,b)=>b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality||assetSourceTier(normalizeRegistryAsset(b.asset))-assetSourceTier(normalizeRegistryAsset(a.asset))||text(a.asset?.id).localeCompare(text(b.asset?.id)));
+  const locked=lockedAssetId?rows.find(row=>text(row.asset?.id)===lockedAssetId)||null:null;
+  const best=locked||rows[0]||null;
+  const current=currentAsset?evaluateInternalAssetReuse({
+    asset:currentAsset,gameDna,requirement,usage:usageByAsset[text(currentAsset?.id)]||{}
+  }):null;
+  const gain=best&&current?Math.round((best.reuse.effectiveQuality-current.effectiveQuality)*10)/10:null;
+  const replacementRecommended=Boolean(
+    best&&current&&text(best.asset?.id)!==text(currentAsset?.id)&&
+    gain>=INTERNAL_ASSET_REUSE_POLICY.replacement.minimumEffectiveGain
+  );
+  return Object.freeze({
+    selectedAssetId:text(best?.asset?.id)||null,
+    selectedMode:best?.reuse?.mode||null,
+    selectedBaseQuality:best?.reuse?.baseQuality??null,
+    selectedEffectiveQuality:best?.reuse?.effectiveQuality??null,
+    currentAssetId:text(currentAsset?.id)||null,
+    currentEffectiveQuality:current?.effectiveQuality??null,
+    effectiveGain:gain,
+    replacementRecommended,
+    replacementAction:locked?'KEEP_LOCKED':
+      !best?'NO_USABLE_INTERNAL_ASSET':
+      !current?'USE_SELECTED':
+      replacementRecommended?(best.reuse.directBindingReady?'REPLACE_NOW':'ADAPT_THEN_REPLACE'):
+      'KEEP_CURRENT_AND_ITERATE',
+    studioRequired:false,
+    lowScoreCurrentAssetMayRemain:true,
+    previousAssetHistoryPreserved:true,
+    candidates:Object.freeze(rows.map(row=>Object.freeze({
+      assetId:text(row.asset?.id),
+      baseQuality:row.reuse.baseQuality,
+      effectiveQuality:row.reuse.effectiveQuality,
+      mode:row.reuse.mode,
+      directBindingReady:row.reuse.directBindingReady,
+      adaptationReady:row.reuse.adaptationReady
+    })))
+  });
+}
+
 export const STUDIO_ASSET_CRITICS=Object.freeze({
   ART_DIRECTOR:Object.freeze(['WORLD_STYLE_COHERENCE','COLOR_LIGHTING','ORIGINALITY_IDENTITY']),
   MODEL_CRITIC:Object.freeze(['SILHOUETTE_FORM','MODELING_STRUCTURE','DETAIL_DENSITY']),
@@ -75,7 +410,7 @@ export const STUDIO_ASSET_FAMILY_OUTPUTS=Object.freeze({
   MATERIAL:Object.freeze(['BASE_MATERIAL','PLATFORM_VARIANT','WEATHERING_VARIANT','DAMAGE_VARIANT_WHEN_APPLICABLE']),
   AUDIO:Object.freeze(['SOURCE_ASSET','EVENT_BINDING','VARIATION_SET','MOBILE_BUDGET_VARIANT']),
   VFX:Object.freeze(['SOURCE_EFFECT','GAMEPLAY_EVENT_BINDING','MOBILE_BUDGET_VARIANT','LOD_OR_DENSITY_VARIANT']),
-  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
+  UI:Object.freeze(['HUD_COMPONENT','MENU_COMPONENT','INVENTORY_COMPONENT','CHARACTER_SHEET','EQUIPMENT_COMPONENT','MINIMAP_COMPONENT','DIALOGUE_COMPONENT','AI_DIALOGUE_HELPER','NPC_INTERACTION_COMPONENT','QUEST_COMPONENT','PARTY_COMPONENT','CRAFTING_COMPONENT','SHOP_COMPONENT','NOTIFICATION_COMPONENT','STATUS_EFFECT_COMPONENT','HOTBAR_COMPONENT','INTERACTION_PROMPT','ICON_SET','STATE_VARIANTS','TOUCH_FEEDBACK']),
   MOTION:Object.freeze(['SOURCE_MOTION','PLATFORM_RETARGET','CONTACT_MAP','BLEND_VARIANTS','MOTION_LOD']),
   PROP:Object.freeze(['WORLD_MODEL','INTERACTION_VARIANT','INVENTORY_ICON_WHEN_ITEM','CRAFTING_ICON_WHEN_CRAFTABLE','DROP_MODEL_WHEN_COLLECTIBLE','COLLISION_PROXY','LOD0','LOD1','LOD2'])
 });
@@ -390,6 +725,93 @@ export function scoreStudioAssetQuality120({asset={},evidence={}}={}){
     lowScoreMayBindWhenNoBetterSafeCompatibleAsset:true,
     productionVerified,
     productionVerificationIndependentFromQualityScore:true
+  });
+}
+
+
+function internalAssetAuditMetric(value){
+  const n=Number(value);
+  if(!Number.isFinite(n))return 0;
+  if(n>1)return clamp(n/100,0,1);
+  return clamp(n,0,1);
+}
+function internalAssetAuditGrade(score=0){
+  return INTERNAL_ASSET_AUDIT_GRADES.find(row=>Number(score)>=row.min)?.id||'REPAIR_REQUIRED';
+}
+function internalAssetAuditEvidenceValue(source={},axis=''){
+  if(source[axis]!==undefined)return source[axis];
+  const aliases={
+    IDENTITY_SILHOUETTE:['identitySilhouette','identity','silhouette','distinctIdentity'],
+    FORM_STRUCTURE:['formStructure','form','structure','modelingStructure','anatomy'],
+    MATERIAL_SURFACE:['materialSurface','material','surface','texture'],
+    COLOR_LIGHTING:['colorLighting','color','lighting'],
+    STYLE_COHERENCE:['styleCoherence','style','worldFit'],
+    DETAIL_FINISH:['detailFinish','detail','finish'],
+    READABILITY_SCALE:['readabilityScale','readability','cameraReadability','scaleReadability'],
+    MOTION_RIG:['motionRig','motion','rig','animation'],
+    FEEDBACK_STATES:['feedbackStates','feedback','states','stateCoverage'],
+    UI_UX_SYSTEM:['uiUxSystem','ui','ux','uiUx','uiSystem'],
+    MODULAR_REUSE:['modularReuse','modular','reuse','modularity'],
+    VARIATION_BREADTH:['variationBreadth','variation','breadth','variantCoverage'],
+    PERFORMANCE_LOD:['performanceLod','performance','lod','mobilePerformance'],
+    ACCESSIBILITY_INPUT:['accessibilityInput','accessibility','input','touch','inputCoverage'],
+    PROVENANCE_MAINTAINABILITY:['provenanceMaintainability','provenance','maintainability','sourceQuality'],
+    INTEGRATION_READINESS:['integrationReadiness','integration','bindingReadiness','applicationReadiness']
+  };
+  for(const key of aliases[axis]||[])if(source[key]!==undefined)return source[key];
+  return 0;
+}
+export function scoreInternalAssetAudit1000({asset={},evidence={}}={}){
+  const source={...(asset?.internalAuditEvidence||{}),...(evidence||{})};
+  const family=upper(asset?.family||asset?.category);
+  const configured=Array.isArray(asset?.internalAuditAxes)&&asset.internalAuditAxes.length
+    ?uniq(asset.internalAuditAxes.map(upper)).filter(axis=>INTERNAL_ASSET_AUDIT_WEIGHTS[axis]!==undefined)
+    :(INTERNAL_ASSET_AUDIT_AXIS_APPLICABILITY[family]||Object.freeze(Object.keys(INTERNAL_ASSET_AUDIT_WEIGHTS)));
+  const excluded=new Set((asset?.internalAuditNotApplicableAxes||source.notApplicableAxes||[]).map(upper));
+  const applicableAxes=configured.filter(axis=>!excluded.has(axis));
+  const normalized={};
+  let earned=0,applicableWeight=0;
+  for(const axis of applicableAxes){
+    const weight=INTERNAL_ASSET_AUDIT_WEIGHTS[axis]||0;
+    const value=internalAssetAuditMetric(internalAssetAuditEvidenceValue(source,axis));
+    normalized[axis]=value;
+    earned+=weight*value;
+    applicableWeight+=weight;
+  }
+  const score=applicableWeight>0?Math.round((earned/applicableWeight)*INTERNAL_ASSET_AUDIT_MAX*10)/10:0;
+  const blockers=[];
+  const minimumAxis=family==='UI'?0.72:0.68;
+  for(const [axis,value] of Object.entries(normalized)){
+    if(value<minimumAxis)blockers.push('AXIS_BELOW_FLOOR:'+axis+':'+Math.round(value*100));
+  }
+  const globalCritical={STYLE_COHERENCE:80,READABILITY_SCALE:78,PROVENANCE_MAINTAINABILITY:80};
+  const familyCritical=INTERNAL_ASSET_FAMILY_EXPECTATIONS[family]?.critical||{};
+  for(const [axis,min] of Object.entries({...globalCritical,...familyCritical})){
+    if(normalized[axis]!==undefined&&normalized[axis]*100<min)blockers.push('HARD_GATE:'+axis+':'+Math.round(normalized[axis]*100)+'<'+min);
+  }
+  const measuredAxisCount=Object.values(normalized).filter(value=>value>0).length;
+  if(measuredAxisCount<Math.max(5,Math.ceil(applicableAxes.length*.8)))blockers.push('INSUFFICIENT_AUDIT_EVIDENCE');
+  const pass=score>=INTERNAL_ASSET_AUDIT_PASS&&blockers.length===0;
+  return Object.freeze({
+    version:INTERNAL_ASSET_AUDIT_VERSION,
+    assetId:text(asset?.id)||null,
+    family:family||null,
+    score,maxScore:INTERNAL_ASSET_AUDIT_MAX,
+    grade:internalAssetAuditGrade(score),
+    pass,
+    minimumPassScore:INTERNAL_ASSET_AUDIT_PASS,
+    axes:Object.freeze(normalized),
+    applicableAxes:freezeList(applicableAxes),
+    applicableWeight,
+    measuredAxisCount,
+    blockers:freezeList(blockers),
+    expectations:freezeList(INTERNAL_ASSET_FAMILY_EXPECTATIONS[family]?.expectations||[]),
+    studioRequired:false,
+    nativeRuntimeRequired:false,
+    productionPromotionIndependent:true,
+    productionRuntimeVerificationUntouched:true,
+    continualImprovementRequired:true,
+    nextQualityTargets:freezeList([920,950,980,1000].filter(value=>value>score))
   });
 }
 
@@ -1212,43 +1634,57 @@ function assetSourceTier(row={}){
   return 2;
 }
 
-export function scoreStudioAssetCandidate({asset={},gameDna={},usage={}}={}){
+export function scoreStudioAssetCandidate({asset={},gameDna={},usage={},requirement={}}={}){
   const row=normalizeRegistryAsset(asset);
-  const concept=gameDna?.concept||createConceptProfile({styleFamily:row.styleFamily||'STYLIZED_FANTASY'});
-  const conceptQa=evaluateConceptCompatibility({asset,concept});
-  const platform=upper(gameDna?.platform||gameDna?.PLATFORM_VARIANT||asset.platformVariant||asset.platform);
-  const targetPlatform=upper(gameDna?.targetPlatform||gameDna?.platform);
+  const reuse=evaluateInternalAssetReuse({asset,gameDna,requirement,usage});
   const companyCommonBase=asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE';
+  const quality120=scoreStudioAssetQuality120({asset,evidence:usage.qualityEvidence||usage.quality120||{}});
   let score=assetSourceTier(row)*20;
-  if(conceptQa.pass)score+=25; else score-=45;
-  if(companyCommonBase&&conceptQa.pass)score+=6;
-  if(targetPlatform&&(!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE'))score+=15;
+  if(reuse.conceptCompatible)score+=25;
+  if(reuse.platformCompatible)score+=15;
+  if(companyCommonBase)score+=6;
   if(usage.runtimePass===true)score+=20;
   score+=Math.min(20,Math.max(0,Number(usage.gameConsumerCount)||0)*4);
   score+=Math.min(10,Math.max(0,Number(usage.usageCount)||0));
   if(usage.runtimeFailure===true||Number(usage.verifiedFailureCount)>0)score-=Math.min(60,20+Number(usage.verifiedFailureCount||0)*10);
   if(usage.identityFailure===true||usage.styleFailure===true||usage.navigationFailure===true)score-=25;
   if(usage.mobileBudgetFailure===true)score-=20;
-  const quality120=scoreStudioAssetQuality120({asset,evidence:usage.qualityEvidence||usage.quality120||{}});
   score+=Math.round(quality120.score/12);
+  score+=Math.round(reuse.effectiveQuality/50);
   return Object.freeze({
     id:row.id,
     score:Math.round(score),
     sourceTier:assetSourceTier(row),
     verified:row.verified,
-    conceptPass:conceptQa.pass,
-    platformCompatible:!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE',
+    conceptPass:reuse.conceptCompatible,
+    platformCompatible:reuse.platformCompatible,
     quality120,
+    internalAudit:reuse.internalAudit,
+    internalAuditScore:reuse.baseQuality,
+    effectiveInternalQuality:reuse.effectiveQuality,
+    internalAuditGrade:internalAssetAuditGrade(reuse.baseQuality),
+    internalAuditPass:reuse.internalAudit.pass===true,
+    internalAuditStudioRequired:false,
+    applicationMode:reuse.mode,
+    directBindingReady:reuse.directBindingReady,
+    adaptationReady:reuse.adaptationReady,
+    adaptationAxes:reuse.adaptationAxes,
     companyCommonBase,
-    commonBasePreferenceApplied:companyCommonBase&&conceptQa.pass,
+    commonBasePreferenceApplied:companyCommonBase,
     qualityScoreBlocksBinding:false,
+    internalAuditScoreBlocksBinding:false,
     lowQualityMayBindWhenNoBetterSafeCompatibleAsset:true,
-    rejected:Boolean(!conceptQa.pass||usage.lockedOut===true),
+    lowInternalAuditScoreMayBind:true,
+    higherCompatibleInternalAuditScorePreferred:true,
+    rejected:Boolean(!reuse.usable||reuse.hardBlockers.length),
+    hardBlockers:reuse.hardBlockers,
     reasons:Object.freeze([
       row.verified?'VERIFIED_RUNTIME_OR_COMPANY':'UNVERIFIED_OR_PREPARED',
-      conceptQa.pass?'CONCEPT_COMPATIBLE':'CONCEPT_MISMATCH',
-      companyCommonBase&&conceptQa.pass?'COMPANY_COMMON_BASE_REUSE_PREFERRED_WHEN_EQUIVALENT':'',
-      quality120.score<100?'QUALITY_DEBT_KEEP_IMPROVING':'QUALITY_COMMERCIAL_TARGET_REACHED',
+      reuse.conceptCompatible?'CONCEPT_COMPATIBLE':'CONCEPT_ADAPTATION_ALLOWED',
+      reuse.platformCompatible?'PLATFORM_COMPATIBLE':reuse.mode==='NATIVE_REAUTHOR_BASE'?'PLATFORM_REAUTHOR_BASE_ALLOWED':'PLATFORM_MISMATCH',
+      companyCommonBase?'COMPANY_COMMON_BASE_REUSE_PREFERRED_WHEN_EQUIVALENT':'',
+      reuse.baseQuality<INTERNAL_ASSET_AUDIT_PASS?'INTERNAL_QUALITY_DEBT_USE_ALLOWED_KEEP_IMPROVING':'INTERNAL_AUDIT_TARGET_REACHED',
+      reuse.mode!=='USE_AS_IS'?'ADAPTATION_MODE:'+reuse.mode:'',
       usage.runtimeFailure===true?'VERIFIED_RUNTIME_FAILURE':''
     ].filter(Boolean))
   });
@@ -1259,22 +1695,49 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
   const selections=[];
   for(const requirement of requirements||[]){
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
-    const candidates=normalized
-      .filter(({row})=>row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily)))
-      .map(({asset,row})=>({asset,row,score:scoreStudioAssetCandidate({asset,gameDna,usage:usageByAsset[row.id]||{}})}))
-      .filter(x=>!x.score.rejected)
-      .sort((a,b)=>b.score.sourceTier-a.score.sourceTier||b.score.quality120.score-a.score.quality120.score||b.score.score-a.score.score||a.row.id.localeCompare(b.row.id));
-    const picked=candidates[0]||null;
+    const lockedAssetId=text(requirement.lockedAssetId||requirement.manualAssetId||requirement.gameLockedAssetId);
+    const currentAssetId=text(requirement.currentAssetId);
+    const familyCandidates=normalized.filter(({row})=>row.family===family);
+    const currentAsset=currentAssetId?familyCandidates.find(({row})=>row.id===currentAssetId)?.asset||null:null;
+    const choice=chooseInternalAssetReplacement({
+      currentAsset,
+      candidates:familyCandidates.map(row=>row.asset),
+      gameDna,
+      requirement:{...requirement,family,subfamily,lockedAssetId},
+      usageByAsset
+    });
+    const picked=choice.selectedAssetId?familyCandidates.find(({row})=>row.id===choice.selectedAssetId)||null:null;
+    const scored=picked?scoreStudioAssetCandidate({
+      asset:picked.asset,gameDna,usage:usageByAsset[picked.row.id]||{},requirement:{...requirement,family,subfamily}
+    }):null;
     selections.push(Object.freeze({
       family,subfamily,required:requirement.required!==false,
       assetId:picked?.row.id||null,
-      score:picked?.score.score??null,
-      sourceTier:picked?.score.sourceTier??0,
+      score:scored?.score??null,
+      sourceTier:scored?.sourceTier??0,
       verified:picked?.row.verified===true,
-      quality120:picked?.score.quality120?.score??null,
-      qualityGrade:picked?.score.quality120?.grade??null,
-      lowQualityFallback:Boolean(picked&&Number(picked.score.quality120?.score||0)<100),
+      quality120:scored?.quality120?.score??null,
+      qualityGrade:scored?.quality120?.grade??null,
+      internalAuditScore:scored?.internalAuditScore??null,
+      effectiveInternalQuality:scored?.effectiveInternalQuality??null,
+      internalAuditGrade:scored?.internalAuditGrade??null,
+      internalAuditPass:scored?.internalAuditPass===true,
+      internalAuditStudioRequired:false,
+      applicationMode:scored?.applicationMode||null,
+      directBindingReady:scored?.directBindingReady===true,
+      adaptationReady:scored?.adaptationReady===true,
+      adaptationAxes:scored?.adaptationAxes||Object.freeze([]),
+      lowQualityFallback:Boolean(picked&&Number(scored?.internalAuditScore||0)<INTERNAL_ASSET_AUDIT_PASS),
       qualityScoreBlocksBinding:false,
+      internalAuditScoreBlocksBinding:false,
+      lockedAssetId:lockedAssetId||null,
+      lockedChoiceApplied:choice.replacementAction==='KEEP_LOCKED',
+      currentAssetId:currentAssetId||null,
+      currentEffectiveQuality:choice.currentEffectiveQuality,
+      replacementRecommended:choice.replacementRecommended,
+      replacementAction:choice.replacementAction,
+      replacementReason:choice.replacementRecommended?'HIGHER_EFFECTIVE_INTERNAL_QUALITY_AFTER_ADAPTATION':null,
+      effectiveGain:choice.effectiveGain,
       unresolved:!picked
     }));
   }
@@ -1283,9 +1746,18 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
     complete:selections.every(row=>!row.required||!row.unresolved),
     lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
+    lowQualityBindingAllowed:true,
     lowQualityBindingAllowedWhenNoBetterSafeCompatibleAsset:true,
+    internalAuditScoreIsNotBindingGate:true,
     qualityScoreIsNotBindingGate:true,
+    adaptationBeforeRejectionPreferred:true,
+    higherCompatibleInternalAuditScoreAutoPreferred:true,
+    automaticReplacementUsesEffectiveQuality:true,
+    automaticReplacementStudioRequired:false,
+    automaticReplacementNativeRuntimeRequired:false,
     manualOrLockedChoiceWins:true,
+    priorAssetHistoryPreserved:true,
+    noEmptySlotDuringReplacement:true,
     gameplayAuthority:false
   });
 }
@@ -1996,10 +2468,18 @@ export function createStudioAssetUniversePlan({
 }={}){
   const conceptProfile=createConceptProfile({...concept,styleFamily:concept.styleFamily||styleFamily});
   const resolvedStyle=conceptProfile.dominantStyle||upper(styleFamily);
+  const combinedById=new Map();
+  for(const asset of [...assets,...repositoryAssets]){
+    const id=text(asset?.id);
+    if(!id)continue;
+    const existing=combinedById.get(id);
+    combinedById.set(id,existing?{...asset,...existing}:asset);
+  }
+  const combinedAssets=[...combinedById.values()];
   const coverage=scanUniversalAssetCoverage({assets,activeDemand,platform,styleFamily:resolvedStyle});
   const verified=assets.filter(asset=>normalizeRegistryAsset(asset).verified);
   const quality120=buildStudioAssetQuality120Program({
-    assets:[...assets,...repositoryAssets],
+    assets:combinedAssets,
     qualityEvidenceByAsset,
     heroAssetIds,
     familyOutputsByAsset
@@ -2011,14 +2491,32 @@ export function createStudioAssetUniversePlan({
   const conceptCoherence=evaluateConceptCoherence({concept:conceptProfile,styleBible:resolvedBible,lockedStyle:styleFamily});
   const visualDna=createGameVisualDNA({gameId,concept:conceptProfile,styleBible:resolvedBible,worldDna,...languages});
   const inferredRequirements=requirements.length?requirements:Object.entries(activeDemand).flatMap(([family,subs])=>Object.entries(subs||{}).filter(([,count])=>Number(count)>0).map(([subfamily])=>({family,subfamily,required:true})));
-  const loadout=buildStudioAssetLoadout({requirements:inferredRequirements,assets,gameDna:{...visualDna,targetPlatform:upper(platform)},usageByAsset});
+  const effectiveRequirements=inferredRequirements.map(requirement=>{
+    if(text(requirement.currentAssetId))return requirement;
+    const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
+    const current=combinedAssets.find(asset=>{
+      const row=normalizeRegistryAsset(asset);
+      const currentConsumer=asset?.sameGameExistingRoblox===true||(asset?.consumerGameIds||[]).map(text).includes(text(gameId));
+      return currentConsumer&&row.family===family&&(!subfamily||row.subfamily===subfamily||row.tags.includes(subfamily));
+    });
+    return current?{...requirement,currentAssetId:text(current.id)}:requirement;
+  });
+  const loadout=buildStudioAssetLoadout({
+    requirements:effectiveRequirements,
+    assets:combinedAssets,
+    gameDna:{...visualDna,targetPlatform:upper(platform)},
+    usageByAsset
+  });
   const futureDemand=buildFutureAssetDemandForecast({gameDemands:futureGameDemands,coverageReport:coverage});
   const usageFeedback=summarizeVerifiedAssetUsage({events:usageEvents});
   const baseMaterialRotation=buildBaseMaterialRotationPlan({families:baseMaterialFamilies,usageByAtom:baseMaterialUsageByAtom});
   const testbed=createStudioTestbedPlan({assetIds:loadout.selections.map(row=>row.assetId).filter(Boolean),platform,mobile:true});
   return Object.freeze({
-    version:3,
+    version:4,
     target:STUDIO_ASSET_UNIVERSE_TARGET,
+    internalAssetReusePolicy:INTERNAL_ASSET_REUSE_POLICY,
+    internalAssetMinimumCoverage:INTERNAL_ASSET_MINIMUM_COVERAGE,
+    internalAssetCandidateCount:combinedAssets.length,
     platform:upper(platform),
     concept:conceptProfile,
     conceptAxes:CONCEPT_AXES,
@@ -2026,7 +2524,7 @@ export function createStudioAssetUniversePlan({
     styleBible:resolvedBible,
     customization:customizationContract?.enabled===true?createAssetCustomizationPlan({
       assets:[...repositoryAssets,...assets],
-      recipes:customizationRecipes.length?customizationRecipes:uniq(inferredRequirements.map(row=>upper(row.family))).filter(family=>ASSET_CUSTOMIZATION_AXES[family]).map(family=>({family,baseAssetId:loadout.selections.find(row=>row.family===family)?.assetId})),
+      recipes:customizationRecipes.length?customizationRecipes:uniq(effectiveRequirements.map(row=>upper(row.family))).filter(family=>ASSET_CUSTOMIZATION_AXES[family]).map(family=>({family,baseAssetId:loadout.selections.find(row=>row.family===family)?.assetId})),
       styleBible:resolvedBible,contract:customizationContract,platform
     }):null,
     conceptCoherence,
