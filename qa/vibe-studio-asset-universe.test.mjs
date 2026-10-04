@@ -1419,3 +1419,67 @@ test('survival combat parts are registered for module-level automatic replacemen
     assert.equal(row.bindingHint.preserveGameplayDamageMovementSaveAndNetworkAuthority,true);
   }
 });
+
+
+test('survival Roblox UI pack matches current UI StudioAssets atoms',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','survival-ui-v1');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+  const source=fs.readFileSync(path.join(packDir,'SurvivalUIAssets.luau'),'utf8');
+  const config=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
+
+  for(const atom of ['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']){
+    assert.ok(config.includes(atom),atom+':config');
+    assert.ok(source.includes(atom),atom+':source');
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
+
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(catalog.authoringQualityTarget,100);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.ok(source.includes('function SurvivalUIAssets.CreatePanel(options)'));
+  assert.ok(source.includes('function SurvivalUIAssets.CreatePrimaryButton(options)'));
+  assert.ok(source.includes('function SurvivalUIAssets.CreateHealthBar(options)'));
+  assert.ok(source.includes('TouchHeight = 48'));
+  assert.ok(source.includes('OwnsRemoteAuthority", false'));
+  assert.ok(source.includes('OwnsHealthValue", false'));
+  assert.ok(source.includes('OwnsDamageAuthority", false'));
+  assert.equal(/DataStoreService/.test(source),false);
+  assert.equal(/RemoteEvent/.test(source),false);
+  assert.equal(/FireServer\(/.test(source),false);
+});
+
+test('survival UI assets are registered for atom-level automatic replacement without false verification',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-survival-ui-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.qualityTarget,100);
+
+  const expected=[
+    ['FRAME_PANEL','CreatePanel'],
+    ['BUTTON_PRIMARY','CreatePrimaryButton'],
+    ['BAR_HEALTH','CreateHealthBar']
+  ];
+  for(const [atomId,factory] of expected){
+    const id='roblox-survival-ui-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.status,'REPO_ASSET');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.bindingHint.gameId,'survival');
+    assert.equal(row.bindingHint.atomId,atomId);
+    assert.equal(row.bindingHint.factory,factory);
+    assert.equal(row.bindingHint.replaceOnlyMatchingUiAtom,true);
+    assert.equal(row.bindingHint.preserveGameplayHealthInputSaveAndNetworkAuthority,true);
+  }
+});
