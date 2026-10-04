@@ -1,19 +1,20 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-vfx-v1",
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
-      "threeReusableCurrentAtoms": 15,
+      "eightReusableCurrentAtoms": 15,
       "noExternalTextureDependency": 10,
       "nativeRobloxPartTrailTween": 15,
       "colorScaleDurationAdaptation": 10,
       "mobileBurstCap": 10,
-      "pooledShortLifetimeCleanup": 10,
-      "projectOriginalLicenseAndProvenance": 10,
-      "automaticCrossGameReuseMetadata": 10,
+      "shortLifetimeCleanup": 10,
+      "combatAndRewardFeedbackCoverage": 10,
+      "projectOriginalLicenseAndProvenance": 5,
+      "automaticCrossGameReuseMetadata": 5,
       "gameplayAuthorityIsolation": 10
     }
   },
@@ -27,5 +28,5 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 3
+  "sourceAssetCount": 8
 }
