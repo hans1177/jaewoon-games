@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -61,6 +61,139 @@
       "MORE_MEANINGFUL",
       "MORE_COHERENT"
     ]
+  },
+  "iterationExpectationEscalation": {
+    "version": 1,
+    "status": "ACTIVE",
+    "executionBoundary": "EXISTING_BUILD_UP_AND_QUALITY_EVOLUTION_ONLY",
+    "objective": "Every verified repeat must raise the expected product depth beyond the prior verified baseline: first close completeness gaps, then deepen systems, then expand coherent content, then extend mid/late/replay depth, then compound second-order detail without creating new pipeline stages or queue amplification.",
+    "cycleSource": "VERIFIED_BUILD_UP_QUALITY_HISTORY_PER_PLATFORM_LANE",
+    "verifiedOnlyAdvancesExpectation": true,
+    "failedOrRepairIterationKeepsCurrentExpectation": true,
+    "previousVerifiedQualityBecomesNewFloor": true,
+    "newWorkflowForbidden": true,
+    "newStageForbidden": true,
+    "newSchedulerForbidden": true,
+    "newQueueForbidden": true,
+    "queueAmplificationForbidden": true,
+    "additionalParallelWorkerForbidden": true,
+    "growth": {
+      "detailDepthLevel": {
+        "base": 1,
+        "stepEveryCycles": 1,
+        "max": null
+      },
+      "connectedImprovements": {
+        "base": 3,
+        "stepEveryCycles": 2,
+        "max": 8
+      },
+      "meaningfulDistinctAxes": {
+        "base": 2,
+        "stepEveryCycles": 3,
+        "max": 5
+      },
+      "crossSystemConnections": {
+        "base": 1,
+        "stepEveryCycles": 2,
+        "max": 4
+      }
+    },
+    "tiers": [
+      {
+        "minCycle": 1,
+        "id": "FOUNDATION_COMPLETENESS",
+        "comparativeBaselineRequired": false,
+        "existingContentDeepeningRequired": false,
+        "coherentContentExpansionRequired": false,
+        "midLateEndgameOrReplayDepthRequired": false,
+        "secondOrderDetailRequired": false,
+        "requiredPractices": [
+          "CLOSE_THE_HIGHEST_VALUE_PLAYER_FACING_COMPLETENESS_GAP",
+          "CONNECT_INPUT_STATE_CHANGE_FEEDBACK_AND_NEXT_CHOICE",
+          "PRESERVE_EXISTING_GAME_RULE_SAVE_BALANCE_AND_AUTHORITY"
+        ]
+      },
+      {
+        "minCycle": 2,
+        "id": "SYSTEM_DEPTH",
+        "comparativeBaselineRequired": true,
+        "existingContentDeepeningRequired": true,
+        "coherentContentExpansionRequired": false,
+        "midLateEndgameOrReplayDepthRequired": false,
+        "secondOrderDetailRequired": false,
+        "requiredPractices": [
+          "DEEPEN_AT_LEAST_ONE_PREVIOUSLY_VERIFIED_SYSTEM_INSTEAD_OF_REPEATING_EQUIVALENT_WORK",
+          "ADD_ROLE_BEHAVIOR_FEEDBACK_OR_EXCEPTION_DEPTH",
+          "SHOW_MEASURABLE_OR_VISIBLE_IMPROVEMENT_AGAINST_THE_PREVIOUS_VERIFIED_BASELINE"
+        ]
+      },
+      {
+        "minCycle": 3,
+        "id": "COHERENT_CONTENT_EXPANSION",
+        "comparativeBaselineRequired": true,
+        "existingContentDeepeningRequired": true,
+        "coherentContentExpansionRequired": true,
+        "midLateEndgameOrReplayDepthRequired": false,
+        "secondOrderDetailRequired": false,
+        "requiredPractices": [
+          "EXPAND_OR_DEEPEN_A_CONNECTED_CONTENT_SURFACE_WITH_REAL_PLAYER_DECISION_VALUE",
+          "CONNECT_WORLD_ENCOUNTER_REWARD_PROGRESSION_OR_STORY_INTO_ONE_PLAYABLE_FLOW",
+          "REJECT_NAME_COLOR_OR_STAT_ONLY_VARIANTS"
+        ]
+      },
+      {
+        "minCycle": 4,
+        "id": "MID_LATE_REPLAY_DEPTH",
+        "comparativeBaselineRequired": true,
+        "existingContentDeepeningRequired": true,
+        "coherentContentExpansionRequired": true,
+        "midLateEndgameOrReplayDepthRequired": true,
+        "secondOrderDetailRequired": false,
+        "requiredPractices": [
+          "EXTEND_MID_LATE_ENDGAME_DISCOVERY_OR_REPLAY_DEPTH_WHERE_APPLICABLE",
+          "KEEP_EARLIER_CONTENT_RELEVANT_THROUGH_NEW_CONNECTIONS_OR_PURPOSE",
+          "ADD_VARIATION_THAT_CHANGES_PLAYER_STRATEGY_NOT_ONLY_CONTENT_COUNT"
+        ]
+      },
+      {
+        "minCycle": 5,
+        "id": "COMPOUND_DETAIL_EVOLUTION",
+        "comparativeBaselineRequired": true,
+        "existingContentDeepeningRequired": true,
+        "coherentContentExpansionRequired": true,
+        "midLateEndgameOrReplayDepthRequired": true,
+        "secondOrderDetailRequired": true,
+        "requiredPractices": [
+          "DEEPEN_SECOND_ORDER_DETAILS_SUCH_AS_TRANSITIONS_EDGE_CASES_DISCOVERABILITY_PACING_AND_CROSS_SYSTEM_CONSEQUENCES",
+          "IMPROVE_MULTIPLE_CONNECTED_SURFACES_WITHOUT_RESETTING_OR_REBUILDING_VERIFIED_SYSTEMS",
+          "TREAT_EVERY_PRIOR_VERIFIED_RESULT_AS_THE_MINIMUM_FLOOR_FOR_THE_NEXT_ITERATION"
+        ]
+      }
+    ],
+    "persistentRules": [
+      "NO_EQUIVALENT_REPEAT_MAY_COUNT_AS_EVOLUTION",
+      "NO_COMPLETION_CLAIM_FROM_MARKERS_CONFIG_OR_DOCUMENTATION_ONLY",
+      "REPAIR_MAY_DEFER_NEW_CONTENT_BUT_MUST_NOT_LOWER_THE_EXPECTATION_LEVEL",
+      "CONTENT_EXPANSION_MUST_PRESERVE_APPROVED_IDENTITY_AND_PROTECTED_BALANCE_SAVE_AND_NETWORK_MEANING",
+      "DETAIL_DEPTH_CONTINUES_TO_RISE_AFTER_THE_LAST_NAMED_TIER",
+      "RISING_EXPECTATIONS_MUST_STAY_INSIDE_THE_EXISTING_TASK_AND_EXISTING_CANONICAL_PIPELINE",
+      "STUDIO_IS_NOT_REQUIRED_FOR_INTERNAL_AUDIT_OR_EXPECTATION_ESCALATION",
+      "RUNTIME_OR_STUDIO_EVIDENCE_IS_REQUIRED_ONLY_WHERE_THE_EXISTING_CANONICAL_STAGE_ALREADY_REQUIRES_IT"
+    ],
+    "acceptance": [
+      "REAL_SOURCE_DELTA",
+      "PREVIOUS_VERIFIED_BASELINE_COMPARISON_WHEN_REQUIRED",
+      "MINIMUM_CONNECTED_IMPROVEMENTS_MET",
+      "MINIMUM_MEANINGFUL_DISTINCT_AXES_MET",
+      "MINIMUM_CROSS_SYSTEM_CONNECTIONS_MET",
+      "TIER_REQUIREMENTS_MET_OR_EXPLICIT_CAUSAL_REPAIR_DEFERRAL",
+      "NO_PROTECTED_REGRESSION",
+      "RELEVANT_EXISTING_QA_AND_RUNTIME_EVIDENCE"
+    ],
+    "studioRequired": false,
+    "internalAuditCanPassWithoutStudio": true,
+    "runtimeEvidenceRule": "USE_EXISTING_CANONICAL_RUNTIME_EVIDENCE_WHEN_THAT_STAGE_REQUIRES_IT; STUDIO_IS_NOT_REQUIRED_FOR_INTERNAL_EXPECTATION_ESCALATION"
   },
   "expansionDomains": [
     "WORLD_BACKGROUND_AND_ENVIRONMENT",
