@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-04T00:45:48.403Z",
+  "updatedAt": "2026-10-04T01:00:24.760Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -707,7 +707,8 @@
         "{\"sourceRevision\":\"966ccd23f0a9f2c487f5b79f908a85ea7e84b5e7\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED",
         "roblox-source-bootstrap:source-generation-failed",
-        "{\"sourceRevision\":\"c91ffce54fe3421934cecf4ea553120b6f6755f3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"c91ffce54fe3421934cecf4ea553120b6f6755f3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"1cc0bb542ad1c545b2c28660b5425d0df24175b1\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -716,8 +717,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T04:43:41.874Z",
-      "updatedAt": "2026-09-26T12:53:38.288Z",
-      "occurrenceCount": 26
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 27
     },
     {
       "id": "bug-99f6b8c5bbd5d227e80c",
@@ -1072,7 +1073,8 @@
         "{\"sourceRevision\":\"4972e04a0619d36e9f48f7b5052e3bd3a23fbf3d\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"33f5aa4c39b889a740fea927cd07e23fd6c90de6\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-runtime-evidence-pending",
-        "{\"sourceRevision\":\"b0c2a716f654aca3c0930170a4b2f51969df0847\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"b0c2a716f654aca3c0930170a4b2f51969df0847\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"dc0e69c84c82c09269eaabd9565294973bcb751b\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -1081,8 +1083,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T08:00:39.064Z",
-      "updatedAt": "2026-09-30T13:17:46.253Z",
-      "occurrenceCount": 8
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 9
     },
     {
       "id": "bug-464ed398325e5af6fd49",
@@ -2835,8 +2837,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 431
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 432
     },
     {
       "id": "bug-46d41aa4fc4f5afdde9b",
@@ -3507,8 +3509,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T15:19:01.326Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 424
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 425
     },
     {
       "id": "bug-aa87cf98c12c15604b1c",
@@ -3609,8 +3611,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T10:38:43.210Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 115
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 116
     },
     {
       "id": "bug-e2cc3ec7845deaeffcb4",
@@ -5030,7 +5032,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a3e36f0517855f15e4c903b8418d0353da459c5d\",\"sourceRootTreeSha\":\"d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b\",\"sourceFingerprint\":\"9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5039,8 +5042,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 279
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 280
     },
     {
       "id": "bug-fd76025ae58f67c545ad",
@@ -5053,7 +5056,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a3e36f0517855f15e4c903b8418d0353da459c5d\",\"sourceRootTreeSha\":\"d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b\",\"sourceFingerprint\":\"9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5062,8 +5066,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 279
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 280
     },
     {
       "id": "bug-90de0bdb99f218cbda83",
@@ -5086,8 +5090,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 160
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 161
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5110,8 +5114,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 160
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 161
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -5180,8 +5184,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 160
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 161
     },
     {
       "id": "bug-f516510d1b674c9f0600",
@@ -5204,8 +5208,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 160
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 161
     },
     {
       "id": "bug-af160e0477c6c79bfed3",
@@ -5228,8 +5232,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 279
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 280
     },
     {
       "id": "bug-a8d2b957fc2b22115227",
@@ -5252,8 +5256,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 279
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 280
     },
     {
       "id": "bug-2c14b904d6aeb3e17198",
@@ -5322,8 +5326,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 154
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 155
     },
     {
       "id": "bug-e775cd1958cd4f0f247c",
@@ -5346,8 +5350,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 154
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 155
     },
     {
       "id": "bug-c2d3a1169668b0efacd1",
@@ -5370,8 +5374,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 228
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 229
     },
     {
       "id": "bug-ab4cd36474b0527e2ece",
@@ -5394,8 +5398,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 228
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 229
     },
     {
       "id": "bug-1c6129dad74bac44976e",
@@ -5510,8 +5514,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 159
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 160
     },
     {
       "id": "bug-ad9dae5e09804b30a45f",
@@ -5534,8 +5538,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 159
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 160
     },
     {
       "id": "bug-4591ef62527e5cb1e58b",
@@ -5606,8 +5610,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 159
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 160
     },
     {
       "id": "bug-ed88b9a0af2e14105e09",
@@ -5630,8 +5634,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 159
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 160
     },
     {
       "id": "bug-9bbef74d19fb4096288d",
@@ -5654,8 +5658,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:45:47.680Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 29
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 30
     },
     {
       "id": "bug-dcd7e7bec026fb1e8fe9",
@@ -5724,8 +5728,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:49:42.055Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 16
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 17
     },
     {
       "id": "bug-83f9304dbad3b4ee26bf",
@@ -5747,8 +5751,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:49:42.055Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 35
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 36
     },
     {
       "id": "bug-591d59999cca3b3f949c",
@@ -5770,8 +5774,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 140
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 141
     },
     {
       "id": "bug-c2f825be7c318eb119f7",
@@ -5793,8 +5797,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 140
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 141
     },
     {
       "id": "bug-77b2b4cecf5a663c0e0b",
@@ -5816,8 +5820,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 85
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 86
     },
     {
       "id": "bug-fcd7e3b7410acdcb39be",
@@ -5839,8 +5843,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-04T00:45:48.400Z",
-      "occurrenceCount": 85
+      "updatedAt": "2026-10-04T01:00:24.757Z",
+      "occurrenceCount": 86
     }
   ]
 }
