@@ -57,8 +57,19 @@
       "lastMs": 75823,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
       "updatedAt": "2026-10-04T09:03:04.647Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 83814,
+      "lastMs": 83814,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-04T09:03:12.638Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T09:03:04.648Z"
+  "updatedAt": "2026-10-04T09:03:12.638Z"
 }
