@@ -472,7 +472,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
     return !value||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value)||lower.includes('unknown')||lower.includes('출처 불명')||lower.includes('재배포 제한');
   };
-  const normalizeRepoPath=value=>clean(value).replace(/^\\/+/, '').replaceAll('\\\\','/');
+  const normalizeRepoPath=value=>clean(value).replaceAll('\\','/').split('/').filter(Boolean).join('/');
   const missingRepositoryAssetIds=[];
   const sourcePathGroups=new Map();
   const repositoryPathExistsCache=new Map();
