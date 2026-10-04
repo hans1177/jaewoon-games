@@ -1,5 +1,5 @@
 {
-  "version": 73,
+  "version": 74,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -55045,7 +55045,9 @@
       "PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING",
       "BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN",
       "BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN",
-      "REBUILD_UI_SUBSYSTEM_DEPTH"
+      "REBUILD_UI_SUBSYSTEM_DEPTH",
+      "READ_PERSISTED_NEXT_VOLUME_ACTIONS",
+      "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS"
     ],
     "postBindingChecks": [
       "RECORD_SOURCE_FILES",
@@ -55068,7 +55070,9 @@
       "REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND",
       "VOLUME_UP_BEFORE_QUALITY_UP",
       "AUTO_SYNC_CATALOG_TO_REGISTRY",
-      "REBUILD_LOOSE_VOLUME_PLAN"
+      "REBUILD_LOOSE_VOLUME_PLAN",
+      "CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER",
+      "QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY"
     ],
     "completionEvidence": [
       "CATALOG_UPDATED",
@@ -55517,7 +55521,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 2,
+    "version": 3,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56137,7 +56141,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 73,
+    "lastCatalogSynchronizedVersion": 74,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -56432,6 +56436,1709 @@
     "audioRoleContractCount": 65,
     "actualVerifiedAudioAssetCount": 0,
     "audioRoleVolumeSeparateFromVerifiedFileCount": true,
-    "qualityUpStartsOnlyAfterRecommendedVolume": true
+    "qualityUpStartsOnlyAfterRecommendedVolume": true,
+    "nextVolumeActions": [
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_CANCEL_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_CANCEL",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "worklistOrder": 1,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_CONFIRM_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_CONFIRM",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "worklistOrder": 2,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_ERROR_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_ERROR",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "worklistOrder": 3,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "AUDIO",
+        "ideaId": "AUDIO_UI_REWARD_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UI_REWARD",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 65,
+        "worklistOrder": 4,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "BUILDING",
+        "ideaId": "BUILDING_DAMAGE_STATE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "DAMAGE_STATE",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 20,
+        "worklistOrder": 5,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "BUILDING",
+        "ideaId": "BUILDING_INTERIOR_KIT_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERIOR_KIT",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 20,
+        "worklistOrder": 6,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "BUILDING",
+        "ideaId": "BUILDING_PROP_SOCKET_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "PROP_SOCKET",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 20,
+        "worklistOrder": 7,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "BUILDING",
+        "ideaId": "BUILDING_SIGNAGE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "SIGNAGE",
+        "priority": 300,
+        "targetMin": 120,
+        "currentCount": 20,
+        "worklistOrder": 8,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_AMORPHOUS_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "AMORPHOUS",
+        "priority": 300,
+        "targetMin": 180,
+        "currentCount": 24,
+        "worklistOrder": 9,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_BOSS_SIGNATURE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "BOSS_SIGNATURE",
+        "priority": 300,
+        "targetMin": 180,
+        "currentCount": 24,
+        "worklistOrder": 10,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_SURFACE_VARIANT_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "SURFACE_VARIANT",
+        "priority": 300,
+        "targetMin": 180,
+        "currentCount": 24,
+        "worklistOrder": 11,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_TORSO_VARIANT_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "TORSO_VARIANT",
+        "priority": 300,
+        "targetMin": 180,
+        "currentCount": 24,
+        "worklistOrder": 12,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "ENVIRONMENT_INTERIOR_EXTERIOR_TRANSITION_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERIOR_EXTERIOR_TRANSITION",
+        "priority": 300,
+        "targetMin": 140,
+        "currentCount": 24,
+        "worklistOrder": 13,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "ENVIRONMENT_STREAMING_LOD_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "STREAMING_LOD",
+        "priority": 300,
+        "targetMin": 140,
+        "currentCount": 24,
+        "worklistOrder": 14,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "MOTION_IDLE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "IDLE",
+        "priority": 300,
+        "targetMin": 200,
+        "currentCount": 61,
+        "worklistOrder": 15,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "PRESENTATION",
+        "ideaId": "PRESENTATION_ACCESSIBILITY_REDUCED_MOTION_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "ACCESSIBILITY_REDUCED_MOTION",
+        "priority": 300,
+        "targetMin": 100,
+        "currentCount": 14,
+        "worklistOrder": 16,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "PRESENTATION",
+        "ideaId": "PRESENTATION_FAILURE_RECOVERY_STATE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "FAILURE_RECOVERY_STATE",
+        "priority": 300,
+        "targetMin": 100,
+        "currentCount": 14,
+        "worklistOrder": 17,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "PRESENTATION",
+        "ideaId": "PRESENTATION_INPUT_SKIP_HINT_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INPUT_SKIP_HINT",
+        "priority": 300,
+        "targetMin": 100,
+        "currentCount": 14,
+        "worklistOrder": 18,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WEAPON",
+        "ideaId": "WEAPON_DAMAGE_WEAR_VARIANT_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "DAMAGE_WEAR_VARIANT",
+        "priority": 300,
+        "targetMin": 80,
+        "currentCount": 20,
+        "worklistOrder": 19,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WEAPON",
+        "ideaId": "WEAPON_RARITY_ORNAMENT_VARIANT_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "RARITY_ORNAMENT_VARIANT",
+        "priority": 300,
+        "targetMin": 80,
+        "currentCount": 20,
+        "worklistOrder": 20,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WEAPON",
+        "ideaId": "WEAPON_UPGRADE_STAGE_VISUAL_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "UPGRADE_STAGE_VISUAL",
+        "priority": 300,
+        "targetMin": 80,
+        "currentCount": 20,
+        "worklistOrder": 21,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_COLLISION_PROXY_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "COLLISION_PROXY",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "worklistOrder": 22,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_DESTRUCTIBLE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "DESTRUCTIBLE",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "worklistOrder": 23,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_INTERACTION_ROLE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERACTION_ROLE",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "worklistOrder": 24,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WORLD_PROP",
+        "ideaId": "WORLD_PROP_INTERACTION_STATE_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "INTERACTION_STATE",
+        "priority": 300,
+        "targetMin": 160,
+        "currentCount": 38,
+        "worklistOrder": 25,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "CLIMATE_SKY_DEPTH_STACK",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "WEATHER_TIME_CELESTIAL_BACKGROUND",
+        "priority": 280,
+        "targetMin": 140,
+        "currentCount": 24,
+        "worklistOrder": 26,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "FOLIAGE",
+        "ideaId": "WIND_AND_SEASON_FOLIAGE_VARIANTS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "WIND_SEASON_WEATHER_RESPONSE",
+        "priority": 280,
+        "targetMin": 36,
+        "currentCount": 18,
+        "worklistOrder": 27,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "ANTICIPATION_IMPACT_RECOVERY_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "COMBAT_TIMING_LANGUAGE",
+        "priority": 262,
+        "targetMin": 200,
+        "currentCount": 61,
+        "worklistOrder": 28,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "SKILL",
+        "ideaId": "CAST_TELEGRAPH_IMPACT_CHAIN",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CAST_TELEGRAPH_TRAVEL_IMPACT",
+        "priority": 262,
+        "targetMin": 180,
+        "currentCount": 20,
+        "worklistOrder": 29,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "COMBAT_THREAT_COMBO_HUD",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "THREAT_COMBO_BOSS_READABILITY",
+        "priority": 262,
+        "targetMin": 340,
+        "currentCount": 204,
+        "worklistOrder": 30,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "VFX",
+        "ideaId": "CRITICAL_DODGE_COUNTER_LANGUAGE",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CRITICAL_DODGE_COUNTER_FEEDBACK",
+        "priority": 262,
+        "targetMin": 120,
+        "currentCount": 27,
+        "worklistOrder": 31,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "WEAPON",
+        "ideaId": "WEAPON_IMPACT_SOCKET_VARIANTS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "IMPACT_TRAIL_SOCKET",
+        "priority": 262,
+        "targetMin": 80,
+        "currentCount": 20,
+        "worklistOrder": 32,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "FIELD_NAVIGATION_SURVIVAL_ITEMS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "REPAIR_SIGNAL_NAVIGATION_RESEARCH",
+        "priority": 256,
+        "targetMin": 140,
+        "currentCount": 40,
+        "worklistOrder": 33,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "QUEST_RELIC_LORE_ITEM_FAMILIES",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "QUEST_RELIC_LORE_KEY_TREASURE",
+        "priority": 256,
+        "targetMin": 140,
+        "currentCount": 40,
+        "worklistOrder": 34,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CHARACTER_GEAR",
+        "ideaId": "FACTION_STORY_WARDROBE_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "FACTION_REGION_STORY_ROLE",
+        "priority": 238,
+        "targetMin": 96,
+        "currentCount": 18,
+        "worklistOrder": 35,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "FOLIAGE",
+        "ideaId": "EXPLORATION_FOLIAGE_BIOME_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "BIOME_ROUTE_LANDMARK_DENSITY",
+        "priority": 238,
+        "targetMin": 36,
+        "currentCount": 18,
+        "worklistOrder": 36,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "CASUAL_COLLECTION_ITEM_FAMILY",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "COLLECTIBLE_REWARD",
+        "priority": 238,
+        "targetMin": 140,
+        "currentCount": 40,
+        "worklistOrder": 37,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ITEM",
+        "ideaId": "EXPLORATION_TOOL_ITEM_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "COMPASS_CAMERA_SCANNER_MARKER",
+        "priority": 238,
+        "targetMin": 140,
+        "currentCount": 40,
+        "worklistOrder": 38,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "DIALOGUE_ACTING_GESTURE_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "DIALOGUE_REACTION_HANDOFF_CEREMONY",
+        "priority": 238,
+        "targetMin": 200,
+        "currentCount": 61,
+        "worklistOrder": 39,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "PRESENTATION",
+        "ideaId": "CASUAL_FAST_RETRY_PRESENTATION",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "FAIL_RESULT_FAST_RETRY",
+        "priority": 238,
+        "targetMin": 100,
+        "currentCount": 14,
+        "worklistOrder": 40,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "CASUAL_ONE_HAND_RUN_HUD",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "ONE_ACTION_SCORE_DISTANCE_RISK",
+        "priority": 238,
+        "targetMin": 340,
+        "currentCount": 204,
+        "worklistOrder": 41,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "VFX",
+        "ideaId": "CASUAL_PICKUP_STREAK_VFX",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "PICKUP_STREAK_REWARD",
+        "priority": 238,
+        "targetMin": 120,
+        "currentCount": 27,
+        "worklistOrder": 42,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CHARACTER_GEAR",
+        "ideaId": "COOP_ROLE_IDENTITY_GEAR",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "TEAM_ROLE_IDENTITY",
+        "priority": 232,
+        "targetMin": 96,
+        "currentCount": 18,
+        "worklistOrder": 43,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MATERIAL",
+        "ideaId": "MACHINE_WEAR_REPAIR_MATERIALS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CLEAN_WORN_DIRTY_CORRODED_REPAIRED",
+        "priority": 232,
+        "targetMin": 40,
+        "currentCount": 25,
+        "worklistOrder": 44,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "COOP_PARTY_MARKER_PING_UI",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "PARTY_MARKER_PING_SHARED_OBJECTIVE",
+        "priority": 232,
+        "targetMin": 340,
+        "currentCount": 204,
+        "worklistOrder": 45,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CHARACTER_GEAR",
+        "ideaId": "GROWTH_STAGE_GEAR_VARIANTS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "VISIBLE_GROWTH_STAGE",
+        "priority": 226,
+        "targetMin": 96,
+        "currentCount": 18,
+        "worklistOrder": 46,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CHARACTER_GEAR",
+        "ideaId": "ROLEPLAY_IDENTITY_LIFE_KIT",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "JOB_ROLE_SOCIAL_OUTFIT",
+        "priority": 226,
+        "targetMin": 96,
+        "currentCount": 18,
+        "worklistOrder": 47,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "ENVIRONMENT",
+        "ideaId": "DEFENSE_LANE_BACKGROUND_PRESSURE",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "LANE_ROUTE_WAVE_PRESSURE",
+        "priority": 226,
+        "targetMin": 140,
+        "currentCount": 24,
+        "worklistOrder": 48,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MATERIAL",
+        "ideaId": "DAMP_RUST_GRIME_HORROR_MATERIALS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "DAMP_DIRT_CORROSION_DAMAGE",
+        "priority": 226,
+        "targetMin": 40,
+        "currentCount": 25,
+        "worklistOrder": 49,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MATERIAL",
+        "ideaId": "HOUSING_MATERIAL_PALETTE_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "WALL_FLOOR_ROOF_TRIM_THEME",
+        "priority": 226,
+        "targetMin": 40,
+        "currentCount": 25,
+        "worklistOrder": 50,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MATERIAL",
+        "ideaId": "PUZZLE_TILE_STATE_MATERIALS",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "TILE_LOCKED_ACTIVE_DAMAGED_SPECIAL",
+        "priority": 226,
+        "targetMin": 40,
+        "currentCount": 25,
+        "worklistOrder": 51,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "MOTION",
+        "ideaId": "BUILD_CARRY_PLACE_MOTION_SET",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "CARRY_BUILD_REPAIR_PLACE",
+        "priority": 226,
+        "targetMin": 200,
+        "currentCount": 61,
+        "worklistOrder": 52,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "UI",
+        "ideaId": "DEFENSE_WAVE_COMMAND_KIT",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "WAVE_BASE_RANGE_UPGRADE_BOSS",
+        "priority": 226,
+        "targetMin": 340,
+        "currentCount": 204,
+        "worklistOrder": 53,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "VFX",
+        "ideaId": "ASCENSION_GROWTH_VFX",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "LEVEL_UP_ASCENSION_UPGRADE",
+        "priority": 226,
+        "targetMin": 120,
+        "currentCount": 27,
+        "worklistOrder": 54,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "VFX",
+        "ideaId": "DEFENSE_RANGE_TELEGRAPH_VFX",
+        "source": "COMPANY_COMMON_SEED_DEMAND",
+        "role": "RANGE_TARGET_WAVE_BOSS_TELEGRAPH",
+        "priority": 226,
+        "targetMin": 120,
+        "currentCount": 27,
+        "worklistOrder": 55,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "ideaId": "ACTION_REMAP_CONTEXT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 4,
+        "worklistOrder": 56,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "SKILL_BUILD_LIBRARY",
+        "ideaId": "ACTIVE_PASSIVE_SPLIT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 8,
+        "worklistOrder": 57,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CONQUEST_DEFENSE",
+        "ideaId": "ATTACK_DIRECTION_COMPASS",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 1,
+        "worklistOrder": 58,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CRAFTING_UPGRADE",
+        "ideaId": "BATCH_CRAFT_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 11,
+        "worklistOrder": 59,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "MENU_NAVIGATION",
+        "ideaId": "BREADCRUMB_BACKSTACK",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 30,
+        "currentCount": 24,
+        "worklistOrder": 60,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "SHOP_TRADE",
+        "ideaId": "BULK_PURCHASE_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 6,
+        "worklistOrder": 61,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "SHOP_TRADE",
+        "ideaId": "BUY_SELL_TOGGLE_CONTEXT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 6,
+        "worklistOrder": 62,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
+        "ideaId": "CAPACITY_FORECAST",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 32,
+        "currentCount": 25,
+        "worklistOrder": 63,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "WORLD_STRATEGY_DIPLOMACY",
+        "ideaId": "CITY_INFLUENCE_HEATMAP",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 12,
+        "worklistOrder": 64,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "FACTION_STORY_RELATION",
+        "ideaId": "CLAN_HIERARCHY_PANEL",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 65,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PROGRESSION_GROWTH",
+        "ideaId": "CLASS_ROLE_MILESTONE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 66,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "COMBAT_HUD",
+        "ideaId": "COMBO_DECAY_INDICATOR",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 14,
+        "worklistOrder": 67,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PARTY_COMPANION",
+        "ideaId": "COMPANION_ORDER_PRIORITY",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 17,
+        "worklistOrder": 68,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "FLEET_NAVIGATION",
+        "ideaId": "CREW_MORALE_PANEL",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 13,
+        "worklistOrder": 69,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CONQUEST_DEFENSE",
+        "ideaId": "DEFENSE_WAVE_FORECAST",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 1,
+        "worklistOrder": 70,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "EXPLORATION_EVENTS",
+        "ideaId": "DISCOVERY_SIGNAL_CARD",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 71,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "QUEST_CODEX",
+        "ideaId": "DISCOVERY_TO_CODEX_LINK",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 9,
+        "worklistOrder": 72,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "FACTION_STORY_RELATION",
+        "ideaId": "FACTION_RELATION_MATRIX",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 73,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "FLEET_NAVIGATION",
+        "ideaId": "FLEET_COMPOSITION_PANEL",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 13,
+        "worklistOrder": 74,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PARTY_COMPANION",
+        "ideaId": "FORMATION_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 17,
+        "worklistOrder": 75,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "COMBAT_HUD",
+        "ideaId": "GUARD_BREAK_RECOVERY",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 14,
+        "worklistOrder": 76,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "EXPLORATION_EVENTS",
+        "ideaId": "HIDDEN_PATH_HINT",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 77,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "ideaId": "HOLD_DURATION_SETTING",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 4,
+        "worklistOrder": 78,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ACCESSIBILITY_INPUT",
+        "ideaId": "INPUT_MODE_LIVE_SWAP",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 14,
+        "currentCount": 4,
+        "worklistOrder": 79,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "CONQUEST_DEFENSE",
+        "ideaId": "INVASION_WARNING_BANNER",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 1,
+        "worklistOrder": 80,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "EXPLORATION_EVENTS",
+        "ideaId": "LANDMARK_REVEAL_PANEL",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 81,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "MENU_NAVIGATION",
+        "ideaId": "LAST_LOCATION_RESUME",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 30,
+        "currentCount": 24,
+        "worklistOrder": 82,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PROGRESSION_GROWTH",
+        "ideaId": "LEVEL_ATTRIBUTE_DELTA",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 83,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "EQUIPMENT_LOADOUT",
+        "ideaId": "LOADOUT_DIFF_PREVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 9,
+        "worklistOrder": 84,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "ECONOMY_TRADE",
+        "ideaId": "LOCAL_PRICE_TREND",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 20,
+        "currentCount": 3,
+        "worklistOrder": 85,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "FACTION_STORY_RELATION",
+        "ideaId": "LOYALTY_HONOR_STATUS",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 86,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "MOUNT_TRAVEL",
+        "ideaId": "MOUNT_CARGO_CAPACITY",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 16,
+        "worklistOrder": 87,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "MOUNT_TRAVEL",
+        "ideaId": "MOUNT_CONDITION_HUD",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 16,
+        "worklistOrder": 88,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "PROGRESSION_GROWTH",
+        "ideaId": "MULTI_AXIS_GROWTH_OVERVIEW",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 1,
+        "worklistOrder": 89,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "NPC_RELATIONSHIP",
+        "ideaId": "NPC_KNOWN_FACTS",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 19,
+        "worklistOrder": 90,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "NPC_RELATIONSHIP",
+        "ideaId": "NPC_MEMORY_CHANGE_BADGE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 24,
+        "currentCount": 19,
+        "worklistOrder": 91,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "QUEST_CODEX",
+        "ideaId": "OBJECTIVE_PROGRESS_TIMELINE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 9,
+        "worklistOrder": 92,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "LOADING_ERROR_STATE",
+        "ideaId": "OFFLINE_CACHE_STATE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 7,
+        "worklistOrder": 93,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "INVENTORY_ITEM_MANAGEMENT",
+        "ideaId": "OVERWEIGHT_RESOLUTION_SHEET",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 32,
+        "currentCount": 25,
+        "worklistOrder": 94,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "COMBAT_HUD",
+        "ideaId": "PARRY_WINDOW_LAYER",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 18,
+        "currentCount": 14,
+        "worklistOrder": 95,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      },
+      {
+        "kind": "UI_SUBSYSTEM_VOLUME",
+        "domain": "UI",
+        "subsystem": "LOADING_ERROR_STATE",
+        "ideaId": "PARTIAL_LOAD_CONTINUE",
+        "source": "UI_SUBSYSTEM_IDEA_POOL",
+        "role": "MISSING_CONTEXT_STATE_OR_FLOW_VARIANT",
+        "priority": 210,
+        "targetMin": 16,
+        "currentCount": 7,
+        "worklistOrder": 96,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "NEW_AUTHORING"
+        ]
+      }
+    ],
+    "persistentWorklistField": "internalAssetLibraryAutomation.nextVolumeActions",
+    "volumeActionConsumption": "PERSISTED_PRIORITY_WORKLIST_FIRST",
+    "reuseResolutionOrder": [
+      "REUSE_EXISTING",
+      "DERIVE_VARIANT",
+      "RECOMBINE_EXISTING",
+      "NEW_AUTHORING"
+    ],
+    "ideaDeduplication": {
+      "fields": [
+        "id",
+        "assetId",
+        "atomId",
+        "role",
+        "roles",
+        "sourceIdeaId",
+        "ideaId"
+      ],
+      "existingIdentityCount": 1438,
+      "repeatedDistinctVariationProposalForbidden": true
+    },
+    "qualityUpPolicy": {
+      "selection": "WEAKEST_INTERNAL_AUDIT_AXIS_FIRST",
+      "workingBandMin": 980,
+      "target": 1000,
+      "productionRuntimeVerificationSeparate": true
+    },
+    "productionRuntimeVerificationSeparateFromInternalQuality": true
   }
 }
