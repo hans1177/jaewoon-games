@@ -1,5 +1,5 @@
 {
-  "version": 53,
+  "version": 54,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -27198,10 +27198,13 @@
       "AUDIO",
       "PRESENTATION"
     ],
-    "nextAction": "FILL_PRIORITY_GAPS_INSIDE_EXISTING_COMMON_PACKS_WITHOUT_NEW_PIPELINE"
+    "nextAction": "FILL_PRIORITY_GAPS_INSIDE_EXISTING_COMMON_PACKS_WITHOUT_NEW_PIPELINE",
+    "crossPackAuditImplementation": "assets/vibe-studio-asset-universe.js#auditCommonLibrarySystemDepth",
+    "crossPackCoverageRequired": true,
+    "perPackGapMayBeResolvedByOtherCompanyCommonPack": true
   },
   "commonGenreSystemExpectations": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_GAP_GUIDE",
     "copyRule": "SYSTEM_PRINCIPLES_ONLY_NO_GAME_SPECIFIC_COPY",
     "genres": {
@@ -27332,6 +27335,114 @@
         "OWNERSHIP",
         "UPGRADE",
         "OVERVIEW_STATUS"
+      ],
+      "ACTION": [
+        "CORE_COMBAT_LOOP",
+        "DODGE_OR_EVASION",
+        "BLOCK_PARRY_OPTIONAL",
+        "COMBO_OR_CHAIN",
+        "WEAPON_FEEDBACK",
+        "HIT_REACTION",
+        "BOSS_TELEGRAPH",
+        "QUICK_ITEM",
+        "SKILL_ACCESS",
+        "CAMERA_FEEDBACK",
+        "MOBILE_INPUT_PARITY"
+      ],
+      "ADVENTURE": [
+        "WORLD_EXPLORATION",
+        "MAP_POI",
+        "QUEST_OR_OBJECTIVE",
+        "INTERACTION_PROMPT",
+        "PUZZLE_OPTIONAL",
+        "LORE",
+        "COLLECTIBLE",
+        "TRAVERSAL",
+        "FAST_TRAVEL_OPTIONAL",
+        "CODEX",
+        "DISCOVERY_FEEDBACK"
+      ],
+      "PUZZLE": [
+        "BOARD_OR_ACTIVE_STATE",
+        "VALID_ACTION_FEEDBACK",
+        "UNDO_REDO_OPTIONAL",
+        "HINT_SYSTEM",
+        "CLEAR_STATE",
+        "FAIL_STATE",
+        "RETRY",
+        "ACCESSIBILITY",
+        "TOUCH_PRECISION",
+        "LEVEL_SELECT",
+        "PROGRESSION"
+      ],
+      "TYCOON": [
+        "BUILD_MODE",
+        "PLACEMENT_VALIDATION",
+        "PATH_CONNECTION",
+        "CAPACITY",
+        "QUEUE",
+        "UPGRADE",
+        "STAFF",
+        "MAINTENANCE",
+        "CUSTOMER_STATE",
+        "SATISFACTION",
+        "INCOME_EXPENSE",
+        "SERVICE_STATUS",
+        "OVERVIEW_DASHBOARD",
+        "DECORATION"
+      ],
+      "DEFENSE": [
+        "BASE_HEALTH",
+        "WAVE_STATE",
+        "PLACEMENT",
+        "TOWER_OR_UNIT_CARD",
+        "RANGE_PREVIEW",
+        "UPGRADE_PATH",
+        "SELL_OR_RECYCLE",
+        "ENEMY_CODEX",
+        "RESOURCE_ECONOMY",
+        "BOSS_WARNING",
+        "FAST_BUILD_INPUT"
+      ],
+      "HORROR": [
+        "LIGHT_OR_VISIBILITY",
+        "THREAT_FEEDBACK",
+        "INVESTIGATION",
+        "LORE",
+        "KEY_ITEM",
+        "PUZZLE",
+        "CHASE_OR_ESCAPE",
+        "SAFE_POINT_OPTIONAL",
+        "INVENTORY_PRESSURE_OPTIONAL",
+        "AUDIO_CUE",
+        "OBJECTIVE_TRACKING"
+      ],
+      "COOP_MULTIPLAYER": [
+        "PARTY",
+        "PLAYER_MARKERS",
+        "PING",
+        "SHARED_OBJECTIVE",
+        "REVIVE_OPTIONAL",
+        "OWNERSHIP_PERMISSION",
+        "LOOT_RULE_PRESENTATION",
+        "TRADE_OPTIONAL",
+        "READY_STATE",
+        "CONNECTION_STATE",
+        "SYNC_FEEDBACK"
+      ],
+      "NARRATIVE": [
+        "DIALOGUE",
+        "CHOICES",
+        "HISTORY",
+        "CHARACTER_RELATIONSHIP",
+        "QUEST_STATE",
+        "LORE",
+        "CODEX",
+        "CUTSCENE_SKIP",
+        "SUBTITLE",
+        "ACCESSIBILITY",
+        "SAVE_CHECKPOINT_PRESENTATION",
+        "DECISION_CONSEQUENCE_FEEDBACK"
       ]
     }
   }
