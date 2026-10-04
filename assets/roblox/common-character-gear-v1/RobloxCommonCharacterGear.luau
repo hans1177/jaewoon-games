@@ -159,11 +159,11 @@ end
 
 local function addVest(model,root,row,level)
 	local p=row.palette
-	weld(root,makePart("VestBody",Vector3.new(2.48,2.42,1.18),p.leather,Enum.Material.Leather),CFrame.new(0,0,0))
-	weld(root,makePart("CenterGap",Vector3.new(0.20,2.06,0.10),p.trim,Enum.Material.Leather),CFrame.new(0,0,-0.62))
+	weld(root,makePart("VestBody",Vector3.new(2.48,2.42,1.18),p.leather,Enum.Material.Fabric),CFrame.new(0,0,0))
+	weld(root,makePart("CenterGap",Vector3.new(0.20,2.06,0.10),p.trim,Enum.Material.Fabric),CFrame.new(0,0,-0.62))
 	if detail(level,2) then
 		for _,x in ipairs({-0.72,0.72}) do
-			weld(root,makePart("Panel"..tostring(x),Vector3.new(0.52,1.85,0.08),p.leatherLight,Enum.Material.Leather),CFrame.new(x,0,-0.64))
+			weld(root,makePart("Panel"..tostring(x),Vector3.new(0.52,1.85,0.08),p.leatherLight,Enum.Material.Fabric),CFrame.new(x,0,-0.64))
 		end
 	end
 	if detail(level,3) then
@@ -223,10 +223,10 @@ local function addGloves(model,root,row,level)
 	local p=row.palette
 	for _,side in ipairs({-1,1}) do
 		local x=side*0.72
-		weld(root,makePart("Glove"..side,Vector3.new(0.62,1.05,0.72),p.leather,Enum.Material.Leather),CFrame.new(x,0,0))
-		weld(root,makePart("Cuff"..side,Vector3.new(0.82,0.28,0.82),p.trim,Enum.Material.Leather),CFrame.new(x,0.58,0))
+		weld(root,makePart("Glove"..side,Vector3.new(0.62,1.05,0.72),p.leather,Enum.Material.Fabric),CFrame.new(x,0,0))
+		weld(root,makePart("Cuff"..side,Vector3.new(0.82,0.28,0.82),p.trim,Enum.Material.Fabric),CFrame.new(x,0.58,0))
 		if detail(level,2) then
-			weld(root,makePart("Knuckle"..side,Vector3.new(0.52,0.20,0.18),p.leatherLight,Enum.Material.Leather),CFrame.new(x,-0.18,-0.42))
+			weld(root,makePart("Knuckle"..side,Vector3.new(0.52,0.20,0.18),p.leatherLight,Enum.Material.Fabric),CFrame.new(x,-0.18,-0.42))
 		end
 		if detail(level,3) then
 			weld(root,makePart("Buckle"..side,Vector3.new(0.24,0.18,0.12),p.buckle,Enum.Material.Metal),CFrame.new(x,0.58,-0.44))
@@ -238,11 +238,11 @@ local function addBoots(model,root,row,level)
 	local p=row.palette
 	for _,side in ipairs({-1,1}) do
 		local x=side*0.68
-		weld(root,makePart("BootLeg"..side,Vector3.new(0.78,1.72,0.86),p.leather,Enum.Material.Leather),CFrame.new(x,0.40,0))
-		weld(root,makePart("BootFoot"..side,Vector3.new(0.86,0.68,1.28),p.leatherLight,Enum.Material.Leather),CFrame.new(x,-0.55,-0.22))
-		weld(root,makePart("Sole"..side,Vector3.new(0.90,0.16,1.34),p.sole,Enum.Material.Rubber),CFrame.new(x,-0.94,-0.22))
+		weld(root,makePart("BootLeg"..side,Vector3.new(0.78,1.72,0.86),p.leather,Enum.Material.Fabric),CFrame.new(x,0.40,0))
+		weld(root,makePart("BootFoot"..side,Vector3.new(0.86,0.68,1.28),p.leatherLight,Enum.Material.Fabric),CFrame.new(x,-0.55,-0.22))
+		weld(root,makePart("Sole"..side,Vector3.new(0.90,0.16,1.34),p.sole,Enum.Material.SmoothPlastic),CFrame.new(x,-0.94,-0.22))
 		if detail(level,2) then
-			weld(root,makePart("Cuff"..side,Vector3.new(0.92,0.28,0.92),p.leatherLight,Enum.Material.Leather),CFrame.new(x,1.20,0))
+			weld(root,makePart("Cuff"..side,Vector3.new(0.92,0.28,0.92),p.leatherLight,Enum.Material.Fabric),CFrame.new(x,1.20,0))
 		end
 		if detail(level,3) then
 			weld(root,makePart("Buckle"..side,Vector3.new(0.26,0.18,0.12),p.buckle,Enum.Material.Metal),CFrame.new(x,0.42,-0.48))
