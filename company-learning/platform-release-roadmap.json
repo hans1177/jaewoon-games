@@ -1,5 +1,5 @@
 {
-  "version": 525,
+  "version": 526,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -6152,7 +6152,7 @@
       "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true
     }
   },
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-05",
   "priorityTiers": [
     {
       "tier": 1,
@@ -26623,6 +26623,67 @@
       "mayNotBypassSecurityQaRuntimeOrReleaseGates": true,
       "mayNotExpandWritableAuthority": true,
       "assistOutcomeMustReturnToExistingVibeLoop": true
+    },
+    "assetProducerConsumerBoundary": {
+      "version": 1,
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "purpose": "KEEP_GRAPHICS_ASSET_PRODUCTION_AND_BUILD_UP_FLOOR_ASSET_CONSUMPTION_AS_EXPLICIT_SEPARATE_RESPONSIBILITIES",
+      "existingConsumerUsagePolicyAuthority": "company-asset-library.json#internalAssetUsagePolicy",
+      "consumerUsageSelectionQualityAdaptationRulesDuplicatedHere": false,
+      "producer": {
+        "role": "GRAPHICS_ASSET_PRODUCER",
+        "owner": "EXISTING_GRAPHICS_PRODUCTION_AND_ASSET_DEVELOPMENT_LANE",
+        "owns": [
+          "ASSET_CREATION_ACQUISITION_DERIVATION_REAUTHORING",
+          "DCC_AND_NATIVE_ASSET_AUTHORING",
+          "ASSET_LIBRARY_TYPE_VOLUME_AND_QUALITY_EVOLUTION",
+          "ASSET_PROVENANCE_AND_PRODUCTION_VERIFICATION_INPUT"
+        ]
+      },
+      "consumer": {
+        "role": "BUILD_UP_FLOOR_ASSET_CONSUMER",
+        "owner": "VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION",
+        "usesExistingPolicyFrom": "company-asset-library.json#internalAssetUsagePolicy",
+        "owns": [
+          "READ_CURRENT_GAME_SOURCE_SYSTEMS_STATES_EVENTS_AND_ROLES",
+          "READ_LATEST_COMPANY_ASSET_LIBRARY_AT_EXECUTION_TIME",
+          "RUN_EXISTING_INTERNAL_ASSET_USAGE_POLICY_AGAINST_CURRENT_LIBRARY",
+          "CONSUME_AND_COMPOSE_COMPATIBLE_EXISTING_ASSETS_IN_EXISTING_RESPONSIBLE_GAME_SOURCE",
+          "VERIFY_ACTUAL_GAME_SOURCE_AND_RUNTIME_USAGE",
+          "REPORT_ONLY_TRUE_UNRESOLVED_ASSET_GAP_TO_EXISTING_ASSET_PRODUCER"
+        ],
+        "forbidden": [
+          "CREATE_OR_AUTHOR_ASSET_AS_FLOOR_CONSUMER",
+          "RUN_DCC_AS_FLOOR_CONSUMER_RESPONSIBILITY",
+          "MUTATE_COMPANY_ASSET_LIBRARY_AS_GAME_SOURCE_BINDING_SHORTCUT",
+          "DUPLICATE_OR_OVERRIDE_INTERNAL_ASSET_USAGE_POLICY",
+          "CREATE_SHADOW_ASSET_PIPELINE_LIBRARY_OR_WRAPPER"
+        ]
+      },
+      "freshness": {
+        "latestLibraryAtEachBuildUpExecution": true,
+        "libraryVersionObserved": true,
+        "libraryInventoryTypeRoleQualityFingerprintObserved": true,
+        "libraryUpdateRequiresEligibilityReevaluationUnderExistingUsagePolicy": true,
+        "newOrImprovedCompatibleAssetsMayChangeSelection": true,
+        "unchangedValidBindingMayRemainWhenReevaluationStillSelectsIt": true,
+        "fullLibraryPromptReplicationForbidden": true,
+        "selectedPromptContextIsSynchronizationOptimizationNotUsageEligibilityCap": true
+      },
+      "bottleneck": {
+        "existingCompatibleAssetMayNotWaitForNewAuthoring": true,
+        "unresolvedAssetGapMayNotSerializeUnrelatedBuildUpWork": true,
+        "producerAndConsumerMayRunParallelWhenResponsibleFilesDoNotConflict": true,
+        "exactDuplicateGapCoalescingAllowed": true,
+        "exactResponsibleFileConflictSerializationOnly": true
+      },
+      "flow": {
+        "existingBuildUpAssetProductionPathOnly": true,
+        "newFlowStageCreated": false,
+        "finalDevelopmentLockSequenceUnchanged": true,
+        "newPipelineWorkflowQueueSchedulerOrShadowManager": false
+      }
     }
   }
 }
