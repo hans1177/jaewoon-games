@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 방어구/의상 비주얼 8종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 방어구/의상 비주얼 18종 생성
 -- 원칙: 순수 표현 자산만 제공한다. 방어력/체력/이동/장착판정/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonCharacterGear = {}
@@ -46,7 +46,47 @@ local Catalog = table.freeze({
 	TRAVEL_CLOAK = table.freeze({
 		id="TRAVEL_CLOAK", name="여행 망토", familyRootId="GEAR_CLOAK", family="CHARACTER", subfamily="BACK_GEAR", gearRole="BACK",
 		silhouette="SHOULDER_MANTLE_TAPERED_CAPE", palette=table.freeze({cloth=c(75,89,78), clothLight=c(109,126,104), trim=c(56,51,45), clasp=c(168,133,68)}),
+	}),,
+	LEG_PLATES = table.freeze({
+		id="LEG_PLATES", name="다리 보호대", familyRootId="GEAR_LEGS", family="CHARACTER", subfamily="LEG_GEAR", gearRole="LEGS",
+		systemRoles=table.freeze({"LEGS"}), silhouette="PAIR_LAYERED_THIGH_GREAVE", palette=table.freeze({metal=c(103,111,117), metalLight=c(158,166,171), metalDark=c(61,66,70), strap=c(87,63,45)}),
 	}),
+	SHOULDER_PAULDRONS = table.freeze({
+		id="SHOULDER_PAULDRONS", name="어깨 견갑", familyRootId="GEAR_SHOULDER", family="CHARACTER", subfamily="SHOULDER_GEAR", gearRole="SHOULDER",
+		systemRoles=table.freeze({"SHOULDER"}), silhouette="PAIR_RAISED_PAULDRON", palette=table.freeze({metal=c(111,119,126), metalLight=c(174,181,185), metalDark=c(65,71,75), accent=c(164,126,62)}),
+	}),
+	UTILITY_BELT = table.freeze({
+		id="UTILITY_BELT", name="다용도 벨트", familyRootId="GEAR_BELT", family="CHARACTER", subfamily="BELT_GEAR", gearRole="BELT",
+		systemRoles=table.freeze({"BELT","ACCESSORY","SOCKET_POINT"}), silhouette="WIDE_BELT_POUCH_SOCKET", palette=table.freeze({leather=c(90,63,46), leatherLight=c(128,89,59), metal=c(143,119,76), pouch=c(105,78,56)}),
+	}),
+	SIGNET_RING = table.freeze({
+		id="SIGNET_RING", name="인장 반지", familyRootId="GEAR_RING", family="CHARACTER", subfamily="RING_GEAR", gearRole="RING",
+		systemRoles=table.freeze({"RING","ACCESSORY"}), silhouette="BAND_WITH_SIGNET_FACE", palette=table.freeze({metal=c(163,142,91), metalLight=c(215,197,139), gem=c(92,134,171)}),
+	}),
+	TRAVEL_AMULET = table.freeze({
+		id="TRAVEL_AMULET", name="여행 목걸이", familyRootId="GEAR_AMULET", family="CHARACTER", subfamily="AMULET_GEAR", gearRole="AMULET",
+		systemRoles=table.freeze({"AMULET","ACCESSORY"}), silhouette="CORD_PENDANT_DROP", palette=table.freeze({cord=c(76,59,48), metal=c(148,125,78), gem=c(93,165,154)}),
+	}),
+	COSMETIC_SASH = table.freeze({
+		id="COSMETIC_SASH", name="장식 띠", familyRootId="GEAR_COSMETIC_SASH", family="CHARACTER", subfamily="COSMETIC_OVERLAY", gearRole="COSMETIC_OVERLAY",
+		systemRoles=table.freeze({"COSMETIC_OVERLAY","TRANSMOG_BASE"}), silhouette="DIAGONAL_CLOTH_SASH", palette=table.freeze({cloth=c(126,79,91), clothLight=c(171,112,128), trim=c(213,176,104)}),
+	}),
+	SET_CREST = table.freeze({
+		id="SET_CREST", name="세트 문장", familyRootId="GEAR_SET_CREST", family="CHARACTER", subfamily="ACCESSORY_GEAR", gearRole="SET_IDENTITY",
+		systemRoles=table.freeze({"SET_IDENTITY","ACCESSORY"}), silhouette="CENTER_CHEST_CREST", palette=table.freeze({base=c(72,82,96), metal=c(171,145,82), accent=c(104,172,204)}),
+	}),
+	SOCKET_CHARM = table.freeze({
+		id="SOCKET_CHARM", name="소켓 부적", familyRootId="GEAR_SOCKET_CHARM", family="CHARACTER", subfamily="ACCESSORY_GEAR", gearRole="SOCKET_POINT",
+		systemRoles=table.freeze({"SOCKET_POINT","ACCESSORY"}), silhouette="HANGING_GEM_CHARM", palette=table.freeze({metal=c(137,125,111), gem=c(121,205,190), cord=c(72,59,50)}),
+	}),
+	UPGRADE_TRIM = table.freeze({
+		id="UPGRADE_TRIM", name="강화 장식 테두리", familyRootId="GEAR_UPGRADE_TRIM", family="CHARACTER", subfamily="COSMETIC_OVERLAY", gearRole="UPGRADE_STAGE_VISUAL",
+		systemRoles=table.freeze({"UPGRADE_STAGE_VISUAL","LIGHT_MEDIUM_HEAVY"}), silhouette="ARMOR_EDGE_UPGRADE_TRIM", palette=table.freeze({base=c(92,101,108), accent=c(217,173,79), glow=c(113,191,217)}),
+	}),
+	WORN_ARMOR_PATCH = table.freeze({
+		id="WORN_ARMOR_PATCH", name="손상 장비 패치", familyRootId="GEAR_WEAR_PATCH", family="CHARACTER", subfamily="COSMETIC_OVERLAY", gearRole="DAMAGE_WEAR_VARIANT",
+		systemRoles=table.freeze({"DAMAGE_WEAR_VARIANT","TRANSMOG_BASE"}), silhouette="ASYMMETRIC_REPAIR_PATCH", palette=table.freeze({patch=c(88,77,68), stitch=c(176,146,104), metal=c(102,108,110)}),
+	})
 })
 
 local function makePart(name,size,color,material,shape)
@@ -265,6 +305,94 @@ local function addCloak(model,root,row,level)
 	end
 end
 
+
+local function addLegPlates(model,root,row,level)
+	local p=row.palette
+	for _,side in ipairs({-1,1}) do
+		local x=side*0.66
+		weld(root,makePart("Thigh"..side,Vector3.new(0.72,1.35,0.82),p.metal,Enum.Material.Metal),CFrame.new(x,0.62,0))
+		weld(root,makePart("Greave"..side,Vector3.new(0.64,1.15,0.72),p.metalDark,Enum.Material.Metal),CFrame.new(x,-0.68,-0.04))
+		weld(root,makePart("Strap"..side,Vector3.new(0.76,0.18,0.86),p.strap,Enum.Material.Fabric),CFrame.new(x,0.08,0))
+		if detail(level,3) then weld(root,makePart("Edge"..side,Vector3.new(0.10,1.03,0.12),p.metalLight,Enum.Material.Metal),CFrame.new(x,-0.66,-0.40)) end
+	end
+end
+
+local function addShoulderPauldrons(model,root,row,level)
+	local p=row.palette
+	for _,side in ipairs({-1,1}) do
+		local x=side*1.30
+		weld(root,wedge("Pauldron"..side,Vector3.new(0.88,0.62,1.35),p.metal,Enum.Material.Metal),CFrame.new(x,1.00,0)*CFrame.Angles(0,side<0 and math.rad(180) or 0,math.rad(side*10)))
+		if detail(level,2) then weld(root,makePart("Rim"..side,Vector3.new(0.92,0.12,1.38),p.metalLight,Enum.Material.Metal),CFrame.new(x,1.28,0)) end
+		if detail(level,3) then weld(root,makePart("Accent"..side,Vector3.new(0.18,0.34,0.18),p.accent,Enum.Material.Metal,"BALL"),CFrame.new(x,1.18,-0.56)) end
+	end
+end
+
+local function addUtilityBelt(model,root,row,level)
+	local p=row.palette
+	weld(root,makePart("Belt",Vector3.new(2.50,0.34,1.18),p.leather,Enum.Material.Fabric),CFrame.new(0,-0.65,0))
+	weld(root,makePart("Buckle",Vector3.new(0.46,0.40,0.16),p.metal,Enum.Material.Metal),CFrame.new(0,-0.65,-0.62))
+	for i,x in ipairs({-0.82,0.82}) do
+		weld(root,makePart("Pouch"..i,Vector3.new(0.58,0.68,0.36),p.pouch,Enum.Material.Fabric),CFrame.new(x,-0.82,-0.58))
+	end
+	if detail(level,3) then weld(root,makePart("Socket",Vector3.new(0.22,0.22,0.16),p.leatherLight,Enum.Material.Fabric,"BALL"),CFrame.new(1.12,-0.62,-0.55)) end
+end
+
+local function addSignetRing(model,root,row,level)
+	local p=row.palette
+	weld(root,makePart("Band",Vector3.new(0.62,0.20,0.62),p.metal,Enum.Material.Metal,"CYLINDER"),CFrame.new(0,0,0)*CFrame.Angles(0,0,math.rad(90)))
+	weld(root,makePart("SignetFace",Vector3.new(0.34,0.18,0.40),p.metalLight,Enum.Material.Metal),CFrame.new(0,0,-0.34))
+	if detail(level,2) then weld(root,makePart("Gem",Vector3.new(0.18,0.12,0.18),p.gem,Enum.Material.Neon,"BALL"),CFrame.new(0,0,-0.48)) end
+end
+
+local function addTravelAmulet(model,root,row,level)
+	local p=row.palette
+	for _,side in ipairs({-1,1}) do
+		weld(root,makePart("Cord"..side,Vector3.new(0.08,1.35,0.08),p.cord,Enum.Material.Fabric,"CYLINDER"),CFrame.new(side*0.32,0.25,-0.48)*CFrame.Angles(0,0,math.rad(side*18)))
+	end
+	weld(root,makePart("Pendant",Vector3.new(0.46,0.62,0.20),p.metal,Enum.Material.Metal),CFrame.new(0,-0.55,-0.58))
+	if detail(level,2) then weld(root,makePart("Gem",Vector3.new(0.22,0.28,0.14),p.gem,Enum.Material.Neon,"BALL"),CFrame.new(0,-0.55,-0.72)) end
+end
+
+local function addCosmeticSash(model,root,row,level)
+	local p=row.palette
+	weld(root,makePart("Sash",Vector3.new(0.54,3.10,0.12),p.cloth,Enum.Material.Fabric),CFrame.new(0,0,-0.62)*CFrame.Angles(0,0,math.rad(-28)))
+	if detail(level,2) then weld(root,makePart("Trim",Vector3.new(0.10,3.05,0.06),p.trim,Enum.Material.Fabric),CFrame.new(0.18,0,-0.70)*CFrame.Angles(0,0,math.rad(-28))) end
+	if detail(level,3) then weld(root,makePart("Fold",Vector3.new(0.18,2.20,0.08),p.clothLight,Enum.Material.Fabric),CFrame.new(-0.14,-0.20,-0.69)*CFrame.Angles(0,0,math.rad(-28))) end
+end
+
+local function addSetCrest(model,root,row,level)
+	local p=row.palette
+	weld(root,makePart("CrestBase",Vector3.new(0.92,1.02,0.16),p.base,Enum.Material.Metal),CFrame.new(0,0.28,-0.66))
+	weld(root,makePart("CrestBar",Vector3.new(0.62,0.14,0.10),p.metal,Enum.Material.Metal),CFrame.new(0,0.30,-0.78))
+	if detail(level,2) then weld(root,makePart("CrestCore",Vector3.new(0.28,0.28,0.12),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(0,0.30,-0.82)) end
+end
+
+local function addSocketCharm(model,root,row,level)
+	local p=row.palette
+	weld(root,makePart("Cord",Vector3.new(0.08,0.72,0.08),p.cord,Enum.Material.Fabric,"CYLINDER"),CFrame.new(0,0.25,0))
+	weld(root,makePart("Hook",Vector3.new(0.18,0.20,0.12),p.metal,Enum.Material.Metal),CFrame.new(0,0.62,0))
+	weld(root,makePart("Gem",Vector3.new(0.36,0.48,0.22),p.gem,Enum.Material.Neon,"BALL"),CFrame.new(0,-0.22,0))
+	if detail(level,3) then weld(root,makePart("Cap",Vector3.new(0.22,0.12,0.22),p.metal,Enum.Material.Metal),CFrame.new(0,0.04,0)) end
+end
+
+local function addUpgradeTrim(model,root,row,level)
+	local p=row.palette
+	for _,x in ipairs({-0.92,0.92}) do
+		weld(root,makePart("Trim"..tostring(x),Vector3.new(0.12,2.40,0.12),p.accent,Enum.Material.Metal),CFrame.new(x,0,-0.64))
+	end
+	weld(root,makePart("CenterUpgrade",Vector3.new(0.34,0.48,0.14),p.glow,Enum.Material.Neon),CFrame.new(0,0.52,-0.70))
+	if detail(level,3) then weld(root,makePart("LowerTrim",Vector3.new(2.05,0.10,0.12),p.base,Enum.Material.Metal),CFrame.new(0,-1.05,-0.64)) end
+end
+
+local function addWornPatch(model,root,row,level)
+	local p=row.palette
+	weld(root,makePart("PatchA",Vector3.new(0.82,0.62,0.10),p.patch,Enum.Material.Fabric),CFrame.new(-0.54,0.22,-0.64)*CFrame.Angles(0,0,math.rad(-12)))
+	weld(root,makePart("PatchB",Vector3.new(0.56,0.46,0.10),p.metal,Enum.Material.Metal),CFrame.new(0.68,-0.42,-0.66)*CFrame.Angles(0,0,math.rad(16)))
+	if detail(level,2) then
+		for i,x in ipairs({-0.78,-0.52,-0.26}) do weld(root,makePart("Stitch"..i,Vector3.new(0.06,0.18,0.05),p.stitch,Enum.Material.Fabric),CFrame.new(x,0.22,-0.72)) end
+	end
+end
+
 local BUILDERS=table.freeze({
 	CLOTH_TUNIC=addTunic,
 	LEATHER_VEST=addVest,
@@ -274,6 +402,16 @@ local BUILDERS=table.freeze({
 	LEATHER_GLOVES=addGloves,
 	LEATHER_BOOTS=addBoots,
 	TRAVEL_CLOAK=addCloak,
+	LEG_PLATES=addLegPlates,
+	SHOULDER_PAULDRONS=addShoulderPauldrons,
+	UTILITY_BELT=addUtilityBelt,
+	SIGNET_RING=addSignetRing,
+	TRAVEL_AMULET=addTravelAmulet,
+	COSMETIC_SASH=addCosmeticSash,
+	SET_CREST=addSetCrest,
+	SOCKET_CHARM=addSocketCharm,
+	UPGRADE_TRIM=addUpgradeTrim,
+	WORN_ARMOR_PATCH=addWornPatch,
 })
 
 local function applyModelMetadata(model,row,quality)
@@ -281,6 +419,7 @@ local function applyModelMetadata(model,row,quality)
 	model:SetAttribute("StudioAssetSubfamily",row.subfamily)
 	model:SetAttribute("StudioAssetGearRole",row.gearRole)
 	model:SetAttribute("StudioAssetSilhouette",row.silhouette)
+	if row.systemRoles then model:SetAttribute("StudioAssetSystemRoles",table.concat(row.systemRoles,",")) end
 	model:SetAttribute("StudioAssetQualityLevel",quality)
 	model:SetAttribute("StudioAssetQualityTarget",100)
 	model:SetAttribute("RuntimeVerificationState","PENDING_STUDIO")
@@ -291,7 +430,7 @@ function RobloxCommonCharacterGear.List()
 	for id,row in pairs(Catalog) do
 		table.insert(result,table.freeze({
 			id=id,name=row.name,familyRootId=row.familyRootId,family=row.family,subfamily=row.subfamily,
-			gearRole=row.gearRole,silhouette=row.silhouette,productionVerified=false,
+			gearRole=row.gearRole,systemRoles=row.systemRoles,silhouette=row.silhouette,productionVerified=false,
 		}))
 	end
 	table.sort(result,function(a,b) return a.id<b.id end)
