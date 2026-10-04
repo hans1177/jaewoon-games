@@ -188,8 +188,8 @@
     },
     {
       "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
-      "PLATFORM": "ROBLOX",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "UNITY",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -210,13 +210,9 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": {
-        "required": true,
-        "ready": false,
-        "reason": "WEB_BASELINE_NOT_VERIFIED"
-      },
+      "ROBLOX_HANDOFF": null,
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": true,
+        "eligibleAfterRelease": false,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -237,7 +233,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     },
     {
       "gameId": "line-defense",
@@ -410,7 +406,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "unity-games/fantasy-survival",
+        "sourcePath": "roblox-games/fantasy-survival",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
