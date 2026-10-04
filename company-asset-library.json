@@ -1,5 +1,5 @@
 {
-  "version": 88,
+  "version": 89,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -56322,7 +56322,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 8,
+    "version": 9,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56942,7 +56942,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 88,
+    "lastCatalogSynchronizedVersion": 89,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -61243,6 +61243,112 @@
         "DETAIL_DENSITY",
         "DAMAGE_WEAR"
       ]
+    },
+    "autonomousOperatingContract": {
+      "version": 1,
+      "status": "ACTIVE_EXISTING_VIBE_ASSET_LOOP",
+      "executionLane": "ASSET_DEVELOPMENT",
+      "normalCycleOwner": "VIBE_EXISTING_ASSET_DEVELOPMENT_LOOP",
+      "ownerPresenceRequired": false,
+      "humanPresenceRequired": false,
+      "chatgptPresenceRequired": false,
+      "manualApprovalRequiredForNormalSafeAssetWork": false,
+      "existingRuntimeBindings": {
+        "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+        "executor": ".github/workflows/vibe2-continuous-core.yml",
+        "planner": "tools/vibe2-asset-production-plan.mjs",
+        "library": "assets/vibe-studio-asset-universe.js",
+        "registry": "company-asset-library.json",
+        "qa": "qa/vibe-studio-asset-universe.test.mjs"
+      },
+      "cycle": [
+        "SYNC_EXISTING_CATALOGS_AND_REGISTRY",
+        "REBUILD_DEDUPED_PRIORITY_WORKLIST",
+        "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS_WHEN_PRESENT",
+        "APPLY_CONCEPT_STYLE_EXPRESSION_AXES",
+        "CONSUME_HIGHEST_PRIORITY_SAFE_ACTION",
+        "REUSE_EXISTING",
+        "DERIVE_VARIANT",
+        "RECOMBINE_EXISTING",
+        "LICENSE_VERIFIED_FREE_SOURCE_ADAPT_ON_DEMAND",
+        "NEW_AUTHORING_ONLY_IF_PRIOR_OPTIONS_FAIL",
+        "RUN_EXISTING_ASSET_QA_AND_IDEMPOTENCY",
+        "PERSIST_REGISTRY_IF_CHANGED",
+        "REPEAT_UNTIL_RECOMMENDED_VOLUME_AND_REQUIRED_ROLES_PASS",
+        "ENTER_QUALITY_UP_1000_IMMEDIATELY",
+        "IMPROVE_WEAKEST_INTERNAL_AUDIT_AXIS_FIRST",
+        "REPEAT_QUALITY_QA_UNTIL_INTERNAL_1000"
+      ],
+      "resumeSource": "company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions",
+      "resumeAfterInterruption": true,
+      "continueAfterSafeActionCompletion": true,
+      "blockedActionPolicy": "QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION",
+      "ambiguousLicensePolicy": "REJECT_SOURCE_AND_CONTINUE_NEXT_VERIFIED_CANDIDATE",
+      "missingFreeSourcePolicy": "CONTINUE_RESOLUTION_ORDER_TO_NEW_AUTHORING",
+      "runtimeEvidenceMissingPolicy": "KEEP_PRODUCTION_UNVERIFIED_AND_CONTINUE_INTERNAL_QUALITY_WORK",
+      "failureRetryPolicy": "REBUILD_FROM_LATEST_REGISTRY_AND_RETRY_SAFE_ASSET_SCOPE",
+      "volumeExitCondition": "RECOMMENDED_VOLUME_AND_REQUIRED_ROLE_GAPS_CLEAR",
+      "qualityEntryAction": "QUALITY_UP_1000",
+      "qualitySelection": "WEAKEST_INTERNAL_AUDIT_AXIS_FIRST",
+      "qualityTarget": 1000,
+      "postQualityTargetAction": "HOLD_RECOMMENDED_VOLUME_AND_REOPEN_ONLY_FOR_NEW_VERIFIED_GAP_OR_QUALITY_REGRESSION",
+      "terminalStateForbidden": true,
+      "internalQualityDoesNotPromoteProduction": true,
+      "rawReferencePersistenceForbidden": true,
+      "newWorkflowRequired": false,
+      "newSchedulerRequired": false,
+      "newQueueRequired": false,
+      "newPipelineRequired": false,
+      "newWrapperRequired": false,
+      "newShadowSystemRequired": false
+    },
+    "autonomousContinuationRequired": true,
+    "ownerPresenceRequired": false,
+    "humanPresenceRequired": false,
+    "chatgptPresenceRequired": false,
+    "autonomousNextAction": {
+      "kind": "CONSUME_PRIORITY_WORKLIST_ACTION",
+      "phase": "VOLUME_UP",
+      "action": {
+        "kind": "DOMAIN_VOLUME",
+        "domain": "CREATURE",
+        "ideaId": "CREATURE_AMORPHOUS_BASE",
+        "source": "SYSTEM_DEPTH_GAP",
+        "role": "AMORPHOUS",
+        "priority": 300,
+        "targetMin": 180,
+        "currentCount": 24,
+        "freeSourceCandidateIds": [
+          "quaternius-ultimate-animated-animals"
+        ],
+        "freeSourceAvailable": true,
+        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
+        "bulkPrefetchAllowed": false,
+        "speculativeDownloadAllowed": false,
+        "acquireExternalOnlyAfterInternalReuseFailure": true,
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
+        ],
+        "worklistOrder": 1,
+        "resolutionOrder": [
+          "REUSE_EXISTING",
+          "DERIVE_VARIANT",
+          "RECOMBINE_EXISTING",
+          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+          "NEW_AUTHORING"
+        ]
+      },
+      "continueAfterCompletion": true,
+      "continueWithoutHuman": true
     }
   },
   "characterNpcCustomization": {
