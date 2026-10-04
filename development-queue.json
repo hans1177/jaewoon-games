@@ -12460,35 +12460,35 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T05:38:22.288Z",
+      "updatedAt": "2026-10-04T05:39:51.493Z",
       "robloxSourceCommit": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
       "robloxSourceBootstrapPassedAt": "2026-10-04T05:35:58.080Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+      "robloxBuildArtifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
+      "robloxBuildPassedAt": "2026-10-04T05:39:51.493Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-04T05:39:51.493Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "village-dungeons",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-04T05:13:41.556Z",
-        "sourceRevision": "5c2993703c5acbb7c19913fd87a20604acce5dcc",
-        "artifactIdentity": "sha256:4216443817dadc09f95db9ad450ce761158ed8ff6de7aabaf68ca09335f9b064",
+        "checkedAt": "2026-10-04T05:39:46.522Z",
+        "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+        "artifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
         "secondaryOwnerFocus": false,
         "facts": {
           "pass": true,
@@ -12507,8 +12507,8 @@
           "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "5c2993703c5acbb7c19913fd87a20604acce5dcc",
-            "artifactIdentity": "sha256:4216443817dadc09f95db9ad450ce761158ed8ff6de7aabaf68ca09335f9b064",
+            "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+            "artifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
             "webValidationPassed": false,
             "musicValidationPassed": false,
             "nativeWebValidationPassed": false,
@@ -12530,27 +12530,25 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
-      "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": {
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-04T05:39:51.493Z",
+      "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "village-dungeons",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T05:13:42.438Z",
+        "checkedAt": "2026-10-04T05:39:47.093Z",
         "sourcePath": "roblox-games/village-dungeons",
-        "sourceRevision": "5c2993703c5acbb7c19913fd87a20604acce5dcc",
-        "artifactIdentity": "sha256:4216443817dadc09f95db9ad450ce761158ed8ff6de7aabaf68ca09335f9b064",
-        "rebuiltArtifactIdentity": "sha256:4216443817dadc09f95db9ad450ce761158ed8ff6de7aabaf68ca09335f9b064",
-        "artifactRunId": 37177563153,
+        "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+        "artifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
+        "rebuiltArtifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
+        "artifactRunId": 37179606357,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -12568,35 +12566,14 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
         "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "village-dungeons",
-          "pass": false,
-          "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:CRAFTING",
-            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:3",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:4",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "GENERIC_SCOPE_HANDLER_SKELETON"
-          ],
+          "pass": true,
+          "blockers": [],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
             "SESSION_FLOW",
@@ -12616,19 +12593,19 @@
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": false,
-            "CRAFTING": false,
-            "INVENTORY": false,
-            "EQUIPMENT": false,
-            "PROGRESSION": false,
+            "CORE_GAMEPLAY_STATE": true,
+            "SESSION_FLOW": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "COMBAT": true,
+            "ENEMY_AI": true,
+            "CRAFTING": true,
+            "INVENTORY": true,
+            "EQUIPMENT": true,
+            "PROGRESSION": true,
             "QUEST": true,
-            "BOSS": false,
-            "TYCOON": false,
+            "BOSS": true,
+            "TYCOON": true,
             "DUNGEON": true,
             "SAVE": true,
             "MOBILE_UI": true
@@ -12646,7 +12623,7 @@
                 "QUEST",
                 "DUNGEON"
               ],
-              "pass": false
+              "pass": true
             },
             {
               "index": 1,
@@ -12658,7 +12635,7 @@
                 "ENEMY_AI",
                 "DUNGEON"
               ],
-              "pass": false
+              "pass": true
             },
             {
               "index": 2,
@@ -12670,7 +12647,7 @@
                 "PROGRESSION",
                 "DUNGEON"
               ],
-              "pass": false
+              "pass": true
             },
             {
               "index": 3,
@@ -12679,7 +12656,7 @@
                 "WORLD",
                 "CONTENT_ENTITY"
               ],
-              "pass": false
+              "pass": true
             },
             {
               "index": 4,
@@ -12695,7 +12672,7 @@
                 "TYCOON",
                 "DUNGEON"
               ],
-              "pass": false
+              "pass": true
             }
           ],
           "signatureSystemTrace": [
@@ -12711,7 +12688,7 @@
                 "DUNGEON",
                 "SAVE"
               ],
-              "pass": false
+              "pass": true
             },
             {
               "index": 1,
@@ -12725,23 +12702,23 @@
                 "BOSS",
                 "DUNGEON"
               ],
-              "pass": false
+              "pass": true
             }
           ],
           "placeholderDebt": {
-            "primitiveConstructionCount": 0,
+            "primitiveConstructionCount": 2,
             "meshConstructionCount": 0,
             "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 7,
-            "meaningfulGameplayFunctionCount": 0
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 24
           },
           "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "MISSING",
-            "Progression": "MISSING",
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "PLAYABLE",
+            "Combat": "PLAYABLE",
+            "AI": "PLAYABLE",
+            "Progression": "PLAYABLE",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -12753,65 +12730,59 @@
           "studioReadiness": {
             "ai": {
               "applicable": true,
-              "signalCount": 0,
-              "pass": false
+              "signalCount": 4,
+              "pass": true
             },
             "combatFeel": {
               "applicable": true,
-              "signalCount": 1,
-              "pass": false
+              "signalCount": 4,
+              "pass": true
             },
             "worldTopology": {
               "applicable": true,
-              "signalCount": 2,
-              "pass": false
+              "signalCount": 3,
+              "pass": true
             },
             "firstTenMinutes": {
-              "signalCount": 3,
-              "pass": false
+              "signalCount": 5,
+              "pass": true
             },
             "midLateGame": {
               "applicable": true,
-              "signalCount": 3,
+              "signalCount": 4,
               "pass": true
             },
             "systemConnections": {
               "rows": [
                 {
                   "id": "CRAFT_TO_EQUIPMENT",
-                  "pass": false
+                  "pass": true
                 },
                 {
                   "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": false
+                  "pass": true
                 },
                 {
                   "id": "QUEST_TO_PROGRESSION",
-                  "pass": false
+                  "pass": true
                 },
                 {
                   "id": "WORLD_TO_CONTENT",
-                  "pass": false
+                  "pass": true
                 }
               ],
-              "pass": false
+              "pass": true
             },
             "placeholder": {
               "pass": true,
-              "primitiveConstructionCount": 0,
+              "primitiveConstructionCount": 2,
               "meshConstructionCount": 0,
               "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 7,
-              "meaningfulGameplayFunctionCount": 0
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 24
             },
-            "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "WORLD_TOPOLOGY_AND_LANDMARKS",
-              "FIRST_10_MINUTES_FLOW",
-              "SYSTEM_CONNECTION_CHAIN"
-            ],
-            "f9SourceQualityReady": false
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
             "worldRequired": true,
@@ -12824,19 +12795,19 @@
             "actualPlayRequired": true
           },
           "designFingerprint": "3af7bdb7490d1d8b160a642f9ab673560387334a1e49e324b0695223568800ed",
-          "antiSkeletonPassed": false,
+          "antiSkeletonPassed": true,
           "designGenre": "RPG",
           "sourceGenre": "RPG",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "MISSING",
-          "Progression": "MISSING",
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "PLAYABLE",
+          "Combat": "PLAYABLE",
+          "AI": "PLAYABLE",
+          "Progression": "PLAYABLE",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -12864,14 +12835,324 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
+      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 4,
+        "gameId": "village-dungeons",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-04T05:39:47.093Z",
+        "sourcePath": "roblox-games/village-dungeons",
+        "sourceRevision": "0b3541bc880dc14bdf0af6d1037955cd742a09b1",
+        "artifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
+        "rebuiltArtifactIdentity": "sha256:f00a1ad7460b090bac332bda85e7539732351c73dc8137d2f8237027c6bd1516",
+        "artifactRunId": 37179606357,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": true,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": true,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "village-dungeons",
+          "pass": true,
+          "blockers": [],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "CRAFTING",
+            "INVENTORY",
+            "EQUIPMENT",
+            "PROGRESSION",
+            "QUEST",
+            "BOSS",
+            "TYCOON",
+            "DUNGEON",
+            "SAVE",
+            "MOBILE_UI"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": true,
+            "SESSION_FLOW": true,
+            "WORLD": true,
+            "CONTENT_ENTITY": true,
+            "COMBAT": true,
+            "ENEMY_AI": true,
+            "CRAFTING": true,
+            "INVENTORY": true,
+            "EQUIPMENT": true,
+            "PROGRESSION": true,
+            "QUEST": true,
+            "BOSS": true,
+            "TYCOON": true,
+            "DUNGEON": true,
+            "SAVE": true,
+            "MOBILE_UI": true
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
+                "QUEST",
+                "DUNGEON"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "step": "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "DUNGEON"
+              ],
+              "pass": true
+            },
+            {
+              "index": 2,
+              "step": "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "DUNGEON"
+              ],
+              "pass": true
+            },
+            {
+              "index": 3,
+              "step": "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": true
+            },
+            {
+              "index": 4,
+              "step": "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다.",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "EQUIPMENT",
+                "BOSS",
+                "TYCOON",
+                "DUNGEON"
+              ],
+              "pass": true
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "마을 재건 시설 연동 시스템",
+              "capabilities": [
+                "WORLD",
+                "COMBAT",
+                "EQUIPMENT",
+                "PROGRESSION",
+                "TYCOON",
+                "DUNGEON",
+                "SAVE"
+              ],
+              "pass": true
+            },
+            {
+              "index": 1,
+              "name": "리스크 배낭 정밀 적재 시스템",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "INVENTORY",
+                "BOSS",
+                "DUNGEON"
+              ],
+              "pass": true
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 2,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 0,
+            "meaningfulGameplayFunctionCount": 24
+          },
+          "studioQualitySheet": {
+            "Core": "PLAYABLE",
+            "Content": "PLAYABLE",
+            "World": "PLAYABLE",
+            "Combat": "PLAYABLE",
+            "AI": "PLAYABLE",
+            "Progression": "PLAYABLE",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 3,
+              "pass": true
+            },
+            "firstTenMinutes": {
+              "signalCount": 5,
+              "pass": true
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 4,
+              "pass": true
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "CRAFT_TO_EQUIPMENT",
+                  "pass": true
+                },
+                {
+                  "id": "EQUIPMENT_TO_COMBAT",
+                  "pass": true
+                },
+                {
+                  "id": "QUEST_TO_PROGRESSION",
+                  "pass": true
+                },
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": true
+                }
+              ],
+              "pass": true
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 2,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 0,
+              "meaningfulGameplayFunctionCount": 24
+            },
+            "criticalGaps": [],
+            "f9SourceQualityReady": true
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": true,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "3af7bdb7490d1d8b160a642f9ab673560387334a1e49e324b0695223568800ed",
+          "antiSkeletonPassed": true,
+          "designGenre": "RPG",
+          "sourceGenre": "RPG",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "PLAYABLE",
+          "Content": "PLAYABLE",
+          "World": "PLAYABLE",
+          "Combat": "PLAYABLE",
+          "AI": "PLAYABLE",
+          "Progression": "PLAYABLE",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": true,
+          "f0SourceIntegrity": true
+        },
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -12905,11 +13186,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -12922,7 +13203,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "village-dungeons",
@@ -59587,7 +59868,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T05:39:46.476Z",
+  "updatedAt": "2026-10-04T05:39:51.493Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
