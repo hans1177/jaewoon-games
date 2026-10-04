@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 
@@ -249,7 +249,307 @@ function resolveAssetProductionTarget({target='',task={},repoRoot=process.cwd()}
 }
 const highEndVisualContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.highEndVisualProductionContract||{};
 const companyGraphicsLibraryContract=repoRoot=>readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),{})?.assetProductionParallelContract?.companyGraphicsLibrary24h||{};
-const companyAssetLibraryRegistry=repoRoot=>readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
+
+const COMMON_PACK_DOMAIN_BY_ID=freeze({
+  'roblox-common-ui-v1':'UI',
+  'roblox-common-items-v1':'ITEM',
+  'roblox-common-tools-v1':'WEAPON',
+  'roblox-common-character-gear-v1':'CHARACTER_GEAR',
+  'roblox-common-skill-v1':'SKILL',
+  'roblox-common-vfx-v1':'VFX',
+  'roblox-common-motion-v1':'MOTION',
+  'roblox-common-materials-v1':'MATERIAL',
+  'roblox-common-environment-v1':'ENVIRONMENT',
+  'roblox-common-building-v1':'BUILDING',
+  'roblox-common-world-props-v1':'WORLD_PROP',
+  'roblox-common-creature-parts-v1':'CREATURE',
+  'roblox-common-foliage-v1':'FOLIAGE',
+  'roblox-common-presentation-v1':'PRESENTATION'
+});
+
+function commonCatalogFiles(repoRoot){
+  const root=path.join(repoRoot,'assets','roblox');
+  let dirs=[];
+  try{dirs=fs.readdirSync(root,{withFileTypes:true});}catch{return[];}
+  return dirs
+    .filter(entry=>entry.isDirectory()&&entry.name.startsWith('common-'))
+    .map(entry=>path.join(root,entry.name,'catalog.json'))
+    .filter(file=>fs.existsSync(file))
+    .sort();
+}
+
+function companySeedRows(repoRoot){
+  const root=path.join(repoRoot,'artbook-submissions');
+  let dirs=[];
+  try{dirs=fs.readdirSync(root,{withFileTypes:true});}catch{return[];}
+  return dirs
+    .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-'))
+    .map(entry=>({name:entry.name,file:path.join(root,entry.name,'current.json')}))
+    .filter(row=>fs.existsSync(row.file))
+    .sort((a,b)=>a.name.localeCompare(b.name))
+    .map(row=>{
+      const value=readJson(row.file,{});
+      return{
+        gameId:value.gameId||row.name,
+        gameName:value.gameName||value.designCore?.identity||value.content?.identity,
+        identity:value.designCore?.identity||value.content?.identity,
+        genre:value.genre||value.designCore?.genre||value.content?.genre,
+        coreFun:value.designCore?.coreFun,
+        coreLoop:value.designCore?.coreLoop||value.content?.coreLoop||[],
+        signatureSystems:value.designCore?.signatureSystems||value.content?.signatureSystems||[],
+        progressionDirection:value.designCore?.progressionDirection||value.content?.progressionDirection,
+        visualDirection:value.designCore?.visualDirection||value.content?.visualDirection,
+        mobileUx:value.designCore?.mobileUx
+      };
+    });
+}
+
+const commonCatalogRows=catalog=>Array.isArray(catalog?.atoms)?{key:'atoms',rows:catalog.atoms}:
+  Array.isArray(catalog?.items)?{key:'items',rows:catalog.items}:{key:'',rows:[]};
+const catalogIdentity=row=>clean(row?.atomId||row?.assetId);
+const catalogSlug=value=>clean(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+
+function inferRegistryIdPrefix(packId,registryRows=[]){
+  const counts=new Map();
+  for(const row of registryRows){
+    const identity=clean(row?.atomId||row?.assetId);
+    const slug=catalogSlug(identity);
+    if(!slug||!clean(row?.id).endsWith(slug))continue;
+    const prefix=clean(row.id).slice(0,-slug.length);
+    counts.set(prefix,(counts.get(prefix)||0)+1);
+  }
+  return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]?.[0]||
+    clean(packId).replace(/-v\d+$/,'')+'-';
+}
+
+function registryRowTags(row={},catalogRow={}){
+  return unique([
+    ...(Array.isArray(row.tags)?row.tags:[]),
+    catalogRow.atomId,catalogRow.assetId,catalogRow.subfamily,catalogRow.role,catalogRow.systemRole,
+    catalogRow.itemRole,catalogRow.toolRole,catalogRow.gearRole,catalogRow.creatureRole,
+    catalogRow.environmentRole,catalogRow.buildingRole,catalogRow.worldRole,catalogRow.familyRootId,
+    ...(Array.isArray(catalogRow.systemRoles)?catalogRow.systemRoles:[]),
+    ...(Array.isArray(catalogRow.presentationRoles)?catalogRow.presentationRoles:[])
+  ]);
+}
+
+function synchronizeCatalogRows({registry,catalog}){
+  const packId=clean(catalog.packId);
+  const pack=registry.assets.find(row=>row.id===packId);
+  if(!pack)return{packId,changed:false,count:0,rowIds:[]};
+  const {key,rows}=commonCatalogRows(catalog);
+  const currentRows=registry.assets.filter(row=>row.packId===packId&&row.id!==packId);
+  const prefix=inferRegistryIdPrefix(packId,currentRows);
+  const template=currentRows.find(row=>catalogIdentity(row))||currentRows[0]||pack;
+  const activeIds=new Set();
+  const rowIds=[];
+
+  for(const catalogRow of rows){
+    const identity=catalogIdentity(catalogRow);
+    if(!identity)continue;
+    const slug=catalogSlug(identity);
+    const id=prefix+slug;
+    activeIds.add(id);rowIds.push(id);
+    let row=registry.assets.find(asset=>asset.id===id);
+    if(!row){
+      row=JSON.parse(JSON.stringify(template));
+      row.id=id;
+      registry.assets.push(row);
+    }
+    row.packId=packId;
+    row.catalogActive=true;
+    row.catalogState='ACTIVE';
+    row.catalogVersion=catalog.version;
+    row.title=clean(catalogRow.name)||('Roblox 공용 '+identity);
+    row.category=row.category||catalog.family;
+    row.family=row.family||catalog.family;
+    row.platform=row.platform||catalog.platform||'ROBLOX';
+    row.productionVerified=row.productionVerified===true;
+    row.verifiedCompanyReusable=row.verifiedCompanyReusable===true;
+    row.runtimeVerificationState=row.productionVerified===true?row.runtimeVerificationState||'VERIFIED':row.runtimeVerificationState||'PENDING_STUDIO';
+
+    for(const [field,value] of Object.entries(catalogRow)){
+      if(field==='source')continue;
+      row[field]=Array.isArray(value)?[...value]:value&&typeof value==='object'?JSON.parse(JSON.stringify(value)):value;
+    }
+    row.tags=registryRowTags(row,catalogRow);
+    const hint={...(row.bindingHint||{})};
+    hint.gameScope=hint.gameScope||'ALL_ROBLOX_GAMES';
+    hint.family=row.family;
+    for(const field of ['atomId','assetId','subfamily','factory','role','systemRole','itemRole','toolRole','gearRole','creatureRole','environmentRole','buildingRole','worldRole','familyRootId']){
+      if(row[field]!=null)hint[field]=row[field];
+    }
+    if(Array.isArray(row.systemRoles))hint.systemRoles=[...row.systemRoles];
+    row.bindingHint=hint;
+  }
+
+  for(const row of currentRows){
+    if(catalogIdentity(row)&&!activeIds.has(row.id)){
+      row.catalogActive=false;
+      row.catalogState='STALE_CATALOG_ROW_REVIEW';
+      row.automaticDeletionForbidden=true;
+    }
+  }
+
+  const count=rows.length;
+  if(catalog.title)pack.title=catalog.title;
+  pack.catalogVersion=catalog.version;
+  pack.catalogRowKey=key||null;
+  pack.catalogRowCount=count;
+  if(key==='items'){
+    pack.itemCount=count;
+    if('assetCount' in pack)pack.assetCount=count;
+  }else if(key==='atoms'){
+    if('motionCount' in pack)pack.motionCount=count;
+    if('componentCount' in pack)pack.componentCount=count;
+    if('assetCount' in pack||!('motionCount' in pack)&&!('componentCount' in pack))pack.assetCount=count;
+    if('registryAtomCount' in pack)pack.registryAtomCount=count;
+  }
+  if(Number.isFinite(Number(catalog.recipeCount)))pack.recipeCount=Number(catalog.recipeCount);
+  if(Array.isArray(catalog.terrainCompositions))pack.terrainCompositionCount=catalog.terrainCompositions.length;
+  if(Array.isArray(catalog.biomes))pack.biomeCount=catalog.biomes.length;
+  if(Array.isArray(catalog.environmentStateContract?.states))pack.environmentStateCount=catalog.environmentStateContract.states.length;
+  if(Array.isArray(catalog.backgroundCompositionContract?.layers))pack.backgroundDepthLayerCount=catalog.backgroundCompositionContract.layers.length;
+  if(Number.isFinite(Number(catalog.vectorIconCount)))pack.vectorIconCount=Number(catalog.vectorIconCount);
+  for(const [field,value] of Object.entries(catalog.deepSystemContract||{})){
+    if(field!=='componentCount'&&/ComponentCount$/.test(field)&&Number.isFinite(Number(value)))pack[field]=Number(value);
+  }
+  if(!key){
+    const declared=unique([
+      ...(catalog.systemDepthContract?.currentDeclaredComponents||[]),
+      ...(catalog.loadingElements||[]),
+      ...(catalog.introModes||[])
+    ]);
+    if(declared.length)pack.presentationComponentCount=declared.length;
+  }
+  return{packId,count,rowIds,key};
+}
+
+function catalogFingerprint(catalogs=[]){
+  return crypto.createHash('sha256').update(JSON.stringify(catalogs.map(row=>({
+    path:row.path,packId:row.catalog.packId,version:row.catalog.version,title:row.catalog.title,
+    rows:commonCatalogRows(row.catalog).rows,
+    systemDepthContract:row.catalog.systemDepthContract,
+    recipeCount:row.catalog.recipeCount,
+    terrainCompositions:row.catalog.terrainCompositions,
+    environmentStateContract:row.catalog.environmentStateContract
+  })))).digest('hex');
+}
+
+export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
+  const registryPath=path.join(repoRoot,'company-asset-library.json');
+  const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
+  const next=JSON.parse(JSON.stringify(original));
+  next.assets=Array.isArray(next.assets)?next.assets:[];
+  const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
+  const fingerprint=catalogFingerprint(catalogs);
+  const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
+  const seeds=companySeedRows(repoRoot);
+  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
+  const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
+  const libraryPlan=buildInternalAssetLibraryAutomationPlan({
+    assets:next.assets,
+    seedPlan,
+    uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId)
+  });
+  const depth=auditCommonLibrarySystemDepth({assets:next.assets});
+  const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
+
+  next.companyCommonSeedAssetIdeation={
+    ...(next.companyCommonSeedAssetIdeation||{}),
+    version:Math.max(1,Number(next.companyCommonSeedAssetIdeation?.version)||1),
+    status:'ACTIVE_MACHINE_READABLE_INTERNAL_ASSET_IDEATION',
+    scope:'ALL_COMPANY_COMMON_SEEDS',
+    sourcePattern:'artbook-submissions/seed-*/current.json',
+    currentSeedCount:seedPlan.seedCount,
+    currentSeedIds:seedPlan.seeds.map(row=>row.gameId),
+    currentDetectedSignals:seedPlan.detectedSignals,
+    currentCrossGenreKitCount:seedPlan.crossGenreKitCount,
+    planBuilder:'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan'
+  };
+
+  const priorRows=new Map((next.commonLibrarySystemDepthAudit?.rows||[]).map(row=>[row.domain,row]));
+  next.commonLibrarySystemDepthAudit={
+    ...(next.commonLibrarySystemDepthAudit||{}),
+    status:'EXPANDED',
+    scoreIsUsageGate:false,
+    existingAssetsRemainUsable:true,
+    rows:depth.rows.map(row=>{
+      const prior=priorRows.get(row.domain)||{};
+      const volume=volumeByDomain.get(row.domain)||{};
+      return{
+        ...prior,
+        domain:row.domain,
+        currentCount:row.domain==='AUDIO'?Number(prior.currentCount||0):Number(volume.currentCount||row.candidateCount||0),
+        requiredComponentCount:row.requiredCount,
+        priorityGaps:[...row.missing],
+        state:row.missing.length?'GAP_FILL_REQUIRED':'BASE_COVERAGE_COMPLETE'
+      };
+    })
+  };
+
+  next.internalAssetLibraryAutomation={
+    version:1,
+    contract:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT',
+    catalogDiscovery:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.catalogDiscovery,
+    discoveredCatalogCount:catalogs.length,
+    catalogFingerprint:fingerprint,
+    countPolicy:libraryPlan.countPolicy,
+    hardMaximum:null,
+    overSoftLimitAction:libraryPlan.overSoftLimitAction,
+    overSoftLimitBlocksUse:false,
+    volumeBeforeQuality:true,
+    autoRegistrySync:true,
+    autoDelete:false,
+    productionPromotionAutomatic:false,
+    runtimeVerificationRequired:true,
+    domainPlan:libraryPlan.domains.map(row=>({
+      domain:row.domain,currentCount:row.currentCount,minimum:row.minimum,targetMin:row.targetMin,targetMax:row.targetMax,
+      softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,missingDepthRoles:row.missingDepthRoles,
+      suggestedIdeaIds:row.suggestedIdeas.map(idea=>idea.ideaId)
+    })),
+    uiSubsystemPlan:libraryPlan.uiSubsystems.map(row=>({
+      subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin,targetMax:row.targetMax,
+      softReviewAt:row.softReviewAt,hardMaximum:null,state:row.state,suggestedIdeaIds:row.suggestedIdeas.map(idea=>idea.ideaId)
+    })),
+    uiCompositionGraph:libraryPlan.uiCompositionGraph,
+    synchronizedPackIds:syncRows.map(row=>row.packId),
+    staleRowsAreReviewOnly:true,
+    workflowCreated:false,
+    schedulerCreated:false,
+    queueCreated:false,
+    pipelineCreated:false,
+    wrapperCreated:false,
+    shadowSystemCreated:false
+  };
+
+  const beforeComparable=JSON.stringify({...original,version:0,updatedAt:null});
+  const afterComparable=JSON.stringify({...next,version:0,updatedAt:null});
+  const changed=beforeComparable!==afterComparable;
+  if(changed)next.version=Math.max(0,Number(original.version)||0)+1;
+  let persisted=false,persistError=null;
+  if(persist&&changed){
+    try{
+      fs.writeFileSync(registryPath,JSON.stringify(next,null,2)+'\n','utf8');
+      persisted=true;
+    }catch(error){
+      persistError=clean(error?.message||error);
+    }
+  }
+  return freeze({
+    registry:next,
+    changed,
+    persisted,
+    persistError,
+    catalogFingerprint:fingerprint,
+    discoveredCatalogCount:catalogs.length,
+    synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
+    seedCount:seedPlan.seedCount,
+    automationPlan:libraryPlan
+  });
+}
+
+const companyAssetLibraryRegistry=repoRoot=>synchronizeCompanyCommonAssetRegistry({repoRoot,persist:true}).registry;
 const inferUniverseFamily=row=>{
   const explicit=clean(row?.family||row?.category).toUpperCase();
   if(explicit)return explicit;
