@@ -858,6 +858,14 @@ export const COMMON_LIBRARY_SYSTEM_DEPTH_ALIASES=Object.freeze({
     BLOCK:Object.freeze(['BLOCK_IMPACT','BLOCK_CONTACT']),
     PARRY:Object.freeze(['PARRY_PERFECT_FLASH','PERFECT_PARRY_CONFIRMATION','COUNTER_READY_PULSE'])
   }),
+  SKILL:Object.freeze({
+    CAST:Object.freeze(['CAST_HAND','CAST_ORIGIN_PRESENTATION']),
+    TELEGRAPH:Object.freeze(['TELEGRAPH_CIRCLE','AREA_TELEGRAPH_PRESENTATION']),
+    IMPACT:Object.freeze(['IMPACT_SMALL','SMALL_IMPACT_PRESENTATION']),
+    TRAIL:Object.freeze(['SKILL_TRAIL']),
+    ICON:Object.freeze(['SKILL_ICON_BADGE']),
+    MOBILE_DENSITY:Object.freeze(['MOBILE_DENSITY_VARIANT'])
+  }),
   MOTION:Object.freeze({
     TURN:Object.freeze(['TURN_90']),
     JUMP:Object.freeze(['JUMP_START']),
