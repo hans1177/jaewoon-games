@@ -676,9 +676,10 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
   assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
-  assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,true);
+  assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,false);
   assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
-  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  const workflowHeader=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.doesNotMatch(workflowHeader,/\nconcurrency:\n/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
@@ -786,8 +787,8 @@ test('Roblox source worker bases candidate on current main without leaking workf
 test('Roblox batch scheduler keeps control work fixed while preserving uncapped per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
-  assert.match(workflow,/cancel-in-progress: false/);
+  const workflowHeader=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.doesNotMatch(workflowHeader,/\nconcurrency:\n/);
   assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
   assert.doesNotMatch(workflow,/\n  source-plan:\n[\s\S]{0,260}?runs-on: ubuntu-slim/);
   assert.doesNotMatch(workflow,/max-parallel:/);
@@ -1058,18 +1059,18 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
   assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
-  assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
 });
 
 
-test('Roblox runtime collapses duplicate exact-game and batch planners with same-game-only workflow locking',()=>{
+test('Roblox runtime collapses duplicate exact-game and batch planners without whole-game workflow locking',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
-  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n(?:\s+#.*\n)*\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
 });
 
 
@@ -1223,3 +1224,26 @@ test('Roblox native motion binding keeps Animator IK foot-contact and mobile fra
     assert.match(client,/GetMarkerReachedSignal\(markerName\)/);
   }
 });
+
+test('exact duplicate validation deployment coalesces by game stage and control revision',()=>{
+  const publish=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
+  const header=publish.slice(0,publish.indexOf('\njobs:\n'));
+  assert.match(header,/group: roblox-publish-exact-\$\{\{ inputs\.game_id \|\| 'sync' \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}-\$\{\{ github\.sha \}\}/);
+  assert.match(header,/cancel-in-progress: false/);
+  assert.match(publish,/release-dedupe:/);
+  assert.match(publish,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
+});
+
+test('verified learning refresh dispatches per game without a portfolio-wide sweep lock',()=>{
+  const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const sweep=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
+  assert.match(runtime,/Dispatch verified learning sweep per game when reconciliation finds refresh debt/);
+  assert.match(runtime,/gh workflow run company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
+  assert.match(runtime,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=/);
+  assert.match(runtime,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=/);
+  assert.match(sweep,/run-name: Roblox verified learning sweep · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}/);
+  assert.match(sweep,/--game-id="\$GAME_ID"/);
+  assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep\s*\n/);
+});
+

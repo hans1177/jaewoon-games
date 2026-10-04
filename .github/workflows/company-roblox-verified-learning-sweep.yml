@@ -1,5 +1,5 @@
 name: Company Roblox Verified Learning Sweep
-run-name: Roblox verified learning sweep
+run-name: Roblox verified learning sweep · ${{ inputs.game_id || 'batch' }}
 
 on:
   push:
@@ -10,14 +10,19 @@ on:
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/vibe3-roblox-learning-context.mjs'
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact Roblox gameId. Empty keeps batch-compatible sweep behavior.
+        required: false
+        type: string
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: roblox-verified-learning-sweep
-  cancel-in-progress: true
+  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
+  cancel-in-progress: false
 
 env:
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
@@ -54,21 +59,26 @@ jobs:
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --test qa/company-development-roblox-source-reconcile.test.mjs
 
-      - name: Apply verified learning to every existing Roblox source
+      - name: Apply verified learning to selected Roblox source scope
         id: apply
+        env:
+          GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
-          branch="development/roblox-learning-sweep-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          scope="${GAME_ID:-batch}"
+          branch="development/roblox-learning-sweep-${scope}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git switch -c "$branch"
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
+            --game-id="$GAME_ID" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep.json
           git diff --binary -- roblox-games > /tmp/roblox-learning-sweep-first.diff
           node tools/company-roblox-verified-learning-sweep.mjs \
             --root=roblox-games \
+            --game-id="$GAME_ID" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep-repeat.json
@@ -86,12 +96,16 @@ jobs:
           fi
           git config user.name 'jaewoon-roblox-learning-sweep'
           git config user.email 'actions@users.noreply.github.com'
-          git add roblox-games
+          if [ -n "$GAME_ID" ]; then
+            git add "roblox-games/$GAME_ID"
+          else
+            git add roblox-games
+          fi
           if git diff --cached --name-only | grep -E '/server/' >/dev/null; then
             echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_SERVER_FILE_FORBIDDEN' >&2
             exit 2
           fi
-          git commit -m "development: apply verified learning to all Roblox sources"
+          git commit -m "development: apply verified learning to Roblox ${scope}"
           git push origin "HEAD:$branch"
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
@@ -101,12 +115,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_BRANCH: ${{ steps.apply.outputs.branch }}
+          GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" \
-            --title "development: apply verified learning to all Roblox sources" \
-            --body "Updates existing Roblox shared/client source with the current verified external black-box distilled learning. Server files are not modified by this sweep.")"
+            --title "development: apply verified learning to Roblox ${GAME_ID:-batch}" \
+            --body "Updates the selected Roblox shared/client source scope with current verified external black-box distilled learning. Server files are not modified by this sweep.")"
           attempt=0
           while true; do
             attempt=$((attempt+1))

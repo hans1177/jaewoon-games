@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
@@ -40,9 +40,9 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
-function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={}){
+function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
   const expectedContract=verifiedExternalBlackBoxPlaybookContract(playbooks);
-  const expectedLearning=createRobloxVibe3LearningContext({gameId,profile:existingRobloxGameLearningProfile(gameId),playbooks});
+  const expectedLearning=createRobloxVibe3LearningContext({gameId,profile:profile||existingRobloxGameLearningProfile(gameId),playbooks});
   if(!expectedContract.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
   const configFile=path.join(root,'shared','GameConfig.luau');
   const clientFile=path.join(root,'client','Game.client.luau');
@@ -194,8 +194,12 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const sourceBind=clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
     const currentRevision=clean(sourceRevision);
     const sourceTreeSha=fs.existsSync(root)?currentSourceTreeSha({repoRoot,sourcePath}):'';
+    let baseline=null;
+    let baselineLoadError=null;
+    try{baseline=loadBaseline(item);}catch(error){baselineLoadError=error;}
+    const learningProfile=baseline?robloxBuildProfileFromBaseline(baseline):null;
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
-    const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
+    const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     if(learningState.refreshRequired===true){
       results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',verifiedExternalLearningRefreshRequired:true,verifiedExternalLearningExpectedIds:learningState.expectedIds,verifiedExternalLearningCurrentIds:learningState.currentIds||[],verifiedExternalLearningFingerprint:learningState.fingerprint,verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null});
       continue;
@@ -310,7 +314,8 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
       continue;
     }
     try{
-      const baseline=loadBaseline(item);
+      if(baselineLoadError)throw baselineLoadError;
+      if(!baseline)throw new Error(`design baseline unavailable: ${item.gameId}`);
       const verdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary});
       results.push({
         gameId:item.gameId,
