@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-building-v1",
-  "title": "Roblox 회사 공용 건축 모듈 8종 v1",
+  "title": "Roblox 회사 공용 건축·하우징 모듈 20종 v3",
   "platform": "ROBLOX",
   "family": "BUILDING",
   "subfamily": "BUILDING_PACK",
@@ -83,6 +83,114 @@
       "subfamily": "RAILING",
       "buildingRole": "EDGE_VISUAL",
       "familyRootId": "BUILDING_RAILING"
+    },
+    {
+      "assetId": "FOUNDATION_TRIANGLE",
+      "name": "삼각 기초",
+      "subfamily": "FOUNDATION_TRIANGLE",
+      "buildingRole": "FOUNDATION",
+      "familyRootId": "BUILDING_FOUNDATION",
+      "snapClass": "FOUNDATION",
+      "stabilityRole": "PRIMARY_SUPPORT"
+    },
+    {
+      "assetId": "FENCE_FOUNDATION",
+      "name": "울타리 기초",
+      "subfamily": "FENCE_FOUNDATION",
+      "buildingRole": "BOUNDARY_FOUNDATION",
+      "familyRootId": "BUILDING_FOUNDATION",
+      "snapClass": "FOUNDATION_EDGE",
+      "stabilityRole": "PRIMARY_SUPPORT"
+    },
+    {
+      "assetId": "HALF_WALL",
+      "name": "반벽",
+      "subfamily": "HALF_WALL",
+      "buildingRole": "WALL",
+      "familyRootId": "BUILDING_WALL",
+      "snapClass": "WALL",
+      "stabilityRole": "SUPPORTED"
+    },
+    {
+      "assetId": "DOOR_FRAME",
+      "name": "문틀",
+      "subfamily": "DOOR_FRAME",
+      "buildingRole": "DOOR_OPENING",
+      "familyRootId": "BUILDING_OPENING",
+      "snapClass": "WALL_OPENING",
+      "stabilityRole": "SUPPORTED"
+    },
+    {
+      "assetId": "WINDOW_FRAME",
+      "name": "창틀",
+      "subfamily": "WINDOW_FRAME",
+      "buildingRole": "WINDOW_OPENING",
+      "familyRootId": "BUILDING_OPENING",
+      "snapClass": "WALL_OPENING",
+      "stabilityRole": "SUPPORTED"
+    },
+    {
+      "assetId": "CEILING_TILE",
+      "name": "천장 모듈",
+      "subfamily": "CEILING_TILE",
+      "buildingRole": "CEILING",
+      "familyRootId": "BUILDING_CEILING",
+      "snapClass": "CEILING",
+      "stabilityRole": "SPAN_SUPPORTED"
+    },
+    {
+      "assetId": "CEILING_WEDGE",
+      "name": "삼각 천장",
+      "subfamily": "CEILING_WEDGE",
+      "buildingRole": "CEILING",
+      "familyRootId": "BUILDING_CEILING",
+      "snapClass": "CEILING",
+      "stabilityRole": "SPAN_SUPPORTED"
+    },
+    {
+      "assetId": "ROOF_SLOPE",
+      "name": "경사 지붕",
+      "subfamily": "ROOF_SLOPE",
+      "buildingRole": "ROOF",
+      "familyRootId": "BUILDING_ROOF",
+      "snapClass": "ROOF",
+      "stabilityRole": "SPAN_SUPPORTED"
+    },
+    {
+      "assetId": "ROOF_CORNER",
+      "name": "모서리 지붕",
+      "subfamily": "ROOF_CORNER",
+      "buildingRole": "ROOF",
+      "familyRootId": "BUILDING_ROOF",
+      "snapClass": "ROOF",
+      "stabilityRole": "SPAN_SUPPORTED"
+    },
+    {
+      "assetId": "GATE_FRAME",
+      "name": "대문 틀",
+      "subfamily": "GATE_FRAME",
+      "buildingRole": "GATE_OPENING",
+      "familyRootId": "BUILDING_GATE",
+      "snapClass": "WALL_OPENING",
+      "stabilityRole": "SUPPORTED"
+    },
+    {
+      "assetId": "LADDER",
+      "name": "사다리",
+      "subfamily": "LADDER",
+      "buildingRole": "VERTICAL_LINK_VISUAL",
+      "familyRootId": "BUILDING_VERTICAL_LINK",
+      "snapClass": "WALL_ATTACHMENT",
+      "stabilityRole": "ATTACHED"
+    },
+    {
+      "assetId": "WALL_TRIM",
+      "name": "벽 장식띠",
+      "subfamily": "WALL_TRIM",
+      "buildingRole": "EXTERIOR_TRIM",
+      "familyRootId": "BUILDING_TRIM",
+      "snapClass": "WALL_ATTACHMENT",
+      "stabilityRole": "ATTACHED"
     }
   ],
   "systemDepthContract": {
@@ -118,9 +226,21 @@
       "STAIRS",
       "ARCHWAY",
       "ROOF_FLAT",
-      "RAILING"
+      "RAILING",
+      "FOUNDATION_TRIANGLE",
+      "FENCE_FOUNDATION",
+      "HALF_WALL",
+      "DOOR_FRAME",
+      "WINDOW_FRAME",
+      "CEILING_TILE",
+      "CEILING_WEDGE",
+      "ROOF_SLOPE",
+      "ROOF_CORNER",
+      "GATE_FRAME",
+      "LADDER",
+      "WALL_TRIM"
     ],
-    "currentAssetCount": 8,
+    "currentAssetCount": 20,
     "missingComponentCandidates": [
       "FOUNDATION",
       "FLOOR",
@@ -142,5 +262,28 @@
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
     "gameplayAuthority": false
+  },
+  "housingContract": {
+    "referenceSystems": [
+      "CONAN_EXILES_BUILDING_PRINCIPLES",
+      "SURVIVAL_SANDBOX_HOUSING_COMMON_PATTERNS"
+    ],
+    "noGameSpecificCopy": true,
+    "visualOnly": true,
+    "requiredPresentation": [
+      "SNAP_CLASS",
+      "STABILITY_ROLE",
+      "VALID_INVALID_PLACEMENT",
+      "TIER_VISUAL",
+      "REPAIR_STATE",
+      "DEMOLISH_PREVIEW",
+      "OWNERSHIP_PERMISSION"
+    ],
+    "gameplayAuthority": false,
+    "collisionAuthority": false,
+    "placementAuthority": false,
+    "stabilityAuthority": false,
+    "decayAuthority": false,
+    "ownershipAuthority": false
   }
 }
