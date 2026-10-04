@@ -111,15 +111,15 @@
       "updatedAt": "2026-10-04T16:48:11.149Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 16,
+      "calls": 18,
       "successes": 0,
-      "failures": 16,
+      "failures": 18,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 139824,
-      "lastMs": 7057,
+      "totalMs": 156092,
+      "lastMs": 8751,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-04T17:02:32.304Z"
+      "updatedAt": "2026-10-04T17:03:50.548Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 8,
@@ -136,7 +136,7 @@
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T16:48:00.815Z",
-  "updatedAt": "2026-10-04T17:03:45.251Z",
+  "updatedAt": "2026-10-04T17:03:50.548Z",
   "lastSuccessfulModelCallAt": "2026-10-04T17:02:25.246Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
