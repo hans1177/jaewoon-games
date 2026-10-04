@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-04T17:40:52.480Z",
+      "updatedAt": "2026-10-04T17:43:46.399Z",
       "robloxSourceCommit": "946cf67ee7866f6bfcb9600e3b41c8a8eb4765b1",
       "robloxSourceBootstrapPassedAt": "2026-10-04T17:19:39.827Z",
       "robloxSourceBootstrapFailedAt": "2026-10-04T17:40:52.480Z",
@@ -1257,10 +1257,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
+      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "robloxFailureSignature": "ROBLOX_F9_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-f9-gameplay-product-readiness-failed"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -1452,7 +1452,7 @@
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
       "robloxRuntimeLastObservationAttemptAt": "2026-10-04T17:27:33.382Z",
-      "robloxF9PendingInParallel": true,
+      "robloxF9PendingInParallel": false,
       "robloxInternalReleasePublished": true,
       "robloxPublicReleaseBlockers": [
         "roblox-public-release-awaiting-real-server-boot"
@@ -1674,10 +1674,963 @@
       "unityMobilePerformanceEvidence": null,
       "unityGeneratedAssetRuntimeBindingPassed": false,
       "unityAssetRuntimeBindingEvidence": null,
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityFailureClass": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "946cf67ee7866f6bfcb9600e3b41c8a8eb4765b1",
+      "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "sourceRevision": "946cf67ee7866f6bfcb9600e3b41c8a8eb4765b1",
+        "artifactIdentity": "sha256:c5186a61a1594162b9413f934e6732f699d8121584240f480a9f16801b10077f",
+        "authority": "roblox-f9-gameplay-product-readiness-failure",
+        "workflowRunId": 37220590883,
+        "testedAt": "2026-10-04T17:43:46.399Z",
+        "qualityFailureKinds": [
+          "F9_SERVER_BOOT_MISSING",
+          "F9_SIMULATION_MISSING",
+          "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+          "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+          "F9_CORE_LOOP_RUNTIME_MISSING",
+          "F9_WORLD_BASEPART_MINIMUM_MISSING",
+          "F9_WORLD_SPAWN_MISSING",
+          "F9_WORLD_LANDMARK_MISSING",
+          "F9_WORLD_OBJECTIVE_MISSING"
+        ],
+        "repairSurfaces": [
+          "RUNTIME_PLAY",
+          "CORE_GAMEPLAY",
+          "WORLD_MAP"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "F9_SERVER_BOOT_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_SIMULATION_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P0",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_CORE_LOOP_RUNTIME_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_WORLD_BASEPART_MINIMUM_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_WORLD_SPAWN_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_WORLD_LANDMARK_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          },
+          {
+            "id": "F9_WORLD_OBJECTIVE_MISSING",
+            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "priority": "P1",
+            "hint": "Repair the exact responsible Roblox gameplay system and rerun F0-F9 with observable player-facing evidence.",
+            "observed": {
+              "version": 1,
+              "pass": false,
+              "blockers": [
+                "F9_SERVER_BOOT_MISSING",
+                "F9_SIMULATION_MISSING",
+                "F9_ACTUAL_PLAY_EVIDENCE_MISSING",
+                "F9_MOBILE_INPUT_UI_RUNTIME_MISSING",
+                "F9_CORE_LOOP_RUNTIME_MISSING",
+                "F9_WORLD_BASEPART_MINIMUM_MISSING",
+                "F9_WORLD_SPAWN_MISSING",
+                "F9_WORLD_LANDMARK_MISSING",
+                "F9_WORLD_OBJECTIVE_MISSING"
+              ],
+              "exactEngine": true,
+              "serverBoot": false,
+              "simulation": false,
+              "actualRuntime": false,
+              "mobileRuntime": false,
+              "coreLoopRuntime": false,
+              "verticalSlicePassed": false,
+              "world": {
+                "observed": true,
+                "basePartCount": 1,
+                "spawnCount": 0,
+                "landmarkCount": 0,
+                "objectiveCount": 0
+              },
+              "sourceQualitySheet": {
+                "Core": "PLAYABLE",
+                "Content": "PLAYABLE",
+                "World": "POLISHED",
+                "Combat": "PLAYABLE",
+                "AI": "PLAYABLE",
+                "Progression": "PLAYABLE",
+                "UI": "POLISHED",
+                "Graphics": "POLISHED",
+                "Motion": "POLISHED",
+                "Audio": "PLAYABLE",
+                "Mobile": "POLISHED",
+                "Performance": "PLAYABLE",
+                "Runtime": "N/A"
+              },
+              "studioReadiness": {
+                "ai": {
+                  "applicable": true,
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "combatFeel": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "worldTopology": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "firstTenMinutes": {
+                  "signalCount": 5,
+                  "pass": true
+                },
+                "midLateGame": {
+                  "applicable": true,
+                  "signalCount": 4,
+                  "pass": true
+                },
+                "systemConnections": {
+                  "rows": [
+                    {
+                      "id": "EQUIPMENT_TO_COMBAT",
+                      "pass": true
+                    },
+                    {
+                      "id": "QUEST_TO_PROGRESSION",
+                      "pass": true
+                    },
+                    {
+                      "id": "WORLD_TO_CONTENT",
+                      "pass": true
+                    }
+                  ],
+                  "pass": true
+                },
+                "placeholder": {
+                  "pass": true,
+                  "primitiveConstructionCount": 4,
+                  "meshConstructionCount": 0,
+                  "likelyPrimitiveHeavy": false,
+                  "genericScopeHandlerCount": 0,
+                  "meaningfulGameplayFunctionCount": 17
+                },
+                "criticalGaps": [],
+                "f9SourceQualityReady": true
+              }
+            }
+          }
+        ]
+      },
       "robloxDedicatedExperiencePublishedAt": "2026-10-04T00:16:26.807Z",
       "robloxInternalPlaytestPassed": false,
       "robloxInternalPlaytestPassedAt": null,
@@ -46285,7 +47238,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T17:43:10.770Z",
+  "updatedAt": "2026-10-04T17:43:46.399Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
