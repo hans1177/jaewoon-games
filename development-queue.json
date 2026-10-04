@@ -4555,7 +4555,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T09:49:45.172Z",
+      "updatedAt": "2026-10-04T09:51:08.771Z",
       "robloxSourceCommit": "9af61be761c423faee2970b5ea529a6b03dcaec7",
       "robloxSourceBootstrapPassedAt": "2026-10-04T09:34:12.374Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4619,18 +4619,18 @@
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-04T09:49:45.172Z",
+      "robloxFoundationF0PassedAt": "2026-10-04T09:51:08.771Z",
       "robloxFoundationF0Evidence": {
         "version": 4,
         "gameId": "bug-defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T09:42:06.402Z",
+        "checkedAt": "2026-10-04T09:50:41.942Z",
         "sourcePath": "roblox-games/bug-defense",
         "sourceRevision": "9af61be761c423faee2970b5ea529a6b03dcaec7",
         "artifactIdentity": "sha256:269ab90d7d7a97270b6e31a91e8fefdc27cea901b08a3f49cd4f6fac5d26182e",
         "rebuiltArtifactIdentity": "sha256:269ab90d7d7a97270b6e31a91e8fefdc27cea901b08a3f49cd4f6fac5d26182e",
-        "artifactRunId": 37190608534,
+        "artifactRunId": 37193237830,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -4656,7 +4656,7 @@
         "multiplayerSyncContractPassed": true,
         "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "bug-defense",
@@ -4664,99 +4664,14 @@
           "blockers": [],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "WAVE",
-            "PROGRESSION",
-            "BOSS",
-            "DEFENSE",
-            "MOBILE_UI",
-            "SAVE"
+            "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": true,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "WAVE": true,
-            "PROGRESSION": true,
-            "BOSS": true,
-            "DEFENSE": true,
-            "MOBILE_UI": true,
-            "SAVE": true
+            "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "웨이브 시작 전 적의 침입 경로와 곤충 유형을 분석하여 방어 전략을 수립합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "보유한 자원을 사용하여 최적의 위치에 포식자 곤충을 배치하거나 기존 곤충을 진화시킵니다.",
-              "capabilities": [
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "실시간 전투를 관찰하며 적의 돌파 시도에 대응해 스킬을 사용하거나 배치를 수정합니다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "step": "웨이브 종료 후 획득한 자원으로 곤충의 생태적 특성을 강화하고 다음 웨이브를 준비합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "WAVE",
-                "PROGRESSION"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "생태 상성 시스템",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "서식지 적응 시스템",
-              "capabilities": [
-                "WORLD",
-                "COMBAT",
-                "DEFENSE"
-              ],
-              "pass": true
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 3,
             "meshConstructionCount": 0,
@@ -4766,11 +4681,11 @@
           },
           "studioQualitySheet": {
             "Core": "PLAYABLE",
-            "Content": "PLAYABLE",
-            "World": "PLAYABLE",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "PLAYABLE",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -4781,17 +4696,17 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 5,
               "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
@@ -4800,17 +4715,12 @@
               "pass": true
             },
             "midLateGame": {
-              "applicable": true,
-              "signalCount": 4,
+              "applicable": false,
+              "signalCount": 3,
               "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
+              "rows": [],
               "pass": true
             },
             "placeholder": {
@@ -4825,29 +4735,29 @@
             "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "279485539ce2a75760a52ef52562bb5e626b36976763a91b41f7070a0afe0790",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": true,
-          "designGenre": "Strategy",
+          "designGenre": null,
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
           "Core": "PLAYABLE",
-          "Content": "PLAYABLE",
-          "World": "PLAYABLE",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "PLAYABLE",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -4889,12 +4799,12 @@
         "gameId": "bug-defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-04T09:42:06.402Z",
+        "checkedAt": "2026-10-04T09:50:41.942Z",
         "sourcePath": "roblox-games/bug-defense",
         "sourceRevision": "9af61be761c423faee2970b5ea529a6b03dcaec7",
         "artifactIdentity": "sha256:269ab90d7d7a97270b6e31a91e8fefdc27cea901b08a3f49cd4f6fac5d26182e",
         "rebuiltArtifactIdentity": "sha256:269ab90d7d7a97270b6e31a91e8fefdc27cea901b08a3f49cd4f6fac5d26182e",
-        "artifactRunId": 37190608534,
+        "artifactRunId": 37193237830,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -4920,7 +4830,7 @@
         "multiplayerSyncContractPassed": true,
         "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "bug-defense",
@@ -4928,99 +4838,14 @@
           "blockers": [],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "WAVE",
-            "PROGRESSION",
-            "BOSS",
-            "DEFENSE",
-            "MOBILE_UI",
-            "SAVE"
+            "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": true,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "WAVE": true,
-            "PROGRESSION": true,
-            "BOSS": true,
-            "DEFENSE": true,
-            "MOBILE_UI": true,
-            "SAVE": true
+            "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "웨이브 시작 전 적의 침입 경로와 곤충 유형을 분석하여 방어 전략을 수립합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "보유한 자원을 사용하여 최적의 위치에 포식자 곤충을 배치하거나 기존 곤충을 진화시킵니다.",
-              "capabilities": [
-                "CONTENT_ENTITY"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "실시간 전투를 관찰하며 적의 돌파 시도에 대응해 스킬을 사용하거나 배치를 수정합니다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "step": "웨이브 종료 후 획득한 자원으로 곤충의 생태적 특성을 강화하고 다음 웨이브를 준비합니다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "WAVE",
-                "PROGRESSION"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "생태 상성 시스템",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "서식지 적응 시스템",
-              "capabilities": [
-                "WORLD",
-                "COMBAT",
-                "DEFENSE"
-              ],
-              "pass": true
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 3,
             "meshConstructionCount": 0,
@@ -5030,11 +4855,11 @@
           },
           "studioQualitySheet": {
             "Core": "PLAYABLE",
-            "Content": "PLAYABLE",
-            "World": "PLAYABLE",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "PLAYABLE",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -5045,17 +4870,17 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 5,
               "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 4,
               "pass": true
             },
@@ -5064,17 +4889,12 @@
               "pass": true
             },
             "midLateGame": {
-              "applicable": true,
-              "signalCount": 4,
+              "applicable": false,
+              "signalCount": 3,
               "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
+              "rows": [],
               "pass": true
             },
             "placeholder": {
@@ -5089,29 +4909,29 @@
             "f9SourceQualityReady": true
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
+            "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "279485539ce2a75760a52ef52562bb5e626b36976763a91b41f7070a0afe0790",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": true,
-          "designGenre": "Strategy",
+          "designGenre": null,
           "sourceGenre": "Strategy",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
         },
         "studioQualitySheet": {
           "Core": "PLAYABLE",
-          "Content": "PLAYABLE",
-          "World": "PLAYABLE",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "PLAYABLE",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -54214,7 +54034,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T09:50:55.864Z",
+  "updatedAt": "2026-10-04T09:51:08.771Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
