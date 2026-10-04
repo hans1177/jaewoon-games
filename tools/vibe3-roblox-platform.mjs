@@ -493,7 +493,10 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
     throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_REVISION');
   if(!artifactIdentity || item.robloxBuildSourceRevision!==sourceRevision || item.robloxBuildArtifactIdentity!==artifactIdentity)
     throw new Error('ROBLOX_PUBLISH_STALE_BUILD_ARTIFACT');
-  if(item.robloxQualityBuildUpRequired===true || item.robloxStudioLocalPlayRepairRequired===true)
+  const qualityRepairSourceRevision=clean(item.robloxQualityBuildUpSourceRevision);
+  const currentQualityRepair=item.robloxQualityBuildUpRequired===true
+    &&(!qualityRepairSourceRevision||qualityRepairSourceRevision===sourceRevision);
+  if(currentQualityRepair || item.robloxStudioLocalPlayRepairRequired===true)
     throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
   const stage=clean(publishStage).toLowerCase()||'final';
   if(!['validation','final'].includes(stage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID');
