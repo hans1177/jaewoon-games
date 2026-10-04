@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-creature-parts-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -30,5 +30,84 @@
     "requiredBeforeProductionVerified": true,
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임에서 native rig/Animator 바인딩과 런타임 확인 전에는 productionVerified를 true로 바꾸지 않는다."
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG",
+      "STYLE_COHERENCE"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "FORM_STRUCTURE": 86,
+      "MATERIAL_SURFACE": 82,
+      "COLOR_LIGHTING": 84,
+      "STYLE_COHERENCE": 86,
+      "DETAIL_FINISH": 80,
+      "READABILITY_SCALE": 86,
+      "MOTION_RIG": 58,
+      "FEEDBACK_STATES": 72,
+      "MODULAR_REUSE": 96,
+      "VARIATION_BREADTH": 88,
+      "PERFORMANCE_LOD": 82,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 84
+    },
+    "expectedScore": 837.8,
+    "expectedGrade": "DEVELOPMENT_READY",
+    "auditPass": false,
+    "hardGateFailures": [
+      "IDENTITY_SILHOUETTE:88<90",
+      "DETAIL_FINISH:80<82",
+      "MOTION_RIG:58<84"
+    ],
+    "evidenceBasis": {
+      "sourceAssetCount": 24,
+      "sourceLineCount": 405,
+      "sourceFunctionCount": 22,
+      "nativeInstanceConstructionCount": 8,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "missingSystemComponents": [
+        "AMORPHOUS",
+        "TORSO_VARIANT",
+        "SURFACE_VARIANT",
+        "BOSS_SIGNATURE",
+        "RIG_PROFILE",
+        "LOCOMOTION_SET",
+        "ATTACK_SET",
+        "HIT_DEATH_SET",
+        "LOD"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ]
+    },
+    "limitations": [
+      "NATIVE_RIG_BINDING_AUTHORING_REQUIRED",
+      "LOCOMOTION_ATTACK_HIT_DEATH_SETS_MISSING",
+      "BOSS_SIGNATURE_AND_SURFACE_VARIANT_GAPS_REMAIN",
+      "NATIVE_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
   }
 }
