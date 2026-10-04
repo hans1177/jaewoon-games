@@ -1376,6 +1376,40 @@ test('studio build-up rejects micro patches and requires the configured connecte
   assert.deepEqual(packageDelta.files,['Game.client.luau','Game.server.luau']);
 });
 
+test('progressive late BUILD_UP connected growth threshold is enforced without Studio runtime',()=>{
+  const contract={
+    phase:'BUILD_UP',
+    focusPillar:'CORE_FUN',
+    realSourceDeltaRequired:true,
+    requiredConnectedImprovements:{min:7,max:null},
+    progressiveGrowthExpectation:{studioRequired:false,tier:'PERPETUAL_MASTERY_GROWTH',minimumGrowthPoints:24}
+  };
+  const six=evaluateStudioQualityCandidateDelta({
+    contract,
+    candidate:{edits:Array.from({length:6},(_,index)=>({
+      path:index<3?'Game.client.luau':'Game.server.luau',
+      find:'local old'+index+'='+index,
+      replace:'local new'+index+'='+(index+1)
+    }))}
+  });
+  assert.equal(six.pass,false);
+  assert.equal(six.requiredSourceDeltaUnits,7);
+  assert.equal(six.sourceDeltaUnits,6);
+  assert.equal(six.reason,'INSUFFICIENT_CONNECTED_SOURCE_DELTAS');
+
+  const seven=evaluateStudioQualityCandidateDelta({
+    contract,
+    candidate:{edits:Array.from({length:7},(_,index)=>({
+      path:index<4?'Game.client.luau':'Game.server.luau',
+      find:'local old'+index+'='+index,
+      replace:'local new'+index+'='+(index+1)
+    }))}
+  });
+  assert.equal(seven.pass,true);
+  assert.equal(seven.requiredSourceDeltaUnits,7);
+  assert.equal(seven.sourceDeltaUnits,7);
+});
+
 test('studio presentation build-up requires at least two real visual source deltas',()=>{
   const contract={
     phase:'BUILD_UP',
