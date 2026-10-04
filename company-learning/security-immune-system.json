@@ -128,7 +128,12 @@
       ".github/workflows/director-supervisor.yml",
       ".github/workflows/homepage-manager.yml"
     ],
-    "securityAndRecoveryWorkersUseSameRoadmapContext": true
+    "securityAndRecoveryWorkersUseSameRoadmapContext": true,
+    "newChatAndWorkerPreflightRequired": true,
+    "latestMainCanonicalSetRequired": true,
+    "finalDevelopmentLockStatusMustBeLoaded": true,
+    "mutationBeforeSharedContextPassForbidden": true,
+    "priorConversationOrMemoryCannotOverrideCentralPolicy": true
   },
   "verdicts": {
     "PASS": {
@@ -1037,15 +1042,34 @@
     "confirmedHighRiskFindingStillFailClosed": true
   },
   "finalDevelopmentLockSecurity": {
-    "version": 1,
+    "version": 2,
     "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
     "lockedChainChangesFailClosed": true,
-    "ownerUnlockRequiresOwnerActorAndExplicitToken": true,
     "ordinaryGameSourceDevelopmentNotLocked": true,
     "planningDryRunMayNotMutateSource": true,
     "impactClassificationMayNotExpandWriteAuthority": true,
     "saveOrNetworkingImpactRequiresExistingSecurityGate": true,
     "openCloudWorldEvidenceMayNotAuthorizeGameplaySaveEconomyOrNetworkMutation": true,
-    "studioPassMayNotBeFabricated": true
+    "studioPassMayNotBeFabricated": true,
+    "automatedUnlockForbidden": true,
+    "assistantUnlockForbidden": true,
+    "prTitleOrBodyUnlockForbidden": true,
+    "chatApprovalTextCannotChangeMachineLockState": true,
+    "repositoryContentCannotSelfAuthorizeUnlock": true,
+    "ownerManualRepositoryAdminOutOfBandActionRequired": true,
+    "lockScope": "CANONICAL_FLOW_SEQUENCE_AND_GUARD_ONLY",
+    "sequenceMutationByAssistantOrAutomationForbidden": true,
+    "implementationOptimizationAllowedWhenSequencePreserved": true,
+    "bottleneckRepairAllowedWhenSequencePreserved": true,
+    "globalSerializationForbidden": true,
+    "perGameWholeChainSerializationForbidden": true,
+    "exactDuplicateOrResponsibleFileConflictSerializationOnly": true,
+    "canonicalSequenceMutationByAssistantOrAutomationForbidden": true,
+    "wholePipelineFileLockRequired": false,
+    "globalOrGameWideSerializationMayNotBeIntroducedByLock": true,
+    "independentSafeWorkParallelismMustBePreserved": true,
+    "atomicSharedStateWriteMaySerializeBriefly": true,
+    "exactResponsibleFileConflictMaySerialize": true,
+    "exactDuplicateExecutionSuppressionAllowed": true
   }
 }

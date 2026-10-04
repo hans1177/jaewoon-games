@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { FINAL_CHAIN_LOCK_PATHS, finalChainLockViolations, isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
+import { FINAL_CHAIN_LOCK_PATHS, LOCKED_FLOW_SEQUENCE_KEYS, finalChainLockViolations, finalDevelopmentLockMetadataViolations, flowSequenceLockViolations, isWorkflowPath, scanTextForDirectMainWrite } from '../tools/main-write-guard.mjs';
 
 test('workflow path detector only accepts workflow yaml files',()=>{
   assert.equal(isWorkflowPath('.github/workflows/build.yml'),true);
@@ -56,30 +56,55 @@ test('main write guard skips its own unit suite when only unrelated workflow fil
 });
 
 
-test('final chain lock blocks only locked pipeline files and leaves game source development open',()=>{
-  const lock={status:'LOCKED',lockedPaths:FINAL_CHAIN_LOCK_PATHS};
+test('final chain lock v2 protects guard implementation but leaves chain optimization files open',()=>{
+  const lock={version:2,status:'LOCKED',chainLock:{status:'LOCKED'}};
   const hits=finalChainLockViolations({
-    files:['tools/company-build-up-directive.mjs','roblox-games/demo/server/Game.server.luau'],
+    files:[
+      'tools/main-write-guard.mjs',
+      'tools/company-build-up-directive.mjs',
+      'tools/company-recovery-escalation.mjs',
+      '.github/workflows/company-development-roblox-runtime.yml',
+      'roblox-games/demo/server/Game.server.luau'
+    ],
     lock,actor:'github-actions[bot]',owner:'hans1177'
   });
-  assert.deepEqual(hits.map(row=>row.file),['tools/company-build-up-directive.mjs']);
+  assert.deepEqual(hits.map(row=>row.file),['tools/main-write-guard.mjs']);
 });
 
-test('final chain lock owner unlock requires both repository owner actor and explicit title token',()=>{
-  const lock={status:'LOCKED',lockedPaths:FINAL_CHAIN_LOCK_PATHS};
+test('final chain lock v2 cannot be unlocked by PR title or assistant-synthesized metadata',()=>{
+  const lock={version:2,status:'LOCKED'};
+  for(const unlockTitle of [
+    '[OWNER_UNLOCK] pipeline repair',
+    '[OWNER_LOCK_HARDEN_V2] migration',
+    'owner approved in chat',
+    ''
+  ]){
+    const hits=finalChainLockViolations({
+      files:['tools/main-write-guard.mjs'],
+      lock,actor:'hans1177',owner:'hans1177',unlockTitle
+    });
+    assert.equal(hits.length,1,unlockTitle);
+    assert.equal(hits[0].reason,'FINAL_CHAIN_LOCKED_AUTOMATION_IMMUTABLE');
+  }
+});
+
+test('one-time v1 to v2 lock hardening migration requires owner actor and exact migration token',()=>{
+  const lock={version:1,status:'LOCKED',chainLock:{status:'LOCKED'},lockedPaths:FINAL_CHAIN_LOCK_PATHS};
   assert.equal(finalChainLockViolations({
-    files:['tools/company-build-up-directive.mjs'],lock,actor:'hans1177',owner:'hans1177',unlockTitle:'[OWNER_UNLOCK] pipeline repair'
+    files:['tools/main-write-guard.mjs'],lock,actor:'hans1177',owner:'hans1177',unlockTitle:'[OWNER_LOCK_HARDEN_V2] central lock migration'
   }).length,0);
   assert.equal(finalChainLockViolations({
-    files:['tools/company-build-up-directive.mjs'],lock,actor:'other-user',owner:'hans1177',unlockTitle:'[OWNER_UNLOCK] pipeline repair'
+    files:['tools/main-write-guard.mjs'],lock,actor:'other-user',owner:'hans1177',unlockTitle:'[OWNER_LOCK_HARDEN_V2] central lock migration'
+  }).length,1);
+  assert.equal(finalChainLockViolations({
+    files:['tools/main-write-guard.mjs'],lock,actor:'hans1177',owner:'hans1177',unlockTitle:'[OWNER_UNLOCK] central lock migration'
   }).length,1);
 });
 
-test('main write guard watches final locked chain without watching ordinary game source',()=>{
+test('main write guard watches central sequence policy and guard implementation without locking chain implementation files',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/main-write-guard.yml',import.meta.url),'utf8');
   assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
-  assert.match(workflow,/tools\/company-build-up-directive\.mjs/);
-  assert.match(workflow,/company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(workflow,/tools\/main-write-guard\.mjs/);
   assert.match(workflow,/--unlock-title=/);
   assert.doesNotMatch(workflow,/roblox-games\/\*\*/);
 });
@@ -96,3 +121,64 @@ test('main write guard recovers merged owner-unlock PR title on push without wea
   assert.match(workflow,/MAIN_WRITE_GUARD_UNLOCK_METADATA=ASSOCIATED_PR_OR_EVENT/);
   assert.match(workflow,/if \[ "\$EVENT_NAME" = 'push' \] && \[ -z "\$unlock_title" \]/);
 });
+
+test('flow sequence lock rejects F0/F9 order mutation while allowing unrelated central policy edits',()=>{
+  const base={
+    finalDevelopmentLock:{version:2,status:'LOCKED',chainLock:{status:'LOCKED'}},
+    developmentLifecycleMachine:{
+      verifiedF0F9PublicationLoop:{sequence:['GAME_SOURCE_MUTATION','F0','F1','F9','IMMEDIATE_NEXT_EVOLUTION_CYCLE']},
+      nativeGameFoundationValidationStack:{releaseGate:{canonicalSequence:['F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1_SERVER_BOOT_PASS','F9_RELEASE_REGRESSION_PASS','INTERNAL_PLATFORM_RELEASE']}}
+    },
+    unrelated:{value:1}
+  };
+  const unrelated=structuredClone(base);unrelated.unrelated.value=2;
+  assert.equal(flowSequenceLockViolations({basePolicy:base,headPolicy:unrelated,lock:base.finalDevelopmentLock}).length,0);
+  const changed=structuredClone(base);
+  changed.developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence=['GAME_SOURCE_MUTATION','F0','F9','F1','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
+  const hits=flowSequenceLockViolations({basePolicy:base,headPolicy:changed,lock:base.finalDevelopmentLock});
+  assert.equal(hits.length,1);
+  assert.equal(hits[0].reason,'FLOW_SEQUENCE_LOCKED_AUTOMATION_IMMUTABLE');
+  assert.equal(hits[0].sequence,LOCKED_FLOW_SEQUENCE_KEYS[0]);
+});
+
+test('flow sequence lock rejects foundation order mutation',()=>{
+  const base={
+    finalDevelopmentLock:{version:2,status:'LOCKED',chainLock:{status:'LOCKED'}},
+    developmentLifecycleMachine:{
+      verifiedF0F9PublicationLoop:{sequence:['GAME_SOURCE_MUTATION','F0','F1','F9','IMMEDIATE_NEXT_EVOLUTION_CYCLE']},
+      nativeGameFoundationValidationStack:{releaseGate:{canonicalSequence:['F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1_SERVER_BOOT_PASS','F9_RELEASE_REGRESSION_PASS','INTERNAL_PLATFORM_RELEASE']}}
+    }
+  };
+  const changed=structuredClone(base);
+  changed.developmentLifecycleMachine.nativeGameFoundationValidationStack.releaseGate.canonicalSequence=['F0_SOURCE_PREFLIGHT_PASS','F1_SERVER_BOOT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F9_RELEASE_REGRESSION_PASS','INTERNAL_PLATFORM_RELEASE'];
+  const hits=flowSequenceLockViolations({basePolicy:base,headPolicy:changed,lock:base.finalDevelopmentLock});
+  assert.equal(hits.length,1);
+  assert.equal(hits[0].sequence,LOCKED_FLOW_SEQUENCE_KEYS[1]);
+});
+
+test('flow sequence lock blocks order changes but allows parallelism policy edits',()=>{
+  const base={
+    finalDevelopmentLock:{version:2,status:'LOCKED',scope:'CANONICAL_FLOW_SEQUENCE_AND_GUARD_ONLY',sequenceLock:{status:'LOCKED',mode:'SEQUENCE_SEMANTICS_ONLY'}},
+    developmentLifecycleMachine:{
+      verifiedF0F9PublicationLoop:{sequence:['GAME_SOURCE_MUTATION','F0','F1','F9','IMMEDIATE_NEXT_EVOLUTION_CYCLE']},
+      nativeGameFoundationValidationStack:{releaseGate:{canonicalSequence:['F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1_SERVER_BOOT_PASS','F9_RELEASE_REGRESSION_PASS','INTERNAL_PLATFORM_RELEASE']}}
+    },
+    developmentSpeedExecution:{robloxEndToEndParallelExecution:{globalSerializationForbidden:true}}
+  };
+  const safe=structuredClone(base);
+  safe.developmentSpeedExecution.robloxEndToEndParallelExecution.globalSerializationForbidden=false;
+  assert.equal(flowSequenceLockViolations({basePolicy:base,headPolicy:safe,lock:base.finalDevelopmentLock}).length,0);
+  const changed=structuredClone(base);
+  changed.developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence=['GAME_SOURCE_MUTATION','F0','F9','F1','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
+  assert.equal(flowSequenceLockViolations({basePolicy:base,headPolicy:changed,lock:base.finalDevelopmentLock}).length,1);
+});
+
+test('final sequence lock metadata cannot be disabled by repository changes',()=>{
+  const base={finalDevelopmentLock:{version:2,status:'LOCKED',scope:'CANONICAL_FLOW_SEQUENCE_AND_GUARD_ONLY',sequenceLock:{status:'LOCKED',mode:'SEQUENCE_SEMANTICS_ONLY'}}};
+  const safe=structuredClone(base);
+  assert.equal(finalDevelopmentLockMetadataViolations({basePolicy:base,headPolicy:safe,lock:base.finalDevelopmentLock}).length,0);
+  const disabled=structuredClone(base);
+  disabled.finalDevelopmentLock.status='UNLOCKED';
+  assert.ok(finalDevelopmentLockMetadataViolations({basePolicy:base,headPolicy:disabled,lock:base.finalDevelopmentLock}).length>0);
+});
+
