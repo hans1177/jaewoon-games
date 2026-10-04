@@ -1071,6 +1071,244 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
 });
 
 
+
+export const COMMON_LIBRARY_LOOSE_VOLUME_BANDS=Object.freeze({
+  UI:Object.freeze({minimum:115,targetMin:200,targetMax:360,softReviewAt:520}),
+  ITEM:Object.freeze({minimum:40,targetMin:64,targetMax:120,softReviewAt:180}),
+  WEAPON:Object.freeze({minimum:20,targetMin:36,targetMax:72,softReviewAt:120}),
+  CHARACTER_GEAR:Object.freeze({minimum:18,targetMin:36,targetMax:72,softReviewAt:120}),
+  SKILL:Object.freeze({minimum:20,targetMin:40,targetMax:96,softReviewAt:150}),
+  VFX:Object.freeze({minimum:22,targetMin:48,targetMax:120,softReviewAt:180}),
+  MOTION:Object.freeze({minimum:52,targetMin:80,targetMax:160,softReviewAt:240}),
+  MATERIAL:Object.freeze({minimum:25,targetMin:40,targetMax:80,softReviewAt:128}),
+  ENVIRONMENT:Object.freeze({minimum:40,targetMin:64,targetMax:140,softReviewAt:220}),
+  BUILDING:Object.freeze({minimum:21,targetMin:40,targetMax:90,softReviewAt:140}),
+  WORLD_PROP:Object.freeze({minimum:32,targetMin:64,targetMax:160,softReviewAt:240}),
+  CREATURE:Object.freeze({minimum:28,targetMin:64,targetMax:160,softReviewAt:240}),
+  FOLIAGE:Object.freeze({minimum:18,targetMin:36,targetMax:96,softReviewAt:150}),
+  PRESENTATION:Object.freeze({minimum:14,targetMin:24,targetMax:60,softReviewAt:96}),
+  AUDIO:Object.freeze({minimum:23,targetMin:48,targetMax:120,softReviewAt:180,measurement:'ROLE_OR_VERIFIED_ASSET_NOT_AUDIO_FILE_CLAIM'})
+});
+
+export const COMMON_UI_SUBSYSTEM_VOLUME_BANDS=Object.freeze({
+  INVENTORY_ITEM_MANAGEMENT:Object.freeze({targetMin:32,targetMax:72,softReviewAt:110,keywords:Object.freeze(['INVENTORY','ITEM_','STASH','LOOT','QUICK_SLOT','RADIAL','RECENT_ITEMS','SOURCE_USAGE'])}),
+  MENU_NAVIGATION:Object.freeze({targetMin:30,targetMax:72,softReviewAt:110,keywords:Object.freeze(['MENU','NAVIGATION','TOP_BAR','SIDE_NAVIGATION','PAUSE','SETTINGS','SEARCH','FILTER','SORT','FULL_SCREEN','CONFIRM_DIALOG'])}),
+  EQUIPMENT_LOADOUT:Object.freeze({targetMin:18,targetMax:42,softReviewAt:70,keywords:Object.freeze(['EQUIPMENT','LOADOUT','SET_BONUS','SOCKET','ENCHANT'])}),
+  CRAFTING_UPGRADE:Object.freeze({targetMin:18,targetMax:44,softReviewAt:72,keywords:Object.freeze(['CRAFT','RECIPE','MATERIAL_TRACK','UPGRADE','REPAIR','DISMANTLE'])}),
+  SHOP_TRADE:Object.freeze({targetMin:14,targetMax:36,softReviewAt:60,keywords:Object.freeze(['SHOP','BUY','SELL','BUYBACK','TRADE','VENDOR'])}),
+  QUEST_CODEX:Object.freeze({targetMin:16,targetMax:40,softReviewAt:64,keywords:Object.freeze(['QUEST','CODEX','COLLECTION','DISCOVERY','LORE'])}),
+  NPC_RELATIONSHIP:Object.freeze({targetMin:24,targetMax:56,softReviewAt:88,keywords:Object.freeze(['NPC_','RELATIONSHIP','MEMORY','RUMOR','DIALOGUE'])}),
+  PARTY_COMPANION:Object.freeze({targetMin:24,targetMax:64,softReviewAt:96,keywords:Object.freeze(['PARTY','COMPANION','ALLY','REVIVE_RESCUE'])}),
+  MOUNT_TRAVEL:Object.freeze({targetMin:18,targetMax:44,softReviewAt:70,keywords:Object.freeze(['MOUNT','TRAVEL','VEHICLE','ROUTE'])}),
+  COMBAT_HUD:Object.freeze({targetMin:18,targetMax:48,softReviewAt:76,keywords:Object.freeze(['HEALTH','STATUS','HOTBAR','PARRY','GUARD','BOSS','WAVE','THREAT','COMBO','TARGET'])}),
+  HOUSING_SANDBOX:Object.freeze({targetMin:24,targetMax:56,softReviewAt:88,keywords:Object.freeze(['BUILD_','PLACEMENT','HOUSING','BLUEPRINT','SNAP','STABILITY','FURNITURE','OBJECT_TRANSFORM'])}),
+  FARMING_SETTLEMENT:Object.freeze({targetMin:18,targetMax:44,softReviewAt:70,keywords:Object.freeze(['FARM','ANIMAL','PROCESSING','SETTLEMENT','CROP','HARVEST'])}),
+  ACCESSIBILITY_INPUT:Object.freeze({targetMin:14,targetMax:36,softReviewAt:60,keywords:Object.freeze(['ACCESSIBILITY','INPUT','FOCUS','TOUCH','GAMEPAD','REDUCED_MOTION','SUBTITLE'])}),
+  LOADING_ERROR_STATE:Object.freeze({targetMin:16,targetMax:40,softReviewAt:64,keywords:Object.freeze(['LOADING','ERROR','FAILURE','EMPTY','DISABLED','LOCKED','NEW_STATE','STATE_BADGES'])}),
+  MOBILE_ONE_HAND:Object.freeze({targetMin:12,targetMax:32,softReviewAt:52,keywords:Object.freeze(['QUICK_SLOT','RADIAL','HOTBAR','INTERACTION_PROMPT','ACTION_BAR','ONE_HAND','TOUCH'])})
+});
+
+export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
+  version:1,
+  inventoryFlow:Object.freeze([
+    'PICKUP','NEW_STATE','DETAIL','COMPARE','CONTEXT_ACTION','USE_OR_EQUIP','CONTAINER_OR_STASH','TRANSFER',
+    'QUICK_SLOT_OR_RADIAL','LOADOUT','UPGRADE_OR_REPAIR_OR_DISMANTLE','SOURCE_AND_USAGE','CODEX','RECENT_ITEMS'
+  ]),
+  menuRoots:Object.freeze([
+    'MAIN_MENU','IN_GAME_PAUSE','INVENTORY','EQUIPMENT','CHARACTER','MAP_TRAVEL','QUEST','CRAFTING',
+    'SHOP_TRADE','CODEX_COLLECTION','SOCIAL_PARTY','HOUSING_SANDBOX','FARM_SETTLEMENT','SETTINGS_ACCESSIBILITY','RUN_RESULT'
+  ]),
+  recommendedDepth:3,
+  softReviewDepth:5,
+  hardBlockDepth:null,
+  preserveBackStack:true,
+  preserveSelectionFocus:true,
+  touchFirst:true,
+  contextActionsNearActiveObject:true,
+  deepNavigationAllowedWhenContextIsPreserved:true,
+  colorOnlyStateForbidden:true,
+  gameplayAuthority:false,
+  saveAuthority:false,
+  networkAuthority:false
+});
+
+export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
+  version:1,
+  scope:'ALL_INTERNAL_COMMON_LIBRARIES',
+  catalogDiscovery:'assets/roblox/common-*/catalog.json',
+  seedDiscovery:'artbook-submissions/seed-*/current.json',
+  registry:'company-asset-library.json',
+  automaticOperations:Object.freeze([
+    'DISCOVER_COMMON_CATALOGS',
+    'SYNC_PACK_COUNTS',
+    'SYNC_ATOM_OR_ITEM_ROWS',
+    'SYNC_CATALOG_TITLE_AND_VERSION_METADATA',
+    'REBUILD_SYSTEM_DEPTH_GAPS',
+    'REBUILD_LOOSE_VOLUME_PLAN',
+    'REBUILD_UI_SUBSYSTEM_DEPTH',
+    'REBUILD_COMPANY_SEED_DEMAND',
+    'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
+  ]),
+  countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
+  hardMaximum:null,
+  overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
+  overSoftLimitBlocksUse:false,
+  perDomainIdeaBudgetPerCycle:24,
+  preferDistinctRoleStateGenreCombination:true,
+  volumeBeforeQuality:true,
+  reuseAdaptRecombineBeforeNewAuthoring:true,
+  deleteExistingAssetAutomatically:false,
+  productionPromotionAutomatically:false,
+  runtimeVerificationStillRequired:true,
+  actualAudioAssetClaimRequiresVerifiedAudioFile:true,
+  workflowCreated:false,
+  schedulerCreated:false,
+  queueCreated:false,
+  pipelineCreated:false,
+  wrapperCreated:false,
+  shadowSystemCreated:false
+});
+
+function looseVolumeState(count,band={}){
+  const value=Math.max(0,Number(count)||0);
+  if(value<Number(band.minimum||0))return'SYSTEM_DEPTH_VOLUME_REQUIRED';
+  if(value<Number(band.targetMin||0))return'EXPAND_TOWARD_RECOMMENDED_RANGE';
+  if(value<=Number(band.targetMax||Infinity))return'HEALTHY_VOLUME';
+  if(value<Number(band.softReviewAt||Infinity))return'BROAD_LIBRARY_KEEP_IF_DISTINCT';
+  return'SOFT_DEDUP_REVIEW_ONLY';
+}
+
+function commonLibraryIdentityCount(domain,assets=[]){
+  const candidates=(assets||[]).filter(asset=>commonDepthDomainMatch(domain,asset));
+  return candidates.filter(asset=>{
+    if(asset?.id===asset?.packId)return false;
+    if(asset?.atomId||asset?.assetId)return true;
+    const sub=upper(asset?.subfamily);
+    return sub&&!sub.endsWith('_PACK')&&!sub.endsWith('_KIT');
+  }).length;
+}
+
+function uiSubsystemCount(ids=[],spec={}){
+  const needles=(spec.keywords||[]).map(upper);
+  return (ids||[]).filter(id=>{
+    const token=upper(id);
+    return needles.some(needle=>token.includes(needle));
+  }).length;
+}
+
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[]}={}){
+  const depth=auditCommonLibrarySystemDepth({assets});
+  const seedIdeas=seedPlan?.ideas||[];
+  const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
+  const domains=[];
+
+  for(const [domain,band] of Object.entries(COMMON_LIBRARY_LOOSE_VOLUME_BANDS)){
+    const currentCount=commonLibraryIdentityCount(domain,assets);
+    const depthRow=depthByDomain.get(domain);
+    const missing=[...(depthRow?.missing||[])];
+    const ideaBudget=Math.min(
+      INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.perDomainIdeaBudgetPerCycle,
+      Math.max(4,Number(band.targetMin||0)-currentCount,missing.length)
+    );
+    const candidates=[];
+    for(const required of missing){
+      candidates.push(Object.freeze({
+        ideaId:[domain,required,'BASE'].join('_'),
+        source:'SYSTEM_DEPTH_GAP',
+        domain,
+        role:required,
+        priority:300
+      }));
+    }
+    for(const idea of seedIdeas.filter(row=>row.domain===domain)){
+      if(candidates.length>=ideaBudget)break;
+      if(!candidates.some(row=>row.ideaId===idea.ideaId)){
+        candidates.push(Object.freeze({
+          ideaId:idea.ideaId,
+          source:'COMPANY_COMMON_SEED_DEMAND',
+          domain,
+          role:idea.role,
+          stateVariants:idea.stateVariants,
+          priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)
+        }));
+      }
+    }
+    let slot=1;
+    while(candidates.length<ideaBudget&&currentCount+candidates.length<Number(band.targetMin||0)){
+      candidates.push(Object.freeze({
+        ideaId:[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_'),
+        source:'LOOSE_VOLUME_TARGET',
+        domain,
+        role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
+        priority:120
+      }));
+      slot++;
+    }
+    domains.push(Object.freeze({
+      domain,
+      currentCount,
+      minimum:band.minimum,
+      targetMin:band.targetMin,
+      targetMax:band.targetMax,
+      softReviewAt:band.softReviewAt,
+      hardMaximum:null,
+      state:looseVolumeState(currentCount,band),
+      missingDepthRoles:Object.freeze(missing),
+      suggestedIdeas:Object.freeze(candidates),
+      suggestedIdeaCount:candidates.length,
+      overSoftLimitBlocksUse:false
+    }));
+  }
+
+  const uiIds=uniq(uiAtomIds.length?uiAtomIds:(assets||[]).filter(row=>row.packId==='roblox-common-ui-v1').map(row=>row.atomId));
+  const uiSubsystems=Object.entries(COMMON_UI_SUBSYSTEM_VOLUME_BANDS).map(([id,band])=>{
+    const currentCount=uiSubsystemCount(uiIds,band);
+    const state=currentCount<band.targetMin?'EXPAND_TOWARD_RECOMMENDED_RANGE':
+      currentCount<=band.targetMax?'HEALTHY_VOLUME':
+      currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
+    const suggestedCount=Math.min(12,Math.max(0,band.targetMin-currentCount));
+    const suggestedIdeas=Array.from({length:suggestedCount},(_,index)=>Object.freeze({
+      ideaId:['UI',id,'DEPTH',String(index+1).padStart(2,'0')].join('_'),
+      source:'UI_SUBSYSTEM_DEPTH',
+      subsystem:id,
+      role:'MISSING_CONTEXT_STATE_OR_FLOW_VARIANT',
+      priority:180
+    }));
+    return Object.freeze({
+      subsystem:id,
+      currentCount,
+      targetMin:band.targetMin,
+      targetMax:band.targetMax,
+      softReviewAt:band.softReviewAt,
+      hardMaximum:null,
+      state,
+      suggestedIdeas:Object.freeze(suggestedIdeas),
+      overSoftLimitBlocksUse:false
+    });
+  }).sort((a,b)=>{
+    const da=Math.max(0,a.targetMin-a.currentCount),db=Math.max(0,b.targetMin-b.currentCount);
+    return db-da||a.subsystem.localeCompare(b.subsystem);
+  });
+
+  return Object.freeze({
+    version:1,
+    countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
+    hardMaximum:null,
+    domains:Object.freeze(domains.sort((a,b)=>{
+      const da=Math.max(0,a.targetMin-a.currentCount),db=Math.max(0,b.targetMin-b.currentCount);
+      return db-da||a.domain.localeCompare(b.domain);
+    })),
+    uiSubsystems:Object.freeze(uiSubsystems),
+    uiCompositionGraph:COMMON_UI_SYSTEM_COMPOSITION_GRAPH,
+    volumeBeforeQuality:true,
+    overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
+    overSoftLimitBlocksUse:false,
+    automaticDeletion:false,
+    productionPromotionAutomatic:false,
+    runtimeVerificationRequired:true
+  });
+}
+
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
   version:2,
   scope:'INTERNAL_ASSETS_ONLY',
@@ -1106,6 +1344,8 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'CROSS_PACK_SYSTEM_DEPTH_AUDIT',
     'GENRE_SYSTEM_EXPECTATION_COMPARE',
     'BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN',
+    'BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN',
+    'REBUILD_UI_SUBSYSTEM_DEPTH',
     'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
     'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
     'PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING'
