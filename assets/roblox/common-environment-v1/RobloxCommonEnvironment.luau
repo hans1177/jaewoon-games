@@ -15,6 +15,7 @@ local BIOMES = table.freeze({
   CITY={ground=Color3.fromRGB(80,84,91),secondary=Color3.fromRGB(101,106,114),rock=Color3.fromRGB(104,108,116),water=Color3.fromRGB(55,96,120),landmark="CLOCK_TOWER",dress={"BOLLARD","PLANTER","STREET_LAMP","BENCH","SIGNAGE","UTILITY_BOX"}},
   RUINS={ground=Color3.fromRGB(102,94,72),secondary=Color3.fromRGB(119,110,84),rock=Color3.fromRGB(121,116,99),water=Color3.fromRGB(63,101,107),landmark="BROKEN_GATE",dress={"COLUMN","RUBBLE","CARVED_STONE","BROKEN_WALL","ALTAR","VINE_CLUSTER"}},
   DUNGEON={ground=Color3.fromRGB(53,50,54),secondary=Color3.fromRGB(72,65,62),rock=Color3.fromRGB(88,82,79),water=Color3.fromRGB(48,76,82),landmark="SEALED_DOOR",dress={"CHAIN","BRAZIER_BASE","BROKEN_CRATE","PILLAR","RUBBLE","WALL_RELIEF"}}
+})
 
 local COMPOSITIONS=table.freeze({
   ROLLING_HILLS={biome="FOREST",terrain={"HILL","HILL","HILL","MEADOW"},background="LAYERED_HILLS",poi="HILLTOP"},
@@ -28,7 +29,19 @@ local COMPOSITIONS=table.freeze({
   FARM_HAMLET={biome="VILLAGE",terrain={"FARM_FIELD","VILLAGE_CLUSTER","CROP_TERRACE","PATH"},background="FARM_COUNTRYSIDE",poi="HAMLET_CENTER"},
   CLIFF_SETTLEMENT={biome="COAST",terrain={"CLIFF","TERRACE","VILLAGE_CLUSTER","STAIR_PATH"},background="CLIFF_DEPTH",poi="CLIFF_LOOKOUT"},
   COAST_VILLAGE={biome="COAST",terrain={"BEACH","VILLAGE_CLUSTER","HILL","WATER_EDGE"},background="SEA_HORIZON",poi="HARBOR"},
-  RUINED_HIGHLAND={biome="RUINS",terrain={"PLATEAU","RIDGE","RUIN_CLUSTER","CLIFF"},background="HIGH_MOUNTAINS",poi="RUIN_CROWN"}
+  RUINED_HIGHLAND={biome="RUINS",terrain={"PLATEAU","RIDGE","RUIN_CLUSTER","CLIFF"},background="HIGH_MOUNTAINS",poi="RUIN_CROWN"},
+  MOUNTAIN_FOOT={biome="FOREST",terrain={"RIDGE","HILL","MEADOW","PATH"},background="MOUNTAIN_FOOT",poi="TRAILHEAD"},
+  RIVER_TOWN={biome="VILLAGE",terrain={"RIVER","BANK","VILLAGE_CLUSTER","CROSSROADS"},background="RIVER_TOWN",poi="RIVER_SQUARE"},
+  SNOW_HAMLET={biome="SNOW",terrain={"HILL","VILLAGE_CLUSTER","RIDGE","PATH"},background="SNOW_HAMLET",poi="WARM_LIGHTS"},
+  OASIS_SETTLEMENT={biome="DESERT",terrain={"DUNE_RIDGE","WATER_EDGE","VILLAGE_CLUSTER","PATH"},background="DESERT_OASIS",poi="OASIS_CENTER"},
+  WETLAND_HAMLET={biome="SWAMP",terrain={"WETLAND_ISLAND","WATER_EDGE","VILLAGE_CLUSTER","PATH"},background="WETLAND_DEPTH",poi="BOARDWALK_CENTER"},
+  CAVE_OUTPOST={biome="CAVE",terrain={"LEDGE","CAVE_FLOOR","VILLAGE_CLUSTER","PASS"},background="CAVE_DEPTH",poi="OUTPOST_LIGHT"},
+  CITY_OUTSKIRTS={biome="CITY",terrain={"ROAD_GRID","VILLAGE_CLUSTER","VILLAGE_CLUSTER","OPEN_LOT"},background="CITY_EDGE",poi="DISTRICT_GATE"},
+  RUIN_VALLEY={biome="RUINS",terrain={"VALLEY","RUIN_CLUSTER","RIDGE","PATH"},background="RUIN_VALLEY",poi="FALLEN_MONUMENT"},
+  ISLAND_TERRACES={biome="COAST",terrain={"TERRACE","HILL","BEACH","WATER_EDGE"},background="ISLAND_DEPTH",poi="ISLAND_LOOKOUT"},
+  FOREST_GULLY={biome="FOREST",terrain={"GULLY","HILL","FOREST_EDGE","CREEK"},background="FOREST_GULLY",poi="CREEK_CROSSING"},
+  DESERT_ESCARPMENT={biome="DESERT",terrain={"ESCARPMENT","DUNE_RIDGE","PATH","ROCK_FIELD"},background="DESERT_DEPTH",poi="ESCARPMENT_GATE"},
+  SNOW_BASIN={biome="SNOW",terrain={"BASIN","RIDGE","MEADOW","PATH"},background="SNOW_BASIN",poi="FROST_BASIN"}
 })
 
 local INTERACTION_ROLE_BY_DRESS=table.freeze({
@@ -38,9 +51,9 @@ local INTERACTION_ROLE_BY_DRESS=table.freeze({
   ROOT="CLIMB_OR_INSPECT",REED="GATHER_VISUAL",CRYSTAL="HARVEST_OR_INSPECT",CAVE_POOL="INSPECT_VISUAL",
   DRIFTWOOD="GATHER_OR_CARRY_VISUAL",SHELL_CLUSTER="GATHER_VISUAL",TIDE_POOL="INSPECT_VISUAL",
   CART="PUSH_OR_INSPECT",BARREL="OPEN_OR_INSPECT",LAMP="TOGGLE_VISUAL",BENCH="SIT_VISUAL",SIGNPOST="READ_VISUAL",
-  PLANTER="INSPECT_VISUAL",UTILITY_BOX="INSPECT_OR_TOGGLE",ALTAR="INSPECT_VISUAL",CHAIN="INSPECT_VISUAL"
-})
-
+  PLANTER="INSPECT_VISUAL",UTILITY_BOX="INSPECT_OR_TOGGLE",ALTAR="INSPECT_VISUAL",CHAIN="INSPECT_VISUAL",
+  STREET_LAMP="TOGGLE_OR_INSPECT",SIGNAGE="READ_VISUAL",BOLLARD="INSPECT_VISUAL",RUBBLE="INSPECT_OR_CLIMB",
+  WALL_RELIEF="READ_OR_INSPECT",BRAZIER_BASE="TOGGLE_OR_INSPECT",WASHED_CRATE="OPEN_OR_INSPECT",BROKEN_CRATE="OPEN_OR_INSPECT"
 })
 
 local function tag(instance, biomeId, role)
@@ -182,19 +195,19 @@ function CommonEnvironment.CreateTerrainComposition(compositionId,options)
   for i,kind in ipairs(recipe.terrain) do
     local x=(-18+(i-1)*12)*scale
     local z=((i%2==0) and 7 or -6)*scale
-    if kind=="HILL" or kind=="BASIN" or kind=="PLATEAU" or kind=="MEADOW" or kind=="BEACH" or kind=="FARM_FIELD" or kind=="CROP_TERRACE" or kind=="TERRACE" then
-      local height=kind=="HILL" and 8 or kind=="PLATEAU" and 6 or kind=="TERRACE" and 3.5 or 2.2
+    if kind=="HILL" or kind=="BASIN" or kind=="PLATEAU" or kind=="MEADOW" or kind=="BEACH" or kind=="FARM_FIELD" or kind=="CROP_TERRACE" or kind=="TERRACE" or kind=="DUNE_RIDGE" or kind=="WETLAND_ISLAND" or kind=="OPEN_LOT" or kind=="ROCK_FIELD" or kind=="CAVE_FLOOR" then
+      local height=kind=="HILL" and 8 or kind=="PLATEAU" and 6 or kind=="TERRACE" and 3.5 or kind=="DUNE_RIDGE" and 5 or kind=="WETLAND_ISLAND" and 2.5 or kind=="ROCK_FIELD" and 4 or 2.2
       local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,height*0.30,z),Vector3.new(18,10,15)*scale,profile.ground,Enum.Material.Ground,"BALL")
       mass.Size=Vector3.new(18*scale,height*scale,15*scale)
       table.insert(i<=2 and layers.foreground or layers.midground,mass)
-    elseif kind=="RIDGE" or kind=="CLIFF" then
+    elseif kind=="RIDGE" or kind=="CLIFF" or kind=="ESCARPMENT" or kind=="LEDGE" then
       local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,6*scale,z),Vector3.new(16,12,7)*scale,profile.rock,Enum.Material.Rock,nil,Vector3.new(0,i*13,kind=="RIDGE" and 8 or 2))
       table.insert(layers.midground,mass)
-    elseif kind=="VALLEY" or kind=="PASS" or kind=="PATH" or kind=="STAIR_PATH" or kind=="CROSSROADS" then
-      local width=kind=="CROSSROADS" and 20 or 8
+    elseif kind=="VALLEY" or kind=="PASS" or kind=="PATH" or kind=="STAIR_PATH" or kind=="CROSSROADS" or kind=="ROAD_GRID" or kind=="GULLY" then
+      local width=(kind=="CROSSROADS" or kind=="ROAD_GRID") and 20 or kind=="GULLY" and 12 or 8
       local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,0.12,z),Vector3.new(width,0.35,24)*scale,profile.secondary,Enum.Material.Slate,nil,Vector3.new(0,i*7,0))
       table.insert(layers.foreground,mass)
-    elseif kind=="RIVER" or kind=="WATER_EDGE" then
+    elseif kind=="RIVER" or kind=="WATER_EDGE" or kind=="CREEK" then
       local mass=terrainMass(root,biomeId,kind..i,origin+Vector3.new(x,0.08,z),Vector3.new(9,0.25,28)*scale,profile.water,Enum.Material.Glass,nil,Vector3.new(0,i*8,0))
       mass.Transparency=0.28
       table.insert(layers.foreground,mass)
@@ -211,10 +224,13 @@ function CommonEnvironment.CreateTerrainComposition(compositionId,options)
     end
   end
 
-  for i=1,3 do
-    local back=terrainMass(root,biomeId,"BackgroundLayer"..i,origin+Vector3.new((i-2)*28*scale,10+i*4,-42*scale),Vector3.new(36,12+i*6,10)*scale,profile.rock,Enum.Material.Slate,nil,Vector3.new(0,(i-2)*9,0))
-    back.Transparency=0.18+i*0.08
+  for i=1,5 do
+    local depth=-34-(i*18)
+    local spread=22+i*8
+    local back=terrainMass(root,biomeId,"BackgroundLayer"..i,origin+Vector3.new((i-3)*spread*0.55*scale,8+i*3.5,depth*scale),Vector3.new(28+i*8,10+i*5,8+i*2)*scale,profile.rock,Enum.Material.Slate,nil,Vector3.new(0,(i-3)*7,0))
+    back.Transparency=0.16+i*0.09
     back:SetAttribute("DepthLayer","BACKGROUND_"..i)
+    back:SetAttribute("ParallaxBand",i<=2 and "MID_FAR" or "FAR")
     table.insert(layers.background,back)
   end
 
@@ -238,11 +254,11 @@ function CommonEnvironment.Audit()
   for id in pairs(BIOMES) do table.insert(ids,id) end
   table.sort(ids)
   return table.freeze({
-    version=2,
+    version=3,
     packId="roblox-common-environment-v1",
     biomes=table.freeze(ids),
     biomeCount=#ids,
-    roles=table.freeze({"BIOME_KIT","TERRAIN","GROUND_DETAIL","PATH_ROAD","CLIFF","WATER","LANDMARK","SET_DRESSING","TERRAIN_COMPOSITION","VILLAGE_CLUSTER","RUIN_CLUSTER","DISCOVERY_POI"}),
+    roles=table.freeze({"BIOME_KIT","TERRAIN","GROUND_DETAIL","PATH_ROAD","CLIFF","WATER","LANDMARK","SET_DRESSING","TERRAIN_COMPOSITION","VILLAGE_CLUSTER","RUIN_CLUSTER","DISCOVERY_POI","BACKGROUND_LAYER","INTERACTION_PRESENTATION"}),
     compositionCount=#CommonEnvironment.ListCompositions(),
     gameSpecificVariationFields=table.freeze({"PALETTE","MATERIAL","VEGETATION_MIX","WEATHERING","DENSITY","LANDMARK_DETAIL","LIGHTING"}),
     gameplayAuthority=false,
