@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-creature-parts-v1",
-  "title": "Roblox 회사 공용 생물/몬스터 외형 모듈 8종 v1",
+  "title": "Roblox 회사 공용 생물·몬스터 외형 모듈 24종 v3",
   "platform": "ROBLOX",
   "family": "CREATURE",
   "subfamily": "CREATURE_PARTS_PACK",
@@ -83,6 +83,150 @@
       "subfamily": "TENTACLE_CLUSTER",
       "creatureRole": "APPENDAGE",
       "familyRootId": "CREATURE_TENTACLE"
+    },
+    {
+      "assetId": "ARACHNID_CORE",
+      "name": "거미형 코어",
+      "subfamily": "ARACHNID_CORE",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_ARACHNID",
+      "bodyPlan": "ARACHNID",
+      "ecologyRole": "AMBUSH_PREDATOR"
+    },
+    {
+      "assetId": "SERPENT_BODY",
+      "name": "뱀형 몸체",
+      "subfamily": "SERPENT_BODY",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_SERPENT",
+      "bodyPlan": "SERPENT",
+      "ecologyRole": "AMBUSH_PREDATOR"
+    },
+    {
+      "assetId": "AQUATIC_BODY",
+      "name": "수생형 몸체",
+      "subfamily": "AQUATIC_BODY",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_AQUATIC",
+      "bodyPlan": "AQUATIC",
+      "ecologyRole": "AQUATIC_PREDATOR_OR_PREY"
+    },
+    {
+      "assetId": "FLYING_BODY",
+      "name": "비행형 몸체",
+      "subfamily": "FLYING_BODY",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_FLYING",
+      "bodyPlan": "FLYING",
+      "ecologyRole": "FLYING_PREDATOR_OR_SCAVENGER"
+    },
+    {
+      "assetId": "GOLEM_CORE",
+      "name": "골렘 코어",
+      "subfamily": "GOLEM_CORE",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_GOLEM",
+      "bodyPlan": "GOLEM",
+      "ecologyRole": "CONSTRUCT_GUARDIAN"
+    },
+    {
+      "assetId": "GIANT_TORSO",
+      "name": "거대형 몸통",
+      "subfamily": "GIANT_TORSO",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_GIANT",
+      "bodyPlan": "GIANT",
+      "ecologyRole": "GIANT_OR_BOSS"
+    },
+    {
+      "assetId": "HUMANOID_RAIDER_TORSO",
+      "name": "인간형 약탈자 몸통",
+      "subfamily": "HUMANOID_RAIDER_TORSO",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_HUMANOID",
+      "bodyPlan": "HUMANOID",
+      "ecologyRole": "HUMANOID_FACTION"
+    },
+    {
+      "assetId": "UNDEAD_TORSO",
+      "name": "언데드 몸통",
+      "subfamily": "UNDEAD_TORSO",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_UNDEAD",
+      "bodyPlan": "UNDEAD",
+      "ecologyRole": "UNDEAD"
+    },
+    {
+      "assetId": "PREDATOR_HEAD",
+      "name": "포식자 머리",
+      "subfamily": "PREDATOR_HEAD",
+      "creatureRole": "HEAD_VARIANT",
+      "familyRootId": "CREATURE_HEAD",
+      "bodyPlan": "MULTI",
+      "ecologyRole": "PREDATOR"
+    },
+    {
+      "assetId": "GRAZER_HEAD",
+      "name": "초식동물 머리",
+      "subfamily": "GRAZER_HEAD",
+      "creatureRole": "HEAD_VARIANT",
+      "familyRootId": "CREATURE_HEAD",
+      "bodyPlan": "QUADRUPED",
+      "ecologyRole": "PREY_GRAZER"
+    },
+    {
+      "assetId": "INSECT_HEAD",
+      "name": "곤충 머리",
+      "subfamily": "INSECT_HEAD",
+      "creatureRole": "HEAD_VARIANT",
+      "familyRootId": "CREATURE_INSECT_HEAD",
+      "bodyPlan": "INSECT",
+      "ecologyRole": "INSECT"
+    },
+    {
+      "assetId": "ARACHNID_LEG_CLUSTER",
+      "name": "거미 다리 군락",
+      "subfamily": "ARACHNID_LEG_CLUSTER",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_ARACHNID_LEGS",
+      "bodyPlan": "ARACHNID",
+      "ecologyRole": "ARACHNID"
+    },
+    {
+      "assetId": "FIN_PAIR",
+      "name": "지느러미 한 쌍",
+      "subfamily": "FIN_PAIR",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_FINS",
+      "bodyPlan": "AQUATIC",
+      "ecologyRole": "AQUATIC"
+    },
+    {
+      "assetId": "CLAW_PAIR",
+      "name": "발톱 한 쌍",
+      "subfamily": "CLAW_PAIR",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_CLAWS",
+      "bodyPlan": "MULTI",
+      "ecologyRole": "PREDATOR"
+    },
+    {
+      "assetId": "MANDIBLE_PAIR",
+      "name": "턱 한 쌍",
+      "subfamily": "MANDIBLE_PAIR",
+      "creatureRole": "HEAD_APPENDAGE",
+      "familyRootId": "CREATURE_MANDIBLES",
+      "bodyPlan": "INSECT",
+      "ecologyRole": "INSECT_PREDATOR"
+    },
+    {
+      "assetId": "ELITE_ORNAMENT",
+      "name": "엘리트 장식",
+      "subfamily": "ELITE_ORNAMENT",
+      "creatureRole": "ELITE_ORNAMENT",
+      "familyRootId": "CREATURE_ELITE",
+      "bodyPlan": "MULTI",
+      "ecologyRole": "ELITE_VARIANT"
     }
   ],
   "systemDepthContract": {
@@ -116,34 +260,50 @@
     ],
     "currentDeclaredComponents": [
       "TORSO_BIPED",
+      "BODY_CORE",
       "TORSO_QUADRUPED",
       "THORAX_INSECT",
       "WING_PAIR",
+      "APPENDAGE",
       "TAIL_LONG",
       "HORN_PAIR",
+      "HEAD_APPENDAGE",
       "SHELL_BACK",
-      "TENTACLE_CLUSTER"
+      "BACK_ARMOR_VISUAL",
+      "TENTACLE_CLUSTER",
+      "ARACHNID_CORE",
+      "ARACHNID",
+      "SERPENT_BODY",
+      "SERPENT",
+      "AQUATIC_BODY",
+      "AQUATIC",
+      "FLYING_BODY",
+      "FLYING",
+      "GOLEM_CORE",
+      "GOLEM",
+      "GIANT_TORSO",
+      "GIANT",
+      "HUMANOID_RAIDER_TORSO",
+      "HUMANOID",
+      "UNDEAD_TORSO",
+      "UNDEAD",
+      "PREDATOR_HEAD",
+      "MULTI",
+      "HEAD_VARIANT",
+      "GRAZER_HEAD",
+      "QUADRUPED",
+      "INSECT_HEAD",
+      "INSECT",
+      "ARACHNID_LEG_CLUSTER",
+      "FIN_PAIR",
+      "CLAW_PAIR",
+      "MANDIBLE_PAIR",
+      "ELITE_ORNAMENT"
     ],
     "missingComponentCandidates": [
-      "BIPED",
-      "QUADRUPED",
-      "INSECT",
-      "ARACHNID",
-      "FLYING",
-      "AQUATIC",
-      "SERPENT",
       "AMORPHOUS",
-      "GOLEM",
-      "GIANT",
-      "HEAD_VARIANT",
       "TORSO_VARIANT",
-      "APPENDAGE",
-      "HORN",
-      "TAIL",
-      "WING",
-      "SHELL",
       "SURFACE_VARIANT",
-      "ELITE_ORNAMENT",
       "BOSS_SIGNATURE",
       "RIG_PROFILE",
       "LOCOMOTION_SET",
@@ -153,7 +313,8 @@
     ],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
-    "gameplayAuthority": false
+    "gameplayAuthority": false,
+    "currentAssetCount": 24
   },
   "internalAssetStandard": {
     "version": 1,
@@ -168,5 +329,88 @@
     "queueExcluded": true,
     "schedulerExcluded": true,
     "deploymentExcluded": true
+  },
+  "creatureEcologyContract": {
+    "referenceRule": "SURVIVAL_OPEN_WORLD_ECOLOGY_AND_ENCOUNTER_HIERARCHY_COMMON_PRINCIPLES_ONLY_NO_COPY",
+    "bodyPlans": [
+      "HUMANOID",
+      "BIPED",
+      "QUADRUPED",
+      "INSECT",
+      "ARACHNID",
+      "SERPENT",
+      "FLYING",
+      "AQUATIC",
+      "GOLEM",
+      "GIANT",
+      "UNDEAD",
+      "AMORPHOUS"
+    ],
+    "ecologyRoles": [
+      "PREY_GRAZER",
+      "PREY_SMALL",
+      "PACK_PREDATOR",
+      "AMBUSH_PREDATOR",
+      "APEX_PREDATOR",
+      "SCAVENGER",
+      "TERRITORIAL",
+      "SWARM",
+      "VENOMOUS",
+      "AQUATIC_PREDATOR",
+      "FLYING_PREDATOR",
+      "HUMANOID_FACTION",
+      "UNDEAD",
+      "CONSTRUCT_GUARDIAN"
+    ],
+    "encounterRanks": [
+      "NORMAL",
+      "ALPHA",
+      "ELITE",
+      "CHAMPION",
+      "MINIBOSS",
+      "WORLD_BOSS"
+    ],
+    "habitatCompositions": [
+      "FOREST_PREY_PREDATOR",
+      "DESERT_SCAVENGER_VENOMOUS",
+      "SWAMP_AMBUSH_AQUATIC",
+      "CAVE_SWARM_ARACHNID",
+      "COAST_AQUATIC_FLYING",
+      "SNOW_PACK_GIANT",
+      "VILLAGE_HUMANOID_FACTION",
+      "RUINS_UNDEAD_GOLEM",
+      "DUNGEON_ELITE_CHAMPION"
+    ],
+    "variationAxes": [
+      "BODY_SCALE",
+      "PROPORTION",
+      "HEAD",
+      "HORN",
+      "TAIL",
+      "WING",
+      "SHELL",
+      "MANDIBLE",
+      "CLAW",
+      "SURFACE",
+      "PALETTE",
+      "ELITE_ORNAMENT",
+      "DAMAGE_WEAR"
+    ],
+    "requiredMotionSets": [
+      "IDLE",
+      "LOCOMOTION",
+      "THREAT",
+      "ATTACK_PRIMARY",
+      "ATTACK_SECONDARY",
+      "HIT",
+      "STAGGER",
+      "DEATH"
+    ],
+    "aiAuthority": false,
+    "healthDamageAuthority": false,
+    "spawnAuthority": false,
+    "lootAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
