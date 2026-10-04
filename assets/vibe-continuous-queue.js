@@ -255,6 +255,38 @@ function normalizeBuildUpDirective(input=null){
   try{return freeze(JSON.parse(JSON.stringify(input)));}
   catch{return null;}
 }
+function normalizeAssetRequirements(input=[]){
+  if(!Array.isArray(input))return freeze([]);
+  const rows=[];
+  for(const row of input){
+    if(!row||typeof row!=='object'||Array.isArray(row))continue;
+    const family=clean(row.family).toUpperCase();
+    if(!family)continue;
+    rows.push(freeze({
+      family,
+      subfamily:clean(row.subfamily).toUpperCase(),
+      required:row.required!==false,
+      priority:clean(row.priority).toUpperCase()||null,
+      flowRoles:freezeList(row.flowRoles||[]),
+      systemRoles:freezeList(row.systemRoles||[]),
+      phases:freezeList(row.phases||[]),
+      reason:clean(row.reason).toUpperCase()||null,
+      resolution:clean(row.resolution)||'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+      libraryEligibility:clean(row.libraryEligibility)||'CROSS_GENRE_COMPATIBLE_ASSETS',
+      genreRestriction:row.genreRestriction===true,
+      crossGenreReuseAllowed:row.crossGenreReuseAllowed!==false,
+      genreUse:clean(row.genreUse)||'PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE',
+      allowedReuseModes:freezeList(row.allowedReuseModes||[]),
+      assetIdPinned:row.assetIdPinned===true,
+      gameplayAuthority:row.gameplayAuthority===true,
+      balanceAuthority:row.balanceAuthority===true,
+      progressionAuthority:row.progressionAuthority===true,
+      saveAuthority:row.saveAuthority===true,
+      networkingAuthority:row.networkingAuthority===true
+    }));
+  }
+  return freeze(rows);
+}
 function normalizeGraphicsReplacementContract(input=null){
   if(!input||typeof input!=='object'||Array.isArray(input))return null;
   try{return freeze(JSON.parse(JSON.stringify(input)));}
@@ -338,6 +370,7 @@ function normalizeTask(input = {}, index = 0) {
     neuronResults: normalizeNeuronResults(input.neuronResults),
     runtimeEvidenceCandidate,
     buildUpDirective: normalizeBuildUpDirective(input.buildUpDirective),
+    assetRequirements: normalizeAssetRequirements(input.assetRequirements),
     buildUpDirectiveId: clean(input.buildUpDirectiveId||input.buildUpDirective?.directiveId) || null,
     buildUpGeneration: clampInt(input.buildUpGeneration??input.buildUpDirective?.generation??0,0,1000000),
     buildUpGoal: clean(input.buildUpGoal||input.buildUpDirective?.thisLoopPrimaryGoal) || null,
