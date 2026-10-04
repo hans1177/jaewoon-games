@@ -261,6 +261,16 @@ test('Roblox bootstrap reads the company material library but leaves verificatio
   assert.match(bootstrap,/studioAssetPromotionEligible:false/);
 });
 
+test('Roblox source binding exposes every selected internal asset family to existing game code',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/local studioAssetFamilies = studioAssetConfig\.Families or \{\}/);
+  assert.match(bootstrap,/local function studioAssetFamily\(family\)/);
+  assert.match(bootstrap,/local function hasStudioAssetAtom\(familyOrAtom, atom\)/);
+  assert.match(bootstrap,/Config\.StudioAssets and Config\.StudioAssets\.Families or \{\}/);
+  assert.match(bootstrap,/hasStudioAtom\("UI", "FRAME_PANEL"\)/);
+  assert.doesNotMatch(bootstrap,/writeFileSync\([^\n]*company-asset-library\.json/);
+});
+
 test('Roblox source workflow persists Studio selection handoff for downstream runtime verification',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/studioAssetBindingApplied:bootstrapEvidence\.studioAssetBindingApplied===true/);
