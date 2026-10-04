@@ -3237,7 +3237,13 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
     escalationStage:'FOUNDATION_COMPLETENESS',
     previousVersionDelta:{previousGoal:'이전 전투 피드백 개선'},
     nextActionDecision:{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'same system needs another verified effect pass'},
-    allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}]
+    allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}],
+    assetRequirementsVersion:1,
+    assetRequirements:[
+      {family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'},
+      {family:'VFX',subfamily:'IMPACT',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'}
+    ],
+    assetRequirementHandoff:'EXISTING_BUILD_UP_DIRECTIVE'
   };
   const normalized=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'demo-build-up',gameId:'demo',target:'roblox',department:'development',type:'implementation',
@@ -3252,6 +3258,9 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
   const task=normalized.tasks[0];
   assert.deepEqual(task.buildUpDirective,directive);
   assert.equal(task.buildUpDirectiveId,directive.directiveId);
+  assert.equal(task.buildUpDirective.assetRequirementHandoff,'EXISTING_BUILD_UP_DIRECTIVE');
+  assert.equal(task.buildUpDirective.assetRequirements.length,2);
+  assert.equal(task.buildUpDirective.assetRequirements[0].family,'UI');
   assert.equal(task.buildUpGeneration,1);
   assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
   assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
