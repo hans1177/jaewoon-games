@@ -1326,9 +1326,7 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.markerOnlyForbidden,true);
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.applicationMode,'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING');
   assert.ok(third.evidence.includes('studio-quality-asset-source-parity:REQUIRED'));
-  assert.ok(third.evidence.includes('studio-quality-library-use:MANDATORY'));
-  assert.ok(third.evidence.includes('studio-quality-primitive-only:FORBIDDEN'));
-  assert.ok(third.evidence.includes('studio-quality-marker-only:FORBIDDEN'));
+  assert.ok(third.evidence.includes('studio-quality-library-floor-projection:v1'));
   assert.match(third.goal,/소스 구성 성장:/);
   assert.match(third.goal,/현재 게임 소스에 동일 활용이 이미 실제 구현·검증되어 있으면 해당 아이디어는 PASS/);
   assert.match(third.goal,/미구현 READY 활용만 선택한다/);
@@ -1526,7 +1524,7 @@ test('full planner replaces low-value micro work with queued studio packages and
     )};
   }
   if(!second)console.log('DEBUG_STUDIO_REPEAT_QUEUE',JSON.stringify(working.tasks.filter(row=>row.gameId===gameId).map(row=>({id:row.id,status:row.status,blocker:row.blocker,focus:row.studioQualityEvolution?.focusPillar,cycle:row.studioQualityEvolution?.cycle,phase:row.studioQualityEvolution?.phase,buildUpNextAction:row.buildUpNextAction,evidence:(row.evidence||[]).filter(value=>/studio-quality|build-up-next|asset-application|library-use|primitive-only|marker-only/.test(value))})),null,2));
-  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle; queue='+JSON.stringify(working.tasks.filter(row=>row.gameId===gameId).map(row=>({id:row.id,status:row.status,blocker:row.blocker,focus:row.studioQualityEvolution?.focusPillar,cycle:row.studioQualityEvolution?.cycle,phase:row.studioQualityEvolution?.phase,evidence:(row.evidence||[]).filter(value=>String(value).includes('studio-quality')||String(value).includes('build-up-next'))}))));
+  assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
   assert.notEqual(second.id,first.id);
   assert.equal(second.taskWorkUnits,7);
   assert.equal(second.studioQualityEvolution?.cycle,2);
