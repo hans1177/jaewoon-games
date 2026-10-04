@@ -1989,3 +1989,102 @@ test('generic world prop requirement can choose company-common base',()=>{
   });
   assert.equal(loadout.selections[0].assetId,'common-signpost');
 });
+
+
+test('company-common foliage pack provides eight reusable environment assets',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-foliage-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonFoliage.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  const ids=['GRASS_TUFT','BUSH_ROUND','FERN_CLUSTER','WILDFLOWER_PATCH','TREE_STUMP','FALLEN_LOG','PINE_TREE','DEAD_TREE'];
+  assert.equal(catalog.items.length,8);
+  for(const id of ids){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');
+  }
+
+  assert.ok(source.includes('function RobloxCommonFoliage.Create(id, options)'));
+  assert.ok(source.includes('function RobloxCommonFoliage.CreateViewport(id, options)'));
+  assert.ok(source.includes('local styledRow = rowWithPalette(row, options.palette)'));
+  assert.ok(source.includes('CompanyCommonBase", true'));
+  assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
+  assert.equal(catalog.family,'ENVIRONMENT');
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.runtimeQuality.claimedScore,null);
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const forbidden of [/\bDamage\s*=/,/\bDropRate\s*=/,/\bHarvestAmount\s*=/,/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+test('company-common foliage registry preserves harvesting save collision and network authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-foliage-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.family,'ENVIRONMENT');
+  assert.equal(pack.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(pack.gameplayAuthority,false);
+
+  const expected=[
+    ['GRASS_TUFT','GRASS','GROUND_COVER'],
+    ['BUSH_ROUND','BUSH','MIDGROUND_FOLIAGE'],
+    ['FERN_CLUSTER','FERN','UNDERSTORY'],
+    ['WILDFLOWER_PATCH','FLOWER','GROUND_ACCENT'],
+    ['TREE_STUMP','STUMP','NATURAL_PROP'],
+    ['FALLEN_LOG','FALLEN_LOG','NATURAL_PROP'],
+    ['PINE_TREE','PINE_TREE','CANOPY_TREE'],
+    ['DEAD_TREE','DEAD_TREE','SILHOUETTE_TREE']
+  ];
+  for(const [assetId,subfamily,environmentRole] of expected){
+    const id='roblox-common-foliage-'+assetId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,assetId);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.family,'ENVIRONMENT');
+    assert.equal(row.subfamily,subfamily);
+    assert.equal(row.environmentRole,environmentRole);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
+    assert.equal(row.bindingHint.preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority,true);
+    assert.equal(row.productionVerified,false);
+  }
+});
+
+test('generic foliage requirement can choose company-common base',()=>{
+  const registryAsset={
+    id:'common-foliage-grass',
+    family:'ENVIRONMENT',
+    subfamily:'GRASS',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    companyCommonBase:true,
+    reuseScope:'COMPANY_ROBLOX_COMMON_BASE',
+    tags:['GROUND_COVER']
+  };
+  const gameOnly={
+    id:'game-only-grass',
+    family:'ENVIRONMENT',
+    subfamily:'GRASS',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    tags:['GROUND_COVER']
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'ENVIRONMENT',subfamily:'GRASS',required:true}],
+    assets:[gameOnly,registryAsset],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-foliage-grass');
+});
