@@ -918,8 +918,8 @@
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
       "recoverToExternalProviderBoundaryAfterPressure": true,
-      "workflowLevelGameWideSerializationForbidden": false,
-      "workflowLevelConcurrencyGroupByGameIdForbidden": false,
+      "workflowLevelGameWideSerializationForbidden": true,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
       "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
       "crossGameWorkflowSerializationForbidden": true,
       "exactGameDuplicateWorkflowSerializationAllowed": true,
@@ -3553,7 +3553,7 @@
       }
     },
     "sharedWorkerContext": {
-      "version": 5,
+      "version": 6,
       "authority": "OWNER_DIRECTIVE_2026-09-20",
       "requiredForAllWorkers": true,
       "appliesTo": [
@@ -3661,7 +3661,37 @@
       },
       "singlePreWorkValidationPerExactWorkUnit": true,
       "repeatedFullValidationWithinExactWorkUnitForbidden": true,
-      "completionUsesInitialValidatedContextEvidence": true
+      "completionUsesInitialValidatedContextEvidence": true,
+      "newSessionPreflight": {
+        "version": 1,
+        "required": true,
+        "appliesTo": [
+          "CHATGPT_NEW_CHAT",
+          "ALL_AI_WORKERS",
+          "ALL_AUTOMATION_WORKERS",
+          "ALL_PLANNERS",
+          "ALL_QA_AND_REVIEW_WORKERS",
+          "ALL_RELEASE_AND_RUNTIME_WORKERS"
+        ],
+        "sourceRef": "LATEST_MAIN_AT_WORK_START",
+        "latestMainMustBeResolvedBeforeDocumentRead": true,
+        "suppliedOrRememberedMainShaIsHintOnly": true,
+        "canonicalReadOrder": [
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/company-log-map.json",
+          "company-learning/company-architecture-map.json",
+          "company-learning/security-immune-system.json"
+        ],
+        "documentHashesMustBeCaptured": true,
+        "finalDevelopmentLockStatusMustBeRead": true,
+        "noSourceMutationBeforeSyncPass": true,
+        "noDeploymentBeforeSyncPass": true,
+        "noRuntimeStateMutationBeforeSyncPass": true,
+        "priorConversationOrMemoryCannotOverrideCentralPolicy": true,
+        "staleOrMissingContextAction": "FAIL_CLOSED_NO_MUTATION",
+        "validator": "tools/company-shared-context.mjs",
+        "resyncAfterCentralDocumentChange": true
+      }
     },
     "primaryAiOrchestration": {
       "version": 3,
@@ -8065,6 +8095,86 @@
       "codingBuildRuntimeQaPreserved": true,
       "canonicalPipelinePreserved": true,
       "wrapperShadowBypassForbidden": true
+    },
+    "chatWorkerCentralPreloadAndFinalLockV2_20261004": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-04",
+      "status": "CENTRALIZED_AND_FAIL_CLOSED",
+      "objective": "EVERY_NEW_CHAT_AND_REGISTERED_WORKER_LOADS_LATEST_MAIN_CANONICAL_FOUR_DOCUMENT_CONTEXT_BEFORE_MUTATION_AND_FINAL_CHAIN_LOCK_CANNOT_BE_SELF_UNLOCKED_BY_ASSISTANT_OR_AUTOMATION",
+      "canonicalReadOrder": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
+      ],
+      "latestMainRequired": true,
+      "mutationBeforeSharedContextPassForbidden": true,
+      "priorConversationOrMemoryCannotOverrideCentralPolicy": true,
+      "finalChainLockVersion": 2,
+      "assistantOrAutomationUnlockForbidden": true,
+      "prMetadataUnlockForbidden": true,
+      "ownerManualRepositoryAdminActionRequired": true,
+      "shadowPipelineCreated": false,
+      "workflowTopologyChanged": false
+    },
+    "flowSequenceOnlyLockAndParallelBottleneckPolicy20261004": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-04",
+      "status": "CENTRALIZED",
+      "lockedScope": "FLOW_SEQUENCE_ONLY",
+      "flowSequence": [
+        "GAME_SOURCE_MUTATION",
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "RELEASE_CLASSIFICATION",
+        "PUBLISH_ONLY_IF_RELEASED",
+        "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
+      ],
+      "foundationSequence": [
+        "F0_SOURCE_PREFLIGHT_PASS",
+        "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+        "F1_SERVER_BOOT_PASS",
+        "F2_WORLD_FOUNDATION_PASS",
+        "F3_CHARACTER_FOUNDATION_PASS",
+        "F4_PHYSICS_AND_MOVEMENT_PASS",
+        "IMPACT_REQUIRED_F5_TO_F8_PASS",
+        "F9_RELEASE_REGRESSION_PASS",
+        "INTERNAL_PLATFORM_RELEASE"
+      ],
+      "implementationOptimizationAllowed": true,
+      "bottleneckRepairAllowed": true,
+      "globalSerializationForbidden": true,
+      "perGameWholeChainSerializationForbidden": true,
+      "sameGameNonOverlappingPackagesParallel": true,
+      "serializationAllowedOnlyFor": [
+        "EXACT_DUPLICATE_WORK",
+        "RESPONSIBLE_FILE_CONFLICT",
+        "ATOMIC_SHARED_STATE_WRITE"
+      ],
+      "qualitySecurityRuntimeEvidenceGatesUnchanged": true
+    },
+    "flowSequenceLockParallelExecution20261004": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-04",
+      "status": "LOCK_SEQUENCE_ONLY_PARALLEL_EXECUTION_REQUIRED",
+      "canonicalSequenceSource": "developmentLifecycleMachine.nativeGameFoundationValidationStack.releaseGate.canonicalSequence",
+      "evolutionLoopSource": "developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence",
+      "sequenceImmutableToAssistantAutomation": true,
+      "globalOrGameWideSerializationForbidden": true,
+      "distinctGamesParallel": true,
+      "independentSameGameWorkParallelWhenSafe": true,
+      "atomicSharedStateWriteMaySerializeBriefly": true,
+      "exactResponsibleFileConflictMaySerialize": true,
+      "exactDuplicateExecutionSuppressionAllowed": true,
+      "nextCycleMayNotBeBlockedByUnrelatedLongRunningRuntimeQaOrPublicationRepair": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -24139,7 +24249,7 @@
     }
   },
   "centralDocumentation": {
-    "version": 3,
+    "version": 4,
     "status": "CANONICAL_MACHINE_DOCUMENTATION_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-22",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -24184,7 +24294,14 @@
       "securityContractChangeRequiresSecurityPolicyUpdate": true,
       "policyChangeRequiresCurrentMainRebind": true,
       "legacyHumanPolicyMirrorForbidden": true,
-      "completedOneShotMigrationArtifactsMustBeRemoved": true
+      "completedOneShotMigrationArtifactsMustBeRemoved": true,
+      "newChatAndWorkerSessionMustLoadLatestMainCanonicalSet": true,
+      "canonicalReadOrderMandatory": true,
+      "rememberedOrSuppliedMainShaCannotReplaceLatestMainResolution": true,
+      "priorConversationOrMemoryCannotOverrideCentralPolicy": true,
+      "mutationDeploymentOrRuntimeStateChangeForbiddenBeforeSharedContextPass": true,
+      "finalDevelopmentLockStatusMustBeReadBeforeWork": true,
+      "lockedChainCannotBeUnlockedByAssistantAutomationOrPrMetadata": true
     },
     "synchronization": {
       "beforeWorkLoadAndValidateCanonicalSet": true,
@@ -24199,7 +24316,12 @@
       "qa": "qa/company-shared-context.test.mjs",
       "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
       "singleCanonicalSetLoadAndValidationPerExactWorkUnit": true,
-      "reuseValidatedDocumentHashesUntilRelevantPolicyOrSourceChange": true
+      "reuseValidatedDocumentHashesUntilRelevantPolicyOrSourceChange": true,
+      "newChatAndWorkerPreflightRequired": true,
+      "latestMainMustBeResolvedAtWorkStart": true,
+      "canonicalReadOrderMustMatchSharedWorkerContext": true,
+      "lockStateMustBeIncludedInPreflight": true,
+      "priorConversationOrMemoryIsNonAuthoritative": true
     },
     "stateDocumentation": {
       "policyStoresRulesNotTransientRuntimeState": true,
@@ -26084,14 +26206,90 @@
     ]
   },
   "finalDevelopmentLock": {
-    "version": 1,
+    "version": 2,
     "status": "LOCKED",
-    "authority": "OWNER_DIRECTIVE_2026-10-03",
-    "chainLock": {
-      "status": "LOCKED"
-    },
+    "authority": "OWNER_DIRECTIVE_2026-10-04",
     "guard": "tools/main-write-guard.mjs",
     "dryRun": "tools/company-build-up-directive.mjs",
-    "robloxWorldEvidence": "tools/company-development-roblox-runtime-foundation.mjs"
+    "robloxWorldEvidence": "tools/company-development-roblox-runtime-foundation.mjs",
+    "ownerApprovalBoundary": {
+      "unlockAuthority": "OWNER_MANUAL_REPOSITORY_ADMIN_OUT_OF_BAND_ONLY",
+      "explicitOwnerApprovalRequired": true,
+      "chatApprovalAloneDoesNotAlterMachineLockState": true,
+      "assistantMayNotSynthesizeOrApplyUnlockMetadata": true,
+      "automationMayNotMutateSequenceLock": true,
+      "manualRepositoryAdminActionRequiredToChangeLockedSequence": true
+    },
+    "migration": {
+      "fromVersion": 1,
+      "toVersion": 2,
+      "reason": "PREVENT_ASSISTANT_OR_AUTOMATION_SELF_UNLOCK_VIA_PR_METADATA",
+      "oneTimeOwnerApprovedMigration": true,
+      "postMigrationAutomatedUnlockPathForbidden": true
+    },
+    "lockScope": "FLOW_SEQUENCE_CONTRACT_ONLY",
+    "scope": "CANONICAL_FLOW_SEQUENCE_AND_GUARD_ONLY",
+    "sequenceLock": {
+      "status": "LOCKED",
+      "mode": "SEQUENCE_SEMANTICS_ONLY",
+      "lockedPolicyPaths": [
+        "developmentLifecycleMachine.nativeGameFoundationValidationStack.releaseGate.canonicalSequence",
+        "developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence"
+      ],
+      "candidateOrderMustRemain": [
+        "F0_SOURCE_PREFLIGHT_PASS",
+        "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+        "F1_SERVER_BOOT_PASS",
+        "F2_WORLD_FOUNDATION_PASS",
+        "F3_CHARACTER_FOUNDATION_PASS",
+        "F4_PHYSICS_AND_MOVEMENT_PASS",
+        "IMPACT_REQUIRED_F5_TO_F8_PASS",
+        "F9_RELEASE_REGRESSION_PASS",
+        "INTERNAL_PLATFORM_RELEASE"
+      ],
+      "evolutionLoopOrderMustRemain": [
+        "GAME_SOURCE_MUTATION",
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "RELEASE_CLASSIFICATION",
+        "PUBLISH_ONLY_IF_RELEASED",
+        "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
+      ],
+      "sequenceChangeRequiresOwnerManualRepositoryAdminOutOfBandAction": true,
+      "assistantOrAutomationSequenceUnlockForbidden": true,
+      "prTitleOrBodySequenceUnlockForbidden": true,
+      "chatApprovalTextIsNotMachineUnlock": true,
+      "repositoryContentCannotSelfAuthorizeSequenceUnlock": true
+    },
+    "parallelismBoundary": {
+      "sequenceLockDoesNotAuthorizeSerialization": true,
+      "distinctGamesMustRemainParallel": true,
+      "independentWorkWithinSameGameMayRunParallelWhenDependenciesAndResponsibleFilesDoNotConflict": true,
+      "globalChainSerializationForbidden": true,
+      "gameWideWorkflowSerializationForbidden": true,
+      "stageWideRepositorySerializationForbidden": true,
+      "allowedSerializationOnly": [
+        "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION",
+        "EXACT_RESPONSIBLE_FILE_CONFLICT",
+        "EXACT_DUPLICATE_EXECUTION_SUPPRESSION"
+      ],
+      "longRunningRuntimeQaOrPublicationRepairMayNotBlockNextIndependentDevelopmentCycle": true
+    },
+    "guardImmutability": {
+      "paths": [
+        "tools/main-write-guard.mjs",
+        ".github/workflows/main-write-guard.yml"
+      ],
+      "automatedModificationAfterV2Forbidden": true,
+      "ownerManualRepositoryAdminOutOfBandActionRequired": true
+    }
   }
 }

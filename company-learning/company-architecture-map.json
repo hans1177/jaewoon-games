@@ -459,7 +459,7 @@
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerSynchronization": {
-    "version": 4,
+    "version": 5,
     "documentIsCode": true,
     "roadmapFirst": true,
     "validator": "tools/company-shared-context.mjs",
@@ -498,7 +498,20 @@
       "bootstrapDoesNotExpandDevelopmentAuthority": true
     },
     "singlePreWorkValidationPerExactWorkUnit": true,
-    "reuseValidatedContextWithinExactWorkUnit": true
+    "reuseValidatedContextWithinExactWorkUnit": true,
+    "newChatAndWorkerPreflightRequired": true,
+    "appliesToChatGPTNewSessions": true,
+    "latestMainResolveBeforeCanonicalRead": true,
+    "canonicalReadOrder": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "finalDevelopmentLockStatusMustBeLoaded": true,
+    "mutationDeploymentStateChangeForbiddenUntilSyncPass": true,
+    "priorConversationOrMemoryCannotOverrideCentralPolicy": true,
+    "staleContextFailsClosedBeforeMutation": true
   },
   "longHorizonTopology": {
     "version": 2,
@@ -6696,5 +6709,31 @@
     "topology": "EXISTING_CANONICAL_PIPELINE_ONLY",
     "gameSourceLanesRemainParallel": true,
     "newPipelineWorkerQueueForbidden": true
+  },
+  "finalChainLockTopology": {
+    "version": 2,
+    "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+    "status": "LOCKED",
+    "lockScope": "CANONICAL_FLOW_SEQUENCE_AND_GUARD_ONLY",
+    "sequenceSemanticLock": true,
+    "wholePipelineFileLock": false,
+    "automatedSequenceUnlockPath": false,
+    "prMetadataSequenceUnlockPath": false,
+    "chatTextSequenceUnlockPath": false,
+    "ownerManualRepositoryAdminOutOfBandOnly": true,
+    "parallelism": {
+      "distinctGamesParallelRequired": true,
+      "independentSameGameWorkParallelWhenSafe": true,
+      "globalChainSerializationForbidden": true,
+      "gameWideWorkflowSerializationForbidden": true,
+      "stageWideRepositorySerializationForbidden": true,
+      "allowedSerializationOnly": [
+        "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION",
+        "EXACT_RESPONSIBLE_FILE_CONFLICT",
+        "EXACT_DUPLICATE_EXECUTION_SUPPRESSION"
+      ]
+    },
+    "ordinaryGameSourceDevelopmentRemainsOpen": true,
+    "bottleneckRepairWithinLockedOrderAllowed": true
   }
 }

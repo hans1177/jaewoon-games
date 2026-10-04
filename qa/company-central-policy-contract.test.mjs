@@ -982,8 +982,8 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(p.qaAndReview.reviewMayNotBecomeRoutineSerializationPoint,true);
   assert.equal(p.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
   const robloxParallel=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
-  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,false);
-  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,false);
+  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,true);
+  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,true);
   assert.equal(robloxParallel.sameGameConflictSerializationScope,'EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
   assert.equal(robloxParallel.crossGameWorkflowSerializationForbidden,true);
   assert.equal(robloxParallel.exactGameDuplicateWorkflowSerializationAllowed,true);

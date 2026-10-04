@@ -220,7 +220,16 @@ export function compileCentralArchitectureProjection(policy={}){
       requiredForAllWorkers:shared?.requiredForAllWorkers===true,
       syncMode:clean(shared?.syncMode)||null,
       staleContextMayNotStartWork:shared?.staleContextMayNotStartWork===true,
-      staleContextMayNotCompleteWork:shared?.staleContextMayNotCompleteWork===true
+      staleContextMayNotCompleteWork:shared?.staleContextMayNotCompleteWork===true,
+      newSessionPreflightRequired:shared?.newSessionPreflight?.required===true,
+      newSessionSourceRef:clean(shared?.newSessionPreflight?.sourceRef)||null,
+      latestMainMustBeResolvedBeforeDocumentRead:shared?.newSessionPreflight?.latestMainMustBeResolvedBeforeDocumentRead===true,
+      canonicalReadOrder:Array.isArray(shared?.newSessionPreflight?.canonicalReadOrder)?shared.newSessionPreflight.canonicalReadOrder.map(clean).filter(Boolean):[],
+      finalDevelopmentLockStatusMustBeRead:shared?.newSessionPreflight?.finalDevelopmentLockStatusMustBeRead===true,
+      noMutationBeforeSyncPass:shared?.newSessionPreflight?.noSourceMutationBeforeSyncPass===true
+        &&shared?.newSessionPreflight?.noDeploymentBeforeSyncPass===true
+        &&shared?.newSessionPreflight?.noRuntimeStateMutationBeforeSyncPass===true,
+      priorConversationOrMemoryCannotOverrideCentralPolicy:shared?.newSessionPreflight?.priorConversationOrMemoryCannotOverrideCentralPolicy===true
     },
     implementationOwnership:{
       gameImplementationOwner:primaryAi?.gameImplementationOwner||null,
@@ -288,6 +297,22 @@ export function validateSharedWorkerContext({
   if(clean(contract?.syncMode)!=='ROADMAP_FIRST_FAIL_CLOSED')fail('ROADMAP_SYNC_MODE');
   if(contract?.completionRequiresSharedContextSync!==true||contract?.completionUsesInitialValidatedContextEvidence!==true)fail('COMPLETION_SYNC_REQUIRED');
   if(contract?.mismatchAction!=='BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE')fail('MISMATCH_ACTION');
+  const newSession=contract?.newSessionPreflight||{};
+  const canonicalReadOrder=[policyFile,logMapFile,architectureFile,securityPolicyFile];
+  if(Number(contract?.version||0)>=6){
+    if(newSession?.required!==true)fail('NEW_SESSION_PREFLIGHT_REQUIRED');
+    const applies=new Set((Array.isArray(newSession?.appliesTo)?newSession.appliesTo:[]).map(clean));
+    for(const required of ['CHATGPT_NEW_CHAT','ALL_AI_WORKERS','ALL_AUTOMATION_WORKERS'])if(!applies.has(required))fail('NEW_SESSION_PREFLIGHT_SCOPE:'+required);
+    if(clean(newSession?.sourceRef)!=='LATEST_MAIN_AT_WORK_START')fail('NEW_SESSION_LATEST_MAIN_SOURCE');
+    if(newSession?.latestMainMustBeResolvedBeforeDocumentRead!==true||newSession?.suppliedOrRememberedMainShaIsHintOnly!==true)fail('NEW_SESSION_LATEST_MAIN_REQUIRED');
+    if(!sameList(newSession?.canonicalReadOrder,canonicalReadOrder))fail('NEW_SESSION_CANONICAL_READ_ORDER');
+    if(newSession?.documentHashesMustBeCaptured!==true||newSession?.finalDevelopmentLockStatusMustBeRead!==true)fail('NEW_SESSION_CONTEXT_EVIDENCE_REQUIRED');
+    if(newSession?.noSourceMutationBeforeSyncPass!==true||newSession?.noDeploymentBeforeSyncPass!==true||newSession?.noRuntimeStateMutationBeforeSyncPass!==true)fail('NEW_SESSION_NO_MUTATION_BEFORE_SYNC');
+    if(newSession?.priorConversationOrMemoryCannotOverrideCentralPolicy!==true)fail('NEW_SESSION_MEMORY_OVERRIDE_FORBIDDEN');
+    if(clean(newSession?.staleOrMissingContextAction)!=='FAIL_CLOSED_NO_MUTATION')fail('NEW_SESSION_FAIL_CLOSED');
+    if(clean(newSession?.validator)!=='tools/company-shared-context.mjs')fail('NEW_SESSION_VALIDATOR_BINDING');
+    if(newSession?.resyncAfterCentralDocumentChange!==true)fail('NEW_SESSION_CENTRAL_DOC_RESYNC');
+  }
 
   const launchers=Array.isArray(contract?.workerLauncherWorkflows)?contract.workerLauncherWorkflows.map(clean).filter(Boolean):[];
   if(!launchers.length)fail('WORKER_LAUNCHERS_REQUIRED');
@@ -315,6 +340,20 @@ export function validateSharedWorkerContext({
   if(logMap?.workerContextLogContract?.roadmapPolicyHashRequired!==true)fail('LOG_ROADMAP_HASH_REQUIRED');
   if(logMap?.workerContextLogContract?.securityPolicyHashRequired!==true)fail('LOG_SECURITY_HASH_REQUIRED');
   if(logMap?.workerContextLogContract?.launcherValidationRequired!==true)fail('LOG_LAUNCHER_VALIDATION_REQUIRED');
+  if(Number(contract?.version||0)>=6){
+    if(logMap?.workerContextLogContract?.newChatAndWorkerPreflightRequired!==true||logMap?.workerContextLogContract?.latestMainShaRequired!==true)fail('LOG_NEW_SESSION_PREFLIGHT_REQUIRED');
+    if(logMap?.workerContextLogContract?.canonicalReadOrderRequired!==true||logMap?.workerContextLogContract?.finalDevelopmentLockStatusRequired!==true)fail('LOG_NEW_SESSION_CONTEXT_EVIDENCE_REQUIRED');
+    if(logMap?.workerContextLogContract?.preMutationSharedContextPassRequired!==true||logMap?.workerContextLogContract?.staleContextMutationForbidden!==true)fail('LOG_PREMUTATION_SYNC_REQUIRED');
+    if(logMap?.workerContextLogContract?.priorConversationOrMemoryOverrideForbidden!==true)fail('LOG_MEMORY_OVERRIDE_FORBIDDEN');
+    if(architecture?.workerSynchronization?.newChatAndWorkerPreflightRequired!==true||architecture?.workerSynchronization?.appliesToChatGPTNewSessions!==true)fail('ARCHITECTURE_NEW_SESSION_PREFLIGHT_REQUIRED');
+    if(architecture?.workerSynchronization?.latestMainResolveBeforeCanonicalRead!==true||architecture?.workerSynchronization?.finalDevelopmentLockStatusMustBeLoaded!==true)fail('ARCHITECTURE_NEW_SESSION_LATEST_MAIN_REQUIRED');
+    if(!sameList(architecture?.workerSynchronization?.canonicalReadOrder,canonicalReadOrder))fail('ARCHITECTURE_NEW_SESSION_READ_ORDER');
+    if(architecture?.workerSynchronization?.mutationDeploymentStateChangeForbiddenUntilSyncPass!==true||architecture?.workerSynchronization?.staleContextFailsClosedBeforeMutation!==true)fail('ARCHITECTURE_PREMUTATION_SYNC_REQUIRED');
+    if(architecture?.workerSynchronization?.priorConversationOrMemoryCannotOverrideCentralPolicy!==true)fail('ARCHITECTURE_MEMORY_OVERRIDE_FORBIDDEN');
+    if(securityPolicy?.workerSynchronization?.newChatAndWorkerPreflightRequired!==true||securityPolicy?.workerSynchronization?.latestMainCanonicalSetRequired!==true)fail('SECURITY_NEW_SESSION_PREFLIGHT_REQUIRED');
+    if(securityPolicy?.workerSynchronization?.finalDevelopmentLockStatusMustBeLoaded!==true||securityPolicy?.workerSynchronization?.mutationBeforeSharedContextPassForbidden!==true)fail('SECURITY_PREMUTATION_SYNC_REQUIRED');
+    if(securityPolicy?.workerSynchronization?.priorConversationOrMemoryCannotOverrideCentralPolicy!==true)fail('SECURITY_MEMORY_OVERRIDE_FORBIDDEN');
+  }
   if(clean(securityPolicy?.sourceOfTruth)!==policyFile)fail('SECURITY_SOURCE_OF_TRUTH');
   if(securityPolicy?.centralRoadmapBinding?.documentIsCode!==true)fail('SECURITY_DOCUMENT_CODE');
   if(clean(securityPolicy?.centralRoadmapBinding?.sharedContextValidator)!=='tools/company-shared-context.mjs')fail('SECURITY_VALIDATOR_BINDING');

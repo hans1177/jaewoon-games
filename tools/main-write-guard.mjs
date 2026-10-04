@@ -7,22 +7,13 @@ import { pathToFileURL } from 'node:url';
 const clean=v=>String(v??'').trim();
 const normalizePath=v=>clean(v).replaceAll('\\','/').replace(/^\.\//,'');
 export const FINAL_CHAIN_LOCK_PATHS=Object.freeze([
-  "company-learning/platform-release-roadmap.json",
-  "company-learning/company-log-map.json",
-  "company-learning/company-architecture-map.json",
-  "company-learning/security-immune-system.json",
-  "company-learning/vibe3-engine-contract.json",
-  "company-learning/vibe3-task-playbooks.json",
   "tools/main-write-guard.mjs",
-  ".github/workflows/main-write-guard.yml",
-  ".github/workflows/company-central-policy-contract-qa.yml",
-  "tools/company-build-up-directive.mjs",
-  "tools/vibe2-source-worker.mjs",
-  "tools/company-development-roblox-bootstrap.mjs",
-  "tools/company-development-roblox-source-reconcile.mjs",
-  "tools/company-development-roblox-runtime-foundation.mjs",
-  "tools/vibe3-roblox-platform.mjs",
-  ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+  ".github/workflows/main-write-guard.yml"
+]);
+
+export const LOCKED_FLOW_SEQUENCE_KEYS=Object.freeze([
+  "developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence",
+  "developmentLifecycleMachine.nativeGameFoundationValidationStack.releaseGate.canonicalSequence"
 ]);
 
 const DIRECT_MAIN_PATTERNS=[
@@ -59,21 +50,83 @@ export function scanChangedWorkflowFiles(files=[]){
   return violations;
 }
 
+function finalLockStatus(lock={}){
+  return clean(lock?.chainLock?.status||lock?.status).toUpperCase();
+}
+function readPolicyAtRef(ref){
+  try{
+    const raw=execFileSync('git',['show',`${ref}:company-learning/platform-release-roadmap.json`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    return JSON.parse(raw);
+  }catch{return null;}
+}
+function valueAtPath(input,path){
+  let value=input;
+  for(const key of String(path).split('.'))value=value?.[key];
+  return value;
+}
+export function flowSequenceLockViolations({basePolicy=null,headPolicy=null,lock=null}={}){
+  if(finalLockStatus(lock)!=='LOCKED'||Number(lock?.version||0)<2)return[];
+  const violations=[];
+  for(const key of LOCKED_FLOW_SEQUENCE_KEYS){
+    const before=valueAtPath(basePolicy,key);
+    const after=valueAtPath(headPolicy,key);
+    if(JSON.stringify(before)!==JSON.stringify(after)){
+      violations.push({file:"company-learning/platform-release-roadmap.json",reason:"FLOW_SEQUENCE_LOCKED_AUTOMATION_IMMUTABLE",sequence:key});
+    }
+  }
+  return violations;
+}
+
+export function finalDevelopmentLockMetadataViolations({basePolicy=null,headPolicy=null,lock=null}={}){
+  if(finalLockStatus(lock)!=='LOCKED'||Number(lock?.version||0)<2)return[];
+  const next=headPolicy?.finalDevelopmentLock||{};
+  const required={
+    version:2,
+    status:'LOCKED',
+    scope:'CANONICAL_FLOW_SEQUENCE_AND_GUARD_ONLY',
+    sequenceStatus:'LOCKED',
+    sequenceMode:'SEQUENCE_SEMANTICS_ONLY'
+  };
+  const actual={
+    version:Number(next?.version||0),
+    status:clean(next?.status).toUpperCase(),
+    scope:clean(next?.scope).toUpperCase(),
+    sequenceStatus:clean(next?.sequenceLock?.status).toUpperCase(),
+    sequenceMode:clean(next?.sequenceLock?.mode).toUpperCase()
+  };
+  const violations=[];
+  for(const [key,value] of Object.entries(required)){
+    const expected=typeof value==='string'?value.toUpperCase():value;
+    if(actual[key]!==expected)violations.push({
+      file:'company-learning/platform-release-roadmap.json',
+      reason:'FINAL_SEQUENCE_LOCK_METADATA_IMMUTABLE',
+      field:key
+    });
+  }
+  return violations;
+}
+function oneTimeV1HardeningMigrationAllowed(lock={},actor='',owner='hans1177',unlockTitle=''){
+  return Number(lock?.version||0)===1
+    && clean(actor)===clean(owner)
+    && /^\[OWNER_LOCK_HARDEN_V2\](?:\s|$)/i.test(clean(unlockTitle));
+}
+
 export function finalChainLockViolations({files=[],lock=null,actor='',owner='hans1177',unlockTitle=''}={}){
-  if(clean(lock?.status).toUpperCase()!=='LOCKED')return[];
-  const ownerUnlock=clean(actor)===clean(owner)&&/\[OWNER_UNLOCK\]/i.test(clean(unlockTitle));
-  if(ownerUnlock)return[];
-  const configured=Array.isArray(lock?.lockedPaths)&&lock.lockedPaths.length?lock.lockedPaths:FINAL_CHAIN_LOCK_PATHS;
+  if(finalLockStatus(lock)!=='LOCKED')return[];
+  // One-time migration only: the base policy must still be lock v1.
+  // After v2 lands, PR title/body/chat metadata can never unlock the chain.
+  if(oneTimeV1HardeningMigrationAllowed(lock,actor,owner,unlockTitle))return[];
+  const configured=FINAL_CHAIN_LOCK_PATHS;
   const locked=new Set(configured.map(normalizePath));
-  return files.map(normalizePath).filter(file=>locked.has(file)).map(file=>({file,reason:'FINAL_CHAIN_LOCKED'}));
+  return files.map(normalizePath).filter(file=>locked.has(file)).map(file=>({
+    file,
+    reason:Number(lock?.version||0)>=2?'FINAL_CHAIN_LOCKED_AUTOMATION_IMMUTABLE':'FINAL_CHAIN_LOCKED'
+  }));
 }
 
 function readBaseFinalChainLock(baseRef){
-  try{
-    const raw=execFileSync('git',['show',`${baseRef}:company-learning/platform-release-roadmap.json`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
-    const policy=JSON.parse(raw);
-    return policy?.finalDevelopmentLock?.chainLock||policy?.finalChainLock||null;
-  }catch{return null;}
+  const policy=readPolicyAtRef(baseRef);
+  return policy?.finalDevelopmentLock||policy?.finalChainLock||null;
 }
 
 function changedFiles(baseRef,headRef){
@@ -96,20 +149,30 @@ function main(){
   const head=arg('head','HEAD');
   const files=changedFiles(base,head);
   const directMainViolations=scanChangedWorkflowFiles(files);
-  const lock=readBaseFinalChainLock(base);
+  const basePolicy=readPolicyAtRef(base);
+  const headPolicy=readPolicyAtRef(head);
+  const lock=basePolicy?.finalDevelopmentLock||basePolicy?.finalChainLock||null;
   const lockViolations=finalChainLockViolations({
     files,lock,actor:arg('actor',''),owner:arg('owner','hans1177'),unlockTitle:arg('unlock-title','')
   });
-  const violations=[...directMainViolations,...lockViolations];
+  const sequenceViolations=flowSequenceLockViolations({basePolicy,headPolicy,lock});
+  const lockMetadataViolations=finalDevelopmentLockMetadataViolations({basePolicy,headPolicy,lock});
+  const violations=[...directMainViolations,...lockViolations,...sequenceViolations,...lockMetadataViolations];
   const result={
     status:violations.length?'FAIL':'PASS',
     developmentProgress:violations.length?'BLOCKED':'INCOMPLETE_PROGRESS',
     changedWorkflowFiles:files.filter(isWorkflowPath),
-    finalChainLockActive:clean(lock?.status).toUpperCase()==='LOCKED',
+    finalChainLockActive:finalLockStatus(lock)==='LOCKED',
+    finalChainLockVersion:Number(lock?.version||0)||null,
+    finalChainUnlockMode:Number(lock?.version||0)>=2?'MANUAL_REPOSITORY_ADMIN_OUT_OF_BAND_ONLY':'V1_HARDENING_MIGRATION_ONLY',
     finalChainLockViolationCount:lockViolations.length,
+    flowSequenceLockViolationCount:sequenceViolations.length,
+    finalSequenceLockMetadataViolationCount:lockMetadataViolations.length,
+    flowSequenceLockScope:'FLOW_SEQUENCE_ONLY',
+    chainImplementationOptimizationAllowed:sequenceViolations.length===0,
     violations,
     adminProtection:'ADMIN_PROTECTION_BLOCKER',
-    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden',
+    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden; F0/F9 flow sequence is immutable to assistant/automation while chain implementation and bottleneck repair remain editable when sequence is preserved',
   };
   console.log(JSON.stringify(result,null,2));
   if(violations.length)process.exitCode=1;

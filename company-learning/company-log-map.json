@@ -340,7 +340,7 @@
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerContextLogContract": {
-    "version": 2,
+    "version": 3,
     "documentIsCode": true,
     "roadmapPolicyHashRequired": true,
     "securityPolicyHashRequired": true,
@@ -359,7 +359,23 @@
       "shared-context-security",
       "shared-context-sync:PASS"
     ],
-    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true
+    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true,
+    "newChatAndWorkerPreflightRequired": true,
+    "latestMainShaRequired": true,
+    "canonicalReadOrderRequired": true,
+    "finalDevelopmentLockStatusRequired": true,
+    "preMutationSharedContextPassRequired": true,
+    "staleContextMutationForbidden": true,
+    "priorConversationOrMemoryOverrideForbidden": true,
+    "requiredPreflightMarkers": [
+      "WORKER_CONTEXT_MAIN_SHA",
+      "WORKER_CONTEXT_POLICY_SHA256",
+      "WORKER_CONTEXT_LOG_MAP_SHA256",
+      "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+      "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
+      "WORKER_CONTEXT_FINAL_CHAIN_LOCK",
+      "WORKER_CONTEXT_SYNC=PASS"
+    ]
   },
   "dualNativeCorrelation": {
     "gameKey": "GAME_ID",
@@ -2896,5 +2912,32 @@
       "streamingEnabled"
     ],
     "unverifiedStateCannotBeLoggedAsPass": true
+  },
+  "workerSessionPreflightEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.sharedWorkerContext.newSessionPreflight",
+    "sourceRef": "LATEST_MAIN_AT_WORK_START",
+    "canonicalReadOrder": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "mutationDeploymentStateChangeBeforePass": "FORBIDDEN",
+    "rememberedContextAuthority": "NON_AUTHORITATIVE",
+    "lockStateEvidenceRequired": true
+  },
+  "flowSequenceLockEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+    "requiredMarkers": [
+      "FLOW_SEQUENCE_LOCK=PASS",
+      "FLOW_GLOBAL_SERIALIZATION=FORBIDDEN",
+      "FLOW_GAME_WIDE_SERIALIZATION=FORBIDDEN",
+      "FLOW_PARALLEL_SAFE_WORK=ALLOWED",
+      "FLOW_ATOMIC_STATE_WRITE_SERIALIZATION=ALLOWED"
+    ],
+    "bottleneckRepairMustPreserveCanonicalOrder": true,
+    "queueOptimizationMayNotClaimSequenceChange": true
   }
 }
