@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-creature-parts-v1",
   "title": "Roblox 회사 공용 생물/몬스터 외형 모듈 8종 v1",
   "platform": "ROBLOX",
@@ -84,5 +84,75 @@
       "creatureRole": "APPENDAGE",
       "familyRootId": "CREATURE_TENTACLE"
     }
-  ]
+  ],
+  "systemDepthContract": {
+    "referenceLevel": "GOTY_COMMON_PRINCIPLES_NOT_COPY",
+    "requiredComponents": [
+      "BIPED",
+      "QUADRUPED",
+      "INSECT",
+      "ARACHNID",
+      "FLYING",
+      "AQUATIC",
+      "SERPENT",
+      "AMORPHOUS",
+      "GOLEM",
+      "GIANT",
+      "HEAD_VARIANT",
+      "TORSO_VARIANT",
+      "APPENDAGE",
+      "HORN",
+      "TAIL",
+      "WING",
+      "SHELL",
+      "SURFACE_VARIANT",
+      "ELITE_ORNAMENT",
+      "BOSS_SIGNATURE",
+      "RIG_PROFILE",
+      "LOCOMOTION_SET",
+      "ATTACK_SET",
+      "HIT_DEATH_SET",
+      "LOD"
+    ],
+    "currentDeclaredComponents": [
+      "TORSO_BIPED",
+      "TORSO_QUADRUPED",
+      "THORAX_INSECT",
+      "WING_PAIR",
+      "TAIL_LONG",
+      "HORN_PAIR",
+      "SHELL_BACK",
+      "TENTACLE_CLUSTER"
+    ],
+    "missingComponentCandidates": [
+      "BIPED",
+      "QUADRUPED",
+      "INSECT",
+      "ARACHNID",
+      "FLYING",
+      "AQUATIC",
+      "SERPENT",
+      "AMORPHOUS",
+      "GOLEM",
+      "GIANT",
+      "HEAD_VARIANT",
+      "TORSO_VARIANT",
+      "APPENDAGE",
+      "HORN",
+      "TAIL",
+      "WING",
+      "SHELL",
+      "SURFACE_VARIANT",
+      "ELITE_ORNAMENT",
+      "BOSS_SIGNATURE",
+      "RIG_PROFILE",
+      "LOCOMOTION_SET",
+      "ATTACK_SET",
+      "HIT_DEATH_SET",
+      "LOD"
+    ],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false
+  }
 }
