@@ -55,6 +55,9 @@ test('canonical evaluator preserves fail-closed multiplayer and internal-release
 });
 
 test('exact Roblox F9 review is deduped per game identity and current control SHA',()=>{
+  assert.match(workflow,/group: roblox-f9-dedupe-\$\{\{ inputs\.game_id \|\| 'scan' \}\}-\$\{\{ github\.sha \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/if \[ -n "\$GAME_ID" \]; then[\s\S]*?ROBLOX_F9_DEDUPE_PASS=\$GAME_ID:\$GITHUB_RUN_ID[\s\S]*?exit 0/);
   assert.match(workflow,/const title='Roblox F9 · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/CURRENT_CONTROL_SHA/);
   assert.match(workflow,/String\(r\.head_sha\|\|''\)===controlSha/);

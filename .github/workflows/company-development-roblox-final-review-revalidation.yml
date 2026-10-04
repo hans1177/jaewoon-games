@@ -27,6 +27,9 @@ env:
 jobs:
   dedupe:
     name: collapse duplicate F9 reviews
+    concurrency:
+      group: roblox-f9-dedupe-${{ inputs.game_id || 'scan' }}-${{ github.sha }}
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 3
     outputs:
@@ -39,6 +42,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ -n "$GAME_ID" ]; then
+            echo "ROBLOX_F9_CONTROL_SHA=$CURRENT_CONTROL_SHA"
+            echo "ROBLOX_F9_ACTIVE_WINNER=$GITHUB_RUN_ID"
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_F9_DEDUPE_PASS=$GAME_ID:$GITHUB_RUN_ID"
+            exit 0
+          fi
           payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-final-review-revalidation.yml/runs?per_page=100")"
           printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" CURRENT_SHA="$GITHUB_SHA" node -e "
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
