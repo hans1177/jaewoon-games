@@ -1498,10 +1498,6 @@ test('full planner replaces low-value micro work with queued studio packages and
       ?{...row,status:'verified',blocker:null,lastOutcome:'PASS'}
       :row
   )};
-  const directSecond=findStudioContinuousImprovementTask({gameId,name:'Studio Full Queue Repeat',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`},root,working,firstFocus);
-  const directAll=findStudioContinuousImprovementTasks({gameId,name:'Studio Full Queue Repeat',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`},root,working);
-  console.log('DEBUG_STUDIO_DIRECT_SECOND',JSON.stringify(directSecond?{id:directSecond.id,focus:directSecond.studioQualityEvolution?.focusPillar,cycle:directSecond.studioQualityEvolution?.cycle,phase:directSecond.studioQualityEvolution?.phase}:null));
-  console.log('DEBUG_STUDIO_DIRECT_ALL',JSON.stringify(directAll.map(row=>({id:row.id,focus:row.studioQualityEvolution?.focusPillar,cycle:row.studioQualityEvolution?.cycle,phase:row.studioQualityEvolution?.phase}))));
   let second=null;
   for(let i=0;i<12&&!second;i++){
     const result=planVibe2AutonomousTasks({
@@ -1523,7 +1519,6 @@ test('full planner replaces low-value micro work with queued studio packages and
         :row
     )};
   }
-  if(!second)console.log('DEBUG_STUDIO_REPEAT_QUEUE',JSON.stringify(working.tasks.filter(row=>row.gameId===gameId).map(row=>({id:row.id,status:row.status,blocker:row.blocker,focus:row.studioQualityEvolution?.focusPillar,cycle:row.studioQualityEvolution?.cycle,phase:row.studioQualityEvolution?.phase,buildUpNextAction:row.buildUpNextAction,evidence:(row.evidence||[]).filter(value=>/studio-quality|build-up-next|asset-application|library-use|primitive-only|marker-only/.test(value))})),null,2));
   assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
   assert.notEqual(second.id,first.id);
   assert.equal(second.taskWorkUnits,7);
