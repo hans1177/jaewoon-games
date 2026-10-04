@@ -1462,11 +1462,12 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:2,
+  version:3,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
   registry:'company-asset-library.json',
+  persistentWorklistField:'internalAssetLibraryAutomation.nextVolumeActions',
   automaticOperations:Object.freeze([
     'DISCOVER_COMMON_CATALOGS',
     'SYNC_PACK_COUNTS',
@@ -1477,6 +1478,8 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'REBUILD_UI_SUBSYSTEM_DEPTH',
     'REBUILD_COMPANY_SEED_DEMAND',
     'REBUILD_REFERENCE_BREADTH_PROFILE_GAPS',
+    'FILTER_IDEAS_ALREADY_PRESENT_BY_ID_ATOM_OR_ROLE',
+    'PERSIST_PRIORITY_ORDERED_NEXT_VOLUME_ACTIONS',
     'SELECT_VOLUME_OR_QUALITY_FOCUS',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
   ]),
@@ -1486,14 +1489,21 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   overSoftLimitBlocksUse:false,
   perDomainIdeaBudgetPerCycle:24,
   preferDistinctRoleStateGenreCombination:true,
+  ideaDeduplicationFields:Object.freeze(['id','assetId','atomId','role','roles','sourceIdeaId','ideaId']),
+  repeatedDistinctVariationProposalForbidden:true,
   volumeBeforeQuality:true,
   qualityUpStartsOnlyAfterRecommendedVolume:true,
   qualityTargetInternalAuditScore:1000,
+  qualityUpWorkingBandMin:980,
+  qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
+  volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
+  reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','NEW_AUTHORING']),
   reuseAdaptRecombineBeforeNewAuthoring:true,
   deleteExistingAssetAutomatically:false,
   productionPromotionAutomatically:false,
   runtimeVerificationStillRequired:true,
+  productionRuntimeVerificationSeparateFromInternalQuality:true,
   actualAudioAssetClaimRequiresVerifiedAudioFile:true,
   workflowCreated:false,
   schedulerCreated:false,
@@ -1578,6 +1588,33 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const domains=[];
+  const normalizeIdentity=value=>upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  const existingIdentityTokens=new Set();
+  const addExistingIdentity=value=>{
+    if(Array.isArray(value)){for(const item of value)addExistingIdentity(item);return;}
+    const token=normalizeIdentity(value);
+    if(token)existingIdentityTokens.add(token);
+  };
+  for(const asset of assets||[]){
+    addExistingIdentity(asset?.id);
+    addExistingIdentity(asset?.assetId);
+    addExistingIdentity(asset?.atomId);
+    addExistingIdentity(asset?.role);
+    addExistingIdentity(asset?.roles);
+    addExistingIdentity(asset?.usageRole);
+    addExistingIdentity(asset?.usageRoles);
+    addExistingIdentity(asset?.sourceIdeaId);
+    addExistingIdentity(asset?.ideaId);
+  }
+  for(const atomId of uiAtomIds||[])addExistingIdentity(atomId);
+  for(const roleId of audioRoleIds||[])addExistingIdentity(roleId);
+  const genericIdeaRoles=new Set(['DISTINCT_ROLE_STATE_STYLE_COMBINATION','MISSING_CONTEXT_STATE_OR_FLOW_VARIANT']);
+  const ideaAlreadyCovered=(ideaId,role='')=>{
+    const ideaToken=normalizeIdentity(ideaId);
+    const roleToken=normalizeIdentity(role);
+    if(ideaToken&&existingIdentityTokens.has(ideaToken))return true;
+    return Boolean(roleToken&&!genericIdeaRoles.has(roleToken)&&existingIdentityTokens.has(roleToken));
+  };
 
   for(const [domain,band] of Object.entries(COMMON_LIBRARY_LOOSE_VOLUME_BANDS)){
     const referenceBreadth=internalReferenceBreadthTarget(domain);
@@ -1593,52 +1630,57 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.perDomainIdeaBudgetPerCycle,
       Math.max(4,targetMin-currentCount,missing.length)
     );
-    const candidates=[];
+    const candidates=[],candidateKeys=new Set();
+    const pushCandidate=candidate=>{
+      if(candidates.length>=ideaBudget||ideaAlreadyCovered(candidate?.ideaId,candidate?.role))return false;
+      const key=normalizeIdentity(candidate?.ideaId);
+      if(!key||candidateKeys.has(key))return false;
+      candidateKeys.add(key);
+      candidates.push(Object.freeze(candidate));
+      return true;
+    };
     for(const required of missing){
-      candidates.push(Object.freeze({
+      pushCandidate({
         ideaId:[domain,required,'BASE'].join('_'),
         source:'SYSTEM_DEPTH_GAP',
         domain,
         role:required,
         priority:300
-      }));
+      });
     }
     for(const idea of seedIdeas.filter(row=>row.domain===domain)){
       if(candidates.length>=ideaBudget)break;
-      if(!candidates.some(row=>row.ideaId===idea.ideaId)){
-        candidates.push(Object.freeze({
-          ideaId:idea.ideaId,
-          source:'COMPANY_COMMON_SEED_DEMAND',
-          domain,
-          role:idea.role,
-          stateVariants:idea.stateVariants,
-          priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)
-        }));
-      }
+      pushCandidate({
+        ideaId:idea.ideaId,
+        source:'COMPANY_COMMON_SEED_DEMAND',
+        domain,
+        role:idea.role,
+        stateVariants:idea.stateVariants,
+        priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)
+      });
     }
     const domainPool=uniq([...(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[]),...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS[domain]||[])]);
     for(const ideaId of domainPool){
       if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
-      if(!candidates.some(row=>row.ideaId===ideaId)){
-        candidates.push(Object.freeze({
-          ideaId,
-          source:'DOMAIN_IDEA_POOL',
-          domain,
-          role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
-          priority:150
-        }));
-      }
+      pushCandidate({
+        ideaId,
+        source:'DOMAIN_IDEA_POOL',
+        domain,
+        role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
+        priority:150
+      });
     }
     let slot=1;
-    while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin){
-      candidates.push(Object.freeze({
-        ideaId:[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_'),
+    while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin&&slot<=9999){
+      const ideaId=[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_');
+      slot++;
+      pushCandidate({
+        ideaId,
         source:'LOOSE_VOLUME_TARGET',
         domain,
         role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
         priority:120
-      }));
-      slot++;
+      });
     }
     domains.push(Object.freeze({
       domain,
@@ -1670,13 +1712,31 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
     const suggestedCount=Math.min(12,Math.max(0,band.targetMin-currentCount));
     const pool=COMMON_UI_SUBSYSTEM_IDEA_POOLS[id]||[];
-    const suggestedIdeas=Array.from({length:suggestedCount},(_,index)=>Object.freeze({
-      ideaId:pool[index]||['UI',id,'DEPTH',String(index+1).padStart(2,'0')].join('_'),
-      source:pool[index]?'UI_SUBSYSTEM_IDEA_POOL':'UI_SUBSYSTEM_DEPTH',
-      subsystem:id,
-      role:'MISSING_CONTEXT_STATE_OR_FLOW_VARIANT',
-      priority:pool[index]?210:180
-    }));
+    const suggestedIdeas=[],candidateKeys=new Set();
+    const pushUiIdea=(ideaId,source,priority)=>{
+      if(suggestedIdeas.length>=suggestedCount||ideaAlreadyCovered(ideaId,'MISSING_CONTEXT_STATE_OR_FLOW_VARIANT'))return false;
+      const key=normalizeIdentity(ideaId);
+      if(!key||candidateKeys.has(key))return false;
+      candidateKeys.add(key);
+      suggestedIdeas.push(Object.freeze({
+        ideaId,
+        source,
+        subsystem:id,
+        role:'MISSING_CONTEXT_STATE_OR_FLOW_VARIANT',
+        priority
+      }));
+      return true;
+    };
+    for(const ideaId of pool){
+      if(suggestedIdeas.length>=suggestedCount)break;
+      pushUiIdea(ideaId,'UI_SUBSYSTEM_IDEA_POOL',210);
+    }
+    let slot=1;
+    while(suggestedIdeas.length<suggestedCount&&slot<=9999){
+      const ideaId=['UI',id,'DEPTH',String(slot).padStart(2,'0')].join('_');
+      slot++;
+      pushUiIdea(ideaId,'UI_SUBSYSTEM_DEPTH',180);
+    }
     return Object.freeze({
       subsystem:id,
       currentCount,
@@ -1704,12 +1764,17 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .filter(row=>row.currentCount<row.targetMin)
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
-  const nextVolumeActions=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>Object.freeze({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>Object.freeze({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount})))
+  const nextVolumeActionRows=volumeReady?[]:[
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount}))),
+    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount})))
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96);
+  const nextVolumeActions=nextVolumeActionRows.map((row,index)=>Object.freeze({
+    ...row,
+    worklistOrder:index+1,
+    resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
+  }));
   return Object.freeze({
-    version:2,
+    version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
     domains:Object.freeze(sortedDomains),
@@ -1723,6 +1788,20 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     volumeBlockingDomains:Object.freeze(volumeBlockingDomains),
     uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
     nextVolumeActions:Object.freeze(nextVolumeActions),
+    persistentWorklistField:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,
+    volumeActionConsumption:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,
+    reuseResolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder,
+    ideaDeduplication:Object.freeze({
+      fields:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.ideaDeduplicationFields,
+      existingIdentityCount:existingIdentityTokens.size,
+      repeatedDistinctVariationProposalForbidden:true
+    }),
+    qualityUpPolicy:Object.freeze({
+      selection:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpSelection,
+      workingBandMin:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,
+      target:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,
+      productionRuntimeVerificationSeparate:true
+    }),
     audioRoleContractCount:audioRoles.length,
     actualVerifiedAudioAssetCount,
     audioRoleVolumeSeparateFromVerifiedFileCount:true,
@@ -1737,7 +1816,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
 }
 
 export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
-  version:2,
+  version:3,
   scope:'INTERNAL_ASSETS_ONLY',
   documentationMode:'MACHINE_READABLE_ONLY',
   mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
@@ -1773,7 +1852,9 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN',
     'BUILD_INTERNAL_ASSET_LIBRARY_AUTOMATION_PLAN',
     'REBUILD_UI_SUBSYSTEM_DEPTH',
+    'READ_PERSISTED_NEXT_VOLUME_ACTIONS',
     'REMOVE_DUPLICATE_AUTHORING_CANDIDATES',
+    'FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS',
     'CHECK_LICENSE_PLATFORM_ROLE_STYLE_COMPATIBILITY',
     'PREFER_REUSE_ADAPT_RECOMBINE_BEFORE_NEW_AUTHORING'
   ]),
@@ -1784,6 +1865,8 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
     'KEEP_ONLY_REAL_COMPANY_WIDE_GAPS',
     'REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND',
     'VOLUME_UP_BEFORE_QUALITY_UP',
+    'CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER',
+    'QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY',
     'UPDATE_PRIORITY_GAPS',
     'UPDATE_CATALOG_AND_LIBRARY',
     'UPDATE_ASSET_QA'
