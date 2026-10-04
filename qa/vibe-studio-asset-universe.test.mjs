@@ -15,6 +15,8 @@ import {
   INTERNAL_ASSET_FAMILY_EXPECTATIONS,
   COMMON_UI_SURFACE_EXPECTATIONS,
   INTERNAL_ASSET_MINIMUM_COVERAGE,
+  INTERNAL_ASSET_REUSE_POLICY,
+  INTERNAL_ASSET_ADAPTATION_AXES,
   CONCEPT_AXES,
   CREATURE_BODY_PLANS,
   CREATURE_SPECIES,
@@ -34,6 +36,8 @@ import {
   createGameVisualDNA,
   scoreStudioAssetQuality120,
   scoreInternalAssetAudit1000,
+  evaluateInternalAssetReuse,
+  chooseInternalAssetReplacement,
   scoreStudioAssetCandidate,
   buildStudioAssetLoadout,
   buildFutureAssetDemandForecast,
@@ -2717,4 +2721,99 @@ test('common Roblox UI v3 covers AI dialogue NPC interaction core game screens a
   assert.equal(evidence.sourceAssetCount,32);
   assert.equal(evidence.productionVerified,false);
   assert.equal(evidence.verifiedCompanyReusable,false);
+});
+
+
+test('flexible internal asset reuse keeps low-score assets usable and adapts good mismatches before rejection',()=>{
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.lowScoreUseAllowed,true);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.studioRequiredForUse,false);
+  assert.ok(INTERNAL_ASSET_ADAPTATION_AXES.UI.includes('LAYOUT'));
+  assert.ok(INTERNAL_ASSET_ADAPTATION_AXES.CREATURE.includes('HORN'));
+
+  const low={
+    id:'low-ui',family:'UI',subfamily:'HUD',platform:'ROBLOX',status:'REPO_ASSET',
+    license:'project-original',internalAuditScore:520,sourceFiles:['low.luau']
+  };
+  const lowReuse=evaluateInternalAssetReuse({
+    asset:low,
+    gameDna:{targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'CARTOON'})},
+    requirement:{family:'UI',subfamily:'HUD'}
+  });
+  assert.equal(lowReuse.usable,true);
+  assert.equal(lowReuse.studioRequired,false);
+  assert.equal(lowReuse.baseQuality,520);
+  assert.equal(lowReuse.scoreIsNotUsageGate,true);
+
+  const highStyleMismatch={
+    id:'high-ui',family:'UI',subfamily:'HUD',platform:'ROBLOX',status:'REPO_ASSET',
+    license:'project-original',internalAuditScore:940,sourceFiles:['high.luau'],
+    styleFamily:'SCI_FI',themeAdaptationRequiredPerGame:true
+  };
+  const adapted=evaluateInternalAssetReuse({
+    asset:highStyleMismatch,
+    gameDna:{targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'DARK_FANTASY'})},
+    requirement:{family:'UI',subfamily:'HUD'}
+  });
+  assert.equal(adapted.usable,true);
+  assert.equal(adapted.mode,'STYLE_ADAPT');
+  assert.equal(adapted.adaptationReady,true);
+  assert.ok(adapted.effectiveQuality>lowReuse.effectiveQuality);
+
+  const choice=chooseInternalAssetReplacement({
+    currentAsset:low,
+    candidates:[low,highStyleMismatch],
+    gameDna:{targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'DARK_FANTASY'})},
+    requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'}
+  });
+  assert.equal(choice.selectedAssetId,'high-ui');
+  assert.equal(choice.replacementRecommended,true);
+  assert.equal(choice.replacementAction,'ADAPT_THEN_REPLACE');
+  assert.equal(choice.studioRequired,false);
+});
+
+test('internal replacement respects locks and treats observed failure as priority penalty instead of automatic ban',()=>{
+  const current={id:'current',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:700,sourceFiles:['a']};
+  const better={id:'better',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:930,sourceFiles:['b']};
+  const failed={id:'failed-high',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',internalAuditScore:980,sourceFiles:['c']};
+  const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'STYLIZED_FANTASY'})};
+
+  const failedReuse=evaluateInternalAssetReuse({
+    asset:failed,gameDna,requirement:{family:'WEAPON',subfamily:'MELEE'},
+    usage:{runtimeFailure:true,verifiedFailureCount:2}
+  });
+  assert.equal(failedReuse.usable,true);
+  assert.ok(failedReuse.observedFailurePenalty>0);
+
+  const unlocked=chooseInternalAssetReplacement({
+    currentAsset:current,candidates:[current,better,failed],gameDna,
+    requirement:{family:'WEAPON',subfamily:'MELEE',currentAssetId:'current'},
+    usageByAsset:{'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
+  });
+  assert.equal(unlocked.selectedAssetId,'better');
+  assert.equal(unlocked.replacementAction,'REPLACE_NOW');
+
+  const locked=chooseInternalAssetReplacement({
+    currentAsset:current,candidates:[current,better],gameDna,
+    requirement:{family:'WEAPON',subfamily:'MELEE',currentAssetId:'current',lockedAssetId:'current'}
+  });
+  assert.equal(locked.selectedAssetId,'current');
+  assert.equal(locked.replacementAction,'KEEP_LOCKED');
+  assert.equal(locked.replacementRecommended,false);
+});
+
+test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
+  const base={id:'asset',family:'PROP',subfamily:'INTERACTIVE',platform:'ROBLOX',status:'REPO_ASSET',internalAuditScore:400,sourceFiles:['asset.luau']};
+  const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'CARTOON'})};
+  for(const asset of [
+    {...base,internalUseForbidden:true,license:'project-original'},
+    {...base,securityBlocked:true,license:'project-original'},
+    {...base,corruptSource:true,license:'project-original'},
+    {...base,license:'CC-BY-NC'}
+  ]){
+    const result=evaluateInternalAssetReuse({asset,gameDna,requirement:{family:'PROP',subfamily:'INTERACTIVE'}});
+    assert.equal(result.usable,false);
+    assert.ok(result.hardBlockers.length>=1);
+  }
+  const merelyLow=evaluateInternalAssetReuse({...base,license:'project-original'},gameDna,{family:'PROP',subfamily:'INTERACTIVE'});
+  assert.equal(merelyLow.usable,true);
 });
