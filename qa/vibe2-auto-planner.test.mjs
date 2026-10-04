@@ -1181,7 +1181,37 @@ test('build-up iteration expectation rises with verified cycles without adding p
   },null,2),'utf8');
   fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
     version:50,
-    assets:['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'].map((family,index)=>({id:`asset-${index}`,family}))
+    rules:{
+      vibeUpgradeUniversalAssetFirstRequired:true,
+      allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade:true,
+      applicableAssetFamiliesRequireActualSourceBinding:true,
+      assetConfigMarkerOnlyCannotPass:true,
+      primitiveOnlyVisualUpgradeForbidden:true,
+      mapEnvironmentBuildingPropAssetCoverageRequired:true
+    },
+    universalVibeUpgradeAssetContract:{
+      status:'ACTIVE_EXECUTABLE_CONTRACT',
+      selection:'ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE',
+      primitiveOnlyPassForbidden:true,
+      markerOnlyPassForbidden:true,
+      mapMinimum:['BACKGROUND','TERRAIN','BUILDING','LANDMARK','SET_DRESSING','PROP']
+    },
+    internalAssetUsagePolicy:{version:3},
+    internalAssetCompositionContract:{consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',allInternalAssetsComposableAcrossExistingStages:true},
+    environmentStateContract:{stateCount:14,states:['CLEAR_DAY','RAIN']},
+    ambientSoundscapeContract:{
+      layers:['BED','NEAR_LOOP','DISTANT_LOOP','SCATTER','ONE_SHOT','INTERACTION_SOURCE'],
+      variationRules:['NO_SINGLE_LOOP_ONLY','RANDOM_SCATTER_INTERVAL_WITH_DEDUPE'],
+      sourceGroups:{wind:['WIND_LIGHT'],animal:['DISTANT_WILDLIFE']},
+      biomeSoundscapes:{FOREST:['WIND_LIGHT','DISTANT_WILDLIFE']},
+      actualAudioAssetCountFromThisContract:0
+    },
+    internalAssetLibraryAutomation:{
+      domainPlan:[{domain:'AUDIO',actualVerifiedAudioAssetCount:0,roleContractCount:65}],
+      maintenance:{inventoryFingerprint:'inv-1',typeRoleFingerprint:'type-1',qualityFingerprint:'quality-1'},
+      studioVariationAxes:{ENVIRONMENT:['WEATHER','TIME_OF_DAY'],AUDIO:['VARIATION_SET','MOBILE_BUDGET']}
+    },
+    assets:['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'].map((family,index)=>({id:`asset-${index}`,family,internalAuditScore:956.4}))
   },null,2),'utf8');
   const first=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN'});
   const third=resolveBuildUpIterationExpectation({repoRoot:root,cycle:3,phase:'BUILD_UP',focusPillar:'PROGRESSION'});
@@ -1207,6 +1237,22 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.equal(sixth.assetLibraryVersion,50);
   assert.equal(sixth.assetLibraryFamilyCount,11);
   assert.equal(sixth.assetLibrarySourceParityRequired,true);
+  assert.equal(sixth.assetLibraryUsageRequired,true);
+  assert.equal(sixth.assetLibraryAllFamiliesEvaluated,true);
+  assert.equal(sixth.assetLibraryApplicableFamiliesRequireActualSourceBinding,true);
+  assert.equal(sixth.assetLibraryPrimitiveOnlyForbidden,true);
+  assert.equal(sixth.assetLibraryMarkerOnlyForbidden,true);
+  assert.equal(sixth.assetLibraryMapEnvironmentCoverageRequired,true);
+  assert.equal(sixth.assetLibraryApplicationMode,'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING');
+  assert.ok(sixth.assetLibraryApplicationIdeas.some(row=>row.id==='WORLD_LAYERED_COMPOSITION'&&row.state==='READY'));
+  assert.ok(sixth.assetLibraryApplicationIdeas.some(row=>row.id==='AMBIENT_SOUNDSCAPE_LAYERING'&&row.state==='ROLE_CONTRACT_ONLY'));
+  assert.equal(sixth.assetLibraryAudioRoleContractOnly,true);
+  assert.equal(sixth.assetLibraryActualAudioAssetCount,0);
+  assert.equal(sixth.assetLibraryAudioRoleContractCount,65);
+  assert.deepEqual(sixth.assetLibrarySoundscapeLayers,['BED','NEAR_LOOP','DISTANT_LOOP','SCATTER','ONE_SHOT','INTERACTION_SOURCE']);
+  assert.equal(sixth.assetLibraryFreshnessIdentity,'inv-1');
+  assert.equal(sixth.assetLibraryMaintenanceTypeRoleFingerprint,'type-1');
+  assert.equal(sixth.assetLibraryMaintenanceQualityFingerprint,'quality-1');
   assert.equal(sixth.assetOnlySwapCountsAsEvolution,false);
   assert.equal(sixth.sourceCompositionDepthUnbounded,true);
   assert.equal(sixth.qualitativeDetailDepthUnbounded,true);
@@ -1226,9 +1272,27 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas><script>function attack(){} function quest(){} function reward(){}</script></body></html>\n','utf8');
-  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:50,assets:[
-    {id:'ui',family:'UI'},{id:'motion',family:'MOTION'},{id:'environment',family:'ENVIRONMENT'},{id:'vfx',family:'VFX'}
-  ]},null,2),'utf8');
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+    version:50,
+    rules:{
+      vibeUpgradeUniversalAssetFirstRequired:true,
+      allAssetFamiliesMustBeEvaluatedForEveryNativeUpgrade:true,
+      applicableAssetFamiliesRequireActualSourceBinding:true,
+      assetConfigMarkerOnlyCannotPass:true,
+      primitiveOnlyVisualUpgradeForbidden:true
+    },
+    universalVibeUpgradeAssetContract:{
+      status:'ACTIVE_EXECUTABLE_CONTRACT',
+      selection:'ALL_FAMILIES_EVALUATED_EVERY_NATIVE_UPGRADE',
+      primitiveOnlyPassForbidden:true,
+      markerOnlyPassForbidden:true
+    },
+    internalAssetUsagePolicy:{version:3},
+    internalAssetCompositionContract:{consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',allInternalAssetsComposableAcrossExistingStages:true},
+    assets:[
+      {id:'ui',family:'UI'},{id:'motion',family:'MOTION'},{id:'environment',family:'ENVIRONMENT'},{id:'vfx',family:'VFX'}
+    ]
+  },null,2),'utf8');
   writeStudioDesign(root,gameId);
   const project={gameId,name:'Build Up Expectation Integration',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
   const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
@@ -1255,8 +1319,17 @@ test('verified BUILD_UP cycles escalate from completeness to system depth to coh
   assert.equal(third.studioQualityEvolution.requiredActiveSourceCompositionDimensions.min,third.studioQualityEvolution.qualityExpectation.minimumActiveSourceCompositionDimensions);
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.required,true);
   assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.libraryVersion,50);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.mandatoryForEveryGame,true);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.allFamiliesEvaluated,true);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.applicableFamiliesRequireActualSourceBinding,true);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.primitiveOnlyForbidden,true);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.markerOnlyForbidden,true);
+  assert.equal(third.studioQualityEvolution.assetLibrarySourceParity.applicationMode,'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING');
   assert.ok(third.evidence.includes('studio-quality-asset-source-parity:REQUIRED'));
+  assert.ok(third.evidence.includes('studio-quality-library-floor-projection:v1'));
   assert.match(third.goal,/소스 구성 성장:/);
+  assert.match(third.goal,/현재 게임 소스에 동일 활용이 이미 실제 구현·검증되어 있으면 해당 아이디어는 PASS/);
+  assert.match(third.goal,/미구현 READY 활용만 선택한다/);
   assert.match(third.goal,/자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면/);
   assert.match(third.goal,/같은 QA\/체크 재통과만 반복/);
   assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
@@ -3171,7 +3244,13 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
     escalationStage:'FOUNDATION_COMPLETENESS',
     previousVersionDelta:{previousGoal:'이전 전투 피드백 개선'},
     nextActionDecision:{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'same system needs another verified effect pass'},
-    allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}]
+    allDomainImplementationDirectives:[{domain:'CORE_FUN',instruction:'전투 선택 결과를 실제 상태 변화로 연결'}],
+    assetRequirementsVersion:1,
+    assetRequirements:[
+      {family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'},
+      {family:'VFX',subfamily:'IMPACT',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'}
+    ],
+    assetRequirementHandoff:'EXISTING_BUILD_UP_DIRECTIVE'
   };
   const normalized=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'demo-build-up',gameId:'demo',target:'roblox',department:'development',type:'implementation',
@@ -3186,6 +3265,9 @@ test('queue normalization preserves BUILD_UP directive payload and aliases for w
   const task=normalized.tasks[0];
   assert.deepEqual(task.buildUpDirective,directive);
   assert.equal(task.buildUpDirectiveId,directive.directiveId);
+  assert.equal(task.buildUpDirective.assetRequirementHandoff,'EXISTING_BUILD_UP_DIRECTIVE');
+  assert.equal(task.buildUpDirective.assetRequirements.length,2);
+  assert.equal(task.buildUpDirective.assetRequirements[0].family,'UI');
   assert.equal(task.buildUpGeneration,1);
   assert.equal(task.buildUpGoal,directive.thisLoopPrimaryGoal);
   assert.equal(task.buildUpSourceTree,directive.sourceTreeFingerprint);
