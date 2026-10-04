@@ -1,5 +1,5 @@
 {
-  "version": 61,
+  "version": 62,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -6730,7 +6730,7 @@
     },
     {
       "id": "roblox-common-items-v1",
-      "title": "Roblox 회사 공용 아이템 24종 v2",
+      "title": "Roblox 회사 공용 아이템 40종 v3",
       "category": "PROP",
       "family": "PROP",
       "platform": "ROBLOX",
@@ -6770,8 +6770,8 @@
         "assets/roblox/common-items-v1/quality-evidence.json"
       ],
       "subfamily": "ITEM_PACK",
-      "itemCount": 8,
-      "assetCount": 24,
+      "itemCount": 40,
+      "assetCount": 40,
       "systemDepthContractRef": "assets/roblox/common-items-v1/catalog.json#systemDepthContract",
       "inventoryCategories": [
         "CONSUMABLE",
@@ -6781,6 +6781,7 @@
         "UPGRADE_MATERIAL",
         "QUEST",
         "LORE",
+        "KEY_ITEM",
         "UTILITY",
         "AMMO",
         "THROWABLE",
@@ -6790,7 +6791,7 @@
       "systemDepthPhase": "STARTED",
       "systemDepthAudit": {
         "domain": "ITEM",
-        "currentCount": 24,
+        "currentCount": 40,
         "requiredComponentCount": 20,
         "priorityGaps": [],
         "state": "BASE_COVERAGE_STARTED"
@@ -6834,9 +6835,9 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "HEALING_POTION",
         "ITEM",
-        "CONSUMABLE",
-        "HEALING_POTION"
+        "CONSUMABLE"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -6856,7 +6857,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "ITEM",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-mana-crystal",
@@ -6893,9 +6904,8 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "RESOURCE",
-        "RESOURCE",
-        "MANA_CRYSTAL"
+        "MANA_CRYSTAL",
+        "RESOURCE"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -6915,7 +6925,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "RESOURCE",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-iron-ingot",
@@ -6952,9 +6972,8 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "RESOURCE",
-        "RESOURCE",
-        "IRON_INGOT"
+        "IRON_INGOT",
+        "RESOURCE"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -6974,7 +6993,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "RESOURCE",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-gold-ingot",
@@ -7011,9 +7040,8 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "RESOURCE",
-        "RESOURCE",
-        "GOLD_INGOT"
+        "GOLD_INGOT",
+        "RESOURCE"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -7033,7 +7061,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "RESOURCE",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-wood-bundle",
@@ -7070,9 +7108,8 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "RESOURCE",
-        "RESOURCE",
-        "WOOD_BUNDLE"
+        "WOOD_BUNDLE",
+        "RESOURCE"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -7092,7 +7129,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "RESOURCE",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-stone-chunk",
@@ -7129,9 +7176,8 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "RESOURCE",
-        "RESOURCE",
-        "STONE_CHUNK"
+        "STONE_CHUNK",
+        "RESOURCE"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -7151,7 +7197,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "RESOURCE",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-relic-key",
@@ -7188,9 +7244,9 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "RELIC_KEY",
         "ITEM",
-        "KEY_ITEM",
-        "RELIC_KEY"
+        "KEY_ITEM"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -7210,7 +7266,17 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "ITEM",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-item-lantern",
@@ -7247,9 +7313,9 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "LANTERN",
         "ITEM",
-        "UTILITY",
-        "LANTERN"
+        "UTILITY"
       ],
       "sourceFiles": [
         "assets/roblox/common-items-v1/RobloxCommonItems.luau",
@@ -7269,11 +7335,21 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "inventoryCategory": "ITEM",
+      "stackProfile": null,
+      "rarityBand": null,
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "id": "roblox-common-vfx-v1",
-      "title": "Roblox 회사 공용 VFX 3종 v1",
+      "title": "Roblox 회사 공용 VFX 8종 v3",
       "category": "VFX",
       "family": "VFX",
       "platform": "ROBLOX",
@@ -7312,22 +7388,30 @@
         "assets/roblox/common-vfx-v1/quality-evidence.json"
       ],
       "subfamily": "VFX_PACK",
-      "assetCount": 3,
+      "assetCount": 8,
       "systemDepthAudit": {
         "domain": "VFX",
-        "currentCount": 3,
+        "currentCount": 8,
         "requiredComponentCount": 22,
         "priorityGaps": [
           "CRITICAL",
-          "BLOCK",
-          "PARRY",
           "DODGE",
           "HEAL",
           "BUFF",
           "DEBUFF",
-          "LOOT_RARITY",
+          "STATUS",
+          "LOOT_COMMON",
+          "LOOT_RARE",
+          "LOOT_LEGENDARY",
           "UPGRADE",
-          "CRAFT"
+          "CRAFT",
+          "DISMANTLE",
+          "QUEST_UPDATE",
+          "ENVIRONMENT",
+          "WEATHER",
+          "DESTRUCTION",
+          "BOSS",
+          "MOBILE_DENSITY"
         ],
         "state": "GAP_FILL_REQUIRED"
       }
@@ -7366,7 +7450,8 @@
         "ROBLOX_REUSABLE",
         "THEME_ADAPTABLE",
         "NO_EXTERNAL_TEXTURE_DEPENDENCY",
-        "IMPACT_FLASH"
+        "IMPACT_FLASH",
+        "IMPACT_CONFIRMATION"
       ],
       "sourceFiles": [
         "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
@@ -7385,7 +7470,8 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
         "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
-      }
+      },
+      "systemRole": null
     },
     {
       "id": "roblox-common-vfx-trail-short",
@@ -7421,7 +7507,8 @@
         "ROBLOX_REUSABLE",
         "THEME_ADAPTABLE",
         "NO_EXTERNAL_TEXTURE_DEPENDENCY",
-        "TRAIL_SHORT"
+        "TRAIL_SHORT",
+        "FAST_MOTION_TRAIL"
       ],
       "sourceFiles": [
         "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
@@ -7440,7 +7527,8 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
         "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
-      }
+      },
+      "systemRole": null
     },
     {
       "id": "roblox-common-vfx-shape-burst",
@@ -7476,7 +7564,8 @@
         "ROBLOX_REUSABLE",
         "THEME_ADAPTABLE",
         "NO_EXTERNAL_TEXTURE_DEPENDENCY",
-        "SHAPE_BURST"
+        "SHAPE_BURST",
+        "BURST_FEEDBACK"
       ],
       "sourceFiles": [
         "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
@@ -7495,7 +7584,8 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
         "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
-      }
+      },
+      "systemRole": null
     },
     {
       "id": "roblox-common-skill-v1",
@@ -7739,7 +7829,7 @@
     },
     {
       "id": "roblox-common-materials-v1",
-      "title": "Roblox 회사 공용 재질 11종 v3",
+      "title": "Roblox 회사 공용 재질 11종 v4",
       "category": "MATERIAL",
       "family": "MATERIAL",
       "platform": "ROBLOX",
@@ -10619,9 +10709,9 @@
         "assets/roblox/common-tools-v1/quality-evidence.json"
       ],
       "id": "roblox-common-tools-v1",
-      "title": "Roblox 회사 공용 무기/도구 8종 v1",
+      "title": "Roblox 회사 공용 무기/도구 20종 v3",
       "subfamily": "TOOL_PACK",
-      "itemCount": 8,
+      "itemCount": 20,
       "complementsExistingCommonSubfamilies": [
         "BLADE_LONG",
         "GUARD_CROSS",
@@ -10637,15 +10727,12 @@
       ],
       "systemDepthAudit": {
         "domain": "WEAPON",
-        "currentCount": 8,
+        "currentCount": 20,
         "requiredComponentCount": 20,
         "priorityGaps": [
-          "TWO_HAND_BLADE",
-          "DAGGER",
-          "CROSSBOW",
-          "DUAL_WIELD_PAIR",
-          "THROWN",
-          "UPGRADE_STAGE_VISUAL"
+          "UPGRADE_STAGE_VISUAL",
+          "DAMAGE_WEAR_VARIANT",
+          "RARITY_ORNAMENT_VARIANT"
         ],
         "state": "GAP_FILL_REQUIRED"
       },
@@ -10705,8 +10792,7 @@
         "WEAPON",
         "TOOL",
         "SWORD",
-        "MELEE",
-        "SWORD"
+        "MELEE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -10718,7 +10804,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "LIGHT_ATTACK_1",
+      "impactProfile": "SLASH_MEDIUM",
+      "trailProfile": "TRAIL_SHORT",
+      "skillFamily": "WEAPON_ARC",
+      "physicsFeel": "MEDIUM"
     },
     {
       "category": "WEAPON",
@@ -10772,8 +10863,7 @@
         "WEAPON",
         "TOOL",
         "SPEAR",
-        "POLEARM",
-        "SPEAR"
+        "POLEARM"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -10785,7 +10875,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "LIGHT_ATTACK_1",
+      "impactProfile": "PIERCE_MEDIUM",
+      "trailProfile": "TRAIL_THIN",
+      "skillFamily": "PROJECTILE_OR_THRUST",
+      "physicsFeel": "MEDIUM"
     },
     {
       "category": "WEAPON",
@@ -10839,8 +10934,7 @@
         "WEAPON",
         "TOOL",
         "AXE",
-        "MELEE_TOOL",
-        "AXE"
+        "MELEE_TOOL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -10852,7 +10946,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "SLASH_HEAVY",
+      "trailProfile": "TRAIL_WIDE",
+      "skillFamily": "GROUND_IMPACT",
+      "physicsFeel": "HEAVY"
     },
     {
       "category": "WEAPON",
@@ -10906,8 +11005,7 @@
         "WEAPON",
         "TOOL",
         "HAMMER",
-        "HEAVY_TOOL",
-        "HAMMER"
+        "HEAVY_TOOL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -10919,7 +11017,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "BLUNT_HEAVY",
+      "trailProfile": "TRAIL_SHORT",
+      "skillFamily": "GROUND_IMPACT",
+      "physicsFeel": "HEAVY"
     },
     {
       "category": "WEAPON",
@@ -10973,8 +11076,7 @@
         "WEAPON",
         "TOOL",
         "PICKAXE",
-        "GATHERING_TOOL",
-        "PICKAXE"
+        "GATHERING_TOOL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -10986,7 +11088,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "GATHER_SWING",
+      "impactProfile": "PIERCE_TOOL",
+      "trailProfile": "TRAIL_SHORT",
+      "skillFamily": "GATHER_OR_STAGGER",
+      "physicsFeel": "MEDIUM"
     },
     {
       "category": "WEAPON",
@@ -11040,8 +11147,7 @@
         "WEAPON",
         "TOOL",
         "BOW",
-        "RANGED",
-        "BOW"
+        "RANGED"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -11053,7 +11159,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "RANGED_DRAW_SHOT",
+      "impactProfile": "PIERCE_RANGED",
+      "trailProfile": "PROJECTILE_STREAK",
+      "skillFamily": "PROJECTILE",
+      "physicsFeel": "LIGHT"
     },
     {
       "category": "WEAPON",
@@ -11107,8 +11218,7 @@
         "WEAPON",
         "TOOL",
         "STAFF",
-        "MAGIC_FOCUS",
-        "STAFF"
+        "MAGIC_FOCUS"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -11120,7 +11230,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "CAST_BURST",
+      "impactProfile": "MAGIC_IMPACT",
+      "trailProfile": "MAGIC_TRAIL",
+      "skillFamily": "CAST_PROJECTILE",
+      "physicsFeel": "ENERGY"
     },
     {
       "category": "WEAPON",
@@ -11174,8 +11289,7 @@
         "WEAPON",
         "TOOL",
         "SHIELD",
-        "DEFENSIVE_VISUAL",
-        "SHIELD"
+        "DEFENSIVE_VISUAL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -11187,7 +11301,12 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
-      }
+      },
+      "motionProfile": "BLOCK_HOLD",
+      "impactProfile": "BLOCK_IMPACT",
+      "trailProfile": "NONE",
+      "skillFamily": "DEFENSE",
+      "physicsFeel": "HEAVY"
     },
     {
       "category": "CHARACTER",
@@ -12596,9 +12715,9 @@
         "assets/roblox/common-creature-parts-v1/quality-evidence.json"
       ],
       "id": "roblox-common-creature-parts-v1",
-      "title": "Roblox 회사 공용 생물/몬스터 외형 모듈 8종 v1",
+      "title": "Roblox 회사 공용 생물·몬스터 외형 모듈 24종 v3",
       "subfamily": "CREATURE_PARTS_PACK",
-      "itemCount": 8,
+      "itemCount": 24,
       "complementsExistingCommonSubfamilies": [
         "HEAD_CANINE",
         "JAW_LONG",
@@ -12614,19 +12733,18 @@
       ],
       "systemDepthAudit": {
         "domain": "CREATURE",
-        "currentCount": 8,
+        "currentCount": 24,
         "requiredComponentCount": 25,
         "priorityGaps": [
-          "ARACHNID",
-          "FLYING",
-          "AQUATIC",
-          "SERPENT",
-          "GOLEM",
-          "GIANT",
-          "HEAD_VARIANT",
-          "ELITE_ORNAMENT",
+          "AMORPHOUS",
+          "TORSO_VARIANT",
+          "SURFACE_VARIANT",
           "BOSS_SIGNATURE",
-          "RIG_PROFILE"
+          "RIG_PROFILE",
+          "LOCOMOTION_SET",
+          "ATTACK_SET",
+          "HIT_DEATH_SET",
+          "LOD"
         ],
         "state": "GAP_FILL_REQUIRED"
       },
@@ -12686,9 +12804,9 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "CREATURE",
+        "BIPED_TORSO",
         "TORSO_BIPED",
-        "BODY_CORE",
-        "BIPED_TORSO"
+        "BODY_CORE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -12702,7 +12820,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -12756,9 +12876,9 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "CREATURE",
+        "QUADRUPED_TORSO",
         "TORSO_QUADRUPED",
-        "BODY_CORE",
-        "QUADRUPED_TORSO"
+        "BODY_CORE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -12772,7 +12892,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -12826,9 +12948,9 @@
         "ROBLOX_REUSABLE",
         "PALETTE_ADAPTABLE",
         "CREATURE",
+        "INSECT_THORAX",
         "THORAX_INSECT",
-        "BODY_CORE",
-        "INSECT_THORAX"
+        "BODY_CORE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -12842,7 +12964,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -12897,8 +13021,7 @@
         "PALETTE_ADAPTABLE",
         "CREATURE",
         "WING_PAIR",
-        "APPENDAGE",
-        "WING_PAIR"
+        "APPENDAGE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -12912,7 +13035,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -12967,8 +13092,7 @@
         "PALETTE_ADAPTABLE",
         "CREATURE",
         "TAIL_LONG",
-        "APPENDAGE",
-        "TAIL_LONG"
+        "APPENDAGE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -12982,7 +13106,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -13037,8 +13163,7 @@
         "PALETTE_ADAPTABLE",
         "CREATURE",
         "HORN_PAIR",
-        "HEAD_APPENDAGE",
-        "HORN_PAIR"
+        "HEAD_APPENDAGE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -13052,7 +13177,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -13107,8 +13234,7 @@
         "PALETTE_ADAPTABLE",
         "CREATURE",
         "SHELL_BACK",
-        "BACK_ARMOR_VISUAL",
-        "SHELL_BACK"
+        "BACK_ARMOR_VISUAL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -13122,7 +13248,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "CREATURE",
@@ -13177,8 +13305,7 @@
         "PALETTE_ADAPTABLE",
         "CREATURE",
         "TENTACLE_CLUSTER",
-        "APPENDAGE",
-        "TENTACLE_CLUSTER"
+        "APPENDAGE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -13192,7 +13319,9 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
-      }
+      },
+      "bodyPlan": null,
+      "ecologyRole": null
     },
     {
       "category": "MATERIAL",
@@ -20492,10 +20621,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "CONSUMABLE",
-        "CONSUMABLE",
-        "MANA_POTION"
+        "MANA_POTION",
+        "ITEM",
+        "CONSUMABLE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20506,7 +20636,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20549,10 +20686,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "CONSUMABLE",
-        "CONSUMABLE",
-        "ANTIDOTE"
+        "ANTIDOTE",
+        "ITEM",
+        "CONSUMABLE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20563,7 +20701,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20606,10 +20751,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "CONSUMABLE",
-        "CONSUMABLE",
-        "STAMINA_TONIC"
+        "STAMINA_TONIC",
+        "ITEM",
+        "CONSUMABLE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20620,7 +20766,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20663,10 +20816,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "UPGRADE_SHARD",
         "UPGRADE_MATERIAL",
-        "MATERIAL",
-        "UPGRADE_SHARD"
+        "MATERIAL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20677,7 +20831,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20720,10 +20881,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "TREASURE",
-        "TREASURE",
-        "TREASURE_GEM"
+        "TREASURE_GEM",
+        "TREASURE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20734,7 +20895,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20777,10 +20945,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "SILVER_INGOT",
         "RESOURCE",
-        "MATERIAL",
-        "SILVER_INGOT"
+        "MATERIAL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20791,7 +20960,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20834,10 +21010,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "CLOTH_ROLL",
         "CRAFT_MATERIAL",
-        "MATERIAL",
-        "CLOTH_ROLL"
+        "MATERIAL"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20848,7 +21025,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20891,10 +21075,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "INGREDIENT",
-        "INGREDIENT",
-        "HERB_BUNDLE"
+        "HERB_BUNDLE",
+        "INGREDIENT"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20905,7 +21089,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -20948,10 +21139,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "FOOD",
-        "FOOD",
-        "COOKED_MEAT"
+        "COOKED_MEAT",
+        "FOOD"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -20962,7 +21153,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21005,10 +21203,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "QUEST_SCROLL",
         "QUEST_ITEM",
-        "QUEST",
-        "QUEST_SCROLL"
+        "QUEST"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21019,7 +21218,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21062,10 +21268,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "LORE",
-        "LORE",
-        "LORE_BOOK"
+        "LORE_BOOK",
+        "LORE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21076,7 +21282,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21119,10 +21332,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "COIN_POUCH",
         "CURRENCY_CONTAINER",
-        "CURRENCY",
-        "COIN_POUCH"
+        "CURRENCY"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21133,7 +21347,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21176,10 +21397,11 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
+        "ARROW_BUNDLE",
         "AMMUNITION",
-        "AMMO",
-        "ARROW_BUNDLE"
+        "AMMO"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21190,7 +21412,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21233,10 +21462,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "THROWABLE",
-        "THROWABLE",
-        "THROWING_BOMB"
+        "THROWING_BOMB",
+        "THROWABLE"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21247,7 +21476,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21290,10 +21526,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "UTILITY",
-        "UTILITY",
-        "LOCKPICK_SET"
+        "LOCKPICK_SET",
+        "UTILITY"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21304,7 +21540,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "PROP",
@@ -21347,10 +21590,10 @@
       "tags": [
         "COMPANY_COMMON_BASE",
         "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
         "WORLD_DROP_UI_SHARED_SOURCE",
-        "UTILITY",
-        "UTILITY",
-        "SIGNAL_LANTERN"
+        "SIGNAL_LANTERN",
+        "UTILITY"
       ],
       "bindingHint": {
         "gameScope": "ALL_ROBLOX_GAMES",
@@ -21361,7 +21604,14 @@
         "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
         "deriveGamePaletteInsteadOfDuplicatingBase": true,
         "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
-      }
+      },
+      "interactionFamily": null,
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
     },
     {
       "category": "UI",
@@ -32121,6 +32371,3419 @@
         "DISCOVERED",
         "RELATED"
       ]
+    },
+    {
+      "id": "roblox-common-item-grappling-kit",
+      "title": "갈고리 로프 키트",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "GRAPPLING_KIT",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "GRAPPLING_KIT",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_GRAPPLING",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_GRAPPLING",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "TRAVERSAL_GRAPPLE",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-field-scanner",
+      "title": "휴대 스캐너",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "FIELD_SCANNER",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "FIELD_SCANNER",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SCANNER",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_SCANNER",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "SCAN_INSPECT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-binoculars",
+      "title": "쌍안경",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "BINOCULARS",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "BINOCULARS",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_OPTIC",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_OPTIC",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "OBSERVE_ZOOM",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-compass-tool",
+      "title": "탐험 나침반",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "COMPASS_TOOL",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "COMPASS_TOOL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_COMPASS",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_COMPASS",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "NAVIGATION",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-chalk-marker-kit",
+      "title": "표식 키트",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "CHALK_MARKER_KIT",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "CHALK_MARKER_KIT",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_MARKER",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_MARKER",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "WORLD_MARKER",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-climbing-piton-set",
+      "title": "등반 피톤 세트",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "CLIMBING_PITON_SET",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "CLIMBING_PITON_SET",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_CLIMB",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_CLIMB",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "CLIMB_ANCHOR",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-fishing-rod",
+      "title": "낚싯대",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "FISHING_ROD",
+        "UTILITY_TOOL",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_TOOL",
+      "assetId": "FISHING_ROD",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_FISHING",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_TOOL",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_FISHING",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "FISHING",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-shovel-tool",
+      "title": "삽",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "SHOVEL_TOOL",
+        "UTILITY_TOOL",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_TOOL",
+      "assetId": "SHOVEL_TOOL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SHOVEL",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_TOOL",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_SHOVEL",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "DIG",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-watering-can",
+      "title": "물뿌리개",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "WATERING_CAN",
+        "UTILITY_TOOL",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_TOOL",
+      "assetId": "WATERING_CAN",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_WATERING",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_TOOL",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_WATERING",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "WATER_PLANTS",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-field-camera",
+      "title": "휴대 카메라",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "FIELD_CAMERA",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "FIELD_CAMERA",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_CAMERA",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_CAMERA",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_RARE",
+      "interactionFamily": "PHOTO_RECORD",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-signal-mirror",
+      "title": "신호 거울",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "SIGNAL_MIRROR",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "SIGNAL_MIRROR",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SIGNAL_MIRROR",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_SIGNAL_MIRROR",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "SIGNAL_REFLECT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-rope-coil",
+      "title": "로프 묶음",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "ROPE_COIL",
+        "UTILITY_MATERIAL",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_MATERIAL",
+      "assetId": "ROPE_COIL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_ROPE",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_MATERIAL",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_ROPE",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "ROPE_ATTACH",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-repair-multitool",
+      "title": "수리 멀티툴",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "REPAIR_MULTITOOL",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "REPAIR_MULTITOOL",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_REPAIR",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_REPAIR",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "REPAIR",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-portable-beacon",
+      "title": "휴대 비콘",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "PORTABLE_BEACON",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "PORTABLE_BEACON",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_BEACON",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_BEACON",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_EPIC",
+      "interactionFamily": "WAYPOINT_SIGNAL",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-specimen-jar",
+      "title": "표본병",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "SPECIMEN_JAR",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "SPECIMEN_JAR",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_SPECIMEN",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_SPECIMEN",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "STACKABLE_SMALL",
+      "rarityBand": "COMMON_TO_RARE",
+      "interactionFamily": "SPECIMEN_COLLECT",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "id": "roblox-common-item-camp-kit",
+      "title": "휴대 캠프 키트",
+      "category": "PROP",
+      "family": "PROP",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-items-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
+      "previewPath": "/assets/roblox/common-items-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "sameAssetDnaAcrossWorldEquipDropAndUi": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WORLD_DROP_UI_SHARED_SOURCE",
+        "CAMP_KIT",
+        "UTILITY_GADGET",
+        "UTILITY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-items-v1/RobloxCommonItems.luau",
+        "assets/roblox/common-items-v1/catalog.json",
+        "assets/roblox/common-items-v1/quality-evidence.json"
+      ],
+      "subfamily": "UTILITY_GADGET",
+      "assetId": "CAMP_KIT",
+      "itemRole": "UTILITY",
+      "familyRootId": "UTILITY_CAMP",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "PROP",
+        "subfamily": "UTILITY_GADGET",
+        "itemRole": "UTILITY",
+        "familyRootId": "UTILITY_CAMP",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority": true
+      },
+      "inventoryCategory": "UTILITY",
+      "stackProfile": "UNIQUE",
+      "rarityBand": "UNCOMMON_TO_RARE",
+      "interactionFamily": "CAMP_DEPLOY",
+      "presentationRoles": [
+        "WORLD_MODEL",
+        "DROP_MODEL",
+        "VIEWPORT_ICON",
+        "EQUIPPED_VISUAL_WHEN_APPLICABLE"
+      ]
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-greatsword",
+      "title": "대검",
+      "subfamily": "TWO_HAND_BLADE",
+      "assetId": "GREATSWORD",
+      "toolRole": "HEAVY_MELEE",
+      "familyRootId": "TOOL_GREATSWORD",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "GREATSWORD",
+        "TWO_HAND_BLADE",
+        "HEAVY_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "TWO_HAND_BLADE",
+        "toolRole": "HEAVY_MELEE",
+        "familyRootId": "TOOL_GREATSWORD",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "SLASH_HEAVY",
+      "trailProfile": "TRAIL_WIDE",
+      "skillFamily": "WEAPON_ARC",
+      "physicsFeel": "HEAVY"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-dagger",
+      "title": "단검",
+      "subfamily": "DAGGER",
+      "assetId": "DAGGER",
+      "toolRole": "FAST_MELEE",
+      "familyRootId": "TOOL_DAGGER",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "DAGGER",
+        "FAST_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "DAGGER",
+        "toolRole": "FAST_MELEE",
+        "familyRootId": "TOOL_DAGGER",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "LIGHT_ATTACK_1",
+      "impactProfile": "PIERCE_LIGHT",
+      "trailProfile": "TRAIL_THIN",
+      "skillFamily": "DASH_STRIKE",
+      "physicsFeel": "LIGHT"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-mace",
+      "title": "철퇴",
+      "subfamily": "HAMMER_MACE",
+      "assetId": "MACE",
+      "toolRole": "BLUNT_MELEE",
+      "familyRootId": "TOOL_MACE",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "MACE",
+        "HAMMER_MACE",
+        "BLUNT_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "HAMMER_MACE",
+        "toolRole": "BLUNT_MELEE",
+        "familyRootId": "TOOL_MACE",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "BLUNT_HEAVY",
+      "trailProfile": "TRAIL_SHORT",
+      "skillFamily": "GROUND_IMPACT",
+      "physicsFeel": "HEAVY"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-crossbow",
+      "title": "석궁",
+      "subfamily": "CROSSBOW",
+      "assetId": "CROSSBOW",
+      "toolRole": "RANGED",
+      "familyRootId": "TOOL_CROSSBOW",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "CROSSBOW",
+        "RANGED"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "CROSSBOW",
+        "toolRole": "RANGED",
+        "familyRootId": "TOOL_CROSSBOW",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "RANGED_DRAW_SHOT",
+      "impactProfile": "PIERCE_RANGED",
+      "trailProfile": "PROJECTILE_STREAK",
+      "skillFamily": "PROJECTILE",
+      "physicsFeel": "MEDIUM"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-dual-blades",
+      "title": "쌍검",
+      "subfamily": "DUAL_WIELD_PAIR",
+      "assetId": "DUAL_BLADES",
+      "toolRole": "FAST_MELEE",
+      "familyRootId": "TOOL_DUAL_BLADES",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "DUAL_BLADES",
+        "DUAL_WIELD_PAIR",
+        "FAST_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "DUAL_WIELD_PAIR",
+        "toolRole": "FAST_MELEE",
+        "familyRootId": "TOOL_DUAL_BLADES",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "LIGHT_ATTACK_1",
+      "impactProfile": "SLASH_FAST",
+      "trailProfile": "TRAIL_DOUBLE",
+      "skillFamily": "DASH_STRIKE",
+      "physicsFeel": "LIGHT"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-throwing-knife",
+      "title": "투척 단검",
+      "subfamily": "THROWN",
+      "assetId": "THROWING_KNIFE",
+      "toolRole": "THROWN",
+      "familyRootId": "TOOL_THROWING_KNIFE",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "THROWING_KNIFE",
+        "THROWN"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "THROWN",
+        "toolRole": "THROWN",
+        "familyRootId": "TOOL_THROWING_KNIFE",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "RANGED_DRAW_SHOT",
+      "impactProfile": "PIERCE_LIGHT",
+      "trailProfile": "PROJECTILE_STREAK",
+      "skillFamily": "PROJECTILE",
+      "physicsFeel": "LIGHT"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-great-axe",
+      "title": "대형 도끼",
+      "subfamily": "GREAT_AXE",
+      "assetId": "GREAT_AXE",
+      "toolRole": "HEAVY_MELEE",
+      "familyRootId": "TOOL_GREAT_AXE",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "GREAT_AXE",
+        "HEAVY_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "GREAT_AXE",
+        "toolRole": "HEAVY_MELEE",
+        "familyRootId": "TOOL_GREAT_AXE",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "SLASH_HEAVY",
+      "trailProfile": "TRAIL_WIDE",
+      "skillFamily": "GROUND_IMPACT",
+      "physicsFeel": "VERY_HEAVY"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-warhammer",
+      "title": "전투망치",
+      "subfamily": "WARHAMMER",
+      "assetId": "WARHAMMER",
+      "toolRole": "HEAVY_MELEE",
+      "familyRootId": "TOOL_WARHAMMER",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "WARHAMMER",
+        "HEAVY_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "WARHAMMER",
+        "toolRole": "HEAVY_MELEE",
+        "familyRootId": "TOOL_WARHAMMER",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "BLUNT_CRUSH",
+      "trailProfile": "TRAIL_SHORT",
+      "skillFamily": "GROUND_IMPACT",
+      "physicsFeel": "VERY_HEAVY"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-wand",
+      "title": "마법봉",
+      "subfamily": "MAGIC_FOCUS",
+      "assetId": "WAND",
+      "toolRole": "MAGIC_FOCUS",
+      "familyRootId": "TOOL_WAND",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "WAND",
+        "MAGIC_FOCUS"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "MAGIC_FOCUS",
+        "toolRole": "MAGIC_FOCUS",
+        "familyRootId": "TOOL_WAND",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "CAST_BURST",
+      "impactProfile": "MAGIC_IMPACT",
+      "trailProfile": "MAGIC_TRAIL",
+      "skillFamily": "CAST_PROJECTILE",
+      "physicsFeel": "ENERGY"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-scythe",
+      "title": "낫",
+      "subfamily": "SCYTHE",
+      "assetId": "SCYTHE",
+      "toolRole": "POLEARM",
+      "familyRootId": "TOOL_SCYTHE",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "SCYTHE",
+        "POLEARM"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "SCYTHE",
+        "toolRole": "POLEARM",
+        "familyRootId": "TOOL_SCYTHE",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "HEAVY_ATTACK_1",
+      "impactProfile": "SLASH_ARC",
+      "trailProfile": "TRAIL_WIDE",
+      "skillFamily": "WEAPON_ARC",
+      "physicsFeel": "MEDIUM_HEAVY"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-club",
+      "title": "곤봉",
+      "subfamily": "CLUB",
+      "assetId": "CLUB",
+      "toolRole": "BLUNT_MELEE",
+      "familyRootId": "TOOL_CLUB",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "CLUB",
+        "BLUNT_MELEE"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "CLUB",
+        "toolRole": "BLUNT_MELEE",
+        "familyRootId": "TOOL_CLUB",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "LIGHT_ATTACK_1",
+      "impactProfile": "BLUNT_MEDIUM",
+      "trailProfile": "TRAIL_SHORT",
+      "skillFamily": "STAGGER_STRIKE",
+      "physicsFeel": "MEDIUM"
+    },
+    {
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "daechung-rpg",
+        "monster-adventure",
+        "village-dungeons",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-tools-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+      "previewPath": "/assets/roblox/common-tools-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualGripAttachment": "VisualGrip",
+      "sourceFiles": [
+        "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
+        "assets/roblox/common-tools-v1/catalog.json",
+        "assets/roblox/common-tools-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-tool-javelin",
+      "title": "투창",
+      "subfamily": "THROWN",
+      "assetId": "JAVELIN",
+      "toolRole": "POLEARM_THROWN",
+      "familyRootId": "TOOL_JAVELIN",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "WEAPON",
+        "TOOL",
+        "JAVELIN",
+        "THROWN",
+        "POLEARM_THROWN"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "WEAPON",
+        "subfamily": "THROWN",
+        "toolRole": "POLEARM_THROWN",
+        "familyRootId": "TOOL_JAVELIN",
+        "visualGripAttachment": "VisualGrip",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority": true
+      },
+      "motionProfile": "RANGED_DRAW_SHOT",
+      "impactProfile": "PIERCE_HEAVY",
+      "trailProfile": "PROJECTILE_STREAK",
+      "skillFamily": "PROJECTILE",
+      "physicsFeel": "MEDIUM"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-arachnid-core",
+      "title": "거미형 코어",
+      "subfamily": "ARACHNID_CORE",
+      "assetId": "ARACHNID_CORE",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_ARACHNID",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "ARACHNID_CORE",
+        "BODY_CORE",
+        "ARACHNID",
+        "AMBUSH_PREDATOR"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "ARACHNID_CORE",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_ARACHNID",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "ARACHNID",
+      "ecologyRole": "AMBUSH_PREDATOR"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-serpent-body",
+      "title": "뱀형 몸체",
+      "subfamily": "SERPENT_BODY",
+      "assetId": "SERPENT_BODY",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_SERPENT",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "SERPENT_BODY",
+        "BODY_CORE",
+        "SERPENT",
+        "AMBUSH_PREDATOR"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "SERPENT_BODY",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_SERPENT",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "SERPENT",
+      "ecologyRole": "AMBUSH_PREDATOR"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-aquatic-body",
+      "title": "수생형 몸체",
+      "subfamily": "AQUATIC_BODY",
+      "assetId": "AQUATIC_BODY",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_AQUATIC",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "AQUATIC_BODY",
+        "BODY_CORE",
+        "AQUATIC",
+        "AQUATIC_PREDATOR_OR_PREY"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "AQUATIC_BODY",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_AQUATIC",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "AQUATIC",
+      "ecologyRole": "AQUATIC_PREDATOR_OR_PREY"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-flying-body",
+      "title": "비행형 몸체",
+      "subfamily": "FLYING_BODY",
+      "assetId": "FLYING_BODY",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_FLYING",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "FLYING_BODY",
+        "BODY_CORE",
+        "FLYING",
+        "FLYING_PREDATOR_OR_SCAVENGER"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "FLYING_BODY",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_FLYING",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "FLYING",
+      "ecologyRole": "FLYING_PREDATOR_OR_SCAVENGER"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-golem-core",
+      "title": "골렘 코어",
+      "subfamily": "GOLEM_CORE",
+      "assetId": "GOLEM_CORE",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_GOLEM",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "GOLEM_CORE",
+        "BODY_CORE",
+        "GOLEM",
+        "CONSTRUCT_GUARDIAN"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "GOLEM_CORE",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_GOLEM",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "GOLEM",
+      "ecologyRole": "CONSTRUCT_GUARDIAN"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-giant-torso",
+      "title": "거대형 몸통",
+      "subfamily": "GIANT_TORSO",
+      "assetId": "GIANT_TORSO",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_GIANT",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "GIANT_TORSO",
+        "BODY_CORE",
+        "GIANT",
+        "GIANT_OR_BOSS"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "GIANT_TORSO",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_GIANT",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "GIANT",
+      "ecologyRole": "GIANT_OR_BOSS"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-humanoid-raider-torso",
+      "title": "인간형 약탈자 몸통",
+      "subfamily": "HUMANOID_RAIDER_TORSO",
+      "assetId": "HUMANOID_RAIDER_TORSO",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_HUMANOID",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "HUMANOID_RAIDER_TORSO",
+        "BODY_CORE",
+        "HUMANOID",
+        "HUMANOID_FACTION"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "HUMANOID_RAIDER_TORSO",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_HUMANOID",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "HUMANOID",
+      "ecologyRole": "HUMANOID_FACTION"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-undead-torso",
+      "title": "언데드 몸통",
+      "subfamily": "UNDEAD_TORSO",
+      "assetId": "UNDEAD_TORSO",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_UNDEAD",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "UNDEAD_TORSO",
+        "BODY_CORE",
+        "UNDEAD"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "UNDEAD_TORSO",
+        "creatureRole": "BODY_CORE",
+        "familyRootId": "CREATURE_UNDEAD",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "UNDEAD",
+      "ecologyRole": "UNDEAD"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-predator-head",
+      "title": "포식자 머리",
+      "subfamily": "PREDATOR_HEAD",
+      "assetId": "PREDATOR_HEAD",
+      "creatureRole": "HEAD_VARIANT",
+      "familyRootId": "CREATURE_HEAD",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "PREDATOR_HEAD",
+        "HEAD_VARIANT",
+        "MULTI",
+        "PREDATOR"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "PREDATOR_HEAD",
+        "creatureRole": "HEAD_VARIANT",
+        "familyRootId": "CREATURE_HEAD",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "MULTI",
+      "ecologyRole": "PREDATOR"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-grazer-head",
+      "title": "초식동물 머리",
+      "subfamily": "GRAZER_HEAD",
+      "assetId": "GRAZER_HEAD",
+      "creatureRole": "HEAD_VARIANT",
+      "familyRootId": "CREATURE_HEAD",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "GRAZER_HEAD",
+        "HEAD_VARIANT",
+        "QUADRUPED",
+        "PREY_GRAZER"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "GRAZER_HEAD",
+        "creatureRole": "HEAD_VARIANT",
+        "familyRootId": "CREATURE_HEAD",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "QUADRUPED",
+      "ecologyRole": "PREY_GRAZER"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-insect-head",
+      "title": "곤충 머리",
+      "subfamily": "INSECT_HEAD",
+      "assetId": "INSECT_HEAD",
+      "creatureRole": "HEAD_VARIANT",
+      "familyRootId": "CREATURE_INSECT_HEAD",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "INSECT_HEAD",
+        "HEAD_VARIANT",
+        "INSECT"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "INSECT_HEAD",
+        "creatureRole": "HEAD_VARIANT",
+        "familyRootId": "CREATURE_INSECT_HEAD",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "INSECT",
+      "ecologyRole": "INSECT"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-arachnid-leg-cluster",
+      "title": "거미 다리 군락",
+      "subfamily": "ARACHNID_LEG_CLUSTER",
+      "assetId": "ARACHNID_LEG_CLUSTER",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_ARACHNID_LEGS",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "ARACHNID_LEG_CLUSTER",
+        "APPENDAGE",
+        "ARACHNID"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "ARACHNID_LEG_CLUSTER",
+        "creatureRole": "APPENDAGE",
+        "familyRootId": "CREATURE_ARACHNID_LEGS",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "ARACHNID",
+      "ecologyRole": "ARACHNID"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-fin-pair",
+      "title": "지느러미 한 쌍",
+      "subfamily": "FIN_PAIR",
+      "assetId": "FIN_PAIR",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_FINS",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "FIN_PAIR",
+        "APPENDAGE",
+        "AQUATIC"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "FIN_PAIR",
+        "creatureRole": "APPENDAGE",
+        "familyRootId": "CREATURE_FINS",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "AQUATIC",
+      "ecologyRole": "AQUATIC"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-claw-pair",
+      "title": "발톱 한 쌍",
+      "subfamily": "CLAW_PAIR",
+      "assetId": "CLAW_PAIR",
+      "creatureRole": "APPENDAGE",
+      "familyRootId": "CREATURE_CLAWS",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "CLAW_PAIR",
+        "APPENDAGE",
+        "MULTI",
+        "PREDATOR"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "CLAW_PAIR",
+        "creatureRole": "APPENDAGE",
+        "familyRootId": "CREATURE_CLAWS",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "MULTI",
+      "ecologyRole": "PREDATOR"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-mandible-pair",
+      "title": "턱 한 쌍",
+      "subfamily": "MANDIBLE_PAIR",
+      "assetId": "MANDIBLE_PAIR",
+      "creatureRole": "HEAD_APPENDAGE",
+      "familyRootId": "CREATURE_MANDIBLES",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "MANDIBLE_PAIR",
+        "HEAD_APPENDAGE",
+        "INSECT",
+        "INSECT_PREDATOR"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "MANDIBLE_PAIR",
+        "creatureRole": "HEAD_APPENDAGE",
+        "familyRootId": "CREATURE_MANDIBLES",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "INSECT",
+      "ecologyRole": "INSECT_PREDATOR"
+    },
+    {
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "survival",
+        "monster-adventure",
+        "daechung-rpg",
+        "horror-escape-room",
+        "seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "packId": "roblox-common-creature-parts-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+      "previewPath": "/assets/roblox/common-creature-parts-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_BODY_PLAN_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "visualAnchor": "CreatureVisualAnchor",
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ],
+      "id": "roblox-common-creature-part-elite-ornament",
+      "title": "엘리트 장식",
+      "subfamily": "ELITE_ORNAMENT",
+      "assetId": "ELITE_ORNAMENT",
+      "creatureRole": "ELITE_ORNAMENT",
+      "familyRootId": "CREATURE_ELITE",
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "PALETTE_ADAPTABLE",
+        "CREATURE",
+        "ELITE_ORNAMENT",
+        "MULTI",
+        "ELITE_VARIANT"
+      ],
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "CREATURE",
+        "subfamily": "ELITE_ORNAMENT",
+        "creatureRole": "ELITE_ORNAMENT",
+        "familyRootId": "CREATURE_ELITE",
+        "visualAnchor": "CreatureVisualAnchor",
+        "bodyPlanCompatibilityRequired": true,
+        "rigBindingState": "AUTHORING_REQUIRED",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGamePaletteInsteadOfDuplicatingBase": true,
+        "preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority": true
+      },
+      "bodyPlan": "MULTI",
+      "ecologyRole": "ELITE_VARIANT"
+    },
+    {
+      "id": "roblox-common-vfx-block-impact",
+      "title": "Roblox 공용 BLOCK_IMPACT",
+      "category": "VFX",
+      "family": "VFX",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-vfx-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+      "previewPath": "/assets/roblox/common-vfx-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "THEME_ADAPTABLE",
+        "NO_EXTERNAL_TEXTURE_DEPENDENCY",
+        "BLOCK_IMPACT",
+        "BLOCK_CONTACT",
+        "BLOCK"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "subfamily": "BLOCK_IMPACT",
+      "atomId": "BLOCK_IMPACT",
+      "factory": "CreateBlockImpact",
+      "role": "BLOCK_CONTACT",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "VFX",
+        "atomId": "BLOCK_IMPACT",
+        "factory": "CreateBlockImpact",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
+        "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
+      },
+      "systemRole": "BLOCK"
+    },
+    {
+      "id": "roblox-common-vfx-parry-perfect-flash",
+      "title": "Roblox 공용 PARRY_PERFECT_FLASH",
+      "category": "VFX",
+      "family": "VFX",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-vfx-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+      "previewPath": "/assets/roblox/common-vfx-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "THEME_ADAPTABLE",
+        "NO_EXTERNAL_TEXTURE_DEPENDENCY",
+        "PARRY_PERFECT_FLASH",
+        "PERFECT_PARRY_CONFIRMATION",
+        "PARRY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "subfamily": "PARRY_PERFECT_FLASH",
+      "atomId": "PARRY_PERFECT_FLASH",
+      "factory": "CreatePerfectParryFlash",
+      "role": "PERFECT_PARRY_CONFIRMATION",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "VFX",
+        "atomId": "PARRY_PERFECT_FLASH",
+        "factory": "CreatePerfectParryFlash",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
+        "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
+      },
+      "systemRole": "PARRY"
+    },
+    {
+      "id": "roblox-common-vfx-guard-break-burst",
+      "title": "Roblox 공용 GUARD_BREAK_BURST",
+      "category": "VFX",
+      "family": "VFX",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-vfx-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+      "previewPath": "/assets/roblox/common-vfx-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "THEME_ADAPTABLE",
+        "NO_EXTERNAL_TEXTURE_DEPENDENCY",
+        "GUARD_BREAK_BURST",
+        "GUARD_BREAK_WARNING",
+        "BLOCK"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "subfamily": "GUARD_BREAK_BURST",
+      "atomId": "GUARD_BREAK_BURST",
+      "factory": "CreateGuardBreakBurst",
+      "role": "GUARD_BREAK_WARNING",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "VFX",
+        "atomId": "GUARD_BREAK_BURST",
+        "factory": "CreateGuardBreakBurst",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
+        "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
+      },
+      "systemRole": "BLOCK"
+    },
+    {
+      "id": "roblox-common-vfx-attack-telegraph-pulse",
+      "title": "Roblox 공용 ATTACK_TELEGRAPH_PULSE",
+      "category": "VFX",
+      "family": "VFX",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-vfx-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+      "previewPath": "/assets/roblox/common-vfx-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "THEME_ADAPTABLE",
+        "NO_EXTERNAL_TEXTURE_DEPENDENCY",
+        "ATTACK_TELEGRAPH_PULSE",
+        "ATTACK_TELEGRAPH_PRESENTATION",
+        "INTERACTION"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "subfamily": "ATTACK_TELEGRAPH_PULSE",
+      "atomId": "ATTACK_TELEGRAPH_PULSE",
+      "factory": "CreateAttackTelegraphPulse",
+      "role": "ATTACK_TELEGRAPH_PRESENTATION",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "VFX",
+        "atomId": "ATTACK_TELEGRAPH_PULSE",
+        "factory": "CreateAttackTelegraphPulse",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
+        "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
+      },
+      "systemRole": "INTERACTION"
+    },
+    {
+      "id": "roblox-common-vfx-counter-ready-pulse",
+      "title": "Roblox 공용 COUNTER_READY_PULSE",
+      "category": "VFX",
+      "family": "VFX",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "packId": "roblox-common-vfx-v1",
+      "qualityTarget": 100,
+      "authoringChecklistScore": 100,
+      "authoringChecklistScoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+      "qualityScoreBlocksBinding": false,
+      "lowScoreBindingAllowedWhenNoBetterSafeCompatibleAlternative": true,
+      "gameplayAuthority": false,
+      "path": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+      "previewPath": "/assets/roblox/common-vfx-v1/preview.svg",
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+      "compatibleGameScope": "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH",
+      "styleAdaptationRequiredPerGame": true,
+      "automaticCrossGameReuseAllowed": true,
+      "crossGameReuseRequiresCompatibilityPass": true,
+      "tags": [
+        "COMPANY_COMMON_BASE",
+        "ROBLOX_REUSABLE",
+        "THEME_ADAPTABLE",
+        "NO_EXTERNAL_TEXTURE_DEPENDENCY",
+        "COUNTER_READY_PULSE",
+        "COUNTER_WINDOW_PRESENTATION",
+        "PARRY"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "subfamily": "COUNTER_READY_PULSE",
+      "atomId": "COUNTER_READY_PULSE",
+      "factory": "CreateCounterReadyPulse",
+      "role": "COUNTER_WINDOW_PRESENTATION",
+      "bindingHint": {
+        "gameScope": "ALL_ROBLOX_GAMES",
+        "family": "VFX",
+        "atomId": "COUNTER_READY_PULSE",
+        "factory": "CreateCounterReadyPulse",
+        "preferCommonBaseWhenCompatibilityAndQualityAreEquivalent": true,
+        "deriveGameColorScaleDurationInsteadOfDuplicatingBase": true,
+        "preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority": true
+      },
+      "systemRole": "PARRY"
     }
   ],
   "research": [
@@ -36361,7 +40024,7 @@
       {
         "domain": "ITEM",
         "packId": "roblox-common-items-v1",
-        "currentCount": 24,
+        "currentCount": 40,
         "requiredComponentCount": 20,
         "priorityGaps": [],
         "state": "BASE_COVERAGE_STARTED"
@@ -36369,15 +40032,12 @@
       {
         "domain": "WEAPON",
         "packId": "roblox-common-tools-v1",
-        "currentCount": 8,
+        "currentCount": 20,
         "requiredComponentCount": 20,
         "priorityGaps": [
-          "TWO_HAND_BLADE",
-          "DAGGER",
-          "CROSSBOW",
-          "DUAL_WIELD_PAIR",
-          "THROWN",
-          "UPGRADE_STAGE_VISUAL"
+          "UPGRADE_STAGE_VISUAL",
+          "DAMAGE_WEAR_VARIANT",
+          "RARITY_ORNAMENT_VARIANT"
         ],
         "state": "GAP_FILL_REQUIRED"
       },
@@ -36419,19 +40079,27 @@
       {
         "domain": "VFX",
         "packId": "roblox-common-vfx-v1",
-        "currentCount": 3,
+        "currentCount": 8,
         "requiredComponentCount": 22,
         "priorityGaps": [
           "CRITICAL",
-          "BLOCK",
-          "PARRY",
           "DODGE",
           "HEAL",
           "BUFF",
           "DEBUFF",
-          "LOOT_RARITY",
+          "STATUS",
+          "LOOT_COMMON",
+          "LOOT_RARE",
+          "LOOT_LEGENDARY",
           "UPGRADE",
-          "CRAFT"
+          "CRAFT",
+          "DISMANTLE",
+          "QUEST_UPDATE",
+          "ENVIRONMENT",
+          "WEATHER",
+          "DESTRUCTION",
+          "BOSS",
+          "MOBILE_DENSITY"
         ],
         "state": "GAP_FILL_REQUIRED"
       },
@@ -36449,6 +40117,7 @@
         "currentCount": 11,
         "requiredComponentCount": 25,
         "priorityGaps": [
+          "LEATHER",
           "SKIN",
           "BONE",
           "WATER",
@@ -36456,10 +40125,14 @@
           "SAND",
           "SNOW",
           "MOSS",
+          "CRYSTAL",
+          "EMISSIVE",
           "CORROSION",
           "DIRT",
           "WET_DRY",
-          "DAMAGE"
+          "DAMAGE",
+          "WEATHERING",
+          "STYLE_VARIANT"
         ],
         "state": "GAP_FILL_REQUIRED"
       },
@@ -36503,19 +40176,18 @@
       {
         "domain": "CREATURE",
         "packId": "roblox-common-creature-parts-v1",
-        "currentCount": 8,
+        "currentCount": 24,
         "requiredComponentCount": 25,
         "priorityGaps": [
-          "ARACHNID",
-          "FLYING",
-          "AQUATIC",
-          "SERPENT",
-          "GOLEM",
-          "GIANT",
-          "HEAD_VARIANT",
-          "ELITE_ORNAMENT",
+          "AMORPHOUS",
+          "TORSO_VARIANT",
+          "SURFACE_VARIANT",
           "BOSS_SIGNATURE",
-          "RIG_PROFILE"
+          "RIG_PROFILE",
+          "LOCOMOTION_SET",
+          "ATTACK_SET",
+          "HIT_DEATH_SET",
+          "LOD"
         ],
         "state": "GAP_FILL_REQUIRED"
       },
@@ -36978,7 +40650,12 @@
     "propSoundRoleCount": 38,
     "seedDerivedIdeaSource": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "uiRegistryAtomCount": 169,
-    "seedDerivedIdeaVersion": 2
+    "seedDerivedIdeaVersion": 2,
+    "itemCount": 40,
+    "toolCount": 20,
+    "creaturePartCount": 24,
+    "vfxAtomCount": 8,
+    "materialAtomCount": 11
   },
   "environmentStateContract": {
     "version": 1,
