@@ -2912,7 +2912,7 @@ test('common presentation v1 provides reusable loading and five short intro mode
 });
 
 test('Vibe loadout returns machine-readable discovery and use contract from existing canonical asset selector',()=>{
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,4);
+  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,3);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.enabled,true);
   assert.equal(INTERNAL_ASSET_REUSE_POLICY.machineReadableDiscovery.newPipelineCreated,false);
   const asset={
@@ -2930,10 +2930,7 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   });
   assert.equal(loadout.complete,true);
   assert.equal(loadout.machineReadableDiscovery,true);
-  assert.equal(loadout.selectionContractVersion,4);
-  assert.equal(loadout.genreRestrictionApplied,false);
-  assert.equal(loadout.crossGenreReuseAllowed,true);
-  assert.equal(loadout.genreUsedForEligibility,false);
+  assert.equal(loadout.selectionContractVersion,3);
   assert.equal(loadout.newPipelineCreated,false);
   assert.equal(loadout.selections[0].assetId,'common-forest-kit');
   assert.equal(loadout.selections[0].packId,'roblox-common-environment-v1');
@@ -2941,48 +2938,4 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   assert.ok(loadout.selections[0].machineTags.includes('FOREST'));
   assert.equal(loadout.selections[0].usageContract.developmentStageAutoDiscovery,true);
   assert.equal(loadout.selections[0].companyCommonBase,true);
-});
-
-test('internal asset library never blocks reuse by source or target genre',()=>{
-  const horrorAsset={
-    id:'cross-genre-hud',
-    family:'UI',
-    subfamily:'HUD',
-    genre:'SURVIVAL_HORROR_ESCAPE',
-    platform:'ROBLOX',
-    status:'REPO_ASSET',
-    license:'project-original',
-    sourceFiles:['assets/cross-genre-hud.luau'],
-    internalAuditScore:900,
-    styleFamily:'DARK_FANTASY'
-  };
-  const gameDna={
-    targetPlatform:'ROBLOX',
-    genre:'IDLE_GROWTH_RPG',
-    concept:createConceptProfile({styleFamily:'CARTOON'})
-  };
-  const reuse=evaluateInternalAssetReuse({
-    asset:horrorAsset,
-    gameDna,
-    requirement:{family:'UI',subfamily:'HUD',genre:'IDLE_GROWTH_RPG'}
-  });
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.version,4);
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.genrePolicy.genreRestrictionForbidden,true);
-  assert.equal(INTERNAL_ASSET_REUSE_POLICY.genrePolicy.crossGenreReuseAllowed,true);
-  assert.equal(reuse.usable,true);
-  assert.equal(reuse.genreRestrictionApplied,false);
-  assert.equal(reuse.crossGenreReuseAllowed,true);
-  assert.equal(reuse.genreUsedForEligibility,false);
-  assert.ok(!reuse.hardBlockers.some(value=>/GENRE/i.test(value)));
-
-  const loadout=buildStudioAssetLoadout({
-    requirements:[{family:'UI',subfamily:'HUD',required:true,genre:'IDLE_GROWTH_RPG'}],
-    assets:[horrorAsset],
-    gameDna
-  });
-  assert.equal(loadout.complete,true);
-  assert.equal(loadout.selections[0].assetId,'cross-genre-hud');
-  assert.equal(loadout.genreRestrictionApplied,false);
-  assert.equal(loadout.crossGenreReuseAllowed,true);
-  assert.equal(loadout.genreUsedForEligibility,false);
 });

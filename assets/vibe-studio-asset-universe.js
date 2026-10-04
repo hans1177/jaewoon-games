@@ -196,15 +196,7 @@ export const INTERNAL_ASSET_ADAPTATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
-  version:4,
-  genrePolicy:Object.freeze({
-    genreRestrictionForbidden:true,
-    crossGenreReuseAllowed:true,
-    sourceGenreNeverBlocksUse:true,
-    targetGenreNeverBlocksUse:true,
-    genreMayInfluencePreferenceOnly:true,
-    styleMismatchUsesAdaptationNotGenreRejection:true
-  }),
+  version:3,
   lowScoreUseAllowed:true,
   scoreIsNotUsageGate:true,
   studioRequiredForUse:false,
@@ -373,9 +365,6 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     hardBlockers:freezeList(hardBlockers),
     lowScoreUseAllowed:true,
     scoreIsNotUsageGate:true,
-    genreRestrictionApplied:false,
-    crossGenreReuseAllowed:true,
-    genreUsedForEligibility:false,
     provenanceAvailable
   });
 }
@@ -1816,12 +1805,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     priorAssetHistoryPreserved:true,
     noEmptySlotDuringReplacement:true,
     machineReadableDiscovery:true,
-    selectionContractVersion:4,
-    genreRestrictionApplied:false,
-    crossGenreReuseAllowed:true,
-    genreUsedForEligibility:false,
-    sourceGenreNeverBlocksUse:true,
-    targetGenreNeverBlocksUse:true,
+    selectionContractVersion:3,
     newPipelineCreated:false,
     gameplayAuthority:false
   });
