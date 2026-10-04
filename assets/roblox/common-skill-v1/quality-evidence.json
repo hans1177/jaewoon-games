@@ -1,12 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-skill-v1",
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
-      "threeReusableCurrentAtoms": 15,
       "commonVfxDependencyReuse": 15,
       "castOriginNativeAttachment": 10,
       "telegraphMobileSegmentCap": 10,
@@ -14,7 +13,12 @@
       "projectOriginalLicenseAndProvenance": 10,
       "automaticCrossGameReuseMetadata": 10,
       "dependencyGraphExplicit": 10,
-      "gameplayAuthorityIsolation": 10
+      "gameplayAuthorityIsolation": 10,
+      "twentyReusableCurrentAtoms": 20,
+      "fullPresentationRoleCoverage": true,
+      "audioPlaybackAuthorityFalse": true,
+      "cameraAuthorityFalse": true,
+      "mobileDensityVariant": true
     }
   },
   "quality120": {
@@ -27,5 +31,34 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 3
+  "sourceAssetCount": 20,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 3,
+    "currentCount": 20,
+    "presentationRoles": [
+      "CAST",
+      "TELEGRAPH",
+      "PROJECTILE",
+      "TRAIL",
+      "IMPACT",
+      "AREA",
+      "CHANNEL",
+      "BEAM",
+      "SUMMON",
+      "DASH",
+      "SHIELD",
+      "HEAL",
+      "AURA",
+      "STATUS_APPLY",
+      "STATUS_CLEANSE",
+      "INTERRUPT",
+      "ICON",
+      "AUDIO_ROLE",
+      "CAMERA_ROLE",
+      "MOBILE_DENSITY"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  }
 }
