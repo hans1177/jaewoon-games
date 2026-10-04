@@ -12,15 +12,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
+      "calls": 7,
       "successes": 1,
-      "failures": 4,
+      "failures": 6,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12863,
-      "lastMs": 2782,
+      "totalMs": 17719,
+      "lastMs": 3446,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T15:40:09.405Z"
+      "updatedAt": "2026-10-04T15:41:55.953Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -67,15 +67,15 @@
       "updatedAt": "2026-10-04T15:37:59.148Z"
     },
     "gemini:gemini-3.1-pro-preview": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8730,
-      "lastMs": 8730,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 8h22m0.763563773s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerMinute-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.1-pro\", \"location\": \"global\"",
-      "updatedAt": "2026-10-04T15:37:59.254Z"
+      "totalMs": 12281,
+      "lastMs": 3551,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 8h18m3.95804033s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
+      "updatedAt": "2026-10-04T15:41:56.058Z"
     },
     "gemini:gemini-2.5-pro": {
       "calls": 1,
@@ -111,36 +111,38 @@
       "updatedAt": "2026-10-04T15:37:59.550Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 4,
+      "calls": 6,
       "successes": 0,
-      "failures": 4,
+      "failures": 6,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 32387,
-      "lastMs": 5713,
+      "totalMs": 43647,
+      "lastMs": 6517,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T15:40:12.336Z"
+      "updatedAt": "2026-10-04T15:41:59.024Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 120002,
-      "lastMs": 120002,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-04T15:40:02.926Z"
+      "jsonFailures": 1,
+      "totalMs": 219064,
+      "lastMs": 99062,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-04T15:41:51.398Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T15:37:50.369Z",
-  "updatedAt": "2026-10-04T15:40:12.336Z",
+  "updatedAt": "2026-10-04T15:41:59.024Z",
   "lastSuccessfulModelCallAt": "2026-10-04T15:40:06.621Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
-  "effectiveDesignerProvider": "GEMINI"
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "designer_draft",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections"
 }
