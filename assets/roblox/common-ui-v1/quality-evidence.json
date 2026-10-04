@@ -104,5 +104,11 @@
   "internalAuditDoesNotRequireStudio": true,
   "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 32
+  "sourceAssetCount": 32,
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "compatibilityNote": "Legacy field retained for existing asset QA. Detailed internal audit is sourceAudit."
+  }
 }
