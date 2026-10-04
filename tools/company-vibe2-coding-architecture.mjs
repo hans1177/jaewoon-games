@@ -70,6 +70,10 @@ function activeSystems({gameplaySketch={},sourceAnalysis={}}={}){
   if((gameplaySketch?.progressionModel?.objectives||[]).length||gameplaySketch?.interactionGraph?.required)systems.push('NARRATIVE');
   if(gameplaySketch?.placementModel?.required)systems.push('PLACEMENT');
   if(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length)systems.push('SAVE');
+  const blueprint=gameplaySketch?.flowArchitecture?.systemBlueprint||{};
+  for(const row of [...(blueprint.requiredSystems||[]),...(blueprint.expansionSystems||[])]){
+    for(const owner of row?.ownerSystems||[])systems.push(clean(owner).toUpperCase());
+  }
   systems.push('GOAL_STATE');
   return uniq(systems);
 }
@@ -120,6 +124,12 @@ function invariants({systems=[],gameplaySketch={}}={}){
   if(systems.includes('ECONOMY'))rows.push(['ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE','Spendable resources cannot become negative unless debt is an explicit mechanic.']);
   if(systems.includes('PLACEMENT'))rows.push(['PLACEMENT_OCCUPANCY_CONSISTENT','A non-stackable placement slot cannot contain multiple mutually exclusive entities.']);
   if(gameplaySketch?.progressionModel?.required)rows.push(['PROGRESSION_REWARD_IDEMPOTENT','Objective completion/unlock rewards must be idempotent.']);
+  const conceptSystems=gameplaySketch?.flowArchitecture?.systemBlueprint?.requiredSystems||[];
+  if(conceptSystems.length){
+    rows.push(['NO_SHADOW_CONCEPT_SYSTEM_AUTHORITY','Inventory crafting housing quest economy companion and other concept systems must reuse declared owners instead of creating duplicate state authorities.']);
+    rows.push(['CONCEPT_SYSTEM_LIBRARY_REUSE_PRESERVES_AUTHORITY','Reusable libraries may supply bounded mechanics or data handling but may not silently replace current save progression economy combat world or narrative ownership.']);
+    rows.push(['CONNECTED_CONTENT_EXPANSION_REQUIRED','New content bundles must connect at least two relevant systems and change a decision state route relationship build recovery or world consequence.']);
+  }
   if(systems.includes('NARRATIVE')){
     rows.push(['NARRATIVE_KNOWLEDGE_CAUSAL','Characters may only know facts learned through declared sources, public/faction-shared knowledge, witnessed events or approved initial knowledge.']);
     rows.push(['NARRATIVE_STORY_TRANSITION_CAUSAL','Story stage transitions require a source event and declared prerequisites; duplicate source events must be idempotent and backward transitions require an explicit rule.']);
@@ -157,6 +167,54 @@ function impactPrediction(systems=[]){
 
 function regressionPlan(systems=[]){
   return systems.map(system=>({id:`REGRESSION_${system}`,trigger:`ANY_PATCH_TOUCHING_${system}_OR_ITS_OWNED_STATE`,assertions:['PRIOR_WORKING_BEHAVIOR_REMAINS','NEW_EXPECTED_BEHAVIOR_OBSERVED','NO_RELEVANT_INVARIANT_VIOLATION','NO_DUPLICATE_CAUSAL_EVENT']}));
+}
+
+function assetIntegrationContract(gameplaySketch={}){
+  const requirements=Array.isArray(gameplaySketch?.flowArchitecture?.assetFlow?.requirements)
+    ?gameplaySketch.flowArchitecture.assetFlow.requirements:[];
+  return{
+    version:1,
+    required:requirements.length>0,
+    resolutionMode:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+    requirements,
+    allowedReuseModes:['USE_AS_IS','LIGHT_THEME_ADAPT','STYLE_ADAPT','RECOMBINE_PARTS','NATIVE_REAUTHOR_BASE'],
+    assetIdPinningForbidden:true,
+    gameplayAuthority:false,
+    balanceAuthority:false,
+    progressionAuthority:false,
+    saveAuthority:false,
+    networkingAuthority:false,
+    bindingRule:'BIND_PRESENTATION_TO_EXISTING_AUTHORITATIVE_STATE_AND_EVENTS',
+    refreshRule:'RE_RESOLVE_WHEN_FLOW_ROLE_STYLE_PLATFORM_OR_LIBRARY_CAPABILITY_CHANGES',
+    growthRule:'ADD_OR_ADAPT_PRESENTATION_BINDINGS_WITHOUT_CREATING_SHADOW_GAMEPLAY_SYSTEMS',
+  };
+}
+
+function featureIntegrationContract(gameplaySketch={}){
+  const blueprint=gameplaySketch?.flowArchitecture?.systemBlueprint||{};
+  const required=Array.isArray(blueprint.requiredSystems)?blueprint.requiredSystems:[];
+  const expansion=Array.isArray(blueprint.expansionSystems)?blueprint.expansionSystems:[];
+  const all=[...required,...expansion];
+  return{
+    version:1,
+    required:required.length>0,
+    profile:clean(blueprint.profile)||null,
+    target:clean(blueprint.target)||'CONCEPT_MATCHED_INTERCONNECTED_SYSTEM_BUNDLE',
+    requiredSystems:required,
+    expansionSystems:expansion,
+    phasePlan:blueprint.phasePlan||{},
+    interconnectionChains:blueprint.interconnectionChains||[],
+    awardCaliberPrinciples:blueprint.awardCaliberPrinciples||[],
+    reusableLibraryHints:uniq(all.flatMap(row=>row?.reusableLibraryHints||[])),
+    ownerSystems:uniq(all.flatMap(row=>row?.ownerSystems||[])),
+    dataDrivenExtensionPreferred:true,
+    existingResponsibilityFunctionsFirst:true,
+    wrapperOrShadowSystemForbidden:true,
+    crossPlatformSourceCopyForbidden:true,
+    nativeReauthoringWhenNeeded:true,
+    contentBundleRule:'NEW_CONTENT_MUST_CONNECT_AT_LEAST_TWO_SYSTEMS_AND_CHANGE_DECISION_STATE_ROUTE_RELATIONSHIP_BUILD_RECOVERY_OR_WORLD_CONSEQUENCE',
+    antiChecklistRule:'MENU_PRESENCE_STAT_ONLY_VARIATION_RESKIN_ONLY_OR_DISCONNECTED_FEATURE_DOES_NOT_COUNT_AS_SYSTEM_DEPTH',
+  };
 }
 
 function patchMode(developmentMode=''){
@@ -198,6 +256,8 @@ function compactForModel(architecture={}){
     invariantIds:(architecture.invariants||[]).map(row=>row.id),
     impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED',
     regressionRule:'ADD_OR_UPDATE_REGRESSION_CASE_PER_FEATURE_OR_FIXED_BUG',
+    featureIntegration:architecture.featureIntegration,
+    assetIntegration:architecture.assetIntegration,
     changeBudget:architecture.changeBudget,
     refactorContract:architecture.refactorPolicy?.behaviorContract,
     recoveryRules:architecture.recoveryPolicy?.rules,
@@ -212,11 +272,13 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
     version:1,
     gameId:clean(gameId),genre:clean(genre),developmentMode,modeContract:mode,
     priorityExecutionSummary:priorityExecutionSummary({developmentMode,sourceAnalysis}),
-    architectureOrder:['GAME_FLOW_ARCHITECT','GAMEPLAY_SKETCH','SYSTEM_BOUNDARIES','STATE_OWNERSHIP','DATA_SCHEMA','API_CONTRACTS','EVENT_CONTRACTS','IMPLEMENTATION_UNITS','MICRO_RUNTIME_TESTS','INTEGRATION','FULL_CANONICAL_VALIDATION','BUILD'],
+    architectureOrder:['GAME_FLOW_ARCHITECT','GAMEPLAY_SKETCH','CONCEPT_SYSTEM_BUNDLE','SYSTEM_BOUNDARIES','STATE_OWNERSHIP','DATA_SCHEMA','API_CONTRACTS','EVENT_CONTRACTS','IMPLEMENTATION_UNITS','MICRO_RUNTIME_TESTS','INTEGRATION','FULL_CANONICAL_VALIDATION','BUILD'],
     sourceLayout:{logicalModules:systems,physicalPolicy:developmentMode==='PRESERVE_PATCH'?'PRESERVE_EXISTING_PHYSICAL_LAYOUT':developmentMode==='GREENFIELD'?'PLATFORM_APPROPRIATE_MODULES':'NEW_COHERENT_PROJECT_LAYOUT_FROM_ALLOWED_COMPONENTS',webCompatibility:'WEB_CAN_REMAIN_SINGLE_SELF_CONTAINED_HTML_WHILE_KEEPING_LOGICAL_MODULE_BOUNDARIES',singleResponsibility:'ONE_MODULE_OR_FUNCTION_SHOULD_NOT_OWN_UNRELATED_WORLD_COMBAT_UI_SAVE_AND_ECONOMY_MUTATIONS'},
     stateOwnership:owners,
     dataSchema:{rule:'CRITICAL_ENTITY_PLAYER_WORLD_ECONOMY_PROGRESSION_NARRATIVE_AND_SAVE_STATE_MUST_HAVE_DECLARED_SHAPE_DEFAULTS_AND_VALIDATION',saveMigration:'VERSION_AND_MIGRATION_REQUIRED_WHEN_EXISTING_PERSISTED_SHAPE_CHANGES',corruptRecovery:'RECOVER_LAST_VALID_OR_SAFE_PARTIAL_STATE_WHEN_SUPPORTED_INSTEAD_OF_SILENT_TOTAL_RESET'},
     apiContracts:apis,eventContracts:events,
+    featureIntegration:featureIntegrationContract(gameplaySketch),
+    assetIntegration:assetIntegrationContract(gameplaySketch),
     implementationUnits:units,
     codingLoop:['PLAN_CHANGE','PREDICT_IMPACT','IMPLEMENT_ONE_COHERENT_UNIT','SYNTAX_TYPE_IMPORT_CHECK','MICRO_RUNTIME_TEST','INVARIANT_CHECK','ADD_OR_UPDATE_REGRESSION_CASE','SELF_REVIEW','INTEGRATE','FULL_VALIDATION_AT_CANONICAL_GATE'],
     microRuntimeTests:microTests,
@@ -228,8 +290,8 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
     duplicationPolicy:{rule:'DO_NOT_COPY_CORE_DAMAGE_SAVE_REWARD_TRANSACTION_OR_STATE_TRANSITION_LOGIC_ACROSS_UNRELATED_CALL_SITES',action:'CENTRALIZE_ONLY_WHEN_IT_REDUCES_DUPLICATE_CAUSAL_LOGIC_WITHOUT_FORCING_UNRELATED_REWRITE'},
     recoveryPolicy:{rules:['MISSING_ENTITY_REFERENCE_RETURNS_EXPLICIT_SAFE_FAILURE','INVALID_SAVE_DATA_MUST_NOT_CRASH_WHOLE_GAME','PARTIAL_FAILURE_MUST_NOT_DOUBLE_APPLY_TRANSACTION_OR_REWARD','RETRY_PATH_MUST_NOT_REUSE_DIRTY_PARTIAL_STATE_UNLESS_EXPLICITLY_DESIGNED']},
     performancePolicy:{rules:['NO_UNBOUNDED_PER_FRAME_DOM_REBUILD','NO_ACCIDENTAL_UNBOUNDED_TIMER_CREATION','NO_FULL_WORLD_SCAN_WHEN_A_BOUNDED_INDEX_OR_LOCAL_SCOPE_EXISTS','STREAM_OR_CHUNK_LARGE_WORLDS_WITH_BOUNDED_ACTIVE_SET_WHEN_RELEVANT','PREWARM_INITIAL_PLAYABLE_ZONE_WHEN_RUNTIME_STREAMING_IS_USED','UNLOADING_MAY_NOT_DROP_AUTHORITATIVE_OR_SAVED_WORLD_STATE','PROFILE_OR_MEASURE_BEFORE_LARGE_OPTIMIZATION_REWRITE']},
-    selfReview:{questions:['DID_THE_CHANGE_IMPLEMENT_THE_LOCKED_REQUIREMENT','WHO_OWNS_EACH_MUTATED_STATE','CAN_ONE_INPUT_APPLY_THE_EFFECT_TWICE','WHAT_EXISTING_SYSTEMS_CAN_THIS_BREAK','WHAT_HAPPENS_ON_INVALID_OR_MISSING_STATE','DID_UI_OR_PRESENTATION_MUTATE_GAMEPLAY_DIRECTLY','ARE_SAVE_AND_REPLAY_SEMANTICS_PRESERVED','DID_THE_MICRO_TEST_AND_REGRESSION_CASE_COVER_THE_FAILURE_MODE']},
-    forbidden:['WRITE_WHOLE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION_WITHOUT_CONTRACT','MICRO_TEST_AS_SUBSTITUTE_FOR_FULL_PROMOTION_VALIDATION','UNAUTHORIZED_EXTERNAL_SOURCE_OR_ASSET_COPY','FEATURE_CHANGE_PLUS_UNRELATED_REFACTOR','STATIC_LABEL_OR_TEST_PANEL_AS_GAMEPLAY_IMPLEMENTATION'],
+    selfReview:{questions:['DID_THE_CHANGE_IMPLEMENT_THE_LOCKED_REQUIREMENT','WHO_OWNS_EACH_MUTATED_STATE','CAN_ONE_INPUT_APPLY_THE_EFFECT_TWICE','WHAT_EXISTING_SYSTEMS_CAN_THIS_BREAK','WHAT_HAPPENS_ON_INVALID_OR_MISSING_STATE','DID_UI_OR_PRESENTATION_MUTATE_GAMEPLAY_DIRECTLY','ARE_SAVE_AND_REPLAY_SEMANTICS_PRESERVED','DOES_NEW_CONTENT_CONNECT_MULTIPLE_RELEVANT_SYSTEMS','DID_EXISTING_COMPATIBLE_SYSTEM_LIBRARIES_GET_REUSED_BEFORE_DUPLICATION','DID_THE_MICRO_TEST_AND_REGRESSION_CASE_COVER_THE_FAILURE_MODE']},
+    forbidden:['WRITE_WHOLE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION_WITHOUT_CONTRACT','MICRO_TEST_AS_SUBSTITUTE_FOR_FULL_PROMOTION_VALIDATION','UNAUTHORIZED_EXTERNAL_SOURCE_OR_ASSET_COPY','FEATURE_CHANGE_PLUS_UNRELATED_REFACTOR','STATIC_LABEL_OR_TEST_PANEL_AS_GAMEPLAY_IMPLEMENTATION','DUPLICATE_SHADOW_INVENTORY_CRAFTING_QUEST_ECONOMY_COMPANION_OR_HOUSING_AUTHORITY','DISCONNECTED_GENRE_FEATURE_CHECKLIST_WITHOUT_CORE_LOOP_CONNECTION'],
   };
   Object.defineProperty(architecture,'toJSON',{enumerable:false,value(){return compactForModel(architecture);}});
   return architecture;
@@ -249,5 +311,20 @@ export function evaluateCodingArchitecture(architecture={}){
   if(!(architecture.codingLoop||[]).includes('ADD_OR_UPDATE_REGRESSION_CASE'))blockers.push('CODING_AUTO_REGRESSION_REQUIRED');
   if(architecture.developmentMode==='PRESERVE_PATCH'&&architecture.modeContract?.sourcePolicy!=='PRESERVE_WORKING_SOURCE_STRUCTURE_SAVE_KEYS_MEANINGS_AND_GAME_RULES')blockers.push('PRESERVE_PATCH_SOURCE_POLICY_REQUIRED');
   if(architecture.developmentMode==='RECOMPOSE'&&!architecture.modeContract?.sourceRightsMode)blockers.push('RECOMPOSE_RIGHTS_POLICY_REQUIRED');
+  const feature=architecture.featureIntegration||{};
+  if(feature.required===true){
+    if(!Array.isArray(feature.requiredSystems)||feature.requiredSystems.length<2)blockers.push('CODING_CONCEPT_SYSTEM_BUNDLE_INSUFFICIENT');
+    if(!Array.isArray(feature.interconnectionChains)||feature.interconnectionChains.length<1)blockers.push('CODING_SYSTEM_INTERCONNECTION_REQUIRED');
+    if(feature.wrapperOrShadowSystemForbidden!==true)blockers.push('CODING_SHADOW_SYSTEM_FORBIDDEN_POLICY_REQUIRED');
+    if(feature.dataDrivenExtensionPreferred!==true||feature.existingResponsibilityFunctionsFirst!==true)blockers.push('CODING_SYSTEM_GROWTH_POLICY_REQUIRED');
+    if((feature.requiredSystems||[]).some(row=>!Array.isArray(row?.ownerSystems)||row.ownerSystems.length<1))blockers.push('CODING_SYSTEM_OWNER_MAPPING_REQUIRED');
+  }
+  const asset=architecture.assetIntegration||{};
+  if(asset.required===true){
+    if(!Array.isArray(asset.requirements)||asset.requirements.length<3)blockers.push('CODING_FLOW_ASSET_REQUIREMENTS_INSUFFICIENT');
+    if(asset.assetIdPinningForbidden!==true)blockers.push('CODING_ASSET_ID_PINNING_POLICY_REQUIRED');
+    if(asset.gameplayAuthority!==false||asset.balanceAuthority!==false||asset.saveAuthority!==false||asset.networkingAuthority!==false)blockers.push('CODING_ASSET_AUTHORITY_SEPARATION_REQUIRED');
+    if(clean(asset.resolutionMode)!=='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME')blockers.push('CODING_ASSET_LATEST_LIBRARY_RESOLUTION_REQUIRED');
+  }
   return{pass:blockers.length===0,blockers};
 }
