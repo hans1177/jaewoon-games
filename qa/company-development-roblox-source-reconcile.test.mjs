@@ -4,9 +4,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
+import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
 const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
@@ -22,7 +23,8 @@ const verifiedExternalRow={
 };
 const verifiedTask=()=>({authority:'verified-task-playbook',checklist:['apply verified black-box learning'],verifiedExternalBlackBoxReuseCount:1,verifiedExternalBlackBoxCoveragePct:100,reuse:[verifiedExternalRow]});
 const verifiedPlaybooks={policy:{verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true},taskTypes:{roblox:verifiedTask(),coding:verifiedTask(),graphics:verifiedTask(),general:verifiedTask(),qa:verifiedTask(),bugfix:verifiedTask(),planning:verifiedTask(),unity:verifiedTask()}};
-const verifiedLearning=createRobloxVibe3LearningContext({gameId,profile:{genre:'Simulation',subgenre:'Tycoon',playMode:'SINGLE'},playbooks:verifiedPlaybooks});
+const verifiedLearning=createRobloxVibe3LearningContext({gameId,profile:robloxDesignProfileFromBaseline(baseline),playbooks:verifiedPlaybooks});
+const designProfileLearning=createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),playbooks:verifiedPlaybooks});
 
 
 function writeLegacyStudioUnboundTree(root){
@@ -543,7 +545,7 @@ test('existing Roblox source rebind applies all verified APK learning without ch
     writeCompiledTree(root);
     const serverFile=path.join(root,'server','Game.server.luau');
     const serverBefore=fs.readFileSync(serverFile,'utf8');
-    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
     assert.equal(applied.verifiedExternalLearningApplied,true);
     assert.equal(applied.gameplayAuthorityChanged,false);
     assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
@@ -821,3 +823,24 @@ test('runtime reconciliation preserves downstream evidence for unchanged game by
   assert.doesNotMatch(block,/robloxFoundationF0Passed:false/);
   assert.doesNotMatch(block,/robloxF9ReleaseRegressionPassed:false/);
 });
+
+test('source reconciliation and sweep derive verified learning from the same build profile',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(source,/robloxBuildProfileFromBaseline/);
+  assert.match(source,/const learningProfile=baseline\?robloxBuildProfileFromBaseline\(baseline\):null/);
+  assert.match(source,/verifiedExternalLearningRefreshState\(\{root,playbooks,gameId:item\.gameId,profile:learningProfile\}\)/);
+  assert.match(sweep,/robloxBuildProfileFromBaseline/);
+  assert.match(sweep,/const designProfile=designContext\?\.record\?robloxBuildProfileFromBaseline\(designContext\.record\):null/);
+  assert.doesNotMatch(sweep,/robloxDesignProfileFromBaseline/);
+});
+
+test('verified learning sweep supports exact per-game scope',()=>{
+  const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  assert.match(sweep,/const requestedGameId=String\(args\['game-id'\]\|\|''\)\.trim\(\)/);
+  assert.match(sweep,/\.filter\(gameId=>!requestedGameId\|\|gameId===requestedGameId\)/);
+  assert.match(sweep,/ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND/);
+  assert.match(sweep,/requestedGameId:requestedGameId\|\|null/);
+  assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCOPE=/);
+});
+

@@ -982,11 +982,12 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(p.qaAndReview.reviewMayNotBecomeRoutineSerializationPoint,true);
   assert.equal(p.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
   const robloxParallel=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
-  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,false);
-  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,false);
-  assert.equal(robloxParallel.sameGameConflictSerializationScope,'EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
+  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,true);
+  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,true);
+  assert.equal(robloxParallel.sameGameConflictSerializationScope,'EXACT_DUPLICATE_STAGE_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
   assert.equal(robloxParallel.crossGameWorkflowSerializationForbidden,true);
-  assert.equal(robloxParallel.exactGameDuplicateWorkflowSerializationAllowed,true);
+  assert.equal(robloxParallel.exactGameDuplicateWorkflowSerializationAllowed,false);
+  assert.equal(robloxParallel.exactGameDuplicateStageCoalescingAllowed,true);
   assert.equal(robloxParallel.internalSameWorkflowGameMatrixParallelismPreserved,true);
   const noGameWideLock=roadmap.changeRecord?.robloxGameWideWorkflowSerializationRemoval20260926;
   assert.equal(noGameWideLock.gameIdStillCanonicalTaskIdentity,true);
@@ -1874,7 +1875,7 @@ test('central document automatically retains only current references and archive
   const file='company-learning/platform-release-roadmap.json';
   const current=JSON.parse(fs.readFileSync(file,'utf8'));
   const policy=current.centralDocumentRetention;
-  assert.equal(policy.version,3);
+  assert.equal(policy.version,4);
   assert.equal(policy.mode,'AUTO_CURRENT_USE_ONLY');
   assert.equal(policy.autoPruneEnabled,true);
   assert.equal(policy.keepOnlyCurrentUseAndPinned,true);

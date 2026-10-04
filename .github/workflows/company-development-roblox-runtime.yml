@@ -43,11 +43,8 @@ permissions:
   pull-requests: write
   actions: write
 
-concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  # Only main-push batch planners are disposable. Exact-game and manual runs keep active execution.
-  cancel-in-progress: ${{ github.event_name == 'push' }}
-
+# Flow order is enforced by stage evidence. Do not serialize the whole per-game chain here.
+# Exact duplicate stages are suppressed at their owning stage/dispatch boundary.
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
@@ -261,21 +258,24 @@ jobs:
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Dispatch verified learning sweep when reconciliation finds refresh debt
+      - name: Dispatch verified learning sweep per game when reconciliation finds refresh debt
         if: steps.freshness.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          learning_debt="$(node - <<'NODE'
+          node - <<'NODE' > /tmp/roblox-learning-rebind-ids
           const fs=require('fs');
           const rows=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
-          const ids=(rows||[]).filter(row=>row?.failure==='existing-source-verified-external-learning-required').map(row=>String(row.gameId||'')).filter(Boolean);
-          process.stdout.write(String(ids.length));
+          const ids=[...new Set((rows||[])
+            .filter(row=>row?.failure==='existing-source-verified-external-learning-required')
+            .map(row=>String(row.gameId||'').trim())
+            .filter(Boolean))].sort();
+          process.stdout.write(ids.join('\n'));
           if(ids.length)console.error('ROBLOX_VERIFIED_LEARNING_REBIND_IDS='+ids.join(','));
           NODE
-          )"
+          learning_debt="$(grep -cve '^$' /tmp/roblox-learning-rebind-ids || true)"
           echo "ROBLOX_VERIFIED_LEARNING_REBIND_COUNT=$learning_debt"
           if [ "$learning_debt" -eq 0 ]; then
             echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=NOT_REQUIRED'
@@ -283,20 +283,36 @@ jobs:
           fi
 
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
-          active="$(node - <<'NODE'
+          current_main="$(git rev-parse origin/main)"
+          dispatched=0
+          deduped=0
+          while IFS= read -r game_id; do
+            [ -n "$game_id" ] || continue
+            active="$(GAME_ID="$game_id" CURRENT_MAIN="$current_main" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-learning-sweep-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
-          const count=(payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())).length;
-          process.stdout.write(String(count));
+          const title='Roblox verified learning sweep · '+String(process.env.GAME_ID||'');
+          const currentMain=String(process.env.CURRENT_MAIN||'');
+          const found=(payload.workflow_runs||[]).some(run=>
+            states.has(String(run.status||'').toLowerCase())
+            &&String(run.display_title||'')===title
+            &&String(run.head_sha||'')===currentMain
+          );
+          process.stdout.write(found?'yes':'no');
           NODE
-          )"
-          if [ "$active" -gt 0 ]; then
-            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_ACTIVE:$active"
-            exit 0
-          fi
-          gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES:debt=$learning_debt"
+            )"
+            if [ "$active" = 'yes' ]; then
+              deduped=$((deduped+1))
+              echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED:$game_id:$current_main"
+              continue
+            fi
+            gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+            dispatched=$((dispatched+1))
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES:$game_id:$current_main"
+          done < /tmp/roblox-learning-rebind-ids
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=$dispatched"
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=$deduped"
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
         if: steps.freshness.outputs.run == 'true'

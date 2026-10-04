@@ -340,7 +340,7 @@
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerContextLogContract": {
-    "version": 2,
+    "version": 3,
     "documentIsCode": true,
     "roadmapPolicyHashRequired": true,
     "securityPolicyHashRequired": true,
@@ -359,7 +359,23 @@
       "shared-context-security",
       "shared-context-sync:PASS"
     ],
-    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true
+    "allCanonicalDocumentHashesMustBeBoundToExecutionEvidence": true,
+    "newChatAndWorkerPreflightRequired": true,
+    "latestMainShaRequired": true,
+    "canonicalReadOrderRequired": true,
+    "finalDevelopmentLockStatusRequired": true,
+    "preMutationSharedContextPassRequired": true,
+    "staleContextMutationForbidden": true,
+    "priorConversationOrMemoryOverrideForbidden": true,
+    "requiredPreflightMarkers": [
+      "WORKER_CONTEXT_MAIN_SHA",
+      "WORKER_CONTEXT_POLICY_SHA256",
+      "WORKER_CONTEXT_LOG_MAP_SHA256",
+      "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+      "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
+      "WORKER_CONTEXT_FINAL_CHAIN_LOCK",
+      "WORKER_CONTEXT_SYNC=PASS"
+    ]
   },
   "dualNativeCorrelation": {
     "gameKey": "GAME_ID",
@@ -1742,7 +1758,7 @@
     "liveVerification": "PENDING_EXACT_HEAD_QA_AND_MAIN_RUNTIME"
   },
   "robloxDevelopmentParallelismEvidenceContract": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "policySource": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution",
     "workflows": [
@@ -1778,7 +1794,16 @@
     "sameGameDuplicateDispatchMustDedup": true,
     "differentGamesMustRemainIndependent": true,
     "privateRuntimeDedupeRule": "OLDEST_ACTIVE_SAME_GAME_RUN_EXECUTES_HEAVY_WORK_OTHERS_SELF_SKIP",
-    "workflowConcurrencyQueueReplacementForbidden": true
+    "workflowConcurrencyQueueReplacementForbidden": false,
+    "workflowConcurrencyQueueReplacementAllowedScope": "EXACT_DUPLICATE_GAME_STAGE_CONTROL_REVISION_ONLY",
+    "nonDuplicateWorkflowConcurrencyReplacementForbidden": true,
+    "stageScopedConcurrencyGroups": [
+      "roblox-shared-preflight-<gameId-or-batch>-<sourceRevision>",
+      "roblox-publish-exact-<gameId>-<publishStage>-<cycleOrControlRevision>",
+      "roblox-verified-learning-sweep-<gameId-or-batch>-<sourceRevision>"
+    ],
+    "wholeGameWorkflowConcurrencyForbidden": true,
+    "sameGameIndependentStagesMayRunParallel": true
   },
   "unityRuntimeParallelCheckpointEvidence": {
     "version": 1,
@@ -2206,32 +2231,28 @@
     "regressionStillRequired": true
   },
   "nativeExactGameWorkflowConcurrencyEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
-    "concurrencyGroups": [
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.perGameFlowQueueBottleneckRepair20261004",
+    "historicalWholeGameGroupsRemoved": [
       "roblox-native-exact-<gameId-or-push-batch-or-runId>",
       "unity-native-exact-<gameId-or-push-batch-or-runId>"
     ],
-    "cancelInProgress": false,
-    "exactGameOverlapForbidden": true,
+    "wholeGameConcurrencyGroupForbidden": true,
+    "exactGameOverlapForbidden": false,
+    "exactDuplicateStageCoalescingRequired": true,
     "distinctGameParallelismRequired": true,
-    "batchRunIdentity": "PUSH=batch-push;NON_PUSH=github.run_id",
-    "batchGlobalSerialization": false,
-    "centralActiveRunScanMarkers": [
-      "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
-      "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
+    "sameGameIndependentStageParallelismRequired": true,
+    "stageScopedGroups": [
+      "roblox-shared-preflight-<gameId-or-batch>-<sourceRevision>",
+      "roblox-publish-exact-<gameId>-<publishStage>-<controlRevision>"
     ],
-    "qualitySecurityReleaseEvidenceUnchanged": true,
-    "pushBatchRunIdentity": "batch-push",
-    "nonPushEmptyBatchRunIdentity": "github.run_id",
-    "pushBatchCoalesced": true,
-    "manualEmptyBatchRunScoped": true,
-    "cancelInProgressMeaning": "EXACT_GAME_ACTIVE_EXECUTION_PRESERVED",
-    "exactGameCancelInProgress": false,
-    "pushBatchCancelInProgress": true,
-    "manualEmptyBatchCancelInProgress": false,
-    "pushBatchLatestWins": true
+    "centralActiveRunScanMarkers": [
+      "ROBLOX_RUNTIME_ACTIVE_WINNER",
+      "ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN",
+      "ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN"
+    ],
+    "qualitySecurityReleaseEvidenceUnchanged": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
     "version": 3,
@@ -2896,5 +2917,50 @@
       "streamingEnabled"
     ],
     "unverifiedStateCannotBeLoggedAsPass": true
+  },
+  "workerSessionPreflightEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.sharedWorkerContext.newSessionPreflight",
+    "sourceRef": "LATEST_MAIN_AT_WORK_START",
+    "canonicalReadOrder": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json",
+      "company-learning/security-immune-system.json"
+    ],
+    "mutationDeploymentStateChangeBeforePass": "FORBIDDEN",
+    "rememberedContextAuthority": "NON_AUTHORITATIVE",
+    "lockStateEvidenceRequired": true
+  },
+  "flowSequenceLockEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#finalDevelopmentLock",
+    "requiredMarkers": [
+      "FLOW_SEQUENCE_LOCK=PASS",
+      "FLOW_GLOBAL_SERIALIZATION=FORBIDDEN",
+      "FLOW_GAME_WIDE_SERIALIZATION=FORBIDDEN",
+      "FLOW_PARALLEL_SAFE_WORK=ALLOWED",
+      "FLOW_ATOMIC_STATE_WRITE_SERIALIZATION=ALLOWED"
+    ],
+    "bottleneckRepairMustPreserveCanonicalOrder": true,
+    "queueOptimizationMayNotClaimSequenceChange": true
+  },
+  "perGameFlowQueueBottleneckEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.perGameFlowQueueBottleneckRepair20261004",
+    "requiredMarkers": [
+      "ROBLOX_VERIFIED_LEARNING_REBIND_COUNT",
+      "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT",
+      "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT",
+      "ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED",
+      "ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH",
+      "UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT",
+      "COHORT_PERSIST_FAN_IN=DISABLED"
+    ],
+    "sequenceLockMarker": "FLOW_SEQUENCE_LOCK=PASS",
+    "wholeGameSerializationForbidden": true,
+    "queueReductionTarget": "EXACT_DUPLICATE_STAGE_RUNS_ONLY",
+    "independentGamesContinueOnOtherGameFailure": true
   }
 }

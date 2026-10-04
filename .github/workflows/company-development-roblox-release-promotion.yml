@@ -36,6 +36,12 @@ permissions:
   contents: write
   actions: write
 
+# Coalesce only the exact same game + publish stage + control revision.
+# Validation and final publication stay independent, and unrelated games never serialize here.
+concurrency:
+  group: roblox-publish-exact-${{ inputs.game_id || 'sync' }}-${{ inputs.publish_stage || 'validation' }}-${{ github.sha }}
+  cancel-in-progress: false
+
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 

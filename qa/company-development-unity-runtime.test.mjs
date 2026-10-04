@@ -727,3 +727,9 @@ test('Unity native generator binds real Animator IK motion evidence without clai
   assert.match(source,/JaewoonMotionContact\(\)/);
   assert.match(source,/JaewoonMotionHit\(\)/);
 });
+
+test('Unity runtime has no whole-game top-level serialization',()=>{
+  const header=workflowSource.slice(0,workflowSource.indexOf('\njobs:\n'));
+  assert.doesNotMatch(header,/\nconcurrency:\n/);
+});
+

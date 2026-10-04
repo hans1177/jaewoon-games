@@ -423,11 +423,15 @@ export function inspectCentralDocumentBudgets({baseRevision=''}={}){
       :Number(budget.hardMaxUtf8Bytes||0);
     let baseBytes=null;
     if(base&& !/^0+$/.test(base)){
-      try{
-        const prior=execFileSync('git',['show',base+':'+budget.sourcePath],{cwd:ROOT,encoding:'utf8'});
-        baseBytes=utf8Bytes(prior);
-      }catch{
-        errors.push('CENTRAL_DOCUMENT_BASE_READ_FAILED:'+documentKey+':'+base);
+      if(base==='HEAD'){
+        baseBytes=utf8Bytes(currentText);
+      }else{
+        try{
+          const prior=execFileSync('git',['show',base+':'+budget.sourcePath],{cwd:ROOT,encoding:'utf8',maxBuffer:8*1024*1024});
+          baseBytes=utf8Bytes(prior);
+        }catch{
+          errors.push('CENTRAL_DOCUMENT_BASE_READ_FAILED:'+documentKey+':'+base);
+        }
       }
     }
     const row=evaluateCentralDocumentBudget({
