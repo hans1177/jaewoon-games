@@ -476,13 +476,50 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
   const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const audioRoleIds=collectCommonCatalogAudioRoles(catalogs);
+  const previousMaintenance=original?.internalAssetLibraryAutomation?.maintenance||null;
   const libraryPlan=buildInternalAssetLibraryAutomationPlan({
     assets:next.assets,
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
-    externalSources:next.externalSources||[]
+    externalSources:next.externalSources||[],
+    previousMaintenance
   });
+  const transientMaintenanceReasons=new Set(['INVENTORY_CHANGED','TYPE_OR_ROLE_CHANGED','QUALITY_METADATA_CHANGED']);
+  const maintenanceChanged=Boolean(previousMaintenance?.inventoryFingerprint)
+    &&(
+      previousMaintenance.inventoryFingerprint!==libraryPlan.maintenance.inventoryFingerprint
+      ||previousMaintenance.typeRoleFingerprint!==libraryPlan.maintenance.typeRoleFingerprint
+      ||previousMaintenance.qualityFingerprint!==libraryPlan.maintenance.qualityFingerprint
+    );
+  const maintenanceBaseline=!previousMaintenance?.inventoryFingerprint;
+  const currentTransientReasons=(libraryPlan.maintenance.refreshReasons||[]).filter(reason=>transientMaintenanceReasons.has(reason));
+  const currentPersistentReasons=(libraryPlan.maintenance.refreshReasons||[]).filter(reason=>!transientMaintenanceReasons.has(reason)&&reason!=='MAINTENANCE_BASELINE_INITIALIZED');
+  const lastChangeReasons=maintenanceChanged
+    ?currentTransientReasons
+    :(Array.isArray(previousMaintenance?.lastChangeReasons)?previousMaintenance.lastChangeReasons:(maintenanceBaseline?['MAINTENANCE_BASELINE_INITIALIZED']:[]));
+  const lastNewTypeRoleTokens=maintenanceChanged
+    ?[...(libraryPlan.maintenance.newTypeRoleTokens||[])]
+    :[...(previousMaintenance?.lastNewTypeRoleTokens||[])];
+  const lastRemovedTypeRoleTokens=maintenanceChanged
+    ?[...(libraryPlan.maintenance.removedTypeRoleTokens||[])]
+    :[...(previousMaintenance?.lastRemovedTypeRoleTokens||[])];
+  const maintenanceState={
+    ...libraryPlan.maintenance,
+    newTypeRoleTokens:[],
+    removedTypeRoleTokens:[],
+    refreshRequired:currentPersistentReasons.length>0,
+    refreshReasons:currentPersistentReasons,
+    lastChangeReasons,
+    lastNewTypeRoleTokens,
+    lastRemovedTypeRoleTokens,
+    lastChangeFingerprint:maintenanceChanged||maintenanceBaseline
+      ?libraryPlan.maintenance.inventoryFingerprint
+      :clean(previousMaintenance?.lastChangeFingerprint)||libraryPlan.maintenance.inventoryFingerprint,
+    catalogFingerprint:fingerprint,
+    catalogChanged:Boolean(previousMaintenance?.catalogFingerprint)&&previousMaintenance.catalogFingerprint!==fingerprint,
+    synchronizedRegistryVersion:Number(original?.version||0)
+  };
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
   const environmentCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-environment-v1')?.catalog||{};
@@ -571,6 +608,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     ideaDeduplication:libraryPlan.ideaDeduplication,
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     autonomousOperatingContract:libraryPlan.autonomousOperatingContract,
+    autonomousMaintenanceContract:libraryPlan.autonomousMaintenanceContract,
+    maintenance:maintenanceState,
+    studioVariationAxes:libraryPlan.studioVariationAxes,
     autonomousNextAction:libraryPlan.autonomousNextAction,
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
@@ -655,7 +695,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const changed=beforeComparable!==afterComparable;
   if(changed){
     next.version=Math.max(0,Number(original.version)||0)+1;
-    if(next.internalAssetLibraryAutomation)next.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion=next.version;
+    if(next.internalAssetLibraryAutomation){
+      next.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion=next.version;
+      if(next.internalAssetLibraryAutomation.maintenance){
+        next.internalAssetLibraryAutomation.maintenance.synchronizedRegistryVersion=next.version;
+      }
+    }
   }
   let persisted=false,persistError=null;
   if(persist&&changed){
@@ -673,6 +718,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     persisted,
     persistError,
     catalogFingerprint:fingerprint,
+    maintenance:next.internalAssetLibraryAutomation?.maintenance||null,
     discoveredCatalogCount:catalogs.length,
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
     seedCount:seedPlan.seedCount,
@@ -1960,6 +2006,9 @@ export function buildVibeAssetProductionPlan({
       productionRuntimeVerificationSeparate:true
     }),
     autonomousOperatingContract:freeze({...libraryAutomation.autonomousOperatingContract,...executionLibraryPlan.autonomousOperatingContract}),
+    autonomousMaintenanceContract:freeze({...libraryAutomation.autonomousMaintenanceContract,...executionLibraryPlan.autonomousMaintenanceContract}),
+    maintenance:freeze({...libraryAutomation.maintenance,...executionLibraryPlan.maintenance}),
+    studioVariationAxes:freeze({...libraryAutomation.studioVariationAxes,...executionLibraryPlan.studioVariationAxes}),
     autonomousNextAction:freeze({...libraryAutomation.autonomousNextAction,...executionLibraryPlan.autonomousNextAction}),
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
