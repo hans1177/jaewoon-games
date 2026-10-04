@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-vfx-v1",
   "family": "VFX",
   "platform": "ROBLOX",
@@ -29,6 +29,41 @@
       "source": "RobloxCommonVFX.luau",
       "factory": "CreateShapeBurst",
       "role": "BURST_FEEDBACK"
+    },
+    {
+      "atomId": "BLOCK_IMPACT",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateBlockImpact",
+      "role": "BLOCK_CONTACT",
+      "systemRole": "BLOCK"
+    },
+    {
+      "atomId": "PARRY_PERFECT_FLASH",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreatePerfectParryFlash",
+      "role": "PERFECT_PARRY_CONFIRMATION",
+      "systemRole": "PARRY"
+    },
+    {
+      "atomId": "GUARD_BREAK_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateGuardBreakBurst",
+      "role": "GUARD_BREAK_WARNING",
+      "systemRole": "BLOCK"
+    },
+    {
+      "atomId": "ATTACK_TELEGRAPH_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateAttackTelegraphPulse",
+      "role": "ATTACK_TELEGRAPH_PRESENTATION",
+      "systemRole": "INTERACTION"
+    },
+    {
+      "atomId": "COUNTER_READY_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateCounterReadyPulse",
+      "role": "COUNTER_WINDOW_PRESENTATION",
+      "systemRole": "PARRY"
     }
   ],
   "systemDepthContract": {
@@ -60,14 +95,19 @@
     "currentDeclaredComponents": [
       "IMPACT_FLASH",
       "TRAIL_SHORT",
-      "SHAPE_BURST"
-    ],
-    "currentAssetCount": 3,
-    "missingComponentCandidates": [
-      "HIT",
-      "CRITICAL",
+      "SHAPE_BURST",
+      "BLOCK_IMPACT",
       "BLOCK",
+      "PARRY_PERFECT_FLASH",
       "PARRY",
+      "GUARD_BREAK_BURST",
+      "ATTACK_TELEGRAPH_PULSE",
+      "INTERACTION",
+      "COUNTER_READY_PULSE"
+    ],
+    "currentAssetCount": 8,
+    "missingComponentCandidates": [
+      "CRITICAL",
       "DODGE",
       "HEAL",
       "BUFF",
@@ -80,7 +120,6 @@
       "CRAFT",
       "DISMANTLE",
       "QUEST_UPDATE",
-      "INTERACTION",
       "ENVIRONMENT",
       "WEATHER",
       "DESTRUCTION",
@@ -103,5 +142,27 @@
     "schedulerExcluded": true,
     "deploymentExcluded": true,
     "documentationMode": "MACHINE_READABLE_ONLY"
+  },
+  "parryFeedbackContract": {
+    "version": 1,
+    "states": [
+      "BLOCK_CONTACT",
+      "PERFECT_PARRY",
+      "GUARD_BREAK",
+      "ATTACK_TELEGRAPH",
+      "COUNTER_READY"
+    ],
+    "feedbackLayers": [
+      "POSE",
+      "VFX",
+      "UI",
+      "AUDIO_ROLE"
+    ],
+    "colorOnlyStateForbidden": true,
+    "reducedMotionVariantRequired": true,
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "stunAuthority": false,
+    "staminaAuthority": false
   }
 }
