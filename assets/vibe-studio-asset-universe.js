@@ -513,6 +513,12 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
   scope:'INTERNAL_ASSETS_ONLY',
   documentationMode:'MACHINE_READABLE_ONLY',
   mode:'EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER',
+  consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',
+  allInternalAssetsComposableAcrossExistingStages:true,
+  stageSpecificCombinationAllowed:true,
+  crossFamilyCompositionAllowed:true,
+  compositionStillRequiresLicenseSecurityPlatformRoleAndStyleCompatibility:true,
+  flowOwnership:false,
   flowMutationAllowed:false,
   workflowMutationAllowed:false,
   queueMutationAllowed:false,
@@ -571,6 +577,16 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
   preferReuseBeforeNewAuthoring:true,
   preferCompanyCommonBaseWhenQualityComparable:true,
   preservePriorAssetHistory:true,
+  composition:Object.freeze({
+    consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',
+    allInternalAssetsComposableAcrossExistingStages:true,
+    stageSpecificCombinationAllowed:true,
+    crossFamilyCompositionAllowed:true,
+    compositionDoesNotGrantGameplaySaveNetworkOrFlowAuthority:true,
+    hardBlockersStillApply:true,
+    compatibilityStillRequired:true,
+    newFlowOrPipelineCreated:false
+  }),
   machineReadableDiscovery:Object.freeze({
     enabled:true,
     developmentStageAutoDiscovery:true,
@@ -588,7 +604,8 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
     ]),
     selectionOutput:Object.freeze([
       'assetId','applicationMode','replacementAction','effectiveInternalQuality',
-      'sourceFiles','packId','machineTags','usageContract','gameSpecificVariationFields'
+      'sourceFiles','packId','machineTags','usageContract','gameSpecificVariationFields',
+      'consumerStageAccess','composableAcrossExistingFlowStages'
     ]),
     newPipelineCreated:false
   }),
@@ -2149,6 +2166,10 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       usageContract:picked?.row.usageContract||null,
       gameSpecificVariationFields:picked?.row.gameSpecificVariationFields||Object.freeze([]),
       companyCommonBase:picked?.row.companyCommonBase===true,
+      consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',
+      composableAcrossExistingFlowStages:true,
+      stageSpecificCombinationAllowed:true,
+      flowOwnership:false,
       machineReadableDiscovery:true,
       unresolved:!picked
     }));
@@ -2170,6 +2191,12 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     manualOrLockedChoiceWins:true,
     priorAssetHistoryPreserved:true,
     noEmptySlotDuringReplacement:true,
+    consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',
+    allSelectedAssetsComposableAcrossExistingFlowStages:true,
+    stageSpecificCombinationAllowed:true,
+    crossFamilyCompositionAllowed:true,
+    flowOwnership:false,
+    flowMutationAllowed:false,
     machineReadableDiscovery:true,
     selectionContractVersion:3,
     newPipelineCreated:false,
