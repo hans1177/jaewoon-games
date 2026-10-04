@@ -476,14 +476,50 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
   const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const audioRoleIds=collectCommonCatalogAudioRoles(catalogs);
+  const previousMaintenance=original?.internalAssetLibraryAutomation?.maintenance||null;
   const libraryPlan=buildInternalAssetLibraryAutomationPlan({
     assets:next.assets,
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
     externalSources:next.externalSources||[],
-    previousMaintenance:original?.internalAssetLibraryAutomation?.maintenance||null
+    previousMaintenance
   });
+  const transientMaintenanceReasons=new Set(['INVENTORY_CHANGED','TYPE_OR_ROLE_CHANGED','QUALITY_METADATA_CHANGED']);
+  const maintenanceChanged=Boolean(previousMaintenance?.inventoryFingerprint)
+    &&(
+      previousMaintenance.inventoryFingerprint!==libraryPlan.maintenance.inventoryFingerprint
+      ||previousMaintenance.typeRoleFingerprint!==libraryPlan.maintenance.typeRoleFingerprint
+      ||previousMaintenance.qualityFingerprint!==libraryPlan.maintenance.qualityFingerprint
+    );
+  const maintenanceBaseline=!previousMaintenance?.inventoryFingerprint;
+  const currentTransientReasons=(libraryPlan.maintenance.refreshReasons||[]).filter(reason=>transientMaintenanceReasons.has(reason));
+  const currentPersistentReasons=(libraryPlan.maintenance.refreshReasons||[]).filter(reason=>!transientMaintenanceReasons.has(reason)&&reason!=='MAINTENANCE_BASELINE_INITIALIZED');
+  const lastChangeReasons=maintenanceChanged
+    ?currentTransientReasons
+    :(Array.isArray(previousMaintenance?.lastChangeReasons)?previousMaintenance.lastChangeReasons:(maintenanceBaseline?['MAINTENANCE_BASELINE_INITIALIZED']:[]));
+  const lastNewTypeRoleTokens=maintenanceChanged
+    ?[...(libraryPlan.maintenance.newTypeRoleTokens||[])]
+    :[...(previousMaintenance?.lastNewTypeRoleTokens||[])];
+  const lastRemovedTypeRoleTokens=maintenanceChanged
+    ?[...(libraryPlan.maintenance.removedTypeRoleTokens||[])]
+    :[...(previousMaintenance?.lastRemovedTypeRoleTokens||[])];
+  const maintenanceState={
+    ...libraryPlan.maintenance,
+    newTypeRoleTokens:[],
+    removedTypeRoleTokens:[],
+    refreshRequired:currentPersistentReasons.length>0,
+    refreshReasons:currentPersistentReasons,
+    lastChangeReasons,
+    lastNewTypeRoleTokens,
+    lastRemovedTypeRoleTokens,
+    lastChangeFingerprint:maintenanceChanged||maintenanceBaseline
+      ?libraryPlan.maintenance.inventoryFingerprint
+      :clean(previousMaintenance?.lastChangeFingerprint)||libraryPlan.maintenance.inventoryFingerprint,
+    catalogFingerprint:fingerprint,
+    catalogChanged:Boolean(previousMaintenance?.catalogFingerprint)&&previousMaintenance.catalogFingerprint!==fingerprint,
+    synchronizedRegistryVersion:Number(original?.version||0)
+  };
   const depth=auditCommonLibrarySystemDepth({assets:next.assets});
   const volumeByDomain=new Map(libraryPlan.domains.map(row=>[row.domain,row]));
   const environmentCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-environment-v1')?.catalog||{};
@@ -573,13 +609,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     qualityUpPolicy:libraryPlan.qualityUpPolicy,
     autonomousOperatingContract:libraryPlan.autonomousOperatingContract,
     autonomousMaintenanceContract:libraryPlan.autonomousMaintenanceContract,
-    maintenance:{
-      ...libraryPlan.maintenance,
-      catalogFingerprint:fingerprint,
-      catalogChanged:Boolean(original?.internalAssetLibraryAutomation?.maintenance?.catalogFingerprint)
-        &&original.internalAssetLibraryAutomation.maintenance.catalogFingerprint!==fingerprint,
-      synchronizedRegistryVersion:Number(original?.version||0)
-    },
+    maintenance:maintenanceState,
     studioVariationAxes:libraryPlan.studioVariationAxes,
     autonomousNextAction:libraryPlan.autonomousNextAction,
     autonomousContinuationRequired:true,
