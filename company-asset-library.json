@@ -1,5 +1,5 @@
 {
-  "version": 49,
+  "version": 50,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -18518,7 +18518,7 @@
     "rule": "급한 3계열은 신규 직접 제작보다 검증된 무료 원본 확보·리타겟·스타일 변형을 먼저 수행"
   },
   "internalAssetUsagePolicy": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTION_2026-10-04",
     "scope": "ALL_INTERNAL_AND_COMPANY_COMMON_ASSETS",
     "studioRequiredForInternalUse": false,
@@ -18547,7 +18547,17 @@
       "gameIdentityCompatibilityRequired": true,
       "roleCompatibilityRequired": true,
       "manualOrGameLockWins": true,
-      "previousAssetHistoryPreserved": true
+      "previousAssetHistoryPreserved": true,
+      "adaptationBeforeRejection": true,
+      "usesEffectiveQualityAfterAdaptation": true,
+      "minimumEffectiveGain": 10,
+      "replacementActions": [
+        "REPLACE_NOW",
+        "ADAPT_THEN_REPLACE",
+        "KEEP_CURRENT_AND_ITERATE",
+        "KEEP_LOCKED"
+      ],
+      "currentAssetRemainsUntilAdaptedCandidateReady": true
     },
     "continualImprovement": {
       "required": true,
@@ -18576,6 +18586,45 @@
       "workflowMutationAllowed": false,
       "deploymentInfrastructureMutationAllowed": false,
       "newAssetPipelineAllowed": false
+    },
+    "adaptationBeforeRejectionPreferred": true,
+    "reuseDecisionOrder": [
+      "HARD_SAFETY_LEGAL_BLOCKERS_ONLY",
+      "FAMILY_AND_ROLE_REUSE_OR_RECOMBINE",
+      "STYLE_AND_THEME_ADAPTATION",
+      "PLATFORM_NATIVE_REAUTHOR_WHEN_NEEDED",
+      "EFFECTIVE_QUALITY_AFTER_ADAPTATION",
+      "MANUAL_OR_GAME_LOCK",
+      "LEGACY_QUALITY_SOURCE_TIEBREAK"
+    ],
+    "hardBlockers": [
+      "EXPLICIT_INTERNAL_USE_FORBIDDEN",
+      "SECURITY_BLOCKED",
+      "CORRUPT_SOURCE",
+      "LICENSE_FORBIDDEN"
+    ],
+    "nonBlockingQualityDebt": [
+      "LOW_INTERNAL_AUDIT_SCORE",
+      "AUDIT_HARD_GATE_MISS",
+      "STYLE_MISMATCH_WHEN_ADAPTABLE",
+      "PLATFORM_MISMATCH_WHEN_NATIVE_REAUTHORABLE",
+      "UNVERIFIED_PRODUCTION_STATE"
+    ],
+    "adaptationModes": {
+      "USE_AS_IS": "역할·스타일·플랫폼이 맞으면 바로 사용",
+      "LIGHT_THEME_ADAPT": "색/재질/테두리/디테일 등 가벼운 게임 테마 적용",
+      "STYLE_ADAPT": "좋은 원본을 게임 스타일에 맞게 재질·형태·비율·연출 변형",
+      "RECOMBINE_PARTS": "같은 자산군의 좋은 파츠를 재조합해 역할에 맞는 파생 자산 제작",
+      "NATIVE_REAUTHOR_BASE": "플랫폼이 다르면 원본/아이디어/형태를 기준으로 해당 플랫폼용 네이티브 자산 재제작",
+      "KEEP_CURRENT_AND_ITERATE": "새 후보 이득이 작거나 응용 준비가 안 됐으면 현재 자산 사용 유지하며 개선"
+    },
+    "qualityComparison": {
+      "base": "INTERNAL_AUDIT_SCORE_0_TO_1000",
+      "effectiveQuality": "BASE_QUALITY_MINUS_ADAPTATION_AND_OBSERVED_FAILURE_COST_PLUS_REUSE_VERSATILITY_AND_PROVEN_USAGE",
+      "minimumReplacementGain": 10,
+      "onePointHigherDoesNotForceReplacement": true,
+      "runtimeFailureIsPriorityPenaltyNotAutomaticUsageBan": true,
+      "provenUsageIsPriorityBonusNotStudioGate": true
     }
   }
 }
