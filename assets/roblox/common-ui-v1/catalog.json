@@ -447,5 +447,75 @@
     "SETTINGS"
   ],
   "iconAssetDependency": false,
-  "vectorIconCount": 12
+  "vectorIconCount": 12,
+  "continuationContract": {
+    "version": 1,
+    "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
+    "infrastructureMutationAllowed": false,
+    "flowMutationAllowed": false,
+    "newAssetPipelineAllowed": false,
+    "existingAssetFirst": true,
+    "companyCommonAssetFirst": true,
+    "lowScoreUseAllowed": true,
+    "internalAuditScoreIsUsageGate": false,
+    "internalAuditScorePurpose": [
+      "COMPARE",
+      "PRIORITIZE_IMPROVEMENT",
+      "PREFER_HIGHER_COMPATIBLE_REPLACEMENT"
+    ],
+    "automaticReplacement": {
+      "enabled": true,
+      "studioRequired": false,
+      "nativeRuntimeRequired": false,
+      "higherInternalAuditScorePreferred": true,
+      "compatibilityRequired": true,
+      "gameIdentityMatchRequired": true,
+      "roleMatchRequired": true,
+      "platformCompatibilityRequired": true,
+      "manualOrGameLockedChoiceWins": true,
+      "neverLeaveConsumerWithoutUsableAsset": true,
+      "lowerScoreAssetRemainsUsableUntilSafeReplacement": true,
+      "priorAssetHistoryPreserved": true
+    },
+    "internalAudit": {
+      "studioRequired": false,
+      "runtimeRequired": false,
+      "passScore": 880,
+      "passIsNotStop": true,
+      "continualTargets": [
+        920,
+        950,
+        980,
+        1000
+      ],
+      "hardGatesStillRequiredForAuditPass": true,
+      "hardGateFailureDoesNotForbidFallbackUse": true
+    },
+    "productionVerification": {
+      "separateFromInternalUse": true,
+      "separateFromInternalAudit": true,
+      "mayRequireNativeRuntimeEvidence": true,
+      "doesNotBlockInternalAuthoringUseOrIteration": true
+    },
+    "interactionAssetParity": {
+      "aiDialogueAndNpcSameQualityLevel": true,
+      "requiredSurfaces": [
+        "ENTRY_PROMPT",
+        "PORTRAIT_IDENTITY",
+        "DIALOGUE_BODY",
+        "CHOICES",
+        "TEXT_INPUT",
+        "TYPING_WAIT_ERROR",
+        "HISTORY",
+        "QUEST",
+        "TRADE",
+        "GIVE_ITEM",
+        "INSPECT",
+        "FOLLOW_PARTY",
+        "CRAFT_SERVICE",
+        "RELATIONSHIP_STATE"
+      ],
+      "gameplayAuthority": false
+    }
+  }
 }
