@@ -12,15 +12,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 77,
-      "successes": 15,
-      "failures": 62,
+      "calls": 80,
+      "successes": 16,
+      "failures": 64,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 227392,
-      "lastMs": 3411,
+      "totalMs": 261387,
+      "lastMs": 3486,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T20:25:34.001Z"
+      "updatedAt": "2026-10-04T20:28:14.669Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -136,8 +136,8 @@
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T17:49:56.763Z",
-  "updatedAt": "2026-10-04T20:27:42.355Z",
-  "lastSuccessfulModelCallAt": "2026-10-04T20:06:37.865Z",
+  "updatedAt": "2026-10-04T20:28:14.669Z",
+  "lastSuccessfulModelCallAt": "2026-10-04T20:28:11.182Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
