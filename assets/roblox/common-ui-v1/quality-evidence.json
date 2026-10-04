@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-ui-v1",
   "staticAuthoringChecklist": {
     "score": 100,
@@ -7,11 +7,12 @@
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
       "nativeRobloxComponents": 15,
-      "themeAdaptableAcrossGames": 15,
+      "themeAdaptableAcrossGames": 10,
       "sharedVisualLanguage": 10,
-      "touchMinimumSizing": 15,
-      "healthReadabilityStates": 10,
-      "panelDepthAndBorderHierarchy": 10,
+      "touchMinimumSizing": 10,
+      "healthAndProgressReadability": 10,
+      "inventoryQuestCurrencyReadoutCoverage": 10,
+      "modalTooltipTabCoverage": 10,
       "projectOriginalLicenseAndProvenance": 10,
       "automaticBindingCompatibility": 10,
       "gameplayAuthorityIsolation": 5
@@ -27,5 +28,5 @@
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
-  "sourceAssetCount": 3
+  "sourceAssetCount": 11
 }

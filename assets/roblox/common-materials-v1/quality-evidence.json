@@ -1,12 +1,11 @@
 {
-  "version": 1,
+  "version": 3,
   "packId": "roblox-common-materials-v1",
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
-      "threeReusableCurrentAtoms": 15,
       "multipleVisualVariantsPerAtom": 10,
       "nativeRobloxMaterials": 10,
       "physicalPropertyPreservation": 20,
@@ -14,7 +13,10 @@
       "gameTintAdaptation": 10,
       "projectOriginalLicenseAndProvenance": 10,
       "automaticCrossGameReuseMetadata": 10,
-      "gameplayAuthorityIsolation": 5
+      "gameplayAuthorityIsolation": 5,
+      "validRobloxMaterialEnums": 5,
+      "physicalPropertyPreservationRuntimeClaim": false,
+      "elevenReusableCurrentAtoms": 15
     }
   },
   "quality120": {
@@ -28,5 +30,5 @@
   "runtimeVerificationState": "PENDING_STUDIO",
   "gameplayAuthority": false,
   "physicalPropertiesPreservedByDefault": true,
-  "sourceAssetCount": 3
+  "sourceAssetCount": 11
 }
