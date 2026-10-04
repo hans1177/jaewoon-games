@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from './vibe3-roblox-learning-context.mjs';
-import {robloxLearningProfileFromSource,robloxDesignProfileFromBaseline} from './company-development-roblox-gameplay-product-readiness.mjs';
+import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {latestVerifiedDesign} from './company-all-games-design-reset.mjs';
 import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
-import {applyVerifiedExternalLearningToExistingRobloxSource,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
+import {applyVerifiedExternalLearningToExistingRobloxSource,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
   const i=x.indexOf('=');
@@ -41,7 +41,7 @@ for(const gameId of gameIds){
   const fallbackProfile=existingRobloxGameLearningProfile(gameId);
   const sourceProfile=robloxLearningProfileFromSource({gameId,config:configSource,fallback:fallbackProfile});
   const designContext=latestVerifiedDesign(process.cwd(),gameId)||latestMinimumDesign(process.cwd(),gameId);
-  const designProfile=designContext?.record?robloxDesignProfileFromBaseline(designContext.record):null;
+  const designProfile=designContext?.record?robloxBuildProfileFromBaseline(designContext.record):null;
   const learningProfile=designProfile||sourceProfile;
   const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
   if(learning.applied!==true)throw new Error('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'+gameId);
