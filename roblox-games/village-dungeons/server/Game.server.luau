@@ -874,7 +874,7 @@ questPrompt.MaxActivationDistance = 10
 questPrompt.RequiresLineOfSight = false
 questPrompt.Parent = questBoard
 questPrompt.Triggered:Connect(function(player)
-  if player and player.Parent then scopeHandler2(player) end
+  if player and player.Parent then acceptVillageQuest(player) end
 end)
 if not nativeFoundationSpawn then
   nativeFoundationSpawn = Instance.new("SpawnLocation")
