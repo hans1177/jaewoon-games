@@ -1419,3 +1419,102 @@ test('survival combat parts are registered for module-level automatic replacemen
     assert.equal(row.bindingHint.preserveGameplayDamageMovementSaveAndNetworkAuthority,true);
   }
 });
+
+
+test('company-common Roblox UI base is theme-adaptable and authority-free',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-ui-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonUI.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.equal(catalog.compatibleGameScope,'ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH');
+  assert.equal(catalog.themeAdaptationRequiredPerGame,true);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.companyCommonBase,true);
+
+  for(const atom of ['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']){
+    assert.ok(source.includes(atom),atom);
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
+  assert.ok(source.includes('function RobloxCommonUI.CreateTheme(overrides)'));
+  assert.ok(source.includes('TouchHeight = 48'));
+  assert.ok(source.includes('CompanyCommonBase", true'));
+  assert.ok(source.includes('ThemeAdaptationRequiredPerGame", true'));
+  assert.ok(source.includes('OwnsRemoteAuthority", false'));
+  assert.ok(source.includes('OwnsHealthValue", false'));
+  assert.ok(source.includes('OwnsDamageAuthority", false'));
+  assert.equal(/DataStoreService/.test(source),false);
+  assert.equal(/RemoteEvent/.test(source),false);
+  assert.equal(/FireServer\(/.test(source),false);
+});
+
+test('equivalent compatible loadout prefers company-common base over game-dedicated duplicate',()=>{
+  const common={
+    id:'common-panel',
+    family:'UI',
+    subfamily:'FRAME_PANEL',
+    platform:'ROBLOX',
+    status:'REPO_ASSET',
+    companyCommonBase:true,
+    reuseScope:'COMPANY_ROBLOX_COMMON_BASE'
+  };
+  const dedicated={
+    id:'one-game-panel',
+    family:'UI',
+    subfamily:'FRAME_PANEL',
+    platform:'ROBLOX',
+    status:'REPO_ASSET'
+  };
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{family:'UI',subfamily:'FRAME_PANEL',required:true}],
+    assets:[dedicated,common],
+    gameDna:{targetPlatform:'ROBLOX'}
+  });
+  assert.equal(loadout.selections[0].assetId,'common-panel');
+  assert.equal(scoreStudioAssetCandidate({asset:common,gameDna:{targetPlatform:'ROBLOX'}}).companyCommonBase,true);
+  assert.equal(scoreStudioAssetCandidate({asset:common,gameDna:{targetPlatform:'ROBLOX'}}).commonBasePreferenceApplied,true);
+});
+
+test('generic survival-origin world and combat assets are classified as company-common bases',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const packs=['roblox-survival-core-world-v1','roblox-survival-combat-parts-v1'];
+  for(const packId of packs){
+    const members=registry.assets.filter(row=>row.id===packId||row.packId===packId);
+    assert.ok(members.length>1,packId);
+    for(const row of members){
+      assert.equal(row.companyCommonBase,true,row.id);
+      assert.equal(row.reuseScope,'COMPANY_ROBLOX_COMMON_BASE',row.id);
+      assert.equal(row.automaticCrossGameReuseAllowed,true,row.id);
+      assert.equal(row.crossGameReuseRequiresCompatibilityPass,true,row.id);
+      assert.equal(row.styleAdaptationRequiredPerGame,true,row.id);
+      assert.ok((row.tags||[]).includes('COMPANY_COMMON_BASE'),row.id);
+    }
+  }
+});
+
+test('common UI registry stays unverified until real consumer runtime evidence exists',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
+  assert.ok(pack);
+  assert.equal(pack.status,'REPO_ASSET');
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.equal(pack.verifiedCompanyReusable,false);
+  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
+
+  for(const atom of ['frame-panel','button-primary','bar-health']){
+    const row=registry.assets.find(asset=>asset.id==='roblox-common-ui-'+atom);
+    assert.ok(row,atom);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.gameplayAuthority,false);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+  }
+});
