@@ -176,7 +176,7 @@ test('Roblox scope classifier includes genre-specific native handler modes',()=>
   assert.equal(classifyRobloxScope({path:'mobileUx',label:'touch controls'},0),'MOBILE');
 });
 
-test('deterministic Roblox compiler binds approved genre and play mode to generated source',()=>{
+test('deterministic Roblox compiler binds approved genre play mode and default multiplayer runtime',()=>{
   const cases=[
     ['seed-roblox-simulator-tycoon-test','collect resources, upgrade production, earn income, unlock areas','Simulation','Tycoon','SINGLE','ECONOMY'],
     ['seed-roblox-battleground-fight-test','fight opponents, use skills and cooldowns, win rounds','Action','Battlegrounds & Fighting','COMPETITIVE','COMBAT'],
@@ -216,13 +216,12 @@ test('deterministic Roblox compiler binds approved genre and play mode to genera
       assert.ok(actionIndex>=0);
       assert.ok(compiled.result.serverCode.includes(`scopeHandler${actionIndex+1}`));
     }
-    if(playMode!=='SINGLE'){
-      assert.ok(compiled.result.serverCode.includes('Players:GetPlayers()'));
-      assert.ok(compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
-      assert.ok(compiled.result.clientCode.includes('OnClientEvent'));
-    }else{
-      assert.ok(!compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
-    }
+    assert.ok(compiled.result.sharedConfig.includes('BasicMultiplayerSupport = true'));
+    assert.ok(compiled.result.serverCode.includes('Players:GetPlayers()'));
+    assert.ok(compiled.result.serverCode.includes('ParticipantCount'));
+    assert.ok(compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
+    assert.ok(compiled.result.clientCode.includes('OnClientEvent'));
+    assert.ok(compiled.result.clientCode.includes('MULTIPLAYER_SYNC'));
   }
 });
 
