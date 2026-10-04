@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g10-9c6e5611de9d",
-  "directiveFingerprint": "9c6e5611de9d460ea1e7d937a39f9b0e0a6aeaf98da7ef946925bf7247bc9ea5",
-  "previousDirectiveFingerprint": "11b830989491f95b0064ec691219a9a1eb9e54aead7701b62a449478d24bc277",
-  "forbiddenRepeatFingerprint": "11b830989491f95b0064ec691219a9a1eb9e54aead7701b62a449478d24bc277",
+  "directiveId": "amusement-tycoon-build-up-g11-076cc73088df",
+  "directiveFingerprint": "076cc73088dfeed71eeea3ec5b22d1b5a60f247770234eb01a3df3e3edb4083f",
+  "previousDirectiveFingerprint": "9c6e5611de9d460ea1e7d937a39f9b0e0a6aeaf98da7ef946925bf7247bc9ea5",
+  "forbiddenRepeatFingerprint": "9c6e5611de9d460ea1e7d937a39f9b0e0a6aeaf98da7ef946925bf7247bc9ea5",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 10,
+  "generation": 11,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "783b4e71ee9e042a58f44fde0119855f690c2c75b5c97525f184bde25431bbaa",
+  "sourceTreeFingerprint": "73830743c7e126e50cff6d864bce5b442caa70a80045dc2e73768d2bccfe5397",
   "designFingerprint": "611d4a16ac6d84d419fddbbdc17eb5b874d863cdb394d7568cec6e83a4b4601b",
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
@@ -306,17 +306,17 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 9,
-    "previousSourceTreeFingerprint": "186394c90e0a5b32533d7669a8e02161087035737818fc0bee06fcfacad2e6d5",
-    "currentSourceTreeFingerprint": "783b4e71ee9e042a58f44fde0119855f690c2c75b5c97525f184bde25431bbaa",
+    "previousGeneration": 10,
+    "previousSourceTreeFingerprint": "783b4e71ee9e042a58f44fde0119855f690c2c75b5c97525f184bde25431bbaa",
+    "currentSourceTreeFingerprint": "73830743c7e126e50cff6d864bce5b442caa70a80045dc2e73768d2bccfe5397",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1478,7 +1478,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 86557,
+        "sourceBytes": 86559,
         "largestFileBytes": 43507,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1511,8 +1511,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1522,7 +1522,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1531,6 +1531,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1568,7 +1569,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2315,11 +2316,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "783b4e71ee9e042a58f44fde0119855f690c2c75b5c97525f184bde25431bbaa",
+      "sourceTreeFingerprint": "73830743c7e126e50cff6d864bce5b442caa70a80045dc2e73768d2bccfe5397",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2362,7 +2363,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 11,
+    "nextGeneration": 12,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2435,5 +2436,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T13:47:23.021Z"
+  "generatedAt": "2026-10-04T15:04:41.513Z"
 }

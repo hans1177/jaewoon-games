@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g8-69824c1d50ad",
-  "directiveFingerprint": "69824c1d50adc6a1343ea29ad84ce68a71d8e3ec1837adadf282fff88656a720",
-  "previousDirectiveFingerprint": "9203782cb0a953b9ba8a22b677bcdf6d6c963935429b2a6ffcbd7756fb1b7d11",
-  "forbiddenRepeatFingerprint": "9203782cb0a953b9ba8a22b677bcdf6d6c963935429b2a6ffcbd7756fb1b7d11",
+  "directiveId": "village-dungeons-build-up-g9-d9b139e52954",
+  "directiveFingerprint": "d9b139e529542b264f9e08391b6363cd021e375a0b847c9a84eb3bd0f64a9566",
+  "previousDirectiveFingerprint": "69824c1d50adc6a1343ea29ad84ce68a71d8e3ec1837adadf282fff88656a720",
+  "forbiddenRepeatFingerprint": "69824c1d50adc6a1343ea29ad84ce68a71d8e3ec1837adadf282fff88656a720",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "930a15347b5721f17fe89a4ef8a884deec32a3fae238626628e7f69b54c7daa8",
+  "sourceTreeFingerprint": "fee6f3761a8cceb1f1e13629fee242aceed0ad3dd648135ea2b17e54ea96af88",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -355,17 +355,17 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "c506ad93101ead100c4c57a1905777644773e66d2e42260fba821a4011670bc8",
-    "currentSourceTreeFingerprint": "930a15347b5721f17fe89a4ef8a884deec32a3fae238626628e7f69b54c7daa8",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "930a15347b5721f17fe89a4ef8a884deec32a3fae238626628e7f69b54c7daa8",
+    "currentSourceTreeFingerprint": "fee6f3761a8cceb1f1e13629fee242aceed0ad3dd648135ea2b17e54ea96af88",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1547,8 +1547,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1558,7 +1558,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1569,6 +1569,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -1602,19 +1603,12 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 210,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 50,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
         ]
       },
       {
@@ -1645,6 +1639,13 @@
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 12,
         "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": -110,
+        "gapDomains": [
+          "SYSTEM_CONNECTION"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -2333,11 +2334,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "930a15347b5721f17fe89a4ef8a884deec32a3fae238626628e7f69b54c7daa8",
+      "sourceTreeFingerprint": "fee6f3761a8cceb1f1e13629fee242aceed0ad3dd648135ea2b17e54ea96af88",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2380,7 +2381,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2448,5 +2449,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T13:47:23.202Z"
+  "generatedAt": "2026-10-04T15:04:41.678Z"
 }
