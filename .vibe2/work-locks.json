@@ -3,36 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-gadfj9",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/background/asset.glb",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/background/preview.png",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/background/evidence.json",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/item/asset.glb",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/item/preview.png",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/item/evidence.json",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/prop/asset.glb",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/prop/preview.png",
-        "assets/generated/roblox/seed-idle-growth-rpg-crystal-bloom/prop/evidence.json"
-      ],
-      "baseSha": "899b9824cc1460c6b83af78d3c60058a88fa1065",
-      "runId": "37177836963",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-04T05:39:30.197Z",
-      "expiresAt": "2026-10-04T06:24:30.197Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-13eb2as",
       "worker": "vibe2",
       "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
@@ -88,6 +58,26 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1"
+      ]
+    },
+    {
+      "id": "wl-g42l1n",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "0cf95dcc1919671a3d102792b7ded9b95a48da22",
+      "runId": "37182155457",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-04T06:24:35.448Z",
+      "expiresAt": "2026-10-04T07:09:35.448Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
