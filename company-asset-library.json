@@ -1,5 +1,5 @@
 {
-  "version": 102,
+  "version": 103,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -95,7 +95,14 @@
     "styleExpressionAxesRequiredForAllInternalAssets": true,
     "commonAssetsRemainStyleAdaptive": true,
     "conceptStyleLockWinsOverPhotoStyleSuggestion": true,
-    "photoReferenceMaySuggestStyleButDirectCopyForbidden": true
+    "photoReferenceMaySuggestStyleButDirectCopyForbidden": true,
+    "newAuthoringAllowed": true,
+    "newAuthoringNotGloballyBlocked": true,
+    "reuseAdaptRecombineIsPreferenceNotAbsoluteBan": true,
+    "volumeExpansionNewAuthoringAllowed": true,
+    "volumeTargetBandsAreGuidanceNotHardCreationCaps": true,
+    "newAuthoringMustAddDistinctCoverageOrQualityValue": true,
+    "colorOnlyOrDuplicateSpamDoesNotCountAsNewVolume": true
   },
   "platformPacks": [
     {
@@ -200,9 +207,21 @@
       "path": "/assets/insect-main-v3.webp",
       "license": "project-original",
       "note": "실제 repo 자산 · 게임별 변형 기준 참고",
-      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "internalAuditStudioRequired": false,
+      "internalAuditProductionPassClaimed": false,
+      "internalAuditEvidenceRequired": [
+        "SOURCE_IMAGE_CONTENT_REVIEW",
+        "SILHOUETTE_READABILITY",
+        "FORM_STRUCTURE",
+        "MATERIAL_SEPARATION",
+        "GAMEPLAY_CAMERA_SCALE",
+        "STYLE_COHERENCE"
+      ],
+      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
+      "internalUseBlockedByMissingAudit": false
     },
     {
       "id": "insect-war-v2",
@@ -213,9 +232,21 @@
       "path": "/assets/insect-war-v2.webp",
       "license": "project-original",
       "note": "전투 캐릭터/적 실루엣 참고",
-      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "internalAuditStudioRequired": false,
+      "internalAuditProductionPassClaimed": false,
+      "internalAuditEvidenceRequired": [
+        "SOURCE_IMAGE_CONTENT_REVIEW",
+        "SILHOUETTE_READABILITY",
+        "FORM_STRUCTURE",
+        "MATERIAL_SEPARATION",
+        "GAMEPLAY_CAMERA_SCALE",
+        "STYLE_COHERENCE"
+      ],
+      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
+      "internalUseBlockedByMissingAudit": false
     },
     {
       "id": "fantasy-rpg-v2",
@@ -226,9 +257,21 @@
       "path": "/assets/fantasy-rpg-v2.webp",
       "license": "project-original",
       "note": "판타지 캐릭터·환경 방향 참고",
-      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "internalAuditStudioRequired": false,
+      "internalAuditProductionPassClaimed": false,
+      "internalAuditEvidenceRequired": [
+        "SOURCE_IMAGE_CONTENT_REVIEW",
+        "SILHOUETTE_READABILITY",
+        "FORM_STRUCTURE",
+        "MATERIAL_SEPARATION",
+        "GAMEPLAY_CAMERA_SCALE",
+        "STYLE_COHERENCE"
+      ],
+      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
+      "internalUseBlockedByMissingAudit": false
     },
     {
       "id": "card-rpg-v2",
@@ -239,9 +282,21 @@
       "path": "/assets/card-rpg-v2.webp",
       "license": "project-original",
       "note": "UI/카드 표현 참고",
-      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "internalAuditStudioRequired": false,
+      "internalAuditProductionPassClaimed": false,
+      "internalAuditEvidenceRequired": [
+        "SOURCE_IMAGE_CONTENT_REVIEW",
+        "READABILITY_SCALE",
+        "UI_UX_SYSTEM_FIT",
+        "STATE_LANGUAGE",
+        "STYLE_COHERENCE",
+        "MOBILE_LEGIBILITY"
+      ],
+      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
+      "internalUseBlockedByMissingAudit": false
     },
     {
       "id": "crystal-v2",
@@ -252,9 +307,21 @@
       "path": "/assets/crystal-v2.webp",
       "license": "project-original",
       "note": "재질·발광·보상 연출 참고",
-      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "internalAuditStudioRequired": false,
+      "internalAuditProductionPassClaimed": false,
+      "internalAuditEvidenceRequired": [
+        "SOURCE_IMAGE_CONTENT_REVIEW",
+        "SHAPE_LANGUAGE",
+        "IMPACT_READABILITY",
+        "COLOR_LIGHTING",
+        "STYLE_COHERENCE",
+        "MOBILE_DENSITY"
+      ],
+      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
+      "internalUseBlockedByMissingAudit": false
     },
     {
       "id": "page-bg-v4",
@@ -265,9 +332,21 @@
       "path": "/assets/page-bg-v4.webp",
       "license": "project-original",
       "note": "전경/중경/후경 배경 구성 참고",
-      "internalAuditState": "REFERENCE_ONLY_UNSCORED",
+      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "internalAuditStudioRequired": false,
+      "internalAuditProductionPassClaimed": false,
+      "internalAuditEvidenceRequired": [
+        "SOURCE_IMAGE_CONTENT_REVIEW",
+        "FOREGROUND_MIDGROUND_BACKGROUND_FIT",
+        "LANDMARK_READABILITY",
+        "MATERIAL_SURFACE",
+        "STYLE_COHERENCE",
+        "MOBILE_CLUTTER"
+      ],
+      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
+      "internalUseBlockedByMissingAudit": false
     },
     {
       "id": "bug-defense-hero",
@@ -66484,7 +66563,16 @@
       "manualOrGameLockWins": true,
       "mustPreserveGameplayBalanceSaveProgressionNetworkAuthority": true,
       "mustPreservePriorAssetLineage": true,
-      "flowWorkflowQueueSchedulerDeploymentMutationAllowed": false
+      "flowWorkflowQueueSchedulerDeploymentMutationAllowed": false,
+      "newAuthoringAfterReuseAssessmentAllowed": true,
+      "newAuthoringIsNotGloballyBlocked": true,
+      "distinctVolumeExpansionAllowed": true,
+      "newAuthoringAllowedWhenCoverageGapRemains": true,
+      "newAuthoringAllowedWhenRoleOrSilhouetteDiversityIsInsufficient": true,
+      "newAuthoringAllowedWhenExistingAdaptationWouldUndermineQuality": true,
+      "heroBossLandmarkSignatureAuthoringAllowed": true,
+      "platformNativeGapMayRequireNewAuthoring": true,
+      "duplicateEquivalentAuthoringStillDiscouraged": true
     }
   },
   "commonLibrarySystemDepthAudit": {
@@ -67555,24 +67643,54 @@
     "volumeBeforeQuality": true,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
+      "version": 1,
+      "enabled": true,
       "globallyBlocked": false,
-      "requiresVerifiedGap": true,
-      "reuseAdaptRecombineRemainPreferred": true,
-      "existingAssetAvailabilityAloneDoesNotCloseGap": true,
-      "allowWhen": [
-        "MISSING_REQUIRED_ROLE_OR_SYSTEM_DEPTH",
-        "EXISTING_ASSETS_CANNOT_PRESERVE_REQUIRED_IDENTITY_OR_SILHOUETTE",
-        "STYLE_OR_THEME_ADAPTATION_WOULD_DEGRADE_IDENTITY_OR_QUALITY",
-        "SAFE_ADAPTATION_DOES_NOT_REACH_CURRENT_QUALITY_TARGET",
-        "REPETITION_OR_DIVERSITY_DEBT_REMAINS_AFTER_RECOMBINATION",
-        "HERO_BOSS_LANDMARK_OR_SIGNATURE_ASSET_NEEDS_DISTINCT_AUTHORING",
-        "PLATFORM_NATIVE_VARIANT_REQUIRES_REAUTHORING"
+      "principle": "REUSE_ADAPT_RECOMBINE_FIRST_BUT_NEW_AUTHORING_REMAINS_AVAILABLE_FOR_REAL_GAPS_AND_DISTINCT_QUALITY_VOLUME",
+      "resolutionOrder": [
+        "REUSE_EXISTING",
+        "DERIVE_VARIANT",
+        "RECOMBINE_EXISTING",
+        "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+        "NEW_AUTHORING"
       ],
-      "mayRunDuringVolumeUp": true,
-      "mayRunDuringQualityUpWhenGapIsVerified": true,
-      "newAssetStillRequiresNormalLicenseProvenanceQaAndRuntimePromotionRules": true,
-      "productionPromotionAutomatic": false,
-      "gameplayBalanceSaveProgressionEconomyNetworkAuthorityUnchanged": true
+      "reusePriorityIsPreferenceNotHardBan": true,
+      "allowedTriggers": [
+        "REAL_SYSTEM_DEPTH_OR_ROLE_COVERAGE_GAP",
+        "LIBRARY_VOLUME_BELOW_RECOMMENDED_TARGET_BAND",
+        "ROLE_OR_SILHOUETTE_DIVERSITY_INSUFFICIENT",
+        "HERO_BOSS_LANDMARK_OR_SIGNATURE_IDENTITY_NEEDS_UNIQUE_ASSET",
+        "EXISTING_ASSET_ADAPTATION_WOULD_UNDERSHOOT_REQUIRED_QUALITY",
+        "PLATFORM_NATIVE_REAUTHOR_CANNOT_PRESERVE_REQUIRED_PRESENTATION",
+        "NO_SAFE_COMPATIBLE_INTERNAL_OR_LICENSE_VERIFIED_SOURCE_EXISTS"
+      ],
+      "volumeRules": {
+        "targetBandsAreGuidanceNotHardCaps": true,
+        "mayAuthorBelowTargetBand": true,
+        "mayAuthorAboveTargetBandForDistinctMissingRoleOrQualityNeed": true,
+        "distinctSemanticRoleOrSilhouetteOrSystemCoverageRequired": true,
+        "colorOnlyVariantDoesNotCount": true,
+        "nearDuplicateSpamForbidden": true
+      },
+      "qualityRules": {
+        "lowQualityExistingAssetDoesNotBanUseButMayTriggerReplacementAuthoring": true,
+        "adaptExistingFirstWhenQualityCanBePreserved": true,
+        "newAuthoringAllowedWhenAdaptationPenaltyWouldLoseIdentityReadabilityOrDetail": true,
+        "sourceAuditDoesNotEqualRuntimeOrProductionPass": true,
+        "runtimeVerificationStillRequiredBeforeProductionPromotion": true
+      },
+      "authorityBoundary": {
+        "gameplayAuthority": false,
+        "balanceAuthority": false,
+        "saveAuthority": false,
+        "networkAuthority": false,
+        "flowMutationAllowed": false,
+        "workflowMutationAllowed": false,
+        "queueMutationAllowed": false,
+        "schedulerMutationAllowed": false,
+        "deploymentMutationAllowed": false,
+        "newPipelineAllowed": false
+      }
     },
     "autoRegistrySync": true,
     "autoPackCountSync": true,
@@ -68180,7 +68298,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 102,
+    "lastCatalogSynchronizedVersion": 103,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -78534,7 +78652,7 @@
       "lastChangeFingerprint": "1e5874b8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 102
+      "synchronizedRegistryVersion": 103
     },
     "studioVariationAxes": {
       "BUILDING": [
@@ -78995,6 +79113,54 @@
       "productionPromotionStillRequiresRuntimeVerification": true,
       "gameplaySaveNetworkAuthorityUnchanged": true,
       "newPipelineWorkflowQueueSchedulerCreated": false
+    },
+    "qualityDebtSummary": {
+      "version": 1,
+      "source": "company-asset-library.json#assets",
+      "activeAssetCount": 713,
+      "measuredAssetCount": 707,
+      "unmeasuredAssetCount": 6,
+      "belowCommercialReadyCount": 175,
+      "gradeCounts": {
+        "REPAIR_REQUIRED": 3,
+        "COMMERCIAL_READY": 300,
+        "PROTOTYPE": 3,
+        "HIGH_QUALITY": 124,
+        "DEVELOPMENT_READY": 45,
+        "ELITE": 232
+      },
+      "unmeasuredAssetIds": [
+        "card-rpg-v2",
+        "crystal-v2",
+        "fantasy-rpg-v2",
+        "insect-main-v3",
+        "insect-war-v2",
+        "page-bg-v4"
+      ],
+      "priorityRepairAssetIds": [
+        "bug-defense-boss",
+        "bug-defense-hero",
+        "bug-defense-spider",
+        "dragonfly-sprite",
+        "ladybug-sprite",
+        "mantis-sprite",
+        "roblox-survival-back_cape",
+        "roblox-survival-blade_long",
+        "roblox-survival-claw",
+        "roblox-survival-combat-parts-v1",
+        "roblox-survival-grip_long",
+        "roblox-survival-guard_cross"
+      ],
+      "reviewOrder": [
+        "REPAIR_REQUIRED_AND_PROTOTYPE_FIRST",
+        "DEVELOPMENT_READY_THEN_HIGH_QUALITY",
+        "UNMEASURED_SOURCE_VISUAL_REVIEW",
+        "COMMERCIAL_READY_TO_ELITE",
+        "ELITE_TO_MASTERPIECE_AFTER_VOLUME_AND_CURRENT_GAPS"
+      ],
+      "qualityRepairDoesNotDisableDistinctNewVolumeAuthoring": true,
+      "newVolumeAndExistingQualityDebtMayCoexist": true,
+      "productionRuntimeVerificationSeparate": true
     }
   },
   "characterNpcCustomization": {
