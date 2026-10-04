@@ -42828,33 +42828,619 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T11:47:50.988Z",
+      "updatedAt": "2026-10-04T12:01:24.921Z",
       "robloxSourceCommit": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
       "robloxSourceBootstrapPassedAt": "2026-10-04T11:47:50.988Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
+      "robloxBuildArtifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+      "robloxBuildPassedAt": "2026-10-04T12:01:24.921Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-04T12:01:24.921Z",
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-04T11:54:55.240Z",
+        "sourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
+        "artifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "llama3.2:1b",
+            "graphics": "llama3.2:1b",
+            "development": "llama3.2:1b",
+            "qa": "llama3.2:1b",
+            "balance": "llama3.2:1b"
+          },
+          "sharedModel": "llama3.2:1b",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": false,
+          "concurrentRoblox": true,
+          "build": {
+            "sourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
+            "artifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found."
+          }
+        ],
+        "blockers": [],
+        "authority": "roblox-vibe-shared-model-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": null,
+      "robloxFoundationF0Evidence": {
+        "version": 4,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-04T11:54:55.819Z",
+        "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "sourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
+        "artifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+        "rebuiltArtifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+        "artifactRunId": 37198250895,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "BOSS",
+            "MOBILE_UI",
+            "SAVE",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "BOSS": false,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
+              "capabilities": [
+                "WORLD",
+                "COMBAT",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "속성 공명 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "운명 개척 탐험 시스템",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 0,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 3,
+              "pass": false
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
+          "antiSkeletonPassed": false,
+          "designGenre": "Strategy",
+          "sourceGenre": "Strategy",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": null,
+      "robloxHeadlessFastMvpEvidence": {
+        "version": 4,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "platform": "ROBLOX",
+        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
+        "checkedAt": "2026-10-04T11:54:55.819Z",
+        "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "sourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
+        "artifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+        "rebuiltArtifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
+        "artifactRunId": 37198250895,
+        "nativeLanguageCompilePassed": true,
+        "nativeCompilerVersion": "0.739",
+        "playMode": "SINGLE",
+        "saveExists": true,
+        "multiplayerApplicable": false,
+        "sourcePreflightPassed": false,
+        "f0SourceIntegrityPassed": true,
+        "sourceStartupMarkersPassed": true,
+        "gameStartPassed": false,
+        "serverBootPassed": false,
+        "worldFoundationPassed": false,
+        "characterFoundationPassed": false,
+        "physicsAndMovementPassed": false,
+        "runtimeFoundationPassed": false,
+        "actualRuntimeEvidence": false,
+        "internalReleaseReady": false,
+        "serverClientBoundaryPreflightPassed": true,
+        "remoteSecurityPreflightPassed": true,
+        "mobileControlUiPreflightPassed": true,
+        "coreProgressionMarkersPassed": true,
+        "combatOrRoundMarkersPassed": true,
+        "datastoreContractPassed": true,
+        "multiplayerSyncContractPassed": true,
+        "protectedStatePreserved": false,
+        "exactRevision": true,
+        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadiness": {
+          "version": 1,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "pass": false,
+          "blockers": [
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "GENERIC_SCOPE_HANDLER_SKELETON"
+          ],
+          "requiredCapabilities": [
+            "CORE_GAMEPLAY_STATE",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "BOSS",
+            "MOBILE_UI",
+            "SAVE",
+            "SESSION_FLOW"
+          ],
+          "implementedCapabilities": {
+            "CORE_GAMEPLAY_STATE": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "BOSS": false,
+            "MOBILE_UI": true,
+            "SAVE": true,
+            "SESSION_FLOW": false
+          },
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI",
+                "PROGRESSION"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
+              "capabilities": [
+                "WORLD",
+                "COMBAT",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "속성 공명 시스템",
+              "capabilities": [
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "운명 개척 탐험 시스템",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT"
+              ],
+              "pass": false
+            }
+          ],
+          "placeholderDebt": {
+            "primitiveConstructionCount": 0,
+            "meshConstructionCount": 0,
+            "likelyPrimitiveHeavy": false,
+            "genericScopeHandlerCount": 6,
+            "meaningfulGameplayFunctionCount": 0
+          },
+          "studioQualitySheet": {
+            "Core": "MISSING",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
+            "UI": "POLISHED",
+            "Graphics": "ROUGH",
+            "Motion": "POLISHED",
+            "Audio": "MISSING",
+            "Mobile": "POLISHED",
+            "Performance": "MISSING",
+            "Runtime": "N/A"
+          },
+          "studioReadiness": {
+            "ai": {
+              "applicable": true,
+              "signalCount": 0,
+              "pass": false
+            },
+            "combatFeel": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "worldTopology": {
+              "applicable": true,
+              "signalCount": 1,
+              "pass": false
+            },
+            "firstTenMinutes": {
+              "signalCount": 3,
+              "pass": false
+            },
+            "midLateGame": {
+              "applicable": true,
+              "signalCount": 2,
+              "pass": false
+            },
+            "systemConnections": {
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
+            },
+            "placeholder": {
+              "pass": true,
+              "primitiveConstructionCount": 0,
+              "meshConstructionCount": 0,
+              "likelyPrimitiveHeavy": false,
+              "genericScopeHandlerCount": 6,
+              "meaningfulGameplayFunctionCount": 0
+            },
+            "criticalGaps": [
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
+            ],
+            "f9SourceQualityReady": false
+          },
+          "runtimeRequirements": {
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
+            "objectiveRequired": false,
+            "serverBootRequired": true,
+            "simulationRequired": true,
+            "actualPlayRequired": true
+          },
+          "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
+          "antiSkeletonPassed": false,
+          "designGenre": "Strategy",
+          "sourceGenre": "Strategy",
+          "designPlayMode": "SINGLE",
+          "sourcePlayMode": "SINGLE"
+        },
+        "studioQualitySheet": {
+          "Core": "MISSING",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
+          "UI": "POLISHED",
+          "Graphics": "ROUGH",
+          "Motion": "POLISHED",
+          "Audio": "MISSING",
+          "Mobile": "POLISHED",
+          "Performance": "MISSING",
+          "Runtime": "N/A"
+        },
+        "checks": {
+          "exactSourceRevision": true,
+          "nativeLanguageCompilePassed": true,
+          "exactArtifact": true,
+          "projectContract": true,
+          "robloxPolicy": true,
+          "duplicateDeclarationGuard": true,
+          "sourceStartupMarkers": true,
+          "foundationSentinelContract": true,
+          "characterPhysicsGuard": true,
+          "mobileFirst": true,
+          "serverClientBoundary": true,
+          "remoteSecurity": true,
+          "coreProgression": true,
+          "combatOrRound": true,
+          "saveRejoin": true,
+          "multiplayerSync": true,
+          "sessionEndRestart": true,
+          "errorGuards": true,
+          "gameplayProductReadiness": false,
+          "f0SourceIntegrity": true
+        },
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
+        "authority": "roblox-headless-source-preflight-f0"
+      },
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -42886,11 +43472,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -42968,29 +43554,25 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
+      "robloxQualityBuildUpSourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
       "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-        "sourceRevision": "9472bd4b844466429db623f3319252e3d488efda",
-        "artifactIdentity": "sha256:4754aad76de2a9836e18bb2f4387986b9838c25155dd72f3a1929489420e059a",
+        "sourceRevision": "b7ceec9765f28ed87211e82303e9f3000e6b985e",
+        "artifactIdentity": "sha256:2e1bd8ca67b6740ddc65e87a38c139d9779ffdddd9d4aa25c48c20236c433808",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37126296043,
-        "testedAt": "2026-10-03T14:07:46.711Z",
+        "workflowRunId": 37198250895,
+        "testedAt": "2026-10-04T12:01:24.921Z",
         "qualityFailureKinds": [
-          "DESIGN_GENRE_MISMATCH:RPG:Strategy",
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
           "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
           "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
           "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
           "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
           "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-          "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-          "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
           "CORE_LOOP_STEP_UNIMPLEMENTED:0",
           "CORE_LOOP_STEP_UNIMPLEMENTED:1",
           "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -43006,219 +43588,6 @@
         ],
         "qualityFailureDetails": [
           {
-            "id": "DESIGN_GENRE_MISMATCH:RPG:Strategy",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-              "pass": false,
-              "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING",
-                "PROGRESSION",
-                "QUEST",
-                "BOSS",
-                "DUNGEON",
-                "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "GATHERING": false,
-                "PROGRESSION": false,
-                "QUEST": true,
-                "BOSS": false,
-                "DUNGEON": false,
-                "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "운명 개척 탐험 시스템",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
-              "antiSkeletonPassed": false,
-              "designGenre": "RPG",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
             "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
             "priority": "P0",
@@ -43228,18 +43597,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -43249,35 +43614,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -43285,8 +43642,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -43329,8 +43685,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -43344,7 +43699,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -43385,10 +43740,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -43418,227 +43769,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-              "pass": false,
-              "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING",
-                "PROGRESSION",
-                "QUEST",
-                "BOSS",
-                "DUNGEON",
-                "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "GATHERING": false,
-                "PROGRESSION": false,
-                "QUEST": true,
-                "BOSS": false,
-                "DUNGEON": false,
-                "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "운명 개척 탐험 시스템",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
-              "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -43647,25 +43785,21 @@
           {
             "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
+            "priority": "P0",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
             "observed": {
               "version": 1,
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -43675,35 +43809,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -43711,8 +43837,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -43755,8 +43880,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -43770,7 +43894,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -43811,10 +43935,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -43844,14 +43964,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -43860,25 +43980,21 @@
           {
             "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
+            "priority": "P0",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
             "observed": {
               "version": 1,
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -43888,35 +44004,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -43924,8 +44032,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -43968,8 +44075,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -43983,7 +44089,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -44024,10 +44130,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -44057,14 +44159,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -44080,18 +44182,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -44101,35 +44199,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -44137,8 +44227,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -44181,8 +44270,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -44196,7 +44284,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -44237,10 +44325,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -44270,14 +44354,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -44293,18 +44377,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -44314,35 +44394,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -44350,8 +44422,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -44394,8 +44465,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -44409,7 +44479,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -44450,10 +44520,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -44483,227 +44549,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-              "pass": false,
-              "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING",
-                "PROGRESSION",
-                "QUEST",
-                "BOSS",
-                "DUNGEON",
-                "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "GATHERING": false,
-                "PROGRESSION": false,
-                "QUEST": true,
-                "BOSS": false,
-                "DUNGEON": false,
-                "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "운명 개척 탐험 시스템",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
-              "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -44719,18 +44572,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -44740,35 +44589,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -44776,8 +44617,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -44820,8 +44660,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -44835,7 +44674,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -44876,10 +44715,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -44909,14 +44744,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -44932,18 +44767,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -44953,35 +44784,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -44989,8 +44812,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -45033,8 +44855,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -45048,7 +44869,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -45089,10 +44910,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -45122,21 +44939,21 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
             }
           },
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
+            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
             "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
             "priority": "P1",
             "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
@@ -45145,18 +44962,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -45166,35 +44979,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -45202,8 +45007,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -45246,8 +45050,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -45261,7 +45064,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -45302,10 +45105,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -45335,227 +45134,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-              "pass": false,
-              "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING",
-                "PROGRESSION",
-                "QUEST",
-                "BOSS",
-                "DUNGEON",
-                "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "GATHERING": false,
-                "PROGRESSION": false,
-                "QUEST": true,
-                "BOSS": false,
-                "DUNGEON": false,
-                "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "COMBAT",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "운명 개척 탐험 시스템",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "MISSING",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
-              "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -45571,18 +45157,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -45592,35 +45174,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -45628,8 +45202,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -45672,8 +45245,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -45687,7 +45259,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -45728,10 +45300,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -45761,14 +45329,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -45784,18 +45352,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -45805,35 +45369,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -45841,8 +45397,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -45885,8 +45440,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -45900,7 +45454,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -45941,10 +45495,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -45974,14 +45524,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -45997,18 +45547,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -46018,35 +45564,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -46054,8 +45592,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -46098,8 +45635,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -46113,7 +45649,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -46154,10 +45690,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -46187,14 +45719,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -46210,18 +45742,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -46231,35 +45759,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -46267,8 +45787,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -46311,8 +45830,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -46326,7 +45844,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -46367,10 +45885,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -46400,14 +45914,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -46423,18 +45937,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -46444,35 +45954,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -46480,8 +45982,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -46524,8 +46025,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -46539,7 +46039,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -46580,10 +46080,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -46613,14 +46109,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -46636,18 +46132,14 @@
               "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
               "pass": false,
               "blockers": [
-                "DESIGN_GENRE_MISMATCH:RPG:Strategy",
                 "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "MISSING_GAMEPLAY_CAPABILITY:WORLD",
                 "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
                 "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
                 "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
                 "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
                 "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-                "MISSING_GAMEPLAY_CAPABILITY:DUNGEON",
-                "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:0",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:1",
                 "CORE_LOOP_STEP_UNIMPLEMENTED:2",
@@ -46657,35 +46149,27 @@
               ],
               "requiredCapabilities": [
                 "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
                 "WORLD",
                 "CONTENT_ENTITY",
                 "COMBAT",
                 "ENEMY_AI",
-                "GATHERING",
                 "PROGRESSION",
-                "QUEST",
                 "BOSS",
-                "DUNGEON",
+                "MOBILE_UI",
                 "SAVE",
-                "MULTIPLAYER",
-                "MOBILE_UI"
+                "SESSION_FLOW"
               ],
               "implementedCapabilities": {
                 "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
                 "WORLD": false,
                 "CONTENT_ENTITY": false,
                 "COMBAT": false,
                 "ENEMY_AI": false,
-                "GATHERING": false,
                 "PROGRESSION": false,
-                "QUEST": true,
                 "BOSS": false,
-                "DUNGEON": false,
+                "MOBILE_UI": true,
                 "SAVE": true,
-                "MULTIPLAYER": false,
-                "MOBILE_UI": true
+                "SESSION_FLOW": false
               },
               "coreLoopTrace": [
                 {
@@ -46693,8 +46177,7 @@
                   "step": "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
                   "capabilities": [
                     "WORLD",
-                    "CONTENT_ENTITY",
-                    "GATHERING"
+                    "CONTENT_ENTITY"
                   ],
                   "pass": false
                 },
@@ -46737,8 +46220,7 @@
                   "capabilities": [
                     "WORLD",
                     "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI"
+                    "COMBAT"
                   ],
                   "pass": false
                 }
@@ -46752,7 +46234,7 @@
               },
               "studioQualitySheet": {
                 "Core": "MISSING",
-                "Content": "ROUGH",
+                "Content": "MISSING",
                 "World": "MISSING",
                 "Combat": "MISSING",
                 "AI": "MISSING",
@@ -46793,10 +46275,6 @@
                 "systemConnections": {
                   "rows": [
                     {
-                      "id": "QUEST_TO_PROGRESSION",
-                      "pass": false
-                    },
-                    {
                       "id": "WORLD_TO_CONTENT",
                       "pass": false
                     }
@@ -46826,14 +46304,14 @@
                 "minimumBasePartCount": 5,
                 "spawnRequired": true,
                 "landmarkRequired": true,
-                "objectiveRequired": true,
+                "objectiveRequired": false,
                 "serverBootRequired": true,
                 "simulationRequired": true,
                 "actualPlayRequired": true
               },
               "designFingerprint": "5e8332b44ac7b3e9189bb7d461b03a293d94ec63b79ee83959bf4ab14c4891ab",
               "antiSkeletonPassed": false,
-              "designGenre": "RPG",
+              "designGenre": "Strategy",
               "sourceGenre": "Strategy",
               "designPlayMode": "SINGLE",
               "sourcePlayMode": "SINGLE"
@@ -53306,7 +52784,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T12:01:01.229Z",
+  "updatedAt": "2026-10-04T12:01:24.921Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
