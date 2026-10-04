@@ -12,15 +12,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 27,
-      "successes": 5,
-      "failures": 22,
+      "calls": 30,
+      "successes": 6,
+      "failures": 24,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 67976,
-      "lastMs": 3780,
+      "totalMs": 75353,
+      "lastMs": 2859,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T09:53:33.533Z"
+      "updatedAt": "2026-10-04T09:55:40.895Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -111,33 +111,33 @@
       "updatedAt": "2026-10-04T09:23:15.149Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 22,
+      "calls": 24,
       "successes": 0,
-      "failures": 22,
+      "failures": 24,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 228713,
-      "lastMs": 5009,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-04T09:53:34.762Z"
+      "totalMs": 238923,
+      "lastMs": 6093,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-04T09:55:44.129Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 10,
+      "calls": 11,
       "successes": 0,
-      "failures": 10,
-      "timeouts": 6,
+      "failures": 11,
+      "timeouts": 7,
       "jsonFailures": 4,
-      "totalMs": 914738,
-      "lastMs": 65860,
-      "lastError": "schema required missing: root.systemInterconnections",
-      "updatedAt": "2026-10-04T09:53:25.693Z"
+      "totalMs": 1034743,
+      "lastMs": 120005,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-04T09:55:34.769Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-04T09:23:10.530Z",
-  "updatedAt": "2026-10-04T09:53:34.762Z",
-  "lastSuccessfulModelCallAt": "2026-10-04T09:52:07.516Z",
+  "updatedAt": "2026-10-04T09:55:44.129Z",
+  "lastSuccessfulModelCallAt": "2026-10-04T09:55:38.035Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
