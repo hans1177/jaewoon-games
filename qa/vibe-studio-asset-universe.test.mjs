@@ -347,7 +347,9 @@ test('game visual DNA keeps mixed concept identity stable across asset selection
   });
   assert.equal(loadout.complete,true);
   assert.equal(loadout.selections[0].assetId,'verified-wuxia');
-  assert.equal(scoreStudioAssetCandidate({asset:assets[2],gameDna:{...dna,targetPlatform:'UNITY'}}).rejected,true);
+  const adaptableMismatch=scoreStudioAssetCandidate({asset:assets[2],gameDna:{...dna,targetPlatform:'UNITY'},requirement:{family:'WEAPON',subfamily:'MELEE'}});
+  assert.equal(adaptableMismatch.rejected,false);
+  assert.equal(adaptableMismatch.applicationMode,'STYLE_ADAPT');
 });
 
 test('company asset promotion is impossible without actual native runtime consumer evidence',()=>{
@@ -2398,7 +2400,7 @@ test('generic character gear requirement can choose company-common base',()=>{
 });
 
 
-test('company-common UI v2 preserves old atoms and adds eight reusable components',()=>{
+test('company-common UI v3 preserves prior atoms and expands reusable interaction surfaces',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-ui-v1');
@@ -2408,8 +2410,8 @@ test('company-common UI v2 preserves old atoms and adds eight reusable component
 
   const oldIds=['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'];
   const newIds=['INVENTORY_SLOT','TOOLTIP','MODAL','TAB_BUTTON','QUEST_CARD','CURRENCY_CHIP','BAR_PROGRESS','MOBILE_ACTION_BUTTON'];
-  assert.equal(catalog.version,2);
-  assert.equal(catalog.atoms.length,11);
+  assert.equal(catalog.version,3);
+  assert.equal(catalog.atoms.length,32);
   for(const id of [...oldIds,...newIds]){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
@@ -2423,7 +2425,11 @@ test('company-common UI v2 preserves old atoms and adds eight reusable component
   assert.ok(source.includes('function RobloxCommonUI.CreateCurrencyChip(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateProgressBar(options)'));
   assert.ok(source.includes('function RobloxCommonUI.CreateMobileActionButton(options)'));
-  assert.ok(source.includes('atomCount = 11'));
+  assert.ok(source.includes('atomCount = 32'));
+  for(const id of ['DIALOGUE_ASSISTANT_BUTTON','DIALOGUE_PANEL','NPC_INTERACTION_PROMPT','NPC_INTERACTION_MENU','INVENTORY_GRID','CHARACTER_SHEET','MINIMAP','HOTBAR']){
+    assert.ok(source.includes(id),id);
+    assert.ok(catalog.atoms.some(row=>row.atomId===id),id+':catalog');
+  }
   assert.equal(quality.staticAuthoringChecklist.score,100);
   assert.equal(quality.quality120.claimedRuntimeScore,null);
   assert.equal(quality.productionVerified,false);
