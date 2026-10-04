@@ -45,6 +45,8 @@ test('F9 and private deployment dedupe exact control revision instead of seriali
   const postRuntime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(f9,/String\(r\.head_sha\|\|''\)===controlSha/);
   assert.match(publish,/String\(r\.head_sha\|\|''\)===controlSha/);
+  assert.match(publish,/group: roblox-publication-target-\$\{\{ inputs\.game_id \}\}-\$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(publish,/Only the shared publication target write is serialized/);
   assert.match(postRuntime,/group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}/);
   assert.doesNotMatch(postRuntime,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id/);
 });
