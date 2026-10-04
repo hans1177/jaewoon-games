@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "packId": "roblox-common-background-v1",
+  "title": "Roblox 회사 공용 레이어형 배경 14종 v1",
+  "family": "ENVIRONMENT",
+  "subfamily": "BACKGROUND",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "license": "project-original",
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "internalAuditStudioRequired": false,
+  "gameplayAuthority": false,
+  "worldGeometryAuthority": false,
+  "flowStageUse": [
+    "DESIGN_REFINEMENT",
+    "GRAPHICS_PRODUCTION",
+    "SOURCE_COMPOSITION",
+    "BUILD_UP",
+    "PRESENTATION_POLISH"
+  ],
+  "profiles": [
+    "FOREST_DAWN",
+    "DEEP_FOREST",
+    "SNOW_FIELD",
+    "DESERT_DUSK",
+    "SWAMP_MIST",
+    "CAVE_BLUE",
+    "CRYSTAL_CAVERN",
+    "COAST_SUNSET",
+    "VILLAGE_WARM",
+    "CITY_NIGHT",
+    "RUINS_MOON",
+    "VOLCANIC_GLOW",
+    "SKY_ISLAND",
+    "HORROR_CORRIDOR"
+  ],
+  "layerGrammar": [
+    "SKY_GRADIENT",
+    "FAR_SILHOUETTE",
+    "MID_STRUCTURE",
+    "NEAR_FOREGROUND",
+    "FOG_OR_LIGHT",
+    "LANDMARK"
+  ],
+  "adaptationAxes": [
+    "PALETTE",
+    "LIGHTING",
+    "FOG",
+    "LANDMARK",
+    "LAYER_HEIGHT",
+    "DEPTH",
+    "ACCENT",
+    "WEATHER_OVERLAY"
+  ],
+  "presentationUse": [
+    "LOADING",
+    "MAIN_MENU",
+    "PAUSE_MENU",
+    "INTRO",
+    "CHAPTER_TITLE",
+    "RESULT_SCREEN"
+  ],
+  "stageRoles": {
+    "DESIGN_REFINEMENT": [
+      "BIOME_TONE",
+      "DEPTH_PLAN",
+      "LANDMARK_ROLE"
+    ],
+    "GRAPHICS_PRODUCTION": [
+      "PALETTE",
+      "LIGHTING",
+      "LAYER_SHAPES",
+      "FOG",
+      "ACCENT"
+    ],
+    "SOURCE_COMPOSITION": [
+      "BACKGROUND_PROFILE_BINDING"
+    ],
+    "BUILD_UP": [
+      "PROFILE_VARIANTS",
+      "WEATHER_OVERLAY",
+      "LANDMARK_VARIANTS"
+    ],
+    "PRESENTATION_POLISH": [
+      "PARALLAX_DEPTH",
+      "CONTRAST",
+      "FOCAL_READABILITY",
+      "REDUCED_MOTION"
+    ]
+  }
+}
