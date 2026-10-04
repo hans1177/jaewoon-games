@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, buildUpGrowthExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -1148,6 +1148,34 @@ test('preservation presentation task is restored instead of superseded by generi
   assert.equal(restored.blocker,null);
   assert.equal(restored.lastOutcome,'RESTORED_OWNER_PRESERVATION_PRESENTATION');
   assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
+});
+
+test('progressive BUILD_UP growth expectation rises with cycle count without requiring Studio',()=>{
+  const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json');
+  fs.mkdirSync(path.dirname(policyPath),{recursive:true});
+  fs.writeFileSync(policyPath,JSON.stringify({
+    version:13,status:'ACTIVE',progressiveGrowthExpectation:{
+      version:1,studioRequired:false,studioEvidenceRole:'OPTIONAL_SUPPORTING_EVIDENCE_ONLY',
+      rules:{previousVerifiedBaselineMustBeBeaten:true,accumulatedGrowthMustRemainVisible:true,sourceAndPlayerEffectRequired:true},
+      growthPointModel:{CONNECTED_CONTENT_BUNDLE:5,EXISTING_SYSTEM_DEEPENED:3},
+      tiers:[
+        {id:'FOUNDATION_GROWTH',minCycle:1,maxCycle:2,minimumGrowthPoints:6,minimumConnectedImprovements:3,minimumDistinctImprovementAxes:2,minimumConnectedContentBundles:0,expectations:['FOUNDATION']},
+        {id:'SYSTEM_DEPTH_GROWTH',minCycle:3,maxCycle:4,minimumGrowthPoints:9,minimumConnectedImprovements:4,minimumDistinctImprovementAxes:3,minimumConnectedContentBundles:1,expectations:['DEPTH']},
+        {id:'CONTENT_NETWORK_GROWTH',minCycle:5,maxCycle:7,minimumGrowthPoints:13,minimumConnectedImprovements:5,minimumDistinctImprovementAxes:4,minimumConnectedContentBundles:1,expectations:['NETWORK']},
+        {id:'ADVANCED_EXPANSION_GROWTH',minCycle:8,maxCycle:12,minimumGrowthPoints:18,minimumConnectedImprovements:6,minimumDistinctImprovementAxes:5,minimumConnectedContentBundles:2,expectations:['ADVANCED']},
+        {id:'PERPETUAL_MASTERY_GROWTH',minCycle:13,maxCycle:null,minimumGrowthPoints:24,minimumConnectedImprovements:7,minimumDistinctImprovementAxes:5,minimumConnectedContentBundles:2,repeatEscalation:{everyAdditionalCycles:3,growthPointsPlus:2,connectedImprovementsPlusEvery:6,connectedImprovementsPlus:1,contentBundlesPlusEvery:9,contentBundlesPlus:1},expectations:['MASTERY']}
+      ]
+    }
+  },null,2)+'\n','utf8');
+  const cycles=[1,3,5,8,13,25].map(cycle=>buildUpGrowthExpectation({cycle,repoRoot:root}));
+  assert.deepEqual(cycles.map(row=>row.tier),['FOUNDATION_GROWTH','SYSTEM_DEPTH_GROWTH','CONTENT_NETWORK_GROWTH','ADVANCED_EXPANSION_GROWTH','PERPETUAL_MASTERY_GROWTH','PERPETUAL_MASTERY_GROWTH']);
+  assert.ok(cycles.every(row=>row.studioRequired===false));
+  for(let i=1;i<cycles.length;i++)assert.ok(cycles[i].minimumGrowthPoints>cycles[i-1].minimumGrowthPoints);
+  assert.ok(cycles.at(-1).minimumConnectedImprovements>cycles[0].minimumConnectedImprovements);
+  assert.ok(cycles.at(-1).minimumConnectedContentBundles>cycles[0].minimumConnectedContentBundles);
+  assert.ok(cycles[0].zeroGrowth.includes('SAME_CHECK_REPASS'));
+  assert.ok(cycles[0].zeroGrowth.includes('NAME_COLOR_OR_STAT_ONLY_CLONE'));
 });
 
 test('first studio build-up cycle establishes presentation baseline even when noisy nonvisual signals exist',()=>{
