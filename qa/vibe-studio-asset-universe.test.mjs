@@ -4317,10 +4317,12 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(repositorySync.libraryModuleConsumerGameIds.includes('demo'));
     assert.equal(repositorySync.exactAssetConsumptionSeparatedFromModuleConsumption,true);
     assert.equal(repositorySync.sourceConsumptionDoesNotPromoteProductionVerification,true);
-    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').automaticSearchEligible,true);
-    assert.ok(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').detectedSourceConsumerGameIds.includes('demo'));
-    assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').sourceConsumptionIsRuntimeVerification,false);
-    assert.deepEqual(first.registry.assets.find(row=>row.id==='marker-alpha').detectedSourceConsumerGameIds,[]);
+    const exactVfxConsumption=repositorySync.exactAssetConsumption.find(row=>row.assetId==='roblox-common-vfx-v1');
+    assert.ok(exactVfxConsumption);
+    assert.ok(exactVfxConsumption.gameIds.includes('demo'));
+    assert.equal(repositorySync.exactAssetConsumptionIsRuntimeVerification,false);
+    assert.equal(repositorySync.exactAssetConsumption.some(row=>row.assetId==='marker-alpha'),false);
+    assert.equal(repositorySync.libraryModuleConsumption.some(row=>row.assetPath.endsWith('/RobloxCommonVFX.luau')),true);
     assert.equal(repositorySync.libraryModuleConsumption.some(row=>row.assetPath.endsWith('/TestModule.luau')),false);
     assert.equal(repositorySync.libraryModuleConsumption.some(row=>row.assetPath.endsWith('/catalog.json')),false);
     assert.equal(first.registry.internalAssetLibraryAutomation.blankAssetForbidden,true);
@@ -4354,6 +4356,15 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
+  console.log('ASSET_MANAGEMENT_DRY_RUN '+JSON.stringify({
+    changed:result.changed,
+    changedSections:result.changedSections,
+    registryVersion:result.registry.version,
+    repositoryAssetSync:result.registry.internalAssetLibraryAutomation.repositoryAssetSync,
+    volumeHealth:result.registry.internalAssetLibraryAutomation.volumeHealth,
+    qualityHealth:result.registry.internalAssetLibraryAutomation.qualityHealth,
+    assetManagementHealth:result.registry.internalAssetLibraryAutomation.assetManagementHealth
+  }));
   assert.equal(result.changed,false,JSON.stringify(result.changedSections));
   assert.deepEqual(result.changedSections,[]);
   assert.equal(result.persisted,false);
