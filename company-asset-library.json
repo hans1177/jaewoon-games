@@ -1,5 +1,5 @@
 {
-  "version": 60,
+  "version": 61,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -36977,7 +36977,8 @@
     "biomeSoundscapeCount": 10,
     "propSoundRoleCount": 38,
     "seedDerivedIdeaSource": "seed-action-survival-rogu-echoes-of-the-lost-star",
-    "uiRegistryAtomCount": 169
+    "uiRegistryAtomCount": 169,
+    "seedDerivedIdeaVersion": 2
   },
   "environmentStateContract": {
     "version": 1,
@@ -37139,72 +37140,94 @@
     "productionVerified": false
   },
   "seedDerivedInternalAssetIdeas": {
-    "version": 1,
+    "version": 2,
     "sourceSeedId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-    "sourceEvidence": "CURRENT_COMPANY_LIBRARY_INTENDED_CONSUMER_REFERENCE",
+    "sourceEvidence": "ACTUAL_GAME_CONFIG_AND_CURRENT_COMPANY_LIBRARY_INTENDED_CONSUMER_REFERENCE",
+    "sourceGameFacts": {
+      "gameName": "잃어버린 별의 메아리",
+      "genre": "SURVIVAL_ACTION_ROGUELITE",
+      "coreLoop": [
+        "REALTIME_COMBAT",
+        "ECHO_SHARD_PICKUP",
+        "REALTIME_BUILD_SELECTION",
+        "WAVE_ESCALATION",
+        "BOSS_WAVE",
+        "RUN_RESULT_TO_META_GROWTH"
+      ],
+      "mobilePresentation": "ONE_HAND_PORTRAIT_FIRST_WITH_LANDSCAPE_PARITY",
+      "currentRuntimeVerified": false
+    },
     "rule": "COMMON_PRESENTATION_IDEAS_ONLY_NO_GAMEPLAY_COPY",
     "gapsObserved": [
       "ENVIRONMENT",
       "ITEM",
       "WORLD_PROP",
+      "CHARACTER_VARIATION",
       "UI_MENU",
       "AMBIENT_AUDIO_LINKAGE"
     ],
     "environmentBackgrounds": [
+      "ECHO_SHARD_FIELD",
+      "ENTROPY_STORM_FRONT",
+      "TEMPORAL_RIFT_VALLEY",
       "STARFALL_RUIN_FIELD",
-      "WIND_CUT_HIGHLAND",
-      "STORM_COAST",
-      "ECLIPSE_VALLEY",
-      "FOG_MARSH",
+      "ECLIPSE_CRATER",
+      "AURORA_RELAY_OUTPOST",
       "WHITE_NIGHT_TUNDRA",
-      "CAVE_RELAY_OUTPOST",
+      "FOG_MARSH",
+      "VOID_TIDE_COAST",
       "CRASHED_MACHINE_SITE"
     ],
     "items": [
-      "WEATHER_CLOAK_VISUAL",
+      "ECHO_SHARD_WORLD_MODEL",
+      "RUN_BUILD_CORE",
+      "META_GROWTH_TOKEN_VISUAL",
       "FIELD_REPAIR_KIT",
       "SIGNAL_BEACON_ITEM",
-      "RELIC_FRAGMENT",
-      "FIELD_RATION",
-      "EMERGENCY_LANTERN",
-      "ROPE_KIT",
-      "COMPASS_TOOL",
       "POWER_CELL",
+      "RELIC_FRAGMENT",
+      "EMERGENCY_LANTERN",
+      "COMPASS_TOOL",
       "LORE_TABLET"
     ],
     "props": [
+      "ECHO_RELAY",
+      "RIFT_ANCHOR",
       "WEATHER_STATION",
-      "BROKEN_RELAY_TOWER",
+      "BROKEN_OBSERVATORY",
       "GENERATOR",
-      "CABLE_REEL",
       "SUPPLY_CRATE",
-      "COLLAPSED_BRIDGE",
-      "WARNING_SIGN",
-      "CAMP_TARP",
+      "SALVAGE_PILE",
       "STAR_MAP_TABLE",
-      "SALVAGE_PILE"
+      "WAVE_WARNING_BEACON",
+      "BOSS_ARENA_MARKER"
     ],
     "characters": [
       "SURVIVOR_SCOUT",
       "FIELD_ENGINEER",
-      "MEDIC_SUPPORT",
-      "RELIC_RESEARCHER",
+      "ECHO_RESEARCHER",
       "WANDERER_TRADER",
-      "ARMORED_SCAVENGER"
+      "ARMORED_SCAVENGER",
+      "RIFT_WATCHER"
     ],
     "menus": [
+      "ECHO_SELECTION",
       "RUN_LOADOUT",
-      "WEATHER_WARNING",
+      "WAVE_THREAT_HUD",
+      "BOSS_WARNING",
+      "RUN_RESULT",
+      "META_GROWTH",
       "REGION_STATE",
-      "SALVAGE_COMPARE",
-      "CAMP_MANAGEMENT",
+      "WEATHER_WARNING",
       "RELIC_CODEX",
-      "ROUTE_CHOICE",
-      "COMPANION_COMMAND",
+      "ONE_HAND_PORTRAIT_ACTION_HUD",
       "AUDIO_ACCESSIBILITY",
       "ENVIRONMENT_ACCESSIBILITY"
     ],
     "ambientAudio": [
+      "ECHO_RESONANCE",
+      "ENTROPY_HUM",
+      "RIFT_SHIMMER",
       "WIND_LAYERED",
       "INSECT_SCATTER",
       "WILDLIFE_DISTANCE",
@@ -37217,11 +37240,15 @@
     ],
     "coupling": [
       "ENVIRONMENT_STATE>SKY_BACKGROUND>SURFACE_RESPONSE>SOUNDSCAPE>OPTIONAL_UI_CUE",
+      "ECHO_SHARD_DROP>WORLD_MODEL>PICKUP_VFX>PICKUP_AUDIO_ROLE>HUD_FEEDBACK",
+      "ECHO_SELECTION>CHOICE_CARD>BUILD_CHANGE_PRESENTATION",
+      "WAVE_STATE>BACKGROUND_PRESSURE>THREAT_HUD>BOSS_WARNING",
       "BIOME>WILDLIFE_AUDIO>PROP_SET>CHARACTER_WARDROBE",
       "WIND>FOLIAGE_CLOTH_PROP_MOTION>WIND_AUDIO_LAYER",
       "MACHINE_PROP>MACHINE_SOUND_ROLE>DISTANCE_OCCLUSION>INTERACTION_ONE_SHOT",
       "ECLIPSE>CELESTIAL_BACKGROUND>AMBIENT_HUSH>WILDLIFE_SILENCE_TRANSITION",
-      "RAIN_OR_SNOW>BACKGROUND_VISIBILITY>SURFACE_PRESENTATION>FOOTSTEP_MATERIAL_AUDIO_ROLE"
+      "RAIN_OR_SNOW>BACKGROUND_VISIBILITY>SURFACE_PRESENTATION>FOOTSTEP_MATERIAL_AUDIO_ROLE",
+      "RUN_RESULT>META_GROWTH_PRESENTATION>RETURN_TO_NEXT_RUN_MENU"
     ],
     "gameplayAuthority": false,
     "balanceAuthority": false,
