@@ -3022,6 +3022,28 @@
       "F9_EXACT_SOURCE_ARTIFACT_REVIEW",
       "NEXT_BUILD_UP_AFTER_F9"
     ],
-    "evaluationOnlyCompletionForbiddenWhenSourceMutationRequired": true
+    "evaluationOnlyCompletionForbiddenWhenSourceMutationRequired": true,
+    "autonomousLearning": {
+      "owner": "VIBE2_VIBE3",
+      "existingLearningMotorOnly": true,
+      "continuous24h": true,
+      "ownerOrChatgptPresenceRequired": false,
+      "requiredEvidence": [
+        "SOURCE_REVISION",
+        "ARTIFACT_IDENTITY",
+        "VERIFIED_QA_OR_RUNTIME_OUTCOME",
+        "LEARNING_OUTCOME_ID",
+        "NEXT_APPLICATION_REFERENCE_WHEN_REUSED"
+      ],
+      "verifiedFailureMayBecomeAvoidLesson": true,
+      "infrastructureFailureNegativeLearningForbidden": true
+    },
+    "requestedRuntimeQaIsolation": {
+      "requestedMarker": "ROBLOX_FOUNDATION_REQUESTED_SCOPE=EXACT_GAME_ONLY",
+      "openCloudMarker": "ROBLOX_OPEN_CLOUD_REQUESTED_SCOPE=EXACT_GAME_ONLY",
+      "requestedGameOnly": true,
+      "batchMarker": "ALL_PENDING_PARALLEL_BATCH",
+      "unrelatedGameFailureMayNotFailRequestedRun": true
+    }
   }
 }

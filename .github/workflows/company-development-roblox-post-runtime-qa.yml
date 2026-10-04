@@ -342,6 +342,7 @@ jobs:
             }:persisted;
           };
           const candidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
             if(transientRetryIds.has(item.gameId)){
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN='+item.gameId);
             }
@@ -418,6 +419,7 @@ jobs:
           const probeConcurrency=Math.max(1,Math.min(8,candidates.length||1));
           console.log('ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE');
           console.log('ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY='+(requested||'NONE'));
+          console.log('ROBLOX_OPEN_CLOUD_REQUESTED_SCOPE='+(requested?'EXACT_GAME_ONLY':'ALL_PENDING_PARALLEL_BATCH'));
           console.log('ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY');
           let probeCursor=0;
           const runProbeWorker=async()=>{
@@ -502,6 +504,7 @@ jobs:
           }
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID:'+requested);
           console.log('ROBLOX_FOUNDATION_REQUESTED_GAME_ID='+(requested||'ALL_PENDING'));
+          console.log('ROBLOX_FOUNDATION_REQUESTED_SCOPE='+(requested?'EXACT_GAME_ONLY':'ALL_PENDING_PARALLEL_BATCH'));
           const queuePath='../runtime/development-queue.json';
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           const beforeById=new Map((q.items||[]).map(item=>[
@@ -548,7 +551,7 @@ jobs:
             }:persisted;
           };
           let changed=false,passed=0,pending=0,failed=0;
-          if(sharedRotationEnabled){
+          if(sharedRotationEnabled&&!requested){
             const sharedCurrent=(q.items||[])
               .filter(item=>item.robloxSharedTargetCurrent!==false&&item.robloxRuntimeCandidateEvidence?.published===true&&isSharedCandidate(item.robloxRuntimeCandidateEvidence))
               .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||0)-Number(a.robloxRuntimeCandidateEvidence?.versionNumber||0)
@@ -600,6 +603,7 @@ jobs:
           const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
           const candidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
             if(transientRetryIds.has(item.gameId)){
               console.log('ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN='+item.gameId);
             }

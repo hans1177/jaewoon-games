@@ -8273,6 +8273,17 @@
       "vibeOwnsNormalProcessAndBottleneckManagement": true,
       "chatgptFocus": "VIBE_AND_GAME_SOURCE_EVOLUTION_NOT_NORMAL_OPERATIONS",
       "sourceGrowthIntegrityRequired": true
+    },
+    "vibeAutonomousLearningAndRequestedRuntimeQaIsolation20261004": {
+      "version": 1,
+      "status": "IMPLEMENTED_IN_PR_PENDING_QA",
+      "objective": "KEEP_VIBE_SELF_LEARNING_AND_PREVENT_UNRELATED_GAME_RUNTIME_STATE_FROM_BLOCKING_EXACT_REQUESTED_GAME_QA",
+      "existingLearningMotorReused": true,
+      "newLearningPipelineCreated": false,
+      "requestedGameRuntimeQaExactIsolation": true,
+      "emptyGameIdBatchParallelismPreserved": true,
+      "canonicalSequenceChanged": false,
+      "finalDevelopmentLockChanged": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -26533,6 +26544,47 @@
       "noSourceChangeAllowedOnlyWhenNoImplementationGapExistsAndVerifiedEvidenceSupportsIt": true,
       "failureRoutesToExactGameStageRepairRetry": true,
       "sourceGrowthDoesNotChangeLockedF0F9Order": true
+    },
+    "autonomousLearning": {
+      "version": 1,
+      "required": true,
+      "owner": "VIBE2_VIBE3",
+      "ownerPresenceRequired": false,
+      "chatgptPresenceRequired": false,
+      "continuous24h": true,
+      "existingLearningMotorOnly": true,
+      "learningMotor": "tools/vibe2-learning-motor.mjs",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "sources": [
+        "VERIFIED_BUILD_UP_SOURCE_GROWTH_OUTCOME",
+        "VERIFIED_QA_AND_REGRESSION_OUTCOME",
+        "VERIFIED_NATIVE_RUNTIME_OUTCOME",
+        "VERIFIED_F9_OUTCOME",
+        "VERIFIED_BOTTLENECK_REPAIR_OUTCOME",
+        "VERIFIED_FAILURE_AND_AVOID_PATTERN"
+      ],
+      "positiveLearningRequiresVerifiedEvidence": true,
+      "verifiedFailureMayBecomeAvoidLesson": true,
+      "infrastructureFailureMayNotBecomeGameNegativeLearning": true,
+      "sameGameLearningHighestPriority": true,
+      "crossGameLearningRequiresTransformativeReapplication": true,
+      "taskRelevantLearningMustBeRetrievedBeforeSourceGeneration": true,
+      "verifiedLearningMustFeedNextBuildUp": true,
+      "verifiedBottleneckLessonsMustFeedFutureCausalRepair": true,
+      "learningMayNotExpandAuthority": true,
+      "learningMayNotReplaceQaRuntimeOrF9Verification": true,
+      "rawUnverifiedModelOutputMayNotSelfPromote": true,
+      "newLearningPipelineOrShadowTrainerForbidden": true,
+      "noManualRestartRequiredAfterNormalLearningCycle": true
+    },
+    "requestedGameScopedRuntimeQa": {
+      "version": 1,
+      "requestedGameIdMeansExactGameOnly": true,
+      "requestedRunMayNotProcessOrMutateUnrelatedGameRuntimeCandidate": true,
+      "emptyGameIdMeansParallelBatchScan": true,
+      "batchCrossGameParallelismPreserved": true,
+      "unrelatedInvalidCandidateMayNotFailRequestedGameRun": true,
+      "exactGameFailureRoutesToExactGameStageRepair": true
     }
   }
 }
