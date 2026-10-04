@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -77,6 +77,358 @@
       "source": "RobloxCommonUI.luau",
       "factory": "CreateMobileActionButton",
       "role": "MOBILE_TOUCH_ACTION"
+    },
+    {
+      "atomId": "ICON_BUTTON",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateIconButton",
+      "role": "ICON_ACTION",
+      "surface": "NAVIGATION",
+      "states": [
+        "DEFAULT",
+        "HOVER",
+        "PRESSED",
+        "BADGED",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "DIALOGUE_ASSISTANT_BUTTON",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDialogueAssistantButton",
+      "role": "AI_DIALOGUE_HELPER",
+      "surface": "AI_DIALOGUE_HELPER",
+      "states": [
+        "AVAILABLE",
+        "BUSY",
+        "UNAVAILABLE",
+        "NOTIFICATION"
+      ]
+    },
+    {
+      "atomId": "DIALOGUE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDialoguePanel",
+      "role": "DIALOGUE_SURFACE",
+      "surface": "DIALOGUE",
+      "states": [
+        "NPC",
+        "AI_ASSISTANT",
+        "PLAYER_REPLY",
+        "STORY"
+      ]
+    },
+    {
+      "atomId": "DIALOGUE_CHOICE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDialogueChoice",
+      "role": "DIALOGUE_CHOICE",
+      "surface": "DIALOGUE",
+      "states": [
+        "DEFAULT",
+        "HOVER",
+        "SELECTED",
+        "LOCKED",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "DIALOGUE_INPUT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDialogueInput",
+      "role": "DIALOGUE_TEXT_INPUT",
+      "surface": "DIALOGUE",
+      "states": [
+        "EMPTY",
+        "FOCUSED",
+        "TYPING",
+        "DISABLED",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "TYPING_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTypingIndicator",
+      "role": "DIALOGUE_TYPING_STATE",
+      "surface": "DIALOGUE",
+      "states": [
+        "IDLE",
+        "ACTIVE"
+      ]
+    },
+    {
+      "atomId": "DIALOGUE_HISTORY",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDialogueHistory",
+      "role": "DIALOGUE_HISTORY",
+      "surface": "DIALOGUE",
+      "states": [
+        "EMPTY",
+        "POPULATED",
+        "SCROLLED"
+      ]
+    },
+    {
+      "atomId": "NPC_INTERACTION_PROMPT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcInteractionPrompt",
+      "role": "NPC_INTERACTION_PROMPT",
+      "surface": "NPC_INTERACTION",
+      "states": [
+        "AVAILABLE",
+        "OUT_OF_RANGE",
+        "LOCKED",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "NPC_INTERACTION_MENU",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcInteractionMenu",
+      "role": "NPC_INTERACTION_MENU",
+      "surface": "NPC_INTERACTION",
+      "states": [
+        "TALK",
+        "QUEST",
+        "TRADE",
+        "GIVE_ITEM",
+        "INSPECT",
+        "FOLLOW",
+        "PARTY",
+        "CRAFT"
+      ]
+    },
+    {
+      "atomId": "NPC_RELATIONSHIP_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNpcRelationshipCard",
+      "role": "NPC_RELATIONSHIP_READOUT",
+      "surface": "NPC_INTERACTION",
+      "states": [
+        "NEUTRAL",
+        "FRIENDLY",
+        "TRUSTED",
+        "HOSTILE",
+        "FEARFUL",
+        "DEBT"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_GRID",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateInventoryGrid",
+      "role": "INVENTORY_GRID",
+      "surface": "INVENTORY",
+      "states": [
+        "EMPTY",
+        "PARTIAL",
+        "FULL",
+        "FILTERED"
+      ]
+    },
+    {
+      "atomId": "EQUIPMENT_SLOT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEquipmentSlot",
+      "role": "EQUIPMENT_SLOT",
+      "surface": "EQUIPMENT",
+      "states": [
+        "EMPTY",
+        "EQUIPPED",
+        "SELECTED",
+        "LOCKED",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "CHARACTER_SHEET",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCharacterSheet",
+      "role": "CHARACTER_SHEET",
+      "surface": "CHARACTER_SHEET",
+      "states": [
+        "BASE",
+        "LEVEL_UP",
+        "DEBUFFED",
+        "BUFFED"
+      ]
+    },
+    {
+      "atomId": "MINIMAP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMinimap",
+      "role": "MINIMAP",
+      "surface": "MINIMAP",
+      "states": [
+        "PLAYER",
+        "OBJECTIVE",
+        "DANGER",
+        "PARTY",
+        "POI"
+      ]
+    },
+    {
+      "atomId": "QUEST_TRACKER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateQuestTracker",
+      "role": "QUEST_TRACKER",
+      "surface": "QUEST",
+      "states": [
+        "ACTIVE",
+        "COMPLETE",
+        "FAILED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "PARTY_MEMBER_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePartyMemberCard",
+      "role": "PARTY_MEMBER_STATUS",
+      "surface": "PARTY",
+      "states": [
+        "HEALTHY",
+        "HURT",
+        "DOWNED",
+        "OFFLINE"
+      ]
+    },
+    {
+      "atomId": "CRAFTING_RECIPE_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateCraftingRecipeCard",
+      "role": "CRAFTING_RECIPE",
+      "surface": "CRAFTING",
+      "states": [
+        "CRAFTABLE",
+        "MISSING_MATERIAL",
+        "LOCKED",
+        "QUEUE"
+      ]
+    },
+    {
+      "atomId": "SHOP_ITEM_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateShopItemCard",
+      "role": "SHOP_ITEM",
+      "surface": "SHOP",
+      "states": [
+        "AVAILABLE",
+        "OWNED",
+        "SOLD_OUT",
+        "LOCKED",
+        "INSUFFICIENT_FUNDS"
+      ]
+    },
+    {
+      "atomId": "NOTIFICATION_TOAST",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateNotificationToast",
+      "role": "NOTIFICATION_TOAST",
+      "surface": "NOTIFICATION",
+      "states": [
+        "INFO",
+        "SUCCESS",
+        "WARNING",
+        "ERROR",
+        "REWARD"
+      ]
+    },
+    {
+      "atomId": "STATUS_EFFECT_CHIP",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStatusEffectChip",
+      "role": "STATUS_EFFECT",
+      "surface": "STATUS_EFFECT",
+      "states": [
+        "BUFF",
+        "DEBUFF",
+        "TIMED",
+        "STACKED"
+      ]
+    },
+    {
+      "atomId": "HOTBAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateHotbar",
+      "role": "HOTBAR",
+      "surface": "HOTBAR",
+      "states": [
+        "EMPTY",
+        "BOUND",
+        "SELECTED",
+        "COOLDOWN"
+      ]
     }
+  ],
+  "title": "Roblox 회사 공용 UI·AI/NPC 상호작용 32종 v3",
+  "internalAudit": {
+    "version": 1,
+    "maxScore": 1000,
+    "passScore": 880,
+    "grades": {
+      "MASTERPIECE": 980,
+      "ELITE": 950,
+      "HERO": 920,
+      "COMMERCIAL_READY": 880,
+      "HIGH_QUALITY": 840,
+      "DEVELOPMENT_READY": 800,
+      "PROTOTYPE": 700
+    },
+    "studioRequired": false,
+    "runtimeRequired": false,
+    "productionPromotionSeparate": true,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateFamilies": [
+      "UI_UX_SYSTEM",
+      "ACCESSIBILITY_INPUT",
+      "FEEDBACK_STATES",
+      "VARIATION_BREADTH",
+      "READABILITY_SCALE",
+      "STYLE_COHERENCE"
+    ]
+  },
+  "surfaces": [
+    "HUD",
+    "NAVIGATION",
+    "INVENTORY",
+    "EQUIPMENT",
+    "CHARACTER_SHEET",
+    "MINIMAP",
+    "DIALOGUE",
+    "AI_DIALOGUE_HELPER",
+    "NPC_INTERACTION",
+    "QUEST",
+    "PARTY",
+    "CRAFTING",
+    "SHOP",
+    "NOTIFICATION",
+    "STATUS_EFFECT",
+    "HOTBAR",
+    "INTERACTION_PROMPT",
+    "TOOLTIP",
+    "MODAL"
+  ],
+  "requiredInputModes": [
+    "TOUCH",
+    "KEYBOARD_MOUSE",
+    "GAMEPAD"
+  ],
+  "requiredUiStates": [
+    "DEFAULT",
+    "HOVER_OR_FOCUS",
+    "PRESSED",
+    "SELECTED",
+    "DISABLED",
+    "LOCKED",
+    "EMPTY",
+    "LOADING",
+    "ERROR"
   ]
 }
