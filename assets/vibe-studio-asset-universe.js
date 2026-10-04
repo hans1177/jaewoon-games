@@ -1502,6 +1502,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   focusPhases:Object.freeze(['VOLUME_UP','QUALITY_UP_1000']),
   volumeActionConsumption:'PERSISTED_PRIORITY_WORKLIST_FIRST',
   freeSourceCandidateLimitPerAction:8,
+  freeSourceCatalogSufficiencyCount:12,
   reuseResolutionOrder:Object.freeze(['REUSE_EXISTING','DERIVE_VARIANT','RECOMBINE_EXISTING','LICENSE_VERIFIED_FREE_SOURCE_ADAPT','NEW_AUTHORING']),
   freeOriginalVolumePolicy:Object.freeze({
     priority:'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING',
@@ -1825,13 +1826,21 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
     ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96);
-  const nextVolumeActions=nextVolumeActionRows.map((row,index)=>Object.freeze({
-    ...row,
-    freeSourceAvailable:Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0,
-    freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
-    worklistOrder:index+1,
-    resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
-  }));
+  const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
+  const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
+    const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
+    return Object.freeze({
+      ...row,
+      freeSourceAvailable,
+      freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
+      freeSourceAcquisitionMode:freeSourceAvailable?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_AVAILABLE',
+      bulkPrefetchAllowed:false,
+      speculativeDownloadAllowed:false,
+      acquireExternalOnlyAfterInternalReuseFailure:true,
+      worklistOrder:index+1,
+      resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
+    });
+  });
   return Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1853,6 +1862,10 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     freeOriginalVolumePolicy:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy,
     eligibleFreeSourceCount:eligibleFreeSources.length,
     freeSourceCandidateLimitPerAction:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction,
+    freeSourceCatalogSufficiencyCount:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount,
+    freeSourceCatalogReady,
+    freeSourceCatalogExpansionMode:freeSourceCatalogReady?'PAUSED_UNTIL_REAL_COVERAGE_GAP':'TARGETED_GAP_ONLY',
+    primaryAttention:freeSourceCatalogReady?'QUALITY_AND_AUTOMATION_DETAIL_WITH_ON_DEMAND_GAP_FILL':'TARGETED_SOURCE_GAP_AND_QUALITY',
     ideaDeduplication:Object.freeze({
       fields:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.ideaDeduplicationFields,
       existingIdentityCount:existingIdentityTokens.size,
