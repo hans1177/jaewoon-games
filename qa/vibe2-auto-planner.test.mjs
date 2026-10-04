@@ -2838,6 +2838,13 @@ test('studio evolution emits all five quality pillars for one game',()=>{
   assert.ok(core.assetRequirements.length>=3);
   assert.ok(core.assetRequirements.every(row=>row.resolution==='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME'));
   assert.ok(core.assetRequirements.every(row=>row.assetIdPinned===false&&row.gameplayAuthority===false));
+  const queuedCore=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[core]}).tasks[0];
+  assert.equal(queuedCore.assetRequirements.length,core.assetRequirements.length);
+  assert.deepEqual(
+    queuedCore.assetRequirements.map(row=>[row.family,row.subfamily,row.resolution]),
+    core.assetRequirements.map(row=>[row.family,row.subfamily,row.resolution])
+  );
+  assert.ok(queuedCore.assetRequirements.every(row=>row.assetIdPinned===false&&row.gameplayAuthority===false));
   assert.ok(core.evidence.includes('flow-asset-requirements:v1'));
   assert.equal(core.studioQualityEvolution.flowAssetRequirementCount,core.assetRequirements.length);
   assert.equal(core.studioQualityEvolution.flowAssetResolutionMode,'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME');
