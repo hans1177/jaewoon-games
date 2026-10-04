@@ -512,7 +512,7 @@ function pointInCrystalRegion(x,y){return pointInRect(x,y,CRYSTAL_REGION)}
 function pointInSnow(x,y){return pointInRect(x,y,SNOW_REGION)}
 function pointInJungle(x,y){return pointInRect(x,y,JUNGLE_REGION)}
 function pointInSwamp(x,y){return pointInRect(x,y,SWAMP_REGION)}
-function randomSwampPoint(margin=120){return{x:rand(SWAMP_REGION.x+margin,SWAMP_REGION.x+SWAMP_REGION.w-margin),y:rand(SWAMP_REGION.y+margin,SWAMP_REGION.y+SWAMP_REGION.h-margin)}}
+function randomSwampPoint(margin=120){let x,y,tries=0;do{x=rand(SWAMP_REGION.x+margin,SWAMP_REGION.x+SWAMP_REGION.w-margin);y=rand(SWAMP_REGION.y+margin,SWAMP_REGION.y+SWAMP_REGION.h-margin);tries++}while(x>SWAMP_OUTPOST.x-120&&x<SWAMP_OUTPOST.x+SWAMP_OUTPOST.w+120&&y>SWAMP_OUTPOST.y-120&&y<SWAMP_OUTPOST.y+SWAMP_OUTPOST.h+120&&tries<120);return{x,y}}
 function pointInJungleLake(x,y){return JUNGLE_LAKES.some(l=>dist(x,y,l.x,l.y)<=l.r)}
 function randomSnowPoint(margin=120){return{x:rand(SNOW_REGION.x+margin,SNOW_REGION.x+SNOW_REGION.w-margin),y:rand(SNOW_REGION.y+margin,SNOW_REGION.y+SNOW_REGION.h-margin)}}
 function randomJunglePoint(margin=120){let x,y,tries=0;do{x=rand(JUNGLE_REGION.x+margin,JUNGLE_REGION.x+JUNGLE_REGION.w-margin);y=rand(JUNGLE_REGION.y+margin,JUNGLE_REGION.y+JUNGLE_REGION.h-margin);tries++}while(pointInJungleLake(x,y)&&tries<80);return{x,y}}
@@ -2619,6 +2619,8 @@ async function connectMultiplayer(rawRoom){
   .on('broadcast',{event:'kill-reward'},({payload})=>grantRemoteKillReward(payload))
   .on('broadcast',{event:'resource-gather'},({payload})=>hostGatherResource(payload))
   .on('broadcast',{event:'resource-loot'},({payload})=>receiveResourceLoot(payload))
+  .on('broadcast',{event:'swamp-outpost-chest-open'},({payload})=>hostOpenSwampOutpostChest(payload))
+  .on('broadcast',{event:'swamp-outpost-chest-reward'},({payload})=>receiveSwampOutpostChestReward(payload))
   .on('broadcast',{event:'gift-item'},({payload})=>receiveGiftItem(payload))
   .on('broadcast',{event:'map-ping'},({payload})=>receiveMapPing(payload))
   .on('broadcast',{event:'revive-player'},({payload})=>receiveRevive(payload))
@@ -5324,9 +5326,22 @@ function drawUnderwater(cx,cy,w,h){
  ctx.restore();
  ctx.fillStyle='rgba(0,18,30,.22)';ctx.fillRect(0,0,w,h)
 }
+function grantSwampOutpostChestReward(){
+ addInv('tiger-dagger',1);rememberItem('tiger-dagger');state.dirty=true;showNotice('늪 전초기지 상자 · 호랑이 단검 획득');updateHud();saveGame(false)
+}
 function openSwampOutpostChest(){
  if(state.swampOutpostChestOpened){showNotice('늪 전초기지 상자는 비어 있어');return}
- state.swampOutpostChestOpened=true;addInv('tiger-dagger',1);rememberItem('tiger-dagger');state.dirty=true;showNotice('늪 전초기지 상자 · 호랑이 단검 획득');updateHud();saveGame(false)
+ if(multiplayer.connected&&!multiIsHost()){multiSend('swamp-outpost-chest-open',{playerId:multiplayer.playerId});showNotice('늪 전초기지 상자 확인 중');return}
+ state.swampOutpostChestOpened=true;grantSwampOutpostChestReward();if(multiplayer.connected)multiplayer.worldAt=0
+}
+function hostOpenSwampOutpostChest(payload){
+ if(!multiIsHost()||state.swampOutpostChestOpened||!payload)return;
+ const id=String(payload.playerId||''),rp=multiplayer.remote.get(id);if(!rp||rp.area!=='surface'||performance.now()-(rp.seenAt||0)>2000)return;
+ if(dist(Number(rp.x)||0,Number(rp.y)||0,SWAMP_OUTPOST.chest.x,SWAMP_OUTPOST.chest.y)>110)return;
+ state.swampOutpostChestOpened=true;state.dirty=true;multiSend('swamp-outpost-chest-reward',{targetId:id});multiplayer.worldAt=0;saveGame(false)
+}
+function receiveSwampOutpostChestReward(payload){
+ if(!payload||payload.targetId!==multiplayer.playerId)return;state.swampOutpostChestOpened=true;grantSwampOutpostChestReward()
 }
 function drawSwampOutpost(cx,cy){
  const o=SWAMP_OUTPOST,x=o.x-cx,y=o.y-cy;if(x>innerWidth+o.w||y>innerHeight+o.h||x+o.w<-100||y+o.h<-100)return;
