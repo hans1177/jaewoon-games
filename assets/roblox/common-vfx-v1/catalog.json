@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-vfx-v1",
   "family": "VFX",
   "platform": "ROBLOX",
@@ -64,6 +64,120 @@
       "factory": "CreateCounterReadyPulse",
       "role": "COUNTER_WINDOW_PRESENTATION",
       "systemRole": "PARRY"
+    },
+    {
+      "atomId": "CRITICAL_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateCriticalBurst",
+      "role": "CRITICAL"
+    },
+    {
+      "atomId": "DODGE_EVASION_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateDodgeEvasionPulse",
+      "role": "DODGE"
+    },
+    {
+      "atomId": "HEAL_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateHealPulse",
+      "role": "HEAL"
+    },
+    {
+      "atomId": "BUFF_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateBuffPulse",
+      "role": "BUFF"
+    },
+    {
+      "atomId": "DEBUFF_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateDebuffPulse",
+      "role": "DEBUFF"
+    },
+    {
+      "atomId": "STATUS_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateStatusPulse",
+      "role": "STATUS"
+    },
+    {
+      "atomId": "LOOT_COMMON_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateLootCommonBurst",
+      "role": "LOOT_COMMON"
+    },
+    {
+      "atomId": "LOOT_RARE_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateLootRareBurst",
+      "role": "LOOT_RARE"
+    },
+    {
+      "atomId": "LOOT_LEGENDARY_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateLootLegendaryBurst",
+      "role": "LOOT_LEGENDARY"
+    },
+    {
+      "atomId": "UPGRADE_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateUpgradeBurst",
+      "role": "UPGRADE"
+    },
+    {
+      "atomId": "CRAFT_SPARKS",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateCraftSparks",
+      "role": "CRAFT"
+    },
+    {
+      "atomId": "DISMANTLE_SHARDS",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateDismantleShards",
+      "role": "DISMANTLE"
+    },
+    {
+      "atomId": "QUEST_UPDATE_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateQuestUpdatePulse",
+      "role": "QUEST_UPDATE"
+    },
+    {
+      "atomId": "INTERACTION_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateInteractionPulse",
+      "role": "INTERACTION"
+    },
+    {
+      "atomId": "ENVIRONMENT_MOTE_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateEnvironmentMotePulse",
+      "role": "ENVIRONMENT"
+    },
+    {
+      "atomId": "WEATHER_GUST_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateWeatherGustPulse",
+      "role": "WEATHER"
+    },
+    {
+      "atomId": "DESTRUCTION_BURST",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateDestructionBurst",
+      "role": "DESTRUCTION"
+    },
+    {
+      "atomId": "BOSS_WARNING_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateBossWarningPulse",
+      "role": "BOSS"
+    },
+    {
+      "atomId": "MOBILE_DENSITY_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateMobileDensityPulse",
+      "role": "MOBILE_DENSITY"
     }
   ],
   "systemDepthContract": {
@@ -94,41 +208,81 @@
     ],
     "currentDeclaredComponents": [
       "IMPACT_FLASH",
+      "IMPACT_CONFIRMATION",
       "TRAIL_SHORT",
+      "FAST_MOTION_TRAIL",
       "SHAPE_BURST",
+      "BURST_FEEDBACK",
       "BLOCK_IMPACT",
+      "BLOCK_CONTACT",
       "BLOCK",
       "PARRY_PERFECT_FLASH",
+      "PERFECT_PARRY_CONFIRMATION",
       "PARRY",
       "GUARD_BREAK_BURST",
+      "GUARD_BREAK_WARNING",
+      "BLOCK",
       "ATTACK_TELEGRAPH_PULSE",
+      "ATTACK_TELEGRAPH_PRESENTATION",
       "INTERACTION",
-      "COUNTER_READY_PULSE"
-    ],
-    "currentAssetCount": 8,
-    "missingComponentCandidates": [
+      "COUNTER_READY_PULSE",
+      "COUNTER_WINDOW_PRESENTATION",
+      "PARRY",
+      "CRITICAL_BURST",
       "CRITICAL",
+      "DODGE_EVASION_PULSE",
       "DODGE",
+      "HEAL_PULSE",
       "HEAL",
+      "BUFF_PULSE",
       "BUFF",
+      "DEBUFF_PULSE",
       "DEBUFF",
+      "STATUS_PULSE",
       "STATUS",
+      "LOOT_COMMON_BURST",
       "LOOT_COMMON",
+      "LOOT_RARE_BURST",
       "LOOT_RARE",
+      "LOOT_LEGENDARY_BURST",
       "LOOT_LEGENDARY",
+      "UPGRADE_BURST",
       "UPGRADE",
+      "CRAFT_SPARKS",
       "CRAFT",
+      "DISMANTLE_SHARDS",
       "DISMANTLE",
+      "QUEST_UPDATE_PULSE",
       "QUEST_UPDATE",
+      "INTERACTION_PULSE",
+      "INTERACTION",
+      "ENVIRONMENT_MOTE_PULSE",
       "ENVIRONMENT",
+      "WEATHER_GUST_PULSE",
       "WEATHER",
+      "DESTRUCTION_BURST",
+      "DESTRUCTION",
+      "BOSS_WARNING_PULSE",
+      "BOSS",
+      "MOBILE_DENSITY_PULSE",
+      "MOBILE_DENSITY"
+    ],
+    "currentAssetCount": 27,
+    "missingComponentCandidates": [],
+    "qualityScoreIsNotUsageGate": true,
+    "existingAssetsRemainUsable": true,
+    "gameplayAuthority": false,
+    "volumeUpPhase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "compositionRoles": [
+      "COMBAT_FEEDBACK",
+      "LOOT_REWARD",
+      "CRAFTING_UPGRADE",
+      "QUEST_INTERACTION",
+      "ENVIRONMENT_WEATHER",
       "DESTRUCTION",
       "BOSS",
       "MOBILE_DENSITY"
-    ],
-    "qualityScoreIsNotUsageGate": true,
-    "existingAssetsRemainUsable": true,
-    "gameplayAuthority": false
+    ]
   },
   "internalAssetStandard": {
     "version": 1,
@@ -164,5 +318,20 @@
     "damageAuthority": false,
     "stunAuthority": false,
     "staminaAuthority": false
+  },
+  "title": "Roblox 회사 공용 VFX 27종 v4",
+  "seedCompositionContract": {
+    "version": 1,
+    "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "compatibleKits": [
+      "SANDSTORM_CONVOY_DEFENSE",
+      "CRYSTAL_FACTORY_OVERLOAD",
+      "WHITE_NIGHT_BOSS_MIGRATION",
+      "FOG_TOWN_MEMORY_CASE",
+      "COLOR_RIFT_PUZZLE_EVENT",
+      "RUINED_COAST_SIGNAL_RESCUE"
+    ],
+    "gameSpecificPaletteTimingScaleRequired": true,
+    "gameplayAuthority": false
   }
 }
