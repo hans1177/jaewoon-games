@@ -4570,7 +4570,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-04T00:52:00.650Z",
+      "updatedAt": "2026-10-04T00:54:21.101Z",
       "robloxSourceCommit": "9e97d2140fb8a32bb1f2ddce7630ef35d6801bcb",
       "robloxSourceBootstrapPassedAt": "2026-10-04T00:49:36.719Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4884,18 +4884,18 @@
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": "development/unity-tech-bug-defense-36774290498",
-      "unitySourceCommit": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
-      "unityBuildRunId": 37018500827,
+      "unityCandidateBranch": "development/unity-tech-bug-defense-37165189884",
+      "unitySourceCommit": "a3e36f0517855f15e4c903b8418d0353da459c5d",
+      "unityBuildRunId": 37166339757,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
-        "sourceRevision": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
+        "sourceRevision": "a3e36f0517855f15e4c903b8418d0353da459c5d",
         "artifactIdentity": null,
-        "sourceRootTreeSha": "e607a1edde76eac8dff375f2e21ddf58306d6154",
+        "sourceRootTreeSha": "d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b",
         "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
         "singleRuntimeSessionF1ThroughF8": true,
         "f9RuntimeReplayRequired": false,
@@ -4944,7 +4944,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-02T14:18:23.629Z"
+        "verifiedAt": "2026-10-04T00:54:21.101Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -4956,9 +4956,9 @@
       "unityExecutionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
-        "sourceRootTreeSha": "e607a1edde76eac8dff375f2e21ddf58306d6154",
-        "sourceFingerprint": "73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a",
+        "sourceRevision": "a3e36f0517855f15e4c903b8418d0353da459c5d",
+        "sourceRootTreeSha": "d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b",
+        "sourceFingerprint": "9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -4980,9 +4980,9 @@
       "executionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "ce1112ea78581b5a2ea212fd55b0141e7b3e1eda",
-        "sourceRootTreeSha": "e607a1edde76eac8dff375f2e21ddf58306d6154",
-        "sourceFingerprint": "73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a",
+        "sourceRevision": "a3e36f0517855f15e4c903b8418d0353da459c5d",
+        "sourceRootTreeSha": "d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b",
+        "sourceFingerprint": "9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -8484,7 +8484,11 @@
         "previousSourceRevision": "9e97d2140fb8a32bb1f2ddce7630ef35d6801bcb",
         "newSourceRevision": "9e97d2140fb8a32bb1f2ddce7630ef35d6801bcb",
         "invalidatedAt": "2026-10-04T00:49:36.719Z"
-      }
+      },
+      "unityMobilePerformancePassed": false,
+      "unityMobilePerformanceEvidence": null,
+      "unityGeneratedAssetRuntimeBindingPassed": false,
+      "unityAssetRuntimeBindingEvidence": null
     },
     {
       "gameId": "line-defense",
@@ -60000,7 +60004,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-04T00:54:17.490Z",
+  "updatedAt": "2026-10-04T00:54:23.079Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
