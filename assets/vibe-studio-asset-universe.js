@@ -1461,8 +1461,26 @@ export const COMMON_UI_SYSTEM_COMPOSITION_GRAPH=Object.freeze({
   networkAuthority:false
 });
 
+export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
+  BUILDING:Object.freeze(['FUNCTION_ROLE','INTERIOR_EXTERIOR','MATERIAL_TIER','REGION_CLIMATE','DAMAGE_REPAIR_DECAY','OWNERSHIP_FACTION','CONSTRUCTION_STATE','LOD']),
+  CREATURE:Object.freeze(['BODY_PLAN','AGE_SIZE','REGION_CLIMATE','NORMAL_ALPHA_ELITE_BOSS','SURFACE_MATERIAL','DAMAGE_SCAR_WEAR','MOTION_IDENTITY','SEASON_EVENT','LOD']),
+  MOTION:Object.freeze(['INTENT','WEIGHT','SPEED','START_STOP_TURN','WEAPON_STANCE','REACTION_DIRECTION_STRENGTH','FATIGUE_INJURY','EMOTION_ACTING','CONTACT','LOD']),
+  UI:Object.freeze(['DEFAULT_HOVER_PRESSED_DISABLED','EMPTY_LOADING_ERROR_SUCCESS','TOUCH_GAMEPAD_KEYBOARD','COMPACT_STANDARD_EXPANDED','ACCESSIBILITY','INFORMATION_DENSITY','CONTEXT_STATE']),
+  WORLD_PROP:Object.freeze(['FUNCTION_ROLE','INTERACTION_STATE','REGION_CLIMATE','WEAR_DAMAGE','OWNERSHIP_FACTION','SET_DRESSING_CONTEXT','LOD']),
+  ENVIRONMENT:Object.freeze(['BIOME_REGION','FOREGROUND_MIDGROUND_BACKGROUND','WEATHER','TIME_OF_DAY','SEASON','CIVILIZATION_STATE','DAMAGE_RECOVERY','ATMOSPHERE','LOD_STREAMING']),
+  ITEM:Object.freeze(['RARITY','MATERIAL_TIER','WORLD_DROP_INVENTORY_CRAFT','USED_UNUSED_EMPTY','REGION_SOURCE','WEAR_DAMAGE','STACK_PRESENTATION']),
+  SKILL:Object.freeze(['PREPARE_TELEGRAPH_RELEASE_IMPACT_RECOVERY','PROJECTILE_BEAM_AOE_SUMMON','BUFF_DEBUFF_HEAL','ELEMENT_AFFINITY','POWER_TIER','MOBILE_DENSITY']),
+  VFX:Object.freeze(['ANTICIPATION_CONTACT_AFTEREFFECT','INTENSITY_TIER','SHAPE_LANGUAGE','ELEMENT_AFFINITY','WEATHER_ENVIRONMENT','MOBILE_DENSITY','LOD']),
+  PRESENTATION:Object.freeze(['INTRO_TRANSITION_RESULT','DISCOVERY_MILESTONE','SUCCESS_FAILURE_RECOVERY','BOSS_PHASE','WORLD_EVENT','INPUT_SKIP_ACCESSIBILITY','MOBILE_DENSITY']),
+  CHARACTER_GEAR:Object.freeze(['BODY_SLOT','LIGHT_MEDIUM_HEAVY','OCCUPATION_FACTION','REGION_CLIMATE','RANK_RARITY','DAMAGE_WEAR','CEREMONIAL_WORK_COMBAT','LOD']),
+  WEAPON:Object.freeze(['FAMILY_ROLE','ONE_TWO_HAND','RARITY_ORNAMENT','MATERIAL_TIER','DAMAGE_WEAR','REGION_FACTION','EQUIP_WORLD_DROP_ICON','MOTION_VFX_PAIRING','LOD']),
+  AUDIO:Object.freeze(['EVENT_ROLE','INTENSITY_LAYER','DISTANCE_BAND','SURFACE_MATERIAL','WEATHER_TIME','REGION_FACTION','VARIATION_SET','MOBILE_BUDGET']),
+  FOLIAGE:Object.freeze(['SPECIES','BIOME_REGION','SEASON','WEATHER_WIND','HEALTH_DAMAGE','DENSITY','FOREGROUND_MIDGROUND_BACKGROUND','LOD']),
+  MATERIAL:Object.freeze(['SURFACE_FAMILY','CLEAN_WORN_DAMAGED','DRY_WET_FROZEN_CORRODED','REGION_CLIMATE','RARITY_ENERGY','LIGHT_RESPONSE','LOD_COST'])
+});
+
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:9,
+  version:10,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1489,6 +1507,10 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     'CONTINUE_NORMAL_SAFE_ASSET_WORK_WITHOUT_HUMAN_OR_CHATGPT_PRESENCE',
     'QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION',
     'ENTER_QUALITY_UP_1000_IMMEDIATELY_AFTER_RECOMMENDED_VOLUME',
+    'RESCAN_LIBRARY_TYPE_ROLE_AND_QUALITY_METADATA_EVERY_CYCLE',
+    'REINDEX_INTERNAL_REUSE_DONORS_FROM_CURRENT_QUALITY',
+    'REBUILD_WORKLIST_AFTER_LIBRARY_FRESHNESS_CHANGE',
+    'REVIEW_SEMANTIC_DUPLICATE_GROUPS_WITHOUT_AUTOMATIC_DELETION',
     'MARK_STALE_ROWS_FOR_REVIEW_WITHOUT_DELETION'
   ]),
   countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
@@ -1593,7 +1615,20 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     qualityEntryAction:'QUALITY_UP_1000',
     qualitySelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
     qualityTarget:1000,
-    postQualityTargetAction:'HOLD_RECOMMENDED_VOLUME_AND_REOPEN_ONLY_FOR_NEW_VERIFIED_GAP_OR_QUALITY_REGRESSION',
+    postQualityTargetAction:'KEEP_REAUDITING_EXISTING_ASSETS_AND_REOPEN_ON_NEW_CRITERIA_BETTER_REFERENCE_OBSERVED_DEFECT_LIBRARY_CHANGE_OR_QUALITY_REGRESSION',
+    continuousExistingAssetQualityEvolution:true,
+    oneAndDoneAssetCompletionForbidden:true,
+    reAuditExistingAssetsEveryMaintenanceCycle:true,
+    quality1000IsCurrentContractCeilingNotPermanentCompletion:true,
+    reopenTriggers:Object.freeze([
+      'NEW_QUALITY_CRITERIA',
+      'NEW_HIGHER_QUALITY_INTERNAL_REFERENCE',
+      'OBSERVED_RUNTIME_OR_VISUAL_DEFECT',
+      'NEW_PLATFORM_OR_LOD_REQUIREMENT',
+      'NEW_STYLE_EXPRESSION_REQUIREMENT',
+      'LIBRARY_TYPE_ROLE_OR_QUALITY_CHANGE',
+      'QUALITY_REGRESSION'
+    ]),
     terminalStateForbidden:true,
     internalQualityDoesNotPromoteProduction:true,
     rawReferencePersistenceForbidden:true,
@@ -1603,6 +1638,37 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     newPipelineRequired:false,
     newWrapperRequired:false,
     newShadowSystemRequired:false
+  }),
+  autonomousMaintenanceContract:Object.freeze({
+    version:1,
+    status:'ACTIVE_SELF_MAINTAINING_LIBRARY',
+    trigger:'EVERY_EXISTING_ASSET_DEVELOPMENT_PLANNING_EXECUTION',
+    ownerPresenceRequired:false,
+    humanPresenceRequired:false,
+    chatgptPresenceRequired:false,
+    operations:Object.freeze([
+      'RESCAN_CURRENT_CATALOGS_AND_REGISTRY',
+      'REBUILD_INVENTORY_TYPE_ROLE_QUALITY_FINGERPRINTS',
+      'DETECT_NEW_OR_REMOVED_TYPE_ROLE_METADATA',
+      'REINDEX_HIGHEST_QUALITY_INTERNAL_REUSE_DONORS',
+      'REBUILD_VOLUME_AND_QUALITY_PRIORITY_FROM_CURRENT_LIBRARY',
+      'MARK_STALE_CATALOG_ROWS_REVIEW_ONLY',
+      'BUILD_SEMANTIC_DUPLICATE_REVIEW_GROUPS',
+      'PERSIST_CANONICAL_REGISTRY_ONLY_WHEN_CHANGED',
+      'CONTINUE_NEXT_SAFE_ASSET_ACTION'
+    ]),
+    currentLibraryAlwaysWins:true,
+    qualityUpdatesReorderReuseDonors:true,
+    newTypeOrRoleReopensRelevantIdeation:true,
+    qualityRegressionReopensQualityWork:true,
+    existingAssetsReauditedContinuously:true,
+    quality1000StillReauditedAgainstCurrentContract:true,
+    strongerReferenceOrNewCriterionMayReopenExistingAsset:true,
+    staleRowsNeverAutoDeleted:true,
+    semanticDuplicatesReviewOnly:true,
+    originalAssetsPreserved:true,
+    maintenanceMayNotPromoteProductionVerified:true,
+    maintenanceMayNotCreateNewWorkflowSchedulerQueuePipelineWrapperOrShadow:true
   }),
   reuseAdaptRecombineBeforeNewAuthoring:true,
   deleteExistingAssetAutomatically:false,
@@ -1617,6 +1683,130 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   wrapperCreated:false,
   shadowSystemCreated:false
 });
+
+function stableAssetMaintenanceHash(value=''){
+  let hash=2166136261;
+  for(const ch of String(value??'')){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
+  return (hash>>>0).toString(16).padStart(8,'0');
+}
+const INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS=Object.freeze([
+  'role','roles','usageRole','usageRoles','systemRole','systemRoles','itemRole','toolRole','gearRole','creatureRole',
+  'environmentRole','environmentRoles','buildingRole','worldRole','interactionRole','presentationRoles','motionRole',
+  'combatRole','ecologyRole','skillFamily','subfamily','type'
+]);
+function internalAssetMaintenanceRoleTokens(asset={}){
+  const out=[];
+  for(const field of INTERNAL_ASSET_MAINTENANCE_ROLE_FIELDS){
+    const value=asset?.[field];
+    for(const entry of (Array.isArray(value)?value:[value])){
+      const token=upper(entry).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+      if(token)out.push(token);
+    }
+  }
+  return uniq(out).sort();
+}
+function internalAssetMaintenanceQuality(asset={}){
+  const declared=Number(asset?.internalAuditScore);
+  if(Number.isFinite(declared))return Math.round(clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10;
+  const audit=scoreInternalAssetAudit1000({asset});
+  return audit?.measuredAxisCount>0?Number(audit.score):null;
+}
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null}={}){
+  const rows=(assets||[]).map(asset=>{
+    const family=upper(asset?.family||asset?.category);
+    const roles=internalAssetMaintenanceRoleTokens(asset);
+    const quality=internalAssetMaintenanceQuality(asset);
+    return Object.freeze({
+      id:text(asset?.id||asset?.assetId||asset?.atomId),
+      packId:text(asset?.packId),
+      family,
+      subfamily:upper(asset?.subfamily||asset?.type),
+      roles:Object.freeze(roles),
+      quality,
+      qualityGrade:text(asset?.internalAuditGrade)||null,
+      catalogState:upper(asset?.catalogState),
+      catalogActive:asset?.catalogActive!==false,
+      status:upper(asset?.status),
+      productionVerified:asset?.productionVerified===true,
+      runtimeVerificationState:upper(asset?.runtimeVerificationState)
+    });
+  }).filter(row=>row.id).sort((a,b)=>a.id.localeCompare(b.id));
+  const typeRoleTokens=new Set();
+  for(const row of rows){
+    if(row.family)typeRoleTokens.add('FAMILY:'+row.family);
+    if(row.packId)typeRoleTokens.add('PACK:'+row.packId);
+    if(row.subfamily)typeRoleTokens.add('SUBFAMILY:'+row.family+':'+row.subfamily);
+    for(const role of row.roles)typeRoleTokens.add('ROLE:'+row.family+':'+role);
+  }
+  for(const id of uiAtomIds||[])typeRoleTokens.add('UI_ATOM:'+upper(id));
+  for(const id of audioRoleIds||[])typeRoleTokens.add('AUDIO_ROLE:'+upper(id));
+  const sortedTypeRoleTokens=[...typeRoleTokens].sort();
+  const inventoryFingerprint=stableAssetMaintenanceHash(JSON.stringify(rows));
+  const typeRoleFingerprint=stableAssetMaintenanceHash(JSON.stringify(sortedTypeRoleTokens));
+  const qualityRows=rows.filter(row=>row.quality!==null).map(row=>({id:row.id,quality:row.quality,grade:row.qualityGrade,family:row.family,packId:row.packId})).sort((a,b)=>a.id.localeCompare(b.id));
+  const qualityFingerprint=stableAssetMaintenanceHash(JSON.stringify(qualityRows));
+  const staleRowIds=rows.filter(row=>row.catalogActive===false||row.catalogState==='STALE_CATALOG_ROW_REVIEW').map(row=>row.id);
+  const semanticGroups=new Map();
+  for(const row of rows){
+    const primaryRole=row.roles[0]||'';
+    const key=[row.family,row.subfamily,primaryRole].join('|');
+    if(!row.family||!row.subfamily||!primaryRole)continue;
+    const group=semanticGroups.get(key)||[];
+    group.push(row.id);semanticGroups.set(key,group);
+  }
+  const semanticDuplicateReviewGroups=[...semanticGroups.entries()]
+    .filter(([,ids])=>ids.length>1)
+    .map(([key,ids])=>Object.freeze({key,assetIds:Object.freeze([...ids].sort()),count:ids.length}))
+    .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key))
+    .slice(0,48);
+  const donorCandidates=qualityRows
+    .slice()
+    .sort((a,b)=>Number(b.quality)-Number(a.quality)||a.id.localeCompare(b.id))
+    .slice(0,64)
+    .map(row=>Object.freeze({...row}));
+  const prior=previous&&typeof previous==='object'?previous:{};
+  const priorReady=Boolean(text(prior.inventoryFingerprint));
+  const priorTokens=new Set(Array.isArray(prior.typeRoleTokens)?prior.typeRoleTokens:[]);
+  const currentTokens=new Set(sortedTypeRoleTokens);
+  const newTypeRoleTokens=priorReady?sortedTypeRoleTokens.filter(token=>!priorTokens.has(token)):[];
+  const removedTypeRoleTokens=priorReady?[...priorTokens].filter(token=>!currentTokens.has(token)).sort():[];
+  const refreshReasons=[];
+  if(!priorReady)refreshReasons.push('MAINTENANCE_BASELINE_INITIALIZED');
+  else{
+    if(prior.inventoryFingerprint!==inventoryFingerprint)refreshReasons.push('INVENTORY_CHANGED');
+    if(prior.typeRoleFingerprint!==typeRoleFingerprint)refreshReasons.push('TYPE_OR_ROLE_CHANGED');
+    if(prior.qualityFingerprint!==qualityFingerprint)refreshReasons.push('QUALITY_METADATA_CHANGED');
+  }
+  if(staleRowIds.length)refreshReasons.push('STALE_ROWS_PRESENT');
+  if(semanticDuplicateReviewGroups.length)refreshReasons.push('SEMANTIC_DUPLICATE_REVIEW_AVAILABLE');
+  return Object.freeze({
+    version:1,
+    status:'SELF_MAINTENANCE_READY',
+    inventoryFingerprint,
+    typeRoleFingerprint,
+    qualityFingerprint,
+    assetCount:rows.length,
+    packCount:new Set(rows.map(row=>row.packId).filter(Boolean)).size,
+    familyCount:new Set(rows.map(row=>row.family).filter(Boolean)).size,
+    typeRoleTokenCount:sortedTypeRoleTokens.length,
+    scoredAssetCount:qualityRows.length,
+    typeRoleTokens:Object.freeze(sortedTypeRoleTokens),
+    newTypeRoleTokens:Object.freeze(newTypeRoleTokens.slice(0,192)),
+    removedTypeRoleTokens:Object.freeze(removedTypeRoleTokens.slice(0,192)),
+    staleRowIds:Object.freeze(staleRowIds.slice(0,192)),
+    semanticDuplicateReviewGroups:Object.freeze(semanticDuplicateReviewGroups),
+    qualityDonorCandidates:Object.freeze(donorCandidates),
+    refreshRequired:refreshReasons.length>0,
+    refreshReasons:Object.freeze(refreshReasons),
+    currentLibraryAlwaysWins:true,
+    automaticDeletion:false,
+    duplicateReviewOnly:true,
+    qualityUpdateMayReorderDonors:true,
+    newTypeOrRoleMayReopenIdeation:true,
+    continueWithoutHuman:true,
+    continueWithoutChatgpt:true
+  });
+}
 
 function looseVolumeState(count,band={}){
   const value=Math.max(0,Number(count)||0);
@@ -1685,13 +1875,14 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null}={}){
   const depth=auditCommonLibrarySystemDepth({assets});
   const seedIdeas=seedPlan?.ideas||[];
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
   const audioRoles=uniq(audioRoleIds).map(upper);
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
+  const maintenance=buildInternalAssetMaintenanceSnapshot({assets,uiAtomIds,audioRoleIds,previous:previousMaintenance});
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -1723,6 +1914,26 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const freeSourceIdsForDomain=domain=>{
     const allowed=freeSourceCategoriesByDomain[upper(domain)]||[];
     return eligibleFreeSources.filter(source=>source.categories.some(category=>allowed.includes(category))).map(source=>source.id);
+  };
+  const internalReuseCandidatesForAction=(domain,role='')=>{
+    const requested=upper(role).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    return (assets||[])
+      .filter(asset=>commonDepthDomainMatch(upper(domain),asset))
+      .map(asset=>{
+        const roles=internalAssetMaintenanceRoleTokens(asset);
+        const quality=internalAssetMaintenanceQuality(asset);
+        const roleMatch=requested&&roles.includes(requested)?1:0;
+        return{
+          id:text(asset?.id||asset?.assetId||asset?.atomId),
+          packId:text(asset?.packId)||null,
+          family:upper(asset?.family||asset?.category)||null,
+          roleMatch,
+          quality,
+          grade:text(asset?.internalAuditGrade)||null
+        };
+      })
+      .filter(row=>row.id)
+      .sort((a,b)=>b.roleMatch-a.roleMatch||Number(b.quality??-1)-Number(a.quality??-1)||a.id.localeCompare(b.id));
   };
   const normalizeIdentity=value=>upper(value).replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   const existingIdentityTokens=new Set();
@@ -1913,9 +2124,18 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const freeSourceCatalogReady=eligibleFreeSources.length>=INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCatalogSufficiencyCount;
   const nextVolumeActions=nextVolumeActionRows.map((row,index)=>{
     const freeSourceAvailable=Array.isArray(row.freeSourceCandidateIds)&&row.freeSourceCandidateIds.length>0;
+    const allInternalReuseCandidates=internalReuseCandidatesForAction(row.domain,row.role);
+    const internalReuseCandidatePreview=allInternalReuseCandidates.slice(0,12);
     return Object.freeze({
       ...row,
       freeSourceAvailable,
+      internalReuseCandidateCount:allInternalReuseCandidates.length,
+      internalReuseCandidatePreview:Object.freeze(internalReuseCandidatePreview.map(candidate=>Object.freeze(candidate))),
+      allCompatibleInternalAssetsRemainEligible:true,
+      internalReusePreviewIsNotEligibilityCap:true,
+      studioVariationAxes:Object.freeze([...(INTERNAL_ASSET_STUDIO_VARIATION_AXES[row.domain]||[])]),
+      libraryFreshnessFingerprint:maintenance.inventoryFingerprint,
+      qualityFreshnessFingerprint:maintenance.qualityFingerprint,
       freeSourceCandidateIds:Object.freeze([...(row.freeSourceCandidateIds||[])]),
       freeSourceAcquisitionMode:freeSourceAvailable?'ON_DEMAND_SELECTED_ACTION_ONLY':'NOT_AVAILABLE',
       bulkPrefetchAllowed:false,
@@ -1965,6 +2185,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     uiBlockingSubsystems:Object.freeze(uiBlockingSubsystems),
     nextVolumeActions:Object.freeze(nextVolumeActions),
     autonomousOperatingContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract,
+    autonomousMaintenanceContract:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousMaintenanceContract,
+    maintenance,
+    studioVariationAxes:INTERNAL_ASSET_STUDIO_VARIATION_AXES,
     autonomousNextAction,
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
@@ -1992,6 +2215,11 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       selection:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpSelection,
       workingBandMin:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,
       target:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,
+      continuousExistingAssetQualityEvolution:true,
+      oneAndDoneAssetCompletionForbidden:true,
+      reAuditEveryMaintenanceCycle:true,
+      quality1000IsCurrentContractCeilingNotPermanentCompletion:true,
+      reopenTriggers:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.autonomousOperatingContract.reopenTriggers,
       productionRuntimeVerificationSeparate:true
     }),
     audioRoleContractCount:audioRoles.length,
