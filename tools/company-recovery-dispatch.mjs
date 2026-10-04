@@ -51,8 +51,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         }
       }
       const recurrenceCount=Math.max(1,Number(rec.recurrenceCount||0),ids.length);
-      const repairMode=recurrenceCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
       const flowStageLoop=clean(rec.blastRadius).startsWith('flow-stage:');
+      const repairMode=flowStageLoop||recurrenceCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
       const flowCanonicalTaskId=clean(rec.sourceTaskId);
       const saveRepairRequired=uniq(rec.evidence).some(value=>/(?:save|load|migration|persist|storage|저장|불러오기)/i.test(value));
       const multiplayerRepairRequired=uniq(rec.evidence).some(value=>/(?:multiplayer|network|sync|join|rejoin|server|client|remote|멀티|협동|동기화)/i.test(value));
