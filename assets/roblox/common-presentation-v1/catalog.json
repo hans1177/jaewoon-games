@@ -1,10 +1,10 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-presentation-v1",
   "family": "UI",
   "subfamily": "PRESENTATION",
   "platform": "ROBLOX",
-  "title": "Roblox 회사 공용 로딩/인트로 프레젠테이션 v1",
+  "title": "Roblox 회사 공용 로딩/인트로/복구 프레젠테이션 14요소 v3",
   "license": "project-original",
   "companyCommonBase": true,
   "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
@@ -92,16 +92,17 @@
       "LOGO_REVEAL",
       "PARTICLE_LIGHT",
       "WORLD_PAN",
-      "MINIMAL_CINEMATIC"
-    ],
-    "missingComponentCandidates": [
+      "MINIMAL_CINEMATIC",
       "INPUT_SKIP_HINT",
       "ACCESSIBILITY_REDUCED_MOTION",
       "FAILURE_RECOVERY_STATE"
     ],
+    "missingComponentCandidates": [],
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
-    "gameplayAuthority": false
+    "gameplayAuthority": false,
+    "currentAssetCount": 14,
+    "volumeUpPhase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP"
   },
   "internalAssetStandard": {
     "version": 1,
@@ -116,5 +117,28 @@
     "queueExcluded": true,
     "schedulerExcluded": true,
     "deploymentExcluded": true
+  },
+  "accessibilityElements": [
+    "INPUT_SKIP_HINT",
+    "ACCESSIBILITY_REDUCED_MOTION",
+    "FAILURE_RECOVERY_STATE"
+  ],
+  "seedCompositionContract": {
+    "version": 1,
+    "ideationSource": "company-asset-library.json#companyCommonSeedAssetIdeation",
+    "compatibleSignals": [
+      "CASUAL_SHORT_RUN",
+      "RPG_PROGRESSION",
+      "HORROR",
+      "DEFENSE",
+      "NARRATIVE",
+      "ROGUELITE_RUN"
+    ],
+    "mobileOneHandAware": true,
+    "reducedMotionVariant": true,
+    "skipOrTimingAuthority": "GAME_CODE",
+    "gameplayAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false
   }
 }
