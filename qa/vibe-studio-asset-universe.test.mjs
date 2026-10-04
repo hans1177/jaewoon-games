@@ -31,6 +31,9 @@ import {
   INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,
   INTERNAL_ASSET_REFERENCE_IDEA_POOLS,
   INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,
+  INTERNAL_ASSET_STYLE_EXPRESSION_AXES,
+  INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,
+  resolveInternalAssetStyleExpressionProfile,
   selectInternalProgressionComplexityProfile,
   buildInternalAssetLibraryAutomationPlan,
   createCompanySeedAssetIdeationPlan,
@@ -200,6 +203,46 @@ test('missing platform variants and altered clip timing require authoring and ne
   assert.equal(result.status,'AUTHORING_REQUIRED');
   assert.ok(result.issues.includes('MOTION_TIMING_MISMATCH:IDLE'));
   assert.deepEqual(result.document,document);assert.deepEqual(result.applications,[]);assert.deepEqual(result.motions,[]);
+});
+
+test('style expression axes adapt rough soft expressive and restrained concepts across every internal domain',()=>{
+  const requiredDomains=['BUILDING','CREATURE','MOTION','UI','WORLD_PROP','ENVIRONMENT','ITEM','SKILL','VFX','PRESENTATION','CHARACTER_GEAR','WEAPON','AUDIO','FOLIAGE','MATERIAL'];
+  for(const axis of ['SURFACE_FEEL','SHAPE_TEMPER','EXPRESSION_INTENSITY','MATERIAL_FINISH','LINE_ENERGY','COLOR_ENERGY','DETAIL_DENSITY','DAMAGE_WEAR','MOTION_ENERGY','VFX_ENERGY','UI_EXPRESSION','AUDIO_ENERGY','ATMOSPHERE_WEIGHT']){
+    assert.ok(INTERNAL_ASSET_STYLE_EXPRESSION_AXES[axis],axis);
+    assert.ok(INTERNAL_ASSET_STYLE_EXPRESSION_AXES[axis].length>=3,axis);
+  }
+  for(const domain of requiredDomains){
+    assert.ok(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS[domain],domain);
+    assert.ok(INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS[domain].length>0,domain);
+  }
+
+  const dark=resolveInternalAssetStyleExpressionProfile({styleFamily:'DARK_FANTASY',artTone:['DARK','EPIC']});
+  assert.equal(dark.axes.SURFACE_FEEL,'ROUGH');
+  assert.equal(dark.axes.SHAPE_TEMPER,'SHARP');
+  assert.equal(dark.axes.MATERIAL_FINISH,'WEATHERED');
+  assert.equal(dark.axes.DETAIL_DENSITY,'DENSE');
+  assert.equal(dark.axes.VFX_ENERGY,'SPECTACULAR');
+
+  const soft=resolveInternalAssetStyleExpressionProfile({styleFamily:'CARTOON',artTone:['BRIGHT','CUTE']});
+  assert.equal(soft.axes.SURFACE_FEEL,'SOFT');
+  assert.equal(soft.axes.SHAPE_TEMPER,'ROUND');
+  assert.equal(soft.axes.COLOR_ENERGY,'VIBRANT');
+  assert.equal(soft.axes.DAMAGE_WEAR,'CLEAN');
+
+  const wuxia=resolveInternalAssetStyleExpressionProfile({styleFamily:'WUXIA',artTone:['ELEGANT']});
+  assert.equal(wuxia.axes.SHAPE_TEMPER,'FLOWING');
+  assert.equal(wuxia.axes.EXPRESSION_INTENSITY,'RESTRAINED');
+  assert.equal(wuxia.axes.MATERIAL_FINISH,'MATTE');
+  assert.equal(wuxia.axes.DETAIL_DENSITY,'SELECTIVE_DENSE');
+
+  const ownerOverride=resolveInternalAssetStyleExpressionProfile({
+    styleFamily:'CARTOON',
+    overrides:{SURFACE_FEEL:'ROUGH',EXPRESSION_INTENSITY:'RESTRAINED'}
+  });
+  assert.equal(ownerOverride.axes.SURFACE_FEEL,'ROUGH');
+  assert.equal(ownerOverride.axes.EXPRESSION_INTENSITY,'RESTRAINED');
+  assert.equal(ownerOverride.conceptStyleLockWins,true);
+  assert.equal(ownerOverride.gameplayAuthority,false);
 });
 
 test('style families produce different authoring direction while explicit art locks survive',()=>{
@@ -381,7 +424,7 @@ test('building reference image expands into detailed task-local building volume 
   const plan=buildVibeAssetProductionPlan({
     task:{
       gameId:'reference-building-volume-test',
-      goal:'건물 사진 보고 내부자산 아이디어 제작',
+      goal:'거칠고 표현력 강한 다크 판타지 건물 사진 보고 내부자산 아이디어 제작',
       imageToAsset:true,
       referenceImages:[{
         sourceId,
@@ -397,7 +440,7 @@ test('building reference image expands into detailed task-local building volume 
           MATERIAL_REGIONS:'stone foundation timber wall dark roof metal trim',
           PALETTE:'warm wood cool stone dark roof bright accent',
           CONSTRUCTION_DETAILS:'exposed beams deep window trim roof brackets repair patches',
-          STYLE_LANGUAGE:'stylized frontier settlement architecture',
+          STYLE_LANGUAGE:'rough weathered dramatic dark fantasy frontier settlement architecture',
           IDENTITY_ANCHORS:'asymmetric tower corner banner and entry canopy',
           UNSEEN_REGIONS:'creative proposal required',
           MOTION_DESIGN:'creative proposal required'
@@ -415,6 +458,15 @@ test('building reference image expands into detailed task-local building volume 
     assert.ok(ideas.some(row=>row.customizationAxis===axis),axis);
   }
   assert.equal(plan.imageAssetCreation.volumeWorklistOverlayConsumesBeforePersistentActions,true);
+  assert.equal(plan.imageAssetCreation.styleExpression.axes.SURFACE_FEEL,'ROUGH');
+  assert.equal(plan.imageAssetCreation.styleExpression.axes.EXPRESSION_INTENSITY,'EXPRESSIVE');
+  assert.equal(plan.imageAssetCreation.styleExpression.axes.MATERIAL_FINISH,'WEATHERED');
+  assert.equal(plan.imageAssetCreation.conceptStyleLockWins,true);
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.every(row=>row.styleExpressionAdaptationRequired===true));
+  assert.ok(plan.imageAssetCreation.volumeWorklistOverlay.every(row=>row.styleExpression.axes.SURFACE_FEEL==='ROUGH'));
+  assert.equal(plan.internalLibraryEvolution.styleExpressionRequiredForAllDomains,true);
+  assert.equal(plan.internalLibraryEvolution.styleExpression.axes.SURFACE_FEEL,'ROUGH');
+  assert.equal(plan.internalLibraryEvolution.photoReferenceMaySuggestButNotOverrideConceptLock,true);
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].domain,'BUILDING');
   assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
@@ -3784,7 +3836,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,7);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,8);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -3798,6 +3850,9 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.repeatedDistinctVariationProposalForbidden,true);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpWorkingBandMin,980);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.productionRuntimeVerificationSeparateFromInternalQuality,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionRequiredForAllDomains,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionContractRef,'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES');
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.styleExpressionDomainBindingRef,'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.priority,'AFTER_INTERNAL_REUSE_BEFORE_NEW_AUTHORING');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.sourceCatalogMode,'SUFFICIENT_METADATA_CATALOG_ON_DEMAND_ACQUISITION');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeOriginalVolumePolicy.bulkPrefetchForbidden,true);
@@ -3822,6 +3877,8 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
     assert.ok(plan.nextVolumeActions.length>0);
     assert.ok(plan.nextVolumeActions.some(row=>row.kind==='DOMAIN_VOLUME'));
     assert.ok(plan.nextVolumeActions.every(row=>row.ideaId&&row.domain));
+    assert.ok(plan.nextVolumeActions.every(row=>row.styleExpressionAdaptationRequired===true));
+    assert.ok(plan.nextVolumeActions.every(row=>Array.isArray(row.styleExpressionAxisIds)&&row.styleExpressionAxisIds.length>0));
     assert.ok(plan.nextVolumeActions.some(row=>row.freeSourceAvailable===true));
     assert.ok(plan.nextVolumeActions.every(row=>Array.isArray(row.freeSourceCandidateIds)));
     assert.ok(plan.nextVolumeActions.every(row=>row.bulkPrefetchAllowed===false));
@@ -3913,7 +3970,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,7);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,8);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -3987,7 +4044,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,7);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,8);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -3998,6 +4055,12 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.workingBandMin,980);
     assert.equal(first.registry.internalAssetLibraryAutomation.qualityUpPolicy.target,1000);
     assert.equal(first.registry.internalAssetLibraryAutomation.productionRuntimeVerificationSeparateFromInternalQuality,true);
+    assert.equal(first.registry.internalAssetLibraryAutomation.styleExpressionRequiredForAllDomains,true);
+    assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionAxes.SURFACE_FEEL.includes('ROUGH'));
+    assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionAxes.SURFACE_FEEL.includes('SOFT'));
+    assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionDomainBindings.BUILDING.includes('MATERIAL_FINISH'));
+    assert.ok(first.registry.internalAssetLibraryAutomation.styleExpressionDomainBindings.MOTION.includes('MOTION_ENERGY'));
+    assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.every(row=>row.styleExpressionAdaptationRequired===true));
     assert.equal(first.registry.internalAssetLibraryAutomation.autoDelete,false);
     assert.equal(first.registry.internalAssetLibraryAutomation.hardMaximum,null);
     assert.equal(first.registry.internalAssetLibraryAutomation.overSoftLimitBlocksUse,false);
@@ -4025,7 +4088,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,7);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,8);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
@@ -4037,6 +4100,11 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.enabled,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.taskLocalOnly,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.referenceImageIdeaOverlay.persistentRegistryStorageForbidden,true);
+  assert.equal(result.registry.internalAssetLibraryAutomation.styleExpressionRequiredForAllDomains,true);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.styleExpressionDomainBindings,result.automationPlan.styleExpressionDomainBindings);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.styleExpressionAxes,result.automationPlan.styleExpressionAxes);
+  assert.ok(result.registry.internalAssetLibraryAutomation.nextVolumeActions.every(row=>row.styleExpressionAdaptationRequired===true));
+  assert.ok(result.registry.internalAssetLibraryAutomation.nextVolumeActions.every(row=>row.styleExpressionAxisIds.length>0));
   assert.equal(result.registry.internalAssetLibraryAutomation.actualVerifiedAudioAssetCount,0);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.workflowCreated,false);
