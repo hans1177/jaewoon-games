@@ -1095,6 +1095,22 @@
     "sourceGrowthMustStayWithinResponsibleGameSourceAuthority": true,
     "sourceGrowthMayNotBypassSaveNetworkSecurityOrReleaseGates": true,
     "evaluationOnlyCompletionMayNotFakeRequiredSourceMutation": true,
-    "wrapperOverrideShadowPatchMayNotSubstituteForResponsibleSourceRepair": true
+    "wrapperOverrideShadowPatchMayNotSubstituteForResponsibleSourceRepair": true,
+    "autonomousLearning": {
+      "existingLearningMotorOnly": true,
+      "positiveLearningRequiresVerifiedEvidence": true,
+      "rawUnverifiedOutputMayNotSelfPromote": true,
+      "infrastructureFailureNegativeLearningForbidden": true,
+      "learningMayNotExpandAuthority": true,
+      "learningMayNotReplaceQaRuntimeOrF9": true,
+      "newShadowTrainerForbidden": true
+    },
+    "requestedRuntimeQaIsolation": {
+      "requestedGameOnly": true,
+      "unrelatedGameInvalidIdentityMayNotFailRequestedRun": true,
+      "batchParallelismPreserved": true,
+      "isolationMayNotBypassExactSourceArtifactIdentity": true,
+      "isolationMayNotBypassSecurityOrRuntimeVerification": true
+    }
   }
 }

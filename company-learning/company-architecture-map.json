@@ -6834,6 +6834,31 @@
     ],
     "sourceMutationRequiredWhenImplementationGapExists": true,
     "evaluationOnlyCompletionForbiddenWhenMutationRequired": true,
-    "wrapperOverrideShadowGrowthForbidden": true
+    "wrapperOverrideShadowGrowthForbidden": true,
+    "autonomousLearning": {
+      "owner": "VIBE2_VIBE3",
+      "existingLearningMotor": "tools/vibe2-learning-motor.mjs",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "continuous24h": true,
+      "ownerAndChatgptNotInLearningCriticalPath": true,
+      "flow": [
+        "VERIFIED_EXECUTION_OUTCOME",
+        "SANITIZE_AND_CLASSIFY_LEARNING",
+        "PERSIST_EXISTING_CANONICAL_EXPERIENCE",
+        "TASK_RELEVANT_RETRIEVAL",
+        "APPLY_TO_NEXT_BUILD_UP_OR_CAUSAL_REPAIR",
+        "FRESH_QA_RUNTIME_F9_VERIFICATION",
+        "RETURN_NEW_VERIFIED_OUTCOME_TO_LEARNING"
+      ],
+      "newLearningPipelineOrShadowTrainer": false
+    },
+    "requestedRuntimeQaIsolation": {
+      "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "requestedGameOnly": true,
+      "batchWhenGameIdEmpty": true,
+      "batchParallelismMax": 8,
+      "unrelatedGameRuntimeCandidateMayNotEnterRequestedCandidateSet": true,
+      "requestedRunCrossGameStateMutationForbidden": true
+    }
   }
 }

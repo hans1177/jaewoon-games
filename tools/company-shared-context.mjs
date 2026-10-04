@@ -249,6 +249,13 @@ export function compileCentralArchitectureProjection(policy={}){
       chatgptNormalOperationsOwner:fixedOperating?.responsibilitySplit?.chatgpt?.normalOperationsOwner===true,
       sourceGrowthIntegrityRequired:fixedOperating?.sourceGrowthIntegrity?.realSourceDiffRequiredWhenBuildUpDecisionRequiresImplementation===true
         &&fixedOperating?.sourceGrowthIntegrity?.evaluationOnlyCompletionForbiddenWhenSourceMutationRequired===true,
+      autonomousLearningOwner:clean(fixedOperating?.autonomousLearning?.owner)||null,
+      autonomousLearningContinuous:fixedOperating?.autonomousLearning?.required===true
+        &&fixedOperating?.autonomousLearning?.continuous24h===true
+        &&fixedOperating?.autonomousLearning?.ownerPresenceRequired===false
+        &&fixedOperating?.autonomousLearning?.chatgptPresenceRequired===false,
+      requestedRuntimeQaExactIsolation:fixedOperating?.requestedGameScopedRuntimeQa?.requestedGameIdMeansExactGameOnly===true
+        &&fixedOperating?.requestedGameScopedRuntimeQa?.unrelatedInvalidCandidateMayNotFailRequestedGameRun===true,
       startupSyncRequired:fixedOperating?.startupSync?.requiredForChatGPTAndWorkers===true
     },
     implementationOwnership:{
@@ -363,6 +370,17 @@ export function validateSharedWorkerContext({
   if(growth?.directResponsibleFunctionOrCompleteBlockEditPreferred!==true||growth?.wrapperOverrideShadowPatchForbidden!==true||growth?.unnecessaryNewFileOrParallelStructureForbidden!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_STRUCTURE');
   if(growth?.sourceRevisionMustPropagateIntoF0CandidateEvidence!==true||growth?.exactBuildUpSourceRevisionMustBeVerifiedThroughRuntimeChain!==true||growth?.f9SuccessMustReturnToImmediateNextBuildUp!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_FLOW');
   if(growth?.failureRoutesToExactGameStageRepairRetry!==true||growth?.sourceGrowthDoesNotChangeLockedF0F9Order!==true)fail('FIXED_OPERATING_SOURCE_GROWTH_REPAIR');
+  const learning=fixedOperating?.autonomousLearning||{};
+  if(learning?.required!==true||clean(learning?.owner)!=='VIBE2_VIBE3'||learning?.ownerPresenceRequired!==false||learning?.chatgptPresenceRequired!==false||learning?.continuous24h!==true)fail('FIXED_OPERATING_AUTONOMOUS_LEARNING_OWNER');
+  if(learning?.existingLearningMotorOnly!==true||clean(learning?.learningMotor)!=='tools/vibe2-learning-motor.mjs'||clean(learning?.scheduler)!=='.github/workflows/vibe2-24h-runner.yml')fail('FIXED_OPERATING_AUTONOMOUS_LEARNING_BINDING');
+  if(learning?.positiveLearningRequiresVerifiedEvidence!==true||learning?.verifiedFailureMayBecomeAvoidLesson!==true||learning?.infrastructureFailureMayNotBecomeGameNegativeLearning!==true)fail('FIXED_OPERATING_AUTONOMOUS_LEARNING_EVIDENCE');
+  if(learning?.taskRelevantLearningMustBeRetrievedBeforeSourceGeneration!==true||learning?.verifiedLearningMustFeedNextBuildUp!==true||learning?.verifiedBottleneckLessonsMustFeedFutureCausalRepair!==true)fail('FIXED_OPERATING_AUTONOMOUS_LEARNING_REUSE');
+  if(learning?.learningMayNotExpandAuthority!==true||learning?.learningMayNotReplaceQaRuntimeOrF9Verification!==true||learning?.rawUnverifiedModelOutputMayNotSelfPromote!==true||learning?.newLearningPipelineOrShadowTrainerForbidden!==true)fail('FIXED_OPERATING_AUTONOMOUS_LEARNING_BOUNDARY');
+  if(clean(policy?.developmentLifecycleMachine?.learningMotor?.implementationOwner)!=='VIBE2_VIBE3'||policy?.developmentLifecycleMachine?.learningMotor?.positiveMasteryRequiresVerifiedEvidence!==true)fail('CANONICAL_LEARNING_MOTOR_VIBE_OWNER');
+  if(clean(policy?.continuousLearning24hContract?.status)!=='ACTIVE_EXECUTABLE_CONTRACT'||policy?.continuousLearning24hContract?.existingCanonicalLearningChainOnly!==true||policy?.continuousLearning24hContract?.separateLearningPipelineForbidden!==true)fail('CANONICAL_CONTINUOUS_LEARNING_CONTRACT');
+  const requestedRuntimeQa=fixedOperating?.requestedGameScopedRuntimeQa||{};
+  if(requestedRuntimeQa?.requestedGameIdMeansExactGameOnly!==true||requestedRuntimeQa?.requestedRunMayNotProcessOrMutateUnrelatedGameRuntimeCandidate!==true||requestedRuntimeQa?.unrelatedInvalidCandidateMayNotFailRequestedGameRun!==true)fail('FIXED_OPERATING_REQUESTED_RUNTIME_QA_ISOLATION');
+  if(requestedRuntimeQa?.emptyGameIdMeansParallelBatchScan!==true||requestedRuntimeQa?.batchCrossGameParallelismPreserved!==true||requestedRuntimeQa?.exactGameFailureRoutesToExactGameStageRepair!==true)fail('FIXED_OPERATING_REQUESTED_RUNTIME_QA_BATCH');
   const fixedSync=fixedOperating?.startupSync||{};
   if(fixedSync?.requiredForChatGPTAndWorkers!==true||fixedSync?.latestMainFirst!==true||fixedSync?.documentHashesRequired!==true||fixedSync?.finalDevelopmentLockV2Required!==true)fail('FIXED_OPERATING_STARTUP_SYNC');
   if(!sameList(fixedSync?.canonicalReadOrder,canonicalReadOrder))fail('FIXED_OPERATING_READ_ORDER');
@@ -423,6 +441,10 @@ export function validateSharedWorkerContext({
   if(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.vibeOwnsAllNormalProcessManagement!==true||logMap?.fixedAutonomousDevelopmentOperatingEvidence?.chatgptNormalOperationsOwner!==false||logMap?.fixedAutonomousDevelopmentOperatingEvidence?.sourceGrowthIntegrityEvidenceRequired!==true)fail('LOG_FIXED_OPERATING_RESPONSIBILITY_SPLIT');
   if(architecture?.fixedAutonomousDevelopmentOperatingTopology?.vibeOwnsAllNormalProcessManagement!==true||architecture?.fixedAutonomousDevelopmentOperatingTopology?.chatgptNormalOperationsOwner!==false||clean(architecture?.fixedAutonomousDevelopmentOperatingTopology?.sourceGrowthExecutionOwner)!=='VIBE2_VIBE3')fail('ARCHITECTURE_FIXED_OPERATING_RESPONSIBILITY_SPLIT');
   if(securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.vibeNormalProcessManagementOwner!==true||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.chatgptNormalOperationsOwner!==false||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.evaluationOnlyCompletionMayNotFakeRequiredSourceMutation!==true)fail('SECURITY_FIXED_OPERATING_RESPONSIBILITY_SPLIT');
+  if(clean(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.autonomousLearning?.owner)!=='VIBE2_VIBE3'||logMap?.fixedAutonomousDevelopmentOperatingEvidence?.autonomousLearning?.ownerOrChatgptPresenceRequired!==false)fail('LOG_FIXED_AUTONOMOUS_LEARNING');
+  if(clean(architecture?.fixedAutonomousDevelopmentOperatingTopology?.autonomousLearning?.owner)!=='VIBE2_VIBE3'||architecture?.fixedAutonomousDevelopmentOperatingTopology?.autonomousLearning?.ownerAndChatgptNotInLearningCriticalPath!==true)fail('ARCHITECTURE_FIXED_AUTONOMOUS_LEARNING');
+  if(securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.autonomousLearning?.positiveLearningRequiresVerifiedEvidence!==true||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.autonomousLearning?.newShadowTrainerForbidden!==true)fail('SECURITY_FIXED_AUTONOMOUS_LEARNING');
+  if(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.requestedRuntimeQaIsolation?.requestedGameOnly!==true||architecture?.fixedAutonomousDevelopmentOperatingTopology?.requestedRuntimeQaIsolation?.requestedGameOnly!==true||securityPolicy?.fixedAutonomousDevelopmentOperatingSecurity?.requestedRuntimeQaIsolation?.requestedGameOnly!==true)fail('FIXED_REQUESTED_RUNTIME_QA_MIRRORS');
   if(clean(securityPolicy?.sourceOfTruth)!==policyFile)fail('SECURITY_SOURCE_OF_TRUTH');
   if(securityPolicy?.centralRoadmapBinding?.documentIsCode!==true)fail('SECURITY_DOCUMENT_CODE');
   if(clean(securityPolicy?.centralRoadmapBinding?.sharedContextValidator)!=='tools/company-shared-context.mjs')fail('SECURITY_VALIDATOR_BINDING');
