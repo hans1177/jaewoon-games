@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,7 +492,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -3061,5 +3061,26 @@
       ],
       "vibeContinuesWhenChatgptAbsent": true
     }
+  },
+  "assetProducerConsumerBoundaryEvidence": {
+    "version": 2,
+    "authority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.assetProducerConsumerBoundary",
+    "requiredConsumerEvidence": [
+      "ASSET_CONSUMER_ROLE=BUILD_UP_FLOOR_ASSET_CONSUMER",
+      "ASSET_LIBRARY_VERSION=<CURRENT>",
+      "ASSET_LIBRARY_FINGERPRINT=<CURRENT_PACK_TYPE_ROLE_QUALITY_FINGERPRINT>",
+      "ASSET_LIBRARY_ELIGIBILITY_SCOPE=ALL_CURRENT_INTERNAL",
+      "ASSET_GENRE_ELIGIBILITY_RESTRICTION=NO",
+      "ASSET_EXISTING_BASELINE=USED_OR_EXACT_UNRESOLVED_GAP",
+      "ASSET_SOURCE_BINDING=APPLIED_OR_NOT_APPLICABLE_WITH_EXISTING_SYSTEM_ABSENCE_EVIDENCE"
+    ],
+    "consumerMayNotClaimAssetAuthoring": true,
+    "changedLibraryFingerprintRequiresAffectedEligibilityRecheck": true,
+    "unchangedValidBindingEvidenceMayBeReused": true,
+    "qualityOrTypeChangeMayReorderCompatibleCandidates": true,
+    "promptApiBatchingDoesNotLimitLibraryEligibility": true,
+    "exactGapEvidenceRequiredBeforeProducerHandoff": true,
+    "duplicateGapEvidenceMustBeCoalesced": true,
+    "unrelatedBuildUpMayNotBeBlockedByIndependentAssetGap": true
   }
 }
