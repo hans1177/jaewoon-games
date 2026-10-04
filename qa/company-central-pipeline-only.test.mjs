@@ -861,3 +861,18 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.match(assetPlan,/mandatoryApplicationCoveragePct:100/);
   assert.match(assetPlan,/TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION/);
 });
+
+
+test('24H runner coalesces duplicate self-refill wakes without cancelling active work',()=>{
+  const runner=read('.github/workflows/vibe2-24h-runner.yml');
+  const refill=runner.slice(runner.indexOf('\n  refill:\n'));
+  assert.match(refill,/actions\/workflows\/vibe2-24h-runner\.yml\/runs\?per_page=100/);
+  assert.match(refill,/new Set\(\['queued','pending','requested','in_progress','waiting'\]\)/);
+  assert.match(refill,/String\(row\.id\|\|''\)!==current/);
+  assert.match(refill,/VIBE2_24H_REFILL_COALESCE_SCAN=PASS/);
+  assert.match(refill,/VIBE2_24H_REFILL=COALESCED_EXISTING_ACTIVE/);
+  assert.match(refill,/VIBE2_24H_REFILL_COALESCE_SCAN=FAIL_OPEN/);
+  assert.match(refill,/VIBE2_24H_REFILL=DISPATCHED/);
+  assert.doesNotMatch(refill,/actions\/runs\/\$\{?run_id\}?\/cancel|force-cancel/);
+  assert.match(runner,/cancel-in-progress: false/);
+});
