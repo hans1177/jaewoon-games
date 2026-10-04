@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-common-character-gear-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -8,7 +8,6 @@
     "score": 100,
     "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
     "checks": {
-      "eightReusableCharacterGearVisuals": true,
       "companyCommonBase": true,
       "currentRobloxGameNeedsMapped": true,
       "bodyPlanCompatibilityRequired": true,
@@ -19,7 +18,10 @@
       "gameplayAuthorityFalse": true,
       "armorHealthMovementEquipInventorySaveNetworkUntouched": true,
       "runtimeVerificationNotClaimed": true,
-      "validRobloxMaterialEnums": true
+      "validRobloxMaterialEnums": true,
+      "eighteenReusableCharacterGearVisuals": true,
+      "setSocketUpgradeWearTransmogRoles": true,
+      "companySeedCrossGenreComposition": true
     }
   },
   "runtimeQuality": {
@@ -27,5 +29,27 @@
     "requiredBeforeProductionVerified": true,
     "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
     "note": "실제 소비 게임 런타임 검증 전에는 productionVerified를 true로 바꾸지 않는다."
+  },
+  "sourceAssetCount": 18,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 8,
+    "currentCount": 18,
+    "addedRoles": [
+      "LEGS",
+      "SHOULDER",
+      "BELT",
+      "RING",
+      "AMULET",
+      "ACCESSORY",
+      "COSMETIC_OVERLAY",
+      "SET_IDENTITY",
+      "SOCKET_POINT",
+      "UPGRADE_STAGE_VISUAL",
+      "DAMAGE_WEAR_VARIANT",
+      "TRANSMOG_BASE"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
   }
 }
