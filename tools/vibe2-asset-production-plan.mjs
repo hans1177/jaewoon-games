@@ -475,6 +475,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const normalizeRepoPath=value=>clean(value).replace(/^\\/+/, '').replaceAll('\\\\','/');
   const missingRepositoryAssetIds=[];
   const sourcePathGroups=new Map();
+  const repositoryPathExistsCache=new Map();
+  const repositoryPathExists=relative=>{
+    if(!relative)return false;
+    if(!repositoryPathExistsCache.has(relative))repositoryPathExistsCache.set(relative,fs.existsSync(path.join(repoRoot,relative)));
+    return repositoryPathExistsCache.get(relative)===true;
+  };
   let repositoryPathPresentCount=0;
   let automaticSearchEligibleCount=0;
   for(const asset of next.assets){
@@ -483,7 +489,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       if(!sourcePathGroups.has(relative))sourcePathGroups.set(relative,[]);
       sourcePathGroups.get(relative).push(clean(asset?.id));
     }
-    const exists=Boolean(relative&&fs.existsSync(path.join(repoRoot,relative)));
+    const exists=repositoryPathExists(relative);
     if(!exists){
       if(clean(asset?.id))missingRepositoryAssetIds.push(clean(asset.id));
       asset.repositoryPathState='MISSING_SOURCE_REVIEW';
@@ -498,11 +504,20 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   }
 
   const consumptionByAssetId=new Map();
+  const libraryModuleConsumptionByPath=new Map();
   const addConsumption=(assetId,gameId,kind,sourcePath)=>{
     const id=clean(assetId),game=clean(gameId);
     if(!id||!game)return;
     if(!consumptionByAssetId.has(id))consumptionByAssetId.set(id,new Map());
     const byGame=consumptionByAssetId.get(id);
+    if(!byGame.has(game))byGame.set(game,new Set());
+    byGame.get(game).add([kind,sourcePath].filter(Boolean).join(':'));
+  };
+  const addLibraryModuleConsumption=(assetPath,gameId,kind,sourcePath)=>{
+    const p=clean(assetPath),game=clean(gameId);
+    if(!p||!game)return;
+    if(!libraryModuleConsumptionByPath.has(p))libraryModuleConsumptionByPath.set(p,new Map());
+    const byGame=libraryModuleConsumptionByPath.get(p);
     if(!byGame.has(game))byGame.set(game,new Set());
     byGame.get(game).add([kind,sourcePath].filter(Boolean).join(':'));
   };
