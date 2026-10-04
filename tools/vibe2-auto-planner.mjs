@@ -272,6 +272,8 @@ function assetLibraryUtilizationFloor(assetLibrary={},assets=[],families=[]){
     applicableFamiliesRequireActualSourceBinding:rules?.applicableAssetFamiliesRequireActualSourceBinding===true,
     lowScoreUseAllowed,
     internalAuditScoreIsUsageGate:usage?.internalAuditScoreIsUsageGate===true,
+    selectedLowScoreAssetUsageIdeaRequired:lowScoreUseAllowed,
+    selectedLowScoreAssetUsageIdeaRule:'EACH_SELECTED_LOW_SCORE_ASSET_MAPS_TO_AT_LEAST_ONE_EXISTING_RESPONSIBILITY_STATE_OR_EVENT_OR_REASONED_NOT_APPLICABLE',
     qualityDebtCandidateCount,
     scoredAssetCount:scored.length,
     qualityMin:scored.length?Math.min(...scored):null,
@@ -378,6 +380,8 @@ export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle
     assetLibraryApplicableFamiliesRequireActualSourceBinding:assetLibrarySnapshot.utilization.applicableFamiliesRequireActualSourceBinding,
     assetLibraryLowScoreUseAllowed:assetLibrarySnapshot.utilization.lowScoreUseAllowed,
     assetLibraryInternalAuditScoreIsUsageGate:assetLibrarySnapshot.utilization.internalAuditScoreIsUsageGate,
+    assetLibrarySelectedLowScoreAssetUsageIdeaRequired:assetLibrarySnapshot.utilization.selectedLowScoreAssetUsageIdeaRequired,
+    assetLibrarySelectedLowScoreAssetUsageIdeaRule:assetLibrarySnapshot.utilization.selectedLowScoreAssetUsageIdeaRule,
     assetLibraryQualityDebtCandidateCount:assetLibrarySnapshot.utilization.qualityDebtCandidateCount,
     assetLibraryScoredAssetCount:assetLibrarySnapshot.utilization.scoredAssetCount,
     assetLibraryQualityMin:assetLibrarySnapshot.utilization.qualityMin,
@@ -432,7 +436,7 @@ function buildUpIterationExpectationPrompt(expectation={}){
 디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
 소스 구성 성장: depth=${expectation.sourceCompositionDepthLevel}; 최소 ${(expectation.activeSourceCompositionDimensions||[]).length}/${expectation.minimumActiveSourceCompositionDimensions}개 축을 실제 책임 소스에서 연결한다. 활성 축=${(expectation.activeSourceCompositionDimensions||[]).join(' | ')||'CORE_LOOP_ORCHESTRATION'}. 내부 자산 라이브러리=${expectation.assetLibraryPresent?`v${expectation.assetLibraryVersion}, assets=${expectation.assetLibraryAssetCount}, families=${expectation.assetLibraryFamilyCount}`:'NOT_OBSERVED'}. 적용 가능한 고급 자산·UI·모션·VFX·컷신·인트로·로딩·메뉴 표현이 생기면 실제 전투/AI/월드 상태/퀘스트/보상/세션 전환/중후반 콘텐츠 흐름과 소스에서 연결한다. 자산만 교체하고 상태·타이밍·플레이어 판단·콘텐츠 네트워크가 그대로면 source evolution으로 계산하지 않는다. 모든 축 활성화 이후에도 sourceCompositionDepth는 계속 상승하며, 비적용 축은 이유가 있어야 한다.
 자산 최대활용 플로어: mode=${expectation.assetLibraryUtilizationMode}; policy=${expectation.assetLibraryUsagePolicySource}; 모든 family 평가=${expectation.assetLibraryAllFamiliesEvaluated?'YES':'POLICY_NOT_OBSERVED'}; 실제 소스 바인딩 필요=${expectation.assetLibraryApplicableFamiliesRequireActualSourceBinding?'YES':'POLICY_NOT_OBSERVED'}; consumer stages=${expectation.assetLibraryConsumerStageAccess||'CURRENT_EXISTING_STAGE_ONLY'}. family 상태=${(expectation.assetLibraryEvaluatedFamilies||[]).map(f=>f+':'+(f==='AUDIO'?(expectation.assetLibraryActualAudioAssetCount>0?expectation.assetLibraryActualAudioAssetCount:'ROLE_CONTRACT_ONLY'):(expectation.assetLibraryFamilyCounts?.[f]||0))).join(' | ')||'NONE'}.
-저점수 사용 규칙: lowScoreUseAllowed=${expectation.assetLibraryLowScoreUseAllowed?'YES':'NO'}; internalAuditScoreIsUsageGate=${expectation.assetLibraryInternalAuditScoreIsUsageGate?'YES':'NO'}; qualityDebtCandidates=${expectation.assetLibraryQualityDebtCandidateCount}. 점수 낮은 안전 자산도 라이선스·플랫폼·역할이 맞으면 빈 슬롯/primitive 대신 반드시 활용 아이디어에 포함한다. 고득점 wrong-role보다 저득점 exact-role을 우선하고, 현재 자산 사용을 유지하면서 약한 축을 개선하거나 충분히 나은 호환 후보가 준비된 뒤 교체한다. 낮은 점수만으로 NOT_APPLICABLE 처리하지 않는다.
+저점수 사용 규칙: lowScoreUseAllowed=${expectation.assetLibraryLowScoreUseAllowed?'YES':'NO'}; internalAuditScoreIsUsageGate=${expectation.assetLibraryInternalAuditScoreIsUsageGate?'YES':'NO'}; qualityDebtCandidates=${expectation.assetLibraryQualityDebtCandidateCount}; perSelectedLowScoreIdea=${expectation.assetLibrarySelectedLowScoreAssetUsageIdeaRequired?'REQUIRED':'POLICY_NOT_ACTIVE'}. 점수 낮은 안전 자산도 라이선스·플랫폼·역할이 맞으면 빈 슬롯/primitive 대신 반드시 활용 아이디어에 포함한다. 선택된 저점수 자산마다 최소 1개 기존 책임/상태/이벤트 활용 아이디어를 매칭하고, 아이디어 없이 점수만 이유로 버리지 않는다. 해당 게임에 그 역할/시스템이 실제로 없을 때만 근거 있는 NOT_APPLICABLE을 허용한다. 고득점 wrong-role보다 저득점 exact-role을 우선하고, 현재 자산 사용을 유지하면서 약한 축을 개선하거나 충분히 나은 호환 후보가 준비된 뒤 교체한다. 낮은 점수만으로 NOT_APPLICABLE 처리하지 않는다.
 활용 아이디어: ${(expectation.assetLibraryUtilizationIdeas||[]).map(row=>row.id+'['+row.state+']'+(row.families?.length?' '+row.families.join('+'):'')+':'+row.purpose+(row.axes?.length?' axes='+row.axes.join('/'):'')).join(' | ')||'NONE'}. 이 목록은 현재 라이브러리 family·variation axes·공용 capability에서 매 실행 다시 만든다. 고정 개수 상한을 두지 않는다. 현재 게임 소스에 해당 아이디어의 실제 바인딩과 동작이 이미 구현돼 있으면 그 아이디어는 PASS하고 중복 구현하지 말고 다음 미구현 적용 아이디어로 넘어간다. ROLE_CONTRACT_ONLY는 실제 검증 자산 파일이 생기기 전까지 실제 재생/표시 자산이 있다고 주장하지 않는다.
 필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
 추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
