@@ -1,32 +1,108 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-ui-v1",
-  "staticAuthoringChecklist": {
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 95,
+      "FORM_STRUCTURE": 96,
+      "MATERIAL_SURFACE": 93,
+      "COLOR_LIGHTING": 94,
+      "STYLE_COHERENCE": 95,
+      "DETAIL_FINISH": 95,
+      "READABILITY_SCALE": 98,
+      "MOTION_RIG": 91,
+      "FEEDBACK_STATES": 97,
+      "UI_UX_SYSTEM": 98,
+      "MODULAR_REUSE": 97,
+      "VARIATION_BREADTH": 98,
+      "PERFORMANCE_LOD": 93,
+      "ACCESSIBILITY_INPUT": 98,
+      "PROVENANCE_MAINTAINABILITY": 96,
+      "INTEGRATION_READINESS": 97
+    },
+    "expectedScore": 956.4,
+    "expectedGrade": "ELITE",
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "detailedExpectations": {
+    "visualSystem": [
+      "panel depth and hierarchy",
+      "readable typography hierarchy",
+      "consistent stroke corner gradient language",
+      "status colors with shape/text redundancy",
+      "mobile-safe spacing and touch targets",
+      "game-theme adaptation without layout rewrite"
+    ],
+    "dialogueAi": [
+      "assistant launcher with availability state",
+      "speaker portrait name role and body hierarchy",
+      "choice states including locked and disabled",
+      "text input and send surface",
+      "typing indicator",
+      "scrollable conversation history",
+      "loading error and unavailable states"
+    ],
+    "npcInteraction": [
+      "distance/action prompt",
+      "interaction action menu",
+      "talk quest trade give item inspect follow party craft roles",
+      "relationship and mood readout",
+      "locked unavailable and requirement states",
+      "no quest reward inventory or network authority in UI"
+    ],
+    "gameScreens": [
+      "inventory grid and slot states",
+      "equipment role slots",
+      "character sheet",
+      "minimap markers",
+      "quest tracker",
+      "party member status",
+      "crafting recipe card",
+      "shop item card",
+      "notifications",
+      "status effects",
+      "hotbar"
+    ],
+    "inputAndAccessibility": [
+      "touch minimum size",
+      "keyboard focus/selectable",
+      "gamepad selectable surfaces",
+      "text labels not color-only state",
+      "disabled locked loading error variants",
+      "mobile readability at compact layouts"
+    ]
+  },
+  "legacyStaticAuthoringChecklist": {
     "score": 100,
     "max": 100,
-    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
-    "checks": {
-      "nativeRobloxComponents": 15,
-      "themeAdaptableAcrossGames": 10,
-      "sharedVisualLanguage": 10,
-      "touchMinimumSizing": 10,
-      "healthAndProgressReadability": 10,
-      "inventoryQuestCurrencyReadoutCoverage": 10,
-      "modalTooltipTabCoverage": 10,
-      "projectOriginalLicenseAndProvenance": 10,
-      "automaticBindingCompatibility": 10,
-      "gameplayAuthorityIsolation": 5
-    }
+    "scoreType": "LEGACY_STATIC_AUTHORING_CHECKLIST_COMPATIBILITY_ONLY"
   },
   "quality120": {
     "target": 100,
     "claimedRuntimeScore": null,
-    "note": "Common source-authoring target only. Each consumer game still requires style adaptation and runtime verification."
+    "note": "Legacy 120-point quality remains compatibility-only. Internal asset audit uses 1000-point studio-independent scoring."
   },
   "companyCommonBase": true,
   "productionVerified": false,
   "verifiedCompanyReusable": false,
   "runtimeVerificationState": "PENDING_STUDIO",
+  "internalAuditDoesNotRequireStudio": true,
+  "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 11
+  "sourceAssetCount": 32
 }
