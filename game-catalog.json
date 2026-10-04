@@ -740,8 +740,8 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-04T00:59:51.049Z",
-        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-04T01:05:59.302Z",
+        "status": "F0_SOURCE_PREFLIGHT_PASSED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -837,8 +837,8 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-04T00:59:51.049Z",
-            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-04T01:05:59.302Z",
+            "status": "F0_SOURCE_PREFLIGHT_PASSED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1825,7 +1825,11 @@
         "UNITY": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
-      "homepageDisplayMode": "WEB_PUBLISHED"
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "targetPlatform": "UNITY",
+      "unityProjectPath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "homepagePublicationApproved": false,
+      "publishTestBuildWhenReady": false
     },
     {
       "id": "seed-casual-realm-weaver",
@@ -4193,7 +4197,9 @@
     "normalizedGames": 26,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
-    "ownerWebDisabled": 0
+    "ownerWebDisabled": 0,
+    "runtimeCatalogAdded": 0,
+    "actualWebPlayableReconciled": 25
   },
   "catalogSchemaVersion": 2,
   "normalization": {
