@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -1033,9 +1033,330 @@
         "QUEST_USE",
         "SHOP_USE"
       ]
+    },
+    {
+      "atomId": "BUILD_CATALOG_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildCatalogPanel",
+      "role": "BUILD_CATALOG_PANEL",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "DEFAULT",
+        "FILTERED",
+        "SEARCH",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "BUILD_PIECE_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildPieceCard",
+      "role": "BUILD_PIECE_CARD",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "AVAILABLE",
+        "LOCKED",
+        "MISSING_MATERIAL",
+        "SELECTED"
+      ]
+    },
+    {
+      "atomId": "PLACEMENT_GHOST_STATE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePlacementGhostState",
+      "role": "PLACEMENT_GHOST_STATE",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "VALID",
+        "INVALID",
+        "SNAPPED",
+        "FREE_PLACE"
+      ]
+    },
+    {
+      "atomId": "SNAP_INDICATOR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSnapIndicator",
+      "role": "SNAP_INDICATOR",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "FOUNDATION",
+        "WALL",
+        "CEILING",
+        "ROOF",
+        "ATTACHMENT"
+      ]
+    },
+    {
+      "atomId": "STABILITY_METER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStabilityMeter",
+      "role": "STABILITY_METER",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "STABLE",
+        "WARNING",
+        "UNSUPPORTED"
+      ]
+    },
+    {
+      "atomId": "BUILD_TIER_BADGE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildTierBadge",
+      "role": "BUILD_TIER_BADGE",
+      "surface": "HOUSING_BUILD",
+      "states": [
+        "TIER_1",
+        "TIER_2",
+        "TIER_3",
+        "CUSTOM"
+      ]
+    },
+    {
+      "atomId": "PLACEMENT_VALIDITY_BANNER",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreatePlacementValidityBanner",
+      "role": "PLACEMENT_VALIDITY_BANNER",
+      "surface": "PLACEMENT_FEEDBACK",
+      "states": [
+        "VALID",
+        "INVALID",
+        "BLOCKED",
+        "NO_SUPPORT"
+      ]
+    },
+    {
+      "atomId": "BUILD_ACTION_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBuildActionBar",
+      "role": "BUILD_ACTION_BAR",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "PLACE",
+        "ROTATE",
+        "MOVE",
+        "COPY",
+        "DEMOLISH",
+        "MATERIAL"
+      ]
+    },
+    {
+      "atomId": "OBJECT_TRANSFORM_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateObjectTransformPanel",
+      "role": "OBJECT_TRANSFORM_PANEL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "MOVE",
+        "ROTATE",
+        "HEIGHT",
+        "COPY",
+        "ALIGN",
+        "DELETE"
+      ]
+    },
+    {
+      "atomId": "GRID_SNAP_CONTROL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGridSnapControl",
+      "role": "GRID_SNAP_CONTROL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "FREE",
+        "GRID",
+        "ANGLE",
+        "SURFACE",
+        "SOCKET"
+      ]
+    },
+    {
+      "atomId": "MATERIAL_PALETTE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateMaterialPalettePanel",
+      "role": "MATERIAL_PALETTE_PANEL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "MATERIAL",
+        "COLOR",
+        "WEAR",
+        "DIRT",
+        "WET",
+        "STYLE"
+      ]
+    },
+    {
+      "atomId": "BLUEPRINT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBlueprintPanel",
+      "role": "BLUEPRINT_PANEL",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "EMPTY",
+        "SAVED",
+        "PREVIEW",
+        "MISSING_MATERIAL"
+      ]
+    },
+    {
+      "atomId": "UNDO_REDO_BAR",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateUndoRedoBar",
+      "role": "UNDO_REDO_BAR",
+      "surface": "SANDBOX_EDIT",
+      "states": [
+        "CAN_UNDO",
+        "CAN_REDO",
+        "EMPTY"
+      ]
+    },
+    {
+      "atomId": "OWNERSHIP_PERMISSION_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateOwnershipPermissionPanel",
+      "role": "OWNERSHIP_PERMISSION_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "OWNER",
+        "PARTY",
+        "CLAN",
+        "GUEST",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "REPAIR_BUILDING_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRepairBuildingPanel",
+      "role": "REPAIR_BUILDING_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "GOOD",
+        "DAMAGED",
+        "REPAIRABLE",
+        "MISSING_MATERIAL"
+      ]
+    },
+    {
+      "atomId": "DEMOLISH_PREVIEW_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateDemolishPreviewPanel",
+      "role": "DEMOLISH_PREVIEW_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "SAFE",
+        "CONNECTED_IMPACT",
+        "STORAGE_IMPACT",
+        "CONFIRM"
+      ]
+    },
+    {
+      "atomId": "UPKEEP_DECAY_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateUpkeepDecayPanel",
+      "role": "UPKEEP_DECAY_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "PROTECTED",
+        "WARNING",
+        "DECAYING",
+        "DISABLED"
+      ]
+    },
+    {
+      "atomId": "BED_RESPAWN_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateBedRespawnPanel",
+      "role": "BED_RESPAWN_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "UNBOUND",
+        "BOUND",
+        "COOLDOWN",
+        "UNAVAILABLE"
+      ]
+    },
+    {
+      "atomId": "ROOM_SCORE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateRoomScorePanel",
+      "role": "ROOM_SCORE_PANEL",
+      "surface": "HOUSING_MANAGEMENT",
+      "states": [
+        "OUTDOOR",
+        "ROOM",
+        "COMFORT_LOW",
+        "COMFORT_HIGH"
+      ]
+    },
+    {
+      "atomId": "FURNITURE_CATALOG",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFurnitureCatalog",
+      "role": "FURNITURE_CATALOG",
+      "surface": "HOUSING_DECOR",
+      "states": [
+        "DEFAULT",
+        "SEARCH",
+        "FILTERED",
+        "LOCKED"
+      ]
+    },
+    {
+      "atomId": "SETTLEMENT_OVERVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSettlementOverview",
+      "role": "SETTLEMENT_OVERVIEW",
+      "surface": "SETTLEMENT",
+      "states": [
+        "HEALTHY",
+        "WARNING",
+        "MISSING_SERVICE",
+        "FULL"
+      ]
+    },
+    {
+      "atomId": "FARM_PLOT_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateFarmPlotPanel",
+      "role": "FARM_PLOT_PANEL",
+      "surface": "FARMING",
+      "states": [
+        "EMPTY",
+        "SEEDED",
+        "GROWING",
+        "READY",
+        "BLOCKED"
+      ]
+    },
+    {
+      "atomId": "ANIMAL_HOUSING_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateAnimalHousingPanel",
+      "role": "ANIMAL_HOUSING_PANEL",
+      "surface": "FARMING",
+      "states": [
+        "EMPTY",
+        "OCCUPIED",
+        "HUNGRY",
+        "PRODUCT_READY"
+      ]
+    },
+    {
+      "atomId": "PROCESSING_MACHINE_PANEL",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateProcessingMachinePanel",
+      "role": "PROCESSING_MACHINE_PANEL",
+      "surface": "CRAFTING_DEEP",
+      "states": [
+        "IDLE",
+        "PROCESSING",
+        "OUTPUT_READY",
+        "NO_FUEL",
+        "QUEUE"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·AI/NPC·아이템 시스템 84종 v5",
+  "title": "Roblox 회사 공용 UI·아이템·하우징·샌드박스 시스템 108종 v6",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -1120,7 +1441,14 @@
     "CRAFTING_DEEP",
     "TRADE",
     "CODEX",
-    "RECENT_ITEMS"
+    "RECENT_ITEMS",
+    "HOUSING_BUILD",
+    "PLACEMENT_FEEDBACK",
+    "SANDBOX_EDIT",
+    "HOUSING_MANAGEMENT",
+    "HOUSING_DECOR",
+    "SETTLEMENT",
+    "FARMING"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -1162,7 +1490,7 @@
   "iconAssetDependency": false,
   "vectorIconCount": 12,
   "continuationContract": {
-    "version": 4,
+    "version": 5,
     "scope": "INTERNAL_ASSET_AND_COMPANY_COMMON_ASSET_ONLY",
     "infrastructureMutationAllowed": false,
     "flowMutationAllowed": false,
@@ -1259,7 +1587,8 @@
       "INTENSITY",
       "DURATION"
     ],
-    "deepSystemComponentCoverageRequired": true
+    "deepSystemComponentCoverageRequired": true,
+    "housingSandboxCoverageRequired": true
   },
   "navigationContract": {
     "version": 1,
@@ -1298,7 +1627,7 @@
   ],
   "deepSystemContract": {
     "version": 1,
-    "componentCount": 30,
+    "componentCount": 54,
     "requiredFlows": [
       "PICKUP>NEW_STATE>DETAIL>USE_OR_EQUIP",
       "DETAIL>COMPARE>SET_SOCKET_UPGRADE",
@@ -1321,6 +1650,28 @@
     "colorOnlyStateForbidden": true,
     "touchKeyboardMouseGamepadParity": true,
     "gameplayAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false,
+    "housingSandboxComponentCount": 24
+  },
+  "housingSandboxContract": {
+    "version": 1,
+    "referenceRule": "SURVIVAL_SANDBOX_HOUSING_COMMON_PRINCIPLES_ONLY_NO_COPY",
+    "requiredFlows": [
+      "CATALOG>PIECE>PLACEMENT_GHOST>SNAP_OR_FREE_PLACE>VALIDATION>PLACE",
+      "SELECT_OBJECT>MOVE_ROTATE_COPY_DELETE>UNDO_REDO",
+      "BUILDING>STABILITY_TIER>REPAIR_OR_DEMOLISH",
+      "HOUSE>OWNERSHIP_PERMISSION>UPKEEP_OPTIONAL>ROOM_SCORE",
+      "FURNITURE>CATALOG>PLACEMENT>MATERIAL_THEME",
+      "SETTLEMENT>HOUSING_STORAGE_CRAFTING_LIGHTING_FARMING_STATUS",
+      "FARM_PLOT>SEED>GROWTH>HARVEST",
+      "ANIMAL_HOUSING>FEED>STATE>PRODUCT",
+      "PROCESSING>INPUT>QUEUE>OUTPUT"
+    ],
+    "gameplayAuthority": false,
+    "placementAuthority": false,
+    "stabilityAuthority": false,
+    "ownershipAuthority": false,
     "saveAuthority": false,
     "networkAuthority": false
   }
