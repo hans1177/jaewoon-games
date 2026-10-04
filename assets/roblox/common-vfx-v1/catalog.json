@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "packId": "roblox-common-vfx-v1",
   "family": "VFX",
   "platform": "ROBLOX",
@@ -59,6 +59,24 @@
       "source": "RobloxCommonVFX.luau",
       "factory": "CreateShieldHit",
       "role": "DEFENSE_FEEDBACK"
+    },
+    {
+      "atomId": "DASH_STREAK",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateDashStreak",
+      "role": "DASH_FEEDBACK"
+    },
+    {
+      "atomId": "SPAWN_PULSE",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateSpawnPulse",
+      "role": "SPAWN_FEEDBACK"
+    },
+    {
+      "atomId": "INTERACT_PING",
+      "source": "RobloxCommonVFX.luau",
+      "factory": "CreateInteractPing",
+      "role": "INTERACTION_FEEDBACK"
     }
   ]
 }
