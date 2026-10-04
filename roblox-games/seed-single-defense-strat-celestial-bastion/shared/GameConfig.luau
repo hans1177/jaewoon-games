@@ -9,6 +9,7 @@ local Config = {
   Subgenre = "",
   PlayMode = "SINGLE",
   MultiplayerRequired = false,
+  BasicMultiplayerSupport = true,
   CoopRequired = false,
   CompetitiveRequired = false,
   MinimumParticipants = 1,
