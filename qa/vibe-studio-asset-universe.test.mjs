@@ -4199,7 +4199,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     },null,2)+'\n');
     fs.writeFileSync(path.join(root,'assets','roblox','common-vfx-v1','index.luau'),'return {}\n','utf8');
     fs.writeFileSync(path.join(root,'assets','roblox','common-ui-v1','index.luau'),'return {}\n','utf8');
-    fs.writeFileSync(path.join(root,'roblox-games','demo','shared','GameConfig.luau'),"local assetId = 'roblox-common-vfx-v1'\nreturn {assetId=assetId}\n",'utf8');
+    fs.writeFileSync(path.join(root,'roblox-games','demo','shared','GameConfig.luau'),"local assetId = 'roblox-common-vfx-v1'\nlocal moduleName = 'RobloxCommonVFX'\nreturn {assetId=assetId,moduleName=moduleName}\n",'utf8');
 
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
     assert.equal(first.changed,true);
@@ -4261,6 +4261,17 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(repositorySync.sourceConsumerAssetCount>=1);
     assert.ok(repositorySync.sourceConsumerBindingCount>=1);
     assert.ok(repositorySync.sourceConsumerGameIds.includes('demo'));
+    assert.ok(repositorySync.uniqueRepositoryPathCount>=2);
+    assert.equal(repositorySync.repositoryPathExistenceCheckCount,repositorySync.uniqueRepositoryPathCount);
+    assert.ok(repositorySync.uniqueRepositoryPathCount<repositorySync.totalAssetRows);
+    assert.equal(repositorySync.assetIdMatcherMode,'COMPILED_EXACT_TOKEN_REGEX');
+    assert.ok(repositorySync.assetIdMatcherTokenCount>=first.registry.assets.length-1);
+    assert.ok(repositorySync.sourceFilesScanned>=1);
+    assert.ok(repositorySync.sourceBytesScanned>0);
+    assert.ok(repositorySync.libraryModuleConsumerPathCount>=1);
+    assert.ok(repositorySync.libraryModuleConsumerBindingCount>=1);
+    assert.ok(repositorySync.libraryModuleConsumerGameIds.includes('demo'));
+    assert.equal(repositorySync.exactAssetConsumptionSeparatedFromModuleConsumption,true);
     assert.equal(repositorySync.sourceConsumptionDoesNotPromoteProductionVerification,true);
     assert.equal(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').automaticSearchEligible,true);
     assert.ok(first.registry.assets.find(row=>row.id==='roblox-common-vfx-v1').detectedSourceConsumerGameIds.includes('demo'));
@@ -4273,6 +4284,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(first.registry.internalAssetLibraryAutomation.volumeHealth.totalDeficit>=0);
     assert.ok(first.registry.internalAssetLibraryAutomation.qualityHealth.scoredAssetCount>=0);
     assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.automaticSearchEligibleCount>=3);
+    assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.assetIdMatcherMode,'COMPILED_EXACT_TOKEN_REGEX');
+    assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.libraryModuleConsumerPathCount>=1);
+    assert.ok(first.registry.internalAssetLibraryAutomation.assetManagementHealth.searchAndConsumption.uniqueRepositoryPathCount>=2);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.assetManagementHealth.bottlenecks));
     assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.continueWithoutHuman,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.assetManagementHealth.continueWithoutChatgpt,true);
@@ -4329,6 +4343,10 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.totalAssetRows,result.registry.assets.length);
   assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.automaticSearchEligibleCount>0);
+  assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.uniqueRepositoryPathCount>0);
+  assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.repositoryPathExistenceCheckCount,result.registry.internalAssetLibraryAutomation.repositoryAssetSync.uniqueRepositoryPathCount);
+  assert.equal(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.assetIdMatcherMode,'COMPILED_EXACT_TOKEN_REGEX');
+  assert.ok(result.registry.internalAssetLibraryAutomation.repositoryAssetSync.sourceFilesScanned>0);
   assert.ok(result.registry.internalAssetLibraryAutomation.volumeHealth.totalTarget>0);
   assert.ok(result.registry.internalAssetLibraryAutomation.volumeHealth.completionPercent>=0);
   assert.ok(result.registry.internalAssetLibraryAutomation.qualityHealth.scoredAssetCount>=0);
