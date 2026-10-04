@@ -1213,6 +1213,16 @@ test('build-up iteration expectation rises with verified cycles without adding p
     },
     assets:['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON'].map((family,index)=>({id:`asset-${index}`,family,internalAuditScore:956.4}))
   },null,2),'utf8');
+  const audioRoot=path.join(root,'assets','roblox','fixture-audio','generated');
+  fs.mkdirSync(audioRoot,{recursive:true});
+  fs.writeFileSync(path.join(audioRoot,'fixture-theme.mp3'),Buffer.alloc(4096,1));
+  fs.writeFileSync(path.join(audioRoot,'tiny-placeholder.mp3'),Buffer.alloc(131,0));
+  fs.writeFileSync(path.join(audioRoot,'roblox-asset.json'),JSON.stringify({musicId:'90251742289566'},null,2),'utf8');
+  const audioGame=path.join(root,'roblox-games','fixture-audio-game');
+  fs.mkdirSync(path.join(audioGame,'client'),{recursive:true});
+  fs.mkdirSync(path.join(audioGame,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(audioGame,'shared','AudioAssets.luau'),'return {LobbyMusicId=90251742289566}\n','utf8');
+  fs.writeFileSync(path.join(audioGame,'client','Game.client.luau'),'local SoundService=game:GetService("SoundService")\nlocal s=Instance.new("Sound")\ns.SoundId="rbxassetid://90251742289566"\ns.Parent=SoundService\ns:Play()\n','utf8');
   const first=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN'});
   const third=resolveBuildUpIterationExpectation({repoRoot:root,cycle:3,phase:'BUILD_UP',focusPillar:'PROGRESSION'});
   const sixth=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'BUILD_UP',focusPillar:'PRESENTATION'});
@@ -1245,10 +1255,21 @@ test('build-up iteration expectation rises with verified cycles without adding p
   assert.equal(sixth.assetLibraryMapEnvironmentCoverageRequired,true);
   assert.equal(sixth.assetLibraryApplicationMode,'APPLY_MISSING_ONLY_SKIP_VERIFIED_EXISTING');
   assert.ok(sixth.assetLibraryApplicationIdeas.some(row=>row.id==='WORLD_LAYERED_COMPOSITION'&&row.state==='READY'));
-  assert.ok(sixth.assetLibraryApplicationIdeas.some(row=>row.id==='AMBIENT_SOUNDSCAPE_LAYERING'&&row.state==='ROLE_CONTRACT_ONLY'));
-  assert.equal(sixth.assetLibraryAudioRoleContractOnly,true);
+  assert.ok(sixth.assetLibraryApplicationIdeas.some(row=>row.id==='AMBIENT_BED_NEAR_DISTANT_SCATTER'&&row.state==='MATCHING_ROLE_REQUIRED'));
+  assert.ok(sixth.assetLibraryApplicationIdeas.some(row=>row.id==='EXISTING_BOUND_AUDIO_REUSE'&&row.state==='READY_EXISTING_BOUND_SOURCE'));
+  assert.equal(sixth.assetLibraryAudioRoleContractOnly,false);
   assert.equal(sixth.assetLibraryActualAudioAssetCount,0);
+  assert.equal(sixth.assetLibraryRegisteredAudioAssetCount,0);
   assert.equal(sixth.assetLibraryAudioRoleContractCount,65);
+  assert.equal(sixth.assetLibraryAudioRegistryGap,true);
+  assert.equal(sixth.repositoryAudioFileCount,1);
+  assert.equal(sixth.repositoryAudioAssetTreeFileCount,1);
+  assert.equal(sixth.repositoryAudioUploadedFileCount,1);
+  assert.equal(sixth.repositoryAudioBoundFileCount,1);
+  assert.equal(sixth.repositoryAudioTinyRejectedCount,1);
+  assert.equal(sixth.repositoryAudioSourcePreviewIsNotEligibilityCap,true);
+  assert.equal(sixth.repositoryAudioSourcePreview[0].path,'assets/roblox/fixture-audio/generated/fixture-theme.mp3');
+  assert.deepEqual([...sixth.repositoryAudioSourcePreview[0].bindingGameIds],['ROBLOX:fixture-audio-game']);
   assert.deepEqual(sixth.assetLibrarySoundscapeLayers,['BED','NEAR_LOOP','DISTANT_LOOP','SCATTER','ONE_SHOT','INTERACTION_SOURCE']);
   assert.equal(sixth.assetLibraryFreshnessIdentity,'inv-1');
   assert.equal(sixth.assetLibraryMaintenanceTypeRoleFingerprint,'type-1');
