@@ -4145,7 +4145,7 @@ test('repository asset sync detects real search eligibility consumption and bott
     fs.mkdirSync(path.join(root,'assets','demo'),{recursive:true});
     fs.mkdirSync(path.join(root,'web-games','demo'),{recursive:true});
     fs.writeFileSync(path.join(root,'assets','demo','internal-prop.js'),'export const demo=true;\n','utf8');
-    fs.writeFileSync(path.join(root,'web-games','demo','index.html'),'<script>window.assetId="internal-prop-one"</script>\n','utf8');
+    fs.writeFileSync(path.join(root,'web-games','demo','index.html'),'<script>window.assetId="internal-prop-one"; window.atom="FRAME_PANEL"</script>\n','utf8');
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
       assets:[
@@ -4153,6 +4153,17 @@ test('repository asset sync detects real search eligibility consumption and bott
           id:'internal-prop-one',
           family:'PROP',
           category:'PROP',
+          path:'assets/demo/internal-prop.js',
+          license:'CC0',
+          status:'REPO_ASSET',
+          productionVerified:false,
+          verifiedCompanyReusable:false
+        },
+        {
+          id:'internal-ui-frame',
+          atomId:'FRAME_PANEL',
+          family:'UI',
+          category:'UI',
           path:'assets/demo/internal-prop.js',
           license:'CC0',
           status:'REPO_ASSET',
@@ -4176,24 +4187,31 @@ test('repository asset sync detects real search eligibility consumption and bott
     const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false});
     const sync=result.registry.internalAssetLibraryAutomation.repositoryAssetSync;
     assert.equal(sync.version,3);
-    assert.equal(sync.totalAssetRows,2);
-    assert.equal(sync.repositoryPathPresentCount,1);
+    assert.equal(sync.totalAssetRows,3);
+    assert.equal(sync.repositoryPathPresentCount,2);
     assert.equal(sync.missingRepositoryPathCount,1);
     assert.ok(sync.missingRepositoryAssetIds.includes('missing-prop-one'));
-    assert.equal(sync.automaticSearchEligibleCount,1);
-    assert.equal(sync.searchCoveragePct,50);
-    assert.equal(sync.sourceConsumerAssetCount,1);
-    assert.equal(sync.sourceConsumerBindingCount,1);
+    assert.equal(sync.automaticSearchEligibleCount,2);
+    assert.equal(sync.searchCoveragePct,66.7);
+    assert.equal(sync.sourceConsumerAssetCount,2);
+    assert.equal(sync.sourceConsumerBindingCount,2);
     assert.deepEqual(sync.sourceConsumerGameIds,['demo']);
     assert.equal(sync.sourceConsumptionCoveragePct,100);
-    assert.equal(sync.sourceScanStrategy,'SINGLE_PASS_ASSET_ID_TOKEN_SET');
+    assert.equal(sync.sourceScanStrategy,'SINGLE_PASS_REGISTRY_IDENTITY_TOKEN_SET');
+    assert.deepEqual(sync.sourceIdentityFields,['id','assetId','atomId']);
     assert.equal(sync.perFileAssetIdLoopEliminated,true);
+    assert.equal(sync.ambiguousAliasesDoNotCountAsConsumption,true);
     assert.equal(sync.sourceScanComplexity,'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)');
     assert.equal(sync.sourceFilesScanned,1);
     assert.ok(sync.sourceBytesScanned>0);
     assert.ok(sync.sourceTokenCandidatesScanned>0);
+    assert.equal(sync.sourceExactIdentityTokenHits,2);
     assert.equal(sync.sourceExactAssetIdTokenHits,1);
-    assert.equal(sync.naiveAssetIdFileComparisonUpperBound,2);
+    assert.equal(sync.sourceAliasTokenHits,1);
+    assert.ok(sync.sourceIdentityMarkerCount>=4);
+    assert.equal(sync.ambiguousSourceIdentityMarkerCount,0);
+    assert.ok(sync.naiveIdentityFileComparisonUpperBound>=sync.sourceIdentityMarkerCount);
+    assert.equal(sync.naiveAssetIdFileComparisonUpperBound,3);
     assert.equal(sync.bottleneckState,'HEALTHY_WITH_STALE_PATH_REVIEW');
     assert.ok(sync.bottleneckActions.includes('REVIEW_MISSING_REPOSITORY_ASSET_PATHS'));
     assert.ok(sync.bottleneckActions.includes('CONTINUE_AUTOMATIC_LIBRARY_CONSUMPTION'));
@@ -4201,6 +4219,11 @@ test('repository asset sync detects real search eligibility consumption and bott
     assert.deepEqual(consumed.detectedSourceConsumerGameIds,['demo']);
     assert.equal(consumed.sourceConsumptionIsRuntimeVerification,false);
     assert.equal(consumed.productionVerified,false);
+    const atomConsumed=result.registry.assets.find(row=>row.id==='internal-ui-frame');
+    assert.deepEqual(atomConsumed.detectedSourceConsumerGameIds,['demo']);
+    assert.ok(atomConsumed.sourceConsumptionEvidence[0].evidence.some(row=>row.includes('ATOMID')));
+    assert.equal(atomConsumed.sourceConsumptionIsRuntimeVerification,false);
+    assert.equal(atomConsumed.productionVerified,false);
     const missing=result.registry.assets.find(row=>row.id==='missing-prop-one');
     assert.equal(missing.repositoryPathState,'MISSING_SOURCE_REVIEW');
     assert.equal(missing.automaticSearchEligible,false);
@@ -4260,12 +4283,16 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.ok(repositorySync.sourceConsumerAssetCount>0);
   assert.ok(repositorySync.sourceConsumerBindingCount>=repositorySync.sourceConsumerAssetCount);
   assert.ok(repositorySync.sourceConsumerGameIds.length>0);
-  assert.equal(repositorySync.sourceScanStrategy,'SINGLE_PASS_ASSET_ID_TOKEN_SET');
+  assert.equal(repositorySync.sourceScanStrategy,'SINGLE_PASS_REGISTRY_IDENTITY_TOKEN_SET');
   assert.equal(repositorySync.perFileAssetIdLoopEliminated,true);
   assert.equal(repositorySync.sourceScanComplexity,'O(SOURCE_BYTES_PLUS_TOKEN_CANDIDATES)');
   assert.ok(repositorySync.sourceFilesScanned>0);
   assert.ok(repositorySync.sourceBytesScanned>0);
   assert.ok(repositorySync.sourceTokenCandidatesScanned>0);
+  assert.ok(repositorySync.sourceExactIdentityTokenHits>0);
+  assert.ok(repositorySync.sourceAliasTokenHits>0);
+  assert.ok(repositorySync.sourceIdentityMarkerCount>0);
+  assert.ok(repositorySync.naiveIdentityFileComparisonUpperBound>=repositorySync.sourceFilesScanned);
   assert.ok(repositorySync.naiveAssetIdFileComparisonUpperBound>=repositorySync.sourceFilesScanned);
   assert.notEqual(repositorySync.bottleneckState,'SEARCH_BLOCKED');
   assert.notEqual(repositorySync.bottleneckState,'CONSUMPTION_EVIDENCE_MISSING');
