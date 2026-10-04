@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-horror-lore-v1",
   "gameId": "horror-escape-room",
   "staticAuthoringChecklist": {
@@ -30,5 +30,83 @@
   "gameplayAuthority": false,
   "originalAssetsImmutable": true,
   "externalAssetDependency": false,
-  "sourceAssetCount": 10
+  "sourceAssetCount": 10,
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "DETAIL_FINISH",
+      "MODULAR_REUSE",
+      "READABILITY_SCALE"
+    ],
+    "hardGateFailures": [],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "FORM_STRUCTURE": 87,
+      "MATERIAL_SURFACE": 84,
+      "COLOR_LIGHTING": 80,
+      "STYLE_COHERENCE": 91,
+      "DETAIL_FINISH": 86,
+      "READABILITY_SCALE": 89,
+      "FEEDBACK_STATES": 78,
+      "UI_UX_SYSTEM": 72,
+      "MODULAR_REUSE": 86,
+      "VARIATION_BREADTH": 87,
+      "PERFORMANCE_LOD": 94,
+      "ACCESSIBILITY_INPUT": 72,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 86
+    },
+    "expectedScore": 854.9,
+    "expectedGrade": "HIGH_QUALITY",
+    "evidenceBasis": {
+      "familyScope": [
+        "PROP"
+      ],
+      "sourceAssetCount": 10,
+      "roleCount": 10,
+      "vertexRange": [
+        88,
+        768
+      ],
+      "faceRange": [
+        66,
+        602
+      ],
+      "materialRegionMax": 9,
+      "semanticGroupMax": 22,
+      "sourceFiles": [
+        "assets/roblox/horror-lore-v1/catalog.json",
+        "assets/roblox/horror-lore-v1/horror-lore.mtl",
+        "assets/roblox/horror-lore-v1/preview.svg"
+      ],
+      "mapSpecificLoreIdentity": true,
+      "distinctSemanticGroups": true,
+      "multipleMaterialRegions": true,
+      "mobileGeometryBudget": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "INTERACTION_STATE_VARIANTS_LIMITED",
+      "INSPECTION_UI_PRESENTATION_NOT_RUNTIME_VERIFIED",
+      "LIGHTING_AND_CAMERA_READABILITY_REQUIRE_GAME_BINDING",
+      "LOD_AND_DAMAGE_STATE_DEPTH_LIMITED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
