@@ -474,6 +474,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   };
   const normalizeRepoPath=value=>clean(value).replaceAll('\\','/').split('/').filter(Boolean).join('/');
   const missingRepositoryAssetIds=[];
+  const missingSearchableRepositoryAssetIds=[];
   const sourcePathGroups=new Map();
   const repositoryPathExistsCache=new Map();
   const repositoryPathExists=relative=>{
@@ -489,14 +490,16 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       if(!sourcePathGroups.has(relative))sourcePathGroups.set(relative,[]);
       sourcePathGroups.get(relative).push(clean(asset?.id));
     }
+    const referenceOnlyAsset=asset?.referenceOnly===true||/_REFERENCE(?:_ONLY)?$/.test(clean(asset?.platform).toUpperCase());
+    const searchEligibleByMetadata=asset?.catalogActive!==false&&!referenceOnlyAsset&&!licenseBlockedForSync(asset);
     const exists=repositoryPathExists(relative);
     if(!exists){
       if(clean(asset?.id))missingRepositoryAssetIds.push(clean(asset.id));
+      if(searchEligibleByMetadata&&clean(asset?.id))missingSearchableRepositoryAssetIds.push(clean(asset.id));
       continue;
     }
     repositoryPathPresentCount++;
-    const searchEligible=asset?.catalogActive!==false&&asset?.referenceOnly!==true&&!licenseBlockedForSync(asset);
-    if(searchEligible)automaticSearchEligibleCount++;
+    if(searchEligibleByMetadata)automaticSearchEligibleCount++;
   }
 
   const consumptionByAssetId=new Map();
@@ -632,6 +635,9 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     repositoryPathPresentCount,
     missingRepositoryPathCount:missingRepositoryAssetIds.length,
     missingRepositoryAssetIds:Object.freeze([...missingRepositoryAssetIds].sort()),
+    missingSearchableRepositoryPathCount:missingSearchableRepositoryAssetIds.length,
+    missingSearchableRepositoryAssetIds:Object.freeze([...missingSearchableRepositoryAssetIds].sort()),
+    staleReferencePathCount:Math.max(0,missingRepositoryAssetIds.length-missingSearchableRepositoryAssetIds.length),
     automaticSearchEligibleCount,
     uniqueRepositoryPathCount:repositoryPathExistsCache.size,
     repositoryPathExistenceCheckCount:repositoryPathExistsCache.size,
@@ -765,11 +771,17 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   };
 
   const managementBottlenecks=[];
-  if(repositoryAssetSync.missingRepositoryPathCount>0)managementBottlenecks.push({
-    id:'MISSING_REPOSITORY_PATHS',
+  if(repositoryAssetSync.missingSearchableRepositoryPathCount>0)managementBottlenecks.push({
+    id:'MISSING_SEARCHABLE_REPOSITORY_PATHS',
     severity:'HIGH',
-    count:repositoryAssetSync.missingRepositoryPathCount,
-    action:'REPAIR_ASSET_PATH_METADATA_OR_MATERIALIZE_SOURCE'
+    count:repositoryAssetSync.missingSearchableRepositoryPathCount,
+    action:'REPAIR_ACTIVE_ASSET_PATH_METADATA_OR_MATERIALIZE_SOURCE'
+  });
+  if(repositoryAssetSync.staleReferencePathCount>0)managementBottlenecks.push({
+    id:'STALE_REFERENCE_PATH_REVIEW',
+    severity:'LOW',
+    count:repositoryAssetSync.staleReferencePathCount,
+    action:'KEEP_REFERENCE_ROW_REVIEW_ONLY_WITHOUT_BLOCKING_ACTIVE_LIBRARY'
   });
   if(repositoryAssetSync.automaticSearchEligibleCount===0&&repositoryAssetSync.totalAssetRows>0)managementBottlenecks.push({
     id:'NO_AUTOMATIC_SEARCH_ELIGIBLE_ASSETS',
@@ -818,6 +830,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       totalAssetRows:repositoryAssetSync.totalAssetRows,
       repositoryPathPresentCount:repositoryAssetSync.repositoryPathPresentCount,
       missingRepositoryPathCount:repositoryAssetSync.missingRepositoryPathCount,
+      missingSearchableRepositoryPathCount:repositoryAssetSync.missingSearchableRepositoryPathCount,
+      staleReferencePathCount:repositoryAssetSync.staleReferencePathCount,
       automaticSearchEligibleCount:repositoryAssetSync.automaticSearchEligibleCount,
       automaticSearchEligiblePercent:repositoryAssetSync.totalAssetRows>0
         ?Math.round((repositoryAssetSync.automaticSearchEligibleCount/repositoryAssetSync.totalAssetRows)*1000)/10:0,
