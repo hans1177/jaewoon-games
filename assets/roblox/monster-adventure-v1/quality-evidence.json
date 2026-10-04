@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "packId": "roblox-monster-adventure-v1",
   "gameId": "monster-adventure",
   "createdForCurrentRobloxNeed": true,
@@ -38,5 +38,84 @@
   "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
   "gameplayAuthority": false,
   "originalAssetsImmutable": true,
-  "externalAssetDependency": false
+  "externalAssetDependency": false,
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG",
+      "STYLE_COHERENCE"
+    ],
+    "hardGateFailures": [
+      "MOTION_RIG"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 93,
+      "FORM_STRUCTURE": 89,
+      "MATERIAL_SURFACE": 84,
+      "COLOR_LIGHTING": 88,
+      "STYLE_COHERENCE": 90,
+      "DETAIL_FINISH": 84,
+      "READABILITY_SCALE": 91,
+      "MOTION_RIG": 42,
+      "FEEDBACK_STATES": 58,
+      "MODULAR_REUSE": 74,
+      "VARIATION_BREADTH": 89,
+      "PERFORMANCE_LOD": 88,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 78
+    },
+    "expectedScore": 822.1,
+    "expectedGrade": "DEVELOPMENT_READY",
+    "evidenceBasis": {
+      "familyScope": [
+        "CREATURE"
+      ],
+      "sourceAssetCount": 9,
+      "roleCount": 9,
+      "heroAssetCount": 3,
+      "vertexRange": [
+        584,
+        1376
+      ],
+      "faceRange": [
+        538,
+        1279
+      ],
+      "sourceFiles": [
+        "assets/roblox/monster-adventure-v1/catalog.json",
+        "assets/roblox/monster-adventure-v1/monster-adventure.mtl",
+        "assets/roblox/monster-adventure-v1/preview.svg"
+      ],
+      "distinctSpeciesSilhouettes": true,
+      "starterHeroIdentity": true,
+      "zoneRoleReadability": true,
+      "mobileGeometryBudget": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "NATIVE_RIG_BINDING_MISSING",
+      "LOCOMOTION_ATTACK_HIT_DEATH_RUNTIME_MOTION_UNVERIFIED",
+      "LOD_VARIANTS_NOT_RUNTIME_PROVEN",
+      "CONTACT_AND_REACTION_PRESENTATION_INCOMPLETE",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
 }
