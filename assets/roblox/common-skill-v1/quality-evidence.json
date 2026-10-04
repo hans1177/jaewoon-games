@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "packId": "roblox-common-skill-v1",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "threeReusableCurrentAtoms": 15,
+      "commonVfxDependencyReuse": 15,
+      "castOriginNativeAttachment": 10,
+      "telegraphMobileSegmentCap": 10,
+      "gameStyleColorScaleAdaptation": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "automaticCrossGameReuseMetadata": 10,
+      "dependencyGraphExplicit": 10,
+      "gameplayAuthorityIsolation": 10
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "Common source-authoring target only. Cast alignment, telegraph readability, impact timing, mobile performance and production verification remain runtime-unverified."
+  },
+  "companyCommonBase": true,
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayAuthority": false,
+  "sourceAssetCount": 3
+}
