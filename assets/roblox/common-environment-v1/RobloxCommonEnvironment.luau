@@ -44,6 +44,150 @@ local COMPOSITIONS=table.freeze({
   SNOW_BASIN={biome="SNOW",terrain={"BASIN","RIDGE","MEADOW","PATH"},background="SNOW_BASIN",poi="FROST_BASIN"}
 })
 
+
+
+local ENVIRONMENT_STATES=table.freeze({
+  CLEAR_DAY=table.freeze({
+    cloudCover=0.12,cloudDensity=0.28,atmosphereDensity=0.24,haze=0.45,glare=0.18,
+    atmosphereColor=Color3.fromRGB(199,220,235),decayColor=Color3.fromRGB(113,133,153),
+    brightness=0.02,contrast=0.04,saturation=0.04,tint=Color3.fromRGB(255,252,245),
+    bloomIntensity=0.12,bloomThreshold=1.15,sunRaysIntensity=0.10,sunRaysSpread=0.78,
+    skyRole="CLEAR_DEEP_SKY",backgroundRole="HIGH_VISIBILITY_LAYERED_DISTANCE",surfaceRole="DRY",
+    precipitationRole="NONE",windRole="LIGHT_BREEZE",visibilityRole="LONG_RANGE",celestialRole="NORMAL",
+    soundscapeRoles=table.freeze({"WIND_LIGHT","BIRD_DAY","INSECT_DAY"})
+  }),
+  OVERCAST=table.freeze({
+    cloudCover=0.72,cloudDensity=0.62,atmosphereDensity=0.34,haze=1.15,glare=0.05,
+    atmosphereColor=Color3.fromRGB(184,194,202),decayColor=Color3.fromRGB(105,111,119),
+    brightness=-0.04,contrast=-0.03,saturation=-0.12,tint=Color3.fromRGB(226,232,236),
+    bloomIntensity=0.05,bloomThreshold=1.35,sunRaysIntensity=0.01,sunRaysSpread=0.55,
+    skyRole="LAYERED_OVERCAST",backgroundRole="SOFTENED_DISTANCE",surfaceRole="DRY_TO_DAMP",
+    precipitationRole="NONE",windRole="SOFT_VARIABLE",visibilityRole="MEDIUM_LONG",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"WIND_SOFT","DISTANT_BIRD","TREE_LEAF_SOFT"})
+  }),
+  RAIN=table.freeze({
+    cloudCover=0.84,cloudDensity=0.70,atmosphereDensity=0.40,haze=1.55,glare=0.02,
+    atmosphereColor=Color3.fromRGB(162,179,190),decayColor=Color3.fromRGB(84,101,112),
+    brightness=-0.08,contrast=0.02,saturation=-0.16,tint=Color3.fromRGB(205,220,229),
+    bloomIntensity=0.05,bloomThreshold=1.40,sunRaysIntensity=0.00,sunRaysSpread=0.45,
+    skyRole="RAIN_CEILING",backgroundRole="RAIN_VEIL_DISTANCE",surfaceRole="WET_REFLECTIVE",
+    precipitationRole="RAIN_STREAKS_AND_SPLASH",windRole="WET_BREEZE",visibilityRole="MEDIUM",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"RAIN_NEAR","RAIN_DISTANT","WIND_WET","WATER_RUNOFF"})
+  }),
+  HEAVY_RAIN=table.freeze({
+    cloudCover=0.94,cloudDensity=0.84,atmosphereDensity=0.48,haze=2.20,glare=0.00,
+    atmosphereColor=Color3.fromRGB(143,160,174),decayColor=Color3.fromRGB(69,82,96),
+    brightness=-0.13,contrast=0.05,saturation=-0.22,tint=Color3.fromRGB(187,204,216),
+    bloomIntensity=0.04,bloomThreshold=1.45,sunRaysIntensity=0.00,sunRaysSpread=0.35,
+    skyRole="HEAVY_STORM_CEILING",backgroundRole="DENSE_RAIN_DEPTH",surfaceRole="SATURATED_WET",
+    precipitationRole="HEAVY_RAIN_SPLASH_RUNOFF",windRole="GUSTY_WET",visibilityRole="SHORT_MEDIUM",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"RAIN_HEAVY_GROUND","RAIN_HEAVY_ROOF","GUTTER_RUNOFF","WIND_GUST"})
+  }),
+  THUNDERSTORM=table.freeze({
+    cloudCover=0.98,cloudDensity=0.90,atmosphereDensity=0.52,haze=2.65,glare=0.00,
+    atmosphereColor=Color3.fromRGB(128,145,162),decayColor=Color3.fromRGB(58,66,82),
+    brightness=-0.18,contrast=0.10,saturation=-0.24,tint=Color3.fromRGB(174,190,210),
+    bloomIntensity=0.08,bloomThreshold=1.25,sunRaysIntensity=0.00,sunRaysSpread=0.28,
+    skyRole="THUNDERHEAD_STACK",backgroundRole="STORM_FRONT_SILHOUETTE",surfaceRole="SATURATED_WET",
+    precipitationRole="HEAVY_RAIN_WITH_LIGHTNING_CUE",windRole="GUST_FRONT",visibilityRole="SHORT_MEDIUM",celestialRole="OBSCURED",
+    lightningPresentationRole="MULTI_DISTANCE_SKY_FLASH",soundscapeRoles=table.freeze({"RAIN_HEAVY_GROUND","WIND_GUST","THUNDER_NEAR_FAR","TREE_CREAK","STRUCTURE_RATTLE"})
+  }),
+  SNOW=table.freeze({
+    cloudCover=0.82,cloudDensity=0.68,atmosphereDensity=0.42,haze=1.70,glare=0.03,
+    atmosphereColor=Color3.fromRGB(211,220,228),decayColor=Color3.fromRGB(146,159,173),
+    brightness=-0.01,contrast=-0.08,saturation=-0.28,tint=Color3.fromRGB(235,242,248),
+    bloomIntensity=0.09,bloomThreshold=1.20,sunRaysIntensity=0.02,sunRaysSpread=0.62,
+    skyRole="SNOW_OVERCAST",backgroundRole="SNOW_SOFT_DEPTH",surfaceRole="SNOW_ACCUMULATION",
+    precipitationRole="SNOW_FLAKE_DEPTH_BANDS",windRole="COLD_BREEZE",visibilityRole="MEDIUM",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"WIND_COLD","SNOW_HUSH","DISTANT_CROW"})
+  }),
+  BLIZZARD=table.freeze({
+    cloudCover=0.96,cloudDensity=0.84,atmosphereDensity=0.62,haze=4.10,glare=0.00,
+    atmosphereColor=Color3.fromRGB(220,226,232),decayColor=Color3.fromRGB(166,176,188),
+    brightness=-0.06,contrast=-0.16,saturation=-0.38,tint=Color3.fromRGB(234,241,248),
+    bloomIntensity=0.06,bloomThreshold=1.35,sunRaysIntensity=0.00,sunRaysSpread=0.30,
+    skyRole="WHITEOUT_SKY",backgroundRole="WHITEOUT_OCCLUSION",surfaceRole="DEEP_SNOW_DRIFT",
+    precipitationRole="SNOW_GUST_WHITEOUT",windRole="GALE_COLD",visibilityRole="VERY_SHORT",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"WIND_GALE_COLD","SNOW_GUST","STRUCTURE_RATTLE","TREE_CREAK"})
+  }),
+  FOG=table.freeze({
+    cloudCover=0.55,cloudDensity=0.48,atmosphereDensity=0.58,haze=4.60,glare=0.00,
+    atmosphereColor=Color3.fromRGB(201,209,211),decayColor=Color3.fromRGB(151,160,164),
+    brightness=-0.05,contrast=-0.20,saturation=-0.30,tint=Color3.fromRGB(222,227,225),
+    bloomIntensity=0.04,bloomThreshold=1.40,sunRaysIntensity=0.00,sunRaysSpread=0.25,
+    skyRole="FOG_CEILING",backgroundRole="FOG_LAYER_OCCLUSION",surfaceRole="DAMP",
+    precipitationRole="MIST_OPTIONAL",windRole="CALM",visibilityRole="VERY_SHORT",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"WIND_LOW","WATER_DRIP","DISTANT_WILDLIFE","AMBIENT_HUSH"})
+  }),
+  STRONG_WIND=table.freeze({
+    cloudCover=0.44,cloudDensity=0.50,atmosphereDensity=0.30,haze=0.95,glare=0.10,
+    atmosphereColor=Color3.fromRGB(184,205,219),decayColor=Color3.fromRGB(101,120,137),
+    brightness=-0.02,contrast=0.06,saturation=-0.06,tint=Color3.fromRGB(230,239,244),
+    bloomIntensity=0.07,bloomThreshold=1.30,sunRaysIntensity=0.05,sunRaysSpread=0.65,
+    skyRole="FAST_CLOUD_BANDS",backgroundRole="WIND_SWEPT_DISTANCE",surfaceRole="DRY_OR_DAMP",
+    precipitationRole="NONE",windRole="GALE_VARIABLE",visibilityRole="LONG",celestialRole="NORMAL",
+    soundscapeRoles=table.freeze({"WIND_GALE","TREE_CREAK","CLOTH_FLAP","SIGN_RATTLE"})
+  }),
+  WHITE_NIGHT=table.freeze({
+    cloudCover=0.22,cloudDensity=0.30,atmosphereDensity=0.26,haze=0.75,glare=0.22,
+    atmosphereColor=Color3.fromRGB(205,219,235),decayColor=Color3.fromRGB(157,149,173),
+    brightness=0.05,contrast=-0.04,saturation=-0.04,tint=Color3.fromRGB(235,229,242),
+    bloomIntensity=0.12,bloomThreshold=1.10,sunRaysIntensity=0.08,sunRaysSpread=0.82,
+    skyRole="POLAR_TWILIGHT_SKY",backgroundRole="LONG_TWILIGHT_GRADIENT",surfaceRole="COOL_DRY",
+    precipitationRole="NONE",windRole="LIGHT_BREEZE",visibilityRole="LONG",celestialRole="LOW_HORIZON_DAYLIGHT",
+    soundscapeRoles=table.freeze({"WIND_LIGHT","BIRD_LATE","INSECT_TWILIGHT"})
+  }),
+  SOLAR_ECLIPSE=table.freeze({
+    cloudCover=0.18,cloudDensity=0.28,atmosphereDensity=0.32,haze=1.05,glare=0.02,
+    atmosphereColor=Color3.fromRGB(124,142,159),decayColor=Color3.fromRGB(72,79,91),
+    brightness=-0.24,contrast=0.16,saturation=-0.34,tint=Color3.fromRGB(163,178,199),
+    bloomIntensity=0.03,bloomThreshold=1.45,sunRaysIntensity=0.00,sunRaysSpread=0.18,
+    skyRole="ECLIPSE_TWILIGHT_RING",backgroundRole="ECLIPSE_SILHOUETTE_DEPTH",surfaceRole="COOL_DARKENED",
+    precipitationRole="NONE",windRole="LOW_VARIABLE",visibilityRole="LONG_DARK",celestialRole="SOLAR_DISC_OCCLUSION",
+    soundscapeRoles=table.freeze({"AMBIENT_HUSH","WIND_LOW","WILDLIFE_SILENCE_TRANSITION"})
+  }),
+  AURORA_NIGHT=table.freeze({
+    cloudCover=0.08,cloudDensity=0.18,atmosphereDensity=0.22,haze=0.42,glare=0.06,
+    atmosphereColor=Color3.fromRGB(88,122,145),decayColor=Color3.fromRGB(41,55,74),
+    brightness=-0.12,contrast=0.10,saturation=0.02,tint=Color3.fromRGB(174,210,202),
+    bloomIntensity=0.18,bloomThreshold=1.05,sunRaysIntensity=0.00,sunRaysSpread=0.20,
+    skyRole="AURORA_CURTAIN",backgroundRole="NIGHT_LAYERED_SILHOUETTE",surfaceRole="COLD_DRY",
+    precipitationRole="NONE",windRole="LIGHT_COLD",visibilityRole="LONG_NIGHT",celestialRole="AURORA_AND_STARS",
+    soundscapeRoles=table.freeze({"WIND_LIGHT_COLD","NIGHT_INSECT","DISTANT_WILDLIFE"})
+  }),
+  SANDSTORM=table.freeze({
+    cloudCover=0.66,cloudDensity=0.58,atmosphereDensity=0.66,haze=5.20,glare=0.01,
+    atmosphereColor=Color3.fromRGB(191,153,104),decayColor=Color3.fromRGB(127,93,67),
+    brightness=-0.09,contrast=-0.08,saturation=-0.14,tint=Color3.fromRGB(221,183,128),
+    bloomIntensity=0.04,bloomThreshold=1.38,sunRaysIntensity=0.01,sunRaysSpread=0.28,
+    skyRole="DUST_SKY",backgroundRole="SAND_OCCLUSION_DEPTH",surfaceRole="SAND_DRIFT",
+    precipitationRole="AIRBORNE_SAND_DEBRIS",windRole="GALE_DRY",visibilityRole="VERY_SHORT",celestialRole="OBSCURED",
+    soundscapeRoles=table.freeze({"WIND_SAND","DEBRIS_RATTLE","CLOTH_FLAP","SIGN_RATTLE"})
+  }),
+  HEAT_HAZE=table.freeze({
+    cloudCover=0.05,cloudDensity=0.14,atmosphereDensity=0.20,haze=1.35,glare=0.42,
+    atmosphereColor=Color3.fromRGB(230,203,159),decayColor=Color3.fromRGB(160,117,83),
+    brightness=0.05,contrast=0.08,saturation=0.05,tint=Color3.fromRGB(255,231,191),
+    bloomIntensity=0.15,bloomThreshold=1.08,sunRaysIntensity=0.15,sunRaysSpread=0.86,
+    skyRole="HOT_CLEAR_SKY",backgroundRole="HEAT_SHIMMER_DISTANCE",surfaceRole="HOT_DRY",
+    precipitationRole="NONE",windRole="THERMAL_LIGHT",visibilityRole="LONG_SHIMMER",celestialRole="HARSH_SUN",
+    soundscapeRoles=table.freeze({"WIND_DRY_LIGHT","INSECT_DRY","DISTANT_BIRD"})
+  })
+})
+
+local BIOME_SOUNDSCAPES=table.freeze({
+  FOREST=table.freeze({"WIND_LEAF","BIRD_DAY","INSECT_DAY","WOOD_CREAK_SCATTER"}),
+  SNOW=table.freeze({"WIND_COLD","DISTANT_CROW","SNOW_HUSH"}),
+  DESERT=table.freeze({"WIND_DRY","INSECT_DRY","SAND_GRAIN_SCATTER"}),
+  SWAMP=table.freeze({"FROG","INSECT_SWARM","WATER_BUBBLE","REED_RUSTLE"}),
+  CAVE=table.freeze({"WATER_DRIP","CAVE_AIR","BAT_SCATTER","STONE_ECHO"}),
+  COAST=table.freeze({"SURF_NEAR","SURF_DISTANT","GULL","COAST_WIND"}),
+  VILLAGE=table.freeze({"WIND_SOFT","DISTANT_VOICE","ANIMAL_YARD","CART_WHEEL","TOOL_WORK"}),
+  CITY=table.freeze({"DISTANT_VOICE","FOOTSTEP_SCATTER","CART_WHEEL","MACHINE_HUM","SIGN_RATTLE"}),
+  RUINS=table.freeze({"WIND_RUIN","DISTANT_CROW","STONE_RATTLE","CLOTH_FLAP"}),
+  DUNGEON=table.freeze({"WATER_DRIP","CHAIN_CREAK","TORCH_BURN","STONE_ECHO"})
+})
+
 local INTERACTION_ROLE_BY_DRESS=table.freeze({
   LOG="SIT_OR_INSPECT",STUMP="SIT_OR_INSPECT",FALLEN_BRANCH="GATHER_VISUAL",FERN="INSPECT_VISUAL",
   FLOWER_PATCH="GATHER_OR_INSPECT",MOSS_ROCK="CLIMB_OR_INSPECT",SNOW_DRIFT="TRACK_OR_INSPECT",
@@ -242,6 +386,112 @@ function CommonEnvironment.CreateTerrainComposition(compositionId,options)
   return root,layers
 end
 
+
+
+local function tagEnvironmentPresentation(instance,stateId,role)
+  instance:SetAttribute("StudioAssetPack","roblox-common-environment-v1")
+  instance:SetAttribute("EnvironmentStateId",stateId)
+  instance:SetAttribute("EnvironmentPresentationRole",role)
+  instance:SetAttribute("OwnsWeatherAuthority",false)
+  instance:SetAttribute("OwnsTimeAuthority",false)
+  instance:SetAttribute("OwnsAudioPlaybackAuthority",false)
+  instance:SetAttribute("ProductionVerified",false)
+end
+
+function CommonEnvironment.GetEnvironmentStateProfile(stateId)
+  return ENVIRONMENT_STATES[string.upper(tostring(stateId or ""))]
+end
+
+function CommonEnvironment.GetBiomeSoundscape(biomeId)
+  return BIOME_SOUNDSCAPES[string.upper(tostring(biomeId or ""))]
+end
+
+function CommonEnvironment.CreateEnvironmentPresentation(stateId,options)
+  options=options or {}
+  stateId=string.upper(tostring(stateId or "CLEAR_DAY"))
+  local profile=ENVIRONMENT_STATES[stateId]
+  assert(profile,"UNKNOWN_COMMON_ENVIRONMENT_STATE:"..stateId)
+
+  local atmosphere=Instance.new("Atmosphere")
+  atmosphere.Name="JG_CommonAtmosphere_"..stateId
+  atmosphere.Density=profile.atmosphereDensity
+  atmosphere.Haze=profile.haze
+  atmosphere.Glare=profile.glare
+  atmosphere.Color=profile.atmosphereColor
+  atmosphere.Decay=profile.decayColor
+  tagEnvironmentPresentation(atmosphere,stateId,"SKY_ATMOSPHERE")
+
+  local correction=Instance.new("ColorCorrectionEffect")
+  correction.Name="JG_CommonColor_"..stateId
+  correction.Brightness=profile.brightness
+  correction.Contrast=profile.contrast
+  correction.Saturation=profile.saturation
+  correction.TintColor=profile.tint
+  tagEnvironmentPresentation(correction,stateId,"LIGHTING_PRESET")
+
+  local bloom=Instance.new("BloomEffect")
+  bloom.Name="JG_CommonBloom_"..stateId
+  bloom.Intensity=profile.bloomIntensity
+  bloom.Threshold=profile.bloomThreshold
+  bloom.Size=24
+  tagEnvironmentPresentation(bloom,stateId,"LIGHTING_PRESET")
+
+  local rays=Instance.new("SunRaysEffect")
+  rays.Name="JG_CommonSunRays_"..stateId
+  rays.Intensity=profile.sunRaysIntensity
+  rays.Spread=profile.sunRaysSpread
+  tagEnvironmentPresentation(rays,stateId,"LIGHTING_PRESET")
+
+  local clouds=Instance.new("Clouds")
+  clouds.Name="JG_CommonClouds_"..stateId
+  clouds.Cover=profile.cloudCover
+  clouds.Density=profile.cloudDensity
+  clouds.Color=profile.atmosphereColor
+  tagEnvironmentPresentation(clouds,stateId,"SKY_CLOUD_LAYER")
+
+  if options.lighting then
+    assert(typeof(options.lighting)=="Instance","COMMON_ENVIRONMENT_LIGHTING_INSTANCE_REQUIRED")
+    atmosphere.Parent=options.lighting
+    correction.Parent=options.lighting
+    bloom.Parent=options.lighting
+    rays.Parent=options.lighting
+  end
+  if options.terrain then
+    assert(typeof(options.terrain)=="Instance","COMMON_ENVIRONMENT_TERRAIN_INSTANCE_REQUIRED")
+    clouds.Parent=options.terrain
+  end
+
+  return table.freeze({
+    stateId=stateId,
+    profile=profile,
+    lightingEffects=table.freeze({atmosphere,correction,bloom,rays}),
+    terrainClouds=clouds,
+    weatherAuthority=false,
+    timeAuthority=false,
+    audioPlaybackAuthority=false
+  })
+end
+
+function CommonEnvironment.BindEnvironmentState(root,stateId)
+  assert(typeof(root)=="Instance","COMMON_ENVIRONMENT_ROOT_REQUIRED")
+  stateId=string.upper(tostring(stateId or "CLEAR_DAY"))
+  local profile=ENVIRONMENT_STATES[stateId]
+  assert(profile,"UNKNOWN_COMMON_ENVIRONMENT_STATE:"..stateId)
+  root:SetAttribute("EnvironmentStateId",stateId)
+  root:SetAttribute("SkyPresentationRole",profile.skyRole)
+  root:SetAttribute("BackgroundPresentationRole",profile.backgroundRole)
+  root:SetAttribute("SurfacePresentationRole",profile.surfaceRole)
+  root:SetAttribute("PrecipitationPresentationRole",profile.precipitationRole)
+  root:SetAttribute("WindPresentationRole",profile.windRole)
+  root:SetAttribute("VisibilityPresentationRole",profile.visibilityRole)
+  root:SetAttribute("CelestialPresentationRole",profile.celestialRole)
+  root:SetAttribute("SoundscapeRoles",table.concat(profile.soundscapeRoles,","))
+  root:SetAttribute("OwnsWeatherAuthority",false)
+  root:SetAttribute("OwnsTimeAuthority",false)
+  root:SetAttribute("OwnsAudioPlaybackAuthority",false)
+  return profile
+end
+
 function CommonEnvironment.ListCompositions()
   local ids={}
   for id in pairs(COMPOSITIONS) do table.insert(ids,id) end
@@ -258,8 +508,10 @@ function CommonEnvironment.Audit()
     packId="roblox-common-environment-v1",
     biomes=table.freeze(ids),
     biomeCount=#ids,
-    roles=table.freeze({"BIOME_KIT","TERRAIN","GROUND_DETAIL","PATH_ROAD","CLIFF","WATER","LANDMARK","SET_DRESSING","TERRAIN_COMPOSITION","VILLAGE_CLUSTER","RUIN_CLUSTER","DISCOVERY_POI","BACKGROUND_LAYER","INTERACTION_PRESENTATION"}),
+    roles=table.freeze({"BIOME_KIT","TERRAIN","GROUND_DETAIL","PATH_ROAD","CLIFF","WATER","LANDMARK","SET_DRESSING","TERRAIN_COMPOSITION","VILLAGE_CLUSTER","RUIN_CLUSTER","DISCOVERY_POI","BACKGROUND_LAYER","INTERACTION_PRESENTATION","WEATHER_PRESENTATION","SKY_ATMOSPHERE","LIGHTING_PRESET","SOUNDSCAPE_ROLE"}),
     compositionCount=#CommonEnvironment.ListCompositions(),
+    environmentStateCount=14,
+    biomeSoundscapeCount=10,
     gameSpecificVariationFields=table.freeze({"PALETTE","MATERIAL","VEGETATION_MIX","WEATHERING","DENSITY","LANDMARK_DETAIL","LIGHTING"}),
     gameplayAuthority=false,
     productionVerified=false
