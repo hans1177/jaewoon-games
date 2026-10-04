@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,7 +492,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -3061,5 +3061,25 @@
       ],
       "vibeContinuesWhenChatgptAbsent": true
     }
+  },
+  "assetProducerConsumerBoundaryEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.assetProducerConsumerBoundary",
+    "consumerRequiredMarkers": [
+      "ASSET_CONSUMER_ROLE=BUILD_UP_FLOOR_ASSET_CONSUMER",
+      "ASSET_LIBRARY_LOOKUP=FULL_INTERNAL_UNIVERSE",
+      "ASSET_EXISTING_BASELINE=USED_OR_EXACT_GAP",
+      "ASSET_GENRE_ELIGIBILITY_RESTRICTION=NO",
+      "ASSET_SOURCE_BINDING=APPLIED_OR_NOT_APPLICABLE_WITH_SOURCE_ABSENCE_EVIDENCE",
+      "ASSET_GAP_ROUTE=NONE_OR_EXISTING_PRODUCER_LANE"
+    ],
+    "producerRequiredMarkers": [
+      "ASSET_PRODUCER_ROLE=GRAPHICS_ASSET_PRODUCER"
+    ],
+    "consumerMayNotClaimAssetAuthoring": true,
+    "libraryContextBatchingDoesNotLimitEligibility": true,
+    "exactGapEvidenceRequiredBeforeProducerHandoff": true,
+    "duplicateGapEvidenceMustBeCoalesced": true,
+    "unrelatedBuildUpMayNotBeMarkedBlockedByIndependentAssetGap": true
   }
 }
