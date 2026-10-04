@@ -757,6 +757,381 @@ function M.CreateCutsceneOverlay(options)
   return root,letterbox,subtitles,skip
 end
 
+
+function M.CreateSettingToggleRow(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "SettingToggleRow",options.size or UDim2.new(1,0,0,58),theme)
+  tag(root,"SETTING_TOGGLE_ROW","SETTING_TOGGLE")
+  local title=label(root,"Title",options.title or "",UDim2.fromOffset(14,4),UDim2.new(0.64,0,0,24),theme.Text,13,true)
+  local detail=label(root,"Detail",options.detail or "",UDim2.fromOffset(14,27),UDim2.new(0.64,0,0,22),theme.Muted,10,false)
+  local toggle=button(root,"Toggle",options.enabled and "켜기" or "끄기",UDim2.fromOffset(92,38),theme)
+  toggle.AnchorPoint=Vector2.new(1,0.5)
+  toggle.Position=UDim2.new(1,-12,0.5,0)
+  toggle:SetAttribute("OwnsSettingPersistence",false)
+  return root,toggle,title,detail
+end
+
+function M.CreateSettingSliderRow(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "SettingSliderRow",options.size or UDim2.new(1,0,0,70),theme)
+  tag(root,"SETTING_SLIDER_ROW","SETTING_SLIDER")
+  label(root,"Title",options.title or "",UDim2.fromOffset(14,4),UDim2.new(0.45,0,0,24),theme.Text,13,true)
+  local value=label(root,"Value",options.valueText or "",UDim2.new(0.72,0,0,4),UDim2.new(0.22,0,0,24),theme.AccentBright,11,true)
+  value.TextXAlignment=Enum.TextXAlignment.Right
+  local track=Instance.new("Frame")
+  track.Name="Track"
+  track.Position=UDim2.new(0,14,0,42)
+  track.Size=UDim2.new(1,-28,0,10)
+  track.BackgroundColor3=theme.PanelInset
+  track.BorderSizePixel=0
+  track.Parent=root
+  corner(track,5)
+  local fill=Instance.new("Frame")
+  fill.Name="Fill"
+  fill.Size=UDim2.fromScale(math.clamp(tonumber(options.ratio) or 0,0,1),1)
+  fill.BackgroundColor3=theme.Accent
+  fill.BorderSizePixel=0
+  fill.Parent=track
+  corner(fill,5)
+  root:SetAttribute("OwnsSettingPersistence",false)
+  root:SetAttribute("OwnsSliderInput",false)
+  return root,track,fill,value
+end
+
+function M.CreateOptionStepperRow(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "OptionStepperRow",options.size or UDim2.new(1,0,0,58),theme)
+  tag(root,"OPTION_STEPPER_ROW","SETTING_STEPPER")
+  label(root,"Title",options.title or "",UDim2.fromOffset(14,0),UDim2.new(0.52,0,1,0),theme.Text,13,true)
+  local previous=button(root,"Previous","‹",UDim2.fromOffset(42,38),theme)
+  previous.Position=UDim2.new(0.56,0,0.5,-19)
+  local value=label(root,"Value",options.valueText or "",UDim2.new(0.66,0,0,0),UDim2.new(0.22,0,1,0),theme.AccentBright,11,true)
+  value.TextXAlignment=Enum.TextXAlignment.Center
+  local next=button(root,"Next","›",UDim2.fromOffset(42,38),theme)
+  next.AnchorPoint=Vector2.new(1,0.5)
+  next.Position=UDim2.new(1,-12,0.5,0)
+  root:SetAttribute("OwnsSettingPersistence",false)
+  return root,previous,value,next
+end
+
+function M.CreateKeybindRow(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "KeybindRow",options.size or UDim2.new(1,0,0,62),theme)
+  tag(root,"KEYBIND_ROW","CONTROL_BINDING_ROW")
+  label(root,"Action",options.actionLabel or "",UDim2.fromOffset(14,0),UDim2.new(0.48,0,1,0),theme.Text,13,true)
+  local bind=button(root,"Binding",options.bindingText or "미지정",UDim2.fromOffset(120,40),theme)
+  bind.AnchorPoint=Vector2.new(1,0.5)
+  bind.Position=UDim2.new(1,-12,0.5,0)
+  local conflict=label(root,"Conflict",options.conflictText or "",UDim2.new(0.52,0,0,42),UDim2.new(0.42,0,0,16),theme.Danger,9,true)
+  conflict.TextXAlignment=Enum.TextXAlignment.Right
+  root:SetAttribute("OwnsInputBinding",false)
+  root:SetAttribute("ConflictVisualOnly",true)
+  return root,bind,conflict
+end
+
+function M.CreateChangedSettingBadge(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("TextLabel")
+  root.Name=options.name or "ChangedSettingBadge"
+  root.Size=options.size or UDim2.fromOffset(72,22)
+  root.BackgroundColor3=theme.Accent
+  root.BorderSizePixel=0
+  root.Text=options.text or "변경됨"
+  root.TextColor3=theme.Text
+  root.TextSize=9
+  root.Font=Enum.Font.GothamBold
+  root.TextXAlignment=Enum.TextXAlignment.Center
+  tag(root,"CHANGED_SETTING_BADGE","SETTING_CHANGED_INDICATOR")
+  corner(root,8)
+  return root
+end
+
+function M.CreateAccessibilityPresetCard(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "AccessibilityPresetCard",options.size or UDim2.fromOffset(280,146),theme)
+  tag(root,"ACCESSIBILITY_PRESET_CARD","ACCESSIBILITY_PRESET")
+  label(root,"Title",options.title or "접근성 프리셋",UDim2.fromOffset(14,12),UDim2.new(1,-28,0,24),theme.Text,14,true)
+  label(root,"Description",options.description or "",UDim2.fromOffset(14,40),UDim2.new(1,-28,0,48),theme.Muted,10,false)
+  local apply=button(root,"Apply",options.actionText or "적용",UDim2.fromOffset(100,36),theme)
+  apply.AnchorPoint=Vector2.new(1,1)
+  apply.Position=UDim2.new(1,-12,1,-12)
+  apply:SetAttribute("OwnsSettingPersistence",false)
+  return root,apply
+end
+
+function M.CreateControllerRemapPanel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "ControllerRemapPanel",options.size or UDim2.fromOffset(420,300),theme)
+  tag(root,"CONTROLLER_REMAP_PANEL","CONTROLLER_VISUALIZATION")
+  label(root,"Title",options.title or "컨트롤 설정",UDim2.fromOffset(16,12),UDim2.new(1,-32,0,26),theme.Text,16,true)
+  local diagram=Instance.new("Frame")
+  diagram.Name="ControllerDiagram"
+  diagram.Position=UDim2.fromOffset(22,54)
+  diagram.Size=UDim2.new(0.48,-28,1,-78)
+  diagram.BackgroundColor3=theme.PanelInset
+  diagram.BorderSizePixel=0
+  diagram.Parent=root
+  corner(diagram,18)
+  stroke(diagram,theme.Border,1,0.14)
+  local list=Instance.new("Frame")
+  list.Name="Bindings"
+  list.Position=UDim2.new(0.5,8,0,54)
+  list.Size=UDim2.new(0.5,-30,1,-78)
+  list.BackgroundTransparency=1
+  list.Parent=root
+  verticalList(list,5)
+  root:SetAttribute("OwnsInputBinding",false)
+  return root,diagram,list
+end
+
+function M.CreateHudCustomizationPanel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "HudCustomizationPanel",options.size or UDim2.fromOffset(420,320),theme)
+  tag(root,"HUD_CUSTOMIZATION_PANEL","HUD_CUSTOMIZATION")
+  label(root,"Title",options.title or "HUD 설정",UDim2.fromOffset(16,12),UDim2.new(1,-32,0,26),theme.Text,16,true)
+  local preview=Instance.new("Frame")
+  preview.Name="Preview"
+  preview.Position=UDim2.fromOffset(16,52)
+  preview.Size=UDim2.new(1,-32,0,120)
+  preview.BackgroundColor3=theme.Backdrop
+  preview.BorderSizePixel=0
+  preview.Parent=root
+  corner(preview,10)
+  stroke(preview,theme.Border,1,0.12)
+  local modes=Instance.new("Frame")
+  modes.Name="Modes"
+  modes.Position=UDim2.fromOffset(16,184)
+  modes.Size=UDim2.new(1,-32,1,-200)
+  modes.BackgroundTransparency=1
+  modes.Parent=root
+  verticalList(modes,5)
+  root:SetAttribute("OwnsHudVisibilityState",false)
+  return root,preview,modes
+end
+
+function M.CreateHighContrastLegend(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "HighContrastLegend",options.size or UDim2.fromOffset(280,132),theme)
+  tag(root,"HIGH_CONTRAST_LEGEND","HIGH_CONTRAST_VISUAL_LEGEND")
+  label(root,"Title",options.title or "고대비 표시",UDim2.fromOffset(12,8),UDim2.new(1,-24,0,22),theme.Text,13,true)
+  local rows=options.items or {
+    {label="플레이어",color=theme.Accent},
+    {label="적",color=theme.Danger},
+    {label="상호작용",color=theme.Warning},
+  }
+  for i,row in ipairs(rows) do
+    local dot=Instance.new("Frame")
+    dot.Size=UDim2.fromOffset(14,14)
+    dot.Position=UDim2.fromOffset(14,36+(i-1)*26)
+    dot.BackgroundColor3=row.color or theme.Accent
+    dot.BorderSizePixel=0
+    dot.Parent=root
+    corner(dot,7)
+    label(root,"Label"..i,row.label,UDim2.fromOffset(38,31+(i-1)*26),UDim2.new(1,-48,0,24),theme.Muted,10,false)
+  end
+  root:SetAttribute("OwnsWorldHighlightState",false)
+  return root
+end
+
+function M.CreateSaveSlotCard(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "SaveSlotCard",options.size or UDim2.new(1,0,0,104),theme)
+  tag(root,"SAVE_SLOT_CARD","SAVE_LOAD_SLOT")
+  label(root,"Title",options.title or "저장 슬롯",UDim2.fromOffset(14,9),UDim2.new(0.6,0,0,22),theme.Text,13,true)
+  label(root,"Meta",options.meta or "",UDim2.fromOffset(14,33),UDim2.new(0.7,0,0,20),theme.Muted,10,false)
+  label(root,"Location",options.location or "",UDim2.fromOffset(14,56),UDim2.new(0.7,0,0,20),theme.AccentBright,10,true)
+  local action=button(root,"Action",options.actionText or "불러오기",UDim2.fromOffset(96,36),theme)
+  action.AnchorPoint=Vector2.new(1,0.5)
+  action.Position=UDim2.new(1,-12,0.5,0)
+  root:SetAttribute("OwnsSaveData",false)
+  root:SetAttribute("OwnsLoadAuthority",false)
+  return root,action
+end
+
+function M.CreateAutosaveIndicator(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "AutosaveIndicator"
+  root.Size=options.size or UDim2.fromOffset(150,34)
+  root.BackgroundColor3=theme.PanelInset
+  root.BackgroundTransparency=0.10
+  root.BorderSizePixel=0
+  tag(root,"AUTOSAVE_INDICATOR","AUTOSAVE_STATUS")
+  corner(root,10)
+  local textLabel=label(root,"Text",options.text or "저장 중…",UDim2.fromOffset(10,0),UDim2.new(1,-20,1,0),theme.Muted,10,true)
+  textLabel.TextXAlignment=Enum.TextXAlignment.Center
+  root:SetAttribute("OwnsSaveData",false)
+  return root,textLabel
+end
+
+function M.CreateStoryRecapScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "StoryRecapScreen"
+  root.Size=UDim2.fromScale(1,1)
+  root.BackgroundColor3=theme.Backdrop
+  root.BorderSizePixel=0
+  tag(root,"STORY_RECAP_SCREEN","STORY_SO_FAR")
+  label(root,"Kicker",options.kicker or "지금까지의 이야기",UDim2.new(0.08,0,0.10,0),UDim2.new(0.84,0,0,24),theme.AccentBright,11,true)
+  local title=label(root,"Title",options.title or "",UDim2.new(0.08,0,0.15,0),UDim2.new(0.84,0,0,44),theme.Text,26,true)
+  local body=label(root,"Body",options.text or "",UDim2.new(0.08,0,0.24,0),UDim2.new(0.56,0,0.48,0),theme.Text,14,false)
+  body.TextYAlignment=Enum.TextYAlignment.Top
+  local chapter=panel("ChapterVisual",UDim2.new(0.28,0,0.48,0),theme)
+  chapter.Position=UDim2.new(0.68,0,0.24,0)
+  chapter.Parent=root
+  root:SetAttribute("OwnsStoryProgress",false)
+  return root,title,body,chapter
+end
+
+function M.CreateTutorialLibraryScreen(options)
+  options=options or {}
+  options.title=options.title or "튜토리얼"
+  local root,top,nav,content,footer=createScreenShell("TUTORIAL_LIBRARY_SCREEN","TUTORIAL_LIBRARY",options)
+  root:SetAttribute("OwnsTutorialCompletion",false)
+  return root,top,nav,content,footer
+end
+
+function M.CreateContextReminder(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "ContextReminder",options.size or UDim2.fromOffset(330,96),theme)
+  tag(root,"CONTEXT_REMINDER","RETURNING_PLAYER_REMINDER")
+  label(root,"Title",options.title or "",UDim2.fromOffset(14,9),UDim2.new(1,-28,0,24),theme.Text,13,true)
+  label(root,"Body",options.text or "",UDim2.fromOffset(14,34),UDim2.new(1,-28,0,48),theme.Muted,10,false)
+  root:SetAttribute("OwnsProgressionState",false)
+  return root
+end
+
+function M.CreateRadialActionWheel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "RadialActionWheel"
+  root.Size=options.size or UDim2.fromOffset(300,300)
+  root.BackgroundTransparency=1
+  tag(root,"RADIAL_ACTION_WHEEL","RADIAL_MENU")
+  local center=Instance.new("Frame")
+  center.AnchorPoint=Vector2.new(0.5,0.5)
+  center.Position=UDim2.fromScale(0.5,0.5)
+  center.Size=UDim2.fromScale(0.30,0.30)
+  center.BackgroundColor3=theme.PanelInset
+  center.BorderSizePixel=0
+  center.Parent=root
+  corner(center,999)
+  stroke(center,theme.BorderBright,1,0.10)
+  local segments={}
+  local items=options.items or {}
+  local count=math.max(1,#items)
+  for i,row in ipairs(items) do
+    local angle=((i-1)/count)*math.pi*2-math.pi/2
+    local b=button(root,tostring(row.id or i),row.shortLabel or tostring(i),UDim2.fromOffset(54,54),theme)
+    b.AnchorPoint=Vector2.new(0.5,0.5)
+    b.Position=UDim2.fromScale(0.5+math.cos(angle)*0.34,0.5+math.sin(angle)*0.34)
+    b:SetAttribute("RadialActionId",tostring(row.id or i))
+    b:SetAttribute("OwnsActionAuthority",false)
+    segments[i]=b
+  end
+  root:SetAttribute("OwnsActionAuthority",false)
+  return root,center,segments
+end
+
+function M.CreateComparisonPanel(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=panel(options.name or "ComparisonPanel",options.size or UDim2.fromOffset(500,310),theme)
+  tag(root,"COMPARISON_PANEL","ITEM_EQUIPMENT_COMPARISON")
+  label(root,"Title",options.title or "비교",UDim2.fromOffset(16,10),UDim2.new(1,-32,0,28),theme.Text,16,true)
+  local left=panel("Current",UDim2.new(0.48,-12,1,-58),theme)
+  left.Position=UDim2.fromOffset(16,46);left.Parent=root
+  local right=panel("Candidate",UDim2.new(0.48,-12,1,-58),theme)
+  right.Position=UDim2.new(0.52,0,0,46);right.Parent=root
+  root:SetAttribute("OwnsEquipAuthority",false)
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  return root,left,right
+end
+
+function M.CreateRewardReveal(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "RewardReveal"
+  root.Size=UDim2.fromScale(1,1)
+  root.BackgroundTransparency=1
+  tag(root,"REWARD_REVEAL","REWARD_UNLOCK_PRESENTATION")
+  local card=panel("RewardCard",options.cardSize or UDim2.fromOffset(360,230),theme)
+  card.AnchorPoint=Vector2.new(0.5,0.5)
+  card.Position=UDim2.fromScale(0.5,0.5)
+  card.Parent=root
+  local rarity=label(card,"Rarity",options.rarity or "",UDim2.fromOffset(18,16),UDim2.new(1,-36,0,20),options.rarityColor or theme.AccentBright,10,true)
+  rarity.TextXAlignment=Enum.TextXAlignment.Center
+  local title=label(card,"Title",options.title or "",UDim2.fromOffset(18,46),UDim2.new(1,-36,0,40),theme.Text,22,true)
+  title.TextXAlignment=Enum.TextXAlignment.Center
+  local detail=label(card,"Detail",options.detail or "",UDim2.fromOffset(18,96),UDim2.new(1,-36,0,64),theme.Muted,12,false)
+  detail.TextXAlignment=Enum.TextXAlignment.Center
+  root:SetAttribute("OwnsRewardAuthority",false)
+  return root,card
+end
+
+function M.CreateDeathScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "DeathScreen"
+  root.Size=UDim2.fromScale(1,1)
+  root.BackgroundColor3=theme.Shadow
+  root.BackgroundTransparency=0.16
+  root.BorderSizePixel=0
+  tag(root,"DEATH_SCREEN","DEATH_RESPAWN_PRESENTATION")
+  local title=label(root,"Title",options.title or "쓰러졌다",UDim2.new(0.15,0,0.36,0),UDim2.new(0.70,0,0,48),theme.Text,30,true)
+  title.TextXAlignment=Enum.TextXAlignment.Center
+  local detail=label(root,"Detail",options.detail or "",UDim2.new(0.20,0,0.44,0),UDim2.new(0.60,0,0,36),theme.Muted,12,false)
+  detail.TextXAlignment=Enum.TextXAlignment.Center
+  local retry=button(root,"Retry",options.retryText or "다시 시작",UDim2.fromOffset(180,46),theme)
+  retry.AnchorPoint=Vector2.new(0.5,0.5);retry.Position=UDim2.fromScale(0.5,0.56)
+  retry:SetAttribute("OwnsRespawnAuthority",false)
+  root:SetAttribute("OwnsRespawnAuthority",false)
+  return root,retry
+end
+
+function M.CreatePhotoModeShell(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "PhotoModeShell"
+  root.Size=UDim2.fromScale(1,1)
+  root.BackgroundTransparency=1
+  tag(root,"PHOTO_MODE_SHELL","PHOTO_MODE")
+  local tabs=panel("Tabs",UDim2.fromOffset(250,320),theme)
+  tabs.Position=UDim2.fromOffset(18,18)
+  tabs.BackgroundTransparency=0.12
+  tabs.Parent=root
+  local list=Instance.new("Frame")
+  list.Position=UDim2.fromOffset(12,12);list.Size=UDim2.new(1,-24,1,-24);list.BackgroundTransparency=1;list.Parent=tabs
+  verticalList(list,6)
+  for i,name in ipairs(options.tabs or {"카메라","초점","색감","필터","프레임"}) do
+    local b=button(list,"Tab"..i,name,UDim2.new(1,0,0,42),theme)
+    b.LayoutOrder=i
+    b:SetAttribute("OwnsPhotoSetting",false)
+  end
+  local hint=M.CreateFooterHintBar({hints=options.hints or {},theme=theme})
+  hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,0,1,0);hint.Parent=root
+  root:SetAttribute("OwnsCameraAuthority",false)
+  root:SetAttribute("OwnsGamePauseAuthority",false)
+  return root,tabs,hint
+end
+
 function M.Create(atomId, options)
   local id=string.upper(tostring(atomId or ""))
   if id=="BRAND_MARK" then return M.CreateBrandMark(options)
@@ -785,6 +1160,25 @@ function M.Create(atomId, options)
   elseif id=="REGION_TITLE_CARD" then return M.CreateRegionTitleCard(options)
   elseif id=="CINEMATIC_CHOICE_STRIP" then return M.CreateCinematicChoiceStrip(options)
   elseif id=="CUTSCENE_OVERLAY" then return M.CreateCutsceneOverlay(options)
+  elseif id=="SETTING_TOGGLE_ROW" then return M.CreateSettingToggleRow(options)
+  elseif id=="SETTING_SLIDER_ROW" then return M.CreateSettingSliderRow(options)
+  elseif id=="OPTION_STEPPER_ROW" then return M.CreateOptionStepperRow(options)
+  elseif id=="KEYBIND_ROW" then return M.CreateKeybindRow(options)
+  elseif id=="CHANGED_SETTING_BADGE" then return M.CreateChangedSettingBadge(options)
+  elseif id=="ACCESSIBILITY_PRESET_CARD" then return M.CreateAccessibilityPresetCard(options)
+  elseif id=="CONTROLLER_REMAP_PANEL" then return M.CreateControllerRemapPanel(options)
+  elseif id=="HUD_CUSTOMIZATION_PANEL" then return M.CreateHudCustomizationPanel(options)
+  elseif id=="HIGH_CONTRAST_LEGEND" then return M.CreateHighContrastLegend(options)
+  elseif id=="SAVE_SLOT_CARD" then return M.CreateSaveSlotCard(options)
+  elseif id=="AUTOSAVE_INDICATOR" then return M.CreateAutosaveIndicator(options)
+  elseif id=="STORY_RECAP_SCREEN" then return M.CreateStoryRecapScreen(options)
+  elseif id=="TUTORIAL_LIBRARY_SCREEN" then return M.CreateTutorialLibraryScreen(options)
+  elseif id=="CONTEXT_REMINDER" then return M.CreateContextReminder(options)
+  elseif id=="RADIAL_ACTION_WHEEL" then return M.CreateRadialActionWheel(options)
+  elseif id=="COMPARISON_PANEL" then return M.CreateComparisonPanel(options)
+  elseif id=="REWARD_REVEAL" then return M.CreateRewardReveal(options)
+  elseif id=="DEATH_SCREEN" then return M.CreateDeathScreen(options)
+  elseif id=="PHOTO_MODE_SHELL" then return M.CreatePhotoModeShell(options)
   end
   error("UNKNOWN_COMMON_PRESENTATION_ATOM: "..tostring(atomId))
 end
@@ -793,7 +1187,7 @@ function M.Audit()
   return table.freeze({
     version=1,
     packId="roblox-common-presentation-v1",
-    atomCount=26,
+    atomCount=45,
     stylePresetCount=7,
     stylePresets=table.freeze({"CINEMATIC_DARK","FANTASY_CARVED","SCI_FI_GLASS","HORROR_MUTED","COZY_SOFT","ARCADE_BOLD","MINIMAL_LIGHT"}),
     studioRequiredForInternalAudit=false,
