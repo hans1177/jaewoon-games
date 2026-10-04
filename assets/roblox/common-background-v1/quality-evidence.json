@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "packId": "roblox-common-background-v1",
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 95,
+      "FORM_STRUCTURE": 94,
+      "MATERIAL_SURFACE": 94,
+      "COLOR_LIGHTING": 97,
+      "STYLE_COHERENCE": 97,
+      "DETAIL_FINISH": 95,
+      "READABILITY_SCALE": 97,
+      "MOTION_RIG": 91,
+      "FEEDBACK_STATES": 91,
+      "MODULAR_REUSE": 98,
+      "VARIATION_BREADTH": 99,
+      "PERFORMANCE_LOD": 95,
+      "PROVENANCE_MAINTAINABILITY": 97,
+      "INTEGRATION_READINESS": 97
+    }
+  },
+  "themeCount": 12,
+  "depthLayerMinimum": 3,
+  "detailedChecks": {
+    "composition": [
+      "foreground",
+      "midground",
+      "background",
+      "landmark hierarchy",
+      "route readability",
+      "negative space for UI"
+    ],
+    "worldDetail": [
+      "macro terrain",
+      "route/landmark",
+      "structural midground",
+      "cluster detail",
+      "functional props",
+      "surface breakup",
+      "weathering/contact",
+      "ambient motion",
+      "lighting focus"
+    ],
+    "themes": [
+      "forest",
+      "snow",
+      "desert",
+      "swamp",
+      "cave",
+      "coast",
+      "village",
+      "city",
+      "ruins",
+      "dungeon",
+      "magical forest",
+      "horror interior"
+    ],
+    "reuse": [
+      "menu backdrop",
+      "loading backdrop",
+      "intro backdrop",
+      "world visual profile",
+      "parallax control"
+    ],
+    "constraints": [
+      "no random clutter",
+      "no flat lighting",
+      "no gameplay authority",
+      "no collision authority"
+    ]
+  },
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO"
+}
