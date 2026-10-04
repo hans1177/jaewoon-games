@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "packId": "roblox-common-environment-v1",
+  "family": "ENVIRONMENT",
+  "platform": "ROBLOX",
+  "title": "Roblox 회사 공용 환경/배경 10바이옴 베이스 v1",
+  "license": "project-original",
+  "companyCommonBase": true,
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "source": "RobloxCommonEnvironment.luau",
+  "biomes": [
+    "FOREST",
+    "SNOW",
+    "DESERT",
+    "SWAMP",
+    "CAVE",
+    "COAST",
+    "VILLAGE",
+    "CITY",
+    "RUINS",
+    "DUNGEON"
+  ],
+  "roles": [
+    "BIOME_KIT",
+    "TERRAIN",
+    "GROUND_DETAIL",
+    "PATH_ROAD",
+    "CLIFF",
+    "WATER",
+    "LANDMARK",
+    "SET_DRESSING"
+  ],
+  "recipeCount": 80,
+  "detailTiers": [
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+  ],
+  "gameSpecificVariationFields": [
+    "PALETTE",
+    "MATERIAL",
+    "VEGETATION_MIX",
+    "WEATHERING",
+    "DENSITY",
+    "LANDMARK_DETAIL",
+    "LIGHTING"
+  ],
+  "assemblyContract": {
+    "existingAssetsFirst": true,
+    "companyCommonAssetsFirst": true,
+    "gameplayAuthority": false,
+    "collisionAuthority": false,
+    "spawnAuthority": false,
+    "resourceAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false,
+    "styleAdaptationRequiredPerGame": true,
+    "streamingOrLodRequiredForLargeScenes": true
+  },
+  "machineTags": [
+    "COMMON_ENVIRONMENT",
+    "BIOME",
+    "TERRAIN",
+    "ROAD",
+    "CLIFF",
+    "WATER",
+    "LANDMARK",
+    "SET_DRESSING",
+    "STYLE_ADAPTABLE"
+  ]
+}
