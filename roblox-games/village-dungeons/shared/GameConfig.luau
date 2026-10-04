@@ -1,3 +1,5 @@
+-- 파일명: roblox-games/village-dungeons/shared/GameConfig.luau
+
 local Config = {
   PolicySource = "company-learning/platform-release-roadmap.json",
   Platform = "ROBLOX",
@@ -9,6 +11,7 @@ local Config = {
   Subgenre = "",
   PlayMode = "SINGLE",
   MultiplayerRequired = false,
+  BasicMultiplayerSupport = true,
   CoopRequired = false,
   CompetitiveRequired = false,
   MinimumParticipants = 1,
