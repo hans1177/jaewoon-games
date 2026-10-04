@@ -52,6 +52,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
       }
       const recurrenceCount=Math.max(1,Number(rec.recurrenceCount||0),ids.length);
       const repairMode=recurrenceCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
+      const flowStageLoop=clean(rec.blastRadius).startsWith('flow-stage:');
+      const flowCanonicalTaskId=clean(rec.sourceTaskId);
       const saveRepairRequired=uniq(rec.evidence).some(value=>/(?:save|load|migration|persist|storage|저장|불러오기)/i.test(value));
       const multiplayerRepairRequired=uniq(rec.evidence).some(value=>/(?:multiplayer|network|sync|join|rejoin|server|client|remote|멀티|협동|동기화)/i.test(value));
       gameQueue.tasks=gameQueue.tasks.map(task=>{
@@ -59,6 +61,22 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         if(clean(task.status)==='done'||clean(task.status)==='cancelled')return task;
         touched++;
         const running=clean(task.status)==='running';
+        if(flowStageLoop&&!running&&clean(task.id)!==flowCanonicalTaskId){
+          touched++;
+          return{
+            ...clearReservation(task),
+            status:'cancelled',
+            blocker:'superseded-by-flow-stage-root-cause:'+flowCanonicalTaskId,
+            lastOutcome:'SUPERSEDED_DUPLICATE_FLOW_STAGE_ATTEMPT',
+            evidence:uniq([
+              ...(task.evidence||[]),
+              'flow-stage-loop-coalesced:YES',
+              'flow-stage-loop-canonical-task:'+flowCanonicalTaskId,
+              'flow-stage-loop-preserves-canonical-order:YES'
+            ]),
+            updatedAt:stamp
+          };
+        }
         if(!running)gameRequeuedTaskIds.add(clean(task.id));
         return{
           ...(running?task:clearReservation(task)),
@@ -98,7 +116,13 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             'game-repair-repeat-count:'+recurrenceCount,
             'game-repair-user-assistance-required:NO',
             'game-repair-save-migration:'+(saveRepairRequired?'REQUIRED':'NOT_APPLICABLE'),
-            'game-repair-multiplayer-lifecycle:'+(multiplayerRepairRequired?'MACHINE_REQUIRED':'NOT_APPLICABLE')
+            'game-repair-multiplayer-lifecycle:'+(multiplayerRepairRequired?'MACHINE_REQUIRED':'NOT_APPLICABLE'),
+            ...(flowStageLoop?[
+              'flow-stage-loop-root-cause:'+(repairMode==='ROOT_CAUSE_MODE'?'YES':'PENDING_THRESHOLD'),
+              'flow-stage-loop-recurrence-count:'+String(recurrenceCount),
+              'flow-stage-loop-preserves-canonical-order:YES',
+              'flow-stage-loop-duplicate-queue-amplification:COLLAPSED'
+            ]:[])
           ]),
           updatedAt:stamp
         };
