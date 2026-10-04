@@ -95,7 +95,7 @@ import {
   buildBaseMaterialRotationPlan,
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
-import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity} from '../assets/vibe-character-identity-director.js';
+import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
@@ -253,12 +253,109 @@ test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.deepEqual([...STUDIO_ASSET_FAMILIES],['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
   assert.ok(CREATURE_BODY_PLANS.length>=30);
   assert.ok(CREATURE_SPECIES.length>=50);
-  assert.equal(CLOTHING_LAYER_SLOTS.length,15);
+  assert.equal(CLOTHING_LAYER_SLOTS.length,24);
   assert.ok(BIOME_FAMILIES.length>=18);
   assert.ok(BUILDING_THEMES.length>=12);
   for(const style of ['INK_WASH','WATERCOLOR','NOIR','TOON_NOIR','SOLARPUNK','BIOPUNK','RETRO_FUTURISM','COZY','PAPER_CRAFT','VOXEL','DREAMCORE','HISTORICAL_EAST_ASIAN','SPACE_OPERA','UNDERWATER_FANTASY','DESERT_FANTASY','MYTHIC_NORDIC']){
     assert.ok(createStudioAssetUniversePlan({styleFamily:style}).styleFamilies.includes(style),style);
   }
+});
+
+test('deep RPG character customization breadth drives player and NPC variety without gameplay authority',()=>{
+  const contract=VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT;
+  assert.equal(contract.version,1);
+  assert.equal(contract.sharedAssetPoolForPlayerAndNpc,true);
+  assert.equal(contract.protectedExpressionCopyForbidden,true);
+  assert.equal(contract.exactThirdPartyFaceHairTattooOutfitUiCopyForbidden,true);
+  assert.ok(contract.targetMinimums.HEAD_BASE>=48);
+  assert.ok(contract.targetMinimums.FACE_MORPH_CONTROL>=28);
+  assert.ok(contract.targetMinimums.HAIR_STYLE>=48);
+  assert.ok(contract.targetMinimums.CLOTHING_LAYER_VARIANT>=60);
+  assert.equal(contract.npcPopulationRules.colorOnlyDuplicateForbidden,true);
+  assert.equal(contract.npcPopulationRules.speciesPartCompatibilityRequired,true);
+  assert.equal(contract.production.photoObservationMaySeedVisibleFormAndSurfaceIdeas,true);
+  assert.equal(contract.production.runtimeVerificationRequiredBeforeProductionPromotion,true);
+  assert.equal(contract.gameplayAuthority,false);
+
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.BODY_ARCHETYPE,12);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.HEAD_BASE,48);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.FACE_MORPH,28);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.HAIR,48);
+  assert.equal(DEFAULT_COVERAGE_BASELINES.CHARACTER.CLOTHING,60);
+
+  const recipe=createVibeCharacterCustomizationRecipe({name:'qa-hero',species:'elflike',role:'scholar',region:'coast'},7);
+  assert.equal(recipe.productionVerified,false);
+  assert.equal(recipe.gameplayAuthority,false);
+  assert.equal(recipe.speciesParts.horn,'NONE');
+  assert.equal(recipe.speciesParts.tail,'NONE');
+  assert.ok(['POINTED','LONG','NOTCHED'].includes(recipe.speciesParts.ear));
+  assert.ok(recipe.head.faceWidth>=0&&recipe.head.faceWidth<=1);
+  assert.ok(recipe.hair.style);
+
+  const population=createVibeNpcCustomizationPopulation({
+    count:48,
+    seed:'qa-npc-population',
+    roles:['MERCHANT','GUARD','ARTISAN','SCHOLAR'],
+    regions:['COAST','MOUNTAIN','CITY'],
+    species:['humanoid','elflike']
+  });
+  assert.equal(population.total,48);
+  assert.equal(population.unique,48);
+  assert.equal(population.diversityPercent,100);
+  assert.equal(population.cloneRatePercent,0);
+  assert.equal(population.sameAssetPoolAsPlayerCustomization,true);
+  assert.equal(population.productionVerified,false);
+  assert.ok(population.recipes.every(row=>row.speciesParts.compatibilityChecked===true));
+});
+
+test('reference image observations become task-local character customization ideas without persistent copy claims',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const sourceId='qa-character-reference';
+  const imageRef='conversation://qa-character-reference.png';
+  const sourceHash='0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+  const plan=buildVibeAssetProductionPlan({
+    task:{
+      gameId:'reference-character-customization-test',
+      goal:'캐릭터 NPC 커스터마이징 사진 참고 제작',
+      imageToAsset:true,
+      characterCustomization:{npcPreviewCount:12},
+      referenceImages:[{
+        sourceId,
+        sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+        imageRef,
+        sourceHash,
+        purpose:'ASSET_CREATION',
+        observation:{
+          sourceId,imageRef,sourceHash,
+          SILHOUETTE:'broad shoulder narrow waist readable head shape',
+          PROPORTIONS:'long legs compact torso',
+          MATERIAL_REGIONS:'skin hair cloth metal accessory',
+          PALETTE:'warm skin dark hair muted cloth',
+          CONSTRUCTION_DETAILS:'layered hair collar piercing belt',
+          STYLE_LANGUAGE:'stylized realistic fantasy',
+          IDENTITY_ANCHORS:'asymmetric brow scar ear accessory',
+          UNSEEN_REGIONS:'creative proposal required',
+          MOTION_DESIGN:'creative proposal required'
+        },
+        verifiedAgainstSource:true
+      }]
+    },
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(plan.imageAssetCreation.enabled,true);
+  assert.equal(plan.imageAssetCreation.ideaWorklistIsTaskLocal,true);
+  assert.equal(plan.imageAssetCreation.ideaWorklistPersistenceForbidden,true);
+  assert.ok(plan.imageAssetCreation.ideaWorklist.length>=8);
+  assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.domain==='CHARACTER'));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.every(row=>row.directCopyForbidden===true&&row.productionVerified===false));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.some(row=>row.customizationAxis==='BODY_ARCHETYPE'));
+  assert.ok(plan.imageAssetCreation.ideaWorklist.some(row=>row.customizationAxis==='SCAR_TATTOO_MAKEUP'));
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.requested,true);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.playerAndNpcShareAssetPool,true);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.npcPopulationPreview.total,12);
+  assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.productionVerified,false);
 });
 
 test('survival wildlife catalog includes forest animals with distinct visual profiles',()=>{
