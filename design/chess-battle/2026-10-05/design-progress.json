@@ -114,15 +114,15 @@
       "updatedAt": "2026-10-04T17:50:07.661Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 62,
+      "calls": 64,
       "successes": 0,
-      "failures": 62,
+      "failures": 64,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 601523,
-      "lastMs": 11757,
+      "totalMs": 630845,
+      "lastMs": 17408,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-04T20:25:42.348Z"
+      "updatedAt": "2026-10-04T20:28:28.591Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 31,
@@ -137,5 +137,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-04T20:28:14.669Z"
+  "updatedAt": "2026-10-04T20:28:28.592Z"
 }
