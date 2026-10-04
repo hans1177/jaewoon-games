@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-vfx-v1/RobloxCommonVFX.luau
--- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 3종
+-- 역할: 모든 Roblox 게임에서 재사용하는 회사 공용 VFX 베이스 8종
 -- 원칙: 시각 표현만 소유한다. 데미지/히트박스/쿨다운/이동/네트워크 권한은 게임 코드가 소유한다.
 
 local TweenService = game:GetService("TweenService")
