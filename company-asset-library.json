@@ -1,5 +1,5 @@
 {
-  "version": 84,
+  "version": 85,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-04",
@@ -79,7 +79,11 @@
     "externalSourceSpeculativeDownloadForbidden": true,
     "externalSourceOnDemandAcquisition": true,
     "externalSourceAcquisitionOnlyAfterInternalReuseFailure": true,
-    "qualityAndAutomationDetailPrimaryAttention": true
+    "qualityAndAutomationDetailPrimaryAttention": true,
+    "styleExpressionAxesRequiredForAllInternalAssets": true,
+    "commonAssetsRemainStyleAdaptive": true,
+    "conceptStyleLockWinsOverPhotoStyleSuggestion": true,
+    "photoReferenceMaySuggestStyleButDirectCopyForbidden": true
   },
   "platformPacks": [
     {
@@ -55767,7 +55771,7 @@
     "compositionContract": "company-asset-library.json#internalAssetCompositionContract"
   },
   "internalAssetRoutineReview": {
-    "version": 3,
+    "version": 4,
     "mode": "EVENT_DRIVEN_ASSET_REVIEW_NOT_SCHEDULER",
     "scheduleCreated": false,
     "workflowCreated": false,
@@ -55813,7 +55817,9 @@
       "REBUILD_UI_SUBSYSTEM_DEPTH",
       "READ_PERSISTED_NEXT_VOLUME_ACTIONS",
       "FILTER_EXISTING_ID_ATOM_ROLE_FROM_SUGGESTED_IDEAS",
-      "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS"
+      "OVERLAY_TASK_LOCAL_REFERENCE_IMAGE_IDEAS",
+      "RESOLVE_CONCEPT_STYLE_EXPRESSION_PROFILE",
+      "APPLY_STYLE_EXPRESSION_AXES_TO_ALL_ASSET_DOMAINS"
     ],
     "postBindingChecks": [
       "RECORD_SOURCE_FILES",
@@ -55838,7 +55844,8 @@
       "AUTO_SYNC_CATALOG_TO_REGISTRY",
       "REBUILD_LOOSE_VOLUME_PLAN",
       "CONSUME_NEXT_VOLUME_ACTIONS_IN_PRIORITY_ORDER",
-      "QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY"
+      "QUALITY_UP_WEAKEST_AXIS_980_TO_1000_AFTER_VOLUME_READY",
+      "KEEP_COMMON_ASSET_STYLE_ADAPTIVE_NOT_GAME_STYLE_PINNED"
     ],
     "completionEvidence": [
       "CATALOG_UPDATED",
@@ -56287,7 +56294,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 7,
+    "version": 8,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -56907,7 +56914,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 84,
+    "lastCatalogSynchronizedVersion": 85,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -57231,6 +57238,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57260,6 +57273,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57289,6 +57308,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57318,6 +57343,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57351,6 +57382,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57384,6 +57427,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57417,6 +57472,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57450,6 +57517,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57474,6 +57553,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -57498,6 +57589,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -57522,6 +57625,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -57546,6 +57661,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -57579,6 +57706,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57612,6 +57749,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57636,6 +57783,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -57666,6 +57819,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57696,6 +57861,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57726,6 +57903,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -57759,6 +57948,19 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -57792,6 +57994,19 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -57825,6 +58040,19 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -57858,6 +58086,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -57891,6 +58128,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -57924,6 +58170,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -57957,6 +58212,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -57990,6 +58254,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -58023,6 +58297,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -58047,6 +58331,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58071,6 +58361,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -58097,6 +58396,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58121,6 +58430,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -58154,6 +58472,19 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -58187,6 +58518,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58220,6 +58560,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58253,6 +58602,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58286,6 +58645,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "MOTION_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -58319,6 +58688,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58352,6 +58730,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58376,6 +58763,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58406,6 +58799,18 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "MOTION_ENERGY",
+          "VFX_ENERGY",
+          "UI_EXPRESSION",
+          "AUDIO_ENERGY",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -58432,6 +58837,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58456,6 +58871,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -58489,6 +58913,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58522,6 +58956,14 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58548,6 +58990,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58581,6 +59033,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58614,6 +59076,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58647,6 +59119,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "SHAPE_TEMPER",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR",
+          "ATMOSPHERE_WEIGHT"
         ]
       },
       {
@@ -58680,6 +59162,14 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58713,6 +59203,14 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58746,6 +59244,14 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SURFACE_FEEL",
+          "MATERIAL_FINISH",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "DAMAGE_WEAR"
         ]
       },
       {
@@ -58770,6 +59276,12 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58796,6 +59308,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58820,6 +59342,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -58844,6 +59375,15 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "VFX_ENERGY"
         ]
       },
       {
@@ -58871,6 +59411,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58898,6 +59448,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58925,6 +59485,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58952,6 +59522,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -58979,6 +59559,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59006,6 +59596,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59033,6 +59633,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59060,6 +59670,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59087,6 +59707,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59114,6 +59744,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59141,6 +59781,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59168,6 +59818,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59195,6 +59855,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59222,6 +59892,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59249,6 +59929,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59276,6 +59966,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59303,6 +60003,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59330,6 +60040,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59357,6 +60077,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59384,6 +60114,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59411,6 +60151,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59438,6 +60188,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59465,6 +60225,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59492,6 +60262,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59519,6 +60299,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59546,6 +60336,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59573,6 +60373,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59600,6 +60410,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59627,6 +60447,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59654,6 +60484,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59681,6 +60521,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59708,6 +60558,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59735,6 +60595,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59762,6 +60632,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59789,6 +60669,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59816,6 +60706,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59843,6 +60743,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59870,6 +60780,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59897,6 +60817,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59924,6 +60854,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       },
       {
@@ -59951,6 +60891,16 @@
           "RECOMBINE_EXISTING",
           "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
           "NEW_AUTHORING"
+        ],
+        "styleExpressionAdaptationRequired": true,
+        "styleExpressionAxisIds": [
+          "SHAPE_TEMPER",
+          "EXPRESSION_INTENSITY",
+          "LINE_ENERGY",
+          "COLOR_ENERGY",
+          "DETAIL_DENSITY",
+          "UI_EXPRESSION",
+          "MOTION_ENERGY"
         ]
       }
     ],
@@ -60022,6 +60972,221 @@
       "unseenGeometryAndMotionRemainCreativeProposals": true,
       "productionPromotionAutomatic": false,
       "producedAssetMayEnterCatalogOnlyAfterNormalAssetQA": true
+    },
+    "styleExpressionRequiredForAllDomains": true,
+    "styleExpressionContractRef": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_AXES",
+    "styleExpressionDomainBindingRef": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS",
+    "styleExpressionAxes": {
+      "SURFACE_FEEL": [
+        "ROUGH",
+        "BALANCED",
+        "SOFT"
+      ],
+      "SHAPE_TEMPER": [
+        "SHARP",
+        "ROUND",
+        "MIXED",
+        "FLOWING",
+        "BLOCKY"
+      ],
+      "EXPRESSION_INTENSITY": [
+        "RESTRAINED",
+        "BALANCED",
+        "EXPRESSIVE",
+        "EXTREME"
+      ],
+      "MATERIAL_FINISH": [
+        "RAW",
+        "MATTE",
+        "WEATHERED",
+        "CLEAN",
+        "GLOSSY"
+      ],
+      "LINE_ENERGY": [
+        "CALM",
+        "FLOWING",
+        "DYNAMIC",
+        "AGGRESSIVE"
+      ],
+      "COLOR_ENERGY": [
+        "MUTED",
+        "NATURAL",
+        "VIBRANT",
+        "HIGH_CONTRAST"
+      ],
+      "DETAIL_DENSITY": [
+        "MINIMAL",
+        "MEDIUM",
+        "DENSE",
+        "SELECTIVE_DENSE"
+      ],
+      "DAMAGE_WEAR": [
+        "CLEAN",
+        "LIGHT_WORN",
+        "HEAVY_WORN"
+      ],
+      "MOTION_ENERGY": [
+        "SUBTLE",
+        "GROUNDED",
+        "EXPRESSIVE",
+        "EXAGGERATED"
+      ],
+      "VFX_ENERGY": [
+        "SUBTLE",
+        "READABLE",
+        "PUNCHY",
+        "SPECTACULAR"
+      ],
+      "UI_EXPRESSION": [
+        "MINIMAL",
+        "BALANCED",
+        "BOLD",
+        "ORNATE"
+      ],
+      "AUDIO_ENERGY": [
+        "SUBTLE",
+        "NATURAL",
+        "PUNCHY",
+        "CINEMATIC"
+      ],
+      "ATMOSPHERE_WEIGHT": [
+        "AIRY",
+        "BALANCED",
+        "HEAVY",
+        "OPPRESSIVE"
+      ]
+    },
+    "styleExpressionDomainBindings": {
+      "BUILDING": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "CREATURE": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "MOTION_ENERGY"
+      ],
+      "MOTION": [
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "MOTION_ENERGY"
+      ],
+      "UI": [
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "UI_EXPRESSION",
+        "MOTION_ENERGY"
+      ],
+      "WORLD_PROP": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ],
+      "ENVIRONMENT": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "ITEM": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ],
+      "SKILL": [
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "MOTION_ENERGY",
+        "VFX_ENERGY"
+      ],
+      "VFX": [
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "VFX_ENERGY"
+      ],
+      "PRESENTATION": [
+        "EXPRESSION_INTENSITY",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "MOTION_ENERGY",
+        "VFX_ENERGY",
+        "UI_EXPRESSION",
+        "AUDIO_ENERGY",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "CHARACTER_GEAR": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ],
+      "WEAPON": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "EXPRESSION_INTENSITY",
+        "MATERIAL_FINISH",
+        "LINE_ENERGY",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "MOTION_ENERGY",
+        "VFX_ENERGY"
+      ],
+      "AUDIO": [
+        "EXPRESSION_INTENSITY",
+        "AUDIO_ENERGY",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "FOLIAGE": [
+        "SURFACE_FEEL",
+        "SHAPE_TEMPER",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR",
+        "MOTION_ENERGY",
+        "ATMOSPHERE_WEIGHT"
+      ],
+      "MATERIAL": [
+        "SURFACE_FEEL",
+        "MATERIAL_FINISH",
+        "COLOR_ENERGY",
+        "DETAIL_DENSITY",
+        "DAMAGE_WEAR"
+      ]
     }
   },
   "characterNpcCustomization": {
