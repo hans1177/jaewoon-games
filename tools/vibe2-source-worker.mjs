@@ -2113,7 +2113,8 @@ export function buildInternalAssetSourceUsageContract(order={},{cwd=process.cwd(
   const flowLoadout=assetProduction?.flowAssetLoadout||{};
   const familyEntries=Object.entries(loadout?.families||{})
     .map(([family,atoms])=>[clean(family).toUpperCase(),unique((atoms||[]).map(clean).filter(Boolean)).sort()])
-    .filter(([family,atoms])=>family&&atoms.length);
+    .filter(([family,atoms])=>family&&atoms.length)
+    .sort(([a],[b])=>a.localeCompare(b));
   const exactFamilies=Object.freeze(Object.fromEntries(familyEntries));
   const libraryIndex=discoverInternalAssetLibraryIndex({cwd,target});
   const flowSelections=(flowLoadout?.selections||[]).map(row=>Object.freeze({
