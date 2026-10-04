@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "web-games/fantasy-survival/index.html"
+      - "web-games/fantasy-survival/tier.html"
       - ".github/workflows/magic-forest-pages.yml"
   workflow_dispatch:
 
@@ -32,6 +33,7 @@ jobs:
           rm -rf _site
           mkdir -p _site
           cp web-games/fantasy-survival/index.html _site/index.html
+          cp web-games/fantasy-survival/tier.html _site/tier.html
           touch _site/.nojekyll
 
       - name: Publish gh-pages branch
