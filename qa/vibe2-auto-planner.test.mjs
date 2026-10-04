@@ -1521,6 +1521,7 @@ test('full planner replaces low-value micro work with queued studio packages and
         :row
     )};
   }
+  if(!second)console.log('DEBUG_STUDIO_REPEAT_QUEUE',JSON.stringify(working.tasks.filter(row=>row.gameId===gameId).map(row=>({id:row.id,status:row.status,blocker:row.blocker,focus:row.studioQualityEvolution?.focusPillar,cycle:row.studioQualityEvolution?.cycle,phase:row.studioQualityEvolution?.phase,buildUpNextAction:row.buildUpNextAction,evidence:(row.evidence||[]).filter(value=>/studio-quality|build-up-next|asset-application|library-use|primitive-only|marker-only/.test(value))})),null,2));
   assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
   assert.notEqual(second.id,first.id);
   assert.equal(second.taskWorkUnits,7);
