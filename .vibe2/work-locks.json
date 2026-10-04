@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-epwpno",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-existing-web-assessment-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "web-games/seed-puzzle-chromatic-cascade/index.html"
+      ],
+      "baseSha": "a667a2f7b8d589a7d4ff805c6a52fc79ba3a529e",
+      "runId": "37208920874",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-04T14:29:44.536Z",
+      "expiresAt": "2026-10-04T15:14:44.536Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
