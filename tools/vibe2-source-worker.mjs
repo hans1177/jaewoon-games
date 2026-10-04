@@ -1929,7 +1929,7 @@ export function discoverInternalAudioSources(repoRoot=process.cwd()){
   return Object.freeze(rows.sort((a,b)=>a.path.localeCompare(b.path)));
 }
 
-export function buildInternalAssetSourceUsageContract(order={},{repoRoot=process.cwd()}={}){
+export function buildInternalAssetSourceUsageContract(order={},{repoRoot=null}={}){
   const target=clean(order?.target).toLowerCase();
   const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
   const assetProduction=order?.assetProduction||{};
@@ -1967,7 +1967,7 @@ export function buildInternalAssetSourceUsageContract(order={},{repoRoot=process
   const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
   const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
-  const binaryAudioSources=discoverInternalAudioSources(repoRoot).map(row=>Object.freeze({
+  const binaryAudioSources=(repoRoot?discoverInternalAudioSources(repoRoot):[]).map(row=>Object.freeze({
     ...row,
     runtimeBindingState:target==='roblox'?'UPLOAD_BINDING_REQUIRED':target==='unity'?'IMPORT_BINDING_REQUIRED':target==='web'?'STATIC_FILE_BINDING_REQUIRED':'PLATFORM_BINDING_REQUIRED'
   }));
@@ -2108,7 +2108,7 @@ export function buildInternalAssetSourceUsageContract(order={},{repoRoot=process
     })
   });
   return Object.freeze({
-    version:3,
+    version:4,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
