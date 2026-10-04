@@ -133,8 +133,6 @@ test('F0 checkout and validation fan out across the full external-capacity matri
   assert.match(workflow,/ROBLOX_F0_CHECKOUT_MODE=PER_GAME_MATRIX_PARALLEL/);
   assert.match(header,/run-name: Roblox F0 · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.doesNotMatch(header,/^concurrency:\s*$/m);
-  assert.doesNotMatch(workflow,/\n  persist:\n/);
-  assert.match(workflow,/Persist this game's F0 evidence without batch fan-in/);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_HANDOFF=DEDUPED_CURRENT_MAIN:/);
   assert.match(workflow,/ROBLOX_F0_PRIVATE_VALIDATION_DISPATCH_COUNT=/);
   assert.match(workflow,/company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id" -f publish_stage=validation/);
@@ -160,25 +158,21 @@ test('F0 accepts approved non-combat action loops without inventing combat marke
  assert.equal(r.checks.combatOrRound,true);
 });
 
-test('F0 persistence is per-game, has no batch fan-in, and reapplies evidence after runtime write conflicts',()=>{
+test('F0 persistence does not serialize the whole job and reapplies evidence after runtime write conflicts',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
-  const validateStart=workflow.indexOf('\n  validate:\n');
-  const block=workflow.slice(validateStart);
-  assert.ok(validateStart>=0);
-  assert.doesNotMatch(workflow,/\n  persist:\n/);
-  assert.match(block,/name: Persist this game's F0 evidence without batch fan-in/);
-  assert.match(block,/if: always\(\)/);
-  assert.match(block,/working-directory: \.f0-runtime/);
-  assert.match(block,/ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT=\$attempt\/UNBOUNDED/);
+  const start=workflow.indexOf('\n  persist:\n');
+  const end=workflow.indexOf('\n      - name: Dispatch exact private Roblox validation directly after F0',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.doesNotMatch(block,/group:\s*company-runtime-writer/);
+  assert.match(block,/ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT=/);
   assert.match(block,/ROBLOX_F0_PERSIST_CONFLICT_RETRY=/);
-  assert.match(block,/while true; do/);
-  assert.doesNotMatch(block,/for attempt in 1 2 3 4 5/);
   assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
-  assert.match(block,/name: Dispatch exact private Roblox validation directly after F0/);
 });
 
-test('F0 planner dedupes duplicate dispatches while validation matrix and per-game handoff remain parallel',()=>{
+
+test('F0 planner dedupes duplicate dispatches while validation matrix remains parallel',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
@@ -186,7 +180,6 @@ test('F0 planner dedupes duplicate dispatches while validation matrix and per-ga
   const planStart=workflow.indexOf('\n  plan:\n');
   const validateStart=workflow.indexOf('\n  validate:\n',planStart);
   const planBlock=workflow.slice(planStart,validateStart);
-  const validateBlock=workflow.slice(validateStart);
   assert.match(planBlock,/runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(planBlock,/concurrency:/);
   assert.match(planBlock,/ROBLOX_F0_PLAN_CONTROL_SHA=/);
@@ -196,10 +189,11 @@ test('F0 planner dedupes duplicate dispatches while validation matrix and per-ga
   assert.match(planBlock,/ROBLOX_F0_PLAN_BATCH_DEDUPED_NEWER=/);
   assert.match(planBlock,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
   assert.doesNotMatch(workflow,/max-parallel:\s*[1-9][0-9]*/);
-  assert.doesNotMatch(workflow,/\n  persist:\n/);
-  assert.match(validateBlock,/Persist this game's F0 evidence without batch fan-in/);
-  assert.match(validateBlock,/Dispatch exact private Roblox validation directly after F0/);
+  const persistStart=workflow.indexOf('\n  persist:\n');
+  const persistBlock=workflow.slice(persistStart);
+  assert.match(persistBlock,/runs-on:\s*ubuntu-slim/);
 });
+
 
 test('F0 hands exact game ids directly to private validation without Studio dependency',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
