@@ -1,0 +1,344 @@
+{
+  "version": 1,
+  "packId": "roblox-common-menu-v1",
+  "title": "Roblox 회사 공용 메뉴·운영 UI 18종 v1",
+  "family": "UI",
+  "subfamily": "MENU",
+  "platform": "ROBLOX",
+  "reuseScope": "COMPANY_ROBLOX_COMMON_BASE",
+  "companyCommonBase": true,
+  "license": "project-original",
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "internalAuditStudioRequired": false,
+  "gameplayAuthority": false,
+  "flowStageUse": [
+    "DESIGN_REFINEMENT",
+    "GRAPHICS_PRODUCTION",
+    "SOURCE_COMPOSITION",
+    "BUILD_UP",
+    "PRESENTATION_POLISH"
+  ],
+  "defaultStageRoles": {
+    "DESIGN_REFINEMENT": [
+      "MENU_INFORMATION_ARCHITECTURE",
+      "STYLE_PRESET_SELECTION"
+    ],
+    "GRAPHICS_PRODUCTION": [
+      "THEME",
+      "TYPOGRAPHY",
+      "LAYOUT",
+      "FOCUS_STATES",
+      "BACKGROUND_INTEGRATION"
+    ],
+    "SOURCE_COMPOSITION": [
+      "MAIN_MENU",
+      "PAUSE_MENU",
+      "SETTINGS",
+      "INVENTORY",
+      "EQUIPMENT",
+      "MAP",
+      "JOURNAL"
+    ],
+    "BUILD_UP": [
+      "SEARCH_FILTER_SORT",
+      "INPUT_HINTS",
+      "PROFILE",
+      "SAVE_STATUS",
+      "DETAIL_PANELS"
+    ],
+    "PRESENTATION_POLISH": [
+      "FOCUS_MOTION",
+      "DEPTH",
+      "READABILITY",
+      "ACCESSIBILITY"
+    ]
+  },
+  "stylePresets": [
+    "MINIMAL_HERO",
+    "DENSE_TACTICAL",
+    "CINEMATIC_DARK",
+    "BRIGHT_CARD",
+    "DIEGETIC_MAP",
+    "CLEAN_CONSOLE"
+  ],
+  "designRules": {
+    "referencePrinciplesOnly": true,
+    "protectedGameUiCopyForbidden": true,
+    "gameStyleLockWins": true,
+    "progressiveDisclosure": true,
+    "persistentCoreState": true,
+    "contextDetailSplit": true,
+    "strongFocusState": true,
+    "inputModeParity": true,
+    "reducedMotionCompatible": true,
+    "changedSettingIndicatorCompatible": true
+  },
+  "atoms": [
+    {
+      "atomId": "MAIN_MENU_SHELL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateMainMenuShell",
+      "surface": "MAIN_MENU",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "TOP_STATUS_BAR",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateTopStatusBar",
+      "surface": "HUD_MENU_BRIDGE",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "SIDE_NAVIGATION",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateSideNavigation",
+      "surface": "NAVIGATION",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "BOTTOM_ACTION_BAR",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateBottomActionBar",
+      "surface": "ACTION_BAR",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "PAUSE_MENU",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreatePauseMenu",
+      "surface": "PAUSE",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "SETTINGS_PANEL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateSettingsPanel",
+      "surface": "SETTINGS",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "SETTINGS_ROW",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateSettingsRow",
+      "surface": "SETTINGS",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "SEARCH_BAR",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateSearchBar",
+      "surface": "SEARCH",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "FILTER_CHIP",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateFilterChip",
+      "surface": "FILTER",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "SORT_SELECTOR",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateSortSelector",
+      "surface": "SORT",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "INVENTORY_PANEL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateInventoryPanel",
+      "surface": "INVENTORY",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "ITEM_DETAIL_PANEL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateItemDetailPanel",
+      "surface": "ITEM_DETAIL",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "EQUIPMENT_PANEL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateEquipmentPanel",
+      "surface": "EQUIPMENT",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "MAP_PANEL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateMapPanel",
+      "surface": "MAP",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "JOURNAL_PANEL",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateJournalPanel",
+      "surface": "JOURNAL",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "INPUT_HINT_BAR",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateInputHintBar",
+      "surface": "INPUT_HINT",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "SAVE_STATUS",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateSaveStatus",
+      "surface": "SAVE_STATUS",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    },
+    {
+      "atomId": "PROFILE_SUMMARY",
+      "source": "RobloxCommonMenu.luau",
+      "factory": "CreateProfileSummary",
+      "surface": "PROFILE",
+      "states": [
+        "DEFAULT",
+        "FOCUS",
+        "SELECTED",
+        "DISABLED",
+        "LOADING",
+        "ERROR"
+      ]
+    }
+  ],
+  "requiredInputModes": [
+    "TOUCH",
+    "KEYBOARD_MOUSE",
+    "GAMEPAD"
+  ],
+  "accessibility": [
+    "TEXT_SCALE_READY",
+    "ICON_SCALE_READY",
+    "HIGH_CONTRAST_THEME_READY",
+    "REDUCED_MOTION_READY",
+    "FOCUS_VISIBLE",
+    "COLOR_NOT_ONLY_SIGNAL"
+  ]
+}
