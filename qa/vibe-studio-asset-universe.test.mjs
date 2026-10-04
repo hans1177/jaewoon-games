@@ -1676,3 +1676,70 @@ test('company-common VFX registry exposes cross-game automatic candidates',()=>{
     assert.equal(row.bindingHint.preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority,true);
   }
 });
+
+
+test('company-common skill presentation reuses common VFX without owning gameplay authority',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const packDir=path.join(root,'assets','roblox','common-skill-v1');
+  const source=fs.readFileSync(path.join(packDir,'RobloxCommonSkillPresentation.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
+  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
+
+  for(const atom of ['CAST_HAND','TELEGRAPH_CIRCLE','IMPACT_SMALL']){
+    assert.ok(source.includes(atom),atom);
+    assert.ok(catalog.atoms.some(row=>row.atomId===atom),atom+':catalog');
+  }
+
+  assert.equal(catalog.reuseScope,'COMPANY_ROBLOX_COMMON_BASE');
+  assert.deepEqual(catalog.dependencyPackIds,['roblox-common-vfx-v1']);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(quality.staticAuthoringChecklist.score,100);
+  assert.equal(quality.quality120.claimedRuntimeScore,null);
+  assert.equal(quality.productionVerified,false);
+
+  assert.ok(source.includes('function RobloxCommonSkillPresentation.AttachCastHand(hostPart, options)'));
+  assert.ok(source.includes('function RobloxCommonSkillPresentation.CreateTelegraphCircle(options)'));
+  assert.ok(source.includes('function RobloxCommonSkillPresentation.CreateImpactSmall(options)'));
+  assert.ok(source.includes('COMMON_VFX_MODULE_REQUIRED'));
+  assert.ok(source.includes('mobileTelegraphSegmentCap = 20'));
+  assert.ok(source.includes('OwnsDamageAuthority", false'));
+  assert.ok(source.includes('OwnsRangeAuthority", false'));
+  assert.ok(source.includes('OwnsCooldownAuthority", false'));
+  assert.ok(source.includes('OwnsMovementAuthority", false'));
+  assert.equal(/RemoteEvent/.test(source),false);
+  assert.equal(/RemoteFunction/.test(source),false);
+  assert.equal(/FireServer\(/.test(source),false);
+  assert.equal(/TakeDamage\(/.test(source),false);
+});
+
+test('company-common skill registry exposes explicit VFX dependency and cross-game candidates',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+  const pack=registry.assets.find(row=>row.id==='roblox-common-skill-v1');
+  assert.ok(pack);
+  assert.equal(pack.companyCommonBase,true);
+  assert.equal(pack.productionVerified,false);
+  assert.deepEqual(pack.dependencyPackIds,['roblox-common-vfx-v1']);
+
+  const expected=[
+    ['CAST_HAND','AttachCastHand',null],
+    ['TELEGRAPH_CIRCLE','CreateTelegraphCircle',null],
+    ['IMPACT_SMALL','CreateImpactSmall','roblox-common-vfx-impact-flash']
+  ];
+  for(const [atomId,factory,reuses] of expected){
+    const id='roblox-common-skill-'+atomId.toLowerCase().replaceAll('_','-');
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,atomId);
+    assert.equal(row.family,'SKILL');
+    assert.equal(row.subfamily,atomId);
+    assert.equal(row.factory,factory);
+    assert.equal(row.reusesAssetId,reuses);
+    assert.equal(row.companyCommonBase,true);
+    assert.equal(row.automaticCrossGameReuseAllowed,true);
+    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
+    assert.equal(row.bindingHint.preserveGameplayDamageRangeCooldownComboMovementAndNetworkAuthority,true);
+  }
+
+  assert.ok(registry.assets.some(row=>row.id==='roblox-common-vfx-impact-flash'));
+});
