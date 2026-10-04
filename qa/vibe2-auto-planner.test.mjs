@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -1150,6 +1150,88 @@ test('preservation presentation task is restored instead of superseded by generi
   assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
 });
 
+test('build-up iteration expectation rises with verified cycles without adding pipeline stages',()=>{
+  const root=tempRepo();
+  fs.writeFileSync(path.join(root,'company-learning','vibe-autonomous-content-expansion-policy.json'),JSON.stringify({
+    iterationExpectationEscalation:{
+      status:'ACTIVE',
+      previousVerifiedQualityBecomesNewFloor:true,
+      verifiedOnlyAdvancesExpectation:true,
+      queueAmplificationForbidden:true,
+      newWorkflowForbidden:true,
+      newStageForbidden:true,
+      growth:{
+        detailDepthLevel:{base:1,stepEveryCycles:1,max:null},
+        connectedImprovements:{base:4,stepEveryCycles:2,max:8},
+        meaningfulDistinctAxes:{base:2,stepEveryCycles:3,max:5},
+        crossSystemConnections:{base:1,stepEveryCycles:2,max:4},
+        activeDetailDimensions:{base:2,stepEveryCycles:1,max:10},
+        playerFacingProofs:{base:1,stepEveryCycles:3,max:4},
+        connectedContentBundles:{base:0,stepEveryCycles:2,max:3}
+      }
+    }
+  },null,2),'utf8');
+  const first=resolveBuildUpIterationExpectation({repoRoot:root,cycle:1,phase:'BUILD_UP',focusPillar:'CORE_FUN'});
+  const third=resolveBuildUpIterationExpectation({repoRoot:root,cycle:3,phase:'BUILD_UP',focusPillar:'PROGRESSION'});
+  const sixth=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'BUILD_UP',focusPillar:'PRESENTATION'});
+  const repair=resolveBuildUpIterationExpectation({repoRoot:root,cycle:6,phase:'REPAIR',focusPillar:'STABILITY'});
+  assert.equal(first.tier,'FOUNDATION_COMPLETENESS');
+  assert.equal(first.minimumConnectedImprovements,4);
+  assert.equal(third.tier,'COHERENT_CONTENT_EXPANSION');
+  assert.ok(third.minimumConnectedImprovements>first.minimumConnectedImprovements);
+  assert.ok(third.minimumCrossSystemConnections>first.minimumCrossSystemConnections);
+  assert.equal(sixth.tier,'COMPOUND_DETAIL_EVOLUTION');
+  assert.ok(sixth.detailDepthLevel>third.detailDepthLevel);
+  assert.equal(sixth.midLateEndgameOrReplayDepthRequired,true);
+  assert.equal(sixth.secondOrderDetailRequired,true);
+  assert.ok(sixth.activeDetailDimensions.length>first.activeDetailDimensions.length);
+  assert.ok(sixth.minimumPlayerFacingProofs>first.minimumPlayerFacingProofs);
+  assert.ok(sixth.minimumConnectedContentBundles>first.minimumConnectedContentBundles);
+  assert.equal(sixth.qualitativeDetailDepthUnbounded,true);
+  assert.equal(sixth.queueAmplificationForbidden,true);
+  assert.equal(sixth.newWorkflowForbidden,true);
+  assert.equal(sixth.newStageForbidden,true);
+  assert.equal(sixth.studioRequired,false);
+  assert.equal(sixth.internalAuditCanPassWithoutStudio,true);
+  assert.equal(repair.expectationLevel,sixth.expectationLevel);
+  assert.equal(repair.repairKeepsExpectation,true);
+  assert.equal(repair.coherentContentExpansionRequired,false);
+});
+
+test('verified BUILD_UP cycles escalate from completeness to system depth to coherent content expansion',()=>{
+  const root=tempRepo();
+  const gameId='build-up-expectation-integration';
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas><script>function attack(){} function quest(){} function reward(){}</script></body></html>\n','utf8');
+  writeStudioDesign(root,gameId);
+  const project={gameId,name:'Build Up Expectation Integration',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const first=findStudioContinuousImprovementTask(project,root,{tasks:[]});
+  assert.ok(first);
+  assert.equal(first.studioQualityEvolution.qualityExpectation.tier,'FOUNDATION_COMPLETENESS');
+  const firstVerified={...first,status:'verified',lastOutcome:'PASS'};
+  const second=findStudioContinuousImprovementTask(project,root,{tasks:[firstVerified]});
+  assert.ok(second);
+  assert.equal(second.studioQualityEvolution.qualityExpectation.tier,'SYSTEM_DEPTH');
+  assert.equal(second.studioQualityEvolution.qualityExpectation.comparativeBaselineRequired,true);
+  const secondVerified={...second,status:'verified',lastOutcome:'PASS'};
+  const third=findStudioContinuousImprovementTask(project,root,{tasks:[firstVerified,secondVerified]});
+  assert.ok(third);
+  assert.equal(third.studioQualityEvolution.qualityExpectation.tier,'COHERENT_CONTENT_EXPANSION');
+  assert.equal(third.studioQualityEvolution.qualityExpectation.coherentContentExpansionRequired,true);
+  assert.ok(third.studioQualityEvolution.requiredConnectedImprovements.min>first.studioQualityEvolution.requiredConnectedImprovements.min);
+  assert.match(third.goal,/COHERENT_CONTENT_EXPANSION_REQUIRED/);
+  assert.match(third.goal,/디테일 렌즈:/);
+  assert.ok(third.studioQualityEvolution.qualityExpectation.activeDetailDimensions.length>=4);
+  assert.equal(third.studioQualityEvolution.qualityExpectation.qualitativeDetailDepthUnbounded,true);
+  assert.equal(third.studioQualityEvolution.requiredActiveDetailDimensions.min,third.studioQualityEvolution.qualityExpectation.minimumActiveDetailDimensions);
+  assert.equal(third.studioQualityEvolution.requiredPlayerFacingProofs.min,third.studioQualityEvolution.qualityExpectation.minimumPlayerFacingProofs);
+  assert.equal(third.studioQualityEvolution.requiredConnectedContentBundles.min,third.studioQualityEvolution.qualityExpectation.minimumConnectedContentBundles);
+  assert.match(third.goal,/같은 QA\/체크 재통과만 반복/);
+  assert.match(third.goal,/내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다/);
+  assert.ok(third.evidence.includes('studio-quality-studio-required:NO'));
+});
+
 test('first studio build-up cycle establishes presentation baseline even when noisy nonvisual signals exist',()=>{
   const root=tempRepo();
   const gameId='studio-first-cycle';
@@ -1165,6 +1247,10 @@ test('first studio build-up cycle establishes presentation baseline even when no
   assert.equal(task.studioQualityEvolution.phase,'BUILD_UP');
   assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
   assert.equal(task.studioQualityEvolution.visibleRenderDeltaRequired,true);
+  assert.equal(task.studioQualityEvolution.qualityExpectation.expectationLevel,1);
+  assert.equal(task.studioQualityEvolution.requiredConnectedImprovements.min,3);
+  assert.match(task.goal,/ITERATION_EXPECTATION_ESCALATION/);
+  assert.ok(task.evidence.includes('studio-quality-expectation-tier:FOUNDATION_COMPLETENESS'));
   assert.ok(task.evidence.includes('graphics-evolution-before-after-comparison-required'));
 });
 
@@ -1211,6 +1297,9 @@ test('verified studio quality package advances to a new large studio cycle inste
   assert.equal(second.studioQualityEvolution.cycle,2);
   assert.equal(second.studioQualityEvolution.baselineId,first.id);
   assert.equal(second.studioQualityEvolution.nextCycleRequired,true);
+  assert.equal(second.studioQualityEvolution.qualityExpectation.expectationLevel,2);
+  assert.equal(second.studioQualityEvolution.qualityExpectation.tier,'SYSTEM_DEPTH');
+  assert.equal(second.studioQualityEvolution.qualityExpectation.comparativeBaselineRequired,true);
   assert.equal(second.workUnits,7);
   assert.notEqual(second.id,first.id);
 });

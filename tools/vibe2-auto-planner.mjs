@@ -60,6 +60,115 @@ function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
+const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
+  status:'ACTIVE',
+  growth:Object.freeze({
+    detailDepthLevel:Object.freeze({base:1,stepEveryCycles:1,max:null}),
+    connectedImprovements:Object.freeze({base:3,stepEveryCycles:2,max:8}),
+    meaningfulDistinctAxes:Object.freeze({base:2,stepEveryCycles:3,max:5}),
+    crossSystemConnections:Object.freeze({base:1,stepEveryCycles:2,max:4}),
+    activeDetailDimensions:Object.freeze({base:2,stepEveryCycles:1,max:10}),
+    playerFacingProofs:Object.freeze({base:1,stepEveryCycles:3,max:4}),
+    connectedContentBundles:Object.freeze({base:0,stepEveryCycles:2,max:3})
+  }),
+  detailDimensions:Object.freeze([
+    'CORE_INTERACTION_RESPONSE',
+    'STATE_TRANSITIONS_AND_CONTINUITY',
+    'EDGE_CASES_AND_RECOVERY',
+    'DISCOVERABILITY_AND_INFORMATION',
+    'PACING_AND_FRICTION',
+    'CONTENT_CAUSALITY_AND_WORLD_LOGIC',
+    'REWARD_AND_PROGRESSION_PURPOSE',
+    'COUNTERPLAY_AND_REPLAY_VARIATION',
+    'PRESENTATION_READABILITY_AND_FEEDBACK',
+    'PERFORMANCE_AND_RUNTIME_STABILITY'
+  ]),
+  tiers:Object.freeze([
+    Object.freeze({minCycle:1,id:'FOUNDATION_COMPLETENESS',comparativeBaselineRequired:false,existingContentDeepeningRequired:false,coherentContentExpansionRequired:false,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['CLOSE_THE_HIGHEST_VALUE_PLAYER_FACING_COMPLETENESS_GAP','CONNECT_INPUT_STATE_CHANGE_FEEDBACK_AND_NEXT_CHOICE','PRESERVE_EXISTING_GAME_RULE_SAVE_BALANCE_AND_AUTHORITY'])}),
+    Object.freeze({minCycle:2,id:'SYSTEM_DEPTH',comparativeBaselineRequired:true,existingContentDeepeningRequired:true,coherentContentExpansionRequired:false,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['DEEPEN_AT_LEAST_ONE_PREVIOUSLY_VERIFIED_SYSTEM_INSTEAD_OF_REPEATING_EQUIVALENT_WORK','ADD_ROLE_BEHAVIOR_FEEDBACK_OR_EXCEPTION_DEPTH','SHOW_MEASURABLE_OR_VISIBLE_IMPROVEMENT_AGAINST_THE_PREVIOUS_VERIFIED_BASELINE'])}),
+    Object.freeze({minCycle:3,id:'COHERENT_CONTENT_EXPANSION',comparativeBaselineRequired:true,existingContentDeepeningRequired:true,coherentContentExpansionRequired:true,midLateEndgameOrReplayDepthRequired:false,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['EXPAND_OR_DEEPEN_A_CONNECTED_CONTENT_SURFACE_WITH_REAL_PLAYER_DECISION_VALUE','CONNECT_WORLD_ENCOUNTER_REWARD_PROGRESSION_OR_STORY_INTO_ONE_PLAYABLE_FLOW','REJECT_NAME_COLOR_OR_STAT_ONLY_VARIANTS'])}),
+    Object.freeze({minCycle:4,id:'MID_LATE_REPLAY_DEPTH',comparativeBaselineRequired:true,existingContentDeepeningRequired:true,coherentContentExpansionRequired:true,midLateEndgameOrReplayDepthRequired:true,secondOrderDetailRequired:false,requiredPractices:Object.freeze(['EXTEND_MID_LATE_ENDGAME_DISCOVERY_OR_REPLAY_DEPTH_WHERE_APPLICABLE','KEEP_EARLIER_CONTENT_RELEVANT_THROUGH_NEW_CONNECTIONS_OR_PURPOSE','ADD_VARIATION_THAT_CHANGES_PLAYER_STRATEGY_NOT_ONLY_CONTENT_COUNT'])}),
+    Object.freeze({minCycle:5,id:'COMPOUND_DETAIL_EVOLUTION',comparativeBaselineRequired:true,existingContentDeepeningRequired:true,coherentContentExpansionRequired:true,midLateEndgameOrReplayDepthRequired:true,secondOrderDetailRequired:true,requiredPractices:Object.freeze(['DEEPEN_SECOND_ORDER_DETAILS_SUCH_AS_TRANSITIONS_EDGE_CASES_DISCOVERABILITY_PACING_AND_CROSS_SYSTEM_CONSEQUENCES','IMPROVE_MULTIPLE_CONNECTED_SURFACES_WITHOUT_RESETTING_OR_REBUILDING_VERIFIED_SYSTEMS','TREAT_EVERY_PRIOR_VERIFIED_RESULT_AS_THE_MINIMUM_FLOOR_FOR_THE_NEXT_ITERATION'])})
+  ])
+});
+function expectationMetric(spec={},cycle=1,fallback={}){
+  const base=Math.max(0,Number(spec?.base??fallback.base??0));
+  const every=Math.max(1,Math.floor(Number(spec?.stepEveryCycles??fallback.stepEveryCycles??1)||1));
+  const rawMax=spec?.max??fallback.max??null;
+  const value=base+Math.floor(Math.max(0,cycle-1)/every);
+  const max=rawMax==null?null:Number(rawMax);
+  return Number.isFinite(max)&&max>0?Math.min(max,value):value;
+}
+export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle=1,phase='BUILD_UP',focusPillar=''}={}){
+  const level=Math.max(1,Math.floor(Number(cycle)||1));
+  const document=readJson(path.join(repoRoot,AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH),{});
+  const configured=document?.iterationExpectationEscalation;
+  const policy=configured?.status==='ACTIVE'?configured:DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY;
+  const fallbackGrowth=DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.growth;
+  const growth=policy?.growth||fallbackGrowth;
+  const tiers=(Array.isArray(policy?.tiers)&&policy.tiers.length?policy.tiers:DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.tiers)
+    .map(row=>({...row,minCycle:Math.max(1,Math.floor(Number(row?.minCycle)||1))}))
+    .sort((a,b)=>a.minCycle-b.minCycle);
+  const tier=tiers.filter(row=>row.minCycle<=level).at(-1)||tiers[0];
+  const detailDimensions=(Array.isArray(policy?.detailDimensions)&&policy.detailDimensions.length?policy.detailDimensions:DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY.detailDimensions)
+    .map(clean).filter(Boolean);
+  const minimumActiveDetailDimensions=expectationMetric(growth?.activeDetailDimensions,level,fallbackGrowth.activeDetailDimensions);
+  const activeDetailDimensions=detailDimensions.slice(0,Math.min(detailDimensions.length,minimumActiveDetailDimensions));
+  const minimumPlayerFacingProofs=expectationMetric(growth?.playerFacingProofs,level,fallbackGrowth.playerFacingProofs);
+  const minimumConnectedContentBundles=expectationMetric(growth?.connectedContentBundles,level,fallbackGrowth.connectedContentBundles);
+  const repair=clean(phase).toUpperCase()==='REPAIR';
+  return Object.freeze({
+    version:1,
+    policySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
+    expectationLevel:level,
+    cycle:level,
+    tier:clean(tier?.id)||'FOUNDATION_COMPLETENESS',
+    phase:clean(phase).toUpperCase()||'BUILD_UP',
+    focusPillar:clean(focusPillar).toUpperCase()||'GENERAL',
+    detailDepthLevel:expectationMetric(growth?.detailDepthLevel,level,fallbackGrowth.detailDepthLevel),
+    minimumConnectedImprovements:expectationMetric(growth?.connectedImprovements,level,fallbackGrowth.connectedImprovements),
+    minimumMeaningfulDistinctAxes:expectationMetric(growth?.meaningfulDistinctAxes,level,fallbackGrowth.meaningfulDistinctAxes),
+    minimumCrossSystemConnections:expectationMetric(growth?.crossSystemConnections,level,fallbackGrowth.crossSystemConnections),
+    minimumActiveDetailDimensions,
+    activeDetailDimensions:Object.freeze([...activeDetailDimensions]),
+    minimumPlayerFacingProofs,
+    minimumConnectedContentBundles,
+    qualitativeDetailDepthUnbounded:true,
+    comparativeBaselineRequired:tier?.comparativeBaselineRequired===true,
+    existingContentDeepeningRequired:tier?.existingContentDeepeningRequired===true,
+    coherentContentExpansionRequired:!repair&&tier?.coherentContentExpansionRequired===true,
+    midLateEndgameOrReplayDepthRequired:!repair&&tier?.midLateEndgameOrReplayDepthRequired===true,
+    secondOrderDetailRequired:tier?.secondOrderDetailRequired===true,
+    requiredPractices:Object.freeze([...(Array.isArray(tier?.requiredPractices)?tier.requiredPractices:[])].map(clean).filter(Boolean)),
+    previousVerifiedQualityBecomesFloor:configured?.previousVerifiedQualityBecomesNewFloor!==false,
+    verifiedOnlyAdvancesExpectation:configured?.verifiedOnlyAdvancesExpectation!==false,
+    repairKeepsExpectation:repair,
+    queueAmplificationForbidden:configured?.queueAmplificationForbidden!==false,
+    newWorkflowForbidden:configured?.newWorkflowForbidden!==false,
+    newStageForbidden:configured?.newStageForbidden!==false,
+    detailDepthContinuesAfterNamedTiers:true,
+    studioRequired:false,
+    internalAuditCanPassWithoutStudio:true,
+    runtimeEvidenceRule:'USE_EXISTING_CANONICAL_RUNTIME_EVIDENCE_WHEN_REQUIRED_BY_THAT_STAGE_ONLY'
+  });
+}
+function buildUpIterationExpectationPrompt(expectation={}){
+  const flags=[
+    expectation.comparativeBaselineRequired?'PREVIOUS_VERIFIED_BASELINE_COMPARISON_REQUIRED':null,
+    expectation.existingContentDeepeningRequired?'EXISTING_CONTENT_DEEPENING_REQUIRED':null,
+    expectation.coherentContentExpansionRequired?'COHERENT_CONTENT_EXPANSION_REQUIRED':null,
+    expectation.midLateEndgameOrReplayDepthRequired?'MID_LATE_ENDGAME_OR_REPLAY_DEPTH_REQUIRED':null,
+    expectation.secondOrderDetailRequired?'SECOND_ORDER_DETAIL_REQUIRED':null,
+    expectation.repairKeepsExpectation?'REPAIR_DOES_NOT_RESET_EXPECTATION':null
+  ].filter(Boolean);
+  return `[ITERATION_EXPECTATION_ESCALATION] level=${expectation.expectationLevel}; tier=${expectation.tier}; detailDepth=${expectation.detailDepthLevel}
+이 반복의 품질 기준은 이전 verified baseline보다 낮아질 수 없다. 실패 수리는 같은 기대치 레벨을 유지하고, 성공한 반복만 다음 기대치를 올린다. 새 workflow/stage/queue/worker를 만들지 말고 기존 BUILD_UP 책임 작업 안에서 충족한다. 내부 품질 감사와 기대치 상승 자체에는 Roblox Studio가 필수가 아니다. Studio/실런타임 증거는 기존 canonical 단계가 원래 요구하는 경우에만 별도로 사용한다.
+최소 요구: 연결된 개선 ${expectation.minimumConnectedImprovements}개, 의미상 차별화 축 ${expectation.minimumMeaningfulDistinctAxes}개, 교차 시스템 연결 ${expectation.minimumCrossSystemConnections}개, 연결형 콘텐츠 묶음 ${expectation.minimumConnectedContentBundles}개, 플레이어가 확인 가능한 전후 근거 ${expectation.minimumPlayerFacingProofs}개. 같은 QA/체크 재통과만 반복하거나 이름/색/수치 복제·마커/문서만 추가한 변경은 성장으로 계산하지 않는다.
+디테일 렌즈: ${(expectation.activeDetailDimensions||[]).join(' | ')||'CORE_INTERACTION_RESPONSE'}. 활성 렌즈 수는 반복할수록 늘어나고, 전부 활성화된 뒤에도 detailDepth가 계속 올라가므로 같은 항목을 더 깊은 전환·예외·발견성·페이싱·인과관계 수준으로 심화한다.
+필수 심화: ${expectation.requiredPractices.join(' | ')||'CURRENT_TIER_REQUIREMENTS'}.
+추가 요구: ${flags.join(' | ')||'FOUNDATION_COMPLETENESS'}. 반복이 오래될수록 detailDepth 레벨은 계속 상승하며, 완성형 이후에는 기존 콘텐츠 심화와 연결형 콘텐츠 확장·중후반/리플레이 깊이·전환/예외/발견성/페이싱 같은 2차 디테일까지 이전 기준 위에 누적한다.`;
+}
 const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
 export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
 function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
@@ -2518,8 +2627,10 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,responsibleFileLimit);
   const baselineId=clean(previous?.id)||`source:${sourceRoot}`;
   const explicitGap=knownSignals[0]||(existingHolisticBackfillRequired?`EXISTING_GAME_HOLISTIC_BACKFILL:${focusPillar}`:`${focusPillar}에서 현재 소스가 가진 가장 큰 실제 품질/완성도 빈틈`);
+  const iterationExpectation=resolveBuildUpIterationExpectation({repoRoot,cycle,phase,focusPillar});
+  const expectationInstruction=buildUpIterationExpectationPrompt(iterationExpectation);
   const phaseInstruction=phase==='BUILD_UP'
-    ?'설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다.'
+    ?`설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 ${iterationExpectation.minimumConnectedImprovements}개 이상 필요한 만큼 한 패키지에서 완성하고, 의미상 차별화 축 ${iterationExpectation.minimumMeaningfulDistinctAxes}개와 교차 시스템 연결 ${iterationExpectation.minimumCrossSystemConnections}개 이상을 만족하며 기능 연결·피드백·연출·예외 처리를 체감 가능하게 개선한다.`
     :phase==='REPAIR'
       ?'최근 실패/차단 근거를 먼저 재현하고 원인 책임 시스템을 직접 수리한다. 같은 증상을 다른 wrapper나 임시 override로 덮지 말고 원인을 제거한 뒤 동일 시나리오를 다시 검증한다. 수리 범위 안에서 작은 품질 개선도 함께 남긴다.'
       :'새 기능을 억지로 늘리지 말고 현재 구현의 병목을 최적화한다. 중복/불필요한 처리, 모바일 입력 지연, 렌더/업데이트 비용, 상태 불일치, UI 가독성, 코드 책임 혼선을 기존 구조 안에서 직접 줄이고 실제 플레이 품질을 한 단계 올린다.';
@@ -2536,6 +2647,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     :'';
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
 ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
+${expectationInstruction}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
 작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.`;
@@ -2559,6 +2671,20 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     'studio-quality-design-is-not-implementation-ceiling',
     'studio-quality-real-source-delta-required',
     'studio-quality-next-cycle-required:YES',
+    'studio-quality-expectation-level:'+String(iterationExpectation.expectationLevel),
+    'studio-quality-expectation-tier:'+iterationExpectation.tier,
+    'studio-quality-detail-depth:'+String(iterationExpectation.detailDepthLevel),
+    'studio-quality-min-connected-improvements:'+String(iterationExpectation.minimumConnectedImprovements),
+    'studio-quality-min-distinct-axes:'+String(iterationExpectation.minimumMeaningfulDistinctAxes),
+    'studio-quality-min-cross-system-connections:'+String(iterationExpectation.minimumCrossSystemConnections),
+    'studio-quality-min-active-detail-dimensions:'+String(iterationExpectation.minimumActiveDetailDimensions),
+    'studio-quality-active-detail-dimensions:'+iterationExpectation.activeDetailDimensions.join(','),
+    'studio-quality-min-player-facing-proofs:'+String(iterationExpectation.minimumPlayerFacingProofs),
+    'studio-quality-min-connected-content-bundles:'+String(iterationExpectation.minimumConnectedContentBundles),
+    'studio-quality-qualitative-detail-depth:UNBOUNDED',
+    'studio-quality-queue-amplification:FORBIDDEN',
+    'studio-quality-studio-required:NO',
+    'studio-quality-internal-audit-without-studio:ALLOWED',
     ...(existingHolisticBackfillRequired?[
       'existing-holistic-backfill:v1',
       'existing-holistic-backfill-focus:'+focusPillar,
@@ -2594,7 +2720,7 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     ])];
   }
   out.studioQualityEvolution={
-    version:3,cycle,phase,focusPillar,baselineId,platformLane,
+    version:4,cycle,phase,focusPillar,baselineId,platformLane,
     laneIndependentVerificationRequired:true,
     siblingPlatformPassCannotSubstitute:true,
     baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
@@ -2606,7 +2732,14 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     strictDesignScore:designContext?.strictScore??null,
     approvedDesignElements:gameplayDesignRequired?designSummary:null,
     designIsImplementationCeiling:false,
-    requiredConnectedImprovements:{min:3,max:null},
+    expectationPolicySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
+    qualityExpectation:iterationExpectation,
+    requiredConnectedImprovements:{min:iterationExpectation.minimumConnectedImprovements,max:null},
+    requiredMeaningfulDistinctAxes:{min:iterationExpectation.minimumMeaningfulDistinctAxes,max:null},
+    requiredCrossSystemConnections:{min:iterationExpectation.minimumCrossSystemConnections,max:null},
+    requiredActiveDetailDimensions:{min:iterationExpectation.minimumActiveDetailDimensions,dimensions:[...iterationExpectation.activeDetailDimensions]},
+    requiredPlayerFacingProofs:{min:iterationExpectation.minimumPlayerFacingProofs,max:null},
+    requiredConnectedContentBundles:{min:iterationExpectation.minimumConnectedContentBundles,max:null},
     existingHolisticBackfillRequired,
     existingHolisticBackfillVersion:project?.existing===true?1:null,
     existingHolisticBackfillFocus:existingHolisticBackfillRequired?focusPillar:null,
