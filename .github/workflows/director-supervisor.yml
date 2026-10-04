@@ -3,7 +3,7 @@ name: Director Staff Supervisor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '*/15 * * * *'
   workflow_run:
     workflows:
       - Company Seed DESIGN_ONLY Runtime
