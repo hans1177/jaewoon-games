@@ -429,7 +429,8 @@ test('Unity runtime captures exact process, visible surface, input and platform 
   assert.match(runtimeSmokeSource,/SurfaceView\.\*\(BLAST\)/);
   assert.match(runtimeSmokeSource,/grep -v 'Background for '/);
   assert.match(runtimeSmokeSource,/RequestedLayerState\\\{/);
-  assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --latency "\$surface_layer"/);
+  assert.match(runtimeSmokeSource,/shlex\.quote\(sys\.argv\[1\]\)/);
+  assert.match(runtimeSmokeSource,/adb shell "dumpsys SurfaceFlinger --latency \$surface_layer_quoted"/);
   assert.match(runtimeSmokeSource,/dumpsys meminfo "\$package"/);
   assert.match(runtimeSmokeSource,/ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO/);
   assert.match(runtimeSmokeSource,/ANDROID_PLATFORM_METRICS_MISSING/);
@@ -449,6 +450,24 @@ test('F9 exact artifact regression binds prior runtime evidence without replayin
   assert.match(regressionSource,/runtimeReplayPerformed.*False/s);
   assert.match(regressionSource,/regressionPassed.*True/s);
   assert.match(regressionSource,/exactArtifactRegression.*True/s);
+});
+
+test('Android SurfaceFlinger receives the exact Unity layer through adb remote-shell parsing',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-surface-shell-'));
+  try{
+    const bin=path.join(root,'bin');fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin,'adb'),'#!/bin/sh\nshift\nexec /bin/sh -c "$*"\n',{mode:0o755});
+    fs.writeFileSync(path.join(bin,'dumpsys'),'#!/usr/bin/env python3\nimport json,sys\nprint(json.dumps(sys.argv[1:]))\n',{mode:0o755});
+    const start=runtimeSmokeSource.indexOf('if [[ -n "$surface_layer" ]]; then');
+    const end=runtimeSmokeSource.indexOf('\nadb shell dumpsys meminfo',start);
+    assert(start>=0&&end>start);
+    const block=runtimeSmokeSource.slice(start,end);
+    for(const layer of ['9ef2b30 SurfaceView[com.jaewoongames.amusementtycoon/com.unity3d.player.UnityPlayerGameActivity](BLAST)#119',"SurfaceView[owner's game](BLAST)#20"]){
+      const result=spawnSync('bash',['-c','surface_layer="$TEST_SURFACE_LAYER"\nout_dir="$TEST_OUTPUT"\n'+block],{encoding:'utf8',env:{...process.env,PATH:bin+path.delimiter+process.env.PATH,TEST_SURFACE_LAYER:layer,TEST_OUTPUT:root}});
+      assert.equal(result.status,0,result.stderr);
+      assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'surfaceflinger-latency.txt'),'utf8')),['SurfaceFlinger','--latency',layer]);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Unity validation preserves an existing current-main project and only creates a technical request',()=>{
