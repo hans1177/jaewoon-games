@@ -31,6 +31,32 @@ test.afterEach(() => {
 });
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
+test('photo teacher reaches actual image-byte observation and keeps inferred geometry unverified',async t=>{
+  const {observeAssetReferenceImages}=await import('../tools/vibe2-source-worker.mjs');
+  const {createVibeReferenceImageStudyRequest}=await import('../assets/vibe-environment-director.js');
+  const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l1EAAAAASUVORK5CYII=','base64');
+  fs.writeFileSync(path.join(root,'reference.png'),bytes);
+  const hash=crypto.createHash('sha256').update(bytes).digest('hex');
+  const request=createVibeReferenceImageStudyRequest({sourceId:'fixture',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',imageRef:'reference.png',sourceHash:hash,purpose:'ASSET_CREATION'});
+  const order={target:'roblox',assetProductionLane:true,assetProduction:{decisions:[{type:'creature'}],imageAssetCreation:{enabled:true,studies:[{request}]}}};
+  let sent;
+  const observation=await observeAssetReferenceImages({order,cwd:root,model:'test-vision-model',requestModel:async(prompt,options)=>{sent={prompt,options};return JSON.stringify(Object.fromEntries(request.requestedFields.map(key=>[key,'Test fixture proposal; not an observed real subject.'])));}});
+  assert.equal(sent.options.images[0],bytes.toString('base64'));
+  assert.match(sent.prompt,/ordinary photographs/);
+  assert.match(sent.prompt,/not a measured top-down map/);
+  assert.equal(observation.observations[0].sourceHash,hash);
+  assert.equal(observation.observations[0].pixelInputDelivered,true);
+  assert.equal(observation.observations[0].verifiedAgainstSource,false);
+  assert.equal(observation.observations[0].creativeCompletion.observedGeometry,false);
+  const prompt=buildPrompt({...order,imageAssetObservation:observation},{files:[]},[]);
+  const recipe=JSON.parse(prompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.equal(recipe.photoReferenceLessons.length,7);
+  assert.ok(prompt.includes(hash));
+  assert.equal(recipe.productionVerified,false);
+  await assert.rejects(observeAssetReferenceImages({order,cwd:root,model:''}),/IMAGE_ASSET_VISION_MODEL_REQUIRED/);
+});
+
 test('asset teacher consumes canonical production decisions and styles in the real source prompt',()=>{
   const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'demo',goal:'character enemy boss background item prop effect ui animation',styleFamily:'COZY'},manifest:{assets:[]},presetCatalog:{presets:[]}});
   const order={target:'roblox',goal:'asset production',selectedTask:{assetProductionLane:true},assetProduction:plan};

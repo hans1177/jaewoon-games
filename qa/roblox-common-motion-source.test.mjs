@@ -74,9 +74,20 @@ const binary=process.env.VIBE2_LUAU_BINARY;
 const teacherBinary=process.env.VIBE2_LUAU_BINARY||process.env.VIBE2_TEACHER_LUA_BINARY;
 test('teacher application examples execute boundary timing placement inventory and lifecycle cases',{skip:!teacherBinary&&'Set a Lua/Luau teaching executor; native Roblox remains a separate gate'},()=>{
   const recipe=createAssetProductionTeachingRecipe({cinematic:true});
-  assert.equal(recipe.applicationExamples.length,19);
+  assert.equal(recipe.applicationExamples.length,20);
   const script='local examples={}\n'+recipe.applicationExamples.map(row=>'examples['+JSON.stringify(row.id)+']=(function()\n'+row.code+'\nend)()').join('\n')+String.raw`
 local function near(a,b) assert(math.abs(a-b)<1e-9, tostring(a).." ~= "..tostring(b)) end
+local pathDistance=examples.PATH_SEGMENT_CLEARANCE
+near(pathDistance(5,2,0,0,10,0),4)
+near(pathDistance(-2,0,0,0,10,0),4)
+near(pathDistance(12,0,0,0,10,0),4)
+near(pathDistance(2,3,0,0,0,0),13)
+near(pathDistance(-5,-3,-10,-1,0,-1),4)
+for i=-20,20 do
+  near(pathDistance(i/3,i/7,-2,4,7,-3),pathDistance(i/3,i/7,7,-3,-2,4))
+end
+assert(pathDistance(5,1,0,0,10,0)<(1+.5)^2)
+assert(pathDistance(5,2,0,0,10,0)>=(1+.5)^2)
 local curve=examples.CUBIC_BEZIER_CAMERA_COMPONENT
 near(curve(0,1,2,3,0),0);near(curve(0,1,2,3,1),3)
 near(curve(0,1,2,3,-1),0);near(curve(0,1,2,3,2),3)

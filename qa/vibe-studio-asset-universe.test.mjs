@@ -145,8 +145,8 @@ test('asset teacher covers every registered object family, base material family 
 
 test('asset teacher application code is scoped, original practice input and never quality authority',()=>{
   const all=createAssetProductionTeachingRecipe();
-  assert.equal(all.applicationExamples.length,16);
-  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,16);
+  assert.equal(all.applicationExamples.length,17);
+  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,17);
   for(const platform of ['UNITY','WEB']){
     const other=createAssetProductionTeachingRecipe({platform});
     assert.deepEqual(other.applicationExamples,[]);
@@ -178,7 +178,7 @@ test('cinematic teacher supplies scoped direction ideas and lifecycle code only 
   const recipe=createAssetProductionTeachingRecipe({platform:'ROBLOX',cinematic:true});
   assert.equal(recipe.cinematicDirection.lessons.length,8);
   assert.equal(recipe.cinematicDirection.ideas.length,6);
-  assert.equal(recipe.applicationExamples.length,19);
+  assert.equal(recipe.applicationExamples.length,20);
   assert.equal(recipe.cinematicDirection.runtimeVerified,false);
   assert.equal(recipe.cinematicDirection.gameplayAuthority,false);
   for(const row of recipe.cinematicDirection.ideas){assert.equal(row.beats.length,4);assert.ok(row.guard.length>50);}
@@ -191,6 +191,26 @@ test('cinematic teacher supplies scoped direction ideas and lifecycle code only 
   const unity=createAssetProductionTeachingRecipe({platform:'UNITY',cinematic:true});
   assert.equal(unity.cinematicDirection,null);
   assert.deepEqual(unity.applicationExamples,[]);
+});
+
+test('photo and world layout teacher separate pixel evidence from construction and reuse canonical layout APIs',async()=>{
+  const photo=createAssetProductionTeachingRecipe({families:['CREATURE'],visualReference:true});
+  assert.equal(photo.photoReferenceLessons.length,7);
+  assert.equal(photo.worldLayoutLessons.length,0);
+  assert.equal(photo.runtimeVerified,false);
+  assert.deepEqual(createAssetProductionTeachingRecipe({families:['CREATURE']}).photoReferenceLessons,[]);
+  const world=createAssetProductionTeachingRecipe({families:['ENVIRONMENT','BUILDING']});
+  assert.equal(world.worldLayoutLessons.length,6);
+  assert.ok(world.applicationExamples.some(row=>row.id==='PATH_SEGMENT_CLEARANCE'));
+  const routeLesson=world.worldLayoutLessons.find(row=>row.id==='ROUTE_GRAPH_BEFORE_DRESSING');
+  const api=await import('../'+routeLesson.source);
+  for(const name of routeLesson.apis)assert.equal(typeof api[name],'function');
+  const nodes=[{id:'entry',role:'spawn'},{id:'door',role:'entrance'},{id:'goal',role:'objective'}];
+  const blocked=api.createVibeRouteGraph({nodes,edges:[{from:'entry',to:'door'}]});
+  assert.equal(blocked.pass,false);assert.deepEqual(blocked.unreachable,['goal']);
+  const connected=api.createVibeRouteGraph({nodes,edges:[{from:'entry',to:'door'},{from:'door',to:'goal'}]});
+  assert.equal(connected.pass,true);
+  assert.match(routeLesson.lesson,/only an abstract proposal/);
 });
 
 test('advanced teacher selects applicable techniques with failure checks and preserves authority boundaries',()=>{
