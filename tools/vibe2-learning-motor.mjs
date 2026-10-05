@@ -1281,15 +1281,23 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const externalAiDistilled=(externalAiDistilledInput?.entries||[])
     .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.distilled===true&&row?.advisoryOnly===true&&row?.reusable===true&&row?.rawOutputStored===false&&row?.directSourceWrite!==true&&row?.directProductionPass!==true&&knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)!=='RETIRED')
     .map(row=>{
-      const eWords=words([row.id,row.engine,row.gameId,...(row.domains||[]),...(row.patterns||[]),...(row.cautions||[])].filter(Boolean).join(' '));
-      let relevance=overlapScore(qWords,eWords)*2;
+      const rowDomains=(row.domains||[]).map(upper);
+      const primaryMatches=rowDomains.filter(domain=>primaryDomains.has(domain));
+      const secondaryMatches=rowDomains.filter(domain=>secondaryDomains.has(domain));
+      const eWords=words([row.id,row.engine,row.gameId,...rowDomains,...(row.patterns||[]),...(row.cautions||[])].filter(Boolean).join(' '));
+      const overlap=overlapScore(qWords,eWords);
+      let relevance=overlap*2;
       if(gameId&&clean(row.gameId)===gameId)relevance+=8;
-      if(engine&&lower(row.engine)===engine)relevance+=5;
-      if((row.domains||[]).some(domain=>domains.includes(upper(domain))))relevance+=8;
-      return{id:clean(row.id),provider:clean(row.provider),model:clean(row.model),engine:lower(row.engine),gameId:clean(row.gameId),domains:(row.domains||[]).map(upper),patterns:(row.patterns||[]).map(clean).filter(Boolean).slice(0,8),cautions:(row.cautions||[]).map(clean).filter(Boolean).slice(0,8),relevance,state:knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)};
+      if(primaryMatches.length)relevance+=18+Math.min(8,(primaryMatches.length-1)*4);
+      else if(secondaryMatches.length)relevance+=7+Math.min(4,(secondaryMatches.length-1)*2);
+      else if(rowDomains.some(domain=>domains.includes(domain)))relevance+=2;
+      const sameEngine=Boolean(engine&&lower(row.engine)===engine);
+      if(sameEngine&&(overlap>0||primaryMatches.length||secondaryMatches.length))relevance+=3;
+      const retrievalTier=primaryMatches.length?3:secondaryMatches.length?2:overlap>0?1:0;
+      return{id:clean(row.id),provider:clean(row.provider),model:clean(row.model),engine:lower(row.engine),gameId:clean(row.gameId),domains:rowDomains,patterns:(row.patterns||[]).map(clean).filter(Boolean).slice(0,8),cautions:(row.cautions||[]).map(clean).filter(Boolean).slice(0,8),primaryDomainMatches:primaryMatches,secondaryDomainMatches:secondaryMatches,retrievalTier,relevance,state:knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)};
     })
-    .filter(row=>row.relevance>0&&row.state!=='RETIRED')
-    .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
+    .filter(row=>row.relevance>0&&row.retrievalTier>0&&row.state!=='RETIRED')
+    .sort((a,b)=>b.retrievalTier-a.retrievalTier||b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
     priority:[...(taskAssetMotionIdentity?['EXACT_ASSET_AND_MOTION_VERIFIED']:[]),'SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_OPEN_CLOUD_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
