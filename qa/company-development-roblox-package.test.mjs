@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactInternalAssetBinding,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -41,6 +42,51 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.failureStage,'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
   assert.equal(evidence.failureSignature,'ROBLOX_BUILD_PREFLIGHT_PENDING');
   assert.equal(evidence.releaseClaim,false);
+});
+
+test('Roblox build preflight requires all internal asset source families and package contract proof',()=>{
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const item={
+    gameId:'seed-roblox-test',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'ROBLOX',
+    targetPlatform:'ROBLOX',
+    status:'ACTIVE',
+    robloxSourceBootstrapPassedAt:'2026-10-05T00:00:00Z',
+    robloxSourceCommit:'a'.repeat(40),
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),
+    robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    robloxStudioAssetBindingApplied:true,
+    robloxStudioAssetBinding:{
+      bindingVersion:2,
+      libraryVersion:109,
+      selectionFingerprint:'package-selection-fingerprint',
+      families:Object.fromEntries(families.map(family=>[family,[family+'_ATOM']]))
+    },
+    robloxBuildInternalAssetContractVersion:ROBLOX_PACKAGE_TOOL.internalAssetContractVersion,
+    robloxBuildInternalAssetBindingPassed:true,
+  };
+  const directive={ai:{robloxPreflightModel:'llama3.2:1b',modelPool:['llama3.2:1b'],minDistinctLeadModelsAcrossDepartments:1}};
+  const pass=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.build.internalAssetSourceBindingComplete,true);
+  assert.equal(pass.build.internalAssetPackageBindingPassed,true);
+  assert.equal(pass.build.internalAssetMissingFamilies.length,0);
+
+  const stale=inspectRobloxBuildPreflight({
+    item:{...item,robloxBuildInternalAssetContractVersion:0,robloxBuildInternalAssetBindingPassed:false},
+    directive
+  });
+  assert.equal(stale.pass,false);
+  assert.ok(stale.blockers.includes('internal-asset-package-contract-version-required'));
+  assert.ok(stale.blockers.includes('internal-asset-package-binding-pass-required'));
+
+  const missingFamily=structuredClone(item);
+  delete missingFamily.robloxStudioAssetBinding.families.PROP;
+  const familyBlocked=inspectRobloxBuildPreflight({item:missingFamily,directive});
+  assert.equal(familyBlocked.pass,false);
+  assert.ok(familyBlocked.blockers.includes('internal-asset-all-families-source-binding-required'));
 });
 
 test('Roblox package source validation keeps ordinary static blockers authoritative',()=>{
