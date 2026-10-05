@@ -43,6 +43,7 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const studioAssetApplied=secondary?item.ownerFocusRobloxStudioAssetBindingApplied===true:item.robloxStudioAssetBindingApplied===true;
   const packageAssetContractVersion=Number(secondary?item.ownerFocusRobloxBuildInternalAssetContractVersion:item.robloxBuildInternalAssetContractVersion)||0;
   const packageAssetBindingPassed=secondary?item.ownerFocusRobloxBuildInternalAssetBindingPassed===true:item.robloxBuildInternalAssetBindingPassed===true;
+  const packageLibrariesAutoLoaded=secondary?item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true:item.robloxBuildInternalLibraryAutoLoadPassed===true;
   const packageLibrariesPackaged=secondary?item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true:item.robloxBuildInternalLibraryModulesPackaged===true;
   const packageRequiredLibraryCount=Number(secondary?item.ownerFocusRobloxBuildInternalLibraryRequiredModuleCount:item.robloxBuildInternalLibraryRequiredModuleCount)||0;
   const packagePackagedLibraryCount=Number(secondary?item.ownerFocusRobloxBuildInternalLibraryPackagedModuleCount:item.robloxBuildInternalLibraryPackagedModuleCount)||0;
@@ -65,6 +66,7 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   if(!sourceAssetBindingComplete)blockers.push('internal-asset-all-families-source-binding-required');
   if(packageAssetContractVersion<1)blockers.push('internal-asset-package-contract-version-required');
   if(!packageAssetBindingPassed)blockers.push('internal-asset-package-binding-pass-required');
+  if(!packageLibrariesAutoLoaded)blockers.push('internal-library-package-autoload-required');
   if(!packageLibrariesPackaged||packageRequiredLibraryCount<=0||packagePackagedLibraryCount!==packageRequiredLibraryCount){
     blockers.push('internal-library-package-all-modules-required');
   }
@@ -99,6 +101,7 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
       internalAssetSelectionFingerprint:clean(studioAssetBinding?.selectionFingerprint)||null,
       internalAssetPackageContractVersion:packageAssetContractVersion,
       internalAssetPackageBindingPassed:packageAssetBindingPassed,
+      internalLibraryAutoLoadPassed:packageLibrariesAutoLoaded,
       internalLibraryModulesPackaged:packageLibrariesPackaged,
       internalLibraryRequiredModuleCount:packageRequiredLibraryCount,
       internalLibraryPackagedModuleCount:packagePackagedLibraryCount,
