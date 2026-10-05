@@ -346,6 +346,60 @@ test('customization and detailed style instructions reach the existing asset wor
   assert.equal(plan.assetCustomization.effort.representativeWorkPlanningMinutes,360);
 });
 
+test('Roblox safe internal assets use zero quality threshold and block primitive fallback',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-internal-threshold-zero-'));
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      assets:[
+        {
+          id:'low-score-ui',category:'UI',status:'REPO_ASSET',license:'project-original',
+          platform:'ROBLOX',path:'/assets/roblox/common-ui-v1/RobloxCommonUI.luau',
+          verifiedCompanyReusable:false,productionVerified:false,runtimeVerificationState:'PENDING_STUDIO',
+          qualityScore:1,tags:['ui','hud','button']
+        },
+        {
+          id:'corrupt-ui',category:'UI',status:'REPO_ASSET',license:'project-original',
+          platform:'ROBLOX',path:'/assets/roblox/common-ui-v1/CorruptUI.luau',
+          corruptSource:true,verifiedCompanyReusable:false,productionVerified:false,qualityScore:120
+        },
+        {
+          id:'blocked-license-ui',category:'UI',status:'REPO_ASSET',license:'CC-BY-NC',
+          platform:'ROBLOX',path:'/assets/roblox/common-ui-v1/BlockedUI.luau',
+          verifiedCompanyReusable:false,productionVerified:false,qualityScore:120
+        }
+      ]
+    }));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',
+      task:{gameId:'threshold-zero-demo',goal:'UI HUD 버튼 인벤토리 그래픽에 내부 라이브러리 자동 적용'},
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    });
+    const ui=plan.decisions.find(row=>row.type==='ui');
+    assert.ok(ui);
+    assert.ok(ui.companyInternalCandidates.some(row=>row.id==='low-score-ui'));
+    assert.ok(!ui.reuseCandidates.some(row=>row.id==='corrupt-ui'));
+    assert.ok(!ui.reuseCandidates.some(row=>row.id==='blocked-license-ui'));
+    const candidate=ui.applyFirst.candidates.find(row=>row.id==='low-score-ui');
+    assert.ok(candidate);
+    assert.equal(candidate.sourceTier,'COMPANY_INTERNAL_ASSET');
+    assert.equal(candidate.lane,'B_NATIVE_READY');
+    assert.equal(candidate.ready,true);
+    assert.equal(candidate.productionVerified,false);
+    assert.equal(candidate.qualityScoreThreshold,0);
+    assert.equal(candidate.qualityScoreIsUsageGate,false);
+    assert.equal(candidate.visualDebtRequired,true);
+    assert.ok(ui.decisionOrder.includes('REUSE_COMPANY_INTERNAL_ASSET_REGARDLESS_OF_QUALITY_SCORE'));
+    assert.equal(plan.qualityDNA.commonRules.minimumQualityScoreForSafeCompatibleBinding,0);
+    assert.equal(plan.qualityDNA.commonRules.lowScoreSafeCompatibleInternalAssetMustRemainEligible,true);
+    assert.equal(plan.qualityDNA.commonRules.primitiveFallbackForbiddenWhenSafeCompatibleInternalAssetExists,true);
+    assert.equal(plan.companyGraphicsLibrary.robloxInternalUseThreshold.minimumQualityScore,0);
+    assert.equal(plan.companyGraphicsLibrary.robloxInternalUseThreshold.blankOrPrimitiveFallbackForbidden,true);
+    assert.deepEqual([...plan.companyGraphicsLibrary.robloxInternalUseThreshold.hardBlockersOnly],[
+      'SECURITY','LICENSE','CORRUPT_SOURCE','PLATFORM_INCOMPATIBLE','EXPLICIT_INTERNAL_USE_FORBIDDEN'
+    ]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));
   try{
