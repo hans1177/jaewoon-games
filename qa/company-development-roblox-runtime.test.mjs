@@ -1270,3 +1270,35 @@ test('verified learning refresh dispatches per game without a portfolio-wide swe
   assert.match(sweep,/--game-id="\$GAME_ID"/);
   assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep\s*\n/);
 });
+
+test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const start=source.indexOf("function bindExistingClientStudioAssets(source=''){");
+  const end=source.indexOf('\nfunction foundationCharacterSource',start);
+  const bind=runInNewContext(source.slice(start,end)+'\nbindExistingClientStudioAssets');
+  const original=[
+    'local C=require(script.Parent.GameConfig)',
+    '-- STUDIO_ASSET_BINDING_CLIENT_BEGIN',
+    'local STUDIO_ASSET_BINDING_VERSION = 2',
+    'local studioAssetConfig = C.StudioAssets or {}',
+    'local studioAssetFamilies = studioAssetConfig.Families or {}',
+    'local studioUi = studioAssetFamilies.UI or {}',
+    '-- STUDIO_ASSET_BINDING_CLIENT_END',
+    'local gui=Instance.new("Frame")',
+    'gui:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+    'gui:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))',
+    'local function existingGameplay() return "preserved" end',
+    ''
+  ].join('\n');
+  const rebound=bind(original);
+  assert.doesNotMatch(rebound,/\bstudioUi\b/);
+  assert.match(rebound,/table\.concat\(studioAssetFamily\("UI"\), ","\)/);
+  assert.match(rebound,/local function existingGameplay\(\) return "preserved" end/);
+  assert.equal(bind(rebound),rebound);
+  const fresh=bind('local C=require(script.Parent.GameConfig)\nlocal gui=Instance.new("Frame")\n');
+  assert.match(fresh,/table\.concat\(studioAssetFamily\("UI"\), ","\)/);
+  assert.doesNotMatch(fresh,/\bstudioUi\b/);
+  const horror=fs.readFileSync(new URL('../roblox-games/horror-escape-room/client/Game.client.luau',import.meta.url),'utf8');
+  assert.match(horror,/chaseTint:SetAttribute\("StudioAssetAtoms", table\.concat\(studioAssetFamily\("UI"\), ","\)\)/);
+  assert.doesNotMatch(horror,/table\.concat\(studioUi\s*,/);
+});

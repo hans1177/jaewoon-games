@@ -818,10 +818,12 @@ if hasStudioAssetAtom("FRAME_PANEL") then
 end
 ${frameVar}:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 ${frameVar}:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
-${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 `;
     output=output.slice(0,insertAt)+visible+output.slice(insertAt);
   }
+  // 기존 managed block 교체로 사라진 studioUi를 기존 실제 UI 소비 위치에서 직접 정리한다.
+  output=output.replace(/\btable\.concat\(\s*studioUi\s*,/g,'table.concat(studioAssetFamily("UI"),');
   return output;
 }
 
@@ -1432,3 +1434,4 @@ async function main(){
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});
 }
+
