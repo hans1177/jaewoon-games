@@ -280,10 +280,13 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
   let familyCoverageCount=0;
   for(const family of ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES){
     const match=config.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'));
-    const expectedAtoms=expectedFamilies[family]||[];
-    const complete=Boolean(match)&&expectedAtoms.length>0&&expectedAtoms.every(atom=>match[1].includes(clean(atom)));
+    const expectedAtoms=[...new Set((expectedFamilies[family]||[]).map(clean).filter(Boolean))].sort();
+    const configuredAtoms=match?[...new Set([...match[1].matchAll(/["']([^"']+)["']/g)].map(row=>clean(row[1])).filter(Boolean))].sort():[];
+    const complete=expectedAtoms.length>0
+      &&expectedAtoms.length===configuredAtoms.length
+      &&expectedAtoms.every((atom,index)=>atom===configuredAtoms[index]);
     if(complete)familyCoverageCount++;
-    else blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_MISSING:'+family);
+    else blockers.push('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_SELECTION_MISMATCH:'+family);
   }
 
   const sourceBindingTracePass=/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(sourceText)
