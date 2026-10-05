@@ -9,21 +9,21 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-10-05T12:51:51.330Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
+      "calls": 5,
+      "successes": 1,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4883,
-      "lastMs": 3427,
+      "totalMs": 18313,
+      "lastMs": 6058,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T12:49:42.433Z"
+      "updatedAt": "2026-10-05T12:51:57.389Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -123,8 +123,19 @@
       "lastMs": 8774,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
       "updatedAt": "2026-10-05T12:49:47.780Z"
+    },
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 120009,
+      "lastMs": 120009,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-05T12:51:47.790Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T12:49:47.780Z"
+  "updatedAt": "2026-10-05T12:51:57.390Z"
 }
