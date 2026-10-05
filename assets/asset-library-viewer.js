@@ -1,4 +1,21 @@
 import * as THREE from '/assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+const COMMON_R15_RECIPE=Object.freeze({
+ bones:{
+  HumanoidRootPart:{position:[0,3,0],parent:null},LowerTorso:{position:[0,3.05,0],parent:'HumanoidRootPart'},UpperTorso:{position:[0,4.02,0],parent:'LowerTorso'},Head:{position:[0,5.22,0],parent:'UpperTorso'},
+  LeftUpperArm:{position:[-1,4.55,0],parent:'UpperTorso'},LeftLowerArm:{position:[-1,3.68,0],parent:'LeftUpperArm'},LeftHand:{position:[-1,3.02,0],parent:'LeftLowerArm'},
+  RightUpperArm:{position:[1,4.55,0],parent:'UpperTorso'},RightLowerArm:{position:[1,3.68,0],parent:'RightUpperArm'},RightHand:{position:[1,3.02,0],parent:'RightLowerArm'},
+  LeftUpperLeg:{position:[-.47,2.58,0],parent:'LowerTorso'},LeftLowerLeg:{position:[-.47,1.48,0],parent:'LeftUpperLeg'},LeftFoot:{position:[-.47,.52,-.08],parent:'LeftLowerLeg'},
+  RightUpperLeg:{position:[.47,2.58,0],parent:'LowerTorso'},RightLowerLeg:{position:[.47,1.48,0],parent:'RightUpperLeg'},RightFoot:{position:[.47,.52,-.08],parent:'RightLowerLeg'}
+ },
+ palette:{skin:[238,199,168],shirt:[56,98,151],pants:[48,55,73],shoe:[28,31,38]},
+ parts:[
+  {bone:'LowerTorso',shape:'Block',size:[1.25,.72,.66],position:[0,3.3,0],rotation:[0,0,0],color:'shirt'},{bone:'UpperTorso',shape:'Block',size:[1.6,1.02,.72],position:[0,4.22,0],rotation:[0,0,0],color:'shirt'},{bone:'Head',shape:'Block',size:[.92,.92,.92],position:[0,5.48,0],rotation:[0,0,0],color:'skin'},
+  {bone:'LeftUpperArm',shape:'Block',size:[.46,.82,.46],position:[-1,4.12,0],rotation:[0,0,0],color:'shirt'},{bone:'LeftLowerArm',shape:'Block',size:[.42,.66,.42],position:[-1,3.36,0],rotation:[0,0,0],color:'skin'},{bone:'LeftHand',shape:'Block',size:[.46,.36,.46],position:[-1,2.86,0],rotation:[0,0,0],color:'skin'},
+  {bone:'RightUpperArm',shape:'Block',size:[.46,.82,.46],position:[1,4.12,0],rotation:[0,0,0],color:'shirt'},{bone:'RightLowerArm',shape:'Block',size:[.42,.66,.42],position:[1,3.36,0],rotation:[0,0,0],color:'skin'},{bone:'RightHand',shape:'Block',size:[.46,.36,.46],position:[1,2.86,0],rotation:[0,0,0],color:'skin'},
+  {bone:'LeftUpperLeg',shape:'Block',size:[.58,1.02,.62],position:[-.47,2.08,0],rotation:[0,0,0],color:'pants'},{bone:'LeftLowerLeg',shape:'Block',size:[.52,.92,.56],position:[-.47,1.03,0],rotation:[0,0,0],color:'pants'},{bone:'LeftFoot',shape:'Block',size:[.58,.36,.9],position:[-.47,.34,-.2],rotation:[0,0,0],color:'shoe'},
+  {bone:'RightUpperLeg',shape:'Block',size:[.58,1.02,.62],position:[.47,2.08,0],rotation:[0,0,0],color:'pants'},{bone:'RightLowerLeg',shape:'Block',size:[.52,.92,.56],position:[.47,1.03,0],rotation:[0,0,0],color:'pants'},{bone:'RightFoot',shape:'Block',size:[.58,.36,.9],position:[.47,.34,-.2],rotation:[0,0,0],color:'shoe'}
+ ]
+});
 export function createViewer(host){
  let renderer,software=false;
  try{renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});}
@@ -76,11 +93,11 @@ export function createViewer(host){
  }
  const grid=new THREE.GridHelper(18,18,0x355064,0x233646);grid.position.y=-.08;scene.add(grid);
  const camera=new THREE.PerspectiveCamera(34,1,.01,1000);
- let model=null,materials=[],joints={},entry=null,clip=null,center=new THREE.Vector3(),extent=6;
+ let model=null,materials=[],joints={},entry=null,clip=null,commonMotion=null,center=new THREE.Vector3(),extent=6;
  let elapsed=0,angle=0,speed=1,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,visible=true;
  function setModel(row,environment=false){
   if(model)scene.remove(model);for(const material of materials)material.dispose();
-  model=new THREE.Group();materials=[];joints={};entry=row;clip=null;elapsed=0;
+  model=new THREE.Group();materials=[];joints={};entry=row;clip=null;commonMotion=null;elapsed=0;
   grid.visible=!environment;
   const recipe=row.model;
   if(!environment){
@@ -114,7 +131,71 @@ export function createViewer(host){
   center=bounds.getCenter(new THREE.Vector3());extent=Math.max(size.y,size.x,size.z)*1.16;
   host.dataset.asset=row.id;host.dataset.kind=environment?'environment':'monster';host.dataset.loaded='true';
  }
- function selectClip(id){clip=entry?.clips?.find(row=>row.id===id)||null;elapsed=0;host.dataset.clip=clip?.id||'';}
+ function resetCommonPose(){for(const joint of Object.values(joints)){joint.position.copy(joint.userData.rest);joint.rotation.set(0,0,0);}}
+ function commonRot(name,x=0,y=0,z=0){const joint=joints[name];if(joint)joint.rotation.set(x*Math.PI/180,y*Math.PI/180,z*Math.PI/180,'XYZ');}
+ function commonMove(name,x=0,y=0,z=0){const joint=joints[name];if(joint)joint.position.copy(joint.userData.rest).add(new THREE.Vector3(x,y,z));}
+ function applyCommonMotion(atom,time){
+  resetCommonPose();
+  const id=atom?.atomId||'',duration=Math.max(.1,Number(atom?.duration)||1),unit=atom?.looped?(time%duration)/duration:Math.min(time/duration,1);
+  const phase=unit*Math.PI*2,s=Math.sin(phase),c=Math.cos(phase),pulse=Math.sin(Math.PI*Math.min(1,unit));
+  commonRot('UpperTorso',-1+s*.8,0,s*.5);commonRot('Head',1-s*.45,0,-s*.2);
+  if(['WALK','JOG','RUN','SPRINT','INJURED_WALK','SLOPE_ASCEND','SLOPE_DESCEND'].includes(id)){
+   const scale={WALK:24,JOG:34,RUN:43,SPRINT:54,INJURED_WALK:18,SLOPE_ASCEND:28,SLOPE_DESCEND:27}[id]||24,lean={RUN:-8,SPRINT:-13,INJURED_WALK:9,SLOPE_ASCEND:-10,SLOPE_DESCEND:7}[id]||-3;
+   commonRot('LowerTorso',lean,0,s*2);commonRot('UpperTorso',-lean*.45,0,-s*3);commonMove('HumanoidRootPart',0,Math.abs(s)*.055,0);
+   for(const [side,sign] of [['Left',1],['Right',-1]]){commonRot(side+'UpperLeg',c*scale*sign,0,0);commonRot(side+'LowerLeg',Math.min(0,-18-22*Math.max(0,-c*sign)),0,0);commonRot(side+'Foot',8+c*7*sign,0,0);commonRot(side+'UpperArm',-c*scale*.8*sign,0,sign*-4);commonRot(side+'LowerArm',16+8*Math.max(0,c*sign),0,0);}
+   if(id==='INJURED_WALK'){commonRot('UpperTorso',10,-6,8);commonRot('LeftUpperArm',-18,0,-24);}
+  }else if(id==='IDLE_RELAXED'||id==='FATIGUED_IDLE'){
+   commonMove('LowerTorso',0,s*.035,0);commonRot('UpperTorso',id==='FATIGUED_IDLE'?10+s*2:1+s,0,s*.6);commonRot('Head',id==='FATIGUED_IDLE'?-8:0,0,0);commonRot('LeftUpperArm',id==='FATIGUED_IDLE'?18:-4+s*2,0,-5);commonRot('RightUpperArm',id==='FATIGUED_IDLE'?18:-4-s*2,0,5);
+  }else if(id==='START'||id==='STOP'){
+   const k=id==='START'?pulse:1-pulse;commonRot('LowerTorso',-12*k,0,0);commonRot('LeftUpperLeg',28*k,0,0);commonRot('RightUpperLeg',-18*k,0,0);commonRot('LeftUpperArm',-24*k,0,-5);commonRot('RightUpperArm',22*k,0,5);
+  }else if(id==='TURN_90'){
+   const yaw=90*Math.sin(unit*Math.PI/2);commonRot('LowerTorso',0,yaw*.5,0);commonRot('UpperTorso',0,yaw*.35,0);commonRot('Head',0,yaw*.15,0);commonRot('LeftUpperLeg',10*pulse,-yaw*.15,0);commonRot('RightUpperLeg',-8*pulse,-yaw*.15,0);
+  }else if(id==='JUMP_START'||id==='LAND'){
+   const k=id==='JUMP_START'?pulse:Math.sin(Math.PI*Math.min(1,unit))*1.15;commonMove('HumanoidRootPart',0,id==='JUMP_START'?pulse*.18:-pulse*.08,0);commonRot('LowerTorso',10*k,0,0);commonRot('LeftUpperLeg',30*k,0,-3);commonRot('RightUpperLeg',30*k,0,3);commonRot('LeftLowerLeg',-55*k,0,0);commonRot('RightLowerLeg',-55*k,0,0);commonRot('LeftUpperArm',-34*k,0,-10);commonRot('RightUpperArm',-34*k,0,10);
+  }else if(id==='CROUCH_IDLE'){
+   commonMove('HumanoidRootPart',0,-.55,0);commonRot('LowerTorso',8,0,0);commonRot('LeftUpperLeg',28+s*3,0,-3);commonRot('RightUpperLeg',28-s*3,0,3);commonRot('LeftLowerLeg',-58,0,0);commonRot('RightLowerLeg',-58,0,0);
+  }else if(id.startsWith('DODGE_')){
+   const sign=id.endsWith('LEFT')?-1:1;commonMove('HumanoidRootPart',sign*pulse*.55,-pulse*.18,0);commonRot('LowerTorso',10,0,-sign*28*pulse);commonRot('UpperTorso',-5,0,sign*10*pulse);commonRot('LeftUpperArm',18,0,-18);commonRot('RightUpperArm',18,0,18);
+  }else if(id==='ROLL_FORWARD'){
+   commonMove('HumanoidRootPart',0,-.55*pulse,-.45*pulse);commonRot('LowerTorso',360*unit,0,0);commonRot('LeftUpperLeg',45,0,-5);commonRot('RightUpperLeg',45,0,5);commonRot('LeftLowerLeg',-75,0,0);commonRot('RightLowerLeg',-75,0,0);
+  }else if(['CLIMB_LOOP','LADDER_ENTER','LADDER_EXIT'].includes(id)){
+   commonRot('UpperTorso',-6,0,0);commonRot('LeftUpperArm',-75*c,0,-12);commonRot('RightUpperArm',75*c,0,12);commonRot('LeftUpperLeg',38*c,0,0);commonRot('RightUpperLeg',-38*c,0,0);commonRot('LeftLowerLeg',-32-18*c,0,0);commonRot('RightLowerLeg',-32+18*c,0,0);
+  }else if(id==='SWIM_FORWARD'){
+   commonRot('HumanoidRootPart',72,0,0);commonRot('LeftUpperArm',-80+55*s,0,-20);commonRot('RightUpperArm',-80-55*s,0,20);commonRot('LeftUpperLeg',18*s,0,0);commonRot('RightUpperLeg',-18*s,0,0);
+  }else if(['BLOCK_RAISE','BLOCK_HOLD','PARRY_PERFECT','COUNTER_READY'].includes(id)){
+   const k=id==='BLOCK_RAISE'?pulse:1;commonRot('LeftUpperArm',-42*k,12,-58*k);commonRot('RightUpperArm',-55*k,-12,48*k);commonRot('LeftLowerArm',88*k,0,0);commonRot('RightLowerArm',96*k,0,0);commonRot('UpperTorso',0,-8*k,0);if(id==='PARRY_PERFECT')commonRot('UpperTorso',-8,22*pulse,0);
+  }else if(id==='GUARD_BREAK'){
+   commonRot('UpperTorso',22*pulse,0,10*pulse);commonRot('Head',-14*pulse,0,-8*pulse);commonRot('LeftUpperArm',55*pulse,0,-28);commonRot('RightUpperArm',48*pulse,0,30);
+  }else if(['LIGHT_ATTACK_1','HEAVY_ATTACK_1','GATHER_SWING','FARM_TEND'].includes(id)){
+   const heavy=id==='HEAVY_ATTACK_1',arc=Math.sin(Math.PI*Math.min(1,unit))*(heavy?105:82);commonRot('LowerTorso',heavy?-10*pulse:-5*pulse,-28*pulse,0);commonRot('UpperTorso',heavy?14*pulse:8*pulse,35*pulse,0);commonRot('RightUpperArm',-35+arc,0,28);commonRot('RightLowerArm',30+arc*.3,0,4);commonRot('LeftUpperArm',-18-arc*.25,0,-18);
+  }else if(id==='RANGED_DRAW_SHOT'){
+   commonRot('LeftUpperArm',-72,0,-58);commonRot('LeftLowerArm',32,0,0);commonRot('RightUpperArm',-62,0,62);commonRot('RightLowerArm',105-60*pulse,0,0);commonRot('UpperTorso',0,-18,0);
+  }else if(['CAST_BURST','CHANNEL_LOOP'].includes(id)){
+   const k=id==='CHANNEL_LOOP'?.75+.25*s:pulse;commonRot('LeftUpperArm',-65*k,0,-55);commonRot('RightUpperArm',-65*k,0,55);commonRot('LeftLowerArm',20,0,0);commonRot('RightLowerArm',20,0,0);commonRot('UpperTorso',-6*k,0,0);commonMove('HumanoidRootPart',0,Math.max(0,k)*.06,0);
+  }else if(['HIT_FRONT','HIT_BACK'].includes(id)){
+   const sign=id==='HIT_FRONT'?1:-1;commonRot('UpperTorso',sign*28*pulse,-8*pulse,12*pulse);commonRot('Head',sign*-18*pulse,6*pulse,-10*pulse);commonRot('LeftUpperArm',18*pulse,0,-22);commonRot('RightUpperArm',28*pulse,0,24);
+  }else if(id==='DEATH_FRONT'||id==='DOWNED_IDLE'){
+   const k=id==='DOWNED_IDLE'?1:Math.sin(Math.min(1,unit)*Math.PI/2);commonMove('HumanoidRootPart',0,-1.55*k,-.35*k);commonRot('HumanoidRootPart',78*k,0,0);commonRot('LeftUpperArm',22,0,-16);commonRot('RightUpperArm',35,0,18);commonRot('LeftUpperLeg',18,0,-5);commonRot('RightUpperLeg',26,0,8);
+  }else if(id==='REVIVE_HELP'){
+   commonMove('HumanoidRootPart',0,-.45*pulse,0);commonRot('LowerTorso',16*pulse,0,0);commonRot('LeftUpperLeg',24*pulse,0,-3);commonRot('RightUpperLeg',36*pulse,0,4);commonRot('LeftLowerLeg',-48*pulse,0,0);commonRot('RightLowerLeg',-62*pulse,0,0);commonRot('RightUpperArm',-55*pulse,0,35);
+  }else if(id==='EMOTE_WAVE'||id==='TALK_GESTURE'){
+   commonRot('RightUpperArm',-72,0,62);commonRot('RightLowerArm',78,0,0);commonRot('RightHand',0,0,22*s);if(id==='TALK_GESTURE')commonRot('LeftUpperArm',-18+8*s,0,-22);
+  }else if(['SIT_DOWN','STAND_UP','BED_LIE_DOWN'].includes(id)){
+   const k=id==='STAND_UP'?1-pulse:pulse;commonMove('HumanoidRootPart',0,-.85*k,id==='BED_LIE_DOWN'?.15*k:0);commonRot('LowerTorso',id==='BED_LIE_DOWN'?70*k:8*k,0,0);commonRot('LeftUpperLeg',70*k,0,-3);commonRot('RightUpperLeg',70*k,0,3);commonRot('LeftLowerLeg',-72*k,0,0);commonRot('RightLowerLeg',-72*k,0,0);
+  }else if(id==='LEAN_WALL_IDLE'){
+   commonMove('HumanoidRootPart',0,0,.16);commonRot('LowerTorso',0,0,-7);commonRot('UpperTorso',-5,0,8);commonRot('LeftUpperLeg',-7,0,0);commonRot('RightUpperLeg',12,0,0);
+  }else if(['PUSH_OBJECT','PULL_OBJECT'].includes(id)){
+   const sign=id==='PUSH_OBJECT'?-1:1;commonRot('LowerTorso',sign*16,0,0);commonRot('UpperTorso',sign*-7,0,0);commonRot('LeftUpperArm',-78+8*s,0,-10);commonRot('RightUpperArm',-78-8*s,0,10);commonRot('LeftLowerArm',12,0,0);commonRot('RightLowerArm',12,0,0);
+  }else if(['PICKUP_GROUND','PLACE_GROUND','OPEN_CONTAINER','OPEN_DOOR','INTERACT_USE','USE_CONSUMABLE','EQUIP_DRAW','UNEQUIP_STOW','CRAFT_LOOP','NPC_WORK_LOOP','COOK_LOOP','FISH_CAST'].includes(id)){
+   commonRot('LowerTorso',12*pulse,0,0);commonRot('RightUpperArm',-22-58*pulse,0,24);commonRot('RightLowerArm',32+55*pulse,0,0);commonRot('LeftUpperArm',-10-28*pulse,0,-18);commonRot('LeftLowerArm',18+30*pulse,0,0);
+  }else if(id==='CARRY_IDLE'){
+   commonRot('LeftUpperArm',-38,0,-24);commonRot('RightUpperArm',-38,0,24);commonRot('LeftLowerArm',85,0,0);commonRot('RightLowerArm',85,0,0);
+  }else if(id==='BLEND_NEUTRAL'){
+   commonRot('UpperTorso',-3+6*pulse,0,0);commonRot('LeftUpperArm',-8+8*pulse,0,-4);commonRot('RightUpperArm',-8+8*pulse,0,4);
+  }
+ }
+ function setCommonMotion(atom){setModel({id:'roblox-common-r15-preview',model:COMMON_R15_RECIPE,boneNames:[],clips:[]},false);commonMotion=atom||null;elapsed=0;host.dataset.asset=atom?.atomId||'COMMON_R15';host.dataset.kind='common';host.dataset.clip=atom?.atomId||'';}
+ function selectClip(id){commonMotion=null;clip=entry?.clips?.find(row=>row.id===id)||null;elapsed=0;host.dataset.clip=clip?.id||'';}
  function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);renderer.setViewport(0,0,w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
  new ResizeObserver(resize).observe(host);resize();
  new IntersectionObserver(([row])=>{visible=row.isIntersecting;},{threshold:.01}).observe(host);
@@ -122,6 +203,7 @@ export function createViewer(host){
  renderer.setAnimationLoop(now=>{
   const dt=Math.max(0,Math.min((now-last)/1000,.1));last=now;if(document.hidden||!visible)return;
   if(!paused)elapsed+=dt*speed;
+  if(commonMotion)applyCommonMotion(commonMotion,elapsed);
   if(clip){
    const t=clip.loop?elapsed%clip.duration:Math.min(elapsed,clip.duration),samples=clip.frames;
    const frame=t/clip.duration*(samples.length-1),lo=Math.floor(frame),hi=Math.min(samples.length-1,lo+1),mix=frame-lo;
@@ -139,5 +221,5 @@ export function createViewer(host){
  });
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();renderer.setAnimationLoop(null);host.dispatchEvent(new Event('previewlost'));});
  host.dataset.renderer=software?'canvas':'webgl';
- return {setModel,selectClip,setPaused:value=>{paused=value;},setSpeed:value=>{speed=value;},setAngle:value=>{angle=value;},replay:()=>{elapsed=0;}};
+ return {setModel,setCommonMotion,selectClip,setPaused:value=>{paused=value;},setSpeed:value=>{speed=value;},setAngle:value=>{angle=value;},replay:()=>{elapsed=0;}};
 }
