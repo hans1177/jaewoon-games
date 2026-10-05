@@ -179,16 +179,22 @@ function studioAssetSelectionFingerprint({gameId='',profile={},libraryVersion=0,
     family,[...new Set((atoms||[]).map(clean).filter(Boolean))].sort()
   ]));
   return crypto.createHash('sha256').update(JSON.stringify({
-    version:1,gameId:clean(gameId),genre:clean(profile?.genre),subgenre:clean(profile?.subgenre),
+    version:2,gameId:clean(gameId),
     libraryVersion:Number(libraryVersion||0),families:normalized
   })).digest('hex');
 }
-function selectBootstrapAtoms(values=[],preferred=[],key='',count=3){
+function selectBootstrapAtoms(values=[],preferred=[],key=''){
   const source=[...new Set((Array.isArray(values)?values:[]).map(clean).filter(Boolean))];
   const out=[];
   for(const id of preferred)if(source.includes(id)&&!out.includes(id))out.push(id);
-  if(source.length){const start=stableAssetSeed(key)%source.length;for(let i=0;i<source.length&&out.length<count;i++){const id=source[(start+i)%source.length];if(!out.includes(id))out.push(id);}}
-  return Object.freeze(out.slice(0,count));
+  if(source.length){
+    const start=stableAssetSeed(key)%source.length;
+    for(let i=0;i<source.length;i++){
+      const id=source[(start+i)%source.length];
+      if(!out.includes(id))out.push(id);
+    }
+  }
+  return Object.freeze(out);
 }
 export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetLibrary={}}={}){
   const families=assetLibrary?.baseMaterialLibrary?.families||{};
@@ -197,8 +203,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     selected[family]=selectBootstrapAtoms(
       families?.[family]||[],
       preferred,
-      `${gameId}|${profile?.genre||''}|${family}`,
-      family==='MOTION'?11:(family==='ENVIRONMENT'||family==='BUILDING'?4:3)
+      `${gameId}|${family}`
     );
   }
   const selectedAtomCount=Object.values(selected).reduce((n,rows)=>n+rows.length,0);
@@ -219,6 +224,8 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
       mode:'VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL',
       fullLibraryReplicationForbidden:true,
       selectedSubsetOnly:true,
+      allPreparedBaseMaterialAtomsEligible:true,
+      noArtificialAtomCountCap:true,
       unchangedFingerprintMayReuseExistingBinding:true,
       changedFamiliesOnlyMayRebind:true
     }),
@@ -233,6 +240,8 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
       familyResultRequired:'APPLIED_OR_EXPLICIT_NOT_APPLICABLE',
       actualSourceBindingRequired:true,
       markerOnlyApplicationForbidden:true,
+      noArtificialAtomCountCap:true,
+      allPreparedBaseMaterialAtomsEvaluated:true,
       mapEnvironmentBuildingPropRequired:true
     }),
     recipeId:'NORMAL_VARIANT',
