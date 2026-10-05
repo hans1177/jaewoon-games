@@ -1103,7 +1103,7 @@ test('Studio push trigger scopes exact revalidation from the actual before-to-he
   assert.doesNotMatch(studioPlanBlock,/github\.event\.head_commit\.(?:modified|added|removed)/);
 });
 
-test('Studio MCP planner stays independent and does not consume the authenticated Studio host',()=>{
+test('legacy Studio MCP planner stays disabled under the cloud-only owner directive',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
@@ -1117,7 +1117,9 @@ test('Studio MCP planner stays independent and does not consume the authenticate
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
   assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
   assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
-  assert.match(studioPlanBlock,/inputs\.run_studio == true && inputs\.retry_open_cloud_only != true/);
+  assert.match(studioPlanBlock,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  assert.equal(central.roblox.deploymentControl.validationProviderContract.localStudioExecutionAllowed,false);
+  assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,false);
   assert.doesNotMatch(studioPlanBlock,/github\.event_name == 'push'/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerDependsOnPortfolioFoundationJob,false);
@@ -3460,4 +3462,3 @@ test('reboot-safe Studio session settles only the exact reserved source and arti
   });
   assert.equal(staleApplied.item.robloxStudioRuntimeSession.status,'QUEUED_FOR_STUDIO');
 });
-
