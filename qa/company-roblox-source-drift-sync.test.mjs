@@ -369,9 +369,10 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.doesNotMatch(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   const sourcePlan=runtime.slice(runtime.indexOf('\n  source-plan:\n'),runtime.indexOf('\n  source-worker:\n'));
-  assert.match(sourcePlan,/concurrency:\n\s+group: roblox-runtime-source-plan-\$\{\{ github\.sha \}\}-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(sourcePlan,/concurrency:\n\s+group: roblox-runtime-source-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Cancel stale exact-game runtime runs'));
   assert.match(freshness,/String\(r\.display_title\|\|''\)===title/);
+  assert.match(sourcePlan,/cancel-in-progress: true/);
   assert.match(freshness,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(freshness,/String\(r\.head_sha\|\|''\)===currentSha/);
   assert.match(freshness,/echo 'run=false' >> "\$GITHUB_OUTPUT"/);
