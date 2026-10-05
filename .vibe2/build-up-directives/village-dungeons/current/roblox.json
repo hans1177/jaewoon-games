@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g17-57b4a95a9871",
-  "directiveFingerprint": "57b4a95a98714dbd2a1b8328f2c960d29087e82a5800c1df2ceb7378c754bc8f",
-  "previousDirectiveFingerprint": "4ffc2b75b44d9cde138a27d8433f7fe17b5f554010e5158e0ac5f74cbb11a251",
-  "forbiddenRepeatFingerprint": "4ffc2b75b44d9cde138a27d8433f7fe17b5f554010e5158e0ac5f74cbb11a251",
+  "directiveId": "village-dungeons-build-up-g18-8cf7fa5999da",
+  "directiveFingerprint": "8cf7fa5999da3a696d8a5c6b7c7f3a90b09893330116de93b1a18ad67888edef",
+  "previousDirectiveFingerprint": "57b4a95a98714dbd2a1b8328f2c960d29087e82a5800c1df2ceb7378c754bc8f",
+  "forbiddenRepeatFingerprint": "57b4a95a98714dbd2a1b8328f2c960d29087e82a5800c1df2ceb7378c754bc8f",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
+  "sourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -363,9 +363,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "3e31213d3092be8f88080aaa43ea769d2404360edc232567491a07ab519ebd28",
-    "currentSourceTreeFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
+    "currentSourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1555,8 +1555,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
+    "themeDepth": 11,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1566,13 +1566,13 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1615,7 +1615,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 66,
+        "score": 48,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1730,6 +1730,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 18,
+    "previousGeneration": 17,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
+    "priorSourceFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -2346,7 +2367,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
+      "sourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2393,7 +2414,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2461,5 +2482,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T01:30:25.758Z"
+  "generatedAt": "2026-10-05T06:46:20.827Z"
 }
