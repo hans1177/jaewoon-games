@@ -3167,7 +3167,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T13:24:29.848Z",
+      "updatedAt": "2026-10-05T13:24:46.244Z",
       "robloxSourceCommit": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
       "robloxSourceBootstrapPassedAt": "2026-10-05T09:10:14.852Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4100,8 +4100,8 @@
       "unitySourceCommit": "ad591ebfa977b468965094f2e229bb5f20e9edb7",
       "unityBuildRunId": 37299847074,
       "unityRuntimeSmokeRunId": 37301135932,
-      "unityIndependentQaRunId": 37313477763,
-      "unityRegressionRunId": 37314303391,
+      "unityIndependentQaRunId": 37316470904,
+      "unityRegressionRunId": 37301778718,
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
@@ -4133,11 +4133,11 @@
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
           },
           "F5": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F6": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F7": {
@@ -4147,7 +4147,7 @@
             "authoritativeSync": false
           },
           "F8": {
-            "state": "PASS",
+            "state": "FAIL",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F9": {
@@ -4156,7 +4156,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-05T13:24:29.848Z"
+        "verifiedAt": "2026-10-05T13:24:46.244Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -4183,15 +4183,15 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": true,
-          "independentQa": true,
+          "independentQa": false,
           "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F8_GAMEPLAY_SYSTEMS",
-        "failureStage": "F9_RELEASE_REGRESSION",
-        "failureSignature": "645869a72197bd4c6d8ef11e89d8b2e9383106ff5426273810c998e88baaade9"
+        "lastSuccessfulStage": "F4_PHYSICS_AND_MOVEMENT",
+        "failureStage": "F5_INPUT_CAMERA_UI",
+        "failureSignature": "5a32698be5414a5cd865332df5a1195cdb4553fc843e3e93a9c621f6e05badf0"
       },
       "executionEvidence": {
         "version": 4,
@@ -4207,17 +4207,17 @@
         "regressionPassed": false,
         "rawStageResults": {
           "runtime": true,
-          "independentQa": true,
+          "independentQa": false,
           "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F8_GAMEPLAY_SYSTEMS",
-        "failureStage": "F9_RELEASE_REGRESSION",
-        "failureSignature": "645869a72197bd4c6d8ef11e89d8b2e9383106ff5426273810c998e88baaade9"
+        "lastSuccessfulStage": "F4_PHYSICS_AND_MOVEMENT",
+        "failureStage": "F5_INPUT_CAMERA_UI",
+        "failureSignature": "5a32698be5414a5cd865332df5a1195cdb4553fc843e3e93a9c621f6e05badf0"
       },
-      "resumeStage": "F9_RELEASE_REGRESSION",
+      "resumeStage": "F5_INPUT_CAMERA_UI",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxStudioAssetBindingApplied": true,
@@ -21382,7 +21382,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T13:24:37.704Z",
+  "updatedAt": "2026-10-05T13:24:49.031Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
