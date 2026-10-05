@@ -201,19 +201,6 @@ public sealed class JaewoonNativeMotionActor : MonoBehaviour
         return new Vector3(value.x, 0f, value.z);
     }
 
-    private int BindNativeMotionActors()
-    {
-        int count = 0;
-        foreach (Animator candidate in FindObjectsByType<Animator>(FindObjectsSortMode.None))
-        {
-            if (candidate == null) continue;
-            if (candidate.GetComponent<JaewoonNativeMotionActor>() == null)
-                candidate.gameObject.AddComponent<JaewoonNativeMotionActor>();
-            count++;
-        }
-        return count;
-    }
-
     private void Update()
     {
         if (animator == null) return;
@@ -377,6 +364,20 @@ ${csharpArray(developmentLearning.principles)}
     private float feedbackUntil;
     private string lastAction = "READY";
     private string lastVerifiedLearningPattern = "READY";
+
+    // 메인: 부팅을 소유한 클래스가 기존 Animator에 모션 관찰자를 연결한다.
+    private int BindNativeMotionActors()
+    {
+        int count = 0;
+        foreach (Animator candidate in FindObjectsByType<Animator>(FindObjectsSortMode.None))
+        {
+            if (candidate == null) continue;
+            if (candidate.GetComponent<JaewoonNativeMotionActor>() == null)
+                candidate.gameObject.AddComponent<JaewoonNativeMotionActor>();
+            count++;
+        }
+        return count;
+    }
 
     private void Awake()
     {

@@ -1,5 +1,5 @@
 {
-  "version": 532,
+  "version": 533,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -6086,7 +6086,14 @@
       "privateValidationArtifactForF0ToF9Allowed": true,
       "validationArtifactMayReplaceCanonicalServer": false,
       "homepageClassificationAndPublicationMustUseSameGate": true,
-      "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException"
+      "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException",
+      "codeAndContentExpansionRequiredAcrossPlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "simpleMotionOrCounterOnlyPrototypeIsNotCompleteGame": true,
+      "webDeploymentBeforeNextBuildUpAuthority": "changeRecord.playableWebMandatoryDeployment20261002"
     },
     "existingRobloxSourceIntake": {
       "authority": "OWNER_DIRECTIVE_2026-09-30",
@@ -6369,10 +6376,40 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true,
       "reconcileExistingCatalogGamesEveryStatusSync": true,
       "existingCanonicalIndexEnablesWebPlay": true,
-      "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true
+      "missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard": true,
+      "discoverCanonicalEntriesEverySync": true,
+      "webExposureQuality": {
+        "authority": "OWNER_DIRECTIVE_2026-10-05",
+        "enabled": true,
+        "excludeFromGameCatalog": [
+          "vibe-maker",
+          "wildlife-motion-sample"
+        ],
+        "withdrawnEntryTitles": [
+          "Approved Web Bootstrap"
+        ],
+        "withdrawnRuntimeScripts": [
+          "/web-games/_shared/vibe2-final.js"
+        ],
+        "action": "WITHDRAW_WEB_ENTRY_AND_PLAY_LINK_ONLY",
+        "preserveNativeProjectsAndSaveData": true,
+        "reentry": "REPLACE_SIMPLE_PROTOTYPE_WITH_GAME_SPECIFIC_IMPLEMENTATION_AND_USE_EXISTING_F0_F9_PUBLICATION",
+        "minimumPlayableContract": [
+          "GAME_SPECIFIC_PLAYER_DECISIONS",
+          "REAL_GAME_STATE_FEEDBACK",
+          "PROGRESSION_AND_CONTENT_DEPTH",
+          "REPLAYABLE_GAMEPLAY"
+        ],
+        "sameGameplayDepthStandardAcrossPlatforms": [
+          "WEB",
+          "ROBLOX",
+          "UNITY"
+        ],
+        "sizeAloneIsNotGameplayEvidence": true
+      }
     }
   },
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-05",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6607,7 +6644,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 8,
+    "version": 9,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6642,7 +6679,9 @@
       "publishAfterRuntimeSyncAndHomepageQa": true,
       "reconcileExistingCatalogGamesEveryStatusSync": true,
       "existingCanonicalIndexEnablesWebPlay": true,
-      "missingCanonicalIndexHidesTitleOnlyCard": true
+      "missingCanonicalIndexHidesTitleOnlyCard": true,
+      "discoverCanonicalEntriesEverySync": true,
+      "webExposureQualityRef": "catalogNormalization.ownerWebAutoIngest.webExposureQuality"
     },
     "executionPipeline": {
       "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
@@ -6801,7 +6840,8 @@
         "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
         "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
         "cardVisibilityRequiresRunnableTarget": true,
-        "titleOnlyCardExposureForbidden": true
+        "titleOnlyCardExposureForbidden": true,
+        "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6922,7 +6962,9 @@
       "existingCatalogSourceMetadataMustBePreserved": true,
       "runtimeMissingGamesMayBeMergedWhenLiveQueueEligible": true,
       "canonicalNormalizationRequiredBeforePublication": true,
-      "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs"
+      "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs",
+      "edgeMustReconcileDeployedCanonicalSourceMetadata": true,
+      "deployedWebExposurePolicyOverridesStaleRuntimeWebFlags": true
     },
     "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate"
   },
@@ -8518,6 +8560,22 @@
       "canonicalSequenceChanged": false,
       "generationDetailRotationPreserved": true,
       "perpetualSourceAssetContentEvolutionRequired": true
+    },
+    "allGamePlayableAccessAndPrototypeWithdrawal20261005": {
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "status": "IMPLEMENTED_PENDING_RUNTIME_VERIFICATION",
+      "allActualOwnerWebGamesDiscovered": true,
+      "simpleWebPrototypesWithdrawn": true,
+      "unityVerifiedTestAccessPreserved": true,
+      "f0F9SequenceAndReleaseEvidencePreserved": true,
+      "sameCodeAndContentDepthStandard": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "newPipelineCreated": false,
+      "loopStopsOnlyOnOwnerHoldOrRemoval": true,
+      "webRequiresExactProductionDeploymentBeforeNextBuildUp": true
     }
   },
   "vibeExecutionLaneContract": {

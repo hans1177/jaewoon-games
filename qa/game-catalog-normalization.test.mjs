@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import vm from 'node:vm';
 import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
@@ -165,10 +166,8 @@ assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
-assert.match(sync,/const actualWebPlayableReconciled=\[\]/);
-assert.match(sync,/web-games\/\$\{id\}\/index\.html/);
-assert.match(sync,/game\.hasWebArchive=true/);
-assert.match(sync,/game\.homepageWebPlayable=true/);
+assert.match(sync,/const actualWebPlayableReconciled=\[\.\.\.ownerWebIngest\.added,\.\.\.ownerWebIngest\.updated\]/);
+assert.doesNotMatch(sync,/game\.homepageWebPlayable=true/,'status reconciliation must not bypass prototype withdrawal');
 assert.match(sync,/COMPANY_ACTUAL_WEB_PLAYABLE_RECONCILED/);
 assert.match(sync,/normalizeCatalog\(catalog\)/);
 assert.match(sync,/validateNormalizedCatalog\(catalog\)/);
@@ -186,6 +185,64 @@ assert.equal(fs.existsSync('tools/game-catalog-normalize.mjs'),false);
 assert.equal(fs.existsSync('company-learning/catalog-homepage-normalization.json'),false);
 
 console.log('PASS canonical catalog normalization + stable homepage order: games='+catalog.games.length);
+
+{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'all-web-access-'));
+  try{
+    const write=(id,html)=>{fs.mkdirSync(path.join(root,id),{recursive:true});fs.writeFileSync(path.join(root,id,'index.html'),html+'<!--'+' '.repeat(600)+'-->');};
+    write('owner-unregistered','<title>주인 게임</title><canvas></canvas>');
+    write('simple-shell','<title>Approved Web Bootstrap</title><button>Win</button>');
+    write('counter-shell','<title>카운터</title><script src="/web-games/_shared/vibe2-final.js?v=1"></script>');
+    write('vibe-maker','<title>게임 제작기</title>');
+    const temp={games:[{id:'simple-shell',webPath:'/web-games/simple-shell/',homepageWebPlayable:true,hasWebArchive:true},{id:'missing-entry',webPath:'/web-games/missing-entry/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:['removed']}};
+    write('removed','<title>이전 삭제 게임</title>');
+    const result=ingestOwnerWebGameIds(temp,[],{rootDir:root});
+    assert.deepEqual(result.added,['owner-unregistered']);
+    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
+    assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
+    assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
+    assert(!temp.games.some(x=>['counter-shell','vibe-maker','removed'].includes(x.id)));
+    write('unity-only-index','<title>Unity Web Player</title><script>var buildUrl="Build"; var loaderUrl=buildUrl+"/game.loader.js";var config={dataUrl:buildUrl+"/game.data",frameworkUrl:buildUrl+"/game.framework.js",codeUrl:buildUrl+"/game.wasm"};</script>');
+    ingestOwnerWebGameIds(temp,[],{rootDir:root});
+    assert(!temp.games.some(x=>x.id==='unity-only-index'),'Unity HTML without its actual bundle is not runnable');
+    fs.mkdirSync(path.join(root,'unity-only-index','Build'));
+    for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(root,'unity-only-index','Build',file),'bundle-fixture');
+    ingestOwnerWebGameIds(temp,[],{rootDir:root});
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,true);
+    write('simple-shell','<title>다시 구현한 게임</title><canvas></canvas>');
+    ingestOwnerWebGameIds(temp,[],{rootDir:root});
+    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,true);
+    assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+}
+
+{
+  const source=fs.readFileSync('_worker.js','utf8');
+  const edge=await import('data:text/javascript;base64,'+Buffer.from(source+'\nexport {mergeRuntimeCatalog};').toString('base64'));
+  const runtime={games:[{id:'old',productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,canonical:{sources:{web:{playable:true,archive:true}}}}]};
+  const deployed={webExposurePolicy:ingestPolicy.webExposureQuality,games:[{id:'old',homepageWebPlayable:false,hasWebArchive:false,ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE',canonical:{sources:{web:{playable:false,archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}},{id:'new-owner',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/new-owner/'}]};
+  const merged=edge.mergeRuntimeCatalog(runtime,{}, {},{},deployed);
+  assert.equal(merged.games.length,2);
+  assert.equal(merged.games.find(x=>x.id==='old').homepageWebPlayable,false);
+  assert.equal(merged.games.find(x=>x.id==='old').canonical.sources.web.playable,false);
+  assert.equal(merged.games.find(x=>x.id==='old').productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(merged.games.find(x=>x.id==='new-owner').homepageWebPlayable,true);
+  const env={ASSETS:{fetch:async request=>new URL(request.url).pathname==='/game-catalog.json'?Response.json(deployed):new Response('<title>Approved Web Bootstrap</title><body><button>Win</button></body>',{headers:{'Content-Type':'text/html'}})}};
+  const response=await edge.default.fetch(new Request('https://example.test/web-games/old/'),env);
+  assert.equal(response.status,410);
+  assert(!(await response.text()).includes('<button>Win</button>'));
+}
+
+{
+  const context=vm.createContext({document:{readyState:'loading',addEventListener(){}},console,URL});
+  vm.runInContext(homepage,context);
+  const links=vm.runInContext(`internalReleaseLinks(bindVerifiedUnityBuild({id:'native-test'},{testBuilds:[{gameId:'native-test',download:'https://example.test/verified.apk',status:'ready',mobileReady:true,signatureVerified:true,installAndLaunchVerified:true}]}))`,context);
+  assert.equal(links.unity,'https://example.test/verified.apk');
+  assert.equal(vm.runInContext("hasInternalRelease({id:'native-test',unityBuildVerified:true})",context),false);
+  assert.equal(vm.runInContext("internalReleaseLinks({id:'native-test',unityBuildUrl:'https://example.test/unverified.apk'}).unity",context),'');
+  assert.equal(vm.runInContext("playableWebHref({id:'old',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/old/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'})",context),'');
+}
+console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
 
 {

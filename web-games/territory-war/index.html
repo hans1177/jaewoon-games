@@ -1,414 +1,138 @@
 <!doctype html>
-<html>
+<!-- 파일: web-games/territory-war/index.html | 영토 전쟁: 세 왕관 -->
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>Approved Web Bootstrap</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-        main {
-            padding: 20px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101c21">
+<meta name="description" content="영지를 개척하고 보급을 관리하며 두 왕국과 중앙 요새를 정복하는 턴제 영토 전략 게임.">
+<title>영토 전쟁 · 세 왕관</title>
+<style>
+/* 화면: 외부 의존성 없는 모바일 우선 왕국 지도 */
+:root{color-scheme:dark;--bg:#101c21;--panel:#1a2b30;--line:#35464b;--ink:#f3eddd;--dim:#afbcb7;--gold:#ecd18b;--blue:#6dc6e4;--red:#ec9688}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 40% 0,#293a3b,var(--bg) 65%);color:var(--ink);font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;font-size:14px;line-height:1.5}button,input,select{font:inherit}button{min-height:44px;border:1px solid var(--line);border-radius:9px;background:#25383c;color:var(--ink);padding:9px 13px;cursor:pointer;touch-action:manipulation}button:hover:not(:disabled){border-color:var(--gold);background:#344a4b}button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button:disabled{opacity:.43;cursor:not-allowed}.primary{background:var(--gold);border-color:var(--gold);color:#26302b;font-weight:800}.primary:hover:not(:disabled){background:#ffe6a7}.danger{color:#ffb3a4;border-color:#8c534e}.quiet{background:transparent}.tiny{font-size:12px}.muted{color:var(--dim)}.gold{color:var(--gold)}.negative{color:#ffafa0}.positive{color:#8fd8b3}h1,h2,h3,p{margin:0}h2{font-size:21px}h3{font-size:16px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.stack{display:grid;gap:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.full{width:100%}.pill{font-size:11px;padding:3px 8px;background:#ffffff0a;border:1px solid var(--line);border-radius:20px}.rule{height:1px;background:var(--line);margin:13px 0}[hidden]{display:none!important}
+#app{max-width:1460px;margin:auto;padding:14px 18px max(24px,env(safe-area-inset-bottom))}header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.brand small{display:block;font-size:10px;letter-spacing:4px;color:var(--gold)}.brand h1{font-size:25px;letter-spacing:-1px}.brand h1 span{font-size:14px;letter-spacing:0;color:var(--dim);margin-left:10px}.headbuttons{display:flex;gap:7px}.headbuttons button{font-size:12px;padding:8px 11px}.resources{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.resource{border:1px solid var(--line);border-radius:10px;background:linear-gradient(120deg,#263837,#17282d);padding:10px 14px;display:flex;align-items:center;gap:11px}.resource svg{width:23px;height:23px;fill:none;stroke:var(--gold);stroke-width:1.5;flex:none}.resource .value{font-size:21px;font-weight:750;font-variant-numeric:tabular-nums}.resource label{font-size:11px;display:block;color:var(--dim)}.resource small{margin-left:auto;font-size:11px;text-align:right}.campaign{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:10px 0}.campaign p{font-size:12px}.progress{width:130px;height:5px;background:#35464b;border-radius:5px;overflow:hidden;margin-top:4px}.progress i{height:100%;display:block;background:var(--gold)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 355px;gap:14px;align-items:start}.mapframe{position:relative;background:#162c37;border:1px solid #50605b;border-radius:14px;overflow:hidden;box-shadow:0 16px 50px #0004}.maplabel{position:absolute;top:12px;left:14px;z-index:1;pointer-events:none;text-shadow:0 1px 4px #000}.maplabel strong{font-size:13px;letter-spacing:3px}.maplabel small{font-size:10px;display:block;color:#bbccc8}.mapbuttons{position:absolute;right:8px;top:8px;display:flex;gap:4px;z-index:1}.mapbuttons button{width:39px;min-height:40px;padding:3px;background:#182b30dd}.legend{position:absolute;bottom:9px;left:12px;font-size:10px;display:flex;gap:11px;pointer-events:none;background:#102129d9;padding:5px 8px;border-radius:8px}.legend b{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}.legend b.player{background:#6ac4de}.legend b.enemy{background:#df867a}.legend b.enemy2{background:#b69fdb}#map{display:block;width:100%;height:clamp(380px,65vh,680px);touch-action:none;outline-offset:-4px}.maphelp{font-size:11px;color:var(--dim);padding:9px 3px}.panel{border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,#223638,#18282e);padding:16px}.side{display:grid;gap:12px}.tabs{display:flex;gap:5px;margin-bottom:14px}.tabs button{flex:1;background:transparent;font-size:13px;padding:8px 4px}.tabs button.active{background:#385050;border-color:#bba770;color:var(--gold)}.terrainbadge{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-size:24px;background:#ffffff09;color:var(--gold)}.regionhead{display:flex;gap:10px;align-items:center;margin-bottom:10px}.statline{display:flex;gap:8px;justify-content:space-between;margin:8px 0;font-size:12px}.troop{padding:9px 4px;border:1px solid var(--line);border-radius:8px;text-align:center}.troop strong{font-size:20px;display:block}.troop small{font-size:11px;color:var(--dim)}.build{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.build p{font-size:11px;color:var(--dim);margin-top:2px}.build button{font-size:12px;min-width:72px;padding:8px}.orders{font-size:12px;color:var(--gold)}.endbar{position:sticky;bottom:8px;z-index:3;margin-top:12px;background:#17292ef2;border:1px solid #647266;border-radius:12px;padding:10px;display:flex;gap:10px;justify-content:space-between;align-items:center;backdrop-filter:blur(8px)}.endbar button{min-width:140px}.journal{margin-top:13px}.journal summary{padding:12px 14px;cursor:pointer;font-size:13px;color:var(--dim)}#log{max-height:200px;overflow-y:auto;padding:0 15px 12px;font-size:12px}#log p{padding:6px 0;border-top:1px solid #ffffff0a}.tip{border-left:2px solid var(--gold);padding:7px 10px;background:#ecd18b08;font-size:12px;color:#d9dfd2}.neighbors{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.neighbors button{font-size:12px;text-align:left;min-height:49px}.neighbors small{display:block;font-size:10px;color:var(--dim)}#toast{position:fixed;left:50%;top:16px;transform:translateX(-50%);max-width:92vw;width:max-content;border:1px solid var(--gold);background:#192b30;color:var(--ink);box-shadow:0 8px 30px #0008;padding:12px 19px;border-radius:10px;z-index:20;pointer-events:none;opacity:0;transition:opacity .15s}#toast.show{opacity:1}
+.overlay{position:fixed;inset:0;z-index:10;background:#071117c9;backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto}.modal{width:min(540px,100%);max-height:calc(100dvh - 36px);overflow:auto;background:linear-gradient(145deg,#29413f,#15262d 70%);border:1px solid #778475;border-radius:18px;padding:25px;box-shadow:0 25px 100px #0009}.modal.wide{width:min(620px,100%)}.eyebrow{font-size:11px;color:var(--gold);letter-spacing:4px;margin-bottom:9px}.herotitle{font-size:43px;line-height:1.15;letter-spacing:-2px;margin-bottom:14px}.herotitle span{display:block;color:var(--gold);font-size:26px;letter-spacing:6px;margin-top:8px}.herotext{font-size:13px;line-height:1.8;color:#c0ccc4}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:22px 0}.features div{border-top:1px solid #697464;padding-top:9px;font-size:12px}.features small{display:block;font-size:10px;color:var(--dim);margin-top:4px}.difficulty{display:flex;gap:6px;margin:9px 0 15px}.difficulty button{flex:1;font-size:12px}.difficulty .active,.selected{border-color:var(--gold)!important;color:var(--gold);background:#4b5141!important}.crownart{display:block;margin:0 auto 16px;width:100px;height:65px;fill:none;stroke:var(--gold);stroke-width:2}.modal .close{float:right;min-width:44px;padding:5px;margin:-10px -10px 8px 8px}.combatrow{display:grid;grid-template-columns:1fr 35px 1fr;align-items:center;gap:8px;margin:17px 0;text-align:center}.combatrow strong{font-size:31px;display:block}.combatrow small{color:var(--dim);font-size:11px}.powerbar{height:8px;background:#cf8271;border-radius:8px;overflow:hidden;margin:10px 0}.powerbar span{display:block;height:100%;background:#78cbe1}.optionrow{display:flex;gap:6px;margin-top:6px}.optionrow button{flex:1;padding:6px;font-size:12px}.helpitem{margin:16px 0}.helpitem h3{color:var(--gold);margin-bottom:4px}.helpitem p{font-size:13px;color:#d4ddd6}.savewarn{font-size:11px;color:#ffb3a4;margin:7px 0}select{max-width:100%;padding:9px;border-radius:7px;background:#203339;color:var(--ink);border:1px solid var(--line)}
+@media(max-width:950px){.layout{grid-template-columns:minmax(0,1fr) 315px}.brand h1 span{display:none}#map{height:510px}}
+@media(max-width:720px){#app{padding:10px 10px max(22px,env(safe-area-inset-bottom))}.brand h1{font-size:22px}.brand small{font-size:9px;letter-spacing:3px}.headbuttons button{padding:7px 9px}.resources{gap:5px}.resource{padding:7px;gap:4px;display:block;position:relative}.resource svg{width:14px;height:14px;position:absolute;right:8px;top:9px}.resource .value{font-size:19px}.resource label{font-size:10px}.resource small{font-size:10px;display:block;text-align:left}.layout{grid-template-columns:1fr;gap:4px}.campaign{margin:8px 0}.campaign p{font-size:11px}.progress{width:95px}#map{height:clamp(305px,44dvh,440px)}.maplabel strong{font-size:11px}.maplabel small{font-size:9px}.maphelp{font-size:10px;margin-bottom:3px}.side{gap:8px}.panel{padding:13px}.tabs{margin-bottom:10px}.endbar{bottom:max(7px,env(safe-area-inset-bottom));padding:8px 10px}.endbar button{min-width:135px}.modal{padding:22px 19px}.herotitle{font-size:38px}.features{margin:16px 0}.crownart{height:51px;margin-bottom:12px}.grid3 .troop strong{font-size:19px}.mapbuttons{top:6px;right:6px}.mapbuttons button{width:36px;min-height:39px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
 </head>
 <body>
-    <main id="game">
-        <h1>Approved Web Bootstrap</h1>
-        <button onclick="startGame()">Start Game</button>
-        <div id="gameArea"></div>
-    </main>
-    <script>
-        function startGame() {
-            const gameArea = document.getElementById('gameArea');
-            gameArea.innerHTML = '<p>Game is starting...</p>';
-            // Simulate game logic here
-        }
-    </script>
-
+<div id="app">
+<header><div class="brand"><small>왕국의 운명은 네 선택에</small><h1>영토 전쟁<span>세 왕관</span></h1></div><div class="headbuttons"><button data-action="help">도움말</button><button data-action="menu">메뉴</button></div></header>
+<div id="resources" class="resources"></div>
+<div class="campaign"><div><p id="objective"></p><div class="progress"><i id="progress"></i></div></div><div class="tiny" id="season"></div></div>
+<main class="layout">
+<section><div class="mapframe"><div class="maplabel"><strong>아르덴 대륙</strong><small>영지를 고른 뒤 인접 영지로 진군</small></div><div class="mapbuttons"><button data-action="zoomOut" aria-label="지도 축소">−</button><button data-action="zoomIn" aria-label="지도 확대">＋</button><button data-action="center" aria-label="지도 전체 보기">⌖</button></div><canvas id="map" tabindex="0" aria-label="영토 지도. 터치로 영지를 선택하거나 드래그로 이동. 아래 인접 영지 버튼으로도 이동할 수 있어."></canvas><div class="legend"><span><b class="player"></b>아르덴</span><span><b class="enemy"></b>적철 왕국</span><span><b class="enemy2"></b>자월 연맹</span><span>왕관 = 수도</span></div></div><p class="maphelp">드래그로 지도 이동 · 두 손가락으로 확대 · 파란 테두리는 진군 가능한 영지</p></section>
+<aside class="side"><section class="panel"><nav class="tabs"><button data-action="tab" data-value="land" class="active">영지</button><button data-action="tab" data-value="army">부대</button><button data-action="tab" data-value="kingdom">왕국</button></nav><div id="panel"></div></section><div id="guidance" class="tip"></div></aside>
+</main>
+<div class="endbar"><div><strong id="turn"></strong><div class="orders" id="orders"></div></div><button id="end" data-action="end" class="primary">턴 종료 →</button></div>
+<details class="panel journal"><summary>전황 기록 <span id="logCount"></span></summary><div id="log" aria-live="polite"></div></details>
+<p id="saveStatus" class="tiny muted" style="margin-top:10px">행동마다 이 기기에 자동 저장돼.</p>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="overlay" class="overlay" hidden><section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></section></div>
 <script>
-    // Add real gameplay systems, mechanics, state transitions, mobile pointer/touch interaction, progression, outcomes, save-compatible state, or game-specific spatial behavior
-    // This script adds a simple game state and progression system
-
-    // Game state management
-    let gameState = {
-        playerHealth: 100,
-        enemyHealth: 100,
-        playerAttack: 10,
-        enemyAttack: 10,
-        gameWon: false,
-        gameLost: false,
-        currentLevel: 1,
-        levelProgression: [
-            { level: 1, requiredHealth: 50 },
-            { level: 2, requiredHealth: 75 },
-            { level: 3, requiredHealth: 100 }
-        ]
-    };
-
-    // Game progression system
-{ level: 1, requiredHealth: 50 }
-let levelProgression = ["{ "level": 1, "requiredHealth": 50 }, "{ "level": 2, "requiredHealth": 75 }"];
-        { level: 1, requiredHealth: 50 },
-        { level: 2, requiredHealth: 75 },
-        { level: 3, requiredHealth: 100 }
-    ];
-
-    // Game outcome system
-    let gameOutcomes = {
-        win: "You defeated the enemy!",
-        lose: "You were defeated by the enemy!",
-        draw: "It's a draw!"
-    };
-
-    // Game state transitions
-    function updateGameState() {
-        const playerHealth = gameState.playerHealth;
-        const enemyHealth = gameState.enemyHealth;
-
-        // Check for win condition
-        if (playerHealth <= 0) {
-            gameState.gameLost = true;
-            gameState.gameWon = false;
-            return gameOutcomes.lose;
-        }
-
-        // Check for draw condition
-        if (enemyHealth <= 0) {
-            gameState.gameWon = true;
-            gameState.gameLost = false;
-            return gameOutcomes.win;
-        }
-
-        // Check if level is completed
-        const level = currentLevel;<!-- replaced with a different behaviorally meaningful token -->
-        const requiredHealth = levelProgression[level - 1].requiredHealth;
-
-        if (playerHealth >= requiredHealth) {
-            currentLevel++;
-gameState.gameState = updateGameState();
-                currentLevel = levelProgression.length + 1;
-            }
-            return gameOutcomes.draw;
-        }
-
-        return "Continue";
-    }
-
-    // Game interaction
-    function handleGameAction(action) {
-        const playerHealth = gameState.playerHealth;
-        const enemyHealth = gameState.enemyHealth;
-
-        if (action === "attack") {
-            gameState.playerHealth -= gameState.enemyAttack;
-            gameState.enemyHealth -= gameState.playerAttack;
-        } else if (action === "defend") {
-            gameState.playerHealth += gameState.enemyAttack;
-            gameState.enemyHealth -= gameState.playerAttack;
-        }
-
-        // Update game state
-        gameState.gameState = updateGameState();
-
-        // Display game outcome
-        const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = `<p>Game Outcome: ${gameState.gameState}</p>`;
-    }
-
-    // Mobile pointer/touch interaction
-    document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 0) {
-            handleGameAction('attack');
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.tagName === 'BUTTON') {
-            handleGameAction('attack');
-        }
-    });
-
-    // Game loop
-    function gameLoop() {
-        const outcome = updateGameState();
-        const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = `<p>Game Outcome: ${outcome}</p>`;
-        if (outcome === "draw") {
-            setTimeout(gameLoop, 1000);
-        }
-    }
-
-    // Start game
-    function startGame() {
-        gameState.playerHealth = 100;
-        gameState.enemyHealth = 100;
-        gameState.gameWon = false;
-        gameState.gameLost = false;
-        gameState.currentLevel = 1;
-        gameState.gameState = "start";
-        gameLoop();
-    }
-</script>
-
-<script>
-    // Add real restart/reset/retry path that restores a valid playable state without reloading validation scaffolding
-    // This script adds a real restart/reset/retry path that restores a valid playable state without reloading validation scaffolding
-
-    // Game state management
-    let gameState = {
-        playerHealth: 100,
-        enemyHealth: 100,
-        playerAttack: 10,
-        enemyAttack: 10,
-        gameWon: false,
-        gameLost: false,
-        currentLevel: 1,
-        levelProgression: [
-            { level: 1, requiredHealth: 50 },
-            { level: 2, requiredHealth: 75 },
-            { level: 3, requiredHealth: 100 }
-        ]
-    };
-
-    // Game outcome system
-    let gameOutcomes = {
-        win: "You defeated the enemy!",
-        lose: "You were defeated by the enemy!",
-        draw: "It's a draw!"
-    };
-
-    // Game state transitions
-    function updateGameState() {
-        const playerHealth = gameState.playerHealth;
-        const enemyHealth = gameState.enemyHealth;
-
-        // Check for win condition
-        if (playerHealth <= 0) {
-            gameState.gameLost = true;
-            gameState.gameWon = false;
-            return gameOutcomes.lose;
-        }
-
-        // Check for draw condition
-        if (enemyHealth <= 0) {
-            gameState.gameWon = true;
-            gameState.gameLost = false;
-            return gameOutcomes.win;
-        }
-
-        // Check if level is completed
-        const level = gameState.currentLevel;
-        const requiredHealth = gameState.levelProgression[level - 1].requiredHealth;
-
-        if (playerHealth >= requiredHealth) {
-            gameState.currentLevel++;
-            if (gameState.currentLevel > gameState.levelProgression.length) {
-                gameState.currentLevel = gameState.levelProgression.length + 1;
-            }
-            return gameOutcomes.draw;
-        }
-
-        return "Continue";
-    }
-
-    // Game interaction
-    function handleGameAction(action) {
-        const playerHealth = gameState.playerHealth;
-        const enemyHealth = gameState.enemyHealth;
-
-        if (action === "attack") {
-            gameState.playerHealth -= gameState.enemyAttack;
-            gameState.enemyHealth -= gameState.playerAttack;
-        } else if (action === "defend") {
-            gameState.playerHealth += gameState.enemyAttack;
-            gameState.enemyHealth -= gameState.playerAttack;
-        }
-
-        // Update game state
-        gameState.gameState = updateGameState();
-
-        // Display game outcome
-        const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = `<p>Game Outcome: ${gameState.gameState}</p>`;
-    }
-
-    // Mobile pointer/touch interaction
-    document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 0) {
-            handleGameAction('attack');
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.tagName === 'BUTTON') {
-            handleGameAction('attack');
-        }
-    });
-
-    // Game loop
-    function gameLoop() {
-        const outcome = updateGameState();
-        const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = `<p>Game Outcome: ${outcome}</p>`;
-        if (outcome === "draw") {
-            setTimeout(gameLoop, 1000);
-        }
-    }
-
-    // Restart/reset/retry path
-    function restartGame() {
-        gameState.playerHealth = 100;
-        gameState.enemyHealth = 100;
-        gameState.gameWon = false;
-        gameState.gameLost = false;
-        gameState.currentLevel = 1;
-        gameState.gameState = "start";
-        gameLoop();
-    }
-
-    // Add restart button
-    const restartButton = document.createElement('button');
-    restartButton.textContent = "Restart Game";
-    restartButton.onclick = restartGame;
-    document.getElementById('gameArea').appendChild(restartButton);
-</script>
-
-<script>
-    // Add real restart/reset/retry path that restores a valid playable state without reloading validation scaffolding
-
-    // Game state management
-    let gameState = {
-        playerHealth: 100,
-        enemyHealth: 100,
-        playerAttack: 10,
-        enemyAttack: 10,
-        gameWon: false,
-        gameLost: false,
-        currentLevel: 1,
-        levelProgression: [
-            { level: 1, requiredHealth: 50 },
-            { level: 2, requiredHealth: 75 },
-            { level: 3, requiredHealth: 100 }
-        ]
-    };
-
-    // Game outcome system
-    let gameOutcomes = {
-        win: "You defeated the enemy!",
-        lose: "You were defeated by the enemy!",
-        draw: "It's a draw!"
-    };
-
-    // Game state transitions
-    function updateGameState() {
-        const playerHealth = gameState.playerHealth;
-        const enemyHealth = gameState.enemyHealth;
-
-        // Check for win condition
-        if (playerHealth <= 0) {
-            gameState.gameLost = true;
-            gameState.gameWon = false;
-            return gameOutcomes.lose;
-        }
-
-        // Check for draw condition
-        if (enemyHealth <= 0) {
-            gameState.gameWon = true;
-            gameState.gameLost = false;
-            return gameOutcomes.win;
-        }
-
-        // Check if level is completed
-        const level = gameState.currentLevel;
-        const requiredHealth = gameState.levelProgression[level - 1].requiredHealth;
-
-        if (playerHealth >= requiredHealth) {
-            gameState.currentLevel++;
-            if (gameState.currentLevel > gameState.levelProgression.length) {
-                gameState.currentLevel = gameState.levelProgression.length + 1;
-            }
-            return gameOutcomes.draw;
-        }
-
-        return "Continue";
-    }
-
-    // Game interaction
-    function handleGameAction(action) {
-        const playerHealth = gameState.playerHealth;
-        const enemyHealth = gameState.enemyHealth;
-
-        if (action === "attack") {
-            gameState.playerHealth -= gameState.enemyAttack;
-            gameState.enemyHealth -= gameState.playerAttack;
-        } else if (action === "defend") {
-            gameState.playerHealth += gameState.enemyAttack;
-            gameState.enemyHealth -= gameState.playerAttack;
-        }
-
-        // Update game state
-        gameState.gameState = updateGameState();
-
-        // Display game outcome
-        const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = `<p>Game Outcome: ${gameState.gameState}</p>`;
-    }
-
-    // Mobile pointer/touch interaction
-    document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 0) {
-            handleGameAction('attack');
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.tagName === 'BUTTON') {
-            handleGameAction('attack');
-        }
-    });
-
-    // Game loop
-    function gameLoop() {
-        const outcome = updateGameState();
-        const gameArea = document.getElementById('gameArea');
-        gameArea.innerHTML = `<p>Game Outcome: ${outcome}</p>`;
-        if (outcome === "draw") {
-            setTimeout(gameLoop, 1000);
-        }
-    }
-
-    // Restart/reset/retry path
-    function restartGame() {
-        gameState.playerHealth = 100;
-        gameState.enemyHealth = 100;
-        gameState.gameWon = false;
-        gameState.gameLost = false;
-        gameState.currentLevel = 1;
-        gameState.gameState = "start";
-        gameLoop();
-    }
-
-    // Add restart button
-    const restartButton = document.createElement('button');
-    restartButton.textContent = "Restart Game";
-    restartButton.onclick = restartGame;
-    document.getElementById('gameArea').appendChild(restartButton);
+'use strict';
+/* 데이터: 외부 임포트 없음. 기존 페이지에 저장 키가 없어 게임 전용 키를 사용한다. */
+const SAVE_KEY='jaewoon.territory-war.v1', VERSION=1, COLS=9, ROWS=7, R=34;
+const $=id=>document.getElementById(id), clone=v=>JSON.parse(JSON.stringify(v));
+const TERRAINS={plain:{name:'초원',color:'#6f8460',def:1,icon:'♧',yield:[2,0,0,5]},forest:{name:'숲',color:'#426956',def:1.25,icon:'♠',yield:[1,5,0,1]},mountain:{name:'산악',color:'#737e7b',def:1.45,icon:'△',yield:[1,0,4,0]},ruins:{name:'유적',color:'#938269',def:1.2,icon:'◇',yield:[4,0,1,0]},marsh:{name:'습지',color:'#567b75',def:1.2,icon:'≋',yield:[1,1,0,3]}};
+const RESOURCE_NAMES=['금화','목재','철광','식량'];
+const UNIT_NAMES=['보병','궁병','기병'], UNIT_SIGNS=['검','활','말'];
+const RECRUIT=[{cost:[18,0,4,8],n:4},{cost:[24,8,0,10],n:3},{cost:[32,0,10,14],n:2}];
+const BUILDINGS={farm:{name:'농장',cost:[15,25,0,0],income:[0,0,0,14],note:'식량 +14 · 초원에서 +5'},lumber:{name:'벌목소',cost:[18,12,0,0],income:[0,11,0,0],note:'목재 +11 · 숲에서 +5'},mine:{name:'광산',cost:[25,28,0,0],income:[0,0,9,0],note:'철광 +9 · 산악에서 +4'},market:{name:'시장',cost:[30,30,8,0],income:[12,0,0,0],note:'금화 +12'},barracks:{name:'병영',cost:[35,35,20,0],income:[0,0,0,0],note:'이 영지에서 전 병종 모집'}};
+const TECH={war:{name:'강철 무장',description:'전 병력 전투력 +12%',cost:[65,20,25,0]},trade:{name:'개간과 교역',description:'모든 자원 생산 +15%',cost:[50,35,10,0]},supply:{name:'군수 체계',description:'식량 유지비 감소 · 1·2단계 지령 +1',cost:[55,25,15,0]}};
+const FACTIONS=[{name:'아르덴 왕국',short:'아르덴',color:'#77cbe1',cap:46},{name:'적철 왕국',short:'적철',color:'#e48b79',cap:16},{name:'자월 연맹',short:'자월',color:'#b49ed9',cap:52}];
+const LANDMARKS={46:'새벽성',16:'적철성',52:'자월성',31:'왕관의 요새'};
+const DIFFICULTY={easy:{name:'연습',grace:5,enemyOrders:2,enemyUnits:[8,2,0]},normal:{name:'보통',grace:2,enemyOrders:3,enemyUnits:[10,3,1]},hard:{name:'도전',grace:0,enemyOrders:4,enemyUnits:[13,4,2]}};
+let state=null,selected=46,tab='land',chosenDifficulty='normal',started=false,busy=false,modalKind='',targetId=null,sendPart=1,tactic='balanced',saved=null,storageFailed=false,lastFocus=null;
+let toastTimer=0,fx=null,frame=0,canvas=$('map'),ctx=canvas.getContext('2d'),view={w:0,h:0,scale:1,x:0,y:0,fit:1},pointers=new Map(),gesture=null;
+const total=a=>a.reduce((s,n)=>s+n,0), clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+function point(tile){return{x:Math.sqrt(3)*R*(tile.c+(tile.r%2)/2)+R,y:R*1.5*tile.r+R};}
+function neighbors(id){const t=state.tiles[id],out=[];for(const [dc,dr] of [[-1,0],[1,0],[t.r%2?0:-1,-1],[t.r%2?1:0,-1],[t.r%2?0:-1,1],[t.r%2?1:0,1]]){const c=t.c+dc,r=t.r+dr;if(c>=0&&c<COLS&&r>=0&&r<ROWS)out.push(r*COLS+c);}return out;}
+function regionName(t){return LANDMARKS[t.id]||`${['서녘','푸른','고요한','돌바람','여명','은빛','붉은','먼','황혼'][t.c]} ${TERRAINS[t.terrain].name} ${t.r+1}`;}
+function owned(f){return state.tiles.filter(t=>t.owner===f);}
+function alive(f){return state.tiles[FACTIONS[f].cap].owner===f;}
+function maxOrders(f=0){return(f===0?4:DIFFICULTY[state.difficulty].enemyOrders)+Math.min(2,state.factions[f].tech.supply);}
+function costText(cost){return cost.map((n,i)=>n?`${RESOURCE_NAMES[i]} ${n}`:'').filter(Boolean).join(' · ');}
+function affordable(f,cost){return state.factions[f].res.every((n,i)=>n>=cost[i]);}
+function pay(f,cost){cost.forEach((n,i)=>state.factions[f].res[i]-=n);}
+function orderOK(){if(!started||busy||state.status!=='playing')return false;if(state.orders<1){notify('지령을 모두 썼어. 턴을 종료해.');return false;}return true;}
+function makeState(difficulty,seed){let rnd=seed>>>0;const rand=()=>{rnd=(Math.imul(rnd,1664525)+1013904223)>>>0;return rnd/4294967296;};const types=['plain','plain','forest','forest','mountain','ruins','marsh'];const tiles=Array.from({length:COLS*ROWS},(_,id)=>{let terrain=types[Math.floor(rand()*types.length)];if([46,16,52].includes(id))terrain='plain';if(id===31)terrain='ruins';return{id,c:id%COLS,r:Math.floor(id/COLS),terrain,owner:-1,units:[2+Math.floor(rand()*3),rand()<.28?1:0,0],ready:[0,0,0],building:null,level:0,fort:0,seen:false,looted:false};});for(let f=0;f<3;f++){const t=tiles[FACTIONS[f].cap];t.owner=f;t.units=f===0?[12,5,2]:[...DIFFICULTY[difficulty].enemyUnits];t.ready=[...t.units];t.fort=1;t.seen=true;}tiles[31].units=[10,5,1];tiles[31].fort=2;tiles[31].seen=true;tiles[37].terrain='forest';tiles[47].terrain='plain';tiles[38].terrain='mountain';return{version:VERSION,seed,difficulty,turn:1,orders:4,status:'playing',tiles,factions:FACTIONS.map(()=>({res:[120,90,45,125],tech:{war:0,trade:0,supply:0}})),log:[],battles:0,conquests:0,selected:46};}
+/* 저장: 형식 검증 후 복원. 오류·저장 불가가 실제 진행을 막지 않게 한다. */
+function validSave(s){const nums=(a,len,max)=>Array.isArray(a)&&a.length===len&&a.every(n=>Number.isFinite(n)&&Number.isInteger(n)&&n>=0&&n<=max);return !!s&&s.version===VERSION&&Number.isInteger(s.seed)&&s.seed>=0&&s.seed<=4294967295&&Object.hasOwn(DIFFICULTY,s.difficulty)&&Number.isInteger(s.turn)&&s.turn>=1&&s.turn<=100000&&Number.isInteger(s.orders)&&s.orders>=0&&s.orders<=6&&['playing','won','lost'].includes(s.status)&&Array.isArray(s.tiles)&&s.tiles.length===63&&s.tiles.every((t,i)=>t&&t.id===i&&t.c===i%9&&t.r===Math.floor(i/9)&&Object.hasOwn(TERRAINS,t.terrain)&&Number.isInteger(t.owner)&&t.owner>=-1&&t.owner<=2&&nums(t.units,3,9999)&&nums(t.ready,3,9999)&&t.ready.every((n,j)=>n<=t.units[j])&&(t.building===null||Object.hasOwn(BUILDINGS,t.building))&&Number.isInteger(t.level)&&t.level>=0&&t.level<=3&&Number.isInteger(t.fort)&&t.fort>=0&&t.fort<=3&&typeof t.seen==='boolean'&&typeof t.looted==='boolean')&&Array.isArray(s.factions)&&s.factions.length===3&&s.factions.every(f=>f&&nums(f.res,4,999999)&&f.tech&&Object.keys(TECH).every(k=>Number.isInteger(f.tech[k])&&f.tech[k]>=0&&f.tech[k]<=3))&&Array.isArray(s.log)&&s.log.length<=35&&s.log.every(l=>l&&Number.isInteger(l.turn)&&typeof l.text==='string'&&l.text.length<=240)&&Number.isInteger(s.battles)&&s.battles>=0&&Number.isInteger(s.conquests)&&s.conquests>=0;}
+function readSave(){try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return null;const v=JSON.parse(raw);if(validSave(v))return v;storageFailed=true;$('saveStatus').textContent='이전 저장 형식을 읽지 못했어. 새 왕국을 시작하기 전까지 기존 저장은 유지돼.';}catch(e){storageFailed=true;$('saveStatus').textContent='브라우저 저장소에 접근할 수 없어. 이 화면에서는 계속 플레이할 수 있어.';}return null;}
+function save(){if(!started)return;state.selected=selected;try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));storageFailed=false;$('saveStatus').textContent=`${state.turn}턴 자동 저장됨 · 이 기기의 브라우저에 보관돼.`;}catch(e){storageFailed=true;$('saveStatus').textContent='저장 공간 또는 권한 문제로 저장하지 못했어. 현재 게임은 계속할 수 있어.';}}
+function log(text){state.log.unshift({turn:state.turn,text:String(text).slice(0,240)});state.log.length=Math.min(35,state.log.length);}
+function reveal(id,radius=1){let edge=[id],seen=new Set(edge);for(let n=0;n<radius;n++){const next=[];for(const v of edge)for(const x of neighbors(v))if(!seen.has(x)){seen.add(x);next.push(x);}edge=next;}for(const i of seen)state.tiles[i].seen=true;}
+function startNew(){state=makeState(chosenDifficulty,Math.floor(Math.random()*4294967296));selected=46;tab='land';started=true;busy=false;reveal(46,2);log('새벽성에 깃발을 올렸어. 주변 자원을 확보하고 두 왕국과 중앙 요새를 정복해.');closeModal();fitMap();save();render();}
+function resume(){if(!saved)return;state=clone(saved);selected=Number.isInteger(state.selected)&&state.tiles[state.selected]?state.selected:46;started=true;busy=false;closeModal();fitMap();render();if(state.status!=='playing')showEnding();}
+/* 경제: 영지·건물 생산과 병력 보급을 한 계산으로 관리한다. */
+function income(f){const sum=[0,0,0,0],tech=state.factions[f].tech;for(const t of owned(f)){TERRAINS[t.terrain].yield.forEach((v,i)=>sum[i]+=v);if(t.id===FACTIONS[f].cap){sum[0]+=10;sum[1]+=5;sum[2]+=3;sum[3]+=9;}if(t.building){const b=BUILDINGS[t.building];b.income.forEach((v,i)=>sum[i]+=v*t.level);if(t.building==='farm'&&t.terrain==='plain')sum[3]+=5*t.level;if(t.building==='lumber'&&t.terrain==='forest')sum[1]+=5*t.level;if(t.building==='mine'&&t.terrain==='mountain')sum[2]+=4*t.level;}}return sum.map(v=>Math.floor(v*(1+tech.trade*.15)));}
+function upkeep(f){return Math.ceil(owned(f).reduce((n,t)=>n+total(t.units),0)*(.45-state.factions[f].tech.supply*.07));}
+function production(f){const inc=income(f),res=state.factions[f].res;inc.forEach((v,i)=>res[i]=Math.min(999999,res[i]+v));const need=upkeep(f);if(res[3]<need){res[3]=0;for(const t of owned(f))t.units=t.units.map(n=>Math.max(0,n-Math.ceil(n*.15)));if(f===0)log('식량 부족! 모든 부대에서 약 15%가 이탈했어. 농장을 늘려.');}else res[3]-=need;}
+function buildingCost(t,type){return BUILDINGS[type].cost.map(n=>n*(t.level+1));}
+function build(type){const t=state.tiles[selected];if(!orderOK()||t.owner!==0||!BUILDINGS[type])return;if(t.building&&t.building!==type){notify('영지마다 생산 건물은 하나만 지을 수 있어.');return;}if(t.level>=3){notify('이미 최고 단계야.');return;}const cost=buildingCost(t,type);if(!affordable(0,cost)){notify('건설 자원이 부족해.');return;}pay(0,cost);t.building=type;t.level++;state.orders--;log(`${regionName(t)}에 ${BUILDINGS[type].name} ${t.level}단계를 건설했어.`);commitAction();}
+function fortify(){const t=state.tiles[selected],cost=[20*(t.fort+1),20*(t.fort+1),12*(t.fort+1),0];if(!orderOK()||t.owner!==0||t.fort>=3)return;if(!affordable(0,cost)){notify('성벽 자원이 부족해.');return;}pay(0,cost);t.fort++;state.orders--;log(`${regionName(t)} 성벽을 ${t.fort}단계로 강화했어.`);commitAction();}
+function recruit(type){const t=state.tiles[selected],r=RECRUIT[type];if(!orderOK()||t.owner!==0||!r)return;if(t.id!==46&&t.building!=='barracks'){notify('수도나 병영이 있는 영지에서 모집할 수 있어.');return;}if(!affordable(0,r.cost)){notify('모집 자원이 부족해.');return;}if(total(t.units)+r.n>300){notify('한 영지의 병력은 300명까지만 모집할 수 있어.');return;}pay(0,r.cost);t.units[type]+=r.n;state.orders--;log(`${regionName(t)}에 ${UNIT_NAMES[type]} ${r.n}명을 모집했어. 다음 턴에 출전할 수 있어.`);commitAction();}
+function research(key){if(!orderOK()||!TECH[key])return;const lv=state.factions[0].tech[key];if(lv>=3)return;const cost=TECH[key].cost.map(n=>n*(lv+1));if(!affordable(0,cost)){notify('연구 자원이 부족해.');return;}pay(0,cost);state.factions[0].tech[key]++;state.orders--;log(`${TECH[key].name} ${lv+1}단계 연구 완료. 지령 증가는 다음 턴부터 적용돼.`);commitAction();}
+function scout(){const t=state.tiles[selected];if(!orderOK()||t.owner!==0)return;if(!affordable(0,[8,0,0,0])){notify('정찰에는 금화 8이 필요해.');return;}pay(0,[8,0,0,0]);reveal(selected,3);state.orders--;log(`${regionName(t)} 주변 세 칸을 정찰했어.`);commitAction();}
+/* 전투: 병종 상성·지형·성벽·연구가 예측과 실제 전투에 똑같이 적용된다. */
+function strength(units,opponent,terrain,f,defending,fort=0,capital=false,style='balanced'){const count=Math.max(1,total(opponent)),share=opponent.map(n=>n/count);let p=units[0]*3*(1+.35*share[2])+units[1]*3.8*(1+.3*share[0])*(terrain==='forest'?1.25:1)+units[2]*5*(1+.4*share[1])*(terrain==='plain'?1.25:terrain==='mountain'?.65:1);if(f>=0)p*=1+state.factions[f].tech.war*.12;if(defending)p*=TERRAINS[terrain].def*(1+fort*.22+(capital?.3:0));else p*=style==='charge'?1.15:style==='careful'?.93:1;return p;}
+function battlePlan(from,to,units,style='balanced'){const attack=strength(units,to.units,to.terrain,from.owner,false,0,false,style),defense=strength(to.units,units,to.terrain,to.owner,true,to.fort,FACTIONS.some(f=>f.cap===to.id));const win=attack>=defense&&total(units)>0;let loss=0;if(defense>0)loss=win?Math.min(total(units)-1,Math.ceil(total(units)*clamp(defense/Math.max(attack,1)*.43,.06,.75)*(style==='charge'?1.2:style==='careful'?.72:1))):Math.max(1,Math.ceil(total(units)*(style==='careful'?.5:.73)));return{attack,defense,win,loss,ratio:attack/Math.max(1,defense)};}
+function removeLoss(units,n){const out=[...units],all=total(out);n=Math.min(all,Math.max(0,n));let used=0;for(let i=0;i<3;i++){const k=Math.min(out[i],Math.floor(n*units[i]/Math.max(1,all)));out[i]-=k;used+=k;}while(used<n){let ix=out.indexOf(Math.max(...out));if(out[ix]===0)break;out[ix]--;used++;}return out;}
+function surrender(defender,victor){if(defender<1||alive(defender))return;for(const t of owned(defender)){t.owner=victor;t.units=t.units.map(n=>Math.ceil(n/2));t.ready=[0,0,0];if(victor===0)reveal(t.id);}log(`${FACTIONS[defender].name}이 수도를 잃고 항복했어. 남은 영지는 ${FACTIONS[victor].short}에 편입됐어.`);}
+function march(from,to,units,style='balanced'){if(!neighbors(from.id).includes(to.id)||total(units)<1||units.some((n,i)=>!Number.isInteger(n)||n<0||n>from.ready[i]))return null;const f=from.owner,old=to.owner;const plan=old===f?null:battlePlan(from,to,units,style);from.units=from.units.map((n,i)=>n-units[i]);from.ready=from.ready.map((n,i)=>n-units[i]);if(old===f){to.units=to.units.map((n,i)=>n+units[i]);return{move:true};}if(plan.win){to.owner=f;to.units=removeLoss(units,plan.loss);to.ready=[0,0,0];to.fort=Math.max(0,to.fort-1);if(!to.looted&&to.terrain==='ruins'){state.factions[f].res[0]=Math.min(999999,state.factions[f].res[0]+25);state.factions[f].res[2]=Math.min(999999,state.factions[f].res[2]+10);to.looted=true;if(f===0)log('유적을 확보해 금화 25와 철광 10을 찾았어.');}if(f===0){state.conquests++;reveal(to.id);}}else{const survivors=removeLoss(units,plan.loss);from.units=from.units.map((n,i)=>n+survivors[i]);const defenderLoss=Math.min(Math.max(0,total(to.units)-1),Math.floor(total(to.units)*clamp(plan.ratio*.45,0,.65)));to.units=removeLoss(to.units,defenderLoss);to.ready=to.ready.map((n,i)=>Math.min(n,to.units[i]));}if(f===0||old===0){state.battles++;log(`${FACTIONS[f].short} → ${regionName(to)}: ${plan.win?'점령 성공':'공격 저지'} · 공격군 ${plan.loss}명 손실.`);}if(old>0&&plan.win)surrender(old,f);if(f===0)fx={id:to.id,win:plan.win,start:performance.now()};checkEnd();return plan;}
+function checkEnd(){if(state.tiles[46].owner!==0)state.status='lost';else if(!alive(1)&&!alive(2)&&state.tiles[31].owner===0)state.status='won';return state.status;}
+function dispatched(){const a=state.tiles[selected].ready;return a.map(n=>Math.floor(n*sendPart));}
+function confirmMarch(){if(!orderOK())return;const from=state.tiles[selected],to=state.tiles[targetId];if(!to||from.owner!==0||!to.seen)return;const units=dispatched();if(!total(units)){notify('출전할 병력이 없어.');return;}const result=march(from,to,units,tactic);if(!result){notify('지금은 진군할 수 없어.');return;}state.orders--;closeModal();if(result.move){selected=to.id;log(`${regionName(to)}로 병력을 이동했어. 다음 턴부터 다시 진군할 수 있어.`);}else if(result.win){selected=to.id;notify(`점령 성공 · 아군 ${result.loss}명 손실`);}else notify(`공격 실패 · ${result.loss}명 손실, 생존자는 출발지로 후퇴했어.`);commitAction();}
+/* 적 세력: 동일한 생산·모집·전투 규칙을 사용하며 불리한 전투는 피한다. */
+function distance(a,b){const pa=point(a),pb=point(b);return Math.hypot(pa.x-pb.x,pa.y-pb.y);}
+function enemyTurn(f){if(!alive(f))return;production(f);for(const t of owned(f))t.ready=[...t.units];const cap=state.tiles[FACTIONS[f].cap],sf=state.factions[f];let ap=maxOrders(f);if(!cap.building&&affordable(f,BUILDINGS.farm.cost)){pay(f,BUILDINGS.farm.cost);cap.building='farm';cap.level=1;ap--;}
+for(let step=0;step<ap&&state.status==='playing';step++){const canAttack=state.turn>DIFFICULTY[state.difficulty].grace;let candidates=[];if(canAttack)for(const from of owned(f)){if(total(from.ready)<2)continue;for(const id of neighbors(from.id)){const to=state.tiles[id];if(to.owner===f)continue;const plan=battlePlan(from,to,from.ready);if(plan.ratio<1.12)continue;let score=15+Math.min(plan.ratio,4)*3+(to.owner===0?7:0)+(to.id===31?8:0)+(FACTIONS.some(x=>x.cap===id)?18:0)-distance(to,state.tiles[46])*.012;candidates.push({from,to,score});}}candidates.sort((a,b)=>b.score-a.score);if(candidates.length){const x=candidates[0];march(x.from,x.to,[...x.from.ready]);continue;}
+const troopType=step%3,r=RECRUIT[troopType];if(total(cap.units)<38&&affordable(f,r.cost)){pay(f,r.cost);cap.units[troopType]+=r.n;continue;}if(canAttack){let movement=null;for(const from of owned(f)){if(total(from.ready)<3)continue;const hostile=state.tiles.filter(t=>t.owner!==f);if(!hostile.length)break;const nearest=t=>Math.min(...hostile.map(e=>distance(t,e)));const d=nearest(from);const options=neighbors(from.id).map(i=>state.tiles[i]).filter(t=>t.owner===f&&(nearest(t)<d-1||(nearest(t)<=d+1&&total(t.units)>total(from.units))));options.sort((a,b)=>nearest(a)-nearest(b));if(options.length){movement={from,to:options[0]};break;}}if(movement){const u=movement.from.ready.map((n,i)=>movement.from.id===FACTIONS[f].cap?Math.max(0,n-(i===0?4:1)):n);if(total(u)>0){march(movement.from,movement.to,u);continue;}}}const land=owned(f).find(t=>!t.building);if(land){const key=sf.res[3]<55?'farm':land.terrain==='forest'?'lumber':'market';if(affordable(f,BUILDINGS[key].cost)){pay(f,BUILDINGS[key].cost);land.building=key;land.level=1;continue;}}break;}}
+function endTurn(confirmed=false){if(!started||busy||state.status!=='playing')return;const food=state.factions[0].res[3]+income(0)[3]-upkeep(0);if(food<0&&!confirmed){showModal('food',`<h2 id="modalTitle">다음 턴 식량이 부족해</h2><p class="herotext" style="margin:13px 0">식량이 ${-food} 부족해 병력 약 15%가 이탈하게 돼. 농장을 짓거나 병력을 줄일 방법을 먼저 확인해.</p><div class="grid2"><button data-action="close">돌아가기</button><button data-action="endForced" class="danger">그래도 턴 종료</button></div>`);return;}closeModal();busy=true;$('end').disabled=true;$('end').textContent='적 세력 행동 중…';renderPanel();setTimeout(()=>{try{enemyTurn(1);if(state.status==='playing')enemyTurn(2);if(state.status==='playing'){state.turn++;production(0);for(const t of owned(0)){t.ready=[...t.units];reveal(t.id);}state.orders=maxOrders();if(state.turn%5===0){const gifts=[[25,0,0,0],[0,0,15,0],[0,0,0,30],[0,20,0,0]],g=gifts[(Math.floor(state.turn/5)-1)%4];g.forEach((v,i)=>state.factions[0].res[i]=Math.min(999999,state.factions[0].res[i]+v));log(`왕국 지원: ${costText(g)}을 받았어.`);}log(`${state.turn}턴 시작 · 생산과 보급이 정산됐어.`);}checkEnd();}finally{busy=false;commitAction();}},280);}
+/* 화면 구성: 게임 상태는 위 책임 함수만 변경하고 그리기는 읽기만 한다. */
+const resourcePaths=['M5 8c0-5 14-5 14 0s-14 5-14 0m0 0v8c0 5 14 5 14 0V8m-14 4c0 5 14 5 14 0','M6 19V7l5-4 7 4v12l-6 3zm5-16v19m-5-9 5 3 7-4','M3 17 8 5l9-2 5 12-9 7zm5-12 5 8 9 2m-9-2v9','M12 22V3m0 5C4 8 4 3 4 3s8 0 8 5m0 6c-8 0-8-5-8-5s8 0 8 5m0-3c8 0 8-5 8-5s-8 0-8 5m0 6c8 0 8-5 8-5s-8 0-8 5'];
+function render(){if(!state)return;const inc=income(0),up=upkeep(0),res=state.factions[0].res;$('resources').innerHTML=res.map((n,i)=>`<div class="resource"><svg viewBox="0 0 25 25" aria-hidden="true"><path d="${resourcePaths[i]}"/></svg><div><label>${RESOURCE_NAMES[i]}</label><span class="value">${n}</span></div><small class="${i===3&&inc[i]-up<0?'negative':'positive'}">${i===3?`${inc[i]-up>=0?'+':''}${inc[i]-up}`:`+${inc[i]}`} / 턴${i===3?`<br><span class="muted">유지비 ${up}</span>`:''}</small></div>`).join('');const goals=[!alive(1),!alive(2),state.tiles[31].owner===0],complete=goals.filter(Boolean).length;$('objective').textContent=`목표 ${complete}/3 · 두 왕국 항복 + 중앙 요새 점령`;$('progress').style.width=`${complete/3*100}%`;$('season').textContent=`${['봄','여름','가을','겨울'][Math.floor((state.turn-1)/4)%4]} · 영지 ${owned(0).length}/63`;$('turn').textContent=`${state.turn}턴 · ${DIFFICULTY[state.difficulty].name}`;$('orders').textContent=`남은 지령 ${state.orders} / ${maxOrders()}`;$('end').disabled=busy||state.status!=='playing';$('end').textContent=state.status==='won'?'왕국 통일':state.status==='lost'?'수도 함락':busy?'적 세력 행동 중…':'턴 종료 →';document.querySelectorAll('[data-action="tab"]').forEach(b=>b.classList.toggle('active',b.dataset.value===tab));renderPanel();$('guidance').textContent=state.turn===1?'첫 출정: 새벽성을 선택하고 이웃 영지로 진군해. 모집한 병력과 이동한 병력은 다음 턴부터 출전할 수 있어.':state.factions[0].res[3]+inc[3]-up<20?'보급 경고: 식량이 줄고 있어. 초원 농장과 군수 체계 연구를 우선해.':state.orders===0?'지령을 모두 썼어. 턴을 종료하면 생산·보급 정산 후 병력이 다시 행동할 수 있어.':'중앙 요새는 방어가 강해. 주변 영지를 확보하고 병력을 모아 우세한 전투를 골라.';$('log').replaceChildren(...state.log.map(l=>{const p=document.createElement('p');p.textContent=`${l.turn}턴 · ${l.text}`;return p;}));$('logCount').textContent=`· ${state.log.length}`;draw();}
+function neighborHTML(t){return `<div class="rule"></div><p class="tiny muted" style="margin-bottom:7px">인접 영지 · 선택해서 진군 또는 살펴보기</p><div class="neighbors">${neighbors(t.id).map(id=>{const n=state.tiles[id];return`<button data-action="neighbor" data-value="${id}">${n.seen?regionName(n):'미탐사 영지'}<small>${!n.seen?'정찰로 공개':n.owner===0?'아군 · 병력 '+total(n.units):n.owner<0?'독립 영지 · 수비 '+total(n.units):FACTIONS[n.owner].short+' · 병력 '+total(n.units)}</small></button>`;}).join('')}</div>`;}
+function renderPanel(){if(!state)return;const t=state.tiles[selected],own=t.owner===0,can=started&&!busy&&state.status==='playing'&&state.orders>0;let html='';if(tab==='kingdom'){html=`<h2>왕국 의회</h2><p class="tiny muted">연구는 왕국 전체에 영구 적용돼.</p><div class="rule"></div>${Object.entries(TECH).map(([k,v])=>{const lv=state.factions[0].tech[k],cost=v.cost.map(n=>n*(lv+1));return`<div class="build"><div><strong>${v.name} <span class="gold">${lv}/3</span></strong><p>${v.description}</p><p>${lv===3?'최고 단계':costText(cost)}</p></div><button data-action="research" data-value="${k}" ${!can||lv===3||!affordable(0,cost)?'disabled':''}>연구</button></div>`;}).join('')}<div class="rule"></div><h3>세력 현황</h3>${FACTIONS.map((f,i)=>`<div class="statline"><span style="color:${f.color}">${f.name}</span><span>${alive(i)?`영지 ${owned(i).length} · 병력 ${owned(i).reduce((n,x)=>n+total(x.units),0)}`:'수도 함락'}</span></div>`).join('')}<button class="full quiet" data-action="capital" style="margin-top:8px">새벽성으로 이동</button>`;}else if(!t.seen){html=`<h2>미탐사 영지</h2><p class="herotext" style="margin:10px 0">아군 영지에서 정찰하거나 주변 땅을 점령해서 지도를 밝혀.</p><button data-action="capital" class="full">수도로 돌아가기</button>${neighborHTML(t)}`;}else{html=`<div class="regionhead"><div class="terrainbadge">${TERRAINS[t.terrain].icon}</div><div><h2>${regionName(t)}</h2><p class="tiny muted">${TERRAINS[t.terrain].name} · ${own?'아르덴 영지':t.owner<0?'독립 수비대':FACTIONS[t.owner].name}</p></div></div><div class="grid3">${t.units.map((n,i)=>`<div class="troop"><small>${UNIT_NAMES[i]}</small><strong>${n}</strong><small>${own?'출전 '+t.ready[i]:'수비 중'}</small></div>`).join('')}</div><div class="statline"><span>지형 방어 +${Math.round((TERRAINS[t.terrain].def-1)*100)}%</span><span>성벽 ${t.fort}/3${FACTIONS.some(f=>f.cap===t.id)?' · 수도':''}</span></div>`;if(own&&tab==='land'){html+=`<div class="rule"></div><h3>${t.building?`${BUILDINGS[t.building].name} ${t.level}단계`:'영지 개발'}</h3><p class="tiny muted">생산 건물 한 종류 + 성벽 · 행동마다 지령 1</p>${Object.entries(BUILDINGS).filter(([k])=>!t.building||t.building===k).map(([k,b])=>{const cost=buildingCost(t,k);return`<div class="build"><div><strong>${b.name}${t.building?' 강화':''}</strong><p>${b.note}${t.building?` · 현재 ${t.level}배`:''}</p><p>${t.level>=3?'최고 단계':costText(cost)}</p></div><button data-action="build" data-value="${k}" ${!can||t.level>=3||!affordable(0,cost)?'disabled':''}>${t.building?'강화':'건설'}</button></div>`;}).join('')}<div class="build"><div><strong>성벽 강화</strong><p>단계마다 방어력 +22%</p><p>${t.fort>=3?'최고 단계':costText([20*(t.fort+1),20*(t.fort+1),12*(t.fort+1),0])}</p></div><button data-action="fort" ${!can||t.fort>=3||!affordable(0,[20*(t.fort+1),20*(t.fort+1),12*(t.fort+1),0])?'disabled':''}>강화</button></div>`;}else if(own&&tab==='army'){html+=`<div class="tip">보병은 기병에, 궁병은 보병에, 기병은 궁병에 유리해. 궁병은 숲에서, 기병은 초원에서 강해.</div>${RECRUIT.map((r,i)=>`<div class="build"><div><strong>${UNIT_NAMES[i]} ${r.n}명 모집</strong><p>${costText(r.cost)}</p></div><button data-action="recruit" data-value="${i}" ${!can||(t.id!==46&&t.building!=='barracks')||!affordable(0,r.cost)||total(t.units)+r.n>300?'disabled':''}>모집</button></div>`).join('')}<p class="tiny muted">${t.id!==46&&t.building!=='barracks'?'이 영지에서 모집하려면 병영을 건설해.':'신병은 다음 턴부터 출전해. 수비에는 즉시 참여해.'}</p>`;}else html+=`<div class="tip">아군 영지를 먼저 선택한 뒤 이 영지를 누르면 공격 부대와 전술을 선택할 수 있어.</div>`;if(own)html+=`<button class="full quiet" data-action="scout" style="margin-top:10px" ${!can||!affordable(0,[8,0,0,0])?'disabled':''}>주변 정찰 · 금화 8 · 지령 1</button>`;html+=neighborHTML(t);}$('panel').innerHTML=html;}
+function commitAction(){save();render();if(state.status!=='playing')showEnding();}
+function notify(message){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3200);}
+function showModal(kind,html){if($('overlay').hidden)lastFocus=document.activeElement;modalKind=kind;$('modal').innerHTML=html;$('overlay').hidden=false;document.body.style.overflow='hidden';$('modal').querySelector('button:not(:disabled)')?.focus();}
+function closeModal(){modalKind='';$('overlay').hidden=true;document.body.style.overflow='';targetId=null;if(lastFocus?.isConnected)lastFocus.focus();}
+function showMenu(){saved=readSave();showModal('menu',`<svg class="crownart" viewBox="0 0 120 80" aria-hidden="true"><path d="M20 57 12 25 38 40 60 13 82 40 108 25 100 57Zm0 9h80M31 74h58"/><circle cx="12" cy="22" r="4"/><circle cx="60" cy="9" r="4"/><circle cx="108" cy="22" r="4"/></svg><p class="eyebrow">한 대륙, 세 개의 왕관</p><h2 id="modalTitle" class="herotitle">영토 전쟁<span>세 왕관</span></h2><p class="herotext">작은 성에서 왕국을 일으켜.<br>숲과 광산을 차지하고, 보급로를 지키고,<br>병종과 지형을 읽어 대륙을 통일해.</p><div class="features"><div>63개 영지<small>다섯 지형과 숨겨진 유적</small></div><div>두 적 세력<small>확장하고 반격하는 왕국</small></div><div>한 번의 판단<small>병종·성벽·보급의 균형</small></div></div><p class="tiny muted">새 왕국 난이도</p><div class="difficulty">${Object.entries(DIFFICULTY).map(([k,v])=>`<button data-action="difficulty" data-value="${k}" class="${chosenDifficulty===k?'active':''}">${v.name}</button>`).join('')}</div><p class="tiny muted" id="difficultyNote" style="margin-bottom:14px">${difficultyNote()}</p><div class="stack">${started?'<button class="primary full" data-action="close">현재 게임으로 돌아가기</button>':saved?`<button class="primary full" data-action="resume">${saved.turn}턴 저장 이어하기</button>`:''}<button class="${started||saved?'quiet':'primary'} full" data-action="new">새 왕국 시작</button><button class="quiet full" data-action="help">전략 안내</button></div>${storageFailed?'<p class="savewarn">저장소를 사용할 수 없거나 이전 저장을 읽지 못했어. 현재 창에서 플레이는 가능해.</p>':''}`);}
+function difficultyNote(){return chosenDifficulty==='easy'?'연습: 적은 5턴 동안 공격하지 않고 턴마다 지령 2개를 사용해.':chosenDifficulty==='hard'?'도전: 적도 지령 4개를 사용하고 첫 턴부터 진군해. 초기 병력이 더 많아.':'보통: 적은 2턴 동안 준비한 뒤 지령 3개로 확장과 반격을 시작해.';}
+function requestNew(){if(started||saved){showModal('reset',`<h2 id="modalTitle">새 왕국을 시작할까?</h2><p class="herotext" style="margin:15px 0">현재 저장은 새 왕국으로 바뀌어. 지도는 새로 생성되고 난이도는 ${DIFFICULTY[chosenDifficulty].name}이야.</p><div class="grid2"><button data-action="menu">돌아가기</button><button class="primary" data-action="start">새로 시작</button></div>`);}else startNew();}
+function showHelp(){showModal('help',`<button class="close" data-action="${started?'close':'menu'}" aria-label="안내 닫기">×</button><p class="eyebrow">통일을 위한 첫걸음</p><h2 id="modalTitle">땅보다 중요한 건 보급이야</h2><div class="helpitem"><h3>1. 영지를 고르고 진군</h3><p>아군 영지를 누르고 이웃 영지를 눌러. 지도 아래 인접 영지 버튼으로도 선택할 수 있어. 출전 비율과 전술을 고른 뒤 예측을 확인하고 명령해. 이동·모집한 부대는 다음 턴에 다시 행동해.</p></div><div class="helpitem"><h3>2. 한 턴에 지령 네 개</h3><p>진군·모집·건설·연구·정찰은 지령 하나씩 사용해. 지령을 남기고 턴을 끝내도 돼. 턴 종료 후 적이 움직이고 자원 생산과 식량 유지비가 정산돼.</p></div><div class="helpitem"><h3>3. 땅에 맞는 건설</h3><p>초원은 농장, 숲은 벌목소, 산악은 광산에 추가 생산이 있어. 영지마다 생산 건물은 한 종류만 지을 수 있고 세 단계까지 강화해. 수도와 병영에서 병력을 모집해.</p></div><div class="helpitem"><h3>4. 상성과 성벽</h3><p>보병 → 기병 → 궁병 → 보병 순으로 유리해. 숲에서는 궁병, 초원에서는 기병이 강하고 산에서는 기병이 약해. 성벽과 수도는 수비 보너스가 있어. 돌격은 강하지만 사상자가 많고, 신중 전술은 약하지만 손실이 적어. 전투 예측과 실제 계산은 동일해.</p></div><div class="helpitem"><h3>5. 승리와 패배</h3><p>적철성과 자월성을 함락해 두 세력을 항복시키고 중앙의 왕관 요새를 점령하면 승리해. 적 수도를 잃은 세력의 남은 영지는 정복한 왕국에 편입돼. 네 수도인 새벽성이 함락되면 패배야.</p></div><div class="helpitem"><h3>저장과 조작</h3><p>행동할 때마다 이 브라우저에 저장돼. 지도는 드래그·두 손가락 확대를 지원하고, 키보드는 방향키로 영지 선택·더하기/빼기로 확대할 수 있어. 메뉴에서 저장을 지우지 않고 돌아갈 수 있어.</p></div><button class="primary full" data-action="${started?'close':'menu'}">${started?'전장으로':'시작 화면으로'}</button>`);}
+function inspectTarget(id){const from=state.tiles[selected],to=state.tiles[id];if(!to)return;if(from.owner===0&&id!==selected&&neighbors(selected).includes(id)&&to.seen&&started&&!busy&&state.status==='playing'){if(!total(from.ready)){selected=id;render();notify('출발 영지에 출전 가능한 병력이 없어. 다음 턴을 기다려.');return;}targetId=id;sendPart=1;tactic='balanced';showMarch();}else{selected=id;render();}}
+function showMarch(){const from=state.tiles[selected],to=state.tiles[targetId],units=dispatched(),friendly=to.owner===0,plan=battlePlan(from,to,units,tactic),ratio=plan.attack/(plan.attack+plan.defense||1);const target=targetId;showModal('march',`<button class="close" data-action="close" aria-label="진군 취소">×</button><p class="eyebrow">${friendly?'아군 영지로 이동':'국경의 전투'}</p><h2 id="modalTitle">${regionName(to)}</h2><p class="tiny muted">출발: ${regionName(from)} · ${TERRAINS[to.terrain].name}${friendly?'':' · 성벽 '+to.fort+'단계'}</p><div class="combatrow"><div><small>출전 병력</small><strong style="color:var(--blue)">${total(units)}</strong><small>${units.map((n,i)=>`${UNIT_NAMES[i]} ${n}`).join(' · ')}</small></div><span>→</span><div><small>${friendly?'아군 주둔':'적 수비'}</small><strong style="color:${friendly?'var(--blue)':'var(--red)'}">${total(to.units)}</strong><small>${to.units.map((n,i)=>`${UNIT_NAMES[i]} ${n}`).join(' · ')}</small></div></div><label class="tiny muted">출전 비율</label><div class="optionrow">${[.25,.5,1].map(n=>`<button data-action="part" data-value="${n}" class="${sendPart===n?'selected':''}">${n*100}%</button>`).join('')}</div>${friendly?'':`<label class="tiny muted" style="display:block;margin-top:13px">전술</label><div class="optionrow">${[['careful','신중'],['balanced','표준'],['charge','돌격']].map(([k,n])=>`<button data-action="tactic" data-value="${k}" class="${tactic===k?'selected':''}">${n}</button>`).join('')}</div><div class="powerbar"><span style="width:${ratio*100}%"></span></div><p class="tiny muted">전투력 ${Math.round(plan.attack)} : ${Math.round(plan.defense)} · 지형·병종·성벽 반영</p><p style="margin:9px 0" class="${plan.win?'positive':'negative'}"><strong>${!total(units)?'출전 인원 없음':plan.win?'점령 가능':'패배 예상'}</strong>${total(units)?` · 예상 손실 ${plan.loss}명`:''}</p>`}<div class="tip" style="margin:13px 0">${friendly?'이동한 부대는 이번 턴에 재이동할 수 없어. 수비에는 즉시 참여해.':'공격한 부대는 이번 턴에 다시 움직일 수 없어. 수도를 비우기 전에 적의 반격 경로를 확인해.'}</div><div class="grid2"><button data-action="look" data-value="${to.id}">영지만 살펴보기</button><button class="primary" data-action="march" ${!state.orders||!total(units)||busy?'disabled':''}>${friendly?'이동':'공격'} · 지령 1</button></div>`);targetId=target;}
+function showEnding(){if(modalKind==='ending')return;const win=state.status==='won';showModal('ending',`<p class="eyebrow">${win?'하나의 깃발 아래':'새벽성의 마지막 날'}</p><h2 id="modalTitle" class="herotitle">${win?'대륙을 통일했어':'수도가 함락됐어'}</h2><p class="herotext">${win?'두 왕국이 항복했고 왕관의 요새를 확보했어. 아르덴의 시대가 시작됐어.':'왕국의 중심을 잃었어. 다음 도전에서는 국경의 병력과 수도의 방어를 함께 유지해.'}</p><div class="features"><div>${state.turn}턴<small>왕국의 역사</small></div><div>${state.conquests}회<small>점령 성공</small></div><div>${state.battles}회<small>참여 전투</small></div></div><div class="stack"><button class="primary full" data-action="menu">새 왕국 준비</button><button data-action="close">최종 지도 살펴보기</button></div>`);}
+/* 지도 그래픽: 절차적 지형과 군기. 외부 자산·네트워크·라이브러리에 의존하지 않는다. */
+function polygon(x,y,r){ctx.beginPath();for(let i=0;i<6;i++){const a=(i*60-30)*Math.PI/180;const px=x+r*Math.cos(a),py=y+r*Math.sin(a);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();}
+function fitMap(){if(!view.w)return;const worldW=Math.sqrt(3)*R*9.5+R*.2,worldH=R*11.1;view.fit=Math.min((view.w-24)/worldW,(view.h-65)/worldH);view.scale=view.fit;view.x=(view.w-worldW*view.scale)/2;view.y=(view.h-worldH*view.scale)/2+15;draw();}
+function resize(){const rect=canvas.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);view.w=rect.width;view.h=rect.height;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);fitMap();}
+function zoom(factor,x=view.w/2,y=view.h/2){const old=view.scale;view.scale=clamp(old*factor,view.fit*.8,view.fit*3.4);view.x=x-(x-view.x)*view.scale/old;view.y=y-(y-view.y)*view.scale/old;constrainView();draw();}
+function constrainView(){const w=570*view.scale,h=410*view.scale;view.x=clamp(view.x,Math.min(view.w-w-25,25),Math.max(view.w-60,25));view.y=clamp(view.y,Math.min(view.h-h-25,25),Math.max(view.h-60,25));}
+function drawTree(x,y,size=1){ctx.fillStyle='#243f36';ctx.fillRect(x-1.4*size,y-4*size,3*size,15*size);ctx.fillStyle='#315643';ctx.beginPath();ctx.moveTo(x,y-17*size);ctx.lineTo(x-9*size,y+4*size);ctx.lineTo(x+9*size,y+4*size);ctx.fill();ctx.fillStyle='#719173';ctx.beginPath();ctx.moveTo(x,y-17*size);ctx.lineTo(x-9*size,y+4*size);ctx.lineTo(x-2*size,y);ctx.fill();}
+function drawCastle(x,y,color,capital){ctx.fillStyle='#17272b88';ctx.beginPath();ctx.ellipse(x+1,y+11,16,6,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b9bba5';ctx.fillRect(x-12,y-9,24,19);ctx.fillStyle='#e1d5af';ctx.fillRect(x-13,y-13,7,23);ctx.fillRect(x+6,y-13,7,23);ctx.fillStyle='#6a7770';ctx.fillRect(x-4,y,8,10);for(let i=-12;i<=10;i+=6)ctx.fillRect(x+i,y-16,4,6);ctx.strokeStyle='#e4cf8c';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,y-12);ctx.lineTo(x,y-34);ctx.stroke();ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,y-34);ctx.lineTo(x+17,y-29);ctx.lineTo(x,y-24);ctx.fill();if(capital){ctx.strokeStyle='#f3dd9a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-7,y-39);ctx.lineTo(x-9,y-46);ctx.lineTo(x-3,y-42);ctx.lineTo(x,y-48);ctx.lineTo(x+4,y-42);ctx.lineTo(x+10,y-46);ctx.lineTo(x+8,y-39);ctx.closePath();ctx.stroke();}}
+function draw(){if(!state||!view.w)return;const dpr=Math.min(2,window.devicePixelRatio||1);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,view.w,view.h);const sea=ctx.createLinearGradient(0,0,view.w,view.h);sea.addColorStop(0,'#253f49');sea.addColorStop(1,'#102833');ctx.fillStyle=sea;ctx.fillRect(0,0,view.w,view.h);ctx.strokeStyle='#a0c5c208';ctx.lineWidth=1;for(let y=14;y<view.h;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(view.w,y-8);ctx.stroke();}ctx.save();ctx.translate(view.x,view.y);ctx.scale(view.scale,view.scale);const reachable=state.tiles[selected]?.owner===0?neighbors(selected):[];
+for(const t of state.tiles){const p=point(t);polygon(p.x,p.y+5,R-1);ctx.fillStyle='#07161970';ctx.fill();polygon(p.x,p.y,R-1);ctx.fillStyle=t.seen?TERRAINS[t.terrain].color:'#34484a';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='#122d2b9a';ctx.stroke();if(t.seen){polygon(p.x,p.y,R-2);ctx.fillStyle=t.owner===0?'#5baecd2b':t.owner===1?'#e2816829':t.owner===2?'#ad91d33b':'#ffffff02';ctx.fill();ctx.save();polygon(p.x,p.y,R-3);ctx.clip();if(t.terrain==='forest'){drawTree(p.x-12,p.y-7,.85);drawTree(p.x+10,p.y-5,1);drawTree(p.x-3,p.y+3,.85);}else if(t.terrain==='mountain'){ctx.fillStyle='#495c58';ctx.beginPath();ctx.moveTo(p.x-23,p.y+7);ctx.lineTo(p.x-2,p.y-23);ctx.lineTo(p.x+24,p.y+8);ctx.fill();ctx.fillStyle='#a7b3a6';ctx.beginPath();ctx.moveTo(p.x-2,p.y-23);ctx.lineTo(p.x-3,p.y+5);ctx.lineTo(p.x+24,p.y+8);ctx.fill();ctx.fillStyle='#d6d8c3';ctx.beginPath();ctx.moveTo(p.x-2,p.y-23);ctx.lineTo(p.x-10,p.y-12);ctx.lineTo(p.x-4,p.y-15);ctx.lineTo(p.x+4,p.y-13);ctx.lineTo(p.x+9,p.y-10);ctx.fill();}else if(t.terrain==='marsh'){ctx.strokeStyle='#9dbbb28a';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(p.x-17+i*3,p.y-12+i*8);ctx.quadraticCurveTo(p.x,p.y-8+i*8,p.x+15-i*3,p.y-12+i*8);ctx.stroke();}}else if(t.terrain==='ruins'&&t.id!==31){ctx.fillStyle='#b6ae8e';ctx.fillRect(p.x-11,p.y-13,6,18);ctx.fillRect(p.x+7,p.y-9,6,14);ctx.fillRect(p.x-14,p.y-16,14,5);ctx.fillStyle='#585f51';ctx.fillRect(p.x-3,p.y+2,11,4);}else if(t.terrain==='plain'){ctx.strokeStyle='#cad19b57';ctx.lineWidth=1.5;for(let i=0;i<5;i++){let x=p.x-19+i*9,y=p.y-7+(i%2)*7;ctx.beginPath();ctx.moveTo(x,y+4);ctx.lineTo(x+2,y-1);ctx.lineTo(x+4,y+4);ctx.stroke();}}ctx.restore();}else{ctx.fillStyle='#91a6a44a';ctx.font='17px system-ui';ctx.textAlign='center';ctx.fillText('?',p.x,p.y+5);}}
+for(const t of state.tiles){if(!t.seen)continue;const p=point(t);if(t.owner>=0){polygon(p.x,p.y,R-3);ctx.lineWidth=t.owner===0?2.5:2;ctx.strokeStyle=FACTIONS[t.owner].color+'b0';ctx.stroke();}if(reachable.includes(t.id)&&started){polygon(p.x,p.y,R-5);ctx.setLineDash([3,4]);ctx.strokeStyle='#c2e4ed';ctx.lineWidth=1.7;ctx.stroke();ctx.setLineDash([]);}const capital=FACTIONS.some(f=>f.cap===t.id);if(capital||t.id===31)drawCastle(p.x,p.y-2,t.owner>=0?FACTIONS[t.owner].color:'#ebd194',capital);else if(t.building){ctx.fillStyle='#e8ce92';ctx.fillRect(p.x-8,p.y-8,16,12);ctx.fillStyle='#79553b';ctx.beginPath();ctx.moveTo(p.x-12,p.y-8);ctx.lineTo(p.x,p.y-16);ctx.lineTo(p.x+12,p.y-8);ctx.fill();ctx.fillStyle='#383e32';ctx.fillRect(p.x-2,p.y-1,5,6);}if(total(t.units)>0){const count=String(total(t.units));ctx.font='bold 12px system-ui';const w=Math.max(24,ctx.measureText(count).width+13);ctx.fillStyle=t.owner===0?'#18343eea':t.owner===1?'#562f2ce8':t.owner===2?'#3a3150e8':'#303b32df';ctx.beginPath();ctx.roundRect(p.x-w/2,p.y+9,w,17,5);ctx.fill();ctx.fillStyle=t.owner===0?'#c4edf4':t.owner>=0?'#ffddd0':'#d9dec7';ctx.textAlign='center';ctx.fillText(count,p.x,p.y+21);if(t.owner===0&&total(t.ready)>0){ctx.fillStyle='#f8da87';ctx.beginPath();ctx.arc(p.x+w/2-1,p.y+10,3,0,7);ctx.fill();}}if(t.fort>0&&!capital&&t.id!==31){ctx.fillStyle='#e0d2a0';ctx.font='bold 10px system-ui';ctx.fillText('▰'+t.fort,p.x+12,p.y-17);}}
+const active=state.tiles[selected];if(active){const p=point(active);polygon(p.x,p.y,R-1);ctx.strokeStyle='#fff0ac';ctx.lineWidth=3;ctx.stroke();polygon(p.x,p.y,R+2);ctx.strokeStyle='#ffde8140';ctx.lineWidth=3;ctx.stroke();}if(fx){const elapsed=performance.now()-fx.start;if(elapsed<700){const p=point(state.tiles[fx.id]);ctx.globalAlpha=1-elapsed/700;polygon(p.x,p.y,R+elapsed*.06);ctx.strokeStyle=fx.win?'#eade94':'#ef9b86';ctx.lineWidth=4;ctx.stroke();ctx.globalAlpha=1;if(!frame)frame=requestAnimationFrame(()=>{frame=0;draw();});}else fx=null;}ctx.restore();}
+/* 이벤트: 클릭 한 경로만 사용해 모바일 터치의 중복 명령을 막는다. */
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,v=b.dataset.value;if(busy&&!['help','close','zoomIn','zoomOut','center'].includes(a))return;switch(a){case'menu':showMenu();break;case'help':showHelp();break;case'close':if(started)closeModal();else showMenu();break;case'difficulty':chosenDifficulty=v;document.querySelectorAll('.difficulty button').forEach(x=>x.classList.toggle('active',x.dataset.value===v));$('difficultyNote').textContent=difficultyNote();break;case'new':requestNew();break;case'start':startNew();break;case'resume':resume();break;case'tab':tab=v;render();break;case'capital':selected=46;tab='army';render();break;case'neighbor':inspectTarget(Number(v));break;case'look':selected=Number(v);closeModal();render();break;case'build':build(v);break;case'fort':fortify();break;case'recruit':recruit(Number(v));break;case'research':research(v);break;case'scout':scout();break;case'part':sendPart=Number(v);showMarch();break;case'tactic':tactic=v;showMarch();break;case'march':confirmMarch();break;case'end':endTurn();break;case'endForced':endTurn(true);break;case'zoomIn':zoom(1.25);break;case'zoomOut':zoom(.8);break;case'center':fitMap();break;}});
+function pointerPosition(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+canvas.addEventListener('pointerdown',e=>{if(!started||busy||!$('overlay').hidden)return;canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,pointerPosition(e));const p=pointerPosition(e);if(pointers.size===1)gesture={start:p,last:p,moved:false,pinch:false};if(pointers.size===2){gesture.pinch=true;const a=[...pointers.values()];gesture.distance=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);}});
+canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId)||!gesture)return;const p=pointerPosition(e);pointers.set(e.pointerId,p);if(pointers.size>=2){const a=[...pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(gesture.distance>0)zoom(d/gesture.distance,(a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2);gesture.distance=d;gesture.moved=true;}else if(!gesture.pinch){if(Math.hypot(p.x-gesture.start.x,p.y-gesture.start.y)>6)gesture.moved=true;if(gesture.moved){view.x+=p.x-gesture.last.x;view.y+=p.y-gesture.last.y;constrainView();draw();}gesture.last=p;}});
+function endPointer(e,cancelled){if(!pointers.has(e.pointerId))return;const p=pointerPosition(e),g=gesture;pointers.delete(e.pointerId);if(!cancelled&&g&&!g.moved&&!g.pinch){const x=(p.x-view.x)/view.scale,y=(p.y-view.y)/view.scale;let id=-1,best=R;for(const t of state.tiles){const a=point(t),d=Math.hypot(a.x-x,a.y-y);if(d<best){best=d;id=t.id;}}if(id>=0)inspectTarget(id);}if(!pointers.size)gesture=null;}
+canvas.addEventListener('pointerup',e=>endPointer(e,false));canvas.addEventListener('pointercancel',e=>endPointer(e,true));canvas.addEventListener('lostpointercapture',e=>{pointers.delete(e.pointerId);if(!pointers.size)gesture=null;});
+canvas.addEventListener('wheel',e=>{if(!started)return;e.preventDefault();const p=pointerPosition(e);zoom(e.deltaY<0?1.1:.9,p.x,p.y);},{passive:false});
+document.addEventListener('keydown',e=>{if(!$('overlay').hidden){if(e.key==='Escape'&&started){closeModal();return;}if(e.key==='Tab'){const focusable=[...$('modal').querySelectorAll('button:not(:disabled),select,input,[tabindex="0"]')];if(!focusable.length)return;const first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}return;}if(document.activeElement!==canvas)return;if(e.key==='+'||e.key==='='){zoom(1.2);e.preventDefault();}if(e.key==='-'){zoom(.8);e.preventDefault();}const delta={ArrowLeft:-1,ArrowRight:1,ArrowUp:-9,ArrowDown:9}[e.key];if(delta){e.preventDefault();selected=clamp(selected+delta,0,62);render();}});
+window.addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden){save();if(frame)cancelAnimationFrame(frame);frame=0;}});
+new ResizeObserver(resize).observe(canvas);state=makeState('normal',20261005);reveal(46,2);saved=readSave();render();showMenu();
 </script>
 </body>
 </html>

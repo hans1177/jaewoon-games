@@ -224,7 +224,10 @@ if [[ -z "$surface_layer" ]]; then
 fi
 printf '%s\n' "$surface_layer" > "$out_dir/surfaceflinger-layer.txt"
 if [[ -n "$surface_layer" ]]; then
-  adb shell dumpsys SurfaceFlinger --latency "$surface_layer" > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
+  # adb concatenates arguments into a remote shell command; host quoting alone
+  # loses spaces and executes the BLAST parentheses as shell syntax on Android.
+  surface_layer_quoted="$(python3 -c 'import shlex,sys; print(shlex.quote(sys.argv[1]))' "$surface_layer")"
+  adb shell "dumpsys SurfaceFlinger --latency $surface_layer_quoted" > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
 else
   adb shell dumpsys SurfaceFlinger --latency > "$out_dir/surfaceflinger-latency.txt" 2>&1 || true
 fi

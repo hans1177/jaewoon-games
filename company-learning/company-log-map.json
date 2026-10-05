@@ -1,5 +1,5 @@
 {
-  "version": 167,
+  "version": 168,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3147,6 +3147,16 @@
       "CONTENT_SIGNATURE_MATCHED",
       "RUNTIME_SCREENSHOT_FALSE_UNLESS_SEPARATELY_PROVEN"
     ]
+  },
+  "allGamePlayableAccessEvidence": {
+    "sourcePolicy": "catalogNormalization.ownerWebAutoIngest.webExposureQuality",
+    "required": [
+      "ACTUAL_CANONICAL_ENTRY",
+      "PROTOTYPE_WITHDRAWAL_REASON",
+      "VERIFIED_NATIVE_TEST_TARGET",
+      "EXACT_DEPLOYED_CATALOG"
+    ],
+    "runtimePassMayNotBeInferredFromCatalog": true
   },
   "internalAssetMotionRepair": {
     "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.internalAssetFocus",
