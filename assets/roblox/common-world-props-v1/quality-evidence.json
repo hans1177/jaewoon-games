@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "packId": "roblox-common-world-props-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -107,5 +107,68 @@
       "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
     ],
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 883.2,
+    "currentGrade": "COMMERCIAL_READY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "requiredEvidence": [
+          "INTERACTION_OPEN_CLOSED_ACTIVE_DAMAGED_STATE_METADATA",
+          "COLLISION_PROXY_AND_INTERACTION_ANCHOR_METADATA",
+          "WORLD_VIEWPORT_ICON_LINEAGE_FOR_ITEM_LIKE_PROPS",
+          "MATERIAL_DAMAGE_WEAR_AND_REGION_VARIANTS",
+          "AUDIO_ROLE_LINKAGE_WITHOUT_PLAYBACK_AUTHORITY"
+        ]
+      },
+      {
+        "id": "ELITE_950",
+        "targetScore": 950,
+        "requiredEvidence": [
+          "DESTRUCTIBLE_AND_REPAIR_PRESENTATION_VARIANTS",
+          "SETTLEMENT_LIFE_AND_FUNCTIONAL_PROP_FAMILIES",
+          "INTERACTION_STATE_READABILITY_AT_MOBILE_CAMERA",
+          "LOD_AND_COLLISION_PROXY_TIERS",
+          "CROSS_GAME_STYLE_ADAPTATION_WITHOUT_ROLE_LOSS"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "UI_UX_SYSTEM",
+      "ACCESSIBILITY_INPUT",
+      "FEEDBACK_STATES",
+      "DETAIL_FINISH",
+      "MATERIAL_SURFACE",
+      "INTEGRATION_READINESS"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "NEW_FUNCTIONAL_PROP_ROLE_GAP_REMAINS",
+        "INTERACTION_OR_DESTRUCTIBLE_STATE_GAP_REMAINS",
+        "SETTLEMENT_OR_WORLD_IDENTITY_NEEDS_DISTINCT_PROP_SILHOUETTE"
+      ],
+      "resolutionOrder": [
+        "REUSE_EXISTING",
+        "DERIVE_VARIANT",
+        "RECOMBINE_EXISTING",
+        "NEW_AUTHORING"
+      ],
+      "exactDuplicateSpamForbidden": true,
+      "recolorOnlyVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "gameplayBalanceSaveNetworkAuthorityUnchanged": true
+    }
   }
 }
