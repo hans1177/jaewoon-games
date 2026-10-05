@@ -675,10 +675,172 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
   }
   return Object.freeze([...rows.values()]);
 }
+export const ROBLOX_INTERNAL_ASSET_FAMILIES=Object.freeze([
+  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
+]);
+const ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
+  CHARACTER:/\b(?:Players|LocalPlayer|CharacterAdded|Humanoid|character|avatar|npc)\b/i,
+  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
+  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
+  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|world|workspace)\b/i,
+  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
+  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
+  MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
+  AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
+  VFX:/\b(?:ParticleEmitter|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
+  UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|hud|menu|inventory|quest|shop|button)\b/i,
+  MOTION:/\b(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|motion|locomotion|idle|walk|run)\b/i,
+  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item)\b/i
+});
+const ROBLOX_INTERNAL_ASSET_NATIVE_PATTERNS=Object.freeze({
+  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
+  CREATURE:/(?:Instance\.new\(["'](?:Model|MeshPart|Attachment|Bone|Motor6D)["']\)|\bHumanoid\b|\bAnimationController\b)/i,
+  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|\bClone\s*\()/i,
+  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart)["']\))/i,
+  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
+  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\))/i,
+  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
+  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\))/i,
+  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)/i,
+  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i,
+  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat)/i,
+  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
+});
+function robloxInternalAssetFamilyRefPattern(family=''){
+  const value=clean(family);
+  return new RegExp('(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']|studioAssetFamilies(?:\\s*\\.\\s*'+value+'|\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\]))','ig');
+}
+function robloxInternalAssetTraceStripped(text=''){
+  return String(text||'')
+    .replace(/--[^\n]*/g,' ')
+    .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
+    .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
+}
+function robloxInternalAssetFamilyBoundInText(text='',family=''){
+  const raw=String(text||'');
+  const nativePattern=ROBLOX_INTERNAL_ASSET_NATIVE_PATTERNS[family];
+  if(!nativePattern)return false;
+  const refs=[...raw.matchAll(robloxInternalAssetFamilyRefPattern(family))];
+  for(const ref of refs){
+    const start=Math.max(0,Number(ref.index||0)-3500);
+    const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+3500);
+    if(nativePattern.test(raw.slice(start,end)))return true;
+  }
+  return false;
+}
+function robloxInternalAssetSourceDocuments(sourceRoot=''){
+  const root=path.resolve(sourceRoot),documents=new Map(),stack=[root];
+  while(stack.length){
+    const current=stack.pop();
+    let entries=[];
+    try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries){
+      if(entry.isDirectory()){
+        if(['.git','Packages','Binaries','Intermediate','Saved'].includes(entry.name))continue;
+        stack.push(path.join(current,entry.name));
+        continue;
+      }
+      if(!/\.(?:lua|luau)$/i.test(entry.name))continue;
+      const absolute=path.join(current,entry.name);
+      const relative=posix(path.relative(root,absolute));
+      documents.set(relative,fs.readFileSync(absolute,'utf8'));
+    }
+  }
+  return documents;
+}
+function robloxInternalAssetApplyCandidateDocuments(documents,candidate={}){
+  const out=new Map(documents);
+  for(const edit of candidate?.edits||[]){
+    const relative=posix(edit.path),before=String(out.get(relative)||'');
+    const find=String(edit.find||''),replace=String(edit.replace||'');
+    if(!find||before.split(find).length-1!==1)continue;
+    out.set(relative,before.replace(find,replace));
+  }
+  for(const file of candidate?.newFiles||[])out.set(posix(file.path),String(file.content||''));
+  for(const file of candidate?.replaceFiles||[])out.set(posix(file.path),String(file.content||''));
+  return out;
+}
+export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={},expectedSelectionFingerprint='',expectedLibraryVersion=0}={}){
+  const base=robloxInternalAssetSourceDocuments(sourceRoot);
+  const result=robloxInternalAssetApplyCandidateDocuments(base,candidate);
+  const touched=new Set([
+    ...(candidate?.edits||[]).map(row=>posix(row.path)),
+    ...(candidate?.newFiles||[]).map(row=>posix(row.path)),
+    ...(candidate?.replaceFiles||[]).map(row=>posix(row.path))
+  ]);
+  const statusSource=[...result.values()].join('\n');
+  const statusBlock=statusSource.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const configEntry=[...result.entries()].find(([relative])=>/(?:^|\/)GameConfig\.luau$/i.test(relative))||null;
+  const configText=String(configEntry?.[1]||'');
+  const expectedFingerprint=clean(expectedSelectionFingerprint);
+  const requiredLibraryVersion=Math.max(0,Math.floor(Number(expectedLibraryVersion)||0));
+  const observedSelectionFingerprint=clean(configText.match(/\bSelectionFingerprint\s*=\s*["']([0-9a-f]{64})["']/i)?.[1]);
+  const observedLibraryVersion=Math.max(0,Math.floor(Number(configText.match(/\bLibraryVersion\s*=\s*(\d+)/i)?.[1])||0));
+  const semanticSource=[...result.entries()]
+    .filter(([relative])=>!/(?:^|\/)GameConfig\.luau$/i.test(relative))
+    .map(([,text])=>robloxInternalAssetTraceStripped(text))
+    .join('\n');
+  const rows=[],blockers=[];
+  if(expectedFingerprint&&observedSelectionFingerprint!==expectedFingerprint){
+    blockers.push('ROBLOX_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH');
+  }
+  if(requiredLibraryVersion>0&&observedLibraryVersion!==requiredLibraryVersion){
+    blockers.push('ROBLOX_INTERNAL_ASSET_LIBRARY_VERSION_MISMATCH');
+  }
+  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0;
+  for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
+    const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
+    const systemPresent=ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true;
+    const selectedAtoms=Array.isArray(expectedFamilies?.[family])?[...new Set(expectedFamilies[family].map(clean).filter(Boolean))].sort():[];
+    const configFamilyBody=configText.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'))?.[1]||'';
+    const configuredAtoms=[...new Set([...configFamilyBody.matchAll(/["']([^"']+)["']/g)].map(match=>clean(match[1])).filter(Boolean))].sort();
+    const configFamilyMatch=selectedAtoms.length===configuredAtoms.length&&selectedAtoms.every((atom,index)=>atom===configuredAtoms[index]);
+    if(configFamilyMatch)configFamilyMatchCount+=1;
+    else blockers.push('ROBLOX_INTERNAL_ASSET_CONFIG_FAMILY_SELECTION_MISMATCH:'+family);
+    const boundFiles=[...result.entries()].filter(([,text])=>robloxInternalAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
+    const actualBinding=boundFiles.length>0;
+    const changedBinding=boundFiles.some(relative=>touched.has(relative));
+    if(!status)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_STATUS_MISSING:'+family);
+    else if(status==='NOT_APPLICABLE'){
+      notApplicableCount+=1;
+      if(systemPresent)blockers.push('ROBLOX_INTERNAL_ASSET_NOT_APPLICABLE_EXISTING_SYSTEM:'+family);
+    }else if(status==='APPLIED'){
+      appliedCount+=1;
+      if(!selectedAtoms.length)blockers.push('ROBLOX_INTERNAL_ASSET_SELECTED_FAMILY_EMPTY:'+family);
+      if(!actualBinding)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:'+family);
+      if(changedBinding)changedAppliedFamilyCount+=1;
+    }
+    rows.push(Object.freeze({
+      family,status:status||null,systemPresent,selectedAtomCount:selectedAtoms.length,
+      configuredAtoms:Object.freeze(configuredAtoms),configFamilyMatch,
+      actualBinding,changedBinding,boundFiles:Object.freeze(boundFiles)
+    }));
+  }
+  if(changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
+  return Object.freeze({
+    pass:blockers.length===0,
+    requiredFamilies:ROBLOX_INTERNAL_ASSET_FAMILIES,
+    appliedCount,notApplicableCount,changedAppliedFamilyCount,configFamilyMatchCount,
+    configSelectionFingerprint:observedSelectionFingerprint||null,
+    expectedSelectionFingerprint:expectedFingerprint||null,
+    configLibraryVersion:observedLibraryVersion||null,
+    expectedLibraryVersion:requiredLibraryVersion||null,
+    configSelectionMatched:(!expectedFingerprint||observedSelectionFingerprint===expectedFingerprint)
+      &&(requiredLibraryVersion<=0||observedLibraryVersion===requiredLibraryVersion)
+      &&configFamilyMatchCount===ROBLOX_INTERNAL_ASSET_FAMILIES.length,
+    familyResults:Object.freeze(rows),
+    blockers:Object.freeze([...new Set(blockers)]),
+    markerOnlyApplicationForbidden:true,
+    notApplicableRequiresSystemAbsenceEvidence:true,
+    authority:'vibe2-roblox-internal-asset-family-binding'
+  });
+}
+
 export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
     &&order.presentationQuality?.required===true
     &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
+    &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired!==true
     &&!assetDevelopmentTask(order)
     &&!worldLobbySourceWorkRequired(order);
 }
@@ -1902,9 +2064,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
   }
   const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
-  const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const libraryVersion=Number(loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const selectionFingerprint=clean(loadout?.robloxSelectionFingerprint);
   const payload={
-    version:3,target,gameId,libraryVersion,
+    version:4,target,gameId,libraryVersion,selectionFingerprint,
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
@@ -2023,10 +2186,11 @@ export function buildInternalAssetSourceUsageContract(order={}){
     })
   });
   return Object.freeze({
-    version:3,
+    version:4,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
+    selectionFingerprint:selectionFingerprint||null,
     fingerprint,
     exactFamilies,
     flowSelections:Object.freeze(flowSelections),
@@ -2046,6 +2210,8 @@ export function buildInternalAssetSourceUsageContract(order={}){
       apiContextMaxBytes:18000,
       apiContextPerFileMaxBytes:4500,
       apiContextRotationByBuildUpGeneration:true,
+      apiContextBatchIsDetailRotationOnly:true,
+      apiIndexIncludesAllSelectedSourcesEveryBuildUp:true,
       allSelectedApiSourcesRemainEligibleAcrossCycles:true
     }),
     eligibility:Object.freeze({
@@ -2119,7 +2285,59 @@ export function buildInternalAssetSourceUsageContract(order={}){
   });
 }
 
-function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
+export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
+  const normalizedPaths=unique((paths||[]).map(posix).filter(file=>
+    file
+    &&!path.isAbsolute(file)
+    &&!file.split('/').includes('..')
+    &&/^assets\//.test(file)
+    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
+  )).sort();
+  const rows=[];
+  let availableSourceCount=0;
+  let signatureCount=0;
+  for(const relative of normalizedPaths){
+    const absolute=path.resolve(cwd,relative);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile()){
+      rows.push(relative+' :: SOURCE_UNAVAILABLE');
+      continue;
+    }
+    availableSourceCount+=1;
+    const raw=fs.readFileSync(absolute,'utf8');
+    const signatures=[];
+    const add=value=>{
+      const normalized=String(value||'').replace(/\s+/g,' ').trim();
+      if(normalized&&!signatures.includes(normalized))signatures.push(normalized);
+    };
+    if(/\.(?:lua|luau)$/i.test(relative)){
+      for(const match of raw.matchAll(/^\s*function\s+([A-Za-z_][\w]*\.[A-Za-z_][\w.]*)\s*\(([^)]*)\)/gm)){
+        add('function '+match[1]+'('+match[2]+')');
+      }
+      for(const match of raw.matchAll(/^\s*([A-Za-z_][\w]*\.[A-Za-z_][\w.]*)\s*=\s*function\s*\(([^)]*)\)/gm)){
+        add(match[1]+'=function('+match[2]+')');
+      }
+    }else{
+      for(const match of raw.matchAll(/^\s*export\s+(?:async\s+)?function\s+([A-Za-z_][\w]*)\s*\(([^)]*)\)/gm)){
+        add('export function '+match[1]+'('+match[2]+')');
+      }
+      for(const match of raw.matchAll(/^\s*export\s+const\s+([A-Za-z_][\w]*)/gm)){
+        add('export const '+match[1]);
+      }
+    }
+    signatureCount+=signatures.length;
+    rows.push(relative+' :: '+(signatures.length?signatures.join(' | '):'NO_PUBLIC_API_SIGNATURE_DISCOVERED'));
+  }
+  return Object.freeze({
+    representedSourceCount:normalizedPaths.length,
+    availableSourceCount,
+    unavailableSourceCount:normalizedPaths.length-availableSourceCount,
+    signatureCount,
+    allSelectedSourcesRepresented:true,
+    text:rows.join('\n')
+  });
+}
+
+export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
   const selectedFamilies=new Set([
     ...Object.keys(contract.exactFamilies||{}),
@@ -2156,6 +2374,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     &&/\.(?:lua|luau|js|mjs)$/i.test(file)
   )).sort();
   if(!allSelectedPaths.length)return context;
+  const apiIndex=buildInternalAssetApiIndex({cwd,paths:allSelectedPaths});
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
   const start=((generation-1)*batchSize)%allSelectedPaths.length;
@@ -2174,7 +2393,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     remaining-=bytes;
     apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
   }
-  if(!apiFiles.length)return context;
+  if(!apiFiles.length&&!apiIndex.text)return context;
   return{
     ...context,
     files:[...context.files,...apiFiles],
@@ -2184,8 +2403,26 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     internalAssetApiContextBounded:true,
     internalAssetApiContextGeneration:generation,
     internalAssetApiContextEligibleSourceCount:allSelectedPaths.length,
-    internalAssetApiContextRotationStart:start
+    internalAssetApiContextRotationStart:start,
+    internalAssetApiIndex:apiIndex.text,
+    internalAssetApiIndexBytes:Buffer.byteLength(apiIndex.text||'','utf8'),
+    internalAssetApiIndexRepresentedSourceCount:apiIndex.representedSourceCount,
+    internalAssetApiIndexAvailableSourceCount:apiIndex.availableSourceCount,
+    internalAssetApiIndexUnavailableSourceCount:apiIndex.unavailableSourceCount,
+    internalAssetApiIndexSignatureCount:apiIndex.signatureCount,
+    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:apiIndex.allSelectedSourcesRepresented===true
   };
+}
+
+function internalAssetApiIndexGuidance(context={}){
+  const index=String(context?.internalAssetApiIndex||'').trim();
+  if(!index)return'';
+  return [
+    '[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]',
+    'Every selected internal source is represented here on every BUILD_UP. Detailed source excerpts still rotate by generation for compactness; rotation changes implementation detail context only and never removes a family, source, or compatible asset from current BUILD_UP eligibility.',
+    index,
+    '[END INTERNAL ASSET API INDEX]'
+  ].join('\n');
 }
 
 function internalAssetSourceUsageGuidance(order={}){
@@ -2199,7 +2436,7 @@ function internalAssetSourceUsageGuidance(order={}){
     .join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
-    'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
+    'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
@@ -2208,14 +2445,14 @@ function internalAssetSourceUsageGuidance(order={}){
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
-    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
-    'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility in the current BUILD_UP. Detailed API source batching is only synchronization optimization and MUST NOT become a usage cap.',
+    'Detailed common-script source excerpts rotate by BUILD_UP generation, but the complete public API index for every selected source is present on every BUILD_UP. Rotation is detail-context scheduling only; it never defers an applicable family/source/asset to a later generation.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
     'The explicit signal matrix is a FLOOR, not a ceiling. Scan current responsible source for additional existing events/state names and use adaptiveSignalRouting semantic hints only to choose presentation families that are both selected and applicable. Unknown source events may use the generic presentation fallback, but may not create a new gameplay system, asset ID, factory, role, state, or authority.',
     'Reuse existing common asset scripts/factories when the selected source/API reference is available. Call them from the current responsible game code or bind their returned native objects there; do not fork/copy a common script into each game.',
-    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. They are read-only bounded implementation context and rotate across BUILD_UP cycles; prefer the existing API before new per-game presentation code.',
+    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. Their detailed source bodies rotate as read-only implementation context, while their public API signatures remain visible every BUILD_UP; prefer the existing API before new per-game presentation code.',
     'When an existing Inventory/Equipment/Quest/Shop/Map/Party/Crafting/Dialogue/NPC/Character/Settings/Search/Filter/Sort system needs UI, inspect the matching RobloxCommonUI Create* factory first and connect it to the existing responsible state instead of rebuilding the screen.',
     'Variant diversity must preserve exact role/body-plan and use existing state/context plus usage history/lineage; simple random asset swapping is forbidden. Prefer compatible variants, recombination and style adaptation without sacrificing fit.',
     'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
@@ -2242,7 +2479,7 @@ function universalAssetWorkerGuidance(order={}) {
     'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
     'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
     'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
-    target==='roblox'?'Roblox source link: selected internal assets are already exposed through the existing shared Config.StudioAssets.Families table. Read the needed family directly from that table in the current responsible Luau source and use those selected atoms while authoring the existing Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator ownership. Do not edit company-asset-library.json or create a second asset pipeline. Use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } as trace evidence only; metadata never replaces actual native source use.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
+    target==='roblox'?'Roblox source link: the exact BUILD_UP selection is authoritative. Compare shared Config.StudioAssets LibraryVersion, SelectionFingerprint, and every Families atom list against the supplied baseMaterialLoadout before implementation. If the existing managed StudioAssets block is stale, update that existing block directly to the exact BUILD_UP selection; never keep a stale selection and never create a second config/pipeline. Then read the needed family directly from Config.StudioAssets.Families in the current responsible Luau source and use those selected atoms while authoring the existing Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator ownership. Do not edit company-asset-library.json. Use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } as trace evidence only; metadata never replaces actual native source use.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
     'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
     'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
   ].filter(Boolean).join('\n');
@@ -2765,6 +3002,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 internalAssetSourceUsageGuidance(order),
+internalAssetApiIndexGuidance(context),
 gameContextCapsuleGuidance(order,exploration,responsibleFiles),
 preSubmitSelfReviewGuidance(order),
 studioAssetQualityCoreGuidance(order),
@@ -4696,12 +4934,22 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const required=[
         new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+studioBindingVersion+'\\b'),
         /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
+        /\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/,
         /StudioAssetBindingVersion/,
         /StudioAssetAtoms/,
         /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
       ];
       if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_FAMILY_STATUS_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+      }
+      const familyBinding=evaluateRobloxInternalAssetFamilyBindingCandidate({
+        candidate,sourceRoot,
+        expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
+        expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
+      });
+      if(!familyBinding.pass){
+        throw new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+familyBinding.blockers.join(','));
       }
     }
     if(bootstrap&&target==='unity'){
@@ -4773,7 +5021,15 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
+    const robloxInternalAssetFamilyBinding=robloxInternalAssetApplicationRequired
+      ?evaluateRobloxInternalAssetFamilyBindingCandidate({
+        candidate,sourceRoot,
+        expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
+        expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
+      })
+      :null;
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes,robloxInternalAssetFamilyBinding};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
@@ -4923,6 +5179,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetApiContextGeneration:Number(context.internalAssetApiContextGeneration||0),
     internalAssetApiContextEligibleSourceCount:Number(context.internalAssetApiContextEligibleSourceCount||0),
     internalAssetApiContextRotationStart:Number(context.internalAssetApiContextRotationStart||0),
+    internalAssetApiContextRotationPreserved:true,
+    internalAssetApiIndexBytes:Number(context.internalAssetApiIndexBytes||0),
+    internalAssetApiIndexRepresentedSourceCount:Number(context.internalAssetApiIndexRepresentedSourceCount||0),
+    internalAssetApiIndexAvailableSourceCount:Number(context.internalAssetApiIndexAvailableSourceCount||0),
+    internalAssetApiIndexUnavailableSourceCount:Number(context.internalAssetApiIndexUnavailableSourceCount||0),
+    internalAssetApiIndexSignatureCount:Number(context.internalAssetApiIndexSignatureCount||0),
+    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:context.internalAssetApiIndexAllSelectedSourcesEveryBuildUp===true,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',
@@ -5036,6 +5299,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     candidateSelfReview:semanticDiffEnforcement?.candidateSelfReview||null,
     gameContextCapsule:buildGameContextCapsule({order,exploration,responsibleFiles}),
     studioAssetQualityAxes:semanticDiffEnforcement?.studioAssetQualityAxes||null,
+    robloxInternalAssetFamilyBinding:semanticDiffEnforcement?.robloxInternalAssetFamilyBinding||null,
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
     binaryAssetsDirectTextEditForbidden:true,
