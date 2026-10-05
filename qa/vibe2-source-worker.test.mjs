@@ -2192,6 +2192,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   };
   workOrder.assetProduction={
     baseMaterialLoadout:{
+      families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
       robloxSelectionHandoff:{
         handoffRequired:true,
         downstreamApplicationRequired:true,
@@ -2202,8 +2203,6 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   workOrder.goal='일반 Roblox BUILD_UP 소스 코딩에서 선택된 내부 자산을 실제 시각 책임 소스에 적용';
   write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
   const clientSource=[
-    'local Players = game:GetService("Players")',
-    'local player = Players.LocalPlayer',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
     'root.BackgroundColor3 = Color3.fromRGB(18,28,48)',
@@ -2215,15 +2214,18 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     edits:[{path:'shared/GameConfig.luau',find:'return { GameId = "demo" }',replace:'return { GameId = "demo", StudioAssets = true }'}]
   }));
   const bound=[
-    'local Players = game:GetService("Players")',
-    'local player = Players.LocalPlayer',
     'local STUDIO_ASSET_BINDING_VERSION = 2',
-    'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+    'local studioAssetFamilies = { UI = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"} }',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    'local STUDIO_ASSET_FAMILY_STATUS = { CHARACTER = "NOT_APPLICABLE", CREATURE = "NOT_APPLICABLE", BUILDING = "NOT_APPLICABLE", ENVIRONMENT = "NOT_APPLICABLE", WEAPON = "NOT_APPLICABLE", SKILL = "NOT_APPLICABLE", MATERIAL = "NOT_APPLICABLE", AUDIO = "NOT_APPLICABLE", VFX = "NOT_APPLICABLE", UI = "APPLIED", MOTION = "NOT_APPLICABLE", PROP = "NOT_APPLICABLE" }',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
+    'local stroke = Instance.new("UIStroke")',
     'root.BackgroundColor3 = Color3.fromRGB(22,34,58)',
     'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
-    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end',
     'root.Parent = gui'
   ].join('\n');
   write(good,JSON.stringify({
@@ -2236,6 +2238,8 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files/client/Game.client.luau'),'utf8');
   assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+  assert.match(candidate,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+  assert.match(candidate,/studioAssetFamily\("UI"\)/);
   assert.match(candidate,/StudioAssetAtoms/);
 });
 
