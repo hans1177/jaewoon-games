@@ -125,5 +125,97 @@
     "lowScoreDoesNotBlockInternalUse": true,
     "newAuthoringMayFillVerifiedGaps": true,
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 859.1,
+    "currentGrade": "HIGH_QUALITY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "COMMERCIAL_READY_880",
+        "targetScore": 880,
+        "projectedSourceAuditScore": 896.5,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 92,
+          "FORM_STRUCTURE": 88,
+          "MATERIAL_SURFACE": 86,
+          "COLOR_LIGHTING": 86,
+          "STYLE_COHERENCE": 90,
+          "DETAIL_FINISH": 86,
+          "READABILITY_SCALE": 90,
+          "MOTION_RIG": 86,
+          "FEEDBACK_STATES": 82,
+          "MODULAR_REUSE": 95,
+          "VARIATION_BREADTH": 99,
+          "PERFORMANCE_LOD": 88,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 90
+        },
+        "requiredEvidence": [
+          "BODY_FORM_SPECIFIC_RIG_AND_MOTION_PROFILE",
+          "CONTACT_READABLE_LOCOMOTION_ATTACK_HIT_DEATH_STATES",
+          "MATERIAL_AND_SURFACE_DETAIL_ABOVE_CURRENT_BASELINE",
+          "INDIVIDUAL_SKIN_OR_BODY_FORM_RUNTIME_BINDING_EVIDENCE",
+          "MOBILE_GAME_CAMERA_READABILITY_AND_LOD_REVIEW"
+        ]
+      },
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "projectedSourceAuditScore": 932.8,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 94,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 92,
+          "COLOR_LIGHTING": 90,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 92,
+          "READABILITY_SCALE": 92,
+          "MOTION_RIG": 92,
+          "FEEDBACK_STATES": 88,
+          "MODULAR_REUSE": 96,
+          "VARIATION_BREADTH": 99,
+          "PERFORMANCE_LOD": 92,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 94
+        },
+        "requiredEvidence": [
+          "SIGNATURE_GHOST_MOTION_IDENTITY_BY_BODY_FORM",
+          "FACE_APPENDAGE_CLOTH_OR_EFFECT_SECONDARY_ACTING",
+          "CAUSE_BASED_DAMAGE_WEAR_AND_MATERIAL_RESPONSE",
+          "ELITE_BOSS_SIGNATURE_VARIANTS_WITHOUT_COLOR_ONLY_REUSE",
+          "MOBILE_CROWD_LOD_AND_CAMERA_DISTANCE_READABILITY"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "MOTION_RIG",
+      "DETAIL_FINISH",
+      "FEEDBACK_STATES",
+      "MATERIAL_SURFACE",
+      "FORM_STRUCTURE",
+      "PERFORMANCE_LOD"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "NEW_GHOST_BODY_FORM_OR_CULTURAL_ROLE_GAP_REMAINS",
+        "BOSS_ELITE_SIGNATURE_SILHOUETTE_GAP_REMAINS",
+        "EXISTING_SKIN_DERIVATION_WOULD_COLLAPSE_IDENTITY_OR_READABILITY",
+        "NEW_REUSABLE_RIG_OR_MOTION_BASE_IS_REQUIRED"
+      ],
+      "exactDuplicateSkinSpamForbidden": true,
+      "recolorOnlySkinVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "gameplayAiDamageMovementHitboxQuestSaveNetworkAuthorityUnchanged": true
+    }
   }
 }
