@@ -47,6 +47,35 @@ test('asset teacher consumes canonical production decisions and styles in the re
   assert.ok(!prompt.includes('[MOTION TEACHER PRACTICE BEGIN]'));
 });
 
+test('asset teacher survives initial compaction and retries at the model request boundary',async(t)=>{
+  const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const source='local sway = 0.025\nreturn sway';
+  write(path.join(root,'init.luau'),source);
+  const work={target:'roblox',assetProductionLane:true,goal:'refine existing visual sway '+('detail '.repeat(20000)),assetProduction:{decisions:[{type:'creature'}],styleBible:{styleFamily:'COZY'}}};
+  const prompt=buildPrompt(work,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau']);
+  const requests=[];
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      const request=JSON.parse(body);requests.push(request);
+      const response=requests.length===1?{edits:[{path:'outside.luau',find:'local sway = 0.025',replace:'local sway = 0.035'}]}:request.format?.required?.includes('replace')?{replace:'local sway = 0.035'}:{edits:[{path:'init.luau',find:'local sway = 0.025',replace:'local sway = 0.035'}]};
+      res.end(JSON.stringify({response:JSON.stringify(response),done:true})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await generateCandidateWithRecovery({prompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
+  assert.equal(requests.length,2);
+  for(const request of requests){
+    const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+    assert.equal(request.prompt.split(marker).length-1,1);
+    const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+    assert.equal(recipe.style.profileKey,'COZY');assert.equal(recipe.runtimeVerified,false);
+    assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CREATURE']);
+    assert.ok(request.prompt.includes('init.luau'));
+    assert.ok(Buffer.byteLength(request.prompt)<20000);
+  }
+});
+
 test('walk teacher reaches the existing source prompt once without promoting learning or changing task scope',()=>{
   const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-bai-wuchang',clipId:'walk',sourcePath:'init.luau',sourceWindow:'function Motion.walk(form, bones, time) return {} end',sourceHash:'a'.repeat(64)};
   const order={target:'roblox',assetProductionLane:true,goal:'Improve the existing walk',assetProduction:{motionRepairWorkUnit:unit}};
