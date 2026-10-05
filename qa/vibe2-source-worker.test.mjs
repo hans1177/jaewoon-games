@@ -2088,8 +2088,15 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     target:'roblox',
     responsibleFiles:workOrder.source.responsibleFiles
   };
+  const families={
+    CHARACTER:['TORSO_CLOTH'],CREATURE:['HEAD_CANINE'],BUILDING:['FOUNDATION_RECT'],ENVIRONMENT:['TREE_TRUNK_THICK'],
+    WEAPON:['BLADE_LONG'],SKILL:['CAST_HAND'],MATERIAL:['WOOD'],AUDIO:['ENV_WIND'],VFX:['IMPACT_FLASH'],UI:['FRAME_PANEL'],
+    MOTION:['IDLE_RELAXED'],PROP:['CHEST']
+  };
+  const atoms=Object.values(families).flat();
   workOrder.assetProduction={
     baseMaterialLoadout:{
+      families,
       robloxSelectionHandoff:{
         handoffRequired:true,
         downstreamApplicationRequired:true,
@@ -2116,10 +2123,12 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     'local Players = game:GetService("Players")',
     'local player = Players.LocalPlayer',
     'local STUDIO_ASSET_BINDING_VERSION = 2',
-    'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+    'local STUDIO_ASSET_SELECTION = {'+atoms.map(atom=>JSON.stringify(atom)).join(',')+'}',
+    'local STUDIO_ASSET_FAMILY_STATUS = { CHARACTER="APPLIED", CREATURE="APPLIED", BUILDING="APPLIED", ENVIRONMENT="APPLIED", WEAPON="APPLIED", SKILL="APPLIED", MATERIAL="APPLIED", AUDIO="APPLIED", VFX="APPLIED", UI="APPLIED", MOTION="APPLIED", PROP="APPLIED" }',
+    'local function hasStudioAssetAtom(atom) return table.find(STUDIO_ASSET_SELECTION, atom) ~= nil end',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
-    'root.BackgroundColor3 = Color3.fromRGB(22,34,58)',
+    'if hasStudioAssetAtom("FRAME_PANEL") then root.BackgroundColor3 = Color3.fromRGB(22,34,58) end',
     'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
     'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
     'root.Parent = gui'
