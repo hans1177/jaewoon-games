@@ -160,7 +160,7 @@ test('stale pressure evidence resets to maximum before fresh evaluation',()=>{
 });
 
 
-test('game-primary keeps adaptive pressure telemetry while reserving to provider boundary',()=>{
+test('game-primary keeps adaptive telemetry while reserving to fixed repeat-development boundary',()=>{
   const files=tempFiles();
   try{
     const tasks=Array.from({length:40},(_,i)=>({
@@ -174,7 +174,7 @@ test('game-primary keeps adaptive pressure telemetry while reserving to provider
       max:'256',min:'4','reservation-id':'adaptive:1','reservation-run':'adaptive','reserved-at':'2026-09-28T00:00:00Z',output:files.output
     });
     assert.equal(result.adaptiveMaxConcurrentTasks,20);
-    assert.equal(result.reservationMaxConcurrentTasks,256);
+    assert.equal(result.reservationMaxConcurrentTasks,64);
     assert.equal(result.tasks.length,40);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });
