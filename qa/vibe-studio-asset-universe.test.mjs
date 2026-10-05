@@ -143,6 +143,23 @@ test('asset teacher covers every registered object family, base material family 
   assert.equal(unknown.style.needsSpecificBrief,true);
 });
 
+test('asset teacher details buildings settlements weather items inventory and menus using existing native APIs',()=>{
+  const recipe=createAssetProductionTeachingRecipe({families:['modern_building','medieval_building','village','city','weather','background_prop','item','inventory','menu','system_ui']});
+  assert.deepEqual(recipe.unmappedFamilies,[]);
+  assert.deepEqual(recipe.familyLessons.map(row=>row.family),['BUILDING','ENVIRONMENT','PROP','UI']);
+  assert.deepEqual(recipe.domainModules.map(row=>row.id),['MODERN_BUILDINGS','MEDIEVAL_BUILDINGS','SETTLEMENT_LAYOUT','BACKGROUND_LAYERS','WEATHER_PRESENTATION','SET_DRESSING','ITEM_REPRESENTATIONS','INVENTORY_VARIANTS','MENU_NAVIGATION','SYSTEM_SCREENS']);
+  for(const module of recipe.domainModules){
+    const source=fs.readFileSync(new URL('../'+module.source,import.meta.url),'utf8');
+    for(const api of module.apis)assert.match(source,new RegExp('function\\s+\\w+\\.'+api+'\\s*\\('),module.id+':'+api);
+    assert.ok(module.lesson.length>100);
+    assert.ok(module.check.length>60);
+  }
+  assert.deepEqual(recipe.domainModules.find(row=>row.id==='WEATHER_PRESENTATION').states,COMMON_ENVIRONMENT_STATE_EXPECTATIONS);
+  assert.deepEqual(createAssetProductionTeachingRecipe({families:['MOTION']}).domainModules,[]);
+  assert.equal(recipe.gameplayAuthority,false);
+  assert.equal(recipe.runtimeVerified,false);
+});
+
 test('asset teacher maps production aliases and respects a selected art lock without conflating cozy and cartoon',()=>{
   const recipe=createAssetProductionTeachingRecipe({families:['npc','monster','animal','plant','background','item','effect','animation'],styleBible:{styleFamily:'DARK_CARTOON'}});
   assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CHARACTER','CREATURE','ENVIRONMENT','PROP','VFX','MOTION']);

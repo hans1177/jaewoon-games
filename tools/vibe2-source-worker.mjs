@@ -3290,7 +3290,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
   const motionTeaching=order.target==='roblox'&&assetDevelopmentTask(order)?createRobloxWalkTeachingRecipe(motionUnit):null;
   const assetTeaching=assetDevelopmentTask(order)?createAssetProductionTeachingRecipe({
-    families:motionUnit?['MOTION']:(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),
+    families:motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)],
     styleBible:order.assetProduction?.styleBible||{styleFamily:order.selectedTask?.styleFamily||order.styleFamily}
   }):null;
   const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify(assetTeaching)+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';

@@ -38,7 +38,8 @@ test('asset teacher consumes canonical production decisions and styles in the re
   assert.equal(prompt.split(marker).length-1,1);
   const recipe=JSON.parse(prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
   assert.deepEqual(recipe.unmappedFamilies,[]);
-  for(const family of ['CHARACTER','CREATURE','ENVIRONMENT','PROP','VFX','UI','MOTION'])assert.ok(recipe.familyLessons.some(row=>row.family===family),family);
+  for(const family of ['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','PROP','VFX','UI','MOTION'])assert.ok(recipe.familyLessons.some(row=>row.family===family),family);
+  for(const id of ['MODERN_BUILDINGS','MEDIEVAL_BUILDINGS','SETTLEMENT_LAYOUT','BACKGROUND_LAYERS','WEATHER_PRESENTATION','SET_DRESSING','ITEM_REPRESENTATIONS','INVENTORY_VARIANTS','MENU_NAVIGATION','SYSTEM_SCREENS'])assert.ok(recipe.domainModules.some(row=>row.id===id),id);
   assert.equal(recipe.style.profileKey,'COZY');
   assert.equal(recipe.style.expression.axes.MOTION_ENERGY,'SUBTLE');
   assert.equal(recipe.status,'PRACTICE_ONLY');
@@ -90,6 +91,9 @@ test('walk teacher reaches the existing source prompt once without promoting lea
   assert.equal(recipe.runtimeVerified,false);
   assert.equal(recipe.status,'PRACTICE_ONLY');
   assert.match(recipe.example.source,/leftSwing \* leftSwing/);
+  const assetRecipe=JSON.parse(prompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(assetRecipe.familyLessons.map(row=>row.family),['MOTION']);
+  assert.deepEqual(assetRecipe.domainModules,[]);
   assert.match(prompt,/motionRepairReport/);
   assert.equal(JSON.stringify(order),before);
   for(const other of [{...order,target:'web'},{...order,assetProductionLane:false},{...order,assetProduction:{}},{...order,assetProduction:{motionRepairWorkUnit:{...unit,clipId:'attack'}}}])assert.ok(!buildPrompt(other,context,['init.luau']).includes(marker));
