@@ -490,7 +490,10 @@ test('Roblox candidate static validation precedes promotion without claiming act
   assert.match(native,/ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'[\s\S]*?exit 0[\s\S]*?git -C runtime config/);
   assert.match(native,/candidate_context == '' && steps\.studio_play/);
   const followup=native.slice(native.indexOf('      - name: Dispatch exact Studio MCP follow-up'),native.indexOf('      - name: Enforce persistent Open Cloud probe failures'));
-  assert.doesNotMatch(followup,/if: \$\{\{ false \}\}/);
+  assert.match(followup,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+  const studioPlan=native.slice(native.indexOf('  studio-local-plan:'),native.indexOf('  studio-mcp-auto-play:'));
+  assert.match(studioPlan,/if: \$\{\{ false \}\}/);
+  assert.match(native,/const cloudApiOnly=true/);
 });
 
 // 빌드 전 소스 진입 검수: 산출물은 이후 기존 빌드·컴파일·실행 게이트가 검증한다.

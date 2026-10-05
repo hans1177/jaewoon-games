@@ -795,7 +795,7 @@
       "authority": "OWNER_DIRECTIVE_2026-10-05",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "scope": "ALL_GAME_DEVELOPMENT_AND_BUILD_UP_WORK",
-      "objective": "EVERY_GAME_DEVELOPMENT_TASK_MUST_DISCOVER_SYNCHRONIZE_AND_BIND_ALL_SAFE_RIGHTS_COMPATIBLE_PLATFORM_AND_ROLE_COMPATIBLE_INTERNAL_LIBRARY_ASSETS_TO_EVERY_APPLICABLE_EXISTING_GAME_SYSTEM_WITHOUT_ARTIFICIAL_COUNT_SCORE_OR_CONTEXT_CAPS",
+      "objective": "BIND_ALL_SAFE_RIGHTS_PLATFORM_ROLE_COMPATIBLE_INTERNAL_ASSETS_TO_APPLICABLE_GAME_SYSTEMS_WITHOUT_ARTIFICIAL_CAPS",
       "platforms": [
         "ROBLOX",
         "UNITY",
@@ -831,20 +831,10 @@
       ],
       "dynamicBinding": {
         "required": true,
-        "everyBuildUpReevaluatesCurrentLibrary": true,
-        "exactLibraryVersionAndSelectionFingerprintRequired": true,
-        "selectedBindingsRemainSynchronizedWithCurrentGameSource": true,
-        "changedLibraryOrGameResponsibilityTriggersRebindEvaluation": true,
-        "detailContextRotationAllowed": true,
-        "contextRotationMayNotReduceEligibility": true,
-        "contextRotationIsDetailSchedulingOnly": true,
-        "allCompatibleAssetsRemainEligibleInSameBuildUp": true,
-        "staleBindingMayNotPass": true,
         "bindingLineageMustPersistThroughPackageRuntimeAndReview": true,
         "version": 1,
         "registry": "company-asset-library.json",
         "execution": "EXISTING_BUILD_UP_ASSET_PRODUCTION_PATH_ONLY",
-        "libraryCoverage": "ALL_REGISTERED_INTERNAL_LIBRARIES_AND_ALL_12_ASSET_FAMILIES",
         "applicableExistingResponsibilitiesMustConsumeCompatibleAssets": true,
         "entireLibraryBulkCopyIntoGameForbidden": true,
         "absentGameplaySystemMayNotBeInvented": true,
@@ -855,7 +845,6 @@
           "GAME_SOURCE_REVISION",
           "PLATFORM_ARTIFACT_IDENTITY"
         ],
-        "refreshBeforeEveryBuildUp": true,
         "unchangedExactBindingReused": true,
         "changedBindingRepairsAffectedResponsibilitiesOnly": true,
         "libraryOrSelectionOrSelectedSourceChangeInvalidatesAffectedBinding": true,
@@ -951,11 +940,6 @@
       "newPipelineWrapperShadowManagerForbidden": true,
       "existingGameConversion": {
         "required": true,
-        "implementationOrder": [
-          "ROBLOX",
-          "UNITY",
-          "WEB"
-        ],
         "orderScope": "THIS_OWNER_REQUESTED_LIBRARY_CONVERSION",
         "globalPlatformAdmissionOrSchedulerRewrite": false,
         "unrelatedSafeDevelopmentContinues": true,
