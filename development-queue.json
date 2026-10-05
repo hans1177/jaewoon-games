@@ -9,8 +9,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -94,7 +94,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-05T09:54:39.971Z",
+      "updatedAt": "2026-10-05T10:14:02.788Z",
       "robloxSourceCommit": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
       "robloxSourceBootstrapPassedAt": "2026-10-05T09:10:14.852Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -191,18 +191,18 @@
         "companyRuntimeAuthoritative": true
       },
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": "development/unity-tech-daechung-rpg-37131116107",
-      "unitySourceCommit": "ec98f80bd1b96f8eb1a327c787760b0a49bd878c",
-      "unityBuildRunId": 37291266292,
+      "unityCandidateBranch": "development/unity-tech-daechung-rpg-37293687299",
+      "unitySourceCommit": "9f809c5bd2c4722001023097e8013fc3e5253576",
+      "unityBuildRunId": 37294231938,
       "unityRuntimeSmokeRunId": 37124423785,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
-        "sourceRevision": "ec98f80bd1b96f8eb1a327c787760b0a49bd878c",
+        "sourceRevision": "9f809c5bd2c4722001023097e8013fc3e5253576",
         "artifactIdentity": null,
-        "sourceRootTreeSha": "ee9c302e4f2e8c33b5031466415390ae6f7025d8",
+        "sourceRootTreeSha": "9fb7672b482b8f3fb81914dffbbe150f9663c3b3",
         "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
         "singleRuntimeSessionF1ThroughF8": true,
         "f9RuntimeReplayRequired": false,
@@ -251,7 +251,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-05T09:46:17.715Z"
+        "verifiedAt": "2026-10-05T10:14:02.788Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -263,9 +263,9 @@
       "unityExecutionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "ec98f80bd1b96f8eb1a327c787760b0a49bd878c",
-        "sourceRootTreeSha": "ee9c302e4f2e8c33b5031466415390ae6f7025d8",
-        "sourceFingerprint": "f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838",
+        "sourceRevision": "9f809c5bd2c4722001023097e8013fc3e5253576",
+        "sourceRootTreeSha": "9fb7672b482b8f3fb81914dffbbe150f9663c3b3",
+        "sourceFingerprint": "da94ef0e2ce1cf3821eb47998c232592e51fddcca2c85e0e2ad6c0d70083bcae",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -287,9 +287,9 @@
       "executionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "ec98f80bd1b96f8eb1a327c787760b0a49bd878c",
-        "sourceRootTreeSha": "ee9c302e4f2e8c33b5031466415390ae6f7025d8",
-        "sourceFingerprint": "f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838",
+        "sourceRevision": "9f809c5bd2c4722001023097e8013fc3e5253576",
+        "sourceRootTreeSha": "9fb7672b482b8f3fb81914dffbbe150f9663c3b3",
+        "sourceFingerprint": "da94ef0e2ce1cf3821eb47998c232592e51fddcca2c85e0e2ad6c0d70083bcae",
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -21382,7 +21382,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T10:13:49.784Z",
+  "updatedAt": "2026-10-05T10:14:04.078Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
