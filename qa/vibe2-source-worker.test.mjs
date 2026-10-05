@@ -114,6 +114,16 @@ test('single motion work unit rejects fake detail reports and unchanged evidence
   f.candidate.motionRepairReport.depthEvidence=[];
   assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_DEPTH_EVIDENCE_REQUIRED');
 });
+test('single motion work unit keeps predeclared sound axes unchanged without awarding fake change credit',t=>{
+  const f=singleMotionFixture(t),row=f.candidate.motionRepairReport.depthEvidence[0];
+  f.candidate.edits[0].replace=f.candidate.edits[0].replace.replace(row.after,row.before);
+  row.after=row.before;row.status='PRESERVED';
+  assert.match(evaluateSingleMotionWorkUnit(f).reason,/PRESERVATION_NOT_BOUND/);
+  f.unit.preservedAxes={[row.axis]:row.before};
+  const result=evaluateSingleMotionWorkUnit(f);
+  assert.equal(result.pass,true);assert.equal(result.changedAxes.includes(row.axis),false);
+  assert.equal(result.runtimeVerified,false);
+});
 test('single motion work unit preserves binding, timing and existing source authority',t=>{
   const f=singleMotionFixture(t);
   f.candidate.edits[0].replace=f.candidate.edits[0].replace.replace('brideWalk','otherWalk');

@@ -1815,7 +1815,9 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
   const window=unit.sourceWindow,start=source.indexOf(window);
   if(Buffer.byteLength(window,'utf8')>24000||start<0||source.indexOf(window,start+1)>=0)return fail('SINGLE_MOTION_EXACT_WINDOW_REQUIRED');
   if(!source.includes(unit.objectBindingEvidence)||!window.includes(unit.clipBindingEvidence))return fail('SINGLE_MOTION_BINDING_NOT_IN_SOURCE');
-  const locked=Array.isArray(unit.lockedSource)?unit.lockedSource:[];
+  const preserved=unit.preservedAxes&&typeof unit.preservedAxes==='object'&&!Array.isArray(unit.preservedAxes)?unit.preservedAxes:{};
+  if(Object.entries(preserved).some(([axis,value])=>!SINGLE_MOTION_DEPTH_AXES.includes(axis)||typeof value!=='string'||!value||!window.includes(value)))return fail('SINGLE_MOTION_PRESERVED_AXIS_NOT_BOUND');
+  const locked=[...(Array.isArray(unit.lockedSource)?unit.lockedSource:[]),...Object.values(preserved)];
   if(locked.some(value=>typeof value!=='string'||!value||!source.includes(value)))return fail('SINGLE_MOTION_LOCK_NOT_IN_SOURCE');
   const base={required:true,pass:true,reason:'SINGLE_MOTION_SOURCE_BOUND',objectId:unit.objectId,clipId:unit.clipId,sourcePath:relative,sourceHash,estimatedModificationMinutes:60,runtimeVerified:false};
   if(!candidate)return base;
@@ -1832,11 +1834,16 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
   const rows=candidate.motionRepairReport?.depthEvidence;
   if(candidate.motionRepairReport?.objectId!==unit.objectId||candidate.motionRepairReport?.clipId!==unit.clipId)return fail('SINGLE_MOTION_REPORT_TARGET_MISMATCH');
   if(!Array.isArray(rows)||rows.length!==SINGLE_MOTION_DEPTH_AXES.length)return fail('SINGLE_MOTION_DEPTH_EVIDENCE_REQUIRED');
-  const axes=new Set(),evidence=new Set();
+  const axes=new Set(),evidence=new Set(),changedAxes=[];
   for(const row of rows){
     if(!SINGLE_MOTION_DEPTH_AXES.includes(row?.axis)||axes.has(row.axis))return fail('SINGLE_MOTION_DEPTH_AXIS_INVALID');
     axes.add(row.axis);
     const before=String(row.before??''),changed=String(row.after??'');
+    if(row.status==='PRESERVED'){
+      if(preserved[row.axis]!==before||before!==changed||!currentWindow.includes(changed))return fail('SINGLE_MOTION_PRESERVATION_NOT_BOUND:'+row.axis);
+      continue;
+    }
+    if(row.status&&row.status!=='CHANGED')return fail('SINGLE_MOTION_DEPTH_STATUS_INVALID');
     // Each dimension needs an actual changed source excerpt; descriptions and edit counts are not proof.
     const pair=candidate.edits.some(edit=>edit.find.includes(before)&&edit.replace.includes(changed)&&!edit.find.includes(changed));
     if(!before.trim()||!changed.trim()||!pair||!window.includes(before)||!currentWindow.includes(changed)
@@ -1844,8 +1851,10 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
     const key=before+'\u0000'+changed;
     if(evidence.has(key))return fail('SINGLE_MOTION_DUPLICATE_DEPTH_EVIDENCE');
     evidence.add(key);
+    changedAxes.push(row.axis);
   }
-  return{...base,reason:'SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS',changedSourceHash:crypto.createHash('sha256').update(after).digest('hex'),depthEvidence:rows,qualityStatus:'NATIVE_BEFORE_AFTER_QA_REQUIRED'};
+  if(!changedAxes.length)return fail('SINGLE_MOTION_REAL_REFINEMENT_REQUIRED');
+  return{...base,reason:'SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS',changedSourceHash:crypto.createHash('sha256').update(after).digest('hex'),depthEvidence:rows,changedAxes,qualityStatus:'NATIVE_BEFORE_AFTER_QA_REQUIRED'};
 }
 
 export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={},singleMotionCheck=null}={}){
@@ -3245,7 +3254,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
   const singleMotionBlock=motionUnit?[
     '[SINGLE MOTION WORK UNIT BEGIN]',JSON.stringify(motionUnit),
-    'One existing object, one existing motion only. Estimate sixty minutes of active modification depth; preparation, QA, waiting and reporting do not fill that estimate. Refine pose/staging, weight/balance, joint arcs/spacing, contact/constraints, overlap/settle, and loop/transition within this one exact sourceWindow. Preserve the original object/clip binding, lockedSource, clip duration and gameplay event times. Do not edit shared functions affecting other objects or clips. Do not switch targets, add motions, or stop at a renamed constant or one cosmetic edit. A complete function-level change may be one edits[] item. Return motionRepairReport: {objectId,clipId,depthEvidence:[{axis,before,after}]} with exactly these axes: '+SINGLE_MOTION_DEPTH_AXES.join(',')+'. Each before/after must be a distinct exact changed executable source excerpt from the patch. This report proves source scope only, never native animation quality or hours actually worked. Native same-condition before/after inspection remains required.',
+    'One existing object, one existing motion only. Estimate sixty minutes of active modification depth; preparation, QA, waiting and reporting do not fill that estimate. Refine pose/staging, weight/balance, joint arcs/spacing, contact/constraints, overlap/settle, and loop/transition within this one exact sourceWindow. Preserve the original object/clip binding, lockedSource, clip duration and gameplay event times. Do not edit shared functions affecting other objects or clips. Do not switch targets, add motions, or stop at a renamed constant or one cosmetic edit. A complete function-level change may be one edits[] item. Return motionRepairReport: {objectId,clipId,depthEvidence:[{axis,before,after}]} with exactly these axes: '+SINGLE_MOTION_DEPTH_AXES.join(',')+'. Use status CHANGED with distinct exact changed executable source excerpts from the patch. For a sound axis predeclared in preservedAxes, use status PRESERVED with before and after equal to its exact locked excerpt; do not change a sound axis to pad the workload. At least one real refinement remains required. This report proves source scope only, never native animation quality or hours actually worked. Native same-condition before/after inspection remains required.',
     '[SINGLE MOTION WORK UNIT END]'
   ].join('\n'):'';
   const detailReview=order.assetProduction?.detailReview,motionAudit=order.assetProduction?.motionContinuityAudit;

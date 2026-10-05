@@ -85,6 +85,11 @@ test('basic motion work gets one hour without changing runtime verification or g
   for(const platform of ['ROBLOX','UNITY','WEB']){
     const session=createMotionDirectorPlan({platform}).studioProduction.baseWorkSession;
     assert.equal(session.defaultMinutes,60);
+    assert.equal(session.objectCount,1);
+    assert.equal(session.motionCount,1);
+    assert.equal(session.budgetMeaning,central.budgetMeaning);
+    assert.equal(session.preparationAndQaIncludedInModificationBudget,false);
+    assert.equal(session.separateWorkerRequired,false);
     assert.deepEqual(session.stageMinutes,central.stageMinutes);
     assert.equal(Object.values(session.stageMinutes).reduce((a,b)=>a+b,0),60);
     assert.equal(session.existingModelsAndRigRequired,true);
