@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-05T01:43:28.224Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 25,
+      "calls": 26,
       "successes": 0,
-      "failures": 25,
+      "failures": 26,
       "timeouts": 22,
-      "jsonFailures": 3,
-      "totalMs": 2771316,
-      "lastMs": 120001,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T03:20:25.196Z"
+      "jsonFailures": 4,
+      "totalMs": 2851164,
+      "lastMs": 79848,
+      "lastError": "schema required missing: root.identity",
+      "updatedAt": "2026-10-05T03:21:45.046Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T00:14:34.401Z",
-  "updatedAt": "2026-10-05T03:20:25.196Z",
+  "updatedAt": "2026-10-05T03:21:45.047Z",
   "lastSuccessfulModelCallAt": "2026-10-05T01:43:26.315Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
@@ -144,5 +144,5 @@
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": "designer_draft",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_NO_AVAILABLE_MODELS gemini-3.5-flash-lite:429,gemini-3.8-flash:429,gemini-3.7-flash:429,gemini-3.6-flash:429,gemini-3.5-flash:429,gemini-2.5-pro:404,gemini-2.5-flash:404,gemini-2.5-flash-lite:404,gemini-3.1-flash-lite:429,gemini-3.1-pro-preview:429 local=Expected ',' or ']' after array element in JSON at position 3071 (line 1 column 3072)"
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_NO_AVAILABLE_MODELS gemini-3.5-flash-lite:429,gemini-3.8-flash:429,gemini-3.7-flash:429,gemini-3.6-flash:429,gemini-3.5-flash:429,gemini-2.5-pro:404,gemini-2.5-flash:404,gemini-2.5-flash-lite:404,gemini-3.1-flash-lite:429,gemini-3.1-pro-preview:429 local=schema required missing: root.identity"
 }
