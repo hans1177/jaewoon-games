@@ -208,9 +208,15 @@ export async function probeRobloxOpenCloudEngine({
   if(!Number.isInteger(version)||version<=0)throw new Error('valid versionNumber required');
   if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
   if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
-  const expectedStudioAssetAtoms=[...new Set(Object.values(expectedStudioAssetBinding?.families||{}).flat().map(clean).filter(Boolean))].sort();
-  const studioAssetBindingRequired=expectedStudioAssetBinding?.applied===true;
+  const expectedStudioAssetAtoms=[...new Set([
+    ...Object.values(expectedStudioAssetBinding?.families||{}).flat(),
+    ...(Array.isArray(expectedStudioAssetBinding?.expectedAtomIds)?expectedStudioAssetBinding.expectedAtomIds:[])
+  ].map(clean).filter(Boolean))].sort();
+  const studioAssetBindingRequired=expectedStudioAssetBinding?.applied===true||expectedStudioAssetBinding?.required===true;
   const expectedStudioAssetBindingVersion=Math.max(1,Number(expectedStudioAssetBinding?.bindingVersion||1));
+  const expectedStudioAssetSelectionFingerprint=clean(expectedStudioAssetBinding?.selectionFingerprint);
+  const expectedStudioAssetLibraryVersion=Math.max(0,Math.floor(Number(expectedStudioAssetBinding?.libraryVersion)||0));
+  const expectedBuildUpAssetSourceUsageFingerprint=clean(expectedStudioAssetBinding?.buildUpAssetSourceUsageFingerprint);
   const expectedStudioAssetAtomCsv=expectedStudioAssetAtoms.join(',');
   const script=[
     'local Players=game:GetService("Players")',
@@ -218,13 +224,17 @@ export async function probeRobloxOpenCloudEngine({
     'local Lighting=game:GetService("Lighting")',
     'local studioAssetApplied=false',
     'local studioAssetBindingVersion=0',
+    'local studioAssetSelectionFingerprint=""',
+    'local studioAssetLibraryVersion=0',
     'local studioAssetAtoms={}',
     'local shared=ReplicatedStorage:FindFirstChild("Shared")',
     'local configModule=shared and shared:FindFirstChild("GameConfig")',
-    'if configModule and configModule:IsA("ModuleScript") then local ok,config=pcall(require,configModule); if ok and type(config)=="table" and type(config.StudioAssets)=="table" then studioAssetApplied=config.StudioAssets.Applied==true; studioAssetBindingVersion=tonumber(config.StudioAssets.BindingVersion) or 0; if type(config.StudioAssets.Families)=="table" then for _,family in pairs(config.StudioAssets.Families) do if type(family)=="table" then for _,atom in ipairs(family) do if type(atom)=="string" and atom~="" then table.insert(studioAssetAtoms,atom) end end end end end end end',
+    'if configModule and configModule:IsA("ModuleScript") then local ok,config=pcall(require,configModule); if ok and type(config)=="table" and type(config.StudioAssets)=="table" then studioAssetApplied=config.StudioAssets.Applied==true; studioAssetBindingVersion=tonumber(config.StudioAssets.BindingVersion) or 0; studioAssetSelectionFingerprint=tostring(config.StudioAssets.SelectionFingerprint or ""); studioAssetLibraryVersion=tonumber(config.StudioAssets.LibraryVersion) or 0; if type(config.StudioAssets.Families)=="table" then for _,family in pairs(config.StudioAssets.Families) do if type(family)=="table" then for _,atom in ipairs(family) do if type(atom)=="string" and atom~="" then table.insert(studioAssetAtoms,atom) end end end end end end end',
     'table.sort(studioAssetAtoms)',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED="..tostring(studioAssetApplied))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION="..tostring(studioAssetBindingVersion))',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT="..studioAssetSelectionFingerprint)',
+    'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION="..tostring(studioAssetLibraryVersion))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS="..table.concat(studioAssetAtoms,","))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLACE="..tostring(game.PlaceId))',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_VERSION="..tostring(game.PlaceVersion))',
@@ -314,10 +324,15 @@ export async function probeRobloxOpenCloudEngine({
   const serverBootObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
   const studioAssetApplied=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true');
   const studioAssetBindingVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=(\d+)/)?.[1]||0);
+  const observedStudioAssetSelectionFingerprint=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT=([^\n]*)/)?.[1]||'');
+  const observedStudioAssetLibraryVersion=Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=(\d+)/)?.[1]||0);
   const observedStudioAssetAtomCsv=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=([^\n]*)/)?.[1]||'');
   const observedStudioAssetAtoms=[...new Set(observedStudioAssetAtomCsv.split(',').map(clean).filter(Boolean))].sort();
   const observedAtomSet=new Set(observedStudioAssetAtoms);
-  const studioAssetSelectionMatched=!studioAssetBindingRequired||(expectedStudioAssetAtoms.length>0&&studioAssetApplied&&studioAssetBindingVersion===expectedStudioAssetBindingVersion&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom)));
+  const atomMatch=expectedStudioAssetAtoms.length>0&&expectedStudioAssetAtoms.length===observedStudioAssetAtoms.length&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom));
+  const fingerprintMatch=!expectedStudioAssetSelectionFingerprint||observedStudioAssetSelectionFingerprint===expectedStudioAssetSelectionFingerprint;
+  const libraryVersionMatch=expectedStudioAssetLibraryVersion<=0||observedStudioAssetLibraryVersion===expectedStudioAssetLibraryVersion;
+  const studioAssetSelectionMatched=!studioAssetBindingRequired||(atomMatch&&studioAssetApplied&&studioAssetBindingVersion===expectedStudioAssetBindingVersion&&fingerprintMatch&&libraryVersionMatch);
   const boundsMatch=joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE=([0-9.+-]+),([0-9.+-]+),([0-9.+-]+)/);
   const worldEvidence=Object.freeze({
     observed:true,
@@ -341,8 +356,13 @@ export async function probeRobloxOpenCloudEngine({
     available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,worldEvidence,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
+    expectedStudioAssetSelectionFingerprint:expectedStudioAssetSelectionFingerprint||null,
+    observedStudioAssetSelectionFingerprint:observedStudioAssetSelectionFingerprint||null,
+    expectedStudioAssetLibraryVersion:expectedStudioAssetLibraryVersion||null,
+    observedStudioAssetLibraryVersion:observedStudioAssetLibraryVersion||null,
+    expectedBuildUpAssetSourceUsageFingerprint:expectedBuildUpAssetSourceUsageFingerprint||null,
     expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
-    expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetSelectionMatched,
+    expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetAtomMatch:atomMatch,studioAssetFingerprintMatch:fingerprintMatch,studioAssetLibraryVersionMatch:libraryVersionMatch,studioAssetSelectionMatched,
     state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),
   });
 }
