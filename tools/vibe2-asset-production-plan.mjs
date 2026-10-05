@@ -361,9 +361,16 @@ function synchronizeCatalogRows({registry,catalog}){
     const id=prefix+slug;
     activeIds.add(id);rowIds.push(id);
     let row=registry.assets.find(asset=>asset.id===id);
+    const verifiedState=row?{
+      productionVerified:row.productionVerified===true,
+      verifiedCompanyReusable:row.verifiedCompanyReusable===true,
+      runtimeVerificationState:row.runtimeVerificationState||'PENDING_STUDIO'
+    }:{productionVerified:false,verifiedCompanyReusable:false,runtimeVerificationState:'PENDING_STUDIO'};
     if(!row){
       row=JSON.parse(JSON.stringify(template));
       row.id=id;
+      for(const field of ['internalAuditScore','internalAuditGrade','internalAuditEvidence','sourceHash','sourceSha256','runtimeEvidence','verificationEvidence'])delete row[field];
+      row.consumerGameIds=[];
       registry.assets.push(row);
     }
     row.packId=packId;
@@ -382,6 +389,8 @@ function synchronizeCatalogRows({registry,catalog}){
       if(field==='source')continue;
       row[field]=Array.isArray(value)?[...value]:value&&typeof value==='object'?JSON.parse(JSON.stringify(value)):value;
     }
+    // 카탈로그 등록/복제는 기존 런타임 검증 증거를 만들거나 승격하지 않는다.
+    Object.assign(row,verifiedState);
     row.tags=registryRowTags(row,catalogRow);
     const hint={...(row.bindingHint||{})};
     hint.gameScope=hint.gameScope||'ALL_ROBLOX_GAMES';
@@ -477,6 +486,19 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
+  // 품질 입력: 집계 점수보다 현재 원본 파일의 축별 감사를 사용한다. 런타임 승격 권한은 없다.
+  const qualityInputs=new Map();
+  const planningAssets=next.assets.map(asset=>{
+    const evidenceRef=clean(asset.internalAuditEvidenceRef);
+    if(!evidenceRef.startsWith('assets/')||evidenceRef.split('/').includes('..'))return asset;
+    if(!qualityInputs.has(evidenceRef)){
+      const evidence=readJson(path.join(repoRoot,evidenceRef),{});
+      const axes=evidence?.sourceAudit?.axes;
+      qualityInputs.set(evidenceRef,axes&&typeof axes==='object'&&!Array.isArray(axes)?axes:null);
+    }
+    const axes=qualityInputs.get(evidenceRef);
+    return axes?{...asset,internalAuditEvidence:{...(asset.internalAuditEvidence||{}),...axes}}:asset;
+  });
   const synchronizedCount=(packId,fallback=0)=>{
     const row=syncRows.find(item=>item.packId===packId);
     return row?Number(row.count||0):Number(fallback||0);
@@ -487,7 +509,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const audioRoleIds=collectCommonCatalogAudioRoles(catalogs);
   const previousMaintenance=original?.internalAssetLibraryAutomation?.maintenance||null;
   const libraryPlan=buildInternalAssetLibraryAutomationPlan({
-    assets:next.assets,
+    assets:planningAssets,
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
@@ -513,8 +535,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const lastRemovedTypeRoleTokens=maintenanceChanged
     ?[...(libraryPlan.maintenance.removedTypeRoleTokens||[])]
     :[...(previousMaintenance?.lastRemovedTypeRoleTokens||[])];
+  const {nextQualityActions,...maintenanceSnapshot}=libraryPlan.maintenance;
   const maintenanceState={
-    ...libraryPlan.maintenance,
+    ...maintenanceSnapshot,
+    qualityActionCount:nextQualityActions.length,
     newTypeRoleTokens:[],
     removedTypeRoleTokens:[],
     refreshRequired:currentPersistentReasons.length>0,
@@ -598,6 +622,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     volumeBlockingDomains:libraryPlan.volumeBlockingDomains,
     uiBlockingSubsystems:libraryPlan.uiBlockingSubsystems,
     nextVolumeActions:libraryPlan.nextVolumeActions,
+    nextQualityActions:libraryPlan.nextQualityActions,
     persistentWorklistField:libraryPlan.persistentWorklistField,
     volumeActionConsumption:libraryPlan.volumeActionConsumption,
     reuseResolutionOrder:libraryPlan.reuseResolutionOrder,
@@ -736,7 +761,6 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   });
 }
 
-const companyAssetLibraryRegistry=repoRoot=>synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT}).registry;
 const inferUniverseFamily=row=>{
   const explicit=clean(row?.family||row?.category).toUpperCase();
   if(explicit)return explicit;
@@ -2117,20 +2141,15 @@ export function buildVibeAssetProductionPlan({
   const resolvedTarget=targetResolution.target;
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
-  const companyRegistry=companyAssetLibraryRegistry(repoRoot);
+  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
+  const companyRegistry=librarySync.registry;
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
-  const executionCatalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
-  const executionUiCatalog=executionCatalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
-  const executionSeedPlan=createCompanySeedAssetIdeationPlan({seeds:companySeedRows(repoRoot),assets:companyRegistry?.assets||[]});
-  const executionLibraryPlan=buildInternalAssetLibraryAutomationPlan({
-    assets:companyRegistry?.assets||[],
-    seedPlan:executionSeedPlan,
-    uiAtomIds:(executionUiCatalog.atoms||[]).map(row=>row.atomId),
-    audioRoleIds:collectCommonCatalogAudioRoles(executionCatalogs),
-    externalSources:companyRegistry?.externalSources||[]
-  });
+  const executionLibraryPlan=librarySync.automationPlan;
   const persistedWorklistFresh=
     Number(libraryAutomation.lastCatalogSynchronizedVersion)===Number(companyRegistry?.version)
+    &&Number(libraryAutomation.version)===INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version
+    &&libraryAutomation.maintenance?.inventoryFingerprint===executionLibraryPlan.maintenance.inventoryFingerprint
+    &&libraryAutomation.maintenance?.qualityFingerprint===executionLibraryPlan.maintenance.qualityFingerprint
     &&Array.isArray(libraryAutomation.nextVolumeActions);
   const activeNextVolumeActions=
     executionLibraryPlan.focusPhase==='VOLUME_UP'
@@ -2148,6 +2167,7 @@ export function buildVibeAssetProductionPlan({
     progressionComplexityProfiles:freezeList(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES)),
     nextVolumeActions:freezeList(activeNextVolumeActions),
     activeNextVolumeAction:activeNextVolumeActions[0]||null,
+    nextQualityActions:freezeList(executionLibraryPlan.nextQualityActions||[]),
     worklistSource:persistedWorklistFresh&&libraryAutomation.nextVolumeActions.length?'COMPANY_ASSET_LIBRARY_PERSISTED':'CURRENT_EXECUTION_RECOMPUTED',
     consumePersistedNextVolumeActionsFirst:true,
     persistentWorklistField:clean(executionLibraryPlan.persistentWorklistField||libraryAutomation.persistentWorklistField)||'internalAssetLibraryAutomation.nextVolumeActions',
@@ -2444,6 +2464,7 @@ export function buildVibeAssetProductionPlan({
       selection:internalLibraryEvolution.qualityUpPolicy.selection,
       workingBandMin:internalLibraryEvolution.qualityUpPolicy.workingBandMin,
       target:internalLibraryEvolution.qualityUpPolicy.target,
+      action:internalLibraryEvolution.nextQualityActions[0]||null,
       continueWithoutHuman:true
     })
     :effectiveNextVolumeActions.length
@@ -2463,6 +2484,7 @@ export function buildVibeAssetProductionPlan({
     ...internalLibraryEvolution,
     nextVolumeActions:effectiveNextVolumeActions,
     activeNextVolumeAction:effectiveNextVolumeActions[0]||null,
+    activeDetailImprovement:internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===effectiveNextVolumeActions[0]?.detailImprovementAssetId)||null,
     autonomousNextAction:effectiveAutonomousNextAction,
     worklistSource:taskLocalReferenceVolumeActions.length
       ?'TASK_REFERENCE_IMAGE_OVERLAY_ON_'+internalLibraryEvolution.worklistSource
@@ -2556,8 +2578,31 @@ export function buildVibeAssetProductionPlan({
       };
     }
   }
+  // 동적 연결: 같은 파일은 한 번만 읽고 현재 바이트 지문을 선택 스냅샷에 함께 묶는다.
+  const sourceHashes=new Map();
+  const sourceBoundAssets=(companyRegistry?.assets||[]).map(asset=>{
+    const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
+      .map(file=>file.replace(/^\//,''))
+      .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')).sort();
+    for(const file of files){
+      if(sourceHashes.has(file))continue;
+      let hash=null;
+      try{
+        const real=fs.realpathSync(path.resolve(repoRoot,file));
+        if(real.startsWith(fs.realpathSync(repoRoot)+path.sep))hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+      }catch{}
+      sourceHashes.set(file,hash);
+    }
+    return {...asset,
+      sourceContentFingerprint:files.length?crypto.createHash('sha256').update(JSON.stringify(files.map(file=>[file,sourceHashes.get(file)]))).digest('hex'):null,
+      sourceFilesPresent:files.length?files.every(file=>sourceHashes.get(file)!==null):null
+    };
+  });
   const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
-    assets:companyRegistry?.assets||[],
+    libraryVersion:Number(companyRegistry?.version)||0,
+    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:companyRegistry,sourceBoundAssets,repositoryAssets:universeRepositoryAssets})).digest('hex'),
+    expectedSnapshotId:clean(task.expectedAssetLibrarySnapshotId),
+    assets:sourceBoundAssets,
     repositoryAssets:universeRepositoryAssets,
     externalSources:companyRegistry?.externalSources||[],
     activeDemand,
@@ -2768,6 +2813,13 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     flowAssetLoadout:freeze({
+      libraryVersion:studioUniversePlan?.loadout?.libraryVersion||0,
+      librarySnapshotId:studioUniversePlan?.loadout?.librarySnapshotId||null,
+      snapshotMatches:studioUniversePlan?.loadout?.snapshotMatches===true,
+      atomicBindingReady:studioUniversePlan?.loadout?.atomicBindingReady===true,
+      bindingBatch:freezeList(studioUniversePlan?.loadout?.bindingBatch||[]),
+      bindingAction:studioUniversePlan?.loadout?.bindingAction||'RESOLVE_REQUIRED_ASSETS_BEFORE_BINDING',
+      searchStats:freeze(studioUniversePlan?.loadout?.searchStats||{}),
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
       complete:studioUniversePlan?.loadout?.complete===true,
       unresolved:freezeList(studioUniversePlan?.loadout?.unresolved||[]),
@@ -3274,6 +3326,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 권장 볼륨과 필수 role이 충족되는 즉시 QUALITY_UP_1000 최약 내부감사 축 개선으로 자동 전환한다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
