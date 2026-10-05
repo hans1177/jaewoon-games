@@ -9,21 +9,21 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-10-05T13:36:11.255Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
+      "calls": 5,
+      "successes": 1,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5788,
-      "lastMs": 3816,
+      "totalMs": 14191,
+      "lastMs": 3248,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T13:33:15.123Z"
+      "updatedAt": "2026-10-05T13:36:14.504Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,17 +114,28 @@
       "updatedAt": "2026-10-05T13:34:04.513Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
+      "calls": 3,
       "successes": 0,
-      "failures": 2,
+      "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 109920,
-      "lastMs": 56121,
-      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T13:34:07.428Z"
+      "totalMs": 113361,
+      "lastMs": 3441,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-10-05T13:36:14.697Z"
+    },
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 120002,
+      "lastMs": 120002,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-05T13:36:07.432Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T13:34:07.428Z"
+  "updatedAt": "2026-10-05T13:36:14.698Z"
 }
