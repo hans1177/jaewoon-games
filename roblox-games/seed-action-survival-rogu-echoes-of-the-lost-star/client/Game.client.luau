@@ -304,7 +304,7 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Parent = root
 end
 root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
-root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+root:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
