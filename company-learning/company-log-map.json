@@ -1,5 +1,5 @@
 {
-  "version": 164,
+  "version": 165,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3134,5 +3134,29 @@
       "CONTENT_SIGNATURE_MATCHED",
       "RUNTIME_SCREENSHOT_FALSE_UNLESS_SEPARATELY_PROVEN"
     ]
+  },
+  "motionRefinementWorkEvidenceContract": {
+    "source": "assetProductionParallelContract.motionFirstQualityWork",
+    "ledger": ".vibe2/queue.json#tasks[].motionRefinement",
+    "metrics": [
+      "candidateMs",
+      "qaMs",
+      "workerTotalMs",
+      "checkoutMs",
+      "modelPrepMs",
+      "changedFileCount",
+      "addedLineCount",
+      "deletedLineCount"
+    ],
+    "identity": [
+      "taskId",
+      "reservationId",
+      "candidateSha",
+      "responsibleScope"
+    ],
+    "recordOnlyAfterExistingFanInReviewPass": true,
+    "durationIsNotQualityOrRuntimeProof": true,
+    "minimumActiveMinutes": 300,
+    "existingPublicationCallbackResumesTaskWhenIncomplete": true
   }
 }

@@ -14,6 +14,7 @@ import { evaluatePhase2Readiness } from './vibe2-neural-phase2-readiness.mjs';
 import { summarizeNeuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples } from './vibe2-learning-motor.mjs';
 import { auditVibeRuntimeBeforeAfterComparison } from '../assets/vibe-visual-quality-gate.js';
+import { recordMotionRefinementWork } from '../assets/vibe-continuous-queue.js';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -486,6 +487,9 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       for(const marker of specializedFinal.trace)evidence.add(marker);
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
+      // 실제 소스·QA·review가 확인된 현재 예약 결과만 적립한다. 배포 callback에서 같은 작업을 재개한다.
+      const motionRefinement=recordMotionRefinementWork(task,selectedResult||{});
+      if(motionRefinement)task={...task,motionRefinement};
       const platformTarget=clean(task.target).toLowerCase();
       if(platformTarget==='web'){
         evidence.add('web-f0-f9-verified');
