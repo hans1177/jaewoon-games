@@ -1343,6 +1343,7 @@ test('older studio failure does not pin later verified cycles in repair',()=>{
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  writeStudioDesign(root,gameId);
   const project={gameId,name:'Studio Repair Recovery',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
   const failed={
     id:`${gameId}-studio-evolution-v1`,gameId,target:'web',sourceRoot:`web-games/${gameId}`,
@@ -1370,6 +1371,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  writeStudioDesign(root,gameId);
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
