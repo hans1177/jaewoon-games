@@ -1130,7 +1130,8 @@ jobs:
     if: always() && needs.reserve.outputs.worker_count != '0'
     # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
-    timeout-minutes: 22
+    # 자산 품질 작업은 기본 60분을 확보한다. 다른 작업과 개별 모델 호출의 제한은 유지한다.
+    timeout-minutes: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 60 || 22 }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
@@ -1144,7 +1145,11 @@ jobs:
     steps:
       - name: Mark worker start
         shell: bash
-        run: echo "$(date +%s%3N)" > /tmp/vibe2-worker-start-ms
+        run: |
+          echo "$(date +%s%3N)" > /tmp/vibe2-worker-start-ms
+          if [ "$VIBE2_EXECUTION_LANE" = asset-development ]; then
+            echo 'VIBE2_ASSET_QUALITY_WORK_BUDGET_MINUTES=60'
+          fi
 
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
