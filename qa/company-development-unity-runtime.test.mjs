@@ -102,6 +102,10 @@ test('creates Unity target-platform prototypes after admission without embedding
     assert.equal(meta.androidGraphicsCompatibilityProfile,'OPEN_GLES3_ES30_MINIMUM');
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
     assert.match(runtimeScript,/private Animator animator;/);
+    const motionClass=runtimeScript.slice(runtimeScript.indexOf('public sealed class JaewoonNativeMotionActor'),runtimeScript.indexOf('public sealed class SeedTechnicalPrototype'));
+    const bootClass=runtimeScript.slice(runtimeScript.indexOf('public sealed class SeedTechnicalPrototype'));
+    assert.doesNotMatch(motionClass,/private int BindNativeMotionActors\(/,'private scene binding must not belong to another component');
+    assert.match(bootClass,/private int BindNativeMotionActors\(\)[\s\S]*private void Awake\(\)[\s\S]*int nativeMotionActors = BindNativeMotionActors\(\);/,'boot call must resolve within its own C# class');
     assert.match(runtimeScript,/AvatarIKGoal\.LeftFoot/);
     assert.match(runtimeScript,/Physics\.Raycast\(/);
     assert.equal(manifest.dependencies['com.unity.modules.animation'],'1.0.0','generated Animator and IK code requires AnimationModule');

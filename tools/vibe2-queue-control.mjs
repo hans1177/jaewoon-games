@@ -528,6 +528,19 @@ export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], b
     const reservationMatches = Boolean(expected && currentReservation && expected === currentReservation);
     const reconcileQueued = task.status === 'queued' && reservationMatches;
     if (expected && !reservationMatches) throw new Error(`await reservation mismatch: ${id}`);
+    // 배포 재호출 기록만 추가하고 이미 검증된 웹 작업의 상태·잠금은 보존한다.
+    const priorEvidence=task.evidence||[];
+    const recoveryEvidence=(evidence||[]).map(clean).filter(Boolean);
+    const candidateBranch=[...priorEvidence].reverse().find(value=>/^vibe2\/candidate\//.test(value));
+    const candidateSha=[...priorEvidence].reverse().find(value=>/^candidate-sha:[0-9a-f]{40}$/i.test(value));
+    const verifiedWebRecovery=task.status==='verified'&&task.target==='web'
+      &&['web-f0-f9-verified','web-f9-verified','web-publish-after-f9-required','package-review:all-required-roles-pass','role-result:regression:PASS','role-result:review:PASS'].every(value=>priorEvidence.includes(value))
+      &&!priorEvidence.includes('web-publication-retry-resolved')
+      &&candidateBranch&&candidateSha
+      &&recoveryEvidence.includes('release-dispatch-recovery-requested:'+candidateBranch)
+      &&recoveryEvidence.includes('release-dispatch-recovery-candidate-sha:'+candidateSha.slice('candidate-sha:'.length))
+      &&recoveryEvidence.some(value=>/^release-dispatch-recovery-at:\d+$/.test(value));
+    if(verifiedWebRecovery)return {...task,evidence:[...new Set([...priorEvidence,...recoveryEvidence])]};
     if (task.status !== 'running' && !reconcileQueued) throw new Error(`await requires running task: ${id}`);
     const mergedEvidence = [
       ...(task.evidence || []),
