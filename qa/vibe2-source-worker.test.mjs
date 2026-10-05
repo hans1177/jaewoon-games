@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -85,6 +85,116 @@ test('hero asset routing selects stronger local model without changing generatio
   assert.equal(route.cacheKey,'qwen3-4b-instruct');
   assert.equal(route.generationBudgetUnchanged,true);
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+});
+
+test('canonical game source work requires a full dynamic internal library contract',()=>{
+  const families=Object.fromEntries(ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]));
+  const plan={
+    required:true,libraryVersion:109,registryAssetCount:717,evaluatedAssetCount:717,
+    compatibleCandidateCount:701,baseMaterialAtomCount:360,fingerprint:'a'.repeat(64),
+    allRegistryAssetsScanned:true,allTwelveFamiliesEvaluated:true,
+    noArtificialAssetCountCap:true,noArtificialFamilyCountCap:true,
+    auditScoreIsUsageGate:false,lowScoreCompatibleAssetUseAllowed:true,
+    baseMaterialAllCompatibleAtomsSelected:true
+  };
+  const usage={
+    fingerprint:'b'.repeat(64),registryAssetCount:717,evaluatedAssetCount:717,
+    compatibleCandidateCount:701,allRegistryAssetsScanned:true,
+    applicationCoverage:{currentBuildUpAllCompatibleCandidatesEligible:true}
+  };
+  const order={
+    target:'unity',
+    compiledWorkContract:{version:1},
+    assetProduction:{
+      allGameDynamicLibraryBinding:plan,
+      baseMaterialLoadout:{families,universalAssetFirst:{allFamiliesEvaluated:true,missingFamilies:[]}}
+    }
+  };
+  const pass=assertAllGameDynamicAssetBindingContract({order,target:'unity',usageContract:usage});
+  assert.equal(pass.required,true);
+  assert.equal(pass.pass,true);
+  assert.equal(pass.registryAssetCount,717);
+  assert.equal(pass.compatibleCandidateCount,701);
+  assert.deepEqual(pass.platformOrder,['ROBLOX','UNITY','WEB']);
+
+  assert.throws(()=>assertAllGameDynamicAssetBindingContract({
+    order:{...order,assetProduction:{...order.assetProduction,allGameDynamicLibraryBinding:{...plan,evaluatedAssetCount:716}}},
+    target:'unity',usageContract:usage
+  }),/ALL_GAME_INTERNAL_LIBRARY_SCAN_INCOMPLETE/);
+});
+
+test('Unity dynamic asset binding requires actual native family consumption instead of registry-only markers',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'unity-games/demo');
+  write(path.join(root,'Assets/Game.cs'),'public class Game {}\n');
+  const bindingPlan={
+    required:true,libraryVersion:109,fingerprint:'c'.repeat(64),registryAssetCount:717,compatibleCandidateCount:701,
+    candidateCountsByFamily:{UI:20},baseMaterialFamilies:{UI:['FRAME_PANEL','BUTTON_PRIMARY']}
+  };
+  const applied=[
+    'using UnityEngine;',
+    'using UnityEngine.UI;',
+    'public class Game : MonoBehaviour {',
+    '  static readonly string[] UiAtoms = {"FRAME_PANEL","BUTTON_PRIMARY"};',
+    '  string[] InternalAssetFamily(string family) => family == "UI" ? UiAtoms : System.Array.Empty<string>();',
+    '  void RenderMenu(){',
+    '    var atoms = InternalAssetFamily("UI");',
+    '    var menuCanvas = GetComponent<Canvas>();',
+    '    if (atoms.Length > 0 && menuCanvas != null) menuCanvas.enabled = true;',
+    '  }',
+    '}'
+  ].join('\n');
+  const pass=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'unity',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'Assets/Game.cs',content:applied}]}
+  });
+  assert.equal(pass.pass,true,pass.blockers.join(','));
+  assert.equal(pass.appliedCount,1);
+  assert.equal(pass.changedAppliedFamilyCount,1);
+  assert.equal(pass.familyResults.find(row=>row.family==='UI').actualBinding,true);
+
+  const markerOnly=applied.replace('var menuCanvas = GetComponent<Canvas>();','var menuCanvas = (object)null;')
+    .replace('menuCanvas != null) menuCanvas.enabled = true','menuCanvas != null) System.Console.WriteLine(atoms.Length)');
+  const rejected=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'unity',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'Assets/Game.cs',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI'));
+});
+
+test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family consumption',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/demo');
+  write(path.join(root,'index.html'),'<main></main>\n');
+  const bindingPlan={
+    required:true,libraryVersion:109,fingerprint:'d'.repeat(64),registryAssetCount:717,compatibleCandidateCount:701,
+    candidateCountsByFamily:{UI:20},baseMaterialFamilies:{UI:['FRAME_PANEL','BUTTON_PRIMARY']}
+  };
+  const applied=[
+    '<!doctype html><html><body><button id="menu">Open</button><canvas id="game"></canvas><script>',
+    'const internalAssetFamilies={UI:["FRAME_PANEL","BUTTON_PRIMARY"]};',
+    'const internalAssetFamily=family=>internalAssetFamilies[family]||[];',
+    'const menu=document.querySelector("#menu");',
+    'const atoms=internalAssetFamily("UI");',
+    'if(atoms.length) menu.classList.add("asset-bound");',
+    '</script></body></html>'
+  ].join('\n');
+  const pass=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'web',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'index.html',content:applied}]}
+  });
+  assert.equal(pass.pass,true,pass.blockers.join(','));
+  assert.equal(pass.appliedCount,1);
+
+  const markerOnly=applied.replace('const menu=document.querySelector("#menu");','const menu={};')
+    .replace('menu.classList.add("asset-bound")','console.log(atoms.length)');
+  const rejected=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'web',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'index.html',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI'));
 });
 
 test('Roblox internal asset family binding requires actual family use and rejects false NOT_APPLICABLE',()=>{
