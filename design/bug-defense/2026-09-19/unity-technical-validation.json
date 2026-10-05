@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-05T15:21:42.716Z",
+  "checkedAt": "2026-10-05T17:40:16.470Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37328067167,
+    "upstreamBuildRunId": 37342040308,
     "sourceCommit": "df0b4e4772f7269d25c1760cad7a347e381d1942",
     "sourceTreeSha": "a874f9f9d1449dc4396e53bcd65e6bf3beafc234",
-    "apkSha256": "fcc0947d2525e94703872fd679b5670c89c164a4a9b600a9955fdc751d49c6b6",
+    "apkSha256": "fb37273461bd3ab34cc813bef1ccba82c71d1a9f1843eb6afa94a08fa43c517b",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -118,14 +118,14 @@
       "totalFramesRendered": 127,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
-      "minFps": 10.9,
-      "avgFps": 14.180000000000001,
+      "minFps": 10.4,
+      "avgFps": 13.98,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 52684154,
+      "maxAllocatedMemoryBytes": 52717730,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/bug-defense-android-cloud-37328067167-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37328067167/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37328067167/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/bug-defense-android-cloud-37342040308-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37342040308/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37342040308/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/bug-defense"
   }
 }
