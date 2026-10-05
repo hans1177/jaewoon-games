@@ -40,6 +40,43 @@ test('Roblox BUILD_UP loadout uses the exact same canonical selection as GameCon
   assert.equal(plan.baseMaterialLoadout.universalAssetFirst.missingFamilies.length,0);
 });
 
+test('all game development scans the full internal registry and removes family atom caps on Roblox Unity and Web',()=>{
+  const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const expectedBaseAtoms=families.reduce((sum,family)=>sum+(library.baseMaterialLibrary?.families?.[family]?.length||0),0);
+  for(const target of ['roblox','unity','web']){
+    const plan=buildVibeAssetProductionPlan({
+      target,
+      task:{gameId:'bug-defense',goal:'모든 내부 라이브러리를 동적 연결하고 기존 게임 시스템에 적용'}
+    });
+    const dynamic=plan.allGameDynamicLibraryBinding;
+    assert.equal(dynamic.required,true,target);
+    assert.equal(dynamic.registryAssetCount,library.assets.length,target);
+    assert.equal(dynamic.evaluatedAssetCount,library.assets.length,target);
+    assert.equal(dynamic.allRegistryAssetsScanned,true,target);
+    assert.equal(dynamic.allTwelveFamiliesEvaluated,true,target);
+    assert.equal(dynamic.noArtificialAssetCountCap,true,target);
+    assert.equal(dynamic.noArtificialFamilyCountCap,true,target);
+    assert.equal(dynamic.auditScoreIsUsageGate,false,target);
+    assert.equal(dynamic.lowScoreCompatibleAssetUseAllowed,true,target);
+    assert.equal(dynamic.baseMaterialAtomCount,expectedBaseAtoms,target);
+    assert.equal(dynamic.baseMaterialAllCompatibleAtomsSelected,true,target);
+    assert.deepEqual(dynamic.platformOrder,['ROBLOX','UNITY','WEB'],target);
+    for(const family of families){
+      assert.equal(plan.baseMaterialLoadout.families[family].length,library.baseMaterialLibrary.families[family].length,target+':'+family);
+    }
+    const usage=buildInternalAssetSourceUsageContract({gameId:'bug-defense',target,assetProduction:plan});
+    assert.equal(usage.version,5,target);
+    assert.equal(usage.registryAssetCount,library.assets.length,target);
+    assert.equal(usage.evaluatedAssetCount,library.assets.length,target);
+    assert.equal(usage.allRegistryAssetsScanned,true,target);
+    assert.equal(usage.allTwelveFamiliesEvaluated,true,target);
+    assert.equal(usage.compatibleCandidateCount,dynamic.compatibleCandidateCount,target);
+    assert.equal(usage.dynamicLibraryFingerprint,dynamic.fingerprint,target);
+    assert.equal(usage.applicationCoverage.currentBuildUpAllCompatibleCandidatesEligible,true,target);
+  }
+});
+
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
   const order={
     gameId:'demo',
@@ -93,12 +130,13 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.applicationCoverage.noArtificialGameplaySignalCoverageCap,true);
   assert.equal(a.applicationCoverage.noArtificialCombinationCap,true);
   assert.equal(a.applicationCoverage.contextBudgetIsNotUsageCap,true);
-  assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
-  assert.equal(a.synchronization.selectedSubsetOnly,true);
+  assert.equal(a.synchronization.fullBinaryLibraryReplicationForbidden,true);
+  assert.equal(a.synchronization.allCompatibleCandidateEligibilityIndexRequired,true);
+  assert.equal(a.synchronization.selectedSubsetOnly,false);
   assert.equal(a.synchronization.changedFamilyRebindOnly,true);
   assert.equal(a.selectionFingerprint,null);
   assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
-  assert.equal(a.version,4);
+  assert.equal(a.version,5);
   assert.ok(a.usageMatrix.length>=72);
   assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
   for(const signal of [
