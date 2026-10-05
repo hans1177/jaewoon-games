@@ -109,8 +109,8 @@ test('object motion modules bind all 100 identities and preserve other states an
   assert(Profiles[skin.id].AssetId==skin.id,"wrong object identity")
   for _,state in ipairs(Motion.States)do for frame=0,32 do
    local time=frame/16
-   local sample=Motion.Sample(skin.form,model.bones,time,state,skin.id)
-   local original=Motion.Sample(skin.form,model.bones,time,state)
+   local sample=Motion.Sample(model.form,model.bones,time,state,skin.id)
+   local original=Motion.Sample(model.form,model.bones,time,state)
    for name,pose in pairs(sample)do
     assert(model.bones[name],"unknown joint")
     for axis,value in pairs(pose)do
