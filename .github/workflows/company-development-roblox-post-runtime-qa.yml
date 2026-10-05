@@ -298,7 +298,7 @@ jobs:
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {probeRobloxOpenCloudEngine} from './tools/company-development-roblox-runtime-foundation.mjs';
+          import {probeRobloxOpenCloudEngine,probeRobloxOpenCloudImageEvidence} from './tools/company-development-roblox-runtime-foundation.mjs';
           let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const retryOpenCloudOnly=String(process.env.RETRY_OPEN_CLOUD_ONLY||'').toLowerCase()==='true';
           if(!requested&&process.env.EVENT_NAME==='push'&&String(process.env.TRIGGER_CHANGED||'').toLowerCase()==='true'){
@@ -435,8 +435,29 @@ jobs:
                   networkRetryAttempts:6,networkRetryDelayMs:1000,
                   expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
                 });
-                const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
+                let imageEvidence;
+                try{
+                  imageEvidence=await probeRobloxOpenCloudImageEvidence({
+                    universeId:String(c.universeId),
+                    apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+                    networkRetryAttempts:4,networkRetryDelayMs:750,
+                  });
+                }catch(error){
+                  const message=String(error?.message||error);
+                  const status=Number(message.match(/_HTTP_(\d+)/)?.[1]||0);
+                  imageEvidence={
+                    available:false,permissionDenied:false,persistentFailure:true,status,
+                    imageMetadataAvailable:false,thumbnailCount:0,imageUrls:[],
+                    runtimeScreenshot:false,exactRuntimeVersionImage:false,
+                    state:'IMAGE_SANITY_UNAVAILABLE',
+                    error:message.slice(0,500),
+                    authority:'roblox-open-cloud-thumbnail-image-sanity',
+                    limitation:'THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF',
+                  };
+                }
+                const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result,imageEvidence};
                 console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
+                console.log('ROBLOX_OPEN_CLOUD_IMAGE_CHECK='+item.gameId+':'+String(imageEvidence?.state||'UNKNOWN')+':count='+Number(imageEvidence?.thumbnailCount||0));
                 probes[index]=probe;
               }catch(error){
                 const message=String(error?.message||error);
@@ -1123,6 +1144,9 @@ jobs:
                     simulationRunning:engineProbe?.simulationRunning===true,
                     serverBootObserved:false,
                     openCloudWorldEvidence:engineProbe?.worldEvidence||null,
+              openCloudImageEvidence:engineProbe?.imageEvidence||null,
+                openCloudImageEvidence:engineProbe?.imageEvidence||null,
+                    openCloudImageEvidence:engineProbe?.imageEvidence||null,
                     blockers:['runtime-sentinel-unavailable'],
                     observedAt:stamp,
                     workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
