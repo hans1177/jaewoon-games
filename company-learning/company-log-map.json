@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3061,5 +3061,45 @@
       ],
       "vibeContinuesWhenChatgptAbsent": true
     }
+  },
+  "allGameDynamicAssetBindingEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract",
+    "recordKind": "all-game-dynamic-asset-binding-evidence",
+    "requiredForAllGameDevelopment": true,
+    "requiredFields": [
+      "GAME_ID",
+      "TARGET_PLATFORM",
+      "SOURCE_REVISION",
+      "LIBRARY_VERSION",
+      "SELECTION_FINGERPRINT",
+      "ASSET_SOURCE_USAGE_FINGERPRINT",
+      "FAMILY_RESULTS",
+      "APPLICABLE_FAMILY_BINDINGS",
+      "NOT_APPLICABLE_EVIDENCE",
+      "BOUND_RESPONSIBLE_FILES",
+      "BOUND_ASSET_IDS",
+      "PLATFORM_NATIVE_ADAPTATIONS",
+      "PACKAGE_OR_RUNTIME_IDENTITY",
+      "QA_RESULT"
+    ],
+    "familyResultValues": [
+      "APPLIED",
+      "NOT_APPLICABLE"
+    ],
+    "allTwelveFamiliesRequired": true,
+    "allCompatibleInternalCandidatesRemainEligible": true,
+    "noArtificialAssetOrFamilyCountCap": true,
+    "lowScoreIsQualityDebtNotUsageFailure": true,
+    "markerConfigManifestOnlyCannotProveUse": true,
+    "primitivePlainFallbackCannotProveUse": true,
+    "exactSourceAndLibraryLineageRequired": true,
+    "dynamicSyncEvidenceRequired": true,
+    "platformOrder": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ],
+    "completionRequiresPlatformRuntimeEvidence": true
   }
 }
