@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactInternalAssetBinding,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -14,10 +14,24 @@ test('Roblox package evidence proves build only and never invents later validati
     artifactSha256:'b'.repeat(64),
     sourceValidationPassed:true,
     saveRequired:true,
+    internalAssetBinding:{
+      pass:true,
+      contractVersion:ROBLOX_PACKAGE_TOOL.internalAssetContractVersion,
+      libraryVersion:109,
+      bindingVersion:2,
+      selectionFingerprint:'asset-fingerprint',
+      familyCount:12,
+      selectedAtomCount:36,
+      primitiveOnlyVisualsForbidden:true,
+    },
   });
   assert.equal(evidence.buildOrPackagePassed,true);
   assert.equal(evidence.artifactIdentity,`sha256:${'b'.repeat(64)}`);
   assert.equal(evidence.luauOrSourceValidationPassed,true);
+  assert.equal(evidence.internalAssetPackageBindingPassed,true);
+  assert.equal(evidence.internalAssetContractVersion,ROBLOX_PACKAGE_TOOL.internalAssetContractVersion);
+  assert.equal(evidence.internalAssetFamilyCount,12);
+  assert.equal(evidence.primitiveOnlyVisualsForbidden,true);
   assert.equal(evidence.buildPreflightPassed,false);
   assert.equal(evidence.runtimePassed,false);
   assert.equal(evidence.independentQaPassed,false);
@@ -59,6 +73,73 @@ test('Roblox package source validation rejects a verified Vibe2 handoff when the
   assert.equal(validation.pass,false);
   assert.deepEqual(validation.blockers,['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']);
   assert.equal(validation.authority,'verified-vibe2-source-handoff');
+});
+
+test('verified Vibe2 handoff cannot bypass internal asset hard blockers',()=>{
+  const tree='c'.repeat(40);
+  const validation=resolvePackageSourceValidation({
+    staticVerdict:{pass:false,blockers:['CLIENT_SERVER_ACTION_REQUIRED','ROBLOX_INTERNAL_ASSET_ALL_FAMILIES_REQUIRED'],saveRequired:false},
+    verifiedSourceTreeSha:tree,
+    actualSourceTreeSha:tree,
+  });
+  assert.equal(validation.pass,false);
+  assert.deepEqual(validation.blockers,['ROBLOX_INTERNAL_ASSET_ALL_FAMILIES_REQUIRED']);
+  assert.equal(validation.authority,'verified-vibe2-source-handoff-plus-internal-asset-hard-gate');
+});
+
+test('Roblox package artifact requires all internal asset families atoms fingerprint and runtime-visible binding',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-asset-package-'));
+  try{
+    const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+    const expectedPlan={
+      applied:true,
+      libraryVersion:109,
+      bindingVersion:2,
+      selectionFingerprint:'0123456789abcdef',
+      universalAssetFirst:{allFamilies:families},
+      families:Object.fromEntries(families.map(family=>[family,[family+'_ATOM']]))
+    };
+    const artifact=path.join(root,'bound.rbxlx');
+    const familyRows=families.map(family=>family+' = { "'+family+'_ATOM'" }').join('\n');
+    fs.writeFileSync(artifact,[
+      '<roblox>',
+      '<Item class="ModuleScript"><Properties><ProtectedString name="Source"><![CDATA[',
+      'StudioAssets = { Applied = true, BindingVersion = 2, SelectionFingerprint = "0123456789abcdef", Families = {',
+      familyRows,
+      '} }',
+      ']]></ProtectedString></Properties></Item>',
+      '<Item class="LocalScript"><Properties><ProtectedString name="Source"><![CDATA[',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
+      'local function studioAssetFamily() return {} end',
+      'root:SetAttribute("StudioAssetAtoms", "UI_ATOM")',
+      'local panel = Instance.new("Frame")',
+      ']]></ProtectedString></Properties></Item>',
+      '</roblox>'
+    ].join('\n'));
+    const ok=validateRobloxArtifactInternalAssetBinding({artifactPath:artifact,expectedPlan});
+    assert.equal(ok.pass,true);
+    assert.equal(ok.familyCount,12);
+    assert.equal(ok.selectedAtomCount,12);
+    assert.equal(ok.primitiveOnlyVisualsForbidden,true);
+
+    const missing=path.join(root,'missing.rbxlx');
+    fs.writeFileSync(missing,fs.readFileSync(artifact,'utf8').replace('PROP_ATOM','PROP_MISSING'));
+    assert.throws(
+      ()=>validateRobloxArtifactInternalAssetBinding({artifactPath:missing,expectedPlan}),
+      /ROBLOX_INTERNAL_ASSET_PACKAGE_SELECTED_ATOMS_REQUIRED/
+    );
+
+    const primitive=path.join(root,'primitive.rbxlx');
+    fs.writeFileSync(primitive,fs.readFileSync(artifact,'utf8')
+      .replace('local function studioAssetFamily() return {} end\n','')
+      .replace('root:SetAttribute("StudioAssetAtoms", "UI_ATOM")\n',''));
+    assert.throws(
+      ()=>validateRobloxArtifactInternalAssetBinding({artifactPath:primitive,expectedPlan}),
+      /ROBLOX_INTERNAL_ASSET_PACKAGE_RUNTIME_BINDING_REQUIRED|ROBLOX_PLAIN_PRIMITIVE_PACKAGE_FORBIDDEN/
+    );
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
