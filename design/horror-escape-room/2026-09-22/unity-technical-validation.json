@@ -1,37 +1,131 @@
 {
-  "version": 1,
+  "version": 2,
   "gameId": "horror-escape-room",
-  "state": "FAIL",
-  "pass": false,
-  "validated": false,
+  "state": "PASS",
+  "pass": true,
+  "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-09-28T03:01:29.294Z",
+  "checkedAt": "2026-10-05T16:11:18.500Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 36370613684,
-    "sourceCommit": "f12b57f8cc46c43f28cf73eab54cf61dc31f9062",
-    "sourceTreeSha": "5c40eaffc2049f5d119188737acb665add097619",
-    "apkSha256": "c6652a74053c5b3f8c8e6f4a23fd98a5afb297989d56bd109db1ebc47642bc08",
+    "upstreamBuildRunId": 37329625818,
+    "sourceCommit": "bd0b85e715fa00e9823ee69e4705c8d0e9afc003",
+    "sourceTreeSha": "fce2537138b59470ea2cc63073fab99431df3c3b",
+    "apkSha256": "e6ddbf73dd4bf76e7050af6f1933eb48dbf39a0b69f100f0016d4bd280e455fd",
     "sameBinding": true
+  },
+  "foundationAdapter": {
+    "version": 1,
+    "platform": "UNITY",
+    "mode": "F0_COMPILE_PLUS_ONE_EXACT_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
+    "f1ThroughF8SingleRuntimeSession": true,
+    "f9RuntimeReplayRequired": false,
+    "blackBoxContractPass": true,
+    "blackBoxFoundationPass": true,
+    "foundationFloors": {
+      "F0": {
+        "state": "PASS",
+        "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+      },
+      "F1": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "EXACT_ACTIVITY_LAUNCH",
+          "PROCESS_ALIVE",
+          "NO_FATAL_RUNTIME_ERROR"
+        ]
+      },
+      "F2": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "FOREGROUND_ACTIVITY",
+          "RENDERED_FRAME",
+          "PRE_INPUT_SCREEN_CAPTURE"
+        ]
+      },
+      "F3": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT",
+          "INPUT_RESPONSE_OBSERVED"
+        ]
+      },
+      "F4": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "CONTROLLED_INPUT_DELIVERED",
+          "VISIBLE_RUNTIME_STATE_DELTA",
+          "PROCESS_ALIVE_AFTER_INPUT"
+        ]
+      },
+      "F5": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "TOUCH_INPUT_PATH",
+          "VISIBLE_INPUT_RESPONSE",
+          "POST_INPUT_SCREEN_CAPTURE"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F6": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "UPDATE_INSTALL",
+          "SAVE_SIGNAL_WHEN_REQUIRED",
+          "RUNTIME_ERROR_BOUNDARY"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F7": {
+        "state": "DEFER_TO_MULTIPLAYER_APPLICABILITY",
+        "authority": "DESIGN_AND_MULTIPLAYER_QA_EVIDENCE"
+      },
+      "F8": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "GAMEPLAY_INTERACTION_RESPONSE",
+          "CORE_ACTION_OR_VISIBLE_STATE_TRANSITION"
+        ],
+        "independentQaCorroborated": true
+      }
+    }
   },
   "realEvidence": {
     "runtimeSmoke": true,
     "independentQa": true,
-    "metricSamples": 0,
-    "actionObserved": false,
+    "evidenceMode": "ANDROID_PLATFORM_BLACK_BOX",
+    "metricSamples": 7,
+    "platformMetricsPass": true,
+    "seedRuntimeRequired": false,
+    "seedSignalsPass": true,
+    "actionObserved": true,
     "saveObserved": true,
-    "pauseResumeObserved": true
+    "pauseResumeObserved": true,
+    "visualDeltaObserved": true,
+    "foregroundActivityObserved": true
   },
   "coverage": {
     "ANDROID_FPS_FRAME_STABILITY": {
-      "state": "FAIL",
-      "sampleCount": 0,
-      "minFps": null,
-      "avgFps": null,
-      "scope": "ANDROID_16_EMULATOR_TECHNICAL_PROTOTYPE"
+      "state": "PASS",
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "sampleCount": 7,
+      "totalFramesRendered": 127,
+      "jankyFrames": 0,
+      "jankyFrameRatePct": 0,
+      "minFps": 10.9,
+      "avgFps": 14.080000000000002,
+      "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
-      "state": "FAIL",
-      "maxAllocatedMemoryBytes": null,
+      "state": "PASS_WITH_LIMITATION",
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "maxAllocatedMemoryBytes": 63850589,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -49,14 +143,15 @@
       "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
     },
     "ASPECT_RATIO_TOUCH": {
-      "state": "FAIL",
+      "state": "PASS",
       "evidence": "Android emulator black-box taps/swipes plus in-app action log."
     },
     "SAVE_LOAD_UPDATE_COMPATIBILITY": {
       "state": "PASS_WITH_LIMITATION",
       "updateInstallPassed": true,
-      "saveSignalObserved": true,
-      "limitation": "Update installation and save writes are observed; cross-version migration schema is not exercised by this first technical prototype."
+      "saveSignalRequired": false,
+      "saveSignalObserved": null,
+      "limitation": "Same-signed update installation is observed; the existing game save schema is not inferred from black-box Android evidence."
     },
     "APP_PAUSE_RESUME": {
       "state": "PASS",
@@ -82,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/horror-escape-room-android-cloud-36370613684-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-36370613684/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-36370613684/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/horror-escape-room-android-cloud-37329625818-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37329625818/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37329625818/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/horror-escape-room"
   }
 }
