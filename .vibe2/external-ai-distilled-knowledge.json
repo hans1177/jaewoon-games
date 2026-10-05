@@ -1,7 +1,254 @@
 {
   "version": 1,
   "kind": "vibe2-external-ai-distilled-knowledge",
-  "entries": [],
+  "entries": [
+    {
+      "id": "external-ai-distilled:openai-advanced-coding-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "DEBUGGING",
+        "RECOVERY",
+        "PERFORMANCE",
+        "ORCHESTRATION"
+      ],
+      "patterns": [
+        "Edit the existing responsible function or complete responsibility block first; avoid wrappers, shadow pipelines, and validation-only bypasses.",
+        "Use optimistic concurrency or compare-and-swap for shared state; reread latest state after conflicts instead of force-pushing stale snapshots.",
+        "Make retries idempotent and deduplicated; a repeated callback must not duplicate state transitions, writes, rewards, or downstream dispatch.",
+        "Repair the exact causal failure stage first, then revalidate from the first invalidated gate; unrelated safe work continues in parallel.",
+        "Fan in immutable worker results by exact source identity and content hash; do not trust self-reported success without matching QA evidence.",
+        "Run impact-first checks for speed, then require final regression on the exact candidate before promotion or durable positive learning.",
+        "Keep deterministic state planning separate from side effects; make mutation boundaries explicit, minimal, and least-privilege.",
+        "Cache only by exact content and environment identity; stale source, dependency, policy, or toolchain hashes invalidate reuse."
+      ],
+      "cautions": [
+        "Do not trade correctness for abstraction count; simpler direct responsibility is preferred when it preserves the canonical flow.",
+        "Concurrency must serialize only exact shared-state or responsible-file conflicts, never the whole repository or unrelated games."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "d40ca2b060e527c7ae2f59f53fe4fcfdc893402964beac0f44eb182f476fe031",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:.github/workflows/vibe2-continuous-core.yml#optimistic-state-fanin-and-exact-locking",
+          "qa:qa/vibe2-learning-motor.test.mjs#verified-learning-causal-repair-and-knowledge-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-visual-aesthetic-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "VISUAL_IDENTITY",
+        "CONCEPT_DIRECTION",
+        "ASSET_ADAPTATION",
+        "ASSET_PRODUCTION"
+      ],
+      "patterns": [
+        "Design silhouette first: role and identity should read in grayscale and at gameplay distance before texture or microdetail is considered.",
+        "Build hierarchy from large, medium, then small forms; proportion and shape language should communicate role before surface decoration.",
+        "Group values into a few readable masses and reserve strongest contrast for the focal gameplay feature instead of spreading contrast everywhere.",
+        "Use dominant, support, and accent color roles; saturation and value extremes should be scarce and tied to identity or gameplay focus.",
+        "Preserve negative space between limbs, props, and landmarks so silhouettes do not collapse into one noisy mass at mobile scale.",
+        "Match detail frequency to camera distance: large forms carry distant readability, medium forms carry identity, microdetail is optional polish.",
+        "Prefer distinct geometry, material boundaries, and structural features over recolor-only variation for meaningful visual differentiation.",
+        "Reauthor platform-native presentation while preserving palette, silhouette language, region identity, and material language."
+      ],
+      "cautions": [
+        "Polygon count, texture density, glow, or saturation alone do not prove quality.",
+        "Do not clone distinctive trade dress or another game's exact visual expression."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "2050e8a6be74ba35e6c03a4e95a24d313adff7d5b507ed50fbee3d6b1a379f0a",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#silhouette-topology-material-boundary-workflow",
+          "qa:qa/vibe2-native-asset-production.test.mjs#real-asset-detail-runtime-quality-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-rig-joint-motion-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "patterns": [
+        "Place joints near anatomical or mechanical rotation centers and support bends with deformation-friendly topology rather than compensating with extreme weights.",
+        "Use smooth normalized skin-weight falloff, distribute twist across suitable joints, and preserve volume around shoulders, hips, elbows, knees, and long twists.",
+        "Locomotion should keep center of mass believable over the support region, lock visible contacts during stance, and coordinate pelvis and limb counter-motion.",
+        "Choose gait from body form: diagonal coordination suits many quadrupeds while multi-leg creatures need phase staggering instead of mirrored simultaneous swings.",
+        "Author one-shots as anticipation, action, overshoot, settle, and rest recovery; attacks should visibly finish instead of freezing at peak pose.",
+        "Drive tails, cloth-like chains, wings, and appendages with bounded phase-lagged secondary motion based on perceived mass and length.",
+        "Keep adjacent-frame changes bounded and loops closed enough to avoid visible pops, foot sliding, or sudden joint discontinuities.",
+        "Cosmetic animation must restore rest transforms and must not move authoritative gameplay roots or change hit, AI, damage, or movement semantics."
+      ],
+      "cautions": [
+        "Avoid candy-wrapper twist, single-vertex weight spikes, knee/elbow inversion, and root drift used to fake locomotion.",
+        "Do not force one humanoid gait onto quadruped, arachnid, floating, serpentine, or bound body forms."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "6e39efd62acb25c6112d60ecb076ff3c9990efb3486ecacf59afcb701da3c8a6",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:assets/roblox/world-ghosts/GhostSkinMotion.luau#form-specific-gaits-secondary-motion-and-root-preservation",
+          "qa:qa/roblox-world-ghost-skins.test.mjs#joint-gait-loop-settle-and-rest-transform-tests"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-material-lighting-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "VISUAL_IDENTITY",
+        "ENVIRONMENT_COMPOSITION"
+      ],
+      "patterns": [
+        "Separate materials through coherent roughness, normal, metallic, and base-color response; recolor alone should not stand in for material identity.",
+        "Require usable UVs, normals, and stable tangent-space assumptions before texture polish; broken shading cannot be hidden by higher texture resolution.",
+        "Place wear causally at contact edges, stress zones, exposed surfaces, and interaction points instead of applying uniform random dirt everywhere.",
+        "Use lighting hierarchy: key establishes form, fill controls readability, rim separates silhouette when needed, and environment light anchors the scene.",
+        "Judge value readability before saturation; materials and characters should remain separable under the actual gameplay lighting and camera.",
+        "Keep a coherent color script across region, character, VFX, and UI while reserving exceptional hues for meaningful states or landmarks.",
+        "Validate material and lighting choices in the target runtime because editor thumbnails and source parameters do not prove final appearance."
+      ],
+      "cautions": [
+        "Do not overuse emissive, bloom, metallic, or pure black/white values to manufacture contrast.",
+        "Do not claim material quality from source metadata without rendered target-runtime inspection."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "fe229e6a1d98d154ba292d78a65440cd156434c6de18cdf619fa02f91a46506c",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#uv-normals-material-separation-and-runtime-review",
+          "qa:qa/vibe2-native-asset-production.test.mjs#native-material-binding-and-runtime-evidence"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-vfx-camera-readability-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "VFX",
+        "CAMERA_LANGUAGE",
+        "PERFORMANCE",
+        "VISUAL_IDENTITY"
+      ],
+      "patterns": [
+        "Bind VFX to real gameplay events: telegraph before danger, contact-timed impact, and readable recovery after the event instead of decorative continuous noise.",
+        "Layer feedback by time scale: immediate flash or hit-stop, short trail or shockwave, then slower residue; each layer should have a distinct information purpose.",
+        "Keep camera shake short, bounded, and frequency-matched to impact weight; preserve aiming, touch control, and motion comfort.",
+        "Scale opacity, particle count, trail width, and screen coverage to focal hierarchy so effects support the subject instead of obscuring silhouettes and UI.",
+        "Design for gameplay zoom and mobile screens: important attack direction, threat area, and hit confirmation must survive reduced particles and lower detail.",
+        "Pool or deterministically retire transient effects and cap lifetime so visual polish does not create unbounded CPU, GPU, memory, or network work."
+      ],
+      "cautions": [
+        "Do not change damage, hit timing, authority, or movement rules to make VFX look stronger.",
+        "Avoid full-screen bloom, long shake, opaque particles, and persistent trails that hide combat state."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "3ca7f7f06fe283bd60b49f1c853411db0f83f40d622223fd0554f7ab4e58d1a4",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#runtime-visual-vfx-camera-performance-contract",
+          "qa:qa/vibe2-native-asset-production.test.mjs#before-after-runtime-visual-and-mobile-quality-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    }
+  ],
   "policy": {
     "rawExternalAiOutputMayEnterDevelopment": false,
     "independentVerificationRequired": true,
