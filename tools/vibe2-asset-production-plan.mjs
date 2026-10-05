@@ -278,6 +278,25 @@ function commonCatalogFiles(repoRoot){
     .filter(file=>fs.existsSync(file))
     .sort();
 }
+function assetCatalogFiles(repoRoot){
+  const root=path.join(repoRoot,'assets');
+  if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())return[];
+  const files=[];
+  const walk=(dir,depth=0)=>{
+    if(depth>6)return;
+    let entries=[];
+    try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch{return;}
+    for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+      if(entry.name.startsWith('.')||['node_modules','generated','previews'].includes(entry.name))continue;
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())walk(full,depth+1);
+      else if(entry.isFile()&&entry.name==='catalog.json')files.push(full);
+    }
+  };
+  walk(root,0);
+  return files.sort();
+}
+
 
 function companySeedRows(repoRoot){
   const root=path.join(repoRoot,'artbook-submissions');
@@ -1959,6 +1978,7 @@ export function buildVibeAssetProductionPlan({
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionCatalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
+  const allExecutionCatalogs=assetCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog&&typeof row.catalog==='object');
   const executionUiCatalog=executionCatalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const executionSeedPlan=createCompanySeedAssetIdeationPlan({seeds:companySeedRows(repoRoot),assets:companyRegistry?.assets||[]});
   const executionLibraryPlan=buildInternalAssetLibraryAutomationPlan({
@@ -2369,10 +2389,57 @@ export function buildVibeAssetProductionPlan({
   const activeDemand=Object.fromEntries(Object.entries(DEFAULT_COVERAGE_BASELINES).map(([family,subs])=>[
     family,Object.fromEntries(Object.keys(subs).map(sub=>[sub,familyRegex[family]?.test(request)?1:0]))
   ]));
-  const universeRepositoryAssets=[
-    ...(companyRegistry?.assets||[]).filter(row=>clean(row.status).toUpperCase()==='REPO_ASSET'),
-    ...(manifestBase?.assets||[]).map(row=>({...row,family:inferUniverseFamily(row),subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),status:'REPO_ASSET'}))
-  ].filter(row=>clean(row.family||row.category));
+  const manifestUniverseAssets=(manifestBase?.assets||[]).map(row=>({
+    ...row,
+    family:inferUniverseFamily(row),
+    subfamily:clean(row.subfamily||row.type||(row.types||[])[0]).toUpperCase(),
+    status:'REPO_ASSET',
+    platform:clean(row.platform||(row.platforms||[])[0]).toUpperCase()||null
+  }));
+  const catalogUniverseAssets=allExecutionCatalogs.flatMap(({path:catalogPath,catalog})=>{
+    const rows=[
+      ...(Array.isArray(catalog?.atoms)?catalog.atoms:[]),
+      ...(Array.isArray(catalog?.items)?catalog.items:[]),
+      ...(Array.isArray(catalog?.assets)?catalog.assets:[])
+    ];
+    return rows.map((row,index)=>{
+      const id=clean(row?.id||row?.atomId||row?.assetId||row?.componentId||row?.presetId);
+      if(!id)return null;
+      const normalized={
+        ...row,
+        id,
+        packId:clean(row?.packId||catalog?.packId)||null,
+        family:clean(row?.family||row?.category||catalog?.family||catalog?.category).toUpperCase()||inferUniverseFamily(row),
+        category:clean(row?.category||row?.family||catalog?.category||catalog?.family).toUpperCase()||inferUniverseFamily(row),
+        subfamily:clean(row?.subfamily||row?.type).toUpperCase()||null,
+        platform:clean(row?.platform||catalog?.platform).toUpperCase()||null,
+        license:clean(row?.license||catalog?.license)||null,
+        sourceFiles:unique([
+          ...(Array.isArray(row?.sourceFiles)?row.sourceFiles:[]),
+          row?.source,row?.implementation,row?.module,row?.script
+        ].map(value=>clean(value)).filter(Boolean)),
+        path:clean(row?.path)||null,
+        status:'REPO_ASSET',
+        catalogActive:true,
+        catalogPath,
+        catalogRowIndex:index
+      };
+      return normalized;
+    }).filter(Boolean);
+  });
+  const universeAllAssets=[...new Map([
+    ...(companyRegistry?.assets||[]),
+    ...manifestUniverseAssets,
+    ...catalogUniverseAssets
+  ].filter(row=>clean(row?.id)).map(row=>[
+    [clean(row.id),clean(row.packId||''),clean(row.catalogPath||'')].join('|'),
+    row
+  ])).values()].filter(row=>clean(row.family||row.category));
+  const universeRepositoryAssets=universeAllAssets.filter(row=>
+    clean(row.status).toUpperCase()==='REPO_ASSET'
+    ||clean(row.status).toUpperCase()==='VERIFIED_COMPANY_ASSET'
+    ||row.downloaded===true
+  );
   const universeSignals={};
   for(const [family,subs] of Object.entries(DEFAULT_COVERAGE_BASELINES)){
     for(const subfamily of Object.keys(subs)){
@@ -2396,7 +2463,7 @@ export function buildVibeAssetProductionPlan({
     }
   }
   const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
-    assets:companyRegistry?.assets||[],
+    assets:universeAllAssets,
     repositoryAssets:universeRepositoryAssets,
     externalSources:companyRegistry?.externalSources||[],
     activeDemand,
@@ -2533,6 +2600,7 @@ export function buildVibeAssetProductionPlan({
       qualityScaleMaximum:120,
       qualityScoreIsNotDevelopmentBindingGate:true,
       lowScoreAssetMayBindWhenNoBetterSafeCompatibleAlternative:true,
+      lowScoreCompatibleAssetMustBindRegardlessOfScore:true,
       lowScoreBindingMustKeepVisualDebtOpen:true,
       productionVerifiedStillRequiresExactRuntimeEvidence:true,
       heroAssetsDefineQualityBaseline:true,
@@ -2604,6 +2672,27 @@ export function buildVibeAssetProductionPlan({
       complete:studioUniversePlan?.loadout?.complete===true,
       unresolved:freezeList(studioUniversePlan?.loadout?.unresolved||[]),
       selections:freezeList(studioUniversePlan?.loadout?.selections||[]),
+      compatibleAssets:freezeList(studioUniversePlan?.loadout?.compatibleAssets||[]),
+      compatibleAssetCount:Number(studioUniversePlan?.loadout?.compatibleAssetCount||0),
+      allCompatibleAssetsMustRemainUsageEligible:studioUniversePlan?.loadout?.allCompatibleAssetsMustRemainUsageEligible===true,
+      allCompatibleAssetsAutoUseRequired:studioUniversePlan?.loadout?.allCompatibleAssetsAutoUseRequired===true,
+      lowQualityBindingAllowedRegardlessOfScore:studioUniversePlan?.loadout?.lowQualityBindingAllowedRegardlessOfScore===true,
+      lowScoreCompatibleAssetMustRemainUsageEligible:studioUniversePlan?.loadout?.lowScoreCompatibleAssetMustRemainUsageEligible===true,
+      libraryEvaluation:freeze({
+        registryVersion:Number(companyRegistry?.version||0),
+        registryAssetCount:Number((companyRegistry?.assets||[]).length),
+        manifestVersion:Number(manifestBase?.version||0),
+        manifestAssetCount:Number((manifestBase?.assets||[]).length),
+        commonCatalogCount:Number(executionCatalogs.length),
+        allCatalogCount:Number(allExecutionCatalogs.length),
+        evaluatedAssetCount:Number(universeAllAssets.length),
+        registryEvaluated:true,
+        manifestEvaluated:true,
+        allCatalogsEvaluated:true,
+        allLibrarySourcesEvaluated:true,
+        qualityScoreIsUsageGate:false,
+        lowScoreCompatibleAssetUseRequired:true
+      }),
       resolutionMode:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
       genreRestrictionApplied:false,
       crossGenreReuseAllowed:true,
@@ -2620,7 +2709,10 @@ export function buildVibeAssetProductionPlan({
       candidateCount:decisions.reduce((sum,row)=>sum+(row.applyFirst?.candidates?.length||0),0),
       sequence:freezeList(['APPLY_USABLE_EXISTING_FIRST','OBSERVE_IN_GAME','DERIVE_WEAK_PARTS_ONLY','REAPPLY','NEW_AUTHORING_LAST']),
       existingAssetApplicationBeforeNewAuthoring:true,
-      qualityGateStillRequired:true,
+      qualityGateStillRequired:false,
+      qualityScoreIsUsageGate:false,
+      lowScoreCompatibleAssetUseRequired:true,
+      qualityDebtContinuesAfterBinding:true,
       newAuthoringOnlyAfterReusableCandidateFailure:true,
       visualVerificationAndVisualQualitySeparated:true,
       detailInvestmentPriority:freezeList(['SCREEN_SPACE_OCCUPANCY','PLAYER_DWELL_TIME','INTERACTION_FREQUENCY','HERO_BOSS_SIGNATURE_ROLE','CAMERA_PROXIMITY','GAMEPLAY_READABILITY'])
