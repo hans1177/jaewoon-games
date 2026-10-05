@@ -81,10 +81,10 @@ permissions:
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
-  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '64'
+  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'
+  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'
+  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '64'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
   VIBE2_24H_GEMINI_ALLOWED: 'false'
@@ -142,7 +142,7 @@ jobs:
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
-          echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
+          echo 'VIBE2_PARALLELISM_POLICY=FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64'
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
           test "$VIBE2_24H_LEARNING_PROVIDER" = "LOCAL_OLLAMA"
@@ -210,7 +210,7 @@ jobs:
           const queuedGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
           const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
           const queuedAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
-          const gameMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
+          const gameMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||64));
           const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||63));
           process.stdout.write([
             queuedGame,activeGame,Math.max(0,gameMax-activeGame),
@@ -252,7 +252,7 @@ jobs:
             exit 0
           fi
 
-          body='{"ref":"main","inputs":{"execution_lane":"game-primary","lane_max":"256"}}'
+          body='{"ref":"main","inputs":{"execution_lane":"game-primary","lane_max":"64"}}'
           if curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \
@@ -812,9 +812,9 @@ jobs:
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
-          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
-          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||20));
-          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||30));
+          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||64));
+          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||64));
+          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||64));
           const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
           const effectiveMax=configuredMax;
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
@@ -836,7 +836,9 @@ jobs:
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
           console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
           console.log('VIBE2_24H_ADAPTIVE_RECOMMENDED_MAX='+controlTarget);
-          console.log('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
+          console.log('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_64');
+          console.log('VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=64');
+          console.log('VIBE2_GAME_PRIMARY_REFILL_TARGET=64');
           console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
           console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
@@ -994,7 +996,7 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
-      lane_max: '256'
+      lane_max: '64'
     permissions:
       contents: write
       actions: write
