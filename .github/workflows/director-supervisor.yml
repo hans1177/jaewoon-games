@@ -415,8 +415,25 @@ jobs:
                   cancelled=$((cancelled+1))
                   echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${current_state}"
                 else
-                  failed=$((failed+1))
-                  echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCEL_FAILED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${current_state}"
+                  # GitHub may accept /cancel and asynchronously settle the run while /force-cancel
+                  # races that transition. Re-read briefly before declaring a real drain failure.
+                  settled=false
+                  settle_state="$current_state"
+                  for settle_attempt in 1 2 3 4 5; do
+                    sleep 1
+                    settle_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
+                    if [[ "$settle_state" == 'completed' ]]; then
+                      settled=true
+                      break
+                    fi
+                  done
+                  if [ "$settled" = true ]; then
+                    cancelled=$((cancelled+1))
+                    echo "DIRECTOR_RUNNER_DRAIN_CANCEL_SETTLED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${settle_state}"
+                  else
+                    failed=$((failed+1))
+                    echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCEL_FAILED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${settle_state:-${current_state}}"
+                  fi
                 fi
               else
                 cancelled=$((cancelled+1))
