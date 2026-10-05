@@ -247,6 +247,66 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-cloud-coding-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "ROBLOX_DATASTORE",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_TOUCH_INPUT",
+        "ROBLOX_CHARACTER_STATE",
+        "ROBLOX_UI_STATE",
+        "STATE_MACHINE",
+        "PERFORMANCE"
+      ],
+      "patterns": [
+        "Keep authoritative gameplay state on the server; clients send bounded intent, never trusted final damage, currency, inventory, or progression state.",
+        "Validate every RemoteEvent and RemoteFunction request on the server for player identity, payload type, bounds, current state, cooldown or nonce, and replay/idempotency before mutation.",
+        "Make remote-triggered rewards and purchases idempotent with request identities so retries or duplicate packets cannot duplicate currency, items, XP, or state transitions.",
+        "Persist progression with failure-safe transactions: validate schema and revision, commit in-memory authoritative state only after the durable write succeeds, and make retry paths preserve the last known-good state.",
+        "Replicate immutable or copied snapshots with monotonic revisions; clients reject stale revisions and render server state rather than owning canonical gameplay truth.",
+        "For late join and rejoin, reconstruct the current authoritative snapshot from server state and saved data instead of aliasing mutable tables or replaying historical side effects.",
+        "Treat PlayerAdded, PlayerRemoving, CharacterAdded, respawn, and UI/input subscriptions as lifecycle-owned resources; replace or disconnect old subscriptions so one logical handler has one active connection.",
+        "Use ContextActionService or bounded input adapters to convert touch and controller input into intent; keep mobile UI responsive and never let UI callbacks directly author server-owned state.",
+        "Bound per-frame and per-player work: cap transient tables, queues, effects, raycasts, pathfinding, remote frequency, and cache growth; reuse pooled objects when repeated allocation would scale with playtime.",
+        "Keep modules small around ownership boundaries: server domain services own mutation, shared modules hold pure schemas and deterministic helpers, and client modules own presentation and input only.",
+        "Bind cloud validation to the exact source revision, artifact identity, universe, place, and place version; stale or locally cached evidence cannot satisfy current Open Cloud runtime acceptance.",
+        "Treat Open Cloud 408, 429, and provider 5xx responses as infrastructure pressure with bounded retry/backoff; never convert provider failure into game-code PASS or consume game repair authority."
+      ],
+      "cautions": [
+        "Do not trust client-provided prices, damage, ownership, cooldown completion, save revisions, or reward results.",
+        "Do not use Studio-local or cached local evidence as the production runtime proof for this cloud-only Roblox coding knowledge.",
+        "Do not widen writable scope or bypass F0-F9, security, independent QA, regression, or exact-candidate checks."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "95fd77d5fb1072c433a371f4de3fedf89de462e79eb304478b1088df9f01b226",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/company-development-roblox-runtime-foundation.mjs#official-open-cloud-exact-version-runtime-contract",
+          "qa:qa/company-development-roblox-runtime-foundation.test.mjs#cloud-only-open-cloud-runtime-contract"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {

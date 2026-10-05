@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "PRACTICE_ONLY",
   "sourceKind": "teacher",
   "synthetic": true,
@@ -85,6 +85,108 @@
         "local solve=require(\"./candidate\")\nlocal s={scores={a=7,b=12}}; local x=solve(s,\"c\"); assert(x.a==7 and x.b==12 and x.c==0 and s.scores.c==nil); x.a=99; assert(s.scores.a==7); local y=solve(s,\"a\"); assert(y.a==7 and y.b==12 and y.c==nil)",
         "local solve=require(\"./candidate\")\nfor n=1,29 do local id=\"player\"..n; local s={scores={[id]=n*3}}; local x=solve(s,id); local y=solve(s,\"guest\"..n); s.scores[id]=-n; assert(x[id]==n*3 and y[id]==n*3 and y[\"guest\"..n]==0 and s.scores[\"guest\"..n]==nil) end"
       ]
+    },
+    {
+      "id": "remote-validation",
+      "level": "고급",
+      "failure": "REMOTE_TRUST_AND_REPLAY",
+      "domains": [
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "STATE_MACHINE"
+      ],
+      "scenario": "Remote 요청을 독립 논리로 검증하는 함수(state, playerId, request)를 반환하라. playerId는 state.players에 존재해야 하고 request는 table, id는 빈 문자열이 아닌 string, amount는 1~10 정수여야 한다. 같은 request.id는 한 번만 처리한다. 검증 통과 후에만 해당 플레이어 값을 amount만큼 증가시키고 true, 아니면 false를 반환한다. 실제 RemoteEvent 없이 서버 검증·재전송 멱등성을 연습한다.",
+      "broken": "return function(state, playerId, request)\n state.players[playerId] = (state.players[playerId] or 0) + request.amount\n return true\nend",
+      "reference": "return function(state, playerId, request)\n if type(playerId) ~= \"string\" or state.players[playerId] == nil or type(request) ~= \"table\" then return false end\n local id=request.id; local amount=request.amount\n if type(id) ~= \"string\" or id == \"\" or type(amount) ~= \"number\" or amount % 1 ~= 0 or amount < 1 or amount > 10 or state.seen[id] then return false end\n state.seen[id]=true\n state.players[playerId]+=amount\n return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={players={a=0},seen={}}; assert(solve(s,\"a\",{id=\"r1\",amount=3})); assert(not solve(s,\"a\",{id=\"r1\",amount=3})); assert(s.players.a==3); assert(not solve(s,\"b\",{id=\"r2\",amount=2})); assert(not solve(s,\"a\",{id=\"r3\",amount=99})); assert(s.players.a==3)",
+        "local solve=require(\"./candidate\")\nlocal s={players={p=10},seen={}}; for n=1,20 do local id=\"q\"..n; assert(solve(s,\"p\",{id=id,amount=1})); assert(not solve(s,\"p\",{id=id,amount=1})) end; assert(s.players.p==30)"
+      ]
+    },
+    {
+      "id": "datastore-transaction",
+      "level": "고급",
+      "failure": "DATASTORE_COMMIT_BEFORE_DURABLE_WRITE",
+      "domains": [
+        "ROBLOX_DATASTORE",
+        "SAVE",
+        "RECOVERY"
+      ],
+      "scenario": "클라우드 저장 트랜잭션 논리를 연습하는 함수(state, nextValue, write)를 반환하라. state에는 value와 revision이 있다. write(expectedRevision,newRevision,nextValue)는 성공 true, 충돌/실패 false 또는 오류를 낼 수 있다. 현재 revision을 expected로 사용하고 newRevision=revision+1로 저장을 시도한 뒤 성공했을 때만 state.value와 state.revision을 갱신한다. 실패 시 기존 상태를 정확히 보존한다.",
+      "broken": "return function(state,nextValue,write)\n state.revision+=1; state.value=nextValue; return write(state.revision-1,state.revision,nextValue)\nend",
+      "reference": "return function(state,nextValue,write)\n local expected=state.revision; local nextRevision=expected+1\n local ok,saved=pcall(write,expected,nextRevision,nextValue)\n if not ok or saved ~= true then return false end\n state.value=nextValue; state.revision=nextRevision; return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={value=7,revision=3}; assert(not solve(s,9,function() return false end)); assert(s.value==7 and s.revision==3); assert(not solve(s,9,function() error(\"429\") end)); assert(s.value==7 and s.revision==3); assert(solve(s,9,function(e,n,v) return e==3 and n==4 and v==9 end)); assert(s.value==9 and s.revision==4)",
+        "local solve=require(\"./candidate\")\nlocal s={value=0,revision=0}; for n=1,25 do assert(solve(s,n,function(e,r,v) return e==n-1 and r==n and v==n end)) end; assert(s.value==25 and s.revision==25)"
+      ]
+    },
+    {
+      "id": "replication-revision",
+      "level": "고급",
+      "failure": "STALE_REPLICATION_OVERWRITE",
+      "domains": [
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "UI_STATE"
+      ],
+      "scenario": "서버가 보낸 스냅샷을 적용하는 함수(state, revision, payload)를 반환하라. revision은 현재 state.revision보다 큰 양의 정수여야 하고 payload는 table이어야 한다. 적용 시 payload를 새 table로 복사해 state.snapshot에 저장하고 revision을 갱신한다. 오래된/중복 revision은 거부하고 원본 payload와 snapshot은 서로 alias되면 안 된다.",
+      "broken": "return function(state,revision,payload)\n state.revision=revision; state.snapshot=payload; return true\nend",
+      "reference": "return function(state,revision,payload)\n if type(revision)~=\"number\" or revision%1~=0 or revision<=state.revision or type(payload)~=\"table\" then return false end\n local copy={}; for k,v in payload do copy[k]=v end\n state.revision=revision; state.snapshot=copy; return true\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={revision=4,snapshot={score=1}}; local p={score=9}; assert(solve(s,5,p)); p.score=99; assert(s.snapshot.score==9); assert(not solve(s,5,{score=10})); assert(not solve(s,3,{score=11})); assert(s.revision==5 and s.snapshot.score==9)",
+        "local solve=require(\"./candidate\")\nlocal s={revision=0,snapshot={}}; for n=1,40 do assert(solve(s,n,{tick=n})); assert(not solve(s,n,{tick=-1})) end; assert(s.snapshot.tick==40 and s.revision==40)"
+      ]
+    },
+    {
+      "id": "respawn-lifecycle",
+      "level": "고급",
+      "failure": "RESPAWN_HANDLER_LEAK",
+      "domains": [
+        "ROBLOX_CHARACTER_STATE",
+        "ROBLOX_REMOTE_SECURITY",
+        "DEBUGGING"
+      ],
+      "scenario": "캐릭터 respawn 시 연결을 교체하는 함수(state, characterId, connect)를 반환하라. 기존 state.disconnect가 있으면 먼저 호출하고 generation을 1 증가시킨 뒤 characterId를 저장한다. connect(generation,characterId)의 반환 disconnect 함수를 저장하고 generation을 반환한다. 반복 respawn에도 활성 연결은 하나만 남아야 한다.",
+      "broken": "return function(state,characterId,connect)\n state.generation+=1; state.characterId=characterId; state.disconnect=connect(state.generation,characterId); return state.generation\nend",
+      "reference": "return function(state,characterId,connect)\n if state.disconnect then state.disconnect() end\n state.generation+=1; state.characterId=characterId; state.disconnect=connect(state.generation,characterId); return state.generation\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal live=0; local s={generation=0}; local function connect() live+=1; local closed=false; return function() if not closed then closed=true; live-=1 end end end; for n=1,20 do assert(solve(s,\"c\"..n,connect)==n); assert(live==1) end; s.disconnect(); assert(live==0 and s.characterId==\"c20\")",
+        "local solve=require(\"./candidate\")\nlocal calls={}; local s={generation=9}; local function connect(g,c) calls[#calls+1]=g..\":\"..c; return function() end end; assert(solve(s,\"hero\",connect)==10); assert(calls[1]==\"10:hero\")"
+      ]
+    },
+    {
+      "id": "touch-intent",
+      "level": "실전",
+      "failure": "CLIENT_UI_AUTHORITY_LEAK",
+      "domains": [
+        "ROBLOX_TOUCH_INPUT",
+        "ROBLOX_UI_STATE",
+        "ROBLOX_REMOTE_SECURITY"
+      ],
+      "scenario": "모바일 UI가 서버 상태를 직접 바꾸지 않고 intent만 만드는 함수(state, action) 를 반환하라. 허용 action은 ATTACK,INTERACT,DASH 세 개뿐이다. 허용된 action이면 state.sequence를 1 증가시키고 {kind=action,sequence=state.sequence} 새 table을 반환한다. 그 외에는 nil. state.score, state.gold 같은 권위 상태는 절대 변경하지 않는다.",
+      "broken": "return function(state,action)\n state.gold=(state.gold or 0)+1; return {kind=action}\nend",
+      "reference": "return function(state,action)\n if action~=\"ATTACK\" and action~=\"INTERACT\" and action~=\"DASH\" then return nil end\n state.sequence=(state.sequence or 0)+1\n return {kind=action,sequence=state.sequence}\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={sequence=0,score=7,gold=9}; local a=solve(s,\"ATTACK\"); assert(a.kind==\"ATTACK\" and a.sequence==1); assert(s.score==7 and s.gold==9); assert(solve(s,\"UNKNOWN\")==nil); assert(s.sequence==1)",
+        "local solve=require(\"./candidate\")\nlocal s={sequence=40,score=1}; for _,kind in ipairs({\"ATTACK\",\"INTERACT\",\"DASH\"}) do local x=solve(s,kind); assert(x.sequence>40) end; assert(s.sequence==43 and s.score==1)"
+      ]
+    },
+    {
+      "id": "bounded-cache",
+      "level": "실전",
+      "failure": "UNBOUNDED_SESSION_CACHE",
+      "domains": [
+        "PERFORMANCE",
+        "ROBLOX_MULTIPLAYER",
+        "STATE_MACHINE"
+      ],
+      "scenario": "세션 캐시가 플레이 시간에 따라 무한히 커지지 않게 하는 함수(state,key,value,limit)를 반환하라. limit은 1 이상 정수다. 기존 key면 값만 교체한다. 새 key이고 용량이 limit이면 가장 오래된 key를 제거한 뒤 추가한다. state.order와 state.values의 크기는 항상 limit 이하이고 반환값은 현재 항목 수다.",
+      "broken": "return function(state,key,value,limit)\n state.values[key]=value; table.insert(state.order,key); return #state.order\nend",
+      "reference": "return function(state,key,value,limit)\n if type(limit)~=\"number\" or limit%1~=0 or limit<1 then return #state.order end\n if state.values[key]~=nil then state.values[key]=value; return #state.order end\n while #state.order>=limit do local old=table.remove(state.order,1); state.values[old]=nil end\n state.values[key]=value; table.insert(state.order,key); return #state.order\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={values={},order={}}; for n=1,50 do assert(solve(s,\"k\"..n,n,8)<=8) end; assert(#s.order==8 and s.values.k1==nil and s.values.k50==50)",
+        "local solve=require(\"./candidate\")\nlocal s={values={},order={}}; solve(s,\"a\",1,3); solve(s,\"b\",2,3); solve(s,\"a\",9,3); assert(#s.order==2 and s.values.a==9); solve(s,\"c\",3,3); solve(s,\"d\",4,3); assert(#s.order==3 and s.values.a==nil)"
+      ]
     }
   ],
   "platformDrills": [
@@ -120,5 +222,9 @@
         "var s=new PracticeState{Score=37,SavedScore=37};Practice.Apply(s,\"pause\",0);Practice.Apply(s,\"enter\",0);Check(!s.InputEnabled&&s.Subscriptions==1);Practice.Apply(s,\"resume\",0);Check(s.InputEnabled);for(int n=1;n<=17;n++){Practice.Apply(s,\"collect\",n);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"despawn\",0);Practice.Apply(s,\"despawn\",0);Check(s.LiveObjects==0);}Check(s.Score==190&&s.SavedScore==190);Practice.Apply(s,\"exit\",0);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"unknown\",999);Check(s.LiveObjects==0&&s.Score==190);Practice.Apply(s,\"enter\",0);Check(s.InputEnabled&&s.Subscriptions==1&&s.SavedScore==190);"
       ]
     }
-  ]
+  ],
+  "productionRuntimeAuthority": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
+  "productionPromotionEvidence": "EXACT_SOURCE_ARTIFACT_UNIVERSE_PLACE_VERSION_OPEN_CLOUD_RUNTIME_QA_REGRESSION",
+  "studioRequired": false,
+  "studioProductionEvidenceAccepted": false
 }
