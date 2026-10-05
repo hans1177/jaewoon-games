@@ -114,45 +114,23 @@ jobs:
         if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
+          ROBLOX_INGRESS_FIX_SHA: 99baeefb84a1846af862d71a515aeb8229ef9506
         shell: bash
         run: |
           set -euo pipefail
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/system-ai-roblox-runtime-runs.json
-          node <<'NODE' > /tmp/system-ai-stale-roblox-runtime-runs
-          const fs=require('fs');
-          const cp=require('child_process');
-          const payload=JSON.parse(fs.readFileSync('/tmp/system-ai-roblox-runtime-runs.json','utf8'));
-          const states=new Set(['queued','pending','requested','waiting']);
-          const repo=process.env.GITHUB_REPOSITORY;
-          const cache=new Map();
-          function hasNewestIngressContract(sha){
-            if(cache.has(sha))return cache.get(sha);
-            let current=false;
-            try{
-              const raw=cp.execFileSync('gh',['api',`repos/${repo}/contents/.github/workflows/company-development-roblox-runtime.yml?ref=${sha}`,'--jq','.content'],{encoding:'utf8',stdio:['ignore','pipe','ignore']});
-              const text=Buffer.from(raw.replace(/\s+/g,''),'base64').toString('utf8');
-              const expressionToken=String.fromCharCode(36,123,123)+" inputs.game_id || 'batch' "+String.fromCharCode(125,125);
-              const newestGroup='group: roblox-runtime-source-plan-'+expressionToken;
-              current=text.includes(newestGroup)&&text.includes('cancel-in-progress: true');
-            }catch{}
-            cache.set(sha,current);
-            return current;
-          }
-          for(const run of payload.workflow_runs||[]){
-            if(!states.has(String(run.status||'').toLowerCase()))continue;
-            const sha=String(run.head_sha||'').trim();
-            if(!sha||hasNewestIngressContract(sha))continue;
-            console.log(run.id);
-          }
-          NODE
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100"             --jq '.workflow_runs[] | select(.status=="queued" or .status=="pending" or .status=="requested" or .status=="waiting") | [.id,.head_sha] | @tsv'             > /tmp/system-ai-roblox-runtime-active.tsv
           cancelled=0
-          while read -r run_id; do
+          while IFS=$'\t' read -r run_id run_sha; do
             [ -n "$run_id" ] || continue
+            [ -n "$run_sha" ] || continue
+            [ "$run_sha" != "$ROBLOX_INGRESS_FIX_SHA" ] || continue
+            relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$run_sha...$ROBLOX_INGRESS_FIX_SHA" --jq '.status' 2>/dev/null || true)"
+            [ "$relation" = 'ahead' ] || continue
             if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
-              echo "SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCELLED=$run_id"
+              echo "SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCELLED=$run_id:$run_sha"
             fi
-          done < /tmp/system-ai-stale-roblox-runtime-runs
+          done < /tmp/system-ai-roblox-runtime-active.tsv
           echo "SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCEL_COUNT=$cancelled"
           echo 'SYSTEM_AI_STALE_ROBLOX_INGRESS_IN_PROGRESS_CANCEL=NO'
 
