@@ -2529,14 +2529,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T06:59:05.241Z",
+      "updatedAt": "2026-10-05T07:05:31.675Z",
       "robloxSourceCommit": "b85470cc48a89a34f51a386dbc9bfee45b34f864",
       "robloxSourceBootstrapPassedAt": "2026-10-05T06:35:11.934Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T06:57:09.155Z",
@@ -3558,7 +3558,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-amusement-tycoon-37131116107",
       "unitySourceCommit": "1e59c94ee019ad8ab915868d07013e58953d6324",
-      "unityBuildRunId": 37240073062,
+      "unityBuildRunId": 37275115994,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -3616,7 +3616,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-04T22:35:53.295Z"
+        "verifiedAt": "2026-10-05T07:05:31.675Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -45754,7 +45754,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T07:01:54.267Z",
+  "updatedAt": "2026-10-05T07:05:34.247Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
