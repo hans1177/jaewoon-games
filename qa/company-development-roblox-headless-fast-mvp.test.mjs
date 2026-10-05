@@ -18,6 +18,13 @@ test('headless FAST_MVP passes complete release checklist without Studio',()=>{
  for(const field of ['gameStartPassed','serverBootPassed','worldFoundationPassed','characterFoundationPassed','physicsAndMovementPassed','runtimeFoundationPassed','actualRuntimeEvidence','internalReleaseReady'])assert.equal(r[field],false,field);
 });
 
+test('F0 rejects the legacy self-hit raycast that fabricated ground contact',()=>{
+ const result=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,config,server:server+'\ncharacter:SetAttribute("GROUND_CONTACT", groundHit ~= nil)',client,project});
+ assert.equal(result.pass,false);
+ assert.equal(result.f0SourceIntegrityPassed,false);
+ assert.ok(result.blockers.includes('groundContactNotSynthetic'));
+});
+
 test('headless F0 binds exact BUILD_UP asset fingerprint and source selection identity',()=>{
  const buildUpFingerprint='d'.repeat(64);
  const selectionFingerprint='e'.repeat(64);

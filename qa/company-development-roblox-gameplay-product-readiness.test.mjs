@@ -403,7 +403,7 @@ test('F9 blocks exact engine execution without server boot actual play and real 
 
   const pass=evaluateRobloxF9ProductReadiness({
     f0Evidence,
-    runtimeEvidence:{engineExecuted:true,exactEngineVersion:true,simulationRunning:true,serverBootObserved:true,f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1}},
+    runtimeEvidence:{validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',openCloudImageEvidence:{imageContentPassed:true},engineExecuted:true,exactEngineVersion:true,simulationRunning:true,serverBootObserved:true,f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1,spawnGroundingObserved:true,unsupportedSpawns:0,floatingSpawns:0}},
     postRuntimeQaEvidence:{actualRuntimeEvidence:true},
     studioPlayEvidence:{}
   });
@@ -415,10 +415,11 @@ test('F9 blocks exact engine execution without server boot actual play and real 
   const persistedPass=evaluateRobloxF9ProductReadiness({
     f0Evidence,
     runtimeEvidence:{
+      validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',openCloudImageEvidence:{imageContentPassed:true},
       exactGame:true,exactPlace:true,exactVersion:true,actualRuntimeEvidence:true,
       f1ServerBootPassed:true,f2WorldFoundationPassed:true,f3CharacterFoundationPassed:true,f4PhysicsAndMovementPassed:true,
       f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,
-      openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1}
+      openCloudWorldEvidence:{basePartCount:20,spawnCount:1,landmarkCount:2,objectiveCount:1,spawnGroundingObserved:true,unsupportedSpawns:0,floatingSpawns:0}
     },
     postRuntimeQaEvidence:{actualRuntimeEvidence:true},
     studioPlayEvidence:{}
@@ -457,4 +458,27 @@ test('verified learning sweep derives genre and play mode from each actual GameC
   assert.match(sweep,/fallbackProfile/);
   assert.match(sweep,/latestVerifiedDesign/);
   assert.match(sweep,/robloxBuildProfileFromBaseline/);
+});
+
+
+test('F9 cannot substitute local Studio or thumbnail metadata for cloud evidence',()=>{
+  const result=evaluateRobloxF9ProductReadiness({
+    f0Evidence:{gameplayProductReadiness:{pass:true,studioReadiness:{f9SourceQualityReady:true},runtimeRequirements:{}}},
+    runtimeEvidence:{exactGame:true,exactPlace:true,exactVersion:true,actualRuntimeEvidence:true,f1ServerBootPassed:true,f2WorldFoundationPassed:true,f3CharacterFoundationPassed:true,f4PhysicsAndMovementPassed:true,f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,openCloudImageEvidence:{imageMetadataAvailable:true}},
+    postRuntimeQaEvidence:{actualRuntimeEvidence:true},studioPlayEvidence:{actualPlay:true,runtimeVerified:true}
+  });
+  assert.equal(result.pass,false);
+  assert.equal(result.actualRuntime,false);
+  assert.ok(result.blockers.includes('F9_CLOUD_API_RUNTIME_EVIDENCE_MISSING'));
+  assert.ok(result.blockers.includes('F9_CLOUD_IMAGE_CONTENT_MISSING'));
+});
+
+
+test('cloud scene rejects floating spawns even when overall map bounds and runtime markers pass',()=>{
+ const result=evaluateRobloxF9ProductReadiness({
+  f0Evidence:{gameplayProductReadiness:{pass:true,studioReadiness:{f9SourceQualityReady:true},runtimeRequirements:{spawnRequired:true}}},
+  runtimeEvidence:{validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',openCloudImageEvidence:{imageContentPassed:true},exactGame:true,exactPlace:true,exactVersion:true,actualRuntimeEvidence:true,f1ServerBootPassed:true,f2WorldFoundationPassed:true,f3CharacterFoundationPassed:true,f4PhysicsAndMovementPassed:true,f5InputCameraUiPassed:true,f8GameplaySystemsPassed:true,openCloudWorldEvidence:{spawnCount:1,spawnsInBounds:true,spawnGroundingObserved:true,floatingSpawns:1,unsupportedSpawns:0}},
+ });
+ assert.equal(result.pass,false);
+ assert.ok(result.blockers.includes('F9_SPAWN_NOT_GROUNDED'));
 });

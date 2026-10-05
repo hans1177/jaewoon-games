@@ -1,5 +1,5 @@
 {
-  "version": 163,
+  "version": 164,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3121,6 +3121,18 @@
     "nativeRenderConsumerSourceRequired": true,
     "commentLogAndCountOnlyEvidenceForbidden": true,
     "staticQaCannotClaimRuntimeOrDeploymentCompletion": true,
-    "noOpSourceCannotEarnBuildUpGrowthCredit": true
+    "noOpSourceCannotEarnBuildUpGrowthCredit": true,
+    "robloxValidationProvider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
+    "cloudImageEvidenceFields": [
+      "API_ENDPOINT",
+      "UNIVERSE_ID",
+      "OBSERVED_AT",
+      "IMAGE_URL",
+      "CONTENT_TYPE",
+      "CONTENT_BYTES",
+      "SHA256",
+      "CONTENT_SIGNATURE_MATCHED",
+      "RUNTIME_SCREENSHOT_FALSE_UNLESS_SEPARATELY_PROVEN"
+    ]
   }
 }

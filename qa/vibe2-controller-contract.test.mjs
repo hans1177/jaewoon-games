@@ -67,7 +67,7 @@ test('adaptive graphics replacement worker contract covers UEFN Verse and reject
     });
     assert.ok(files.includes('uefn-games/demo/Content/Verse/Presentation.verse'));
     assert.match(continuousRunnerSource,/adaptive-graphics-replacement=required/);
-    assert.match(continuousRunnerSource,/actual-range=/);
+    assert.match(continuousRunnerSource,/maximum-actual=UNLIMITED/);
     assert.match(continuousRunnerSource,/zero-replacement-pass-forbidden/);
     assert.match(continuousRunnerSource,/실제 교체 개수/);
     assert.match(continuousRunnerSource,/재사용\/변형\/재조합/);
@@ -544,7 +544,7 @@ test('candidate release carries exact source-bound asset promotion candidates in
   assert.match(candidateReleaseWorkflow,/asset_promotion_candidates: \$\{\{ steps\.gate\.outputs\.asset_promotion_candidates \}\}/);
   assert.match(candidateReleaseWorkflow,/m\.runtimePromotionCandidates/);
   assert.match(candidateReleaseWorkflow,/candidateSourceBindingVerified/);
-  assert.match(candidateReleaseWorkflow,/Persist exact runtime asset promotion plan/);
+  assert.match(candidateReleaseWorkflow,/Persist exact runtime asset binding and promotion plan/);
   assert.match(candidateReleaseWorkflow,/robloxAssetRuntimePromotionPlan/);
   assert.match(candidateReleaseWorkflow,/PENDING_EXACT_NATIVE_RUNTIME/);
   assert.match(candidateReleaseWorkflow,/promotedMainSha/);

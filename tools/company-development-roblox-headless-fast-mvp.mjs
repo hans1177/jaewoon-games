@@ -37,6 +37,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.sourceStartupMarkers=/Players\.PlayerAdded:Connect/.test(server)&&/ScreenGui/.test(client);
   checks.foundationSentinelContract=/native-foundation-sentinel-v1/.test(server)&&/RuntimeFoundationReport/.test(combined)&&/SpawnLocation/.test(server)&&/HumanoidRootPart/.test(server)&&/GROUND_CONTACT/.test(server)&&/MOVEMENT_CONFIRMED/.test(server)&&/CameraSubject/.test(client);
   checks.characterPhysicsGuard=/\.Anchored\s*=\s*false/.test(server)&&/PlatformStand\s*=\s*false/.test(server)&&/Raycast\s*\(/.test(server);
+  checks.groundContactNotSynthetic=!/SetAttribute\(\s*["']GROUND_CONTACT["']\s*,\s*groundHit\s*~=\s*nil\s*\)/.test(server);
   checks.mobileFirst=/MobileFirst\s*=\s*true/i.test(config)&&/UserInputService/.test(client)&&/TouchEnabled/.test(client)&&/\.Activated:Connect/.test(client);
   checks.serverClientBoundary=/RemoteEvent/.test(server)&&/OnServerEvent/.test(server)&&/FireServer/.test(client);
   checks.remoteSecurity=/typeof\s*\(/i.test(server)&&/rateLimit|cooldown|lastActionRequest|lastRequest|lastHit/i.test(server);
@@ -49,7 +50,7 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
   checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
   checks.gameplayProductReadiness=!gameplayProductReadinessRequired||gameplayProductReadiness.pass===true;
-  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
+  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.groundContactNotSynthetic&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
   return Object.freeze({
     version:5,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),

@@ -365,9 +365,10 @@ jobs:
             const existingSourceMaintenanceRebind=existingSourceAssetRebind;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
-              &&item.robloxFoundationF0Passed!==true
-              &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
-              &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
+              &&((item.robloxFoundationF0Passed!==true
+                &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
+                &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED')
+                ||['GROUND_CONTACT_FAILURE','SPAWN_GROUND_MISSING','ROBLOX_FIRST_FRAME_GROUNDING_FAILED'].includes(String(item.robloxFailureSignature||'').toUpperCase()));
             const currentReconciliationPass=reconciledPass.has(item.gameId);
             const resolvedSourceBindDebt=!secondaryOwnerFocus
               &&currentReconciliationPass

@@ -878,6 +878,12 @@ test('new Roblox compiler output contains the F0 foundation contract from first 
   assert.match(compiled.result.serverCode,/HumanoidRootPart/);
   assert.match(compiled.result.serverCode,/GROUND_CONTACT/);
   assert.match(compiled.result.serverCode,/MOVEMENT_CONFIRMED/);
+  assert.match(compiled.result.serverCode,/params\.ExcludeInstances = \{character, foundationSpawn\}/);
+  assert.match(compiled.result.serverCode,/params\.RespectCanCollide = true/);
+  assert.match(compiled.result.serverCode,/humanoid\.FloorMaterial ~= Enum\.Material\.Air/);
+  assert.match(compiled.result.serverCode,/displacement\.Magnitude > 0\.5/);
+  assert.match(compiled.result.serverCode,/NativeFoundationGroundingVersion/);
+  assert.doesNotMatch(compiled.result.serverCode,/GROUND_CONTACT", groundHit ~= nil/);
   assert.match(compiled.result.serverCode,/BindToClose/);
   assert.match(compiled.result.clientCode,/TouchEnabled/);
   assert.match(compiled.result.clientCode,/CameraSubject/);
@@ -909,6 +915,10 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.match(client,/FRAME_PANEL/);
     assert.match(server,/native-foundation-sentinel-v1/);
     assert.match(server,/RuntimeFoundationReport/);
+    assert.match(server,/NativeFoundationGroundingVersion/);
+    assert.match(server,/AssemblyLinearVelocity = Vector3\.zero/);
+    assert.match(server,/humanoid\.RigType == Enum\.HumanoidRigType\.R6/);
+    assert.doesNotMatch(server,/GROUND_CONTACT", groundHit ~= nil/);
     assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
     assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
     assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
@@ -1260,4 +1270,3 @@ test('verified learning refresh dispatches per game without a portfolio-wide swe
   assert.match(sweep,/--game-id="\$GAME_ID"/);
   assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep\s*\n/);
 });
-

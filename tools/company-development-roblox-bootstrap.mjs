@@ -821,6 +821,64 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
   return output;
 }
 
+function foundationCharacterSource(name,spawn){
+  return `local function ${name}(character)
+  local humanoid = character:WaitForChild("Humanoid", 10)
+  local rootPart = character:WaitForChild("HumanoidRootPart", 10)
+  if not humanoid or not rootPart then character:SetAttribute("FoundationFailure", "CHARACTER_FOUNDATION_FAILURE"); return end
+  character:SetAttribute("GROUND_CONTACT", false)
+  character:SetAttribute("MOVEMENT_CONFIRMED", false)
+  rootPart.Anchored = false
+  humanoid.PlatformStand = false
+  for _, bodyPart in ipairs(character:GetDescendants()) do
+    if bodyPart:IsA("BasePart") and not bodyPart:FindFirstAncestorOfClass("Tool") then bodyPart.Anchored = false end
+  end
+  local params = RaycastParams.new()
+  params.ExcludeInstances = {character, ${spawn}}
+  params.RespectCanCollide = true
+  params.IgnoreWater = true
+  params.CollisionGroup = rootPart.CollisionGroup
+  local leg = humanoid.RigType == Enum.HumanoidRigType.R6 and character:FindFirstChild("Left Leg") or nil
+  local clearance = humanoid.HipHeight + rootPart.Size.Y * 0.5 + (leg and leg.Size.Y or 0)
+  local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -512, 0), params)
+  if not groundHit or groundHit.Normal.Y < 0.55 then
+    groundHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), params)
+  end
+  if not groundHit or groundHit.Normal.Y < 0.55 then
+    character:SetAttribute("FoundationFailure", "SPAWN_GROUND_MISSING")
+    return
+  end
+  -- The existing spawn rests on verified world geometry; it cannot be its own ground proof.
+  local spawnHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), params)
+  if spawnHit and spawnHit.Normal.Y >= 0.55 then
+    ${spawn}.Position = Vector3.new(${spawn}.Position.X, spawnHit.Position.Y - ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
+  end
+  local target = groundHit.Position + Vector3.new(0, clearance + 0.1, 0)
+  character:PivotTo(character:GetPivot() + (target - rootPart.Position))
+  rootPart.AssemblyLinearVelocity = Vector3.zero
+  rootPart.AssemblyAngularVelocity = Vector3.zero
+  local movementOrigin = rootPart.Position
+  humanoid.Running:Connect(function(speed)
+    if not rootPart.Parent or humanoid.FloorMaterial == Enum.Material.Air then return end
+    local displacement = (rootPart.Position - movementOrigin) * Vector3.new(1, 0, 1)
+    if speed > 0.1 and displacement.Magnitude > 0.5 then character:SetAttribute("MOVEMENT_CONFIRMED", true) end
+  end)
+  local deadline = os.clock() + 5
+  repeat
+    if not character.Parent or not rootPart.Parent then return end
+    local contact = workspace:Raycast(rootPart.Position, Vector3.new(0, -(clearance + 0.75), 0), params)
+    if contact and contact.Normal.Y >= 0.55 and humanoid.FloorMaterial ~= Enum.Material.Air and math.abs(rootPart.AssemblyLinearVelocity.Y) < 3 then
+      character:SetAttribute("GROUND_CONTACT", true)
+      character:SetAttribute("FoundationFailure", nil)
+      character:SetAttribute("NativeFoundationGroundingVersion", 2)
+      return
+    end
+    task.wait(0.1)
+  until os.clock() >= deadline
+  character:SetAttribute("FoundationFailure", "GROUND_CONTACT_FAILURE")
+end`;
+}
+
 export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,learning={}}={}){
   const verifiedLearning=requireRobloxVerifiedExternalLearning(learning);
   const profile=robloxBuildProfileFromBaseline(baseline);
@@ -898,15 +956,7 @@ if not nativeFoundationSpawn then
   nativeFoundationSpawn.CanCollide = true
   nativeFoundationSpawn.Parent = workspace
 end
-local function bindNativeFoundationCharacter(character)
-  local humanoid = character:WaitForChild("Humanoid")
-  local rootPart = character:WaitForChild("HumanoidRootPart")
-  rootPart.Anchored = false
-  humanoid.PlatformStand = false
-  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
-  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
-  character:SetAttribute("MOVEMENT_CONFIRMED", true)
-end
+${foundationCharacterSource("bindNativeFoundationCharacter","nativeFoundationSpawn")}
 local function bindNativeFoundationPlayer(player)
   if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
   player.CharacterAdded:Connect(bindNativeFoundationCharacter)
@@ -922,6 +972,21 @@ end)
 game:BindToClose(function() end)
 `;
     }
+
+    // Upgrade only the known faulty foundation owner, preserving custom gameplay functions.
+    afterServer=afterServer.replace(/local function (bind(?:Native)?FoundationCharacter)\(character\)\n[\s\S]*?\nend(?=\s*local function bind(?:Native)?FoundationPlayer)/g,(body,name)=>{
+      const legacy=`local function ${name}(character)
+  local humanoid = character:WaitForChild("Humanoid")
+  local rootPart = character:WaitForChild("HumanoidRootPart")
+  rootPart.Anchored = false
+  humanoid.PlatformStand = false
+  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))
+  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
+  character:SetAttribute("MOVEMENT_CONFIRMED", true)
+end`;
+      if(body.replace(/\s+/g,' ').trim()!==legacy.replace(/\s+/g,' ').trim())return body;
+      return foundationCharacterSource(name,name==='bindNativeFoundationCharacter'?'nativeFoundationSpawn':'foundationSpawn');
+    });
 
     if(!/RuntimeFoundationReport/.test(afterClient)||!/CameraSubject/.test(afterClient)||!/TouchEnabled/.test(afterClient)){
       afterClient += `
@@ -1161,7 +1226,7 @@ function serverSource({gameId,saveRequired,actions,profile,learning={}}){
   const datastoreHead=saveRequired?`local DataStoreService = game:GetService("DataStoreService")\nlocal store = nil\nlocal storeOk, storeResult = pcall(function()\n  return DataStoreService:GetDataStore(${luauString(`${gameId}-development-v1`)})\nend)\nif storeOk then store = storeResult end\n`:'';
   const loadBlock=saveRequired?`  local ok, saved = pcall(function()\n    return store:GetAsync("player:" .. player.UserId)\n  end)\n  if ok and typeof(saved) == "table" then\n    for key, fallback in pairs(Config.InitialState) do\n      local value = saved[key]\n      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end\n    end\n  else\n    initializePlayer(player)\n  end\n`:`  initializePlayer(player)\n`;
   const saveBlock=saveRequired?`  local snapshot = {}\n  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end\n  pcall(function()\n    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)\n  end)\n`:'';
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\n-- native-foundation-sentinel-v1\nlocal foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")\nif foundationRemote and not foundationRemote:IsA("RemoteEvent") then foundationRemote:Destroy(); foundationRemote = nil end\nif not foundationRemote then\n  foundationRemote = Instance.new("RemoteEvent")\n  foundationRemote.Name = "RuntimeFoundationReport"\n  foundationRemote.Parent = ReplicatedStorage\nend\nlocal foundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")\nif not foundationSpawn then\n  foundationSpawn = Instance.new("SpawnLocation")\n  foundationSpawn.Name = "NativeFoundationSpawn"\n  foundationSpawn.Size = Vector3.new(8, 1, 8)\n  foundationSpawn.Position = Vector3.new(0, 3, 0)\n  foundationSpawn.Neutral = true\n  foundationSpawn.Anchored = true\n  foundationSpawn.CanCollide = true\n  foundationSpawn.Parent = workspace\nend\nlocal function bindFoundationCharacter(character)\n  local humanoid = character:WaitForChild("Humanoid")\n  local rootPart = character:WaitForChild("HumanoidRootPart")\n  rootPart.Anchored = false\n  humanoid.PlatformStand = false\n  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))\n  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)\n  character:SetAttribute("MOVEMENT_CONFIRMED", true)\nend\nlocal function bindFoundationPlayer(player)\n  if player.Character then task.defer(bindFoundationCharacter, player.Character) end\n  player.CharacterAdded:Connect(bindFoundationCharacter)\nend\nfoundationRemote.OnServerEvent:Connect(function(player, signal)\n  if typeof(signal) ~= "string" then return end\n  player:SetAttribute("NativeFoundationReadyAt", os.time())\nend)\n\nlocal lastAction = {}\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end\n  player:SetAttribute("LastApprovedScope", "ready")\n  player:SetAttribute("LearningOperator", Config.LearningContext.Operator)
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\n-- native-foundation-sentinel-v1\nlocal foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")\nif foundationRemote and not foundationRemote:IsA("RemoteEvent") then foundationRemote:Destroy(); foundationRemote = nil end\nif not foundationRemote then\n  foundationRemote = Instance.new("RemoteEvent")\n  foundationRemote.Name = "RuntimeFoundationReport"\n  foundationRemote.Parent = ReplicatedStorage\nend\nlocal foundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")\nif not foundationSpawn then\n  foundationSpawn = Instance.new("SpawnLocation")\n  foundationSpawn.Name = "NativeFoundationSpawn"\n  foundationSpawn.Size = Vector3.new(8, 1, 8)\n  foundationSpawn.Position = Vector3.new(0, 3, 0)\n  foundationSpawn.Neutral = true\n  foundationSpawn.Anchored = true\n  foundationSpawn.CanCollide = true\n  foundationSpawn.Parent = workspace\nend\n${foundationCharacterSource("bindFoundationCharacter","foundationSpawn")}\nlocal function bindFoundationPlayer(player)\n  if player.Character then task.defer(bindFoundationCharacter, player.Character) end\n  player.CharacterAdded:Connect(bindFoundationCharacter)\nend\nfoundationRemote.OnServerEvent:Connect(function(player, signal)\n  if typeof(signal) ~= "string" then return end\n  player:SetAttribute("NativeFoundationReadyAt", os.time())\nend)\n\nlocal lastAction = {}\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end\n  player:SetAttribute("LastApprovedScope", "ready")\n  player:SetAttribute("LearningOperator", Config.LearningContext.Operator)
   player:SetAttribute("LastLearningPattern", "")
   player:SetAttribute("ActionSequence", 0)\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\ngame:BindToClose(function() end)\n`;
 }

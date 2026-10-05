@@ -299,6 +299,19 @@ jobs:
               ||(internalRuntimeFindingDeferred&&post.studioAssetBindingRequired!==true)
               ||(internalRuntimeFindingDeferred&&post.studioAssetRuntimeBindingPassed===true)
               ||(internalStudioValidationAccepted&&post.studioAssetRuntimeBindingPassed===true);
+            // Cloud-only evidence debt returns to observation, never to fabricated gameplay repair.
+            if(runtime.validationProvider!=='ROBLOX_OFFICIAL_CLOUD_API_ONLY'||runtime.openCloudImageEvidence?.imageContentPassed!==true){
+              item.robloxFinalReviewPassed=false;
+              item.robloxF9ReleaseRegressionPassed=false;
+              item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_CLOUD_API_EVIDENCE_REQUIRED';
+              item.robloxF9FailureSignature='ROBLOX_CLOUD_API_EVIDENCE_REQUIRED';
+              item.robloxF9Blockers=['roblox-cloud-api-evidence-required'];
+              item.routingBlockers=['roblox-cloud-api-evidence-required'];
+              item.updatedAt=stamp;blocked++;
+              continue;
+            }
             const productReadiness=evaluateRobloxF9ProductReadiness({
               f0Evidence:f0CandidateEvidence,
               runtimeEvidence:runtime,
