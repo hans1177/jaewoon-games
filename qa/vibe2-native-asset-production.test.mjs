@@ -31,7 +31,15 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
       flowAssetLoadout:{
         selections:[
           {requirementId:'weapon-primary',assetId:'common-sword',family:'WEAPON',role:'MELEE_WEAPON',sourceFiles:['assets/roblox/common-tools-v1/RobloxCommonTools.luau']}
-        ]
+        ],
+        compatibleAssets:[
+          {requirementId:'weapon-primary',assetId:'common-sword',family:'WEAPON',role:'MELEE_WEAPON',sourceFiles:['assets/roblox/common-tools-v1/RobloxCommonTools.luau'],internalAuditScore:930,lowQuality:false},
+          {requirementId:'weapon-primary',assetId:'common-sword-low',family:'WEAPON',role:'MELEE_WEAPON_ALT',sourceFiles:['assets/roblox/common-tools-v1/RobloxCommonTools.luau'],internalAuditScore:120,lowQuality:true}
+        ],
+        allCompatibleAssetsAutoUseRequired:true,
+        lowQualityBindingAllowedRegardlessOfScore:true,
+        lowScoreCompatibleAssetMustRemainUsageEligible:true,
+        libraryEvaluation:{registryAssetCount:717,manifestAssetCount:25,commonCatalogCount:14,allCatalogCount:18,allLibrarySourcesEvaluated:true,qualityScoreIsUsageGate:false,lowScoreCompatibleAssetUseRequired:true}
       },
       decisions:[
         {type:'item',applyFirst:{candidates:[
@@ -56,6 +64,8 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.eligibility.crossGenreReuseAllowed,true);
   assert.equal(a.eligibility.qualityScoreIsUsageGate,false);
   assert.equal(a.eligibility.lowScoreCompatibleAssetUseAllowed,true);
+  assert.equal(a.eligibility.lowScoreCompatibleAssetUseRequired,true);
+  assert.equal(a.eligibility.lowScoreMayNeverBeDroppedForScoreAlone,true);
   assert.equal(a.eligibility.safeCompatibleFallbackPreferredOverBlank,true);
   assert.equal(a.eligibility.safeCompatibleFallbackPreferredOverPrimitivePlaceholder,true);
   assert.equal(a.eligibility.qualityMayNotOverrideRoleMismatch,true);
@@ -65,10 +75,25 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.applicationCoverage.noArtificialGameplaySignalCoverageCap,true);
   assert.equal(a.applicationCoverage.noArtificialCombinationCap,true);
   assert.equal(a.applicationCoverage.contextBudgetIsNotUsageCap,true);
+  assert.equal(a.applicationCoverage.allCompatibleLibraryAssetsRequired,true);
+  assert.equal(a.applicationCoverage.lowScoreCompatibleAssetsRequired,true);
   assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
-  assert.equal(a.synchronization.selectedSubsetOnly,true);
+  assert.equal(a.synchronization.selectedSubsetOnly,false);
+  assert.equal(a.synchronization.fullLibraryEvaluatedEveryBuildUp,true);
+  assert.equal(a.synchronization.allCompatibleLibraryAssetsIncluded,true);
+  assert.equal(a.synchronization.compatibilityFilteredUsageSet,true);
+  assert.equal(a.synchronization.qualityScoreNeverFiltersCompatibility,true);
+  assert.equal(a.synchronization.sourceApiContextOnlyForCompatibleAssets,true);
   assert.equal(a.synchronization.changedFamilyRebindOnly,true);
   assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
+  assert.equal(a.compatibleAssetCount,2);
+  assert.equal(a.allCompatibleAssetsAutoUseRequired,true);
+  assert.equal(a.lowQualityBindingAllowedRegardlessOfScore,true);
+  assert.equal(a.lowScoreCompatibleAssetMustRemainUsageEligible,true);
+  assert.ok(a.compatibleAssets.some(row=>row.assetId==='common-sword-low'&&row.internalAuditScore===120));
+  assert.ok(a.sourceConsumptionSequence.includes('SEARCH_FULL_INTERNAL_LIBRARY_FOR_ALL_COMPATIBLE_FAMILY_ROLE_ASSETS'));
+  assert.equal(a.commonSourceReuse.selectedFamilyOnly,false);
+  assert.equal(a.commonSourceReuse.compatibleFamilyOnly,true);
   assert.equal(a.version,3);
   assert.ok(a.usageMatrix.length>=72);
   assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
@@ -207,6 +232,36 @@ test('Web fully consumes the same visual loadout as Unity and imports a shared c
   assert.equal(web.companyGraphicsLibrary.platformProfile,'WEB');
   assert.equal(web.baseMaterialLoadout.universalAssetFirst.required,true);
   assert.match(assetProductionGuidance(unity),/UNITY \/ WEB SHARED VISUAL DOCUMENT/);
+});
+
+test('Web asset planner evaluates registry manifest and every asset catalog before compatibility filtering',()=>{
+  const prior=process.env.NODE_TEST_CONTEXT;
+  process.env.NODE_TEST_CONTEXT='1';
+  try{
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:process.cwd(),
+      target:'web',
+      task:{gameId:'all-library-web-qa',goal:'웹 BUILD_UP UI 배경 캐릭터 이펙트 자산 전체 자동사용 검증'}
+    });
+    const inventory=plan.flowAssetLoadout.libraryEvaluation;
+    assert.equal(inventory.allLibrarySourcesEvaluated,true);
+    assert.equal(inventory.registryEvaluated,true);
+    assert.equal(inventory.manifestEvaluated,true);
+    assert.equal(inventory.allCatalogsEvaluated,true);
+    assert.ok(inventory.registryAssetCount>=717);
+    assert.ok(inventory.manifestAssetCount>=25);
+    assert.ok(inventory.commonCatalogCount>=14);
+    assert.ok(inventory.allCatalogCount>=18);
+    assert.ok(inventory.evaluatedAssetCount>=inventory.registryAssetCount);
+    assert.equal(inventory.qualityScoreIsUsageGate,false);
+    assert.equal(inventory.lowScoreCompatibleAssetUseRequired,true);
+    assert.equal(plan.applyFirstSummary.qualityGateStillRequired,false);
+    assert.equal(plan.applyFirstSummary.qualityScoreIsUsageGate,false);
+    assert.equal(plan.applyFirstSummary.lowScoreCompatibleAssetUseRequired,true);
+  }finally{
+    if(prior===undefined)delete process.env.NODE_TEST_CONTEXT;
+    else process.env.NODE_TEST_CONTEXT=prior;
+  }
 });
 
 test('image-only asset input delivers actual pixels and binds observations to the image hash',async()=>{
