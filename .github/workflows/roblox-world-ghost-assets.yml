@@ -6,12 +6,18 @@ on:
       - 'assets/roblox/world-ghosts/**'
       - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/asset-library-sync.test.mjs'
+      - 'assets/asset-library*.js'
+      - 'asset-library.html'
       - '.github/workflows/roblox-world-ghost-assets.yml'
   pull_request:
     paths:
       - 'assets/roblox/world-ghosts/**'
       - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/asset-library-sync.test.mjs'
+      - 'assets/asset-library*.js'
+      - 'asset-library.html'
       - '.github/workflows/roblox-world-ghost-assets.yml'
   workflow_dispatch:
 permissions:
@@ -102,7 +108,7 @@ jobs:
       - name: Verify regenerated packages
         env:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
-        run: node --test qa/roblox-world-ghost-skins.test.mjs
+        run: node --test qa/roblox-world-ghost-skins.test.mjs qa/asset-library-sync.test.mjs
       - name: Install Blender for authored assets
         if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
         run: |
