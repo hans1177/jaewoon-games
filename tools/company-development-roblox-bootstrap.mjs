@@ -179,7 +179,7 @@ function studioAssetSelectionFingerprint({gameId='',profile={},libraryVersion=0,
     family,[...new Set((atoms||[]).map(clean).filter(Boolean))].sort()
   ]));
   return crypto.createHash('sha256').update(JSON.stringify({
-    version:1,gameId:clean(gameId),genre:clean(profile?.genre),subgenre:clean(profile?.subgenre),
+    version:2,gameId:clean(gameId),
     libraryVersion:Number(libraryVersion||0),families:normalized
   })).digest('hex');
 }
