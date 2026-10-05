@@ -42,7 +42,7 @@ jobs:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     concurrency:
       # Preserve an active drain; GitHub coalesces pending runs within the same group.
-      group: director-runner-drain-v2
+      group: director-runner-drain-v3
       cancel-in-progress: false
     # Queue eviction must stay off the saturated slim control lane.
     # Keep the dedicated fixed 24.04 control capacity while game-heavy work remains unchanged.
