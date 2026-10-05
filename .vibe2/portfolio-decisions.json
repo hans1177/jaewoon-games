@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-05T09:05:26.807Z",
+  "generatedAt": "2026-10-05T09:25:41.612Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -18,7 +18,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 59
+          "repeatedFailureSignal": 60
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -64,36 +64,6 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "horror-escape-room",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 10,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 22
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
       "gameId": "wild-survival",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
@@ -108,7 +78,7 @@
           "activeTasks": 1,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 28
+          "repeatedFailureSignal": 29
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -166,6 +136,36 @@
         },
         "development": {
           "activeTasks": 5,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "horror-escape-room",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 10,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
@@ -529,6 +529,216 @@
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "card-grid-duel",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 49
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "cat-step",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 49
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 49
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 46
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 50
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "star-frontier",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 46
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
