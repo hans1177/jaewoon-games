@@ -197,7 +197,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     selected[family]=selectBootstrapAtoms(
       families?.[family]||[],
       preferred,
-      `${gameId}|${profile?.genre||''}|${family}`,
+      `${gameId}|${family}`,
       family==='MOTION'?11:(family==='ENVIRONMENT'||family==='BUILDING'?4:3)
     );
   }
