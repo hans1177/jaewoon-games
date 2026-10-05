@@ -152,6 +152,13 @@ test('Roblox package rejects artifacts that can reopen as deprecated Compatibili
   }
 });
 
+test('Roblox package source validation is bound to the exact current company asset library and emits coverage evidence',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-package.mjs',import.meta.url),'utf8');
+  assert.match(source,/readJson\(path\.join\(worktree,'company-asset-library\.json'\)\)/);
+  assert.match(source,/validateExistingRobloxSourceTree\(\{root,baseline,assetLibrary\}\)/);
+  assert.match(source,/ROBLOX_BUILD_INTERNAL_ASSET_COVERAGE=PASS/);
+});
+
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{
   assert.equal(ROBLOX_PACKAGE_TOOL.rojoVersion,'7.7.0');
   assert.equal(ROBLOX_PACKAGE_TOOL.linuxX64Asset,'rojo-7.7.0-linux-x86_64.zip');
