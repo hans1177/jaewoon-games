@@ -270,8 +270,8 @@
       "sourceRevision": "8ae452c72c30c75d99aca9584fc4e5dd9383ed4f",
       "artifactIdentity": "sha256:47b655e4c7be36a08a42a08ccbcc9cef7d57db47f1c5793ae8cb7b72c4e71579",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
-      "workflowRunId": 37244731892,
-      "testedAt": "2026-10-05T00:26:53.447Z",
+      "workflowRunId": 37246798736,
+      "testedAt": "2026-10-05T00:51:27.566Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "COMBAT_FEEL",
@@ -2406,7 +2406,7 @@
     "expectedPlayerEffect": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "reason": "current source Studio product-quality failure",
       "runtimeObserved": true
     },
     "baseline": {
@@ -2426,7 +2426,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
