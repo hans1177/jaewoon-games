@@ -2738,6 +2738,7 @@ function hostApplyPetAttack(a){
  if(!multiIsHost()||!a)return;const e=state.enemies.find(x=>x.netId===a.targetId&&x.hp>0);if(!e)return;const dmg=enemyIncomingDamage(e,42,performance.now());e.hp-=dmg;e.hitAt=performance.now()+110;markEnemyHitByPet(e);if(e.hp<=0)finishPetEnemyKill(e,a.ownerId)
 }
 function petStrike(e,manual=false){
+ if(state.pet.form==='croc')return false;
  if(!petAlive()||!e||e.hp<=0)return false;const now=performance.now();if(now-state.pet.attackAt<750)return false;
  if(dist(state.pet.x,state.pet.y,e.x,e.y)>105+e.type.r)return false;state.pet.attackAt=now;playGameSfx('petAttack');
  if(multiplayer.connected&&!multiIsHost())multiSend('pet-attack',{ownerId:multiplayer.playerId,targetId:e.netId});
@@ -2745,6 +2746,7 @@ function petStrike(e,manual=false){
  if(manual)showNotice(activePetName()+' 공격 · 42');return true
 }
 function petMountedAttack(){
+ if(state.pet.form==='croc')return false;
  if(!state.pet.mounted||!petAlive())return false;let best=null,bd=150;
  for(const e of state.enemies){if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;const d=dist(state.pet.x,state.pet.y,e.x,e.y);if(d<bd){best=e;bd=d}}
  if(best){state.pet.targetId=best.netId;petStrike(best,true)}else showNotice('근처에 공격할 적이 없어');return true
@@ -2756,6 +2758,7 @@ function updatePet(dt,now){
  if(pet.hatched&&!pet.alive&&pet.respawnAt&&Date.now()>=pet.respawnAt){pet.alive=true;pet.hp=pet.maxHp;pet.respawnAt=0;pet.reviveClickUntil=0;pet.x=p.x+55;pet.y=p.y+25;pet.targetId=null;state.dirty=true;showNotice(activePetName()+'가 부활했어')}
  if(!petAlive())return;
  if(pet.mounted){pet.x=p.x;pet.y=p.y;return}
+ if(pet.form==='croc'){pet.targetId=null;const followD=dist(pet.x,pet.y,p.x,p.y);if(followD>700){pet.x=p.x-45;pet.y=p.y+30}else if(followD>72){pet.x+=((p.x-pet.x)/(followD||1))*220*dt;pet.y+=((p.y-pet.y)/(followD||1))*220*dt}return}
  let target=petTarget();
  if(!target){let best=null,bd=430;for(const e of state.enemies){if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')continue;if(!e.raidId&&!e.hostile&&e.type.mood!=='aggressive'&&e.type.mood!=='boss')continue;const d=dist(pet.x,pet.y,e.x,e.y);if(d<bd){best=e;bd=d}}if(best){pet.targetId=best.netId;target=best}}
  if(target){
