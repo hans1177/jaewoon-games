@@ -3,11 +3,41 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
 const exists=relative=>fs.existsSync(path.join(repoRoot,relative));
+
+test('owner design reset refreshes shallow tracking refs after a concurrent runtime update',t=>{
+  const workflow=read('.github/workflows/owner-all-games-design-reset.yml');
+  const fetchCommand=workflow.match(/git fetch --depth=1 origin \\\n\s+[^\n]+\\\n\s+[^\n]+/)?.[0];
+  assert.ok(fetchCommand);
+  assert.doesNotMatch(workflow,/git push (?:--force|-f)(?:\s|$)/);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-reset-fetch-'));
+  t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:'pipe'}).trim();
+  const origin=path.join(dir,'origin.git'),writer=path.join(dir,'writer'),reader=path.join(dir,'reader');
+  git(dir,'init','--bare',origin);git(dir,'init','-b','main',writer);
+  git(writer,'config','user.name','QA');git(writer,'config','user.email','qa@example.invalid');
+  fs.writeFileSync(path.join(writer,'state.json'),'base\n');
+  git(writer,'add','.');git(writer,'commit','-m','base');
+  git(writer,'remote','add','origin',origin);git(writer,'push','origin','main','main:company-runtime');
+  git(dir,'clone','--depth=1','--branch','main','file://'+origin,reader);
+  const refresh=()=>execFileSync('bash',['-euc',fetchCommand],{cwd:reader,encoding:'utf8',stdio:'pipe',env:{...process.env,COMPANY_RUNTIME_BRANCH:'company-runtime'}});
+  refresh();
+  fs.writeFileSync(path.join(writer,'state.json'),'other-worker\n');
+  git(writer,'add','.');git(writer,'commit','-m','concurrent runtime checkpoint');
+  const latest=git(writer,'rev-parse','HEAD');git(writer,'push','origin','HEAD:company-runtime');
+  assert.throws(()=>git(reader,'fetch','--depth=1','origin','company-runtime:refs/remotes/origin/company-runtime'),error=>/non-fast-forward/.test(String(error.stderr)));
+  refresh();
+  assert.equal(git(reader,'rev-parse','refs/remotes/origin/company-runtime'),latest);
+  git(reader,'checkout','-B','owner-all-games-design-reset-runtime','origin/company-runtime');
+  assert.equal(fs.readFileSync(path.join(reader,'state.json'),'utf8'),'other-worker\n');
+  assert.equal(git(reader,'rev-parse','HEAD'),latest);
+});
 
 const centralWorkflows=[
   '.github/workflows/company-seed-design-runtime.yml',

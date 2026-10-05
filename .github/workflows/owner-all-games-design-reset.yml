@@ -41,9 +41,10 @@ jobs:
           git config user.email 'owner-design-reset@users.noreply.github.com'
           pushed=0
           for attempt in 1 2 3 4; do
+            echo "OWNER_ALL_GAMES_DESIGN_RESET_FETCH_RETRY=$attempt/4"
             git fetch --depth=1 origin \
-              "main:refs/remotes/origin/main" \
-              "$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
+              "+refs/heads/main:refs/remotes/origin/main" \
+              "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
             git checkout -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git show origin/main:game-catalog.json > game-catalog.json
             node /tmp/company-all-games-design-reset.mjs | tee /tmp/design-reset-state.txt
