@@ -260,7 +260,7 @@ export function eligibleForRobloxSourceReconciliation(item={}){
   return true;
 }
 
-export function validateExistingRobloxSourceTree({root='',baseline={},assetLibrary={}}={}){
+export function validateExistingRobloxSourceTree({root='',gameId='',baseline={},assetLibrary={}}={}){
   const blockers=[];
   const required={
     project:path.join(root,'default.project.json'),
@@ -286,7 +286,7 @@ export function validateExistingRobloxSourceTree({root='',baseline={},assetLibra
     baseline,
   });
   blockers.push(...verdict.blockers);
-  const internalAssetBinding=validateRobloxInternalAssetSourceBinding({root,gameId:clean(baseline?.gameId||baseline?.content?.gameId),baseline,assetLibrary});
+  const internalAssetBinding=validateRobloxInternalAssetSourceBinding({root,gameId,baseline,assetLibrary});
   if(internalAssetBinding.required===true)blockers.push(...internalAssetBinding.blockers);
   return {pass:blockers.length===0,blockers:[...new Set(blockers)],saveRequired:verdict.saveRequired,internalAssetBinding};
 }
@@ -431,7 +431,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     try{
       if(baselineLoadError)throw baselineLoadError;
       if(!baseline)throw new Error(`design baseline unavailable: ${item.gameId}`);
-      const verdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary});
+      const verdict=validateExistingRobloxSourceTree({root,gameId:item.gameId,baseline,assetLibrary});
       results.push({
         gameId:item.gameId,
         pass:verdict.pass,
