@@ -12,6 +12,15 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('Roblox internal asset selection is genre-agnostic for the same game and library',()=>{
+  const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const a=buildRobloxStudioAssetBootstrapPlan({gameId:'bug-defense',profile:{genre:'Strategy',subgenre:'Tower Defense'},assetLibrary});
+  const b=buildRobloxStudioAssetBootstrapPlan({gameId:'bug-defense',profile:{genre:'Completely Different Label',subgenre:'Other'},assetLibrary});
+  assert.deepEqual(a.families,b.families);
+  assert.equal(a.selectionFingerprint,b.selectionFingerprint);
+  assert.equal(a.libraryVersion,b.libraryVersion);
+});
+
 test('Roblox BUILD_UP loadout uses the exact same canonical selection as GameConfig bootstrap',()=>{
   const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   const config=fs.readFileSync('roblox-games/bug-defense/shared/GameConfig.luau','utf8');
