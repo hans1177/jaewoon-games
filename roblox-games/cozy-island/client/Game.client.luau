@@ -509,7 +509,7 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Parent = feedbackFlash
 end
 feedbackFlash:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
-feedbackFlash:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+feedbackFlash:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 
 feedbackFlash.Size=UDim2.fromScale(1,1)
 feedbackFlash.BackgroundTransparency=1
