@@ -3265,11 +3265,12 @@
       "VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX=64",
       "VIBE2_GAME_PRIMARY_REFILL_TARGET=64"
     ],
-    "runtimeStateField": "vibe2-unreal-core:.vibe2/parallelism-control.json#currentMax",
-    "requiredRuntimeState": 64,
     "assetDevelopmentSlotsMustRemain": 63,
     "adaptiveTargetMutationForbidden": true,
     "qaReleaseRecoveryLaneCapacityClaim": false,
-    "sequenceChangeClaim": false
+    "sequenceChangeClaim": false,
+    "parallelismControlCurrentMaxRole": "ADVISORY_TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
+    "parallelismControlCurrentMaxMayDifferFrom64": true,
+    "actualReservationAuthority": "WORKFLOW_GAME_PRIMARY_MAX_AND_LANE_MAX_FIXED_64"
   }
 }
