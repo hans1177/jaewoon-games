@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -85,6 +85,54 @@ test('hero asset routing selects stronger local model without changing generatio
   assert.equal(route.cacheKey,'qwen3-4b-instruct');
   assert.equal(route.generationBudgetUnchanged,true);
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+});
+
+test('Roblox internal asset family binding requires actual family use and rejects false NOT_APPLICABLE',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'roblox-games/demo');
+  write(path.join(root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = {} } }\n');
+  write(path.join(root,'client/Game.client.luau'),'local placeholder = true\n');
+  const expectedFamilies=Object.fromEntries(ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]));
+  const statusRows=ROBLOX_INTERNAL_ASSET_FAMILIES
+    .map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`)
+    .join('\n');
+  const appliedUi=[
+    'local studioAssetFamilies = {}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    'local STUDIO_ASSET_FAMILY_STATUS = {',
+    statusRows,
+    '}',
+    'local root = Instance.new("Frame")',
+    'local stroke = Instance.new("UIStroke")',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end'
+  ].join('\n');
+  const pass=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi}]}
+  });
+  assert.equal(pass.pass,true);
+  assert.equal(pass.appliedCount,1);
+  assert.equal(pass.notApplicableCount,11);
+  assert.equal(pass.changedAppliedFamilyCount,1);
+
+  const falseNotApplicable=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi+'\nlocal enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'}]}
+  });
+  assert.equal(falseNotApplicable.pass,false);
+  assert.ok(falseNotApplicable.blockers.includes('ROBLOX_INTERNAL_ASSET_NOT_APPLICABLE_EXISTING_SYSTEM:CREATURE'));
+
+  const markerOnly=appliedUi
+    .replace('local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }','local STUDIO_ASSET_SELECTION = { UI = {"UI_ATOM"} }')
+    .replace('if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end','stroke.Thickness = 2');
+  const rejected=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
 });
 
 test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{
