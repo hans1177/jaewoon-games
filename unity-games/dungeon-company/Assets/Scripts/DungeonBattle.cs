@@ -15,6 +15,23 @@ namespace JaewoonGames.DungeonCompany
         private float moveTo;
         private float moveTime;
         private float moveDuration;
+        private float nextCommandAt;
+
+        // The same command is used by the visible touch button and keyboard.
+        public bool CommandDefense()
+        {
+            if (!WaveActive) return StartWave();
+            if (!HeroPresent || Time.time < nextCommandAt) return false;
+            nextCommandAt = Time.time + 0.65f;
+            var damage = 10;
+            for (var i = 0; i < State.unlockedRooms; i++)
+                if (State.rooms[i].monster != MonsterType.None && monsterHp[i] > 0)
+                    damage += GetMonster(State.rooms[i].monster, State.rooms[i].monsterLevel).attack;
+            HeroHp = Mathf.Max(0, HeroHp - damage);
+            Message = $"집중 방어 · 침입자에게 {damage} 피해.";
+            if (HeroHp == 0) DefeatHero();
+            return true;
+        }
 
         private void Update()
         {
@@ -54,6 +71,7 @@ namespace JaewoonGames.DungeonCompany
             }
             phase = Phase.Spawn;
             timer = 0.35f;
+            nextCommandAt = 0f;
             Message = $"모험가 {heroesTotal}명이 침입 중이야.";
             return true;
         }
@@ -173,6 +191,7 @@ namespace JaewoonGames.DungeonCompany
             heroesLeft--;
             Save();
             Message = $"침입자 처치 · +{reward}G / 악명 +{infamy}.";
+            DungeonQaBridge.ObserveDefenseReward(reward, infamy);
             phase = Phase.Spawn;
             timer = 0.75f;
         }

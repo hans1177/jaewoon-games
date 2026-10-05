@@ -1,6 +1,7 @@
 // 파일명: DungeonQaBridge.cs
 // 역할: Unity Web 실게임 QA 모드에서 실제 던전 기능을 키보드 입력으로 검증한다.
 using UnityEngine;
+using System.Globalization;
 
 namespace JaewoonGames.DungeonCompany
 {
@@ -11,6 +12,24 @@ namespace JaewoonGames.DungeonCompany
         private int lastGold;
         private int lastInfamy;
         private int lastWave;
+        private int targetWidth;
+        private int targetHeight;
+        private static bool QaActive => Application.absoluteURL.Contains("qa=1");
+
+        public static void ObserveCommand(bool touch, bool starting = false)
+        {
+            if (!QaActive) return;
+            if (starting) Debug.Log("JAEWOON_UNITY_WEB_QA START game=dungeon-company region=dungeon status=PASS");
+            Debug.Log("JAEWOON_UNITY_WEB_QA ACTION game=dungeon-company action=command-defense status=PASS");
+            if (touch) Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=dungeon-company role=action status=PASS");
+        }
+
+        public static void ObserveDefenseReward(int gold, int infamy)
+        {
+            if (!QaActive || gold <= 0 || infamy <= 0) return;
+            Debug.Log($"JAEWOON_UNITY_WEB_QA REWARD game=dungeon-company gold={gold} infamy={infamy} status=PASS");
+            Debug.Log("JAEWOON_UNITY_WEB_QA CORE_FUN game=dungeon-company kind=defeat-invader-and-earn-reward status=PASS");
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoCreate()
@@ -35,6 +54,7 @@ namespace JaewoonGames.DungeonCompany
             lastInfamy = game.State.infamy;
             lastWave = game.State.wave;
             Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=dungeon-company status=PASS");
+            LogMobileTarget();
             LogState();
         }
 
@@ -46,21 +66,13 @@ namespace JaewoonGames.DungeonCompany
                 game = FindAnyObjectByType<DungeonGame>();
                 if (game == null) return;
             }
+            if (Screen.width != targetWidth || Screen.height != targetHeight) LogMobileTarget();
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 PrepareStarterDefense();
-                game.StartWave();
-                Debug.Log("JAEWOON_UNITY_WEB_QA START game=dungeon-company region=dungeon status=PASS");
-                Debug.Log("JAEWOON_UNITY_WEB_QA ATTACK game=dungeon-company action=start-defense status=PASS");
-                Debug.Log("JAEWOON_UNITY_WEB_QA PROGRESS game=dungeon-company kind=starter-defense status=PASS");
-                LogState();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                game.QaAdvanceCombat();
-                Debug.Log("JAEWOON_UNITY_WEB_QA ATTACK game=dungeon-company action=accelerate-defense status=PASS");
+                if (game.StartWave())
+                    Debug.Log("JAEWOON_UNITY_WEB_QA START game=dungeon-company region=dungeon status=PASS");
                 LogState();
             }
 
@@ -73,9 +85,18 @@ namespace JaewoonGames.DungeonCompany
 
             if (game.State.gold != lastGold || game.State.infamy != lastInfamy || game.State.wave != lastWave)
             {
-                Debug.Log($"JAEWOON_UNITY_WEB_QA REWARD game=dungeon-company gold={game.State.gold} infamy={game.State.infamy} wave={game.State.wave} status=PASS");
                 LogState();
             }
+        }
+
+        private void LogMobileTarget()
+        {
+            targetWidth = Screen.width;
+            targetHeight = Screen.height;
+            var center = DungeonUI.ActionRect().center;
+            var x = (center.x / Mathf.Max(1, targetWidth)).ToString("F5", CultureInfo.InvariantCulture);
+            var y = (center.y / Mathf.Max(1, targetHeight)).ToString("F5", CultureInfo.InvariantCulture);
+            Debug.Log($"JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=dungeon-company role=action x={x} y={y}");
         }
 
         private void PrepareStarterDefense()
@@ -99,15 +120,6 @@ namespace JaewoonGames.DungeonCompany
 
     public sealed partial class DungeonGame
     {
-        public void QaAdvanceCombat()
-        {
-            if (!WaveActive)
-            {
-                StartWave();
-            }
-            timer = 0f;
-        }
-
         public void QaSafeReturn()
         {
             WaveActive = false;
