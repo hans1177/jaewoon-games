@@ -177,7 +177,7 @@ jobs:
 
   record_incident:
     needs: scan
-    if: ${{ always() && needs.scan.outputs.verdict != 'PASS' && github.event_name != 'pull_request' }}
+    if: ${{ always() && (needs.scan.outputs.verdict == 'REVIEW' || needs.scan.outputs.verdict == 'QUARANTINE') && github.event_name != 'pull_request' }}
     runs-on: ubuntu-slim
     timeout-minutes: 8
     permissions:
@@ -236,7 +236,7 @@ jobs:
 
   enforce:
     needs: [scan, record_incident]
-    if: ${{ always() }}
+    if: ${{ always() && (needs.scan.result != 'success' || needs.scan.outputs.verdict != 'PASS') }}
     runs-on: ubuntu-slim
     timeout-minutes: 4
     permissions:
@@ -426,6 +426,10 @@ jobs:
           set -euo pipefail
           echo "VIBE_SECURITY_FINAL=$VERDICT"
           echo "VIBE_SECURITY_HIGHEST=$HIGHEST"
+          case "$VERDICT" in
+            PASS|REVIEW|QUARANTINE) ;;
+            *) echo 'VIBE_SECURITY_ACTION=SCAN_RESULT_REQUIRED'; exit 1 ;;
+          esac
           if [ "$VERDICT" = 'QUARANTINE' ]; then
             echo 'VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE'
             exit 1
