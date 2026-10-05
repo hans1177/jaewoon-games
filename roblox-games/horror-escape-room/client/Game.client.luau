@@ -994,7 +994,7 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Parent = chaseTint
 end
 chaseTint:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
-chaseTint:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+chaseTint:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 
 chaseTint.Size=UDim2.fromScale(1,1)
 chaseTint.BackgroundColor3=Color3.fromRGB(120,8,18)
