@@ -44,6 +44,7 @@ test('Web browser validation requires latest verified design and rejects simple-
   assert.match(validator,/latestVerifiedDesign\(process\.cwd\(\),id\)/);
   assert.match(validator,/WEB_VERIFIED_DESIGN_REQUIRED/);
   assert.match(validator,/WEB_DESIGN_BASELINE_STALE_OR_NONCANONICAL/);
+  assert.match(validator,/PERSISTENT_SAVE_RESTORE_CONTRACT_REQUIRED/);
   assert.match(planner,/const webDesignRequired=clean\(project\.engine\)\.toLowerCase\(\)==='web'/);
   assert.doesNotMatch(planner,/sourceSafeNoDesign/);
   assert.match(worker,/WEB_VERIFIED_DESIGN_REQUIRED_BEFORE_SOURCE/);
