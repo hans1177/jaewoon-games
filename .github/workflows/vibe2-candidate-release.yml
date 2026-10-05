@@ -54,6 +54,8 @@ jobs:
       already_promoted: ${{ steps.gate.outputs.already_promoted }}
       asset_promotion_candidates: ${{ steps.gate.outputs.asset_promotion_candidates }}
       generated_asset_files: ${{ steps.gate.outputs.generated_asset_files }}
+      asset_source_usage_fingerprint: ${{ steps.gate.outputs.asset_source_usage_fingerprint }}
+      asset_source_usage_library_version: ${{ steps.gate.outputs.asset_source_usage_library_version }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -111,6 +113,8 @@ jobs:
           const base=String(m.baseMainSha||'').trim();
           const transportBase=String(m.transportBaseSha||base).trim();
           const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
+          const assetSourceUsageFingerprint=String(m?.codingMethod?.internalAssetSourceUsageFingerprint||'').trim();
+          const assetSourceUsageLibraryVersion=Math.max(0,Math.floor(Number(m?.codingMethod?.internalAssetSourceUsageLibraryVersion)||0));
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
           const productionClass=String(row?.productionClass||'').trim().toUpperCase();
           const legacyState=String(row?.homepageCategory||'other').toLowerCase();
@@ -120,6 +124,8 @@ jobs:
           else if(!['roblox','web','unity'].includes(target)) reason='target-auto-release-not-configured';
           else if(target==='unity' && !['UNITY_WEB','UNITY_NATIVE'].includes(executionSurface)) reason='unity-execution-surface-missing-or-invalid';
           else if(target==='roblox' && root!==`roblox-games/${game}`) reason='roblox-source-root-mismatch';
+          else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSourceUsageFingerprint)) reason='roblox-build-up-asset-fingerprint-missing';
+          else if(target==='roblox' && assetSourceUsageLibraryVersion<=0) reason='roblox-build-up-asset-library-version-missing';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
           else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
@@ -129,6 +135,7 @@ jobs:
           }
           put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
           put('target',target); put('execution_surface',executionSurface); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
+          put('asset_source_usage_fingerprint',assetSourceUsageFingerprint); put('asset_source_usage_library_version',assetSourceUsageLibraryVersion);
           const promotionCandidates=(Array.isArray(m.runtimePromotionCandidates)?m.runtimePromotionCandidates:[]).slice(0,64).map(row=>({
             assetId:String(row?.assetId||'').trim(),
             family:String(row?.family||'').trim(),
@@ -808,6 +815,8 @@ jobs:
       CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
       PRODUCTION_CLASS: ${{ needs.inspect.outputs.production_class }}
       BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+      BUILD_UP_ASSET_FINGERPRINT: ${{ needs.inspect.outputs.asset_source_usage_fingerprint }}
+      BUILD_UP_ASSET_LIBRARY_VERSION: ${{ needs.inspect.outputs.asset_source_usage_library_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -837,7 +846,7 @@ jobs:
           if(!baselinePath||baselinePath.includes('..'))throw Error('canonical design baseline missing');
           const baseline=JSON.parse(cp.execFileSync('git',['show','origin/company-runtime:'+baselinePath],{encoding:'utf8'}));
           fs.writeFileSync('/tmp/roblox-candidate/baseline.json',JSON.stringify(baseline));
-          const item={gameId:old.gameId,status:'ACTIVE',productionClass:process.env.PRODUCTION_CLASS,selectedPlatform:old.selectedPlatform,targetPlatform:old.targetPlatform,platformExecutionMode:old.platformExecutionMode,concurrentTargetPlatforms:old.concurrentTargetPlatforms,designBaselineSource:baselinePath,robloxSourceCommit:process.env.CANDIDATE_SHA,robloxProjectPath:process.env.SOURCE_ROOT,robloxInternalVibePlayEvidence:old.robloxInternalVibePlayEvidence||null};
+          const item={gameId:old.gameId,status:'ACTIVE',productionClass:process.env.PRODUCTION_CLASS,selectedPlatform:old.selectedPlatform,targetPlatform:old.targetPlatform,platformExecutionMode:old.platformExecutionMode,concurrentTargetPlatforms:old.concurrentTargetPlatforms,designBaselineSource:baselinePath,robloxSourceCommit:process.env.CANDIDATE_SHA,robloxProjectPath:process.env.SOURCE_ROOT,robloxInternalVibePlayEvidence:old.robloxInternalVibePlayEvidence||null,robloxBuildUpAssetSourceUsageFingerprint:process.env.BUILD_UP_ASSET_FINGERPRINT,robloxBuildUpAssetSourceUsageLibraryVersion:Number(process.env.BUILD_UP_ASSET_LIBRARY_VERSION||0)};
           fs.writeFileSync('/tmp/roblox-candidate/context/development-queue.json',JSON.stringify({items:[item]}));
           let launch;
           try{launch=JSON.parse(cp.execFileSync('git',['show',process.env.CANDIDATE_SHA+':'+process.env.SOURCE_ROOT+'/launch-mvp.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));}
@@ -888,14 +897,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json
+          node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json --build-up-asset-fingerprint="$BUILD_UP_ASSET_FINGERPRINT" --build-up-asset-library-version="$BUILD_UP_ASSET_LIBRARY_VERSION"
           mapfile -d '' place_files < <(find /tmp/roblox-candidate/package/packages -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) -print0)
           [ "${#place_files[@]}" -eq 1 ] || { echo 'roblox-place-package-count-invalid' >&2; exit 1; }
           node <<'NODE'
           const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
           const q=JSON.parse(fs.readFileSync(file)),build=JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/build.json'));
           if(build.buildOrPackagePassed!==true||build.sourceRevision!==process.env.CANDIDATE_SHA)throw Error('candidate package invalid');
-          Object.assign(q.items[0],{robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:build.sourceRevision,robloxBuildArtifactIdentity:build.artifactIdentity});
+          if(build.buildUpAssetSourceUsageFingerprint!==process.env.BUILD_UP_ASSET_FINGERPRINT)throw Error('candidate package BUILD_UP asset fingerprint mismatch');
+          if(Number(build.buildUpAssetSourceUsageLibraryVersion||0)!==Number(process.env.BUILD_UP_ASSET_LIBRARY_VERSION||0))throw Error('candidate package BUILD_UP asset library mismatch');
+          if(!/^[0-9a-f]{64}$/i.test(String(build.assetSelectionFingerprint||''))||Number(build.assetLibraryVersion||0)<=0)throw Error('candidate package asset selection identity missing');
+          const selectedFamilies=build.assetThreshold?.selectedFamilies||{};
+          const expectedAtomIds=[...new Set(Object.values(selectedFamilies).flat().map(String).filter(Boolean))].sort();
+          const familyResults=Array.isArray(build.assetThreshold?.familyResults)?build.assetThreshold.familyResults:[];
+          Object.assign(q.items[0],{
+            robloxBuildOrPackagePassed:true,
+            robloxBuildSourceRevision:build.sourceRevision,
+            robloxBuildArtifactIdentity:build.artifactIdentity,
+            robloxBuildUpAssetSourceUsageFingerprint:build.buildUpAssetSourceUsageFingerprint,
+            robloxBuildUpAssetSourceUsageLibraryVersion:Number(build.buildUpAssetSourceUsageLibraryVersion||0),
+            robloxBuildAssetSelectionFingerprint:build.assetSelectionFingerprint,
+            robloxBuildAssetLibraryVersion:Number(build.assetLibraryVersion||0),
+            robloxStudioAssetBinding:{
+              required:true,bindingVersion:2,libraryVersion:Number(build.assetLibraryVersion||0),
+              selectionFingerprint:build.assetSelectionFingerprint,expectedAtomIds,
+              familyResults:familyResults.map(row=>({family:String(row.family||''),status:String(row.status||''),actualBinding:row.actualBinding===true,systemPresent:row.systemPresent===true})),
+              buildUpAssetSourceUsageFingerprint:build.buildUpAssetSourceUsageFingerprint,
+              authority:'roblox-package-exact-build-up-selection'
+            }
+          });
           fs.writeFileSync(file,JSON.stringify(q));
           NODE
       - uses: ./.github/actions/prepare-ollama
@@ -918,12 +948,17 @@ jobs:
           [ "${#scripts[@]}" -gt 0 ]
           for file in "${scripts[@]}"; do /tmp/luau-bin/luau-compile "$file" >/dev/null; done
           identity="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').artifactIdentity)")"
-          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --artifact-identity="$identity" --rebuilt-artifact-identity="$identity" --artifact-run-id="$GITHUB_RUN_ID" --native-language-compile-passed=true --native-compiler-version=0.739 --output=/tmp/roblox-candidate/package/results/f0.json
+          asset_selection_fingerprint="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').assetSelectionFingerprint)")"
+          asset_library_version="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').assetLibraryVersion)")"
+          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --artifact-identity="$identity" --rebuilt-artifact-identity="$identity" --artifact-run-id="$GITHUB_RUN_ID" --native-language-compile-passed=true --native-compiler-version=0.739 --build-up-asset-fingerprint="$BUILD_UP_ASSET_FINGERPRINT" --asset-selection-fingerprint="$asset_selection_fingerprint" --asset-library-version="$asset_library_version" --output=/tmp/roblox-candidate/package/results/f0.json
           node <<'NODE'
           const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
           const q=JSON.parse(fs.readFileSync(file)),i=q.items[0],read=name=>JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/'+name+'.json'));
           const pre=read('preflight'),f0=read('f0');
           for(const e of [pre,f0])if(e.pass!==true||e.sourceRevision!==i.robloxSourceCommit||e.artifactIdentity!==i.robloxBuildArtifactIdentity)throw Error('candidate preflight identity mismatch');
+          if(f0.buildUpAssetSourceUsageFingerprint!==i.robloxBuildUpAssetSourceUsageFingerprint)throw Error('candidate F0 BUILD_UP asset fingerprint mismatch');
+          if(f0.assetSelectionFingerprint!==i.robloxBuildAssetSelectionFingerprint||f0.observedAssetSelectionFingerprint!==i.robloxBuildAssetSelectionFingerprint)throw Error('candidate F0 asset selection fingerprint mismatch');
+          if(Number(f0.assetLibraryVersion||0)!==Number(i.robloxBuildAssetLibraryVersion||0)||Number(f0.observedAssetLibraryVersion||0)!==Number(i.robloxBuildAssetLibraryVersion||0))throw Error('candidate F0 asset library version mismatch');
           Object.assign(i,{currentStep:'CANDIDATE_STATIC_REVIEW',robloxBuildPreflightPassed:true,robloxBuildPreflightEvidence:pre,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:f0});
           const launchFile='/tmp/roblox-candidate/context/launch-mvp.json',launch=JSON.parse(fs.readFileSync(launchFile));
           if(f0.saveExists===true)launch.launchCore.push('save and rejoin persistence');
