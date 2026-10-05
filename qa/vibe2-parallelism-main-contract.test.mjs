@@ -24,27 +24,30 @@ test('early fan-in review never suppresses new runnable worker reservations',()=
   assert.doesNotMatch(block,/matrix:\[\]/);
 });
 
-test('maximum parallelism is default and source-root locks are permanently disabled',()=>{
+test('repeat development is fixed at 64 while physical provider capacity and conflict safety remain',()=>{
   const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
   assert.equal(wave.externalProviderAndPlanningBound,256);
-  assert.equal(wave.defaultRequestedParallelism,256);
-  assert.equal(wave.gamePrimaryBaselineTarget,256);
-  assert.equal(wave.gamePrimaryAdaptiveMinimum,30);
+  assert.equal(wave.gamePrimaryFixedInternalCap,64);
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,64);
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.assetDevelopmentSlotsUnchanged,63);
+  assert.equal(wave.defaultRequestedParallelism,64);
+  assert.equal(wave.gamePrimaryBaselineTarget,64);
+  assert.equal(wave.gamePrimaryAdaptiveMinimum,64);
   assert.equal(wave.sourceRootWideLockForbidden,true);
   assert.equal(wave.responsibleFileConflictProtectionStillRequired,true);
   assert.equal(wave.globalActiveWorkerBarrier,false);
 
-  assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,30);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
+  assert.equal(runtime.continuous.maxConcurrentGameTasks,64);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,64);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,64);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,64);
   const prePlan=runtime.continuous.prePlanGamePrimaryRefill||{};
   assert.equal(prePlan.enabled,true);
   assert.equal(prePlan.workerWorkflow,'.github/workflows/vibe2-continuous-core.yml');
   assert.equal(prePlan.dispatchMode,'WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER');
   assert.equal(prePlan.preservesCanonicalReservation,true);
-  assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY');
-  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
+  assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY_NO_RESERVATION_AUTHORITY');
+  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'FIXED_REPEAT_DEVELOPMENT_64');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationDownshiftAllowed,false);
   const architectureWave=architecture.neuralWorkGraphTopology.currentWaveExecution;
   const architecturePrePlan=architectureWave.prePlanGamePrimaryRefill||{};
@@ -73,9 +76,9 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(architectureMainPushWake.workflowCallLaneRunsRunScoped,true);
   assert.equal(architectureMainPushWake.workflowCallInheritedPushEventMustNotCoalesce,true);
   assert.equal(architectureMainPushWake.activeWakeCancellationForbidden,true);
-  assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT');
-  assert.equal(architectureWave.externalSpareBeyond30,'AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP');
-  assert.match(architectureWave.adaptiveControl,/PRESSURE_FLOOR_30/);
+  assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'FIXED_REPEAT_DEVELOPMENT_64');
+  assert.equal(architectureWave.externalSpareBeyond30,'SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_64');
+  assert.match(architectureWave.adaptiveControl,/FIXED_64/);
   assert.equal(runtime.coordination.sourceRootExclusive,false);
   assert.equal(runtime.coordination.responsibleFileExclusive,true);
   assert.equal(runtime.coordination.sameFileParallelWrite,false);
@@ -88,14 +91,14 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(queue.scheduling.responsibleFileExclusive,true);
   assert.equal(control.currentMax,256);
 
-  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'"));
-  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
-  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
+  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '64'"));
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'"));
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'"));
   assert.ok(runner.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
   assert.ok(runner.includes("VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'"));
-  assert.ok(runner.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY'));
-  assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
-  assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
+  assert.ok(runner.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_64'));
+  assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'"));
+  assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'"));
   assert.match(core,/GAME_PRIMARY_MAIN_PUSH_WAKE/);
   assert.match(core,/push:\n\s*branches:\n\s*- main\n\s*- 'vibe2\/refill\/fanin\/\*\*'/);
   assert.match(core,/github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' && inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
