@@ -454,7 +454,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderWeb','giantSpiderFang','mantisBlade','sporeSac','toxicMycelium','swampCore','fearBearHide','fearBearClaw','sunstoneOre','crystalShard'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,sunstoneBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],sunstones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,desert:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,giantCrocEggTaken:false,incubation:{eggPlaced:false,eggType:null,hatchAt:0},pet:{hatched:false,wolfHatched:false,crocHatched:false,form:'wolf',alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,sandSlowUntil:0,attackBlockedUntil:0,scorpionBurrowPoisonUntil:0,scorpionBurrowPoisonNext:0,scorpionStingPoisonExpiries:[],scorpionStingPoisonNext:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,sunstoneBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],sunstones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,desert:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,giantCrocEggTaken:false,incubation:{eggPlaced:false,eggType:null,hatchAt:0},pet:{hatched:false,wolfHatched:false,crocHatched:false,form:'wolf',alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 const RAID_DIFFICULTY_SCALE=1;
 const RAID_WAVES=[
  [{id:'goblin',count:5},{id:'shadowwolf',count:3},{id:'golem',count:1}],
@@ -1132,7 +1132,7 @@ function toggleTorch(){
 }
 function equipItem(id){const r=item(id);if(!r||invCount(id)<1)return;const p=state.player;if(r.kind==='weapon'){setWeapon(id);showNotice(r.name+' 장착')}else if(r.kind==='tool'){p.tool=id;showNotice(r.name+' 장착')}else if(r.kind==='armor'){setArmor(id);showNotice(r.name+' 장착')}state.dirty=true;updateHud();renderPanel()}
 function useItem(id){
- const hadPoison=performance.now()<(state.player.poisonUntil||0);
+ const poisonNow=performance.now(),hadPoison=poisonNow<(state.player.poisonUntil||0)||poisonNow<(state.player.scorpionBurrowPoisonUntil||0)||(state.player.scorpionStingPoisonExpiries||[]).some(t=>t>poisonNow);
  const r=item(id),p=state.player;if(!r||r.kind!=='consumable'||invCount(id)<1)return;
  if(r.hunger!==undefined){
    if(p.hunger>=100&&!r.foodRegen){showNotice('밥 게이지가 이미 가득 찼어');return}
@@ -1146,7 +1146,7 @@ function useItem(id){
    if(p.hp>=p.maxHp){showNotice('체력이 이미 가득 찼어');return}
    p.inventory[id]--;p.regenTicks=5;p.regenNext=performance.now()+1000;showNotice('좋은 붕대 사용 · 5초 회복 시작')
  }
- if(hadPoison){state.player.poisonUntil=0;state.player.poisonNext=0;state.player.poisonDamage=5;showNotice((r?.name||'회복템')+' 사용 · 독 해제')}
+ if(hadPoison){state.player.poisonUntil=0;state.player.poisonNext=0;state.player.poisonDamage=5;state.player.scorpionBurrowPoisonUntil=0;state.player.scorpionBurrowPoisonNext=0;state.player.scorpionStingPoisonExpiries=[];state.player.scorpionStingPoisonNext=0;showNotice((r?.name||'회복템')+' 사용 · 독 해제')}
  state.dirty=true;updateHud();renderPanel()
 }
 function cropTypeForSeed(id){return id==='carrot-seed'?'carrot':id==='greens-seed'?'greens':null}
@@ -1218,7 +1218,7 @@ function drawCrop(c,cx,cy){
  for(const dx of [-8,0,8]){ctx.beginPath();ctx.moveTo(dx,6);ctx.lineTo(dx+(c.type==='carrot'?0:4),-14-(ready?8:0));ctx.stroke()}
  ctx.fillStyle='#edf6d7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(ready?(c.type==='carrot'?'당근 수확':'야채 수확'):Math.ceil(Math.max(0,c.readyAt-Date.now())/1000)+'초',0,34);ctx.restore()
 }
-function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.jungleBench,state.blacksmithAnvil,state.cookingStation,state.incubator,...state.flags,...state.chests,...state.walls,...state.doors,...state.towers,...state.beds,...state.gardens,...state.portals].filter(Boolean)}
+function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.jungleBench,state.sunstoneBench,state.blacksmithAnvil,state.cookingStation,state.incubator,...state.flags,...state.chests,...state.walls,...state.doors,...state.towers,...state.beds,...state.gardens,...state.portals].filter(Boolean)}
 function resolveStructureOverlaps(){
  const keys=['bench','furnace','ironBench','goldBench','jungleBench','sunstoneBench','blacksmithAnvil','cookingStation','incubator'],placed=[];
  for(const key of keys){let s=state[key];if(!s)continue;if(placed.some(p=>dist(s.x,s.y,p.x,p.y)<88)){let fixed=null;for(let ring=1;ring<=4&&!fixed;ring++)for(let i=0;i<12;i++){const a=i*Math.PI/6,pos={x:clamp(s.x+Math.cos(a)*95*ring,45,WORLD.w-45),y:clamp(s.y+Math.sin(a)*95*ring,45,WORLD.h-45)};if(placed.every(p=>dist(pos.x,pos.y,p.x,p.y)>=88)){fixed=pos;break}}if(fixed){state[key]=s=fixed;state.dirty=true}}placed.push(s)}
@@ -1669,6 +1669,8 @@ const BESTIARY_INFO={
  polarfox:{cat:'harmless',desc:'설원의 작은 바위와 눈더미 사이를 뛰어다니는 북극여우. 싸움에는 관심이 없고 주변의 작은 먹이를 찾아다닌다.'},
  froststalker:{cat:'aggressive',desc:'설원 보급막사 주변을 맴도는 정체불명의 추적자. 눈보라 속에서도 흔적을 놓치지 않고 영역 안의 침입자를 쫓는다.'},
  icegolem:{cat:'aggressive',desc:'빙설 감시소 부근에 서 있는 거대한 얼음 골렘. 평소에는 얼어붙은 조각상처럼 보이지만 주변의 침입을 조용히 감시한다.'},
+ sandSpirit:{cat:'aggressive',desc:'황야 사막을 세 마리 안팎의 무리로 돌아다니는 4티어 모래 정령. 가까운 적에게 모래를 흩뿌려 움직임을 둔화시킨다.'},
+ giantVenomScorpion:{cat:'aggressive',desc:'황야 사막의 4티어 거대 맹독 전갈. 땅속 잠복과 독침 발사를 번갈아 사용한다.'},
  swampPrimitiveSpearman:{cat:'aggressive',desc:'늪 전초기지 안을 지키는 3티어 원시인 창병. 침입자를 발견하면 창을 들고 직접 달려든다.'},
  swampPrimitiveArcher:{cat:'aggressive',desc:'늪 전초기지의 3티어 원시인 궁수. 빠른 화살을 쏘며 거리를 유지한다.'},
  swampPrimitiveGuard:{cat:'aggressive',desc:'늪 전초기지 입구를 지키는 3티어 보초. 자리를 떠나지 않고 가까이 온 침입자를 공격한다.'},
@@ -1963,7 +1965,7 @@ function renderUpgrade(){
 function openUpgrade(){if(!state.blacksmithAnvil){showNotice('대장장이 모루를 먼저 만들어');return}if(!nearAnvil()){showNotice('대장장이 모루 가까이 가야 해');return}state.panelMode='upgrade';ui.sheet.classList.add('open');renderUpgrade()}
 function openCraft(mode=state.craftMode){
  if(!craftStationBuilt(mode)){
-  const label=mode==='bench'?'제작대':mode==='ironbench'?'철 제작대':mode==='goldbench'?'금 제작대':mode==='junglebench'?'밀림 제작대':'제작대';
+  const label=mode==='bench'?'제작대':mode==='ironbench'?'철 제작대':mode==='goldbench'?'금 제작대':mode==='junglebench'?'독점석 제작대':mode==='sunstonebench'?'태양석 제작대':'제작대';
   showNotice(label+'를 먼저 만들어 설치해야 해');mode='hand'
  }
  state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()
@@ -2188,6 +2190,10 @@ function gather(target=null,silent=false){
  if(best.kind==='essence'&&!axeId){if(!silent)showNotice('정수는 철도끼나 금도끼로만 캘 수 있어');return false}
  if(best.kind==='giantflower'&&!axeId){if(!silent)showNotice('거대 꽃은 철도끼나 금도끼가 필요해');return false}
  if(best.kind==='swamptree'&&!axeId){if(!silent)showNotice('늪 거목은 철 도끼나 금 도끼로만 벨 수 있어');return false}
+ if(best.kind==='sunstone'&&multiplayer.connected&&!multiIsHost()){
+  multiSend('resource-gather',{playerId:multiplayer.playerId,nodeId:best.id,kind:'sunstone'});
+  if(!silent)showNotice('태양석 채굴 · 호스트와 동기화 중');return true
+ }
  if(best.kind==='swamptree'&&multiplayer.connected&&!multiIsHost()){
   multiSend('resource-gather',{playerId:multiplayer.playerId,nodeId:best.id,kind:'swamptree'});
   if(!silent)showNotice('늪 거목 벌목 · 호스트와 동기화 중');
@@ -2460,6 +2466,12 @@ function applyRemoteEnemyHit(payload){
  const attacker=state.enemies.find(e=>e.netId===payload.sourceId)||null;
  damagePlayer(damage,!!payload.force,attacker)
 }
+function applyScorpionStingPoison(p,duration=5000){
+ const now=performance.now();p.scorpionStingPoisonExpiries=(Array.isArray(p.scorpionStingPoisonExpiries)?p.scorpionStingPoisonExpiries:[]).filter(t=>t>now);
+ if(p.scorpionStingPoisonExpiries.length<3)p.scorpionStingPoisonExpiries.push(now+duration);
+ else{let min=0;for(let i=1;i<p.scorpionStingPoisonExpiries.length;i++)if(p.scorpionStingPoisonExpiries[i]<p.scorpionStingPoisonExpiries[min])min=i;p.scorpionStingPoisonExpiries[min]=now+duration}
+ if(!p.scorpionStingPoisonNext||p.scorpionStingPoisonNext<now)p.scorpionStingPoisonNext=now+1000
+}
 function applyRemoteEnemyEffect(payload){
  if(!payload||payload.targetId!==multiplayer.playerId)return;
  const p=state.player,now=performance.now(),duration=Math.max(0,Number(payload.duration)||0);
@@ -2469,6 +2481,9 @@ function applyRemoteEnemyEffect(payload){
  else if(payload.kind==='poison'){p.poisonDamage=5;p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000;showNotice('독 상태 · '+Math.round(duration/1000)+'초')}
  else if(payload.kind==='beePoison'){p.poisonDamage=10;p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000;showNotice('거대 꿀벌 독 · '+Math.round(duration/1000)+'초')}
  else if(payload.kind==='mudslow'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);showNotice('진흙 둔화 · 3초')}
+ else if(payload.kind==='sandslow'){p.sandSlowUntil=Math.max(p.sandSlowUntil||0,now+duration);showNotice('모래 뿌리기 · 이동속도 30% 감소 · 3초')}
+ else if(payload.kind==='scorpionBurrowPoison'){p.scorpionBurrowPoisonUntil=Math.max(p.scorpionBurrowPoisonUntil||0,now+duration);p.scorpionBurrowPoisonNext=now+1000;showNotice('맹독 전갈 독 · '+Math.round(duration/1000)+'초')}
+ else if(payload.kind==='scorpionStingPoison'){applyScorpionStingPoison(p,duration);showNotice('독침 독 · 최대 3중첩')}}
  else if(payload.kind==='coldburst'){p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);showNotice('추위 상승속도 3배 · 5초')}
  else if(payload.kind==='slow30'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+duration);showNotice('독화살 · 이동속도 30% 감소')}
  else if(payload.kind==='attackblock'){p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+duration);showNotice('공격 불가 · '+Math.max(1,Math.round(duration/1000))+'초')}
@@ -2486,6 +2501,9 @@ function applyEnemyEffectTarget(e,p,kind,duration=0){
  else if(kind==='poison'){p.poisonDamage=5;p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000}
  else if(kind==='beePoison'){p.poisonDamage=10;p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000}
  else if(kind==='mudslow')p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);
+ else if(kind==='sandslow')p.sandSlowUntil=Math.max(p.sandSlowUntil||0,now+duration);
+ else if(kind==='scorpionBurrowPoison'){p.scorpionBurrowPoisonUntil=Math.max(p.scorpionBurrowPoisonUntil||0,now+duration);p.scorpionBurrowPoisonNext=now+1000}
+ else if(kind==='scorpionStingPoison')applyScorpionStingPoison(p,duration);
  else if(kind==='coldburst')p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);
  else if(kind==='slow30')p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+duration);
  else if(kind==='attackblock')p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+duration);
@@ -2521,6 +2539,7 @@ function serializeWorld(){
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0,speedRatio:q.speedRatio||0,nextSlowAt:q.nextSlowAt||0,gasBatchId:q.gasBatchId||null,gasPlayerSpeed:q.gasPlayerSpeed||0})),
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
   swampTrees:state.swampTrees.map(n=>({id:n.id,kind:'swamptree',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
+  sunstones:state.sunstones.map(n=>({id:n.id,kind:'sunstone',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   structures:sharedStructureSnapshot(),
   crops:state.crops.map(c=>({...c})),flowerWebs:state.flowerWebs.map(w=>({id:w.id,x:w.x,y:w.y,r:w.r,hits:w.hits})),snowChests:[...state.snowChests],swampOutpostChestOpened:!!state.swampOutpostChestOpened,raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
   weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},
@@ -2536,6 +2555,7 @@ function applyWorldSnapshot(w){
   return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];
+ if(Array.isArray(w.sunstones))state.sunstones=w.sunstones.filter(n=>n&&String(n.kind||'sunstone')==='sunstone'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('sunstone'+i)),kind:'sunstone',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:10,dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(Array.isArray(w.swampTrees))state.swampTrees=w.swampTrees.filter(n=>n&&String(n.kind||'swamptree')==='swamptree'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('swamptree'+i)),kind:'swamptree',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:Math.max(1,Number(n.maxHp)||8),dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(w.structures&&typeof w.structures==='object'){
   state.bench=sharedStructurePos(w.structures.bench);
@@ -2560,21 +2580,25 @@ function applyWorldSnapshot(w){
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
 }
 function hostGatherResource(payload){
- if(!multiIsHost()||!payload||String(payload.kind||'')!=='swamptree')return;
+ if(!multiIsHost()||!payload||!['swamptree','sunstone'].includes(String(payload.kind||'')))return;
  const playerId=String(payload.playerId||''),remote=multiplayer.remote.get(playerId);
  if(!remote||remote.area!=='surface'||performance.now()-(remote.seenAt||0)>2000)return;
- const node=state.swampTrees.find(n=>n.id===String(payload.nodeId||''));
+ const kind=String(payload.kind||''),node=(kind==='sunstone'?state.sunstones:state.swampTrees).find(n=>n.id===String(payload.nodeId||''));
  if(!node||node.dead||dist(Number(remote.x)||0,Number(remote.y)||0,node.x,node.y)>AUTO_GATHER_RANGE+30)return;
- if(!equippedAxeId(remote))return;
+ if(kind==='swamptree'&&!equippedAxeId(remote))return;
+ if(kind==='sunstone'&&!['monopoly-pick','sunstone-pick'].includes(remote.tool))return;
  node.hp=Math.max(0,node.hp-1);
+ if(kind==='sunstone')multiSend('resource-loot',{targetId:playerId,kind:'sunstone',sunstoneOre:1});
  if(node.hp<=0){
   node.dead=true;node.respawnAt=performance.now()+RESOURCE_RESPAWN_MS;
-  multiSend('resource-loot',{targetId:playerId,kind:'swamptree',wood:15});
+  if(kind==='swamptree')multiSend('resource-loot',{targetId:playerId,kind:'swamptree',wood:15});
  }
  state.dirty=true;multiplayer.worldAt=0
 }
 function receiveResourceLoot(payload){
- if(!payload||payload.targetId!==multiplayer.playerId||String(payload.kind||'')!=='swamptree')return;
+ if(!payload||payload.targetId!==multiplayer.playerId)return;
+ if(String(payload.kind||'')==='sunstone'){const n=Math.max(0,Math.min(10,Math.floor(Number(payload.sunstoneOre)||0)));if(n){addMaterial('sunstoneOre',n);showNotice('태양석 광석 +'+n);updateHud();saveGame(false)}return}
+ if(String(payload.kind||'')!=='swamptree')return;
  const wood=Math.max(0,Math.min(100,Math.floor(Number(payload.wood)||0)));if(!wood)return;
  state.player.wood+=wood;rememberMaterial('wood');state.dirty=true;showNotice('늪 거목 벌목 완료 · 나무 +'+wood);updateHud();saveGame(false)
 }
@@ -3495,6 +3519,37 @@ function updateSwampOutpostEnemy(e,targetP,now,playerD){
  }
  return null
 }
+function fireScorpionStings(e,targetP,now,count){
+ const speed=Number(creatures.shadowwolf?.speed)||90,base=Math.atan2(targetP.y-e.y,targetP.x-e.x);
+ for(let i=0;i<count;i++){const spread=count===1?0:(i-(count-1)/2)*.07,a=base+spread;state.projectiles.push({kind:'scorpionSting',x:e.x,y:e.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,speed,damage:45,createdAt:now,life:6000,area:e.area,sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId})}
+ showNotice(count===10?'거대 맹독 전갈 · 독침 10발':'거대 맹독 전갈 · 화살독침')
+}
+function updateDesertEnemySpecial(e,targetP,now,playerD){
+ if(e.type.sandSpray&&e.hostile){
+  if(!e.nextSandSprayAt)e.nextSandSprayAt=now+3000;
+  if(now>=e.nextSandSprayAt){e.nextSandSprayAt=now+3000;if(Math.random()<.30&&playerD<=175){applyEnemyEffectTarget(e,targetP,'sandslow',3000);showNotice('모래 정령 · 모래 뿌리기 · 3초 둔화');return{vx:0,vy:0}}}
+ }
+ if(e.type.venomScorpion&&e.hostile){
+  const b=e.scorpionBurrow;
+  if(b){
+   if(b.phase==='approach'){
+    if(playerD<=150||now>=b.until){b.phase='strike';b.strikeAt=now+1000;showNotice('거대 맹독 전갈 · 1초 뒤 잠복 독침');return{vx:0,vy:0}}
+    return{vx:(targetP.x-e.x)/(playerD||1)*e.type.speed*1.8,vy:(targetP.y-e.y)/(playerD||1)*e.type.speed*1.8}
+   }
+   if(b.phase==='strike'){
+    if(now<b.strikeAt)return{vx:0,vy:0};
+    e.scorpionBurrow=null;
+    if(playerD<=205){enemyDamageTarget(e,120,true);const duration=(4+Math.floor(Math.random()*4))*1000;applyEnemyEffectTarget(e,targetP,'scorpionBurrowPoison',duration);showNotice('잠복 독침 적중 · 120 피해 · 맹독 '+duration/1000+'초')}
+    return{vx:0,vy:0}
+   }
+  }
+  if(!e.nextScorpionBurrowAt)e.nextScorpionBurrowAt=now+2000;
+  if(now>=e.nextScorpionBurrowAt){e.nextScorpionBurrowAt=now+2000;if(Math.random()<.45&&playerD<enemyDetectRange(e,900)){e.scorpionBurrow={phase:'approach',until:now+3000};showNotice('거대 맹독 전갈 · 잠복 · 3초 접근');return{vx:0,vy:0}}}
+  if(!e.nextScorpionStingAt)e.nextScorpionStingAt=now+1000;
+  if(now>=e.nextScorpionStingAt){e.nextScorpionStingAt=now+1000;if(Math.random()<.20&&playerD<enemyDetectRange(e,900)){fireScorpionStings(e,targetP,now,Math.random()<.40?10:1);return{vx:0,vy:0}}}
+ }
+ return null
+}
 function updateSwampSpecial(e,targetP,now,playerD){
  if(e.type.toxicMycelium){
   const engaged=e.hostile&&playerD<enemyDetectRange(e,900);
@@ -4085,6 +4140,7 @@ function updateProjectiles(dt,now){
    else if(q.kind==='poisonArrow'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+2000);p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+2000);showNotice('독화살 적중 · 50 피해 · 이동속도 30% 감소 · 2초 공격 불가')}
    else if(q.kind==='templeSpear')showNotice('원시인 창 적중 · 30 피해');
    else if(q.kind==='swampOutpostArrow')showNotice('늪 전초기지 화살 적중 · '+Math.round(q.damage)+' 피해');
+   else if(q.kind==='scorpionSting'){applyScorpionStingPoison(p,5000);showNotice('맹독 전갈 독침 · 45 피해 · 독 '+p.scorpionStingPoisonExpiries.length+'/3중첩')}
    else showNotice('수정 투척 적중 · 78 데미지');
    state.projectiles.splice(i,1);continue
   }
@@ -4102,6 +4158,7 @@ function updateProjectiles(dt,now){
      multiSend('enemy-hit',{targetId:id,damage:enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),force:true,sourceId:q.sourceId||null});
      if(q.kind==='mud')multiSend('enemy-effect',{targetId:id,kind:'mudslow',duration:3000,sourceId:q.sourceId||null});
      if(q.kind==='poisonArrow'){multiSend('enemy-effect',{targetId:id,kind:'slow30',duration:2000,sourceId:q.sourceId||null});multiSend('enemy-effect',{targetId:id,kind:'attackblock',duration:2000,sourceId:q.sourceId||null})}
+     if(q.kind==='scorpionSting')multiSend('enemy-effect',{targetId:id,kind:'scorpionStingPoison',duration:5000,sourceId:q.sourceId||null})
      state.projectiles.splice(i,1);hitRemote=true;break
     }
    }
@@ -4172,6 +4229,9 @@ function updateHazards(now){
  }
  if(p.burnTicks>0&&now>=p.burnNext){interruptAutoGather(now);p.hp=Math.max(0,p.hp-5);p.burnTicks--;p.burnNext=now+1000;state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('화염 피해로 쓰러졌다');return}}
  if(now<(p.poisonUntil||0)&&now>=(p.poisonNext||0)){p.poisonNext=now+1000;interruptAutoGather(now);p.hp=Math.max(0,p.hp-(p.poisonDamage||5));state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독 피해로 쓰러졌다');return}}
+ if(now<(p.scorpionBurrowPoisonUntil||0)&&now>=(p.scorpionBurrowPoisonNext||0)){p.scorpionBurrowPoisonNext=now+1000;interruptAutoGather(now);p.hp=Math.max(0,p.hp-10);state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('맹독 전갈 독으로 쓰러졌다');return}}
+ p.scorpionStingPoisonExpiries=(Array.isArray(p.scorpionStingPoisonExpiries)?p.scorpionStingPoisonExpiries:[]).filter(t=>t>now);
+ if(p.scorpionStingPoisonExpiries.length&&now>=(p.scorpionStingPoisonNext||0)){p.scorpionStingPoisonNext=now+1000;interruptAutoGather(now);p.hp=Math.max(0,p.hp-3*p.scorpionStingPoisonExpiries.length);state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독침 중첩 독으로 쓰러졌다');return}}
  if(state.area==='surface'&&regionAt(p.x,p.y)==='jungle'){
   const gas=state.poisonStones.some(n=>!n.dead&&dist(p.x,p.y,n.x,n.y)<180);
   if(gas&&now>=(p.poisonGasNext||0)){p.poisonGasNext=now+1000;interruptAutoGather(now);p.hp=Math.max(0,p.hp-5);showNotice('독점석 독가스 · 5 피해');state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독점석 독가스로 쓰러졌다');return}}
@@ -4215,7 +4275,7 @@ function update(dt,now){
   const flowerWebTrapped=updateFlowerWebTrap();
   if(m>.01&&!flowerWebTrapped&&now>=(p.stunnedUntil||0)&&now>=(p.grabbedUntil||0)){
     mx/=Math.max(1,m);my/=Math.max(1,m);
-    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){const nx=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24),deepLimit=nx>=DEEP_CORAL_FOREST.x?UNDERWATER.h-24:NORMAL_DEEP_MAX_Y;p.x=nx;p.y=clamp(p.y+my*moveSpeed*dt,24,deepLimit)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
+    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(now<(p.sandSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){const nx=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24),deepLimit=nx>=DEEP_CORAL_FOREST.x?UNDERWATER.h-24:NORMAL_DEEP_MAX_Y;p.x=nx;p.y=clamp(p.y+my*moveSpeed*dt,24,deepLimit)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
     else{const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);if(!pointInGiantLakeWater(nx,ny)&&!blockedByPlayerBuilding(nx,ny)){p.x=nx;p.y=ny}}
     p.faceX=mx;p.faceY=my
   }
@@ -4267,6 +4327,7 @@ function update(dt,now){
         if(pick){e.enemyTarget=pick.target;const chase=chaseMonster(e,pick.target,now);if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}}
       }
       updateMushroomGas(e,targetP,now,playerD);
+      const desertMove=!monsterFight?updateDesertEnemySpecial(e,targetP,now,playerD):null;if(desertMove){vx=desertMove.vx;vy=desertMove.vy;monsterFight=true}
       const outpostMove=!monsterFight?updateSwampOutpostEnemy(e,targetP,now,playerD):null;if(outpostMove){vx=outpostMove.vx;vy=outpostMove.vy;monsterFight=true}
       const swampMove=!monsterFight?updateSwampSpecial(e,targetP,now,playerD):null;if(swampMove){vx=swampMove.vx;vy=swampMove.vy;monsterFight=true}
       const crocMove=!monsterFight?updateCrocodileSpecial(e,targetP,now,playerD):null;if(crocMove){vx=crocMove.vx;vy=crocMove.vy;monsterFight=true}
@@ -4362,6 +4423,11 @@ function update(dt,now){
         }
       }
   
+      if(e.type.id==='sandSpirit'&&e.packId!==null&&e.packId!==undefined){
+        const mates=state.enemies.filter(m=>m!==e&&m.hp>0&&m.packId===e.packId&&m.type.id==='sandSpirit');
+        if(mates.length){const pcx=mates.reduce((s,m)=>s+m.x,0)/mates.length,pcy=mates.reduce((s,m)=>s+m.y,0)/mates.length,pd=dist(e.x,e.y,pcx,pcy);if(pd>120){vx+=(pcx-e.x)/(pd||1)*e.type.speed*.45;vy+=(pcy-e.y)/(pd||1)*e.type.speed*.45}}
+        if(!pointInWildernessDesert(e.x,e.y)){const sd=dist(e.x,e.y,e.spawnX,e.spawnY);vx+=(e.spawnX-e.x)/(sd||1)*e.type.speed;vy+=(e.spawnY-e.y)/(sd||1)*e.type.speed}
+      }
       if(e.type.canyon&&!monsterFight&&playerD>=(e.type.detect||860)){
         const mates=state.enemies.filter(m=>m!==e&&m.hp>0&&m.packId===e.packId);
         if(mates.length){
@@ -4386,6 +4452,7 @@ function update(dt,now){
       }else if(visualSpeed>.5){e.faceX=vx/visualSpeed;e.faceY=vy/visualSpeed}
       if(e.raidId){vx*=RAID_DIFFICULTY_SCALE;vy*=RAID_DIFFICULTY_SCALE}
       let nextEnemyX=clamp(e.x+vx*dt,35,enemyW-35),nextEnemyY=clamp(e.y+vy*dt,35,enemyH-35);
+      if(e.type.desert){nextEnemyX=clamp(nextEnemyX,WILDERNESS_DESERT.x+40,WILDERNESS_DESERT.x+WILDERNESS_DESERT.w-40);nextEnemyY=clamp(nextEnemyY,WILDERNESS_DESERT.y+40,WILDERNESS_DESERT.y+WILDERNESS_DESERT.h-40)}
       if(e.outpostUnit){
        if(e.outpostFixed){nextEnemyX=e.spawnX;nextEnemyY=e.spawnY}
        else{nextEnemyX=clamp(nextEnemyX,SWAMP_OUTPOST.x+120,SWAMP_OUTPOST.x+SWAMP_OUTPOST.w-120);nextEnemyY=clamp(nextEnemyY,SWAMP_OUTPOST.y+120,SWAMP_OUTPOST.y+SWAMP_OUTPOST.h-120)}
@@ -5253,6 +5320,7 @@ function drawCreature(e,cx,cy){
  const x=e.x-cx,y=e.y-cy,now=performance.now();if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;
  if(e.type.stealthMantis&&dist(state.player.x,state.player.y,e.x,e.y)>260){ctx.save();ctx.globalAlpha=.10;drawThemedCreatureAsset(e,x,y,now);ctx.restore();return}
  if(e.type.labBoss&&now<(e.submergedUntil||0)){ctx.fillStyle='#ff5a30';ctx.beginPath();ctx.ellipse(x,y,52,18,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c5a2ff';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#f7e7ff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('용암 잠수',x,y+34);return}
+ if(e.type.venomScorpion&&e.scorpionBurrow?.phase==='approach'){ctx.fillStyle='#a1783f';ctx.beginPath();ctx.ellipse(x,y+8,42,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d5b26b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y+8,30,0,Math.PI*2);ctx.stroke();return}
  if(e.type.burrower&&!e.emerged){ctx.fillStyle='#6f5134';ctx.beginPath();ctx.ellipse(x,y+10,34,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a67b4b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-25,y+6);ctx.lineTo(x+23,y+13);ctx.stroke();return}
  ctx.save();if(now<e.hitAt)ctx.globalAlpha=.5;
  if(e.type.outpostArrowTower){
@@ -5280,7 +5348,7 @@ function drawCreature(e,cx,cy){
  drawEnemyCombatVfx(e,x,y,now);
  if(state.arrowAim?.targetId===e.netId&&currentWeapon()?.ranged==='bow'){ctx.save();ctx.strokeStyle='#fff3a8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r+14,0,Math.PI*2);ctx.stroke();for(let a=0;a<4;a++){const ang=a*Math.PI/2,inner=e.type.r+7,outer=e.type.r+22;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*inner,y+Math.sin(ang)*inner);ctx.lineTo(x+Math.cos(ang)*outer,y+Math.sin(ang)*outer);ctx.stroke()}ctx.fillStyle='#fff3a8';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('조준',x,y-e.type.r-28);ctx.restore()}
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
- ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.outpostPrimitive||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
+ ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.outpostPrimitive||e.type.desert||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
 }
 function drawSporeClouds(cx,cy){const now=performance.now();for(const g of state.sporeClouds){if(g.area!==state.area||now>=g.until)continue;const x=g.x-cx,y=g.y-cy,life=Math.max(0,Math.min(1,(g.until-now)/3000));ctx.save();ctx.globalAlpha=.18+.18*life;ctx.fillStyle='#8c68a9';ctx.beginPath();ctx.arc(x,y,g.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c99be5';ctx.lineWidth=2;ctx.stroke();ctx.restore()}for(const e of state.enemies){if(e.area!==state.area||!e.type.mushroomGas||now>=(e.sporeGasUntil||0))continue;const x=e.x-cx,y=e.y-cy;ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#7d5c94';ctx.beginPath();ctx.arc(x,y,145,0,Math.PI*2);ctx.fill();ctx.restore()}}
 function drawProjectiles(cx,cy){
@@ -5293,6 +5361,7 @@ function drawProjectiles(cx,cy){
   else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}
   else if(q.kind==='toxicGasShot'){ctx.globalAlpha=.82;ctx.fillStyle='#74c84a';ctx.strokeStyle='#c8ff98';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.24;ctx.fillStyle='#9ef06b';ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*2);ctx.fill()}
   else if(q.kind==='poisonArrow'){ctx.strokeStyle='#8bcf6a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#b7f58c';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
+  else if(q.kind==='scorpionSting'){ctx.strokeStyle='#6f4d2b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-14);ctx.stroke();ctx.fillStyle='#9be15e';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
   else if(q.kind==='swampOutpostArrow'){ctx.strokeStyle='#75593b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,-17);ctx.stroke();ctx.fillStyle='#d0c4a4';ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
   else if(q.kind==='templeSpear'){ctx.strokeStyle='#8f6c43';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,-18);ctx.stroke();ctx.fillStyle='#d6d0b8';ctx.beginPath();ctx.moveTo(0,-25);ctx.lineTo(7,-13);ctx.lineTo(-7,-13);ctx.closePath();ctx.fill()}
   else{ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke()}
