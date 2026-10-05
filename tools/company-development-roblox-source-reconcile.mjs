@@ -166,11 +166,32 @@ export function validateExistingRobloxSourceTree({root='',baseline={},assetLibra
   if(project?.tree?.ServerScriptService?.GameServer?.$path!=='server')blockers.push('SOURCE_PROJECT_SERVER_MAPPING_REQUIRED');
   if(project?.tree?.StarterPlayer?.StarterPlayerScripts?.GameClient?.$path!=='client')blockers.push('SOURCE_PROJECT_CLIENT_MAPPING_REQUIRED');
 
+  const sharedConfig=fs.readFileSync(required.config,'utf8');
+  const serverCode=fs.readFileSync(required.server,'utf8');
+  const clientCode=fs.readFileSync(required.client,'utf8');
+  const profile=robloxBuildProfileFromBaseline(baseline);
+  const studioAssets=assetLibrary&&Object.keys(assetLibrary).length
+    ?buildRobloxStudioAssetBootstrapPlan({gameId:path.basename(root),profile,assetLibrary})
+    :{};
+  if(assetLibrary&&Object.keys(assetLibrary).length&&studioAssets.applied!==true){
+    blockers.push('ROBLOX_INTERNAL_ASSET_LIBRARY_THRESHOLD_REQUIRED');
+    for(const family of studioAssets?.universalAssetFirst?.missingFamilies||[])blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_MISSING:'+family);
+    for(const family of studioAssets?.universalAssetFirst?.underfilledFamilies||[])blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_UNDERFILLED:'+family);
+  }
+  if(studioAssets.applied===true){
+    for(const [family,atoms] of Object.entries(studioAssets.families||{})){
+      const familyBlock=sharedConfig.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'))?.[1]||'';
+      if(!familyBlock)blockers.push('CONFIG_STUDIO_ASSET_FAMILY_REQUIRED:'+family);
+      for(const atom of atoms||[])if(!familyBlock.includes('"'+atom+'"')&&!familyBlock.includes("'"+atom+"'"))blockers.push('CONFIG_STUDIO_ASSET_ATOM_REQUIRED:'+family+':'+atom);
+    }
+  }
   const verdict=validateRobloxBootstrap({
-    sharedConfig:fs.readFileSync(required.config,'utf8'),
-    serverCode:fs.readFileSync(required.server,'utf8'),
-    clientCode:fs.readFileSync(required.client,'utf8'),
+    sharedConfig,
+    serverCode,
+    clientCode,
     baseline,
+    profile,
+    studioAssets,
   });
   blockers.push(...verdict.blockers);
   return {pass:blockers.length===0,blockers:[...new Set(blockers)],saveRequired:verdict.saveRequired};
