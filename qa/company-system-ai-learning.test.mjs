@@ -269,7 +269,7 @@ test('verified external AI graphics findings distill into visual rig motion mate
   const result=buildExternalAiLearningFeed({tasks:[{
     id:'graphics-multimodal-review',status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',
     department:'graphics',taskType:'graphics-review',target:'roblox',gameId:'graphics-demo',
-    goal:'review silhouette aesthetics rig joints skin weights walk gait foot contact secondary motion material roughness lighting vfx particles camera shake mobile readability',
+    goal:'review silhouette aesthetics rig joints skin weights walk gait animation timing anticipation settle foot contact secondary motion material roughness lighting vfx particles camera shake mobile readability',
     responsibleFiles:['roblox-games/graphics-demo/shared/VisualStyle.luau'],
     evidence:[
       'verification:success','primary-ai-review:PASS',
