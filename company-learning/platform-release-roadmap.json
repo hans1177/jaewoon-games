@@ -7483,8 +7483,8 @@
       "releaseAndQaFifoSemanticsUnchanged": true,
       "runnerDrainRunner": "ubuntu-24.04",
       "gamePrimaryGateRunner": "ubuntu-slim",
-      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-      "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
       "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true,
       "staleCentralPushMayCancelWhenCurrentHeadReplacementActive": true,
       "staleNativeBatchPushMayCancelWhenCurrentHeadCentralReplacementActive": true,
@@ -7638,8 +7638,8 @@
       "sharedStateWriterCancellationChurnForbidden": true,
       "independentGameRunCancellationForbidden": true,
       "qualitySecurityReleaseGatesUnchanged": true,
-      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-      "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
       "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
     },
     "developmentFloorParallelBottleneckRepair20260927": {
@@ -8019,8 +8019,8 @@
       "independentGameCancellationForbidden": true,
       "drainLogicChanged": false,
       "qualitySecurityReleaseGatesUnchanged": true,
-      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-      "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
       "concurrencyEpochAdvancedForLegacyPendingQueue": true
     },
     "developmentQueueReconcileRunnerIsolation20260927": {
