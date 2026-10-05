@@ -140,8 +140,31 @@ export function retrieveVibeVerifiedPatterns({index,request='',taskType='',proje
   return Object.freeze({version:1,query,successes:Object.freeze(rank(index.positive,topKSuccess)),failureWarnings:Object.freeze(rank(index.failureWarnings,topKFailure)),useRule:'reuse-verified-patterns-and-avoid-observed-failures',authority:'retrieval-context-only'});
 }
 
+const ADVANCED_CODING_BASE=Object.freeze([
+  'map-data-ownership-invariants-and-authority-before-edit',
+  'separate-pure-decision-logic-from-side-effect-boundaries',
+  'model-complex-flow-as-explicit-state-machine',
+  'encode-invalid-or-impossible-states-out-of-the-data-model-when-practical',
+  'make-retries-idempotent-deduplicated-and-causally-bounded',
+  'make-shared-state-writes-atomic-conflict-aware-and-replay-safe',
+  'keep-independent-work-parallel-and-serialize-only-exact-conflicts',
+  'version-persistent-data-and-migrate-backward-compatibly',
+  'prefer-deterministic-reproducible-transforms-and-content-identity',
+  'treat-cancellation-cleanup-timeouts-and-resource-lifetime-as-first-class',
+  'validate-untrusted-input-at-trust-boundaries-and-fail-closed',
+  'choose-data-structures-from-access-pattern-complexity-and-memory-locality',
+  'measure-before-optimization-then-fix-algorithmic-io-and-allocation-hotspots',
+  'batch-hot-path-work-and-avoid-per-frame-or-n-plus-one-churn',
+  'design-observability-at-responsibility-boundaries-with-deduplicated-signals',
+  'test-invariants-properties-failure-paths-recovery-and-happy-paths',
+  'use-exact-revision-differential-before-after-and-regression-evidence',
+  'prefer-direct-owner-function-or-complete-block-edit-over-wrapper-shadow-patches',
+  'preserve-security-save-network-gameplay-and-authority-semantics-through-refactors',
+  'promote-reusable-patterns-only-after-runtime-independent-qa-and-regression'
+]);
+
 const PLAYBOOK_BASE=Object.freeze({
-  coding:Object.freeze(['rank-responsible-source-before-edit','generate-3-to-5-independent-candidates','prefer-smallest-behavior-preserving-diff','run-syntax-tests-runtime-regression']),
+  coding:Object.freeze(['rank-responsible-source-before-edit','generate-3-to-5-independent-candidates','prefer-smallest-behavior-preserving-diff','run-syntax-tests-runtime-regression',...ADVANCED_CODING_BASE]),
   bugfix:Object.freeze(['reproduce-or-bind-failure-evidence','trace-failure-to-responsible-source','repair-smallest-surface','rerun-original-failure-and-regression']),
   qa:Object.freeze(['bind-exact-revision','separate-launch-from-real-success','preserve-positive-and-negative-boundaries','require-observed-runtime-evidence']),
   unity:Object.freeze(['bind-current-source-tree-and-build','require-android-runtime-pass','require-independent-qa','preserve-save-and-core-design-lock']),
@@ -169,6 +192,9 @@ export function createVibeTaskPlaybook({taskType='general',retrieval=null,source
     }))),
     avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure}))),
     responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),
+    checklistAuthority:'owner-requested-base-engineering-guidance',
+    checklistCountsAsTrainingSample:false,
+    checklistClaimsVerifiedOutcome:false,
     authority:'verified-task-playbook'
   });
 }
