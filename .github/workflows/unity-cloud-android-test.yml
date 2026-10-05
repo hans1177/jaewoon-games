@@ -311,24 +311,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse "${source_commit}^{tree}")"
+          [[ "$source_commit" == "$GITHUB_SHA" && "$source_tree" =~ ^[0-9a-f]{40}$ ]] || { echo '[JAEWOON_BUILD_ERROR:BUILD_SOURCE_BINDING_INVALID] checked-out source does not match this build' >&2; exit 50; }
           python3 - \
             '${{ steps.request.outputs.game_id }}' \
             '${{ steps.request.outputs.request_id }}' \
             '${{ steps.apk_verify.outputs.application_id }}' \
-            "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            "$source_commit" "$source_tree" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
             '${{ steps.artifact.outputs.release_tag }}' \
             '${{ steps.artifact.outputs.sha256 }}' \
             '${{ steps.artifact.outputs.bytes }}' \
             '${{ steps.request.outputs.publish_homepage }}' \
             "$JAEWOON_ANDROID_VERIFY_API" > dist/build-info.json <<'PY'
           import json, sys, datetime
-          game, req, app_id, source, run_id, attempt, tag, apk_sha, size, approved, api = sys.argv[1:]
+          game, req, app_id, source, source_tree, run_id, attempt, tag, apk_sha, size, approved, api = sys.argv[1:]
           print(json.dumps({
               'version': 2,
               'gameId': game,
               'requestId': req,
               'applicationId': app_id,
               'sourceCommit': source,
+              'sourceTreeSha': source_tree,
               'runId': int(run_id),
               'runAttempt': int(attempt),
               'releaseTag': tag,
