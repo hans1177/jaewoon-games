@@ -140,7 +140,7 @@ function canonicalWebHref(row){
 }
 function playableWebHref(row){
   const web=sourcesOf(row).web||{};
-  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID'].includes(web.state||row?.ownerWebSourceState))return'';
+  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','UNITY_WEB_BUNDLE_INCOMPLETE'].includes(web.state||row?.ownerWebSourceState))return'';
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const archive=web.archive===true||row?.hasWebArchive===true;
   return activeLifecycle(row)&&playable&&archive?canonicalWebHref(row):'';

@@ -202,6 +202,13 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
     assert(!temp.games.some(x=>['counter-shell','vibe-maker','removed'].includes(x.id)));
+    write('unity-only-index','<title>Unity Web Player</title><script>var buildUrl="Build"; var loaderUrl=buildUrl+"/game.loader.js";var config={dataUrl:buildUrl+"/game.data",frameworkUrl:buildUrl+"/game.framework.js",codeUrl:buildUrl+"/game.wasm"};</script>');
+    ingestOwnerWebGameIds(temp,[],{rootDir:root});
+    assert(!temp.games.some(x=>x.id==='unity-only-index'),'Unity HTML without its actual bundle is not runnable');
+    fs.mkdirSync(path.join(root,'unity-only-index','Build'));
+    for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(root,'unity-only-index','Build',file),'bundle-fixture');
+    ingestOwnerWebGameIds(temp,[],{rootDir:root});
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,true);
     write('simple-shell','<title>다시 구현한 게임</title><canvas></canvas>');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,true);

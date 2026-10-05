@@ -205,6 +205,19 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       if(excluded.has(id)){valid=false;sourceState='NON_GAME_SURFACE';}
       else if(list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
     }
+    if(valid){
+      const html=filesystem.readFileSync(indexFile,'utf8');
+      if(/Unity Web Player|unity-container|createUnityInstance/i.test(html)){
+        const buildRoot=html.match(/(?:var|let|const)\s+buildUrl\s*=\s*["']([^"']+)["']/)?.[1]||'Build';
+        const refs=[...html.matchAll(/["']([^"']+\.(?:loader\.js|data(?:\.(?:br|gz))?|framework\.js(?:\.(?:br|gz))?|wasm(?:\.(?:br|gz))?))["']/gi)].map(match=>match[1].replace(/^\.\//,'').replace(/^\//,''));
+        const complete=[/\.loader\.js$/i,/\.data(?:\.(?:br|gz))?$/i,/\.framework\.js(?:\.(?:br|gz))?$/i,/\.wasm(?:\.(?:br|gz))?$/i].every(pattern=>refs.some(ref=>{
+          if(!pattern.test(ref)||ref.includes('..')||buildRoot.includes('..'))return false;
+          const file=dir+'/'+(ref.startsWith(buildRoot+'/')?ref:buildRoot+'/'+ref);
+          try{return filesystem.statSync(file).isFile()&&filesystem.statSync(file).size>0;}catch{return false;}
+        }));
+        if(!complete){valid=false;sourceState='UNITY_WEB_BUNDLE_INCOMPLETE';}
+      }
+    }
     if(!valid){
       if(existing){
         existing.homepageWebPlayable=false;
