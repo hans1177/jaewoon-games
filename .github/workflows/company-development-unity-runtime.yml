@@ -784,22 +784,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
-          REUSE: ${{ steps.plan.outputs.reuse_build }}
         shell: bash
         run: |
           set -euo pipefail
           api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
           title="Unity Android Runtime Smoke $BUILD_RUN"
-          child=''
-          if [[ "$REUSE" != 'true' ]]; then
-            for _ in $(seq 1 60); do
-              child="$(gh api "$api/runs?event=workflow_run&per_page=50" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title)|.id]|max//empty')"
-              [[ "$child" =~ ^[0-9]+$ ]] && break
-              sleep 2
-            done
-            if [[ "$child" =~ ^[0-9]+$ ]]; then
-              echo "UNITY_RUNTIME_SMOKE_REUSED_AUTO=$child"
-            fi
+          # BUILD_RUN already identifies the APK/source checked by immutable artifact binding.
+          # Cloud Android has no automatic smoke trigger; reuse an exact run now or dispatch.
+          runs="$(gh api "$api/runs?per_page=100")"
+          child="$(jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title and (.event=="workflow_dispatch" or .event=="workflow_run") and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="requested" or .status=="waiting" or (.status=="completed" and .conclusion=="success")))|.id]|max//empty' <<< "$runs")"
+          if [[ "$child" =~ ^[0-9]+$ ]]; then
+            echo "UNITY_RUNTIME_SMOKE_REUSED_EXACT_BUILD=$child"
           fi
           if [[ ! "$child" =~ ^[0-9]+$ ]]; then
             baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
@@ -824,14 +819,14 @@ jobs:
               failure_json="$(find /tmp/unity-runtime-failure -type f -name evidence.json -size +0c | head -n1 || true)"
               if [[ -n "$failure_json" ]]; then
                 failure_floor="$(node - "$failure_json" <<'NODE'
-                const fs=require('fs');
-                const evidence=JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,''));
-                const floors=evidence?.blackBoxFoundation?.floors||{};
-                for(const id of ['F1','F2','F3','F4','F5','F6','F8']){
-                  if(floors[id]?.state!=='PASS'){process.stdout.write(id);process.exit(0);}
-                }
-                process.stdout.write('F1');
-                NODE
+          const fs=require('fs');
+          const evidence=JSON.parse(fs.readFileSync(process.argv[2],'utf8').replace(/^\uFEFF/,''));
+          const floors=evidence?.blackBoxFoundation?.floors||{};
+          for(const id of ['F1','F2','F3','F4','F5','F6','F8']){
+            if(floors[id]?.state!=='PASS'){process.stdout.write(id);process.exit(0);}
+          }
+          process.stdout.write('F1');
+          NODE
                 )"
                 echo "failure_floor=$failure_floor" >> "$GITHUB_OUTPUT"
                 echo "UNITY_RUNTIME_EXACT_FAILURE_FLOOR=$failure_floor"
