@@ -2047,6 +2047,22 @@ export function buildInternalAssetSourceUsageContract(order={}){
     sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).slice(0,8))
   })).filter(row=>row.assetId||row.requirementId);
   const sourceCandidates=[];
+  const dynamicLibraryBinding=assetProduction?.allGameDynamicLibraryBinding||{};
+  for(const family of Object.keys(dynamicLibraryBinding?.familyCandidates||{})){
+    for(const row of dynamicLibraryBinding.familyCandidates[family]||[]){
+      const id=clean(row?.assetId||row?.id);
+      if(!id)continue;
+      sourceCandidates.push(Object.freeze({
+        assetId:id,
+        type:'ALL_GAME_DYNAMIC_LIBRARY',
+        family:clean(row?.family||family).toUpperCase()||null,
+        role:clean(row?.role)||null,
+        sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean)),
+        path:posix(row?.path)||null,
+        sourceTier:clean(row?.applicationMode)||null
+      }));
+    }
+  }
   for(const decision of assetProduction?.decisions||[]){
     for(const row of [...(decision?.applyFirst?.candidates||[]),...(decision?.reuseCandidates||[])]){
       const id=clean(row?.id||row?.assetId);
@@ -2067,7 +2083,11 @@ export function buildInternalAssetSourceUsageContract(order={}){
   const libraryVersion=Number(loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
   const selectionFingerprint=clean(loadout?.robloxSelectionFingerprint);
   const payload={
-    version:4,target,gameId,libraryVersion,selectionFingerprint,
+    version:5,target,gameId,libraryVersion,selectionFingerprint,
+    dynamicLibraryFingerprint:clean(dynamicLibraryBinding?.fingerprint)||null,
+    registryAssetCount:Number(dynamicLibraryBinding?.registryAssetCount||0),
+    evaluatedAssetCount:Number(dynamicLibraryBinding?.evaluatedAssetCount||0),
+    compatibleCandidateCount:Number(dynamicLibraryBinding?.compatibleCandidateCount||0),
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
@@ -2186,25 +2206,33 @@ export function buildInternalAssetSourceUsageContract(order={}){
     })
   });
   return Object.freeze({
-    version:4,
+    version:5,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
     selectionFingerprint:selectionFingerprint||null,
+    dynamicLibraryFingerprint:clean(dynamicLibraryBinding?.fingerprint)||null,
+    registryAssetCount:Number(dynamicLibraryBinding?.registryAssetCount||0),
+    evaluatedAssetCount:Number(dynamicLibraryBinding?.evaluatedAssetCount||0),
+    compatibleCandidateCount:Number(dynamicLibraryBinding?.compatibleCandidateCount||0),
+    allRegistryAssetsScanned:dynamicLibraryBinding?.allRegistryAssetsScanned===true,
+    allTwelveFamiliesEvaluated:dynamicLibraryBinding?.allTwelveFamiliesEvaluated===true,
+    candidateCountsByFamily:Object.freeze({...dynamicLibraryBinding?.candidateCountsByFamily}),
     fingerprint,
     exactFamilies,
     flowSelections:Object.freeze(flowSelections),
     sourceCandidates:Object.freeze(dedupedSources),
     synchronization:Object.freeze({
       mode:'INCREMENTAL_SELECTION_FINGERPRINT',
-      fullLibraryReplicationForbidden:true,
+      fullBinaryLibraryReplicationForbidden:true,
       fullCatalogPromptInjectionForbidden:true,
-      selectedSubsetOnly:true,
+      allCompatibleCandidateEligibilityIndexRequired:true,
+      selectedSubsetOnly:false,
       unchangedFingerprintReusePreferred:true,
       changedFamilyRebindOnly:true,
-      sourceApiContextOnlyForSelectedAssets:true,
+      sourceApiContextOnlyForSelectedAssets:false,
       selectedCommonSourceApiDiscovery:true,
-      selectedCommonSourcesDerivedFromSelectedFamiliesOnly:true,
+      selectedCommonSourcesDerivedFromSelectedFamiliesAndDynamicRegistry:true,
       selectedCommonSourceApiContextReadOnly:true,
       apiContextBatchSize:4,
       apiContextMaxBytes:18000,
@@ -2274,7 +2302,9 @@ export function buildInternalAssetSourceUsageContract(order={}){
       noArtificialCombinationCap:true,
       allApplicableExistingSystemsEligible:true,
       allApplicableSelectedAssetsEligible:true,
-      continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
+      allSafeRightsPlatformRoleCompatibleRegistryAssetsEligible:true,
+      currentBuildUpAllCompatibleCandidatesEligible:true,
+      crossCycleQualityImprovementContinues:true,
       contextBudgetIsNotUsageCap:true,
       apiContextBatchingAllowedForSynchronizationEfficiency:true,
       independentResponsibleFilesMayApplyInParallel:true,
