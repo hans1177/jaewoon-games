@@ -5,12 +5,32 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,buildRegisteredRobloxLibraryPackInventory,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('registered Roblox internal library inventory matches maintenance count and evaluates every registered pack',()=>{
+  const repoRoot=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
+  const inventory=buildRegisteredRobloxLibraryPackInventory({registry,repoRoot});
+  assert.equal(inventory.required,true);
+  assert.equal(inventory.packCount,registry.internalAssetLibraryAutomation.maintenance.packCount);
+  assert.equal(inventory.countMatchesMaintenance,true);
+  assert.equal(inventory.allPacksEvaluated,true);
+  assert.equal(inventory.allRegisteredPacksAutoDiscovery,true);
+  assert.equal(inventory.allApplicablePacksRequireRealSourceBinding,true);
+  assert.equal(inventory.plainDefaultPrimitiveFallbackForbidden,true);
+  assert.ok(inventory.packCount>=18);
+  assert.equal(inventory.packs.length,inventory.packCount);
+  assert.ok(inventory.packs.every(row=>row.root&&row.assetCount>0&&row.contextFile&&row.evaluationRequired===true));
+  const roots=new Set(inventory.packs.map(row=>row.root));
+  for(const root of ['common-ui-v1','common-vfx-v1','common-motion-v1','horror-lore-v1','monster-adventure-v1','survival-core-world-v1','world-ghosts'])assert.ok(roots.has(root),root);
+  assert.equal(roots.has('midnight-manor'),false);
+  assert.equal(roots.has('survival-wildlife'),false);
+});
 
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
   const order={
@@ -73,7 +93,7 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.synchronization.allSelectedApiSourcesEveryBuildUp,true);
   assert.equal(a.synchronization.apiContextRotationByBuildUpGeneration,false);
   assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
-  assert.equal(a.version,3);
+  assert.equal(a.version,4);
   assert.ok(a.usageMatrix.length>=72);
   assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
   for(const signal of [
@@ -96,7 +116,7 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.match(a.usageMatrix.find(row=>row.signal==='EQUIPMENT_SOCKET_AND_STANCE_SYNC').rule,/equippedWeaponId/);
   assert.match(a.usageMatrix.find(row=>row.signal==='INTERACTION_ACTION_GRAMMAR').rule,/OPEN\/CLOSE\/GATHER\/MINE\/CHOP\/DIG\/CRAFT\/SIT\/PUSH\/PULL\/CARRY\/REVIVE\/MOUNT/);
   assert.equal(a.synchronization.selectedCommonSourceApiDiscovery,true);
-  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesOnly,true);
+  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesOnly,false);
   assert.equal(a.commonSourceReuse.existingFactoryBeforeNewImplementation,true);
   assert.equal(a.repetitionControl.simpleRandomVariantSelectionForbidden,true);
   assert.equal(a.repetitionControl.usageHistoryAndLineageMustBePreserved,true);
@@ -124,11 +144,17 @@ test('Vibe source exposes every selected Roblox internal asset API each BUILD_UP
   assert.match(source,/fullLibraryReplicationForbidden:true/);
   assert.match(source,/fullCatalogPromptInjectionForbidden:true/);
   assert.match(source,/apiContextBatchSize:4/);
-  assert.match(source,/apiContextMaxBytes:18000/);
+  assert.match(source,/apiContextMaxBytes:24000/);
+  assert.match(source,/apiContextMinimumPerFileBytes:320/);
   assert.match(source,/apiContextPerFileMaxBytes:4500/);
   assert.match(source,/allSelectedApiSourcesEveryBuildUp:target==='roblox'/);
   assert.match(source,/apiContextRotationByBuildUpGeneration:target!=='roblox'/);
   assert.match(source,/allSelectedApiSourcesRemainEligibleAcrossCycles:true/);
+  assert.match(source,/registeredPackMetadataEveryBuildUp:target==='roblox'/);
+  assert.match(source,/registeredPackPrimaryContextEveryBuildUp:target==='roblox'/);
+  assert.match(source,/registeredPackContextPaths/);
+  assert.match(source,/internalAssetRegisteredPackCount/);
+  assert.match(source,/EVERY REGISTERED INTERNAL LIBRARY PACK is evaluated every BUILD_UP/);
   assert.match(source,/const allSelectedEveryBuildUp=clean\(contract\?\.target\)\.toLowerCase\(\)==='roblox'/);
   assert.match(source,/const selectedPaths=allSelectedEveryBuildUp/);
   assert.match(source,/internalAssetApiContextEligibleSourceCount:allSelectedPaths\.length/);
