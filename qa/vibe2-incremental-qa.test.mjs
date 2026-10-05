@@ -510,6 +510,53 @@ test('Roblox asset adaptation rejects a single primitive even when names mimic e
   );
 });
 
+test('Roblox internal asset QA rejects multiple bare visual Parts even when every applicable family is marked applied',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'roblox-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const atoms=Object.fromEntries(families.map(family=>[family,[family+'_ATOM']]));
+  const statuses=Object.fromEntries(families.map(family=>[family,['ENVIRONMENT','UI','PROP'].includes(family)?'APPLIED':'NOT_APPLICABLE']));
+  const statusRows=Object.entries(statuses).map(([family,status])=>'  '+family+' = "'+status+'",');
+  fs.writeFileSync(path.join(sourceRoot,'client/Visual.client.luau'),[
+    'local STUDIO_ASSET_BINDING_VERSION = 2',
+    'local STUDIO_ASSET_SELECTION = {'+families.map(family=>'"'+family+'_ATOM"').join(',')+'}',
+    'local STUDIO_ASSET_FAMILY_STATUS = {',
+    ...statusRows,
+    '}',
+    'local gui = Instance.new("ScreenGui")',
+    'local rootFrame = Instance.new("Frame")',
+    'rootFrame:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+    'rootFrame:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
+    'local tree = Instance.new("Part")',
+    'tree.Name = "Tree"',
+    'tree.CFrame = CFrame.new(0, 2, 0)',
+    'tree.Parent = workspace',
+    'local chest = Instance.new("Part")',
+    'chest.Name = "Chest"',
+    'chest.CFrame = CFrame.new(4, 2, 0)',
+    'chest.Parent = workspace',
+    'rootFrame.Parent = gui'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'roblox-games/demo',
+    target:'roblox',
+    changedFiles:['client/Visual.client.luau'],
+    assetProduction:{
+      baseMaterialLoadout:{
+        families:atoms,
+        universalAssetFirst:{required:true},
+        robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,bindingVersion:2}
+      }
+    }
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'roblox:multiple-bare-primitives'}),
+    /ROBLOX_PLAIN_PRIMITIVE_FORBIDDEN/
+  );
+});
+
 test('presentation living motion static QA requires continuous smooth motion signals',()=>{
   const root=repo();
   const sourceRoot=path.join(root,'web-games/presentation-motion');
