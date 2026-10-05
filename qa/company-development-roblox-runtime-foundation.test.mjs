@@ -23,6 +23,15 @@ test('Roblox runtime foundation push wake includes its deterministic QA contract
  assert.match(pushBlock,/company-learning\/platform-release-roadmap\.json/);
  assert.match(pushBlock,/roblox-games\/\.company-runtime-trigger/);
 });
+test('Roblox post-work verification defaults to Open Cloud runtime plus image sanity without requiring Studio',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED:\s*true/);
+ assert.match(workflow,/probeRobloxOpenCloudImageEvidence/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_IMAGE_CHECK=/);
+ assert.match(workflow,/openCloudImageEvidence:engineProbe\?\.imageEvidence\|\|null/);
+ assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
+});
+
 test('event-driven Roblox runtime foundation QA has no delayed cron and does not require full git history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
