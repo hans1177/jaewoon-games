@@ -1,5 +1,5 @@
 {
-  "version": 65,
+  "version": 66,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1122,5 +1122,34 @@
       "mayNotBypassQaRuntimeOrReleaseGates": true,
       "mayNotCreateShadowManagerPipeline": true
     }
+  },
+  "allGameDynamicAssetBindingSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract",
+    "scope": "ALL_GAME_DEVELOPMENT_TARGETS_ROBLOX_UNITY_WEB",
+    "protections": {
+      "allGameDevelopmentMustLoadInternalAssetContract": true,
+      "allTwelveFamiliesMustBeEvaluated": true,
+      "compatibleAssetCountCapForbidden": true,
+      "auditScoreMayNotBecomeUsageGate": true,
+      "lowScoreCompatibleUseMayNotBeSilentlyDropped": true,
+      "existingSystemMayNotBeMarkedNotApplicable": true,
+      "markerConfigManifestOnlyPassForbidden": true,
+      "primitivePlainDefaultFallbackPassForbidden": true,
+      "librarySelectionMustBindExactSourceRevision": true,
+      "staleLibraryVersionOrSelectionFingerprintCannotPass": true,
+      "contextRotationMayNotRemoveCurrentEligibility": true,
+      "platformNativeAdaptationRequired": true,
+      "directCrossPlatformBinaryReuseForbidden": true,
+      "gameRulesBalanceSaveProgressionEconomyNetworkAuthorityProtected": true,
+      "wrapperOverrideShadowAssetPipelineForbidden": true
+    },
+    "platformOrder": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ],
+    "failureAction": "REPAIR_EXACT_GAME_ASSET_BINDING_AND_REVALIDATE_FROM_FIRST_INVALIDATED_STAGE",
+    "unrelatedGamesMayContinue": true
   }
 }
