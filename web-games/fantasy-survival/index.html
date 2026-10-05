@@ -36,7 +36,7 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=66,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=67,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=36000*14400/5; // 기존 특수지역 설계 기준 면적 · 확장분은 일반 마력숲
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 기존 수정 지대 크기 유지
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -3689,7 +3689,8 @@ function updateMummyGases(now){
  for(let i=state.mummyGases.length-1;i>=0;i--){
   const g=state.mummyGases[i];if(now>=g.until){state.mummyGases.splice(i,1);continue}
   const source=state.enemies.find(e=>e.netId===g.sourceId&&e.hp>0)||null;
-  if(source&&dist(source.x,source.y,g.x,g.y)<=g.r&&now>=(g.nextHealTick||0)){
+  if(source){g.x=source.x;g.y=source.y}
+  if(source&&now>=(g.nextHealTick||0)){
    g.nextHealTick=now+500;source.hp=Math.min(source.maxHp,source.hp+40);source.hitAt=now+80
   }
   if(state.area==='surface'&&dist(p.x,p.y,g.x,g.y)<=g.r&&now>=(g.nextPlayerTick||0)){
