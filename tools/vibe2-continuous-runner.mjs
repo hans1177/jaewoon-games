@@ -131,15 +131,20 @@ function presentationPassFromTask(task = {}) {
   const fromGoal=clean(match?.[1]).toUpperCase();
   return PRESENTATION_PASSES.has(fromGoal)?fromGoal:null;
 }
-export function expandPresentationResponsibleFiles({task={},target='',repoRoot=process.cwd(),fallbackRoot=''}={}){
+export function expandPresentationResponsibleFiles({task={},target='',repoRoot=process.cwd(),fallbackRoot='',assetProduction=null}={}){
   const base=freezeList(task.responsibleFiles||[]);
   const pass=presentationPassFromTask(task);
-  if(!pass)return base;
+  const resolvedTarget=clean(target||task.target).toLowerCase();
+  const internalAssetBindingRequired=resolvedTarget==='roblox'
+    &&assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
+    &&assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
+  if(!pass&&!internalAssetBindingRequired)return base;
   const root=posix(task.sourceRoot||fallbackRoot);
   if(!root)return base;
-  const resolvedTarget=clean(target||task.target).toLowerCase();
   const candidates=resolvedTarget==='roblox'
-    ?[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`]
+    ?(internalAssetBindingRequired
+      ?[`${root}/client/Game.client.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`,`${root}/shared/GameConfig.luau`,`${root}/server/Game.server.luau`]
+      :[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`])
     :resolvedTarget==='unity'
       ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
       :resolvedTarget==='web'
@@ -171,7 +176,7 @@ export function expandPresentationResponsibleFiles({task={},target='',repoRoot=p
     }
     return freezeList([...base,...discovered,...verse]).slice(0,6);
   }
-  return freezeList([...base,...discovered]).slice(0,6);
+  return freezeList(internalAssetBindingRequired?[...discovered,...base]:[...base,...discovered]).slice(0,6);
 }
 
 function presentationTaskType(task = {}) {
@@ -776,7 +781,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'The candidate must be independently playable and reviewable; validation-only patches, placeholder source, and unrelated rewrites are forbidden.',
     supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
   ].join('\n'):'';
-  const responsibleFiles = expandPresentationResponsibleFiles({task,target:plan.target,repoRoot:process.cwd(),fallbackRoot:adapter.source.root});
+  const responsibleFiles = expandPresentationResponsibleFiles({task,target:plan.target,repoRoot:process.cwd(),fallbackRoot:adapter.source.root,assetProduction});
   const compiledWorkContract = compileVibeCentralWorkContract({
     snapshot:centralPolicy,
     task:{...task,supervisionApproved},
