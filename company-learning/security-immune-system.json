@@ -1,5 +1,5 @@
 {
-  "version": 76,
+  "version": 77,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1214,7 +1214,14 @@
     "lockedSequenceAndGuardsUnchanged": true,
     "ownerRemovalMustRemainExcludedUntilNewExplicitOwnerChange": true,
     "optionalAiDoesNotGrantPassAuthority": true,
-    "deterministicValidationAndSourceBoundReleaseEvidencePreserved": true
+    "deterministicValidationAndSourceBoundReleaseEvidencePreserved": true,
+    "platformEvidenceNotInterchangeable": true,
+    "webSlotTargetDoesNotBypassOwnerHoldOrFileConflicts": true,
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ]
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",

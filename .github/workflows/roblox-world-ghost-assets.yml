@@ -312,6 +312,8 @@ jobs:
           git commit -m "assets: synchronize verified native packages and authored derivatives"
           git fetch --no-tags origin "$HEAD_BRANCH"
           git rebase "origin/$HEAD_BRANCH"
+          # A concurrent source edit must not publish stale derived previews.
+          node --test --test-name-pattern='native place and model|published comparison frames|automatic asset gallery' qa/roblox-world-ghost-skins.test.mjs
           git push origin "HEAD:$HEAD_BRANCH"
       - uses: actions/upload-artifact@v4
         if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'

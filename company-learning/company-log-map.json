@@ -1,5 +1,5 @@
 {
-  "version": 173,
+  "version": 174,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3190,7 +3190,10 @@
       "conceptIdentity",
       "selectedIdea.id",
       "implementationPackages",
-      "sourceTreeFingerprint"
+      "sourceTreeFingerprint",
+      "platform",
+      "executionSurface",
+      "qualityContract"
     ],
     "designPlanIsNotImplementationOrRuntimePass": true,
     "ownerRequestIdentity": [
@@ -3203,6 +3206,16 @@
       "DESIGN_EXTERNAL_AI_REQUIRED=NO",
       "DESIGN_AI_REVIEW_LANES=NONE",
       "DESIGN_EXTERNAL_AI_WAIT=DISABLED"
+    ],
+    "webFlowTelemetry": [
+      "VIBE2_WEB_FLOW_TARGET",
+      "VIBE2_WEB_FLOW_ACTIVE_GAMES",
+      "VIBE2_WEB_FLOW_SHORTFALL"
+    ],
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
     ]
   },
   "assetQualityFirstDevelopment": {

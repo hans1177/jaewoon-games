@@ -2410,12 +2410,18 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const projectRequiresMultiplayer=Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
   const activeDirectivePlatformCompatible=platformLane!=='roblox'||clean(activeDirectiveTask?.buildUpDirective?.platform).toUpperCase()==='ROBLOX';
   const activeDirectiveSemanticCompatible=!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE';
+  const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
+  const productionTarget=platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
+  const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
+  const priorProduction=activeDirectiveTask?.buildUpDirective?.productionPlan||activeDirectiveTask?.buildUpDirective?.robloxProductionPlan;
+  const activeProductionCompatible=!productionRequired||(Number(priorProduction?.version)>=2&&priorProduction?.platform===productionTarget);
   const activeDirectiveMatchesCurrentSource=Boolean(
     activeDirectiveTask?.buildUpDirective
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)
     &&clean(activeDirectiveTask.buildUpDirective.sourceTreeFingerprint)===clean(sourceObservation.sourceTreeFingerprint)
     &&activeDirectivePlatformCompatible
     &&activeDirectiveSemanticCompatible
+    &&activeProductionCompatible
   );
   if(activeDirectiveMatchesCurrentSource){
     const directive=applyRobloxQualityRepairDirective({
@@ -3016,11 +3022,16 @@ function bindSharedBuildUpDirective(taskInput,directive){
   };
 }
 
-function hasCurrentAutonomousContentExpansionDirective(directive={}){
+function hasCurrentAutonomousContentExpansionDirective(directive={},productionPolicy={}){
   const expansion=directive?.autonomousContentExpansion;
   const ledger=expansion?.themeCoverageLedger;
+  const platform=clean(directive?.platform).toUpperCase();
+  const target=platform.startsWith('UNITY')||clean(directive?.sourceRoot).split('|').some(root=>posix(root).startsWith('unity-games/'))?'UNITY':platform;
+  const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(target);
+  const plan=directive?.productionPlan||directive?.robloxProductionPlan;
   return Boolean(
     clean(directive?.directiveId)
+    &&(!productionRequired||(Number(plan?.version)>=2&&plan?.platform===target&&plan?.gameId===directive?.gameId))
     &&Number(expansion?.version||0)>=2
     &&clean(expansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
     &&expansion?.autonomousDecisionOwner==='VIBE'
@@ -3031,6 +3042,7 @@ function hasCurrentAutonomousContentExpansionDirective(directive={}){
 }
 
 function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
+  const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
   const projectByScope=new Map();
   for(const project of projects||[]){
     const gameId=clean(project?.gameId);
@@ -3052,7 +3064,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   const canonicalByScope=new Map();
   for(const row of tasks){
     const gameId=clean(row?.gameId),directive=row?.buildUpDirective,lane=studioQualityTaskLane(row),scope=gameId+'|'+lane;
-    if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running'||!hasCurrentAutonomousContentExpansionDirective(directive))continue;
+    if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running'||!hasCurrentAutonomousContentExpansionDirective(directive,productionPolicy))continue;
     const currentSourceFingerprint=sourceFingerprintByScope.get(scope)||'';
     if(currentSourceFingerprint&&clean(directive.sourceTreeFingerprint)!==currentSourceFingerprint)continue;
     const current=canonicalByScope.get(scope);
@@ -3071,7 +3083,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const mappedCanonical=canonicalByScope.get(scope)||null;
     const activeCanonical=mappedCanonical
       ?{buildUpDirective:mappedCanonical,status:'queued'}
-      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())&&hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective)).sort(byGeneration)[0]||null;
+      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())&&hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective,productionPolicy)).sort(byGeneration)[0]||null;
     const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
@@ -3080,7 +3092,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       currentId&&currentSourceFingerprint
       &&clean(item?.buildUpDirective?.sourceTreeFingerprint)!==currentSourceFingerprint
     );
-    const currentDirectiveNeedsContractMigration=Boolean(currentId&&!hasCurrentAutonomousContentExpansionDirective(item?.buildUpDirective));
+    const currentDirectiveNeedsContractMigration=Boolean(currentId&&!hasCurrentAutonomousContentExpansionDirective(item?.buildUpDirective,productionPolicy));
     const latestHistoricalGeneration=Number(latestHistorical?.buildUpDirective?.generation||0);
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
     if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
@@ -3129,7 +3141,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           if(rowIndex===index)return false;
           const sameScope=clean(row?.gameId)===gameId&&studioQualityTaskLane(row)===lane;
           if(!sameScope)return true;
-          return !clean(row?.buildUpDirective?.directiveId)||hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective);
+          return !clean(row?.buildUpDirective?.directiveId)||hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective,productionPolicy);
         });
         const syntheticPrevious={
           ...item,

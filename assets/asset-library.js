@@ -1,7 +1,11 @@
 const $=id=>document.getElementById(id);
 const MANIFEST='/assets/roblox/world-ghosts/native/asset-gallery.json';
 const SYNC_INTERVAL_MS=30000;
-const forms={SHROUD:'망령형',TALL:'장신형',SLENDER:'인간형',GIANT:'거인형',STOCKY:'강건형',BEAST:'짐승형',SERPENT:'뱀형',ARACHNID:'거미형',CENTAUR:'반인반수형',FLOATING_HEAD:'부유 머리형',OBJECT_SWARM:'군집형',RIBBON:'띠형',LANTERN:'등불형',WHEEL:'바퀴형',WALL:'벽형',BOUND:'속박형',OTHER:'기타'};
+const forms={SHROUD:'망령형',TALL:'장신형',SLENDER:'인간형',GIANT:'거인형',STOCKY:'강건형',BEAST:'짐승형',SERPENT:'뱀형',ARACHNID:'거미형',CENTAUR:'반인반수형',FLOATING_HEAD:'부유 머리형',OBJECT_SWARM:'군집형',RIBBON:'띠형',LANTERN:'등불형',WHEEL:'바퀴형',WALL:'벽형',BOUND:'속박형',CRAWLER:'기어가는 형',HALF_BODY:'반신형',HEADLESS:'머리 없는 형',HUNCHED:'굽은 등형',LONG_ARM:'긴 팔형',LONG_NECK:'긴 목형',SKELETON:'해골형',SMALL:'소형',THIN_NECK:'가는 목형',UMBRELLA:'우산형',WINGED:'날개형',OTHER:'기타'};
+// Owner-retired homepage previews. Keep the reusable source assets intact.
+const retiredPreviews=new Set(['roblox-insect-spider-hd-v1','roblox-insect-spider-hd','roblox-world-ghost-gwisin-bride']);
+const publicAssets=assets=>assets.filter(row=>!retiredPreviews.has(row.id));
+const registrySignature=value=>JSON.stringify(value?.assets?.map(({id,title,category,path,previewPath})=>({id,title,category,path,previewPath})));
 const biomes={forest:'숲',snow:'설원',desert:'사막',swamp:'늪',cave:'동굴',coast:'해안',village:'마을',city:'도시',ruins:'폐허',dungeon:'던전'};
 const clipNames={idle:'대기',walk:'걷기',chase:'추격',attack:'공격',hit:'피격',death:'쓰러짐'};
 let manifest=null,registry=null,registryEtag=null,rows=[],kind='monster',selectedId='',selectionToken=0,currentKey='',currentRow=null;
@@ -22,12 +26,12 @@ async function readRegistry(){
 function allRows(){
  const monsters=new Map(manifest.monsters.map(row=>['roblox-world-ghost-'+row.id,row]));
  const environments=new Map(manifest.environments.map(row=>['roblox-common-environment-'+row.id,row]));
- return registry.assets.filter(row=>row.category===(kind==='monster'?'CREATURE':'ENVIRONMENT')).map(asset=>{
+ return publicAssets(registry.assets).filter(row=>row.category===(kind==='monster'?'CREATURE':'ENVIRONMENT')).map(asset=>{
   const sample=(kind==='monster'?monsters:environments).get(asset.id);
   return {id:asset.id,title:sample?(kind==='environment'?biomes[sample.id]||sample.title:sample.title):asset.title||asset.id,
    form:sample?.form||'OTHER',role:sample?.role||'',sample,image:localImage(asset.previewPath)||localImage(asset.path),
    sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)};
- });
+ }).sort((a,b)=>Number(Boolean(b.sample))-Number(Boolean(a.sample)));
 }
 function updateFilters(){
  const old=$('formFilter').value;
@@ -38,7 +42,7 @@ function updateFilters(){
 function showList(){
  const query=$('assetSearch').value.trim().toLocaleLowerCase(),form=kind==='monster'?$('formFilter').value:'';
  const filtered=rows.filter(row=>(!form||row.form===form)&&(!query||(row.title+' '+row.id+' '+(forms[row.form]||row.form)).toLocaleLowerCase().includes(query)));
- const list=$('assetList');list.replaceChildren();
+ const list=$('assetList'),scrollTop=list.scrollTop,scrollLeft=list.scrollLeft,focused=document.activeElement?.dataset?.id;list.replaceChildren();
  $('resultCount').textContent=filtered.length+'개 / 전체 '+rows.length+'개';
  for(const row of filtered){
   const button=document.createElement('button');button.type='button';button.dataset.id=row.id;button.setAttribute('aria-pressed',String(row.id===selectedId));
@@ -47,6 +51,8 @@ function showList(){
   button.append(title,detail);button.addEventListener('click',()=>choose(row));list.append(button);
  }
  if(!filtered.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='찾는 자산이 없어. 이름이나 종류를 바꿔 봐.';list.append(empty);}
+ list.scrollTop=scrollTop;list.scrollLeft=scrollLeft;
+ if(focused)[...list.querySelectorAll('button')].find(button=>button.dataset.id===focused)?.focus({preventScroll:true});
 }
 function pauseLabel(){$('pauseMotion').textContent=paused?'재생':'멈춤';$('pauseMotion').setAttribute('aria-pressed',String(paused));}
 function applyClip(id){
@@ -114,11 +120,11 @@ async function refresh(force=false){
  try{
   const [nextManifest,nextRegistry]=await Promise.all([request(MANIFEST).then(response=>response.json()),readRegistry()]);
   if(nextManifest.schemaVersion!==1||nextManifest.sampledBy!=='OFFICIAL_LUAU'||!Array.isArray(nextManifest.monsters)||!Array.isArray(nextManifest.environments))throw Error('미리보기 목록을 확인하고 있어.');
-  const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registry!==nextRegistry;
+  const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registrySignature(registry)!==registrySignature(nextRegistry);
   manifest=nextManifest;registry=nextRegistry;
   $('assetCount').textContent=registry.assets.length.toLocaleString('ko-KR');
-  $('monsterCount').textContent=registry.assets.filter(row=>row.category==='CREATURE').length;
-  $('environmentCount').textContent=registry.assets.filter(row=>row.category==='ENVIRONMENT').length;
+  $('monsterCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='CREATURE').length;
+  $('environmentCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='ENVIRONMENT').length;
   if(changed||force||!currentKey){rows=allRows();updateFilters();showList();const selected=rows.find(row=>row.id===selectedId)||rows.find(row=>row.sample?.id==='ghoul')||rows[0];if(selected)await choose(selected,force);}
   $('syncStatus').textContent='자동 동기화 연결됨 · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 확인';
  }catch(error){$('syncStatus').textContent=(registry?'이전 목록을 표시 중이야. ':'')+(error.message||'자산 정보를 불러오지 못했어.')+' 새로고침으로 다시 시도할 수 있어.';}
