@@ -194,7 +194,15 @@ export function validateExistingRobloxSourceTree({root='',baseline={},assetLibra
     studioAssets,
   });
   blockers.push(...verdict.blockers);
-  return {pass:blockers.length===0,blockers:[...new Set(blockers)],saveRequired:verdict.saveRequired};
+  const internalAssetCoverage=studioAssets.applied===true?Object.freeze({
+    libraryVersion:Number(studioAssets.libraryVersion||0),
+    selectedAtomCount:Number(studioAssets.selectedAtomCount||0),
+    requiredSelectedAtomCount:Number(studioAssets.requiredSelectedAtomCount||0),
+    familyCount:Object.keys(studioAssets.families||{}).length,
+    requiredFamilyCount:(studioAssets?.universalAssetFirst?.allFamilies||[]).length,
+    coveragePct:Number(studioAssets.selectedAtomCount||0)===Number(studioAssets.requiredSelectedAtomCount||0)?100:0,
+  }):null;
+  return {pass:blockers.length===0,blockers:[...new Set(blockers)],saveRequired:verdict.saveRequired,internalAssetCoverage};
 }
 
 function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
