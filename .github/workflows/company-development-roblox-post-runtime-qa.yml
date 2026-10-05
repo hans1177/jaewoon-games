@@ -1144,8 +1144,6 @@ jobs:
                     simulationRunning:engineProbe?.simulationRunning===true,
                     serverBootObserved:false,
                     openCloudWorldEvidence:engineProbe?.worldEvidence||null,
-              openCloudImageEvidence:engineProbe?.imageEvidence||null,
-                openCloudImageEvidence:engineProbe?.imageEvidence||null,
                     openCloudImageEvidence:engineProbe?.imageEvidence||null,
                     blockers:['runtime-sentinel-unavailable'],
                     observedAt:stamp,
@@ -1273,6 +1271,7 @@ jobs:
                 simulationRunning:engineProbe?.simulationRunning===true,
                 serverBootObserved:engineProbe?.serverBootObserved===true,
                 openCloudWorldEvidence:engineProbe?.worldEvidence||null,
+                openCloudImageEvidence:engineProbe?.imageEvidence||null,
                 blockers:result.blockers,
                 observedAt:stamp,
                 workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
@@ -1358,6 +1357,7 @@ jobs:
               observedAt:stamp,
               workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
               openCloudWorldEvidence:engineProbe?.worldEvidence||null,
+              openCloudImageEvidence:engineProbe?.imageEvidence||null,
               authority:'existing-game-tester-roblox-runtime-foundation-v1',
             };
             item.robloxRuntimeFoundationEvidence=evidence;
