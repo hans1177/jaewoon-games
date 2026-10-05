@@ -1983,6 +1983,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   if(!d||typeof d!=='object'||!clean(d.directiveId))return'';
   const target=clean(order?.target).toUpperCase();
   const platformKey=target==='ROBLOX'?'ROBLOX':target==='UNITY'?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP'):target==='WEB'?'WEB':['FORTNITE_UEFN','FORTNITE-UEFN','UEFN','UNREAL'].includes(target)?'FORTNITE_UEFN':'';
+  const plan=d.productionPlan||d.robloxProductionPlan;
+  const production=plan&&plan.gameId===order.gameId&&(plan.platform||'ROBLOX')===target?robloxProductionPromptLines(plan,{prefix:target==='ROBLOX'?'robloxProduction':'gameProduction',responsibleFiles}):[];
   const visual=Object.entries(d?.visualBuildUpDirective?.domains||{})
     .map(([domain,instruction])=>`${domain}=${clean(instruction)}`)
     .filter(Boolean);
@@ -2020,7 +2022,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
-    ...(platformKey==='ROBLOX'?robloxProductionPromptLines(d.robloxProductionPlan,{prefix:'robloxProduction',responsibleFiles}):[]),
+    ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
     `whyNow=${clean(d.primaryGoalReason)}`,
@@ -2065,11 +2067,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
-    'robloxProduction',
+    'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
-    'robloxProduction',
+    'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
@@ -2094,7 +2096,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     }
     if(!compact||line===begin||line===end)return[line];
     if(!keepPrefixes.some(prefix=>line.startsWith(prefix)))return[];
-    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||line.startsWith('robloxProductionOWNER='))return[line];
+    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)ProductionOWNER=/.test(line))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
@@ -2105,7 +2107,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
 
   const essentialPrefixes=[
-    'robloxProductionCONCEPT=','robloxProductionIDEA=','robloxProductionCONNECTION=','robloxProductionFILES=','robloxProductionSCOPE=','robloxProductionOWNER=',
+    ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2121,7 +2123,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(prefix==='sourceAnchors='){
       if(essentialAnchors>=3)continue;
       essentialAnchors+=1;
-    }else if(prefix!=='robloxProductionOWNER='){
+    }else if(!/^(?:roblox|game)ProductionOWNER=$/.test(prefix)){
       if(seen.has(prefix))continue;
       seen.add(prefix);
     }
@@ -2130,7 +2132,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||line.startsWith('robloxProductionOWNER='))return line;
+    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)ProductionOWNER=/.test(line))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);

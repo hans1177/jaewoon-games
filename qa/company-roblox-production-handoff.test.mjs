@@ -39,4 +39,25 @@ test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   const {order,context}=fixture();
   const prompt=buildPrompt({...order,target:'web'},context,[client]);
   assert.doesNotMatch(prompt,/robloxProductionIDEA=/);
+  const otherGame=buildPrompt({...order,gameId:'different-game'},context,[client]);
+  assert.doesNotMatch(otherGame,/robloxProductionIDEA=/);
+});
+
+test('Unity and Web connected-quality plans survive real source prompts and focused retries',()=>{
+  for(const target of ['unity','web']){
+    const root=target+'-games/garden';
+    const own=root+(target==='unity'?'/Assets/Scripts/GameCore.cs':'/game.js');
+    const sibling=root+(target==='unity'?'/Assets/Scripts/RuntimeBootstrap.cs':'/view.js');
+    const code=target==='unity'?'public class GameCore { public int Tick() { return 1; } }':'function tick(){return 1;}';
+    const source={sourceTreeFingerprint:'quality-handoff',signals:{},observations:[],sourceAnchors:[{file:own,line:1,symbol:'Tick',kind:'FUNCTION',score:10}],topFiles:[own,sibling].map(file=>({file,score:10}))};
+    const directive=buildGameSpecificBuildUpDirective({gameId:'garden',platform:target.toUpperCase(),sourceRoot:root,sourceObservation:source,responsibleFiles:[own,sibling],designRecord:{content:{identity:'서식지 방어',genre:'DEFENSE',coreLoop:['관찰','배치','방어'],ownerFeatureChanges:[{requestId:'keep-removal',featureId:'shop',action:'REMOVE',requirement:'상점 복원 금지'}]}}});
+    const order={gameId:'garden',target,goal:'기존 방어 흐름 완성',selectedTask:{type:'implementation',buildUpDirective:directive}};
+    const prompt=buildPrompt(order,{files:[{path:own,editable:true,content:code},{path:sibling,editable:false,content:code}]},[own]);
+    const filesLine=prompt.split('\n').find(line=>line.startsWith('gameProductionFILES='));
+    assert.ok(filesLine.includes(own));assert.ok(!filesLine.includes(sibling));
+    for(const text of [prompt,buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[own]}).prompt,buildGenerationRetryPrompt(prompt,{error:new Error('JSON parse error'),responsibleFiles:[own],attempt:2})]){
+      assert.match(text,/gameProductionIDEA=/);assert.match(text,/gameProductionQUALITY=/);
+      assert.match(text,/keep-removal/);assert.doesNotMatch(text,/robloxProductionIDEA=/);
+    }
+  }
 });

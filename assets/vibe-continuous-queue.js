@@ -604,7 +604,7 @@ function taskMatchesExecutionLane(task={},lane='all'){
   if(requested==='all')return true;
   return clean(task.executionLane).toLowerCase().replaceAll('_','-')===requested;
 }
-export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false } = {}) {
+export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const laneMode=normalizedExecutionLane(lane);
   const running = queue.tasks.filter((task) => task.status === 'running');
@@ -626,6 +626,20 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   });
   candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
   const priorityLane=['game-primary','asset-development'].includes(laneMode);
+  // 자산 배정: 현재 게임 소스에 연결된 로블록스 출시·출시 준비 작업부터 처리한다.
+  const demandFirst=laneMode==='asset-development'&&assetDemandFirst;
+  const assetDemandRank=(task)=>{
+    if(!demandFirst)return 0;
+    const target=clean(task.target).toLowerCase(),gameId=clean(task.gameId);
+    const gameRoot=target+'-games/'+gameId;
+    const bound=Boolean(gameId)&&(clean(task.sourceRoot)===gameRoot
+      ||(task.responsibleFiles||[]).some(file=>clean(file).startsWith(gameRoot+'/'))
+      ||(task.evidence||[]).includes('asset-current-consumer:'+gameId));
+    if(!bound)return 0;
+    if(target==='roblox'&&task.releaseState==='release-confirmed')return 3;
+    if(target==='roblox'&&task.releaseState==='development-confirmed')return 2;
+    return 1;
+  };
   const platform=(task)=>clean(task.target).toLowerCase();
   // Roblox:Unity:Web 6:2:1은 현재 실행량을 시작점으로 같은 배치 안에서 계속 재계산한다.
   // 완료된 과거 작업은 다음 배치의 플랫폼 몫을 잠식하지 않는다.
@@ -639,17 +653,22 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const strictOwnerRank=(task)=>task.ownerDirective===true?1:0;
   const strictReleaseRank=(task)=>RELEASE_STATE_SCORE[task.releaseState]||0;
   const strictlyHigherPlatformPriority=(left,right)=>{
+    const demandDelta=assetDemandRank(left)-assetDemandRank(right);
+    if(demandDelta!==0)return demandDelta>0;
     const ownerDelta=strictOwnerRank(left)-strictOwnerRank(right);
     if(ownerDelta!==0)return ownerDelta>0;
     return strictReleaseRank(left)>strictReleaseRank(right);
   };
-  const weightedPlatformOrder=(rows)=>{
+  const weightedPlatformOrder=(rows,alreadySelected=[])=>{
     const pending=[...rows];
     const ordered=[];
     const virtualService={...service};
+    for(const task of alreadySelected){const name=platform(task);if(weights[name])virtualService[name]=(virtualService[name]||0)+1;}
     while(pending.length){
-      const ownerRank=Math.max(...pending.map((row)=>strictOwnerRank(row.task)));
-      const ownerTier=pending.filter((row)=>strictOwnerRank(row.task)===ownerRank);
+      const demandRank=Math.max(...pending.map(row=>assetDemandRank(row.task)));
+      const demandTier=pending.filter(row=>assetDemandRank(row.task)===demandRank);
+      const ownerRank=Math.max(...demandTier.map((row)=>strictOwnerRank(row.task)));
+      const ownerTier=demandTier.filter((row)=>strictOwnerRank(row.task)===ownerRank);
       const releaseRank=Math.max(...ownerTier.map((row)=>strictReleaseRank(row.task)));
       const tier=ownerTier.filter((row)=>strictReleaseRank(row.task)===releaseRank);
       tier.sort((a,b)=>{
@@ -672,6 +691,11 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const selected = [];
   const deferredConflicts = [];
   const active = [...running];
+  // 웹 상시 배정은 작업 수가 아니라 서로 다른 실제 게임 수를 센다.
+  // 실행 중인 작업을 취소하거나 같은 게임의 독립 파일 작업을 직렬화하지 않는다.
+  const webTarget=laneMode==='game-primary'?Math.max(0,Math.floor(Number(webGameFlowTarget)||0)):0;
+  const webGameId=task=>clean(task.gameId)||clean(task.sourceRoot)||clean(task.id);
+  const webGames=()=>new Set([...capacityRunning,...selected].filter(task=>platform(task)==='web').map(webGameId));
   // 같은 파일의 자산 작업이 이미 대기 중이면 일반 GAME_PRIMARY가 매 사이클 먼저 선점해서
   // ASSET_DEVELOPMENT가 굶지 않게 한다. 실행 중 충돌 보호는 그대로 유지하고,
   // owner/release-confirmed/post-release 긴급 작업은 기존 우선권을 보존한다.
@@ -686,6 +710,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const reservationConflictFor=(task)=>{
     const activeConflict=conflictDetails(task,active);
     if(activeConflict)return activeConflict;
+    if(webTarget&&platform(task)==='web'&&!webGames().has(webGameId(task))&&webGames().size>=webTarget){
+      return {reason:'web-game-flow-target-full',taskId:null,executionLane:'GAME_PRIMARY',blocker:null};
+    }
     if(laneMode!=='game-primary'
       ||task.ownerDirective===true
       ||clean(task.releaseState).toLowerCase()==='release-confirmed'
@@ -706,7 +733,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   const focusedGameId=(task)=>clean(task?.gameId)||clean(task?.sourceRoot)||clean(task?.id);
   const focusedRunning=capacityRunning.filter(isPostReleaseFocused);
-  const focusedCandidates=schedulingCandidates.filter((row)=>isPostReleaseFocused(row.task));
+  const focusedCandidates=demandFirst?[]:schedulingCandidates.filter((row)=>isPostReleaseFocused(row.task));
   const focusedGameIds=new Set(focusedRunning.map(focusedGameId).filter(Boolean));
   const eligibleFocusedGameIds=new Set([...focusedGameIds,...focusedCandidates.map((row)=>focusedGameId(row.task)).filter(Boolean)]);
   const postReleaseFocusedSlotLimit=effectiveMax;
@@ -719,8 +746,21 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     postReleaseFocusedTaskIds.push(task.id);
   };
 
+  if(webTarget&&freeSlots>0){
+    for(const row of schedulingCandidates.filter(row=>platform(row.task)==='web')){
+      if(selected.length>=freeSlots||webGames().size>=webTarget)break;
+      if(webGames().has(webGameId(row.task)))continue;
+      const conflict=reservationConflictFor(row.task);
+      if(conflict){deferredConflicts.push(freeze({task:row.task,reason:conflict.reason,conflictTaskId:conflict.taskId}));continue;}
+      selected.push(row.task);active.push(row.task);
+      shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
+      noteFocusedSelection(row.task);
+    }
+  }
+
   if (freeSlots > 0) {
     for (const focusedRow of focusedCandidates) {
+      if(selected.some(task=>task.id===focusedRow.task.id))continue;
       if(priorityLane && selected.length>=Math.max(0,freeSlots-(platformRows.unity.length?1:0)-(platformRows.web.length?1:0)))break;
       if(selected.length>=freeSlots||!focusedSlotAvailable(focusedRow.task))continue;
       const conflict = reservationConflictFor(focusedRow.task);
@@ -739,7 +779,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const postReleaseFocusedTaskId=postReleaseFocusedTaskIds[0]||null;
 
   // Unity/Web 최소 슬롯은 보장하되 더 높은 owner/release 단계 작업을 밀어내지는 않는다.
-  if(priorityLane && freeSlots>=3){
+  if(priorityLane && !demandFirst && freeSlots>=3){
     const selectedIds=()=>new Set(selected.map((task)=>task.id));
     const floorCanUseSlot=(row)=>{
       const used=selectedIds();
@@ -751,11 +791,12 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
       return selected.length+higherPending<freeSlots;
     };
     for(const name of ['unity','web']){
+      if(name==='web'&&webTarget)continue;
       if(!platformRows[name].length || selected.some((task)=>platform(task)===name))continue;
       for(const row of schedulingCandidates.filter((candidate)=>platform(candidate.task)===name)){
         if(selected.length>=freeSlots)break;
         if(!floorCanUseSlot(row))continue;
-        const conflict=conflictDetails(row.task,active);
+        const conflict=reservationConflictFor(row.task);
         if(conflict)continue;
         selected.push(row.task);active.push(row.task);
         shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
@@ -767,7 +808,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
-  if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
+  if (freeSlots > 0 && !demandFirst && !capacityRunning.some(isProtectedLongOwner)) {
     for (const protectedRow of schedulingCandidates.filter((row) => isProtectedLongOwner(row.task))) {
       if(selected.length>=freeSlots)break;
       if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
@@ -786,17 +827,18 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     }
   }
 
-  for (const row of schedulingCandidates) {
+  const remainingCandidates=webTarget?weightedPlatformOrder(schedulingCandidates.filter(row=>!selected.some(task=>task.id===row.task.id)),selected):schedulingCandidates;
+  for (const row of remainingCandidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
     if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
     const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
-    if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
+    if (!demandFirst && (shardUse[row.task.shard] || 0) >= baseSlots) continue;
     const conflict = reservationConflictFor(row.task);
     if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
-  for (const row of schedulingCandidates) {
+  for (const row of remainingCandidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
     if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
@@ -807,11 +849,12 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   const queuedEligible = schedulingCandidates.length;
   return freeze({
-    selected: freeze([...selected].sort((a,b)=>scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
+    selected: freeze([...selected].sort((a,b)=>assetDemandRank(b)-assetDemandRank(a)||scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
     lane: laneMode,
     laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
     robloxFirstMode: robloxCandidateAvailable,
     robloxFirstDeferred: freeze(robloxFirstDeferred),
+    webGameFlow:freeze({target:webTarget,activeGameIds:freeze([...webGames()]),shortfall:Math.max(0,webTarget-webGames().size),countsTasksAsGames:false}),
     running: freeze(running),
     capacityRunning: freeze(capacityRunning),
     awaitingQa: freeze(running.filter(isAwaitingQaTask)),
@@ -879,12 +922,12 @@ const CLEARED_RESERVATION = Object.freeze({
   reservedAt: null
 });
 
-export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false } = {}) {
+export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
   const existing = queue.tasks.find((task) => task.id === id);
   if (existing?.status === 'running') return freeze({ started: true, task: existing, queue, resumed: true });
-  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
+  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   if (!batch.selected.some((task) => task.id === id)) return freeze({ started: false, reason: 'task-not-currently-eligible-or-conflicts', queue, selection: batch });
   const reservationMeta = reservationFields(reservation);
   const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
@@ -892,9 +935,9 @@ export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = nu
   return freeze({ started: true, task: nextQueue.tasks.find((task) => task.id === id), queue: nextQueue, resumed: false });
 }
 
-export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false } = {}) {
+export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
   const selectedOrder = selection.selected.map((task) => task.id);
   const ids = new Set(selectedOrder);
@@ -944,10 +987,10 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
   });
 }
 
-export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false } = {}) {
+export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
-  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
+  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   return freeze({
     version: 5,
     counts: freeze(counts),

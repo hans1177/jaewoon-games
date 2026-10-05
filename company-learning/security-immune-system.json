@@ -1,5 +1,5 @@
 {
-  "version": 75,
+  "version": 77,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1214,6 +1214,40 @@
     "lockedSequenceAndGuardsUnchanged": true,
     "ownerRemovalMustRemainExcludedUntilNewExplicitOwnerChange": true,
     "optionalAiDoesNotGrantPassAuthority": true,
-    "deterministicValidationAndSourceBoundReleaseEvidencePreserved": true
+    "deterministicValidationAndSourceBoundReleaseEvidencePreserved": true,
+    "platformEvidenceNotInterchangeable": true,
+    "webSlotTargetDoesNotBypassOwnerHoldOrFileConflicts": true,
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ]
+  },
+  "assetQualityFirstDevelopment": {
+    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
+    "version": 1,
+    "concurrentSlots": 63,
+    "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
+    "normalOperationsOwner": "VIBE2_VIBE3",
+    "priority": [
+      "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
+      "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
+      "OTHER_ACTIVE_GAME_CURRENT_ASSET",
+      "REUSABLE_LIBRARY_QUALITY",
+      "DEMAND_BOUND_MISSING_ASSET"
+    ],
+    "qualityBeforeVolume": true,
+    "recommendedVolumeBlocksQuality": false,
+    "quantityQuotaRequiresNewAsset": false,
+    "currentConsumerEvidenceRequired": true,
+    "intendedConsumerAloneIsNotActualUse": true,
+    "sameFailedObjectAndMotionRepairRequired": true,
+    "sourceScopeAndGameplaySemanticsPreserved": true,
+    "sameFileParallelForbidden": true,
+    "runningTasksDrainWithoutCancellation": true,
+    "safeWorkShortageMayLeaveSlotsIdle": true,
+    "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
+    "sourceOnlyPassIsNotQualityPass": true,
+    "newWorkflowQueueOrScheduler": false
   }
 }

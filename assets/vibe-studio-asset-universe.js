@@ -662,7 +662,7 @@ export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[]}={}){
     crossGenreKits:Object.freeze(crossGenreKits),
     crossGenreKitCount:crossGenreKits.length,
     stateAxes:COMPANY_COMMON_SEED_ASSET_IDEA_AXES.stateAxes,
-    volumeBeforeQuality:true,
+    volumeBeforeQuality:false,
     reuseAdaptRecombineBeforeNewAuthoring:true,
     deterministicMachineReadable:true,
     eventDrivenOnly:true,
@@ -1589,7 +1589,7 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:12,
+  version:13,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1632,8 +1632,8 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   preferDistinctRoleStateGenreCombination:true,
   ideaDeduplicationFields:Object.freeze(['id','assetId','atomId','role','roles','sourceIdeaId','ideaId']),
   repeatedDistinctVariationProposalForbidden:true,
-  volumeBeforeQuality:true,
-  qualityUpStartsOnlyAfterRecommendedVolume:true,
+  volumeBeforeQuality:false,
+  qualityUpStartsOnlyAfterRecommendedVolume:false,
   qualityTargetInternalAuditScore:1000,
   qualityUpWorkingBandMin:980,
   qualityUpSelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
@@ -1724,7 +1724,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
     missingFreeSourcePolicy:'CONTINUE_RESOLUTION_ORDER_TO_NEW_AUTHORING',
     runtimeEvidenceMissingPolicy:'KEEP_PRODUCTION_UNVERIFIED_AND_CONTINUE_INTERNAL_QUALITY_WORK',
     failureRetryPolicy:'REBUILD_FROM_LATEST_REGISTRY_AND_RETRY_SAFE_ASSET_SCOPE',
-    volumeExitCondition:'RECOMMENDED_VOLUME_AND_REQUIRED_ROLE_GAPS_CLEAR',
+    volumeExitCondition:'EXISTING_SAFE_ASSET_QUALITY_WORK_AVAILABLE',
     qualityEntryAction:'QUALITY_UP_1000',
     qualitySelection:'WEAKEST_INTERNAL_AUDIT_AXIS_FIRST',
     qualityTarget:1000,
@@ -1847,7 +1847,8 @@ const INTERNAL_ASSET_DETAIL_REPAIR_STEPS=Object.freeze({
   PROVENANCE_MAINTAINABILITY:['CHECK_SOURCE_LICENSE_HASH_AND_DERIVATIVE_LINEAGE','KEEP_REPRODUCIBLE_AUTHORING_RECIPE'],
   INTEGRATION_READINESS:['CHECK_NATIVE_IMPORT_MATERIAL_RIG_AND_SOCKET_BINDINGS','KEEP_RUNTIME_VERIFICATION_SEPARATE_FROM_INTERNAL_AUDIT']
 });
-export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null}={}){
+export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],audioRoleIds=[],previous=null,consumerGames=[]}={}){
+  const gamesById=new Map(consumerGames.filter(game=>upper(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE')==='ACTIVE').map(game=>[text(game.id||game.gameId),game]));
   const rows=(assets||[]).map(asset=>{
     const family=upper(asset?.family||asset?.category);
     const roles=internalAssetMaintenanceRoleTokens(asset);
@@ -1858,6 +1859,13 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       family,
       subfamily:upper(asset?.subfamily||asset?.type),
       roles:Object.freeze(roles),
+      consumerGameIds:Object.freeze(uniq(asset.consumerGameIds||[])),
+      consumerPriority:Math.max(0,...(asset.consumerGameIds||[]).map(id=>{
+        const game=gamesById.get(text(id));if(!game)return 0;
+        const state=upper(game.productionClass||game.canonical?.production?.class);
+        const roblox=upper(asset.platform)==='ROBLOX'||(asset.platforms||[]).some(p=>upper(p)==='ROBLOX');
+        return roblox&&state==='RELEASE_CONFIRMED'?3:roblox&&state==='DEVELOPMENT_CONFIRMED'?2:1;
+      })),
       quality,
       qualityGrade:text(asset?.internalAuditGrade)||null,
       auditAxes:scoreInternalAssetAudit1000({asset}).axes,
@@ -1915,7 +1923,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     .slice(0,64)
     .map(row=>Object.freeze({...row}));
   const qualityRepairActions=[],repairKeys=new Set();
-  for(const row of rows.filter(row=>row.reuseEligible)){
+  for(const row of rows.filter(row=>row.reuseEligible).sort((a,b)=>b.consumerPriority-a.consumerPriority)){
     const axes=Object.entries(row.auditAxes).sort(([a,av],[b,bv])=>av-bv||INTERNAL_ASSET_AUDIT_WEIGHTS[b]-INTERNAL_ASSET_AUDIT_WEIGHTS[a]||a.localeCompare(b));
     const weakest=axes[0];
     const measured=row.measuredAuditAxes.includes(weakest?.[0]);
@@ -1926,7 +1934,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     if(repairKeys.has(repairKey))continue;
     repairKeys.add(repairKey);
     qualityRepairActions.push(Object.freeze({
-      kind,assetId:row.id,packId:row.packId||null,family:row.family,
+      kind,assetId:row.id,packId:row.packId||null,family:row.family,consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
       sourceFiles:Object.freeze(sourceFiles),sourceHash:row.sourceHash,
       sourceInspectionRequired:sourceFiles.length===0,
       weakestAxis:measured?weakest?.[0]||null:null,
@@ -1941,7 +1949,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       productionPromotionAllowed:false,gameplayAuthority:false
     }));
   }
-  qualityRepairActions.sort((a,b)=>(a.kind==='REAUDIT_ASSET_QUALITY')-(b.kind==='REAUDIT_ASSET_QUALITY')
+  qualityRepairActions.sort((a,b)=>b.consumerPriority-a.consumerPriority||(a.kind==='REAUDIT_ASSET_QUALITY')-(b.kind==='REAUDIT_ASSET_QUALITY')
     ||Number(a.currentAxisScore??-1)-Number(b.currentAxisScore??-1)||a.assetId.localeCompare(b.assetId));
   const prior=previous&&typeof previous==='object'?previous:{};
   const priorReady=Boolean(text(prior.inventoryFingerprint));
@@ -2055,7 +2063,7 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[]}={}){
   const inventoryAssets=assets;
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
     &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
@@ -2066,7 +2074,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const audioRoles=uniq(audioRoleIds).map(upper);
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance});
+  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -2346,7 +2354,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       resolutionOrder:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.reuseResolutionOrder
     });
   });
-  const autonomousNextAction=volumeReady
+  const qualityFirst=maintenance.nextQualityActions.length>0||volumeReady;
+  const autonomousNextAction=qualityFirst
     ?Object.freeze({
       kind:'QUALITY_UP_1000',
       phase:'QUALITY_UP_1000',
@@ -2378,7 +2387,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     uiCompositionGraph:COMMON_UI_SYSTEM_COMPOSITION_GRAPH,
     referenceBreadthProfiles:INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,
     progressionComplexityProfiles:INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,
-    focusPhase:volumeReady?'QUALITY_UP_1000':'VOLUME_UP',
+    focusPhase:qualityFirst?'QUALITY_UP_1000':'VOLUME_UP',
     qualityTarget:INTERNAL_ASSET_AUDIT_MAX,
     volumeReady,
     volumeBlockingDomains:Object.freeze(volumeBlockingDomains),
@@ -2427,8 +2436,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     audioRoleContractCount:audioRoles.length,
     actualVerifiedAudioAssetCount,
     audioRoleVolumeSeparateFromVerifiedFileCount:true,
-    volumeBeforeQuality:true,
-    qualityUpStartsOnlyAfterRecommendedVolume:true,
+    volumeBeforeQuality:false,
+    qualityUpStartsOnlyAfterRecommendedVolume:false,
     overSoftLimitAction:'DEDUPLICATION_REVIEW_ONLY',
     overSoftLimitBlocksUse:false,
     automaticDeletion:false,

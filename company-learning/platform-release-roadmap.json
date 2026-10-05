@@ -1,5 +1,5 @@
 {
-  "version": 537,
+  "version": 539,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -17,7 +17,7 @@
     },
     "minimumPlatformDevelopment": {
       "UNITY": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE",
-      "WEB": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE"
+      "WEB": "TWO_DISTINCT_ACTIVE_GAMES_WHEN_ELIGIBLE_AND_CAPACITY_AVAILABLE"
     },
     "smallCapacitySelection": "WEIGHTED_OBSERVED_SERVICE_ROTATION",
     "robloxGamePriority": [
@@ -1335,6 +1335,20 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
+    },
+    "webGameFlow": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-06",
+      "enabled": true,
+      "targetConcurrentGames": 2,
+      "scope": "GAME_PRIMARY_WEB",
+      "counting": "DISTINCT_GAMES_WITH_ACTIVE_SOURCE_WORK",
+      "refillBeforeWeightedPlatformMix": true,
+      "refillThroughExistingPlannerAndCompletionEvents": true,
+      "waitingQaAndExternalRuntimeReleaseWorkerCapacity": true,
+      "existingRunningWorkNotCancelled": true,
+      "sameGameIndependentFilesMayRemainParallel": true,
+      "noNewWorkflowOrQueue": true
     }
   },
   "phases": [
@@ -8621,6 +8635,18 @@
       "policy": "homepageGameMediaContract",
       "newPipeline": false,
       "robloxGameMutation": false
+    },
+    "assetQualityFirst63_20261006": {
+      "ownerRequest": "자산 동시 개발 63개 고정, 볼륨보다 퀄리티, 현재 로블록스 출시 게임 수요 우선",
+      "scope": "EXISTING_ASSET_DEVELOPMENT_PLANNING_RESERVATION_AND_WORKER_CONTEXT",
+      "lockedSequenceChanged": false,
+      "verification": "PENDING_IMPLEMENTATION_QA_AND_LIVE_RESERVATION"
+    },
+    "crossPlatformFlowFinish20261006": {
+      "reason": "기존 로블 체인 대기 제거와 웹 두 게임 상시 배정, 유니티·웹 제작 품질 지시 연결",
+      "existingPipelineOnly": true,
+      "lockedSequenceAndGuardUnchanged": true,
+      "runtimeAndDeploymentPassNotClaimedByConfiguration": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15185,7 +15211,7 @@
       "assetDevelopmentSpeculativeVariantsSuppressed": true,
       "assetDevelopmentDistinctTaskParallelismPreserved": true,
       "assetDevelopmentSpeculativeSuppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK_WHILE_PRESERVING_PARALLEL_DISTINCT_ASSET_TASKS",
-      "assetDevelopmentLaneMax": 64,
+      "assetDevelopmentLaneMax": 63,
       "assetDevelopmentLaneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch": true,
       "assetDevelopmentFanInOptimisticRetryHardAttemptCap": false,
       "assetDevelopmentFanInOptimisticRetryMode": "RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE",
@@ -15202,7 +15228,7 @@
         "enabled": true,
         "gameId": "horror-escape-room",
         "sourceRoot": "assets/roblox/world-ghosts/motions",
-        "concurrentSlots": 64,
+        "concurrentSlots": 63,
         "targetObjectCount": 100,
         "firstMotion": "walk",
         "oneObjectPerTask": true,
@@ -15213,7 +15239,37 @@
         "repeatOnVerifiedReviewFeedback": true,
         "unconditionalSelfRequeue": false,
         "nativeBeforeAfterQaRequired": true,
-        "preparationIsNotMotionQualityPass": true
+        "preparationIsNotMotionQualityPass": true,
+        "exclusive": false,
+        "requireCurrentGameUse": true,
+        "allRobloxConsumers": true
+      },
+      "qualityFirstDevelopment": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-06",
+        "concurrentSlots": 63,
+        "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
+        "normalOperationsOwner": "VIBE2_VIBE3",
+        "priority": [
+          "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
+          "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
+          "OTHER_ACTIVE_GAME_CURRENT_ASSET",
+          "REUSABLE_LIBRARY_QUALITY",
+          "DEMAND_BOUND_MISSING_ASSET"
+        ],
+        "qualityBeforeVolume": true,
+        "recommendedVolumeBlocksQuality": false,
+        "quantityQuotaRequiresNewAsset": false,
+        "currentConsumerEvidenceRequired": true,
+        "intendedConsumerAloneIsNotActualUse": true,
+        "sameFailedObjectAndMotionRepairRequired": true,
+        "sourceScopeAndGameplaySemanticsPreserved": true,
+        "sameFileParallelForbidden": true,
+        "runningTasksDrainWithoutCancellation": true,
+        "safeWorkShortageMayLeaveSlotsIdle": true,
+        "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
+        "sourceOnlyPassIsNotQualityPass": true,
+        "newWorkflowQueueOrScheduler": false
       }
     },
     "failureHandling": {
@@ -27145,10 +27201,10 @@
     "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
   },
   "robloxStudioProductionFlowContract": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-10-05",
-    "objective": "STUDIO_STYLE_GAME_SPECIFIC_CONCEPT_AND_GENRE_DESIGN_TO_CONNECTED_NATIVE_IMPLEMENTATION",
+    "objective": "SAME_GAME_SPECIFIC_CONNECTED_PLAY_AND_PRESENTATION_QUALITY_ACROSS_ROBLOX_UNITY_WEB",
     "executionBoundary": "EXISTING_BUILD_UP_AND_VIBE_SOURCE_WORKER",
     "implementation": "tools/company-roblox-production-plan.mjs",
     "designInput": [
@@ -27233,6 +27289,26 @@
       "resume": "CURRENT_MAIN_SOURCE_THROUGH_EXISTING_F0_F9_TO_NEXT_BUILD_UP",
       "manualRestartRequired": false,
       "newGlobalPause": false
-    }
+    },
+    "chainOptimization": {
+      "perGameF0PersistAndImmediateHandoff": true,
+      "exactLearningSweepCoalescing": true,
+      "existingFailureStageResumeAndEvidenceIdentityPreserved": true,
+      "unityStatusPollingIntervalSeconds": 15,
+      "unityExistingWaitBudgetsPreserved": true
+    },
+    "unityQualityParity": {
+      "reference": "ROBLOX_CONNECTED_CONTENT_AND_PRESENTATION_STANDARD",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "unityWebUsesCanonicalUnityProject": true,
+      "nativeRuntimeEvidenceRequiredForNativePass": true,
+      "webOrRobloxPassMayNotSubstituteUnityPass": true,
+      "markerOnlyOrPrimitiveOnlyCompletionForbidden": true
+    },
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ]
   }
 }
