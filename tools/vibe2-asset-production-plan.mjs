@@ -747,6 +747,92 @@ const inferUniverseFamily=row=>{
   return'';
 };
 
+export function buildRegisteredRobloxLibraryPackInventory({registry={},repoRoot=process.cwd()}={}){
+  const packs=new Map();
+  const assetRows=Array.isArray(registry?.assets)?registry.assets:[];
+  const normalizePath=value=>clean(value).replaceAll('\\\\','/').replace(/^\.\//,'');
+  const registeredPaths=row=>[
+    row?.path,row?.sourcePath,row?.catalogPath,
+    ...(Array.isArray(row?.sourceFiles)?row.sourceFiles:[]),
+    ...(Array.isArray(row?.files)?row.files:[])
+  ].map(normalizePath).filter(Boolean);
+  for(const asset of assetRows){
+    const roots=unique(registeredPaths(asset).map(value=>value.match(/^assets\/roblox\/([^/]+)/)?.[1]).filter(Boolean));
+    if(!roots.length)continue;
+    const family=inferUniverseFamily(asset);
+    for(const root of roots){
+      if(!packs.has(root))packs.set(root,{
+        root,
+        packIds:new Set(),
+        families:new Set(),
+        assetIds:new Set(),
+        registeredPaths:new Set(),
+        contextFiles:[],
+      });
+      const pack=packs.get(root);
+      if(clean(asset?.packId))pack.packIds.add(clean(asset.packId));
+      if(family)pack.families.add(family);
+      if(clean(asset?.id||asset?.assetId))pack.assetIds.add(clean(asset.id||asset.assetId));
+      for(const value of registeredPaths(asset))if(value.startsWith('assets/roblox/'+root+'/'))pack.registeredPaths.add(value);
+    }
+  }
+  const contextPriority=file=>{
+    const lower=file.toLowerCase();
+    if(/\.luau?$/.test(lower))return 0;
+    if(/\.(?:mjs|js)$/.test(lower))return 1;
+    if(/\/catalog\.json$/.test(lower))return 2;
+    if(/\.json$/.test(lower)&&!/quality-evidence\.json$/.test(lower))return 3;
+    if(/quality-evidence\.json$/.test(lower))return 4;
+    return 9;
+  };
+  const walkContextFiles=(root,dir,rows,depth=0)=>{
+    if(depth>3||!fs.existsSync(dir))return;
+    let entries=[];try{entries=fs.readdirSync(dir,{withFileTypes:true});}catch{return;}
+    for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory()){walkContextFiles(root,full,rows,depth+1);continue;}
+      if(!entry.isFile()||!/\.(?:lua|luau|js|mjs|json)$/i.test(entry.name))continue;
+      rows.push(path.relative(repoRoot,full).replaceAll('\\\\','/'));
+    }
+  };
+  const normalized=[...packs.values()].map(pack=>{
+    const discovered=[];
+    walkContextFiles(pack.root,path.join(repoRoot,'assets','roblox',pack.root),discovered);
+    const registered=[...pack.registeredPaths].filter(file=>/\.(?:lua|luau|js|mjs|json)$/i.test(file));
+    const contextFiles=unique([...registered,...discovered]).sort((a,b)=>contextPriority(a)-contextPriority(b)||a.localeCompare(b));
+    return freeze({
+      root:pack.root,
+      packIds:freezeList([...pack.packIds].sort()),
+      families:freezeList([...pack.families].sort()),
+      assetCount:pack.assetIds.size,
+      contextFile:contextFiles[0]||null,
+      contextFiles:freezeList(contextFiles.slice(0,6)),
+      registeredAssetPathCount:pack.registeredPaths.size,
+      evaluationRequired:true,
+      applicationRule:'APPLY_WHEN_COMPATIBLE_EXISTING_SYSTEM_ELSE_NOT_APPLICABLE_WITH_ABSENCE_EVIDENCE',
+      lowScoreStillEligible:true,
+      plainPrimitiveFallbackForbidden:true,
+    });
+  }).sort((a,b)=>a.root.localeCompare(b.root));
+  const expectedPackCount=Math.max(0,Number(registry?.internalAssetLibraryAutomation?.maintenance?.packCount||0));
+  const packCount=normalized.length;
+  return freeze({
+    version:1,
+    required:true,
+    source:'company-asset-library.json#assets',
+    expectedPackCount,
+    packCount,
+    countMatchesMaintenance:expectedPackCount<=0||packCount===expectedPackCount,
+    allPacksEvaluated:true,
+    allRegisteredPacksAutoDiscovery:true,
+    allApplicablePacksRequireRealSourceBinding:true,
+    notApplicableRequiresExistingSystemAbsenceEvidence:true,
+    lowScoreNeverBlocksSafeCompatibleUse:true,
+    plainDefaultPrimitiveFallbackForbidden:true,
+    packs:freezeList(normalized)
+  });
+}
+
 function inferRequestedConcept(task={},request=''){
   const explicit=Array.isArray(task?.concept?.styles)?task.concept.styles:Array.isArray(task?.conceptStyles)?task.conceptStyles:[];
   const rows=explicit.map((row,index)=>typeof row==='string'?{family:clean(row),weight:1}:{family:clean(row?.family||row?.styleFamily||row?.id),weight:Number(row?.weight??row?.ratio??1)||1}).filter(row=>row.family);
@@ -2003,6 +2089,10 @@ export function buildVibeAssetProductionPlan({
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
+  const registeredRobloxLibraryPacks=buildRegisteredRobloxLibraryPackInventory({registry:companyRegistry,repoRoot});
+  if(resolvedTarget==='roblox'&&registeredRobloxLibraryPacks.expectedPackCount>0&&!registeredRobloxLibraryPacks.countMatchesMaintenance){
+    throw new Error('ROBLOX_INTERNAL_LIBRARY_PACK_COUNT_MISMATCH:expected='+registeredRobloxLibraryPacks.expectedPackCount+':actual='+registeredRobloxLibraryPacks.packCount);
+  }
   const executionCatalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const executionUiCatalog=executionCatalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const executionSeedPlan=createCompanySeedAssetIdeationPlan({seeds:companySeedRows(repoRoot),assets:companyRegistry?.assets||[]});
@@ -2645,6 +2735,7 @@ export function buildVibeAssetProductionPlan({
     productionProfile:selector.production||null,
     commercialDistillation,
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
+    registeredRobloxLibraryPacks:resolvedTarget==='roblox'?registeredRobloxLibraryPacks:null,
     flowAssetRequirements,
     flowAssetLoadout:freeze({
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
@@ -3153,6 +3244,7 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 권장 볼륨과 필수 role이 충족되는 즉시 QUALITY_UP_1000 최약 내부감사 축 개선으로 자동 전환한다.`:'',
+    plan.registeredRobloxLibraryPacks?.required?`[REGISTERED ROBLOX INTERNAL LIBRARY PACKS] count=${plan.registeredRobloxLibraryPacks.packCount}; expected=${plan.registeredRobloxLibraryPacks.expectedPackCount||'UNSPECIFIED'}; matched=${plan.registeredRobloxLibraryPacks.countMatchesMaintenance}. Every registered pack must be evaluated every BUILD_UP: ${plan.registeredRobloxLibraryPacks.packs.map(row=>row.root+'['+(row.families.join('|')||'UNCLASSIFIED')+']').join(', ')}. A compatible pack for an existing game system must be actually bound in the existing responsible source. NOT_APPLICABLE requires evidence that the corresponding existing system is absent. Internal audit score never blocks safe compatible use. Blank/default/plain primitive presentation is forbidden when a compatible internal pack exists.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
