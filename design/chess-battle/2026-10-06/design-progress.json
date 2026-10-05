@@ -15,17 +15,17 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=Expected ',' or ']' after array element in JSON at position 3073 (line 1 column 3074)",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
+      "calls": 23,
       "successes": 0,
-      "failures": 22,
-      "timeouts": 13,
+      "failures": 23,
+      "timeouts": 14,
       "jsonFailures": 9,
-      "totalMs": 2126666,
-      "lastMs": 80344,
-      "lastError": "Expected ',' or ']' after array element in JSON at position 3073 (line 1 column 3074)",
-      "updatedAt": "2026-10-05T22:24:39.339Z"
+      "totalMs": 2246717,
+      "lastMs": 120051,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-05T22:26:44.463Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T22:24:44.411Z"
+  "updatedAt": "2026-10-05T22:26:44.463Z"
 }
