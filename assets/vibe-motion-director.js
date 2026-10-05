@@ -1550,6 +1550,52 @@ export function resolveMonsterBodyPlanMotionDetail(bodyPlan=''){
   return MONSTER_BODY_PLAN_MOTION_DETAILS[resolved]||null;
 }
 
+export const COMMON_R15_MONSTER_RETARGET_SOURCES=Object.freeze({
+  locomotion:freezeList(['IDLE_RELAXED','WALK','RUN','START','STOP','TURN_90']),
+  attacks:freezeList(['LIGHT_ATTACK_1','HEAVY_ATTACK_1','GATHER_SWING']),
+  defense:freezeList(['BLOCK_HOLD','DODGE_LEFT','DODGE_RIGHT','PARRY_PERFECT']),
+  reactions:freezeList(['HIT_FRONT','HIT_BACK','DOWNED_IDLE','REVIVE_HELP']),
+  acting:freezeList(['IDLE_RELAXED','EMOTE_WAVE','TALK_GESTURE']),
+  deaths:freezeList(['DEATH_FRONT']),
+  skill:freezeList(['CAST_BURST','CHANNEL_LOOP','RANGED_DRAW_SHOT']),
+  signature:freezeList([])
+});
+
+export function createMonsterCommonActionRetargetPlan({bodyPlan='',archetype='',group='',count=1}={}){
+  const requestedBodyPlan=upper(bodyPlan);
+  const detail=resolveMonsterBodyPlanMotionDetail(requestedBodyPlan);
+  const family=text(group);
+  const sources=COMMON_R15_MONSTER_RETARGET_SOURCES[family]||Object.freeze([]);
+  if(!detail||!sources.length||family==='signature')return null;
+  const canonicalBodyPlan=MONSTER_BODY_PLAN_ALIAS[requestedBodyPlan]||requestedBodyPlan;
+  const amount=Math.max(1,Math.floor(Number(count)||1));
+  return Object.freeze({
+    sourcePack:'roblox-common-motion-v1',
+    sourceAtomIds:freezeList(sources),
+    sourceProductionVerified:false,
+    bodyPlan:canonicalBodyPlan,
+    archetype:upper(archetype),
+    group:family,
+    targetRoleIds:freezeList((detail.roles?.[family]||[]).slice(0,amount)),
+    mode:canonicalBodyPlan==='HUMANOID_UNDEAD'?'R15_DIRECT_WHEN_COMPATIBLE_ELSE_RETARGET':'BODY_PLAN_SEMANTIC_RETARGET',
+    adaptation:detail.presentationVariation,
+    preserve:Object.freeze({
+      gameplayMovementAuthority:true,
+      damage:true,
+      hitbox:true,
+      cooldown:true,
+      saveProgressionEconomy:true,
+      networkAuthority:true,
+      authoredContactTiming:true
+    }),
+    directCrossBodyPlanBinaryReuseForbidden:canonicalBodyPlan!=='HUMANOID_UNDEAD',
+    runtimeVerificationRequired:true,
+    promotionBlockedUntilRuntimeQa:true,
+    productionVerified:false,
+    gameplayAuthority:false
+  });
+}
+
 export function createCreatureMotionSetProfile({
   id='',archetype='',bodyPlan='HUMANOID',rigProfile='HUMANOID',weightClass='STANDARD',
   locomotion=[],attacks=[],defense=[],reactions=[],acting=[],deaths=[],skill=[],signature=[],compatibleStyles=[],
@@ -1824,6 +1870,9 @@ export function buildAutomaticMotionGapFillPlan({
     const donors=findCompatibleMotionDonors({targetProfile:target,librarySets,group:gap.group});
     const verifiedDonor=donors.find(row=>row.productionVerified===true);
     const preparedDonor=donors.find(row=>row.productionVerified!==true);
+    const commonRetarget=createMonsterCommonActionRetargetPlan({
+      bodyPlan:target.bodyPlan,archetype:target.archetype,group:gap.group,count:gap.missing
+    });
     const priority=scoreMotionGapPriority({gap,usage});
     let route='PREPARE_SEMANTIC_MOTION_SEED';
     let sourceId=null;
@@ -1836,6 +1885,9 @@ export function buildAutomaticMotionGapFillPlan({
     }else if(preparedDonor){
       route='REFERENCE_COMPATIBLE_PREPARED_SEMANTIC_DONOR';
       sourceId=preparedDonor.id;
+    }else if(commonRetarget){
+      route='RETARGET_COMPANY_COMMON_R15_MOTION';
+      sourceId=commonRetarget.sourcePack;
     }
     actions.push(Object.freeze({
       group:gap.group,
@@ -1843,6 +1895,7 @@ export function buildAutomaticMotionGapFillPlan({
       priority,
       route,
       sourceId,
+      commonRetarget,
       semanticSeeds:semanticSeedIds(target,gap.group,gap.missing),
       verifiedFill:route.startsWith('REUSE_VERIFIED_'),
       promotionBlockedUntilRuntimeQa:!route.startsWith('REUSE_VERIFIED_')
