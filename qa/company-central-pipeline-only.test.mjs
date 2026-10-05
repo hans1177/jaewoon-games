@@ -455,6 +455,19 @@ test('director runner drain advances latest scheduler without cancelling running
   assert.doesNotMatch(director,/VIBE2_STALE_UNSTARTED_SCHEDULER[\s\S]{0,400}in_progress/);
 });
 
+test('director drains only queued stale exact-game coordinator ingress when current-main replacement exists',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/const exactGameId=run=>/);
+  assert.match(director,/const currentCentralExactGames=new Set/);
+  assert.match(director,/String\(r\.event\|\|''\)==='workflow_dispatch'/);
+  assert.match(director,/queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+  assert.match(director,/String\(r\.head_sha\|\|''\)===currentMain/);
+  assert.match(director,/currentCentralExactGames\.has\(gameId\)/);
+  assert.match(director,/CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN/);
+  assert.match(director,/VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED'.*CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN.*ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY/s);
+  assert.doesNotMatch(director,/CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN[\s\S]{0,240}in_progress/);
+});
+
 test('director drain QA changes wake the existing runner drain',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const pushBlock=director.slice(director.indexOf('  push:'),director.indexOf('\npermissions:',director.indexOf('  push:')));
