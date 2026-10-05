@@ -20,6 +20,34 @@ const evidenceTool=path.resolve('tools/company-development-unity-evidence.mjs');
 const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';
 
+test('old source reuse keeps game bytes but cannot pin an outdated cloud build driver',()=>{
+  const block=workflowSource.split('          preserved_source=false\n')[1]?.split('          directive_args=()')[0];
+  assert.ok(block,'source reuse must account for the driver used by the dispatched branch');
+  const script='set -euo pipefail\nbind_catalog(){ :; }\npreserved_source=false\n'+block.split('\n').map(line=>line.replace(/^          /,'')).join('\n')+'\nprintf "PRESERVED=%s\\n" "$preserved_source"\n';
+  for(const changed of [true,false]){
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-driver-reuse-'));
+    try{
+      const git=(...args)=>{const run=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(run.status,0,run.stderr);return run.stdout.trim();};
+      git('init','-q');git('config','user.name','QA');git('config','user.email','qa@example.invalid');
+      const project='unity-games/reuse-fixture',request='.build-requests/unity/reuse-fixture-development.json';
+      for(const dir of ['.github/workflows',project+'/ProjectSettings',path.dirname(request)])fs.mkdirSync(path.join(root,dir),{recursive:true});
+      fs.writeFileSync(path.join(root,'.github/workflows/unity-cloud-android-test.yml'),'driver-v1\n');
+      fs.writeFileSync(path.join(root,project,'ProjectSettings/ProjectVersion.txt'),'6000.6.0f1\n');
+      fs.writeFileSync(path.join(root,project,'prototype-source.json'),JSON.stringify({generatorFingerprint:'same-game-generator'}));
+      fs.writeFileSync(path.join(root,project,'player-save-contract.txt'),'preserve the exact original game');
+      fs.writeFileSync(path.join(root,request),'{}');git('add','.');git('commit','-qm','existing candidate');
+      const source=git('rev-parse','HEAD');
+      if(changed){fs.writeFileSync(path.join(root,'.github/workflows/unity-cloud-android-test.yml'),'driver-v2\n');git('add','.');git('commit','-qm','repair build metadata');}
+      const output=path.join(root,'outputs');fs.writeFileSync(output,'');
+      const run=spawnSync('bash',['-c',script],{cwd:root,encoding:'utf8',env:{...process.env,reuse_source:source,reuse_branch:'existing-candidate',PROJECT:project,REQUEST:request,current_generator:'same-game-generator',GITHUB_OUTPUT:output}});
+      assert.equal(run.status,0,run.stderr);
+      assert.equal(fs.readFileSync(path.join(root,project,'player-save-contract.txt'),'utf8'),'preserve the exact original game');
+      if(changed){assert.match(run.stdout,/PRESERVED=true/);assert.equal(fs.readFileSync(output,'utf8'),'');}
+      else{assert.match(run.stdout,/UNCHANGED_SOURCE_REUSED/);assert.match(fs.readFileSync(output,'utf8'),new RegExp('source_revision='+source));}
+    }finally{fs.rmSync(root,{recursive:true,force:true});}
+  }
+});
+
 test('cloud build metadata binds the checkout tree before runtime and F9 download it',()=>{
   assert.doesNotMatch(cloudBuildSource,/git\s+push\s+origin\s+HEAD:main/,'cloud producer must not bypass the canonical homepage publisher');
   assert.match(cloudBuildSource,/UNITY_HOMEPAGE_PUBLICATION_AUTHORITY=COMPANY_RUNTIME_THEN_HOMEPAGE_MANAGER/);
