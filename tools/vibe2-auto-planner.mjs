@@ -2325,18 +2325,20 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
-  const minimum=verified?null:latestMinimumDesign(repoRoot,project.gameId);
+  const webTarget=clean(project.engine).toLowerCase()==='web';
+  const minimum=verified||webTarget?null:latestMinimumDesign(repoRoot,project.gameId);
   const designContext=verified||minimum;
   const requestedFocus=clean(taskInput?.studioQualityEvolution?.focusPillar).toUpperCase();
-  const sourceSafeNoDesign=Boolean(
-    !designContext
-    &&clean(project.engine).toLowerCase()==='web'
-    &&['PRESENTATION','USABILITY','STABILITY'].includes(requestedFocus)
-  );
-  if(!designContext&&!sourceSafeNoDesign){
+  if(!designContext){
     return{
       ...taskInput,
-      evidence:[...new Set([...(taskInput.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]
+      buildUpStatus:'DESIGN_PENDING',
+      evidence:[...new Set([
+        ...(taskInput.evidence||[]),
+        'build-up-directive:DESIGN_PENDING',
+        'build-up-directive:auto-design-enrollment-required',
+        ...(webTarget?['web-build-up:VERIFIED_DESIGN_REQUIRED','web-build-up:SIMPLE_CODE_SUBSTITUTE_FORBIDDEN']:[])
+      ])]
     };
   }
   const platformLane=studioQualityLane(project);
@@ -2645,7 +2647,9 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
 
   const designContext=latestVerifiedDesign(repoRoot,project.gameId);
   const gameplayDesignRequired=['CORE_FUN','PROGRESSION'].includes(focusPillar);
-  if(gameplayDesignRequired&&!designContext)return null;
+  const webDesignRequired=clean(project.engine).toLowerCase()==='web';
+  const designRequired=gameplayDesignRequired||webDesignRequired;
+  if(designRequired&&!designContext)return null;
   const designContent=designContext?.record?.content&&typeof designContext.record.content==='object'
     ?designContext.record.content
     :(designContext?.record||{});
@@ -2746,7 +2750,9 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     ?` 승인 설계의 coreFun/coreLoop/signatureSystems를 실제 입력→판단→상태 변화→피드백→다음 선택으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
     :focusPillar==='PROGRESSION'
       ?` 승인 설계의 progressionDirection/coreLoop/signatureSystems를 실제 목표·보상·해금·웨이브·퀘스트·인벤토리·경제·콘텐츠 깊이 중 해당 게임에 존재하는 책임 시스템으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
-      :(designContext?` 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=${designSource}`:'');
+      :webDesignRequired
+        ?` Web은 단순 코드 샘플이 아니라 승인 설계의 실제 게임 구현이다. identity/coreFun/coreLoop/signatureSystems/progressionDirection을 현재 focus에도 직접 유지하고, 입력→상태 변화→피드백→진행→승패/결과→재시작의 플레이 루프를 설계와 대조한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
+        :(designContext?` 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=${designSource}`:'');
   const flowQualityInstruction=flowArchitecture
     ?` FLOW_QUALITY_CONTRACT=${JSON.stringify(flowArchitecture.qualityGrowthContract||{})}; FLOW_SYSTEM_BLUEPRINT=${JSON.stringify(systemBlueprintSummary||{})}; FLOW_ASSET_REQUIREMENTS=${JSON.stringify(flowAssetRequirements)}. 시스템은 컨셉에 맞는 묶음으로만 사용하고 서로 인과적으로 연결한다. 기존 inventory/crafting/quest/economy/skill/targeting/AI 등 호환 라이브러리가 있으면 먼저 재사용하고, 플랫폼이 다르면 소스 복사가 아니라 같은 의미를 현재 네이티브 책임 구조에 재구현한다. 생존은 채집→제작→하우징/장비→탐험/위험, RPG는 NPC/동료→퀘스트→전투/아이템→관계/지역 변화처럼 핵심 판타지와 연결한다. 메뉴만 존재하거나 시스템이 서로 단절되면 완성도로 인정하지 않는다.${flowAssetInstruction}`
     :'';
@@ -2863,8 +2869,11 @@ ${expectationInstruction}
     baselineSource:previous?.id?'VERIFIED_QUEUE_TASK':'CURRENT_SOURCE',
     explicitGap,
     designSource,
-    designGrounded:gameplayDesignRequired,
-    designVerified:gameplayDesignRequired,
+    designGrounded:designRequired,
+    designVerified:designRequired,
+    webDesignRequired,
+    webDesignSourceRequired:webDesignRequired,
+    webSimpleCodeGameSubstituteForbidden:webDesignRequired,
     designContextAvailable:Boolean(designContext),
     strictDesignScore:designContext?.strictScore??null,
     approvedDesignElements:gameplayDesignRequired?designSummary:null,
