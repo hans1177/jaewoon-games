@@ -567,6 +567,44 @@ test('existing Roblox source rebind applies all verified APK learning without ch
   }
 });
 
+test('source reconciliation accepts a compatible newer client without a no-change refresh loop',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-compatible-client-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const originalConfig=fs.readFileSync(configFile,'utf8');
+    const originalClient=fs.readFileSync(clientFile,'utf8');
+    const current=Number(originalConfig.match(/NativeBindingVersion\s*=\s*(\d+)/)[1]);
+    const newer=originalClient.replace(/(VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*)\d+/,'$1'+(current+1));
+    fs.writeFileSync(clientFile,newer);
+    const nativeBlock=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END\n/;
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:designProfileLearning});
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativeBlock)?.[0],newer.match(nativeBlock)?.[0]);
+    applyVerifiedExternalLearningToExistingRobloxSource({root,learning:designProfileLearning});
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativeBlock)?.[0],newer.match(nativeBlock)?.[0]);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const inspect=()=>evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.deepEqual(inspect(),[]);
+    assert.equal(fs.readFileSync(clientFile,'utf8'),newer);
+    const rejected=()=>assert.equal(inspect()[0]?.failure,'existing-source-verified-external-learning-required');
+    fs.writeFileSync(configFile,originalConfig.replace(/MemoryFingerprint\s*=\s*"[^"]*"/g,'MemoryFingerprint = "stale"'));
+    rejected();
+    fs.writeFileSync(configFile,originalConfig);
+    fs.writeFileSync(clientFile,newer.replaceAll('VerifiedExternalLearningGameplayState','MissingGameplayBinding'));
+    rejected();
+    fs.writeFileSync(clientFile,newer);
+    fs.writeFileSync(configFile,originalConfig.replace(/(NativeBindingVersion\s*=\s*)\d+/g,(_,prefix)=>prefix+(current+2)));
+    rejected();
+    fs.writeFileSync(configFile,originalConfig.replace(/(NativeBindingVersion\s*=\s*)\d+/g,(_,prefix)=>prefix+(current-1)));
+    rejected();
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
 test('verified learning sweep preserves a newer native binding instead of downgrading it',()=>{
   const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
   assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION/);
@@ -843,4 +881,3 @@ test('verified learning sweep supports exact per-game scope',()=>{
   assert.match(sweep,/requestedGameId:requestedGameId\|\|null/);
   assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCOPE=/);
 });
-

@@ -677,6 +677,10 @@ ${frameVar}:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLear
   }
   const behavior=robloxNativeLearningRuntimeBlock({frameVar,configVar,learning});
   const behaviorRe=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END\n/;
+  const currentNativeVersion=Number(output.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
+  // Asset refresh may update context, but must preserve newer game-owned behavior.
+  // Both callers still validate all required native and semantic binding signals.
+  if(currentNativeVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION&&behaviorRe.test(output))return output;
   if(behaviorRe.test(output))output=output.replace(behaviorRe,behavior);
   else{
     let at=(frameMatch.index||0)+frameMatch[0].length;
@@ -1015,7 +1019,7 @@ task.defer(reportNativeFoundationReady)
     ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
   if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)    ||!/ContentComplete\s*=\s*true/.test(afterConfig)    ||!/GameSpecificSemanticMappings\s*=\s*\{/.test(afterConfig)    ||!/LearningDispositions\s*=\s*\{/.test(afterConfig)    ||!afterConfig.includes(`SemanticMappingVersion = ${Number(verifiedLearning.semanticMappingVersion||0)}`)    ||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
-  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)    ||!/VerifiedExternalLearningContentComplete/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingVersion/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningSemanticVariant/.test(afterClient)    ||!/VerifiedLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningTouchTarget/.test(afterClient)    ||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)    ||!/FieldOfView/.test(afterClient)    ||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
+  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)    ||!/VerifiedExternalLearningContentComplete/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingVersion/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningSemanticVariant/.test(afterClient)    ||!/VerifiedLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningTouchTarget/.test(afterClient)    ||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)    ||!/FieldOfView/.test(afterClient)    ||Number(afterClient.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0)<ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;
     for(const [token,re] of Object.entries({
