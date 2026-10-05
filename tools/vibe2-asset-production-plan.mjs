@@ -1275,11 +1275,14 @@ function stableMaterialAtoms(values=[],key=''){
 function internalAssetHardBlockReason(asset={}){
   const status=clean(asset?.status).toUpperCase();
   const license=clean(asset?.license).toUpperCase();
+  if(asset?.corruptSource===true)return'CORRUPT_SOURCE';
+  if(asset?.internalUseAllowed===false)return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
+  if(asset?.securityBlocked===true||asset?.quarantined===true)return'SECURITY_BLOCKED';
   if(/SECURITY_BLOCKED|QUARANTINED/.test(status))return'SECURITY_BLOCKED';
   if(/CORRUPT|BROKEN_SOURCE/.test(status))return'CORRUPT_SOURCE';
   if(/EXPLICIT_INTERNAL_USE_FORBIDDEN|USE_FORBIDDEN/.test(status))return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
   if(/NON.?COMMERCIAL|\bNC\b|FORBIDDEN|NO_DERIVATIVES/.test(license))return'LICENSE_FORBIDDEN';
-  if(!license)return'LICENSE_METADATA_MISSING';
+  if(!license||/UNKNOWN|UNVERIFIED|출처 불명/.test(license))return'LICENSE_METADATA_MISSING';
   return'';
 }
 function internalAssetPlatformApplicationMode(asset={},target=''){
@@ -1301,7 +1304,7 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
   const evaluated=[];
   let hardBlockedCount=0,classifiableCount=0,compatibleCandidateCount=0;
   for(const asset of assets){
-    const family=clean(asset?.family).toUpperCase();
+    const family=clean(asset?.family||asset?.category).toUpperCase();
     const hardBlockReason=internalAssetHardBlockReason(asset);
     const applicationMode=internalAssetPlatformApplicationMode(asset,resolved);
     const familyClassified=familySet.has(family);
@@ -1433,11 +1436,20 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
   const visualScope=/(?:PRESENTATION_PASS|GRAPHICS_PRODUCTION|ASSET_ADAPTATION|graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|vfx|effect|particle|ui|hud|그래픽|비주얼|연출|에셋|모델|환경|배경|지형|재질|조명|애니|모션|이펙트|효과|파티클|외형|실루엣|스타일)/i.test(clean(request));
   const selectedAtomCount=Object.values(families).reduce((n,rows)=>n+rows.length,0);
   const missingFamilies=UNIVERSAL_ASSET_FAMILIES.filter(family=>nativeTarget&&!(families[family]||[]).length);
+  const libraryVersion=Number(companyRegistry?.version||0);
+  const selectionFingerprint=robloxCanonicalSelection?.selectionFingerprint||crypto.createHash('sha256').update(JSON.stringify({
+    gameId,libraryVersion,platform:resolvedTarget==='unity'||resolvedTarget==='web'?'UNITY_WEB_SHARED':resolvedTarget,
+    families:Object.fromEntries(Object.entries(families).sort(([a],[b])=>a.localeCompare(b)).map(([family,atoms])=>[family,[...atoms].sort()]))
+  })).digest('hex');
   return freeze({
     status:selectedAtomCount&&missingFamilies.length===0?'READY':selectedAtomCount?'PARTIAL_FAMILY_COVERAGE':'NO_COMPATIBLE_ATOMS',
     source:'company-asset-library.json#baseMaterialLibrary',
     atomState:clean(companyRegistry?.baseMaterialLibrary?.status)||null,
     selectedAtomCount,
+    libraryVersion,
+    selectionFingerprint,
+    allActiveCompatibleAtomsEligible:true,
+    artificialAtomCountCap:false,
     families:freeze(Object.fromEntries(Object.entries(families).map(([family,rows])=>[family,freezeList(rows)]))),
     universalAssetFirst:freeze({
       required:nativeTarget,

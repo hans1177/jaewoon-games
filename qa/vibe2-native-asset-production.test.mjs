@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -74,6 +74,24 @@ test('all game development scans the full internal registry and removes family a
     assert.equal(usage.compatibleCandidateCount,dynamic.compatibleCandidateCount,target);
     assert.equal(usage.dynamicLibraryFingerprint,dynamic.fingerprint,target);
     assert.equal(usage.applicationCoverage.currentBuildUpAllCompatibleCandidatesEligible,true,target);
+  }
+});
+
+test('full library scan preserves low quality assets but rejects unsafe corrupt or forbidden assets',()=>{
+  const assets=[
+    {id:'low-quality',category:'UI',license:'CC0',internalAuditScore:0},
+    {id:'corrupt',category:'UI',license:'CC0',corruptSource:true},
+    {id:'forbidden',category:'UI',license:'CC0',internalUseAllowed:false},
+    {id:'quarantined',family:'UI',license:'CC0',quarantined:true},
+    {id:'unknown-rights',family:'UI',license:'UNKNOWN'},
+    {id:'noncommercial',family:'UI',license:'CC-BY-NC-4.0'}
+  ];
+  for(const target of ['roblox','unity','web']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:1,assets},target,gameId:'demo'});
+    assert.equal(plan.evaluatedAssetCount,assets.length);
+    assert.deepEqual(plan.familyCandidates.UI.map(row=>row.assetId),['low-quality']);
+    assert.equal(plan.hardBlockedAssetCount,5);
+    assert.equal(plan.unclassifiedAssetCount,0);
   }
 });
 
@@ -159,7 +177,7 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.match(a.usageMatrix.find(row=>row.signal==='EQUIPMENT_SOCKET_AND_STANCE_SYNC').rule,/equippedWeaponId/);
   assert.match(a.usageMatrix.find(row=>row.signal==='INTERACTION_ACTION_GRAMMAR').rule,/OPEN\/CLOSE\/GATHER\/MINE\/CHOP\/DIG\/CRAFT\/SIT\/PUSH\/PULL\/CARRY\/REVIVE\/MOUNT/);
   assert.equal(a.synchronization.selectedCommonSourceApiDiscovery,true);
-  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesOnly,true);
+  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesAndDynamicRegistry,true);
   assert.equal(a.commonSourceReuse.existingFactoryBeforeNewImplementation,true);
   assert.equal(a.repetitionControl.simpleRandomVariantSelectionForbidden,true);
   assert.equal(a.repetitionControl.usageHistoryAndLineageMustBePreserved,true);
@@ -181,10 +199,10 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.deepEqual(a.sourceCandidates[0].sourceFiles,['assets/roblox/common-tools-v1/RobloxCommonTools.luau']);
 });
 
-test('Vibe source loads only selected internal asset API context with hard bounds',()=>{
+test('Vibe source rotates detailed API context while keeping the full eligibility index',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(source,/sourceApiContextOnlyForSelectedAssets:true/);
-  assert.match(source,/fullLibraryReplicationForbidden:true/);
+  assert.match(source,/sourceApiContextOnlyForSelectedAssets:false/);
+  assert.match(source,/fullBinaryLibraryReplicationForbidden:true/);
   assert.match(source,/fullCatalogPromptInjectionForbidden:true/);
   assert.match(source,/apiContextBatchSize:4/);
   assert.match(source,/apiContextMaxBytes:18000/);
@@ -201,9 +219,9 @@ test('Vibe source loads only selected internal asset API context with hard bound
   assert.match(source,/Internal quality score is NOT a usage gate/);
   assert.match(source,/leaving a blank\/default\/primitive presentation/);
   assert.match(source,/NO artificial asset-count, family-count, gameplay-signal, or combination cap/);
-  assert.match(source,/Context\/API batching is only synchronization optimization and MUST NOT become a usage cap/);
-  assert.match(source,/rotates by BUILD_UP generation/i);
-  assert.match(source,/every selected compatible source remains eligible for later cycles/i);
+  assert.match(source,/Detailed API source batching is only synchronization optimization and MUST NOT become a usage cap/);
+  assert.match(source,/rotate by BUILD_UP generation/i);
+  assert.match(source,/complete public API index for every selected source is present on every BUILD_UP/i);
   assert.match(source,/explicit signal matrix is a FLOOR, not a ceiling/i);
   assert.match(source,/Unknown source events may use the generic presentation fallback/i);
   assert.match(source,/never perform full-library resync/i);
@@ -1922,4 +1940,40 @@ test('flow asset requirements resolve through the latest company library and are
   assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
   assert.match(guidance,/최신 company-asset-library\.json/);
   assert.match(guidance,/gameplay\/balance\/progression\/save\/network 권한을 갖지 않는다/);
+});
+
+
+// 전체 자산 선택과 같은 버전 내 실제 소스 변경 회귀 검증.
+test('Unity and Web retain every active family atom and share exact selection identity',()=>{
+  const make=target=>buildVibeAssetProductionPlan({repoRoot:process.cwd(),target,task:{gameId:'library-cycle-demo',target,goal:'기존 게임 내부 라이브러리 연결과 반복 개선'}}).baseMaterialLoadout;
+  const unity=make('unity'),web=make('web');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.deepEqual(unity.families,web.families);
+  assert.equal(unity.selectionFingerprint,web.selectionFingerprint);
+  assert.equal(unity.libraryVersion,registry.version);
+  assert.match(unity.selectionFingerprint,/^[a-f0-9]{64}$/);
+  for(const [family,atoms] of Object.entries(unity.families)){
+    assert.ok(atoms.length>3,'인위적인 3개 제한이 남음: '+family);
+    assert.ok(atoms.every(atom=>registry.baseMaterialLibrary.families[family].includes(atom)));
+  }
+});
+
+test('selected source content changes invalidate binding without a library version change',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'asset-source-identity-'));
+  try{
+    fs.mkdirSync(path.join(cwd,'assets/test'),{recursive:true});
+    const files=Array.from({length:10},(_,i)=>'assets/test/source-'+i+'.cs');
+    for(const relative of files)fs.writeFileSync(path.join(cwd,relative),'public static GameObject Create() { return prefab; }\n');
+    const order={target:'unity',gameId:'demo',assetProduction:{baseMaterialLoadout:{libraryVersion:7,selectionFingerprint:'a'.repeat(64),families:{UI:['FRAME_PANEL']}},decisions:[{type:'ui',applyFirst:{candidates:[{id:'panel',family:'UI',sourceFiles:files}]}}]}};
+    const before=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.equal(before.sourceCandidates[0].sourceFiles.length,10);
+    assert.equal(before.selectedSourceHashes.length,10);
+    assert.equal(before.selectionFingerprint,'a'.repeat(64));
+    assert.equal(before.fingerprint,buildInternalAssetSourceUsageContract(order,{cwd}).fingerprint);
+    fs.writeFileSync(path.join(cwd,files[9]),'public static GameObject Create() { return improvedPrefab; }\n');
+    const after=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.equal(after.libraryVersion,before.libraryVersion);
+    assert.notEqual(after.fingerprint,before.fingerprint);
+    assert.equal(after.selectedSourceHashes.filter((row,i)=>row.sha256!==before.selectedSourceHashes[i].sha256).length,1);
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
 });

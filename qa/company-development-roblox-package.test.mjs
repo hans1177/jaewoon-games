@@ -260,6 +260,12 @@ test('Vibe2 candidate release binds BUILD_UP source and selection fingerprints t
   assert.match(workflow,/robloxStudioAssetBinding=persistedBinding/);
   assert.match(workflow,/ROBLOX_ASSET_RUNTIME_BINDING=/);
   assert.match(workflow,/studioRuntimeRequired:false/);
+  const persistStart=workflow.indexOf('      - name: Persist exact runtime asset binding and promotion plan');
+  const handoffStart=workflow.indexOf('      - name: Hand exact promoted Roblox source',persistStart);
+  const settleStart=workflow.indexOf('      - name: Settle Roblox result',handoffStart);
+  assert.ok(persistStart>=0&&handoffStart>persistStart&&settleStart>handoffStart);
+  assert.doesNotMatch(workflow.slice(persistStart,handoffStart),/continue-on-error: true/,'required binding persistence must fail the handoff closed');
+  assert.match(workflow.slice(handoffStart,settleStart),/needs\.inspect\.outputs\.evidence_only == 'true' \|\| steps\.asset_binding\.outcome == 'success'/,'a source candidate cannot continue with missing binding identity');
 });
 
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{

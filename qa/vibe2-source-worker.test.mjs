@@ -140,7 +140,7 @@ test('Unity dynamic asset binding requires actual native family consumption inst
     '  void RenderMenu(){',
     '    var atoms = InternalAssetFamily("UI");',
     '    var menuCanvas = GetComponent<Canvas>();',
-    '    if (atoms.Length > 0 && menuCanvas != null) menuCanvas.enabled = true;',
+    '    if (menuCanvas != null) menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0]);',
     '  }',
     '}'
   ].join('\n');
@@ -153,8 +153,18 @@ test('Unity dynamic asset binding requires actual native family consumption inst
   assert.equal(pass.changedAppliedFamilyCount,1);
   assert.equal(pass.familyResults.find(row=>row.family==='UI').actualBinding,true);
 
+  for(const unused of [
+    applied.replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','System.Console.WriteLine(atoms[0])'),
+    applied.replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','menuCanvas.enabled = atoms.Length > 0'),
+    applied.replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','/* menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0]); */ System.Console.WriteLine(atoms.Length)')
+  ]){
+    const unusedResult=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'unity',bindingPlan,
+      candidate:{replaceFiles:[{path:'Assets/Game.cs',content:unused}]}});
+    assert.equal(unusedResult.pass,false,'UI API near unused registry references cannot prove binding');
+  }
+
   const markerOnly=applied.replace('var menuCanvas = GetComponent<Canvas>();','var menuCanvas = (object)null;')
-    .replace('menuCanvas != null) menuCanvas.enabled = true','menuCanvas != null) System.Console.WriteLine(atoms.Length)');
+    .replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','System.Console.WriteLine(atoms.Length)');
   const rejected=evaluateAllGameDynamicAssetBindingCandidate({
     sourceRoot:root,target:'unity',bindingPlan,
     candidate:{edits:[],newFiles:[],replaceFiles:[{path:'Assets/Game.cs',content:markerOnly}]}
@@ -177,7 +187,7 @@ test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family co
     'const internalAssetFamily=family=>internalAssetFamilies[family]||[];',
     'const menu=document.querySelector("#menu");',
     'const atoms=internalAssetFamily("UI");',
-    'if(atoms.length) menu.classList.add("asset-bound");',
+    'menu.classList.add(atoms[0]);',
     '</script></body></html>'
   ].join('\n');
   const pass=evaluateAllGameDynamicAssetBindingCandidate({
@@ -186,6 +196,17 @@ test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family co
   });
   assert.equal(pass.pass,true,pass.blockers.join(','));
   assert.equal(pass.appliedCount,1);
+
+  for(const unused of [
+    applied.replace('menu.classList.add(atoms[0]);','console.log(atoms[0]);'),
+    applied.replace('menu.classList.add(atoms[0]);','if(atoms.length) menu.classList.add("marker-only");'),
+    applied.replace('menu.classList.add(atoms[0]);','// menu.classList.add(atoms[0]);\nconsole.log(atoms[0]);'),
+    applied.replace('menu.classList.add(atoms[0]);','/* menu.classList.add(atoms[0]); */')
+  ]){
+    const unusedResult=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'web',bindingPlan,
+      candidate:{replaceFiles:[{path:'index.html',content:unused}]}});
+    assert.equal(unusedResult.pass,false,'DOM near unused registry references cannot prove binding');
+  }
 
   const markerOnly=[
     '<!doctype html><html><body><script>',
@@ -720,6 +741,39 @@ test('candidate self review rejects comment-only game changes and keeps retryabl
 
   const good={edits:[{path:'index.html',find:'const score = 0;',replace:'const score = 1;'}],newFiles:[],replaceFiles:[]};
   assert.equal(evaluateCandidateSelfReview({candidate:good,order:workOrder,responsibleFiles:['index.html']}).pass,true);
+});
+
+test('BUILD_UP and self review reject inline block and formatting-only growth on every platform',()=>{
+  const cases=[
+    ['web','index.html','const score = 1;','const score = 1; /* source growth */'],
+    ['unity','Game.cs','int score = 1;','int score = 1; // source growth'],
+    ['roblox','Game.luau','local score = 1','local score = 1 --[=[ source growth ]=]'],
+    ['web','game.js','const score = 1;','const   score=1;'],
+    ['web','index.html','<canvas id="game"></canvas>','<canvas id="game"></canvas><!-- source growth -->']
+  ];
+  const contract={phase:'BUILD_UP',focusPillar:'CORE_FUN',requiredConnectedImprovements:{min:1}};
+  for(const [target,relative,before,after] of cases){
+    const candidate={edits:[{path:relative,find:before,replace:after}]};
+    assert.equal(evaluateCandidateSelfReview({candidate,order:{target}}).pass,false,relative);
+    assert.equal(evaluateStudioQualityCandidateDelta({candidate,contract}).sourceDeltaUnits,0,relative);
+  }
+  for(const [target,relative,before,after] of [
+    ['web','game.js','const url="https://assets/a";','const url="https://assets/b";'],
+    ['roblox','Game.luau','local text=[=[-- old]=]','local text=[=[-- new]=]'],
+    ['unity','Game.cs','var text=@"old // path";','var text=@"new // path";']
+  ]){
+    const candidate={edits:[{path:relative,find:before,replace:after}]};
+    assert.equal(evaluateCandidateSelfReview({candidate,order:{target}}).pass,true,relative);
+    assert.equal(evaluateStudioQualityCandidateDelta({candidate,contract}).sourceDeltaUnits,1,relative);
+  }
+});
+
+test('full-file candidates compare against their actual source before earning growth credit',()=>{
+  const sourceRoot=tempRoot();
+  write(path.join(sourceRoot,'game.js'),'const score = 1;\n');
+  const candidate={replaceFiles:[{path:'game.js',content:'const score = 1; /* claimed build-up */\n'}]};
+  assert.equal(evaluateCandidateSelfReview({candidate,sourceRoot,order:{target:'web'}}).pass,false);
+  assert.equal(evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:{phase:'BUILD_UP',requiredConnectedImprovements:{min:1}}}).pass,false);
 });
 
 test('repeated self-review failure changes strategy inside the existing retry budget',async()=>{
@@ -4955,7 +5009,7 @@ test('graphics replacement report grounds every actual replacement in changed so
   assert.equal(valid.groundedCount,3);
 
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:0,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
-  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_EVIDENCE_MISSING');
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:[],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_SURFACES_MISSING');
   assert.match(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['RAW_COPY'],before:'a',after:'b'}},contract}).reason,/GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID/);
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING');
@@ -6656,3 +6710,15 @@ test('Luau focused anchors fall back to directive line hints when the symbolic l
   assert.ok(focused.spec.context.includes('local function renderQuestHud()'));
 });
 
+
+
+// 자산 적용은 실제 소스 근거가 있으면 개수 상한 없이 허용한다.
+test('graphics replacement accepts more than sixty grounded applications and still rejects duplicates',()=>{
+  const reuseMode='ADAPT_RESTYLE_AND_RETARGET';
+  const rows=Array.from({length:75},(_,i)=>({surface:'VFX',path:'effects.js',bindingKey:'effect'+i,reuseMode,sourceEvidence:'const effect'+i+' = createImpactVfx('+i+');'}));
+  const candidate={edits:[{path:'effects.js',find:'old',replace:rows.map(row=>row.sourceEvidence).join('\n')}],graphicsReplacementReport:{actualCount:rows.length,changedSurfaces:['VFX'],reuseModesUsed:[reuseMode],replacementEvidence:rows,before:'기존 효과',after:'호환 자산으로 연결한 효과'}};
+  const contract={required:true,adaptiveCount:{minimumActual:1,maximumActual:60},surfaces:['VFX'],reuseModes:[reuseMode]};
+  assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,true);
+  candidate.graphicsReplacementReport.replacementEvidence[74]=rows[0];
+  assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,false);
+});

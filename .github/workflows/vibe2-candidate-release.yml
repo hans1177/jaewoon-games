@@ -1105,8 +1105,8 @@ jobs:
           echo 'DIRECT_MAIN_WRITE=NO'
 
       - name: Persist exact runtime asset binding and promotion plan
+        id: asset_binding
         if: steps.promote.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true'
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ needs.inspect.outputs.game_id }}
@@ -1212,7 +1212,7 @@ jobs:
           test "$persisted" = 1
       - name: Hand exact promoted Roblox source to F0-F9 runtime without pre-F9 canonical publish
         id: publish
-        if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success'
+        if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success' && (needs.inspect.outputs.evidence_only == 'true' || steps.asset_binding.outcome == 'success')
         continue-on-error: true
         shell: bash
         run: |

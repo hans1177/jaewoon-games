@@ -203,7 +203,8 @@ function buildPresentationQualityContract(task = {}, target = '') {
     platform:clean(replacementInput.platform)||null,
     adaptiveCount:freeze({
       minimumActual:Math.max(1,Number(replacementInput?.adaptiveCount?.minimumActual||1)),
-      maximumActual:Math.min(60,Math.max(1,Number(replacementInput?.adaptiveCount?.maximumActual||60))),
+      maximumActual:null,
+      noArtificialApplicationCountCap:true,
       fixedQuotaForbidden:replacementInput?.adaptiveCount?.fixedQuotaForbidden!==false,
       chooseOnlyWhatActuallyNeedsImprovement:replacementInput?.adaptiveCount?.chooseOnlyWhatActuallyNeedsImprovement!==false,
       bands:replacementInput?.adaptiveCount?.bands||{micro:[1,10],normal:[10,30],major:[30,60]}
@@ -305,10 +306,10 @@ function presentationQualityGuidance(contract = {}) {
     `static-checks=${(contract.staticChecks||[]).join(',')}`,
     `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
     ...(contract.graphicsReplacement?.required?[
-      `adaptive-graphics-replacement=required; actual-range=${contract.graphicsReplacement.adaptiveCount?.minimumActual||1}-${contract.graphicsReplacement.adaptiveCount?.maximumActual||60}; fixed-quota=forbidden`,
+      `adaptive-graphics-replacement=required; minimum-actual=${contract.graphicsReplacement.adaptiveCount?.minimumActual||1}; maximum-actual=UNLIMITED; fixed-quota=forbidden`,
       `replacement-surfaces=${(contract.graphicsReplacement.surfaces||[]).join(',')}`,
       `candidate-use-modes=${(contract.graphicsReplacement.reuseModes||[]).join(',')}`,
-      '교체 개수는 Vibe가 실제 결함에 맞춰 정한다. 1~10개만 고쳐야 하면 그만큼만 고치고, 일반 개선은 대체로 10~30개, 큰 일관된 리프레시는 필요할 때 30~60개까지 가능하다. 개수 채우기를 위해 멀쩡한 표현을 바꾸면 안 된다.',
+      '교체 개수는 Vibe가 실제 결함에 맞춰 정한다. 1~10개만 고쳐야 하면 그만큼만 고치고, 일반 개선은 대체로 10~30개, 큰 일관된 리프레시는 필요에 따라 제한 없이 적용한다. 개수 채우기를 위해 멀쩡한 표현을 바꾸면 안 된다.',
       '완성 자산 그대로 사용에만 묶이지 않는다. 현재 컨셉에 정확히 맞으면 재사용하고, 필요하면 재질·비율·색·모션·VFX·레이아웃을 응용하며, 여러 호환 후보의 장점을 재조합해 하나의 게임 전용 표현으로 만든다. 무가공 에셋팩 짬뽕은 금지한다.',
       '완료 결과에는 실제 교체 개수, 변경한 표현 계열, 사용한 재사용/변형/재조합 방식을 기록해야 한다. actualCount의 각 1개는 touched source path + bindingKey + 그 변경 소스에 실제 존재하는 sourceEvidence로 개별 근거가 있어야 하며, 근거 없는 숫자 부풀리기는 PASS가 아니다. 실제 source/binding 교체가 0개면 이 그래픽/presentation 작업은 PASS가 아니다.'
     ]:[]),

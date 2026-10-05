@@ -454,7 +454,7 @@ test('Open Cloud engine probe rejects a deployed Studio material selection misma
 
 test('post-runtime QA requires target-engine Studio material selection match before binding PASS',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/expectedStudioAssetBinding:item\.robloxStudioAssetBindingApplied===true\?item\.robloxStudioAssetBinding:null/);
+ assert.match(workflow,/expectedStudioAssetBinding:\(item\.robloxStudioAssetBindingApplied===true\|\|item\.robloxStudioAssetBinding\?\.required===true\)\?item\.robloxStudioAssetBinding:null/);
  assert.match(workflow,/engineProbe\?\.studioAssetSelectionMatched===true/);
  assert.match(workflow,/if\(exactStudioPlay\)item\.robloxNativeFailureClass=null/);
  assert.match(workflow,/targetEngineSelectionMatched:engineProbe\?\.studioAssetSelectionMatched===true/);

@@ -365,8 +365,8 @@ function runGraphicsReplacementGroundingQa({root,data={},changed=[]}={}){
   const actualCount=Math.floor(Number(report?.actualCount||0));
   const evidence=Array.isArray(report?.replacementEvidence)?report.replacementEvidence:[];
   const min=Math.max(1,Math.floor(Number(contract?.adaptiveCount?.minimumActual||1)));
-  const max=Math.min(60,Math.max(min,Math.floor(Number(contract?.adaptiveCount?.maximumActual||60))));
-  require('ACTUAL_COUNT_RANGE',actualCount>=min&&actualCount<=max);
+  const max=null; // 자산 적용 개수에는 상한을 두지 않는다.
+  require('ACTUAL_COUNT_RANGE',Number.isSafeInteger(actualCount)&&actualCount>=min);
   require('ACTUAL_COUNT_EQUALS_EVIDENCE',actualCount===evidence.length);
   require('VALIDATION_GROUNDED_COUNT_MATCH',Number(validation?.groundedCount||0)===actualCount);
   require('BEFORE_AFTER_PRESENT',clean(report?.before).length>0&&clean(report?.after).length>0);
@@ -867,7 +867,27 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const studioAssetBinding=robloxStudioAssetBindingContract(data);
   const graphicsReplacementReport=data?.graphicsReplacementReport||null;
   const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
-  const payload = ['vibe2-incremental-qa-v16', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation)];
+  const assetSourceUsage=data?.internalAssetSourceUsage||null;
+  const assetSourceHashes=Array.isArray(assetSourceUsage?.selectedSourceHashes)?assetSourceUsage.selectedSourceHashes:[];
+  const payload = ['vibe2-incremental-qa-v17', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
+  // 자산 소스는 변경 파일 목록 밖에서도 바뀐다. 캐시 조회 전에 현재 내용과 비교한다.
+  if(assetSourceUsage?.synchronization?.selectedSourceContentHashesRequired===true){
+    const paths=assetSourceUsage.selectedSourcePaths||[];
+    if(paths.length!==assetSourceHashes.length||new Set(assetSourceHashes.map(row=>row.path)).size!==paths.length||paths.some(relative=>!assetSourceHashes.some(row=>row.path===relative)))throw new Error('INTERNAL_ASSET_SOURCE_HASH_COVERAGE_MISMATCH');
+    for(const row of assetSourceHashes){
+      const relative=posix(row.path);
+      if(!relative.startsWith('assets/')||relative.split('/').includes('..'))throw new Error('INTERNAL_ASSET_SOURCE_PATH_INVALID:'+relative);
+      const file=assertInside(root,relative);
+      let actual=null;
+      if(fs.existsSync(file)&&fs.statSync(file).isFile()){
+        if(!fs.realpathSync(file).startsWith(fs.realpathSync(root)+path.sep))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
+        actual=sha256([fs.readFileSync(file)]);
+      }
+      if(actual!==row.sha256)throw new Error('INTERNAL_ASSET_SOURCE_HASH_MISMATCH:'+relative);
+      if(actual!==null&&!/^[a-f0-9]{64}$/.test(clean(row.sha256)))throw new Error('INTERNAL_ASSET_SOURCE_HASH_INVALID:'+relative);
+      payload.push('INTERNAL_ASSET_SOURCE:'+relative+':'+(actual||'SOURCE_UNAVAILABLE'));
+    }
+  }
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -1000,4 +1020,3 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode=1;
   }
 }
-

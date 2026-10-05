@@ -36,7 +36,7 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=68,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=70,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=36000*14400/5; // 기존 특수지역 설계 기준 면적 · 확장분은 일반 마력숲
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 기존 수정 지대 크기 유지
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -378,7 +378,7 @@ const ARROW_IDS=['wood-arrow','iron-arrow','spider-arrow','firewolf-arrow','shar
 const LEGACY_ARROW_MIGRATION={'stone-arrow':'firewolf-arrow','gold-arrow':'yeti-arrow'};
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4,swampPrimitiveSpearman:3,swampPrimitiveArcher:3,swampPrimitiveGuard:3,giantVenomScorpion:4};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4,swampPrimitiveSpearman:3,swampPrimitiveArcher:3,swampPrimitiveGuard:3,sandSpirit:4,giantVenomScorpion:4};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},foreststag:{id:'foreststag',name:'이끼뿔사슴',mood:'neutral',hp:105,dmg:12,speed:68,r:21,color:'#789766',detect:420,attackCooldown:1100,foodDrop:'raw-deer-meat'},thornhound:{id:'thornhound',name:'가시숲 사냥개',mood:'aggressive',hp:128,dmg:18,speed:86,r:20,color:'#536f4f',detect:480,attackCooldown:950},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},sporegiant:{id:'sporegiant',name:'독포자 거대버섯',mood:'aggressive',hp:340,dmg:24,speed:54,r:32,color:'#76609a',detect:500,attackCooldown:1100,worldtree:true,mushroomGas:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -441,7 +441,7 @@ swampPrimitiveSpearman:{id:'swampPrimitiveSpearman',name:'늪 원시인 창병',
 swampPrimitiveArcher:{id:'swampPrimitiveArcher',name:'늪 원시인 궁수',mood:'aggressive',hp:700,dmg:80,speed:64,r:22,color:'#5c7048',detect:1050,attackCooldown:1600,swamp:true,outpostPrimitive:true,outpostArcher:true},
 swampPrimitiveGuard:{id:'swampPrimitiveGuard',name:'늪 원시인 보초',mood:'aggressive',hp:886,dmg:50,speed:0,r:24,color:'#596342',detect:520,attackCooldown:1100,swamp:true,outpostPrimitive:true,outpostGuard:true},
 swampArrowTower:{id:'swampArrowTower',name:'원시 화살탑',mood:'aggressive',hp:1200,dmg:60,speed:0,r:32,color:'#66513b',detect:1050,attackCooldown:1600,swamp:true,outpostArrowTower:true,noBestiary:true},
-sandSpirit:{id:'sandSpirit',name:'모래 정령',mood:'aggressive',hp:400,dmg:55,speed:78,r:24,color:'#c6a45e',detect:620,attackCooldown:1000,desert:true,sandSpray:true,noTierLabel:true},
+sandSpirit:{id:'sandSpirit',name:'모래 정령',mood:'aggressive',hp:400,dmg:55,speed:78,r:24,color:'#c6a45e',detect:620,attackCooldown:1000,desert:true,sandSpray:true},
 giantVenomScorpion:{id:'giantVenomScorpion',name:'거대 맹독 전갈',mood:'aggressive',hp:2222,dmg:90,speed:82,r:38,color:'#6e4e35',detect:900,attackCooldown:1100,desert:true,venomScorpion:true},
 wastelandMummy:{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30,color:'#b79a69',detect:760,attackCooldown:1100,desert:true,mummyHealGas:true,noTierLabel:true}
 
@@ -2541,6 +2541,7 @@ function serializeWorld(){
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0,speedRatio:q.speedRatio||0,nextSlowAt:q.nextSlowAt||0,gasBatchId:q.gasBatchId||null,gasPlayerSpeed:q.gasPlayerSpeed||0})),
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
+  mummyGases:state.mummyGases.map(g=>({x:g.x,y:g.y,r:g.r,until:g.until,sourceId:g.sourceId||null})),
   swampTrees:state.swampTrees.map(n=>({id:n.id,kind:'swamptree',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   sunstones:state.sunstones.map(n=>({id:n.id,kind:'sunstone',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   structures:sharedStructureSnapshot(),
@@ -2557,7 +2558,7 @@ function applyWorldSnapshot(w){
   const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0),hitAt=old&&Number(n.hp)<Number(old.hp)?now+110:(old?.hitAt||0);
   return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase}
  }).filter(Boolean);
- state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];
+ state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];if(Array.isArray(w.mummyGases))state.mummyGases=w.mummyGases.map(g=>({x:Number(g.x)||0,y:Number(g.y)||0,r:Number(g.r)||126,until:Number(g.until)||0,nextPlayerTick:0,nextHealTick:Infinity,sourceId:g.sourceId||null}));
  if(Array.isArray(w.sunstones))state.sunstones=w.sunstones.filter(n=>n&&String(n.kind||'sunstone')==='sunstone'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('sunstone'+i)),kind:'sunstone',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:10,dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(Array.isArray(w.swampTrees))state.swampTrees=w.swampTrees.filter(n=>n&&String(n.kind||'swamptree')==='swamptree'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('swamptree'+i)),kind:'swamptree',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:Math.max(1,Number(n.maxHp)||8),dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(w.structures&&typeof w.structures==='object'){
@@ -3695,6 +3696,15 @@ function updateMummyGases(now){
   }
   if(state.area==='surface'&&dist(p.x,p.y,g.x,g.y)<=g.r&&now>=(g.nextPlayerTick||0)){
    g.nextPlayerTick=now+500;damagePlayer(4,true,source)
+  }
+  if(multiplayer.connected&&multiIsHost()){
+   g.remoteNext=g.remoteNext||{};
+   for(const [id,r] of multiplayer.remote){
+    if(!r||r.area!=='surface'||now-(r.seenAt||0)>1500||(Number(r.hp)||0)<=0)continue;
+    if(dist(Number(r.x)||0,Number(r.y)||0,g.x,g.y)>g.r)continue;
+    if(now<(g.remoteNext[id]||0))continue;
+    g.remoteNext[id]=now+500;multiSend('enemy-hit',{targetId:id,damage:4,force:true,sourceId:g.sourceId||null})
+   }
   }
  }
 }
