@@ -5078,6 +5078,42 @@ test('asset-development Roblox presentation always keeps the bounded local-model
     presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false},
     selectedTask:{evidence:[]}
   }),true);
+  assert.equal(robloxDeterministicPresentationEligible({
+    target:'roblox',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] improve HUD only',
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false},
+    selectedTask:{evidence:[],assetRequirements:[{family:'UI',subfamily:'HUD',required:true}]}
+  }),true);
+  const multiFamily={
+    target:'roblox',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] apply world and UI library assets to existing source',
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false},
+    selectedTask:{
+      evidence:[],
+      assetRequirements:[
+        {family:'UI',subfamily:'HUD',required:true},
+        {family:'ENVIRONMENT',subfamily:'BIOME',required:true},
+        {family:'MOTION',subfamily:'COMBAT',required:true}
+      ]
+    }
+  };
+  assert.equal(robloxDeterministicPresentationEligible(multiFamily),false);
+  assert.equal(deterministicRobloxBuildUpCandidate({
+    order:multiFamily,
+    sourceRoot:'/unused',
+    responsibleFiles:['client/Game.client.luau']
+  }),null);
+  assert.equal(robloxDeterministicPresentationEligible({
+    target:'roblox',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] consume selected environment asset',
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false},
+    selectedTask:{evidence:[]},
+    assetProduction:{
+      flowAssetLoadout:{
+        selections:[{assetId:'environment-biome-forest',family:'ENVIRONMENT',applicationMode:'STYLE_ADAPT',sourceFiles:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau']}]
+      }
+    }
+  }),false);
 });
 
 

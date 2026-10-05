@@ -675,12 +675,35 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
   }
   return Object.freeze([...rows.values()]);
 }
+function robloxInternalAssetSourceConsumptionRequired(order={}){
+  const rows=[
+    ...(Array.isArray(order?.selectedTask?.assetRequirements)?order.selectedTask.assetRequirements:[]),
+    ...(Array.isArray(order?.assetRequirements)?order.assetRequirements:[]),
+    ...(Array.isArray(order?.assetProduction?.flowAssetRequirements)?order.assetProduction.flowAssetRequirements:[])
+  ];
+  const selected=[
+    ...(Array.isArray(order?.assetProduction?.flowAssetLoadout?.selections)?order.assetProduction.flowAssetLoadout.selections:[])
+  ];
+  const families=new Set([
+    ...rows.map(row=>clean(row?.family||row?.category).toUpperCase()),
+    ...selected.map(row=>clean(row?.family||row?.category).toUpperCase())
+  ].filter(Boolean));
+  const sourceBoundSelection=selected.some(row=>
+    clean(row?.assetId||row?.selectedAssetId||row?.id)
+    ||(Array.isArray(row?.sourceFiles)&&row.sourceFiles.some(Boolean))
+    ||clean(row?.applicationMode||row?.mode)
+  );
+  const nonUiFamilies=[...families].filter(family=>!['UI','CAMERA_PRESENTATION'].includes(family));
+  return nonUiFamilies.length>0&&(rows.length>0||sourceBoundSelection);
+}
+
 export function robloxDeterministicPresentationEligible(order={}){
   return clean(order.target).toLowerCase()==='roblox'
     &&order.presentationQuality?.required===true
     &&clean(order.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
     &&!assetDevelopmentTask(order)
-    &&!worldLobbySourceWorkRequired(order);
+    &&!worldLobbySourceWorkRequired(order)
+    &&!robloxInternalAssetSourceConsumptionRequired(order);
 }
 
 export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[],order={}}={}){
