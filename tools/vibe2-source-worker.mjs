@@ -2046,6 +2046,8 @@ export function buildInternalAssetSourceUsageContract(order={}){
       apiContextMaxBytes:18000,
       apiContextPerFileMaxBytes:4500,
       apiContextRotationByBuildUpGeneration:true,
+      apiContextBatchIsDetailRotationOnly:true,
+      apiIndexIncludesAllSelectedSourcesEveryBuildUp:true,
       allSelectedApiSourcesRemainEligibleAcrossCycles:true
     }),
     eligibility:Object.freeze({
@@ -2119,7 +2121,59 @@ export function buildInternalAssetSourceUsageContract(order={}){
   });
 }
 
-function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
+export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
+  const normalizedPaths=unique((paths||[]).map(posix).filter(file=>
+    file
+    &&!path.isAbsolute(file)
+    &&!file.split('/').includes('..')
+    &&/^assets\//.test(file)
+    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
+  )).sort();
+  const rows=[];
+  let availableSourceCount=0;
+  let signatureCount=0;
+  for(const relative of normalizedPaths){
+    const absolute=path.resolve(cwd,relative);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile()){
+      rows.push(relative+' :: SOURCE_UNAVAILABLE');
+      continue;
+    }
+    availableSourceCount+=1;
+    const raw=fs.readFileSync(absolute,'utf8');
+    const signatures=[];
+    const add=value=>{
+      const normalized=String(value||'').replace(/\s+/g,' ').trim();
+      if(normalized&&!signatures.includes(normalized))signatures.push(normalized);
+    };
+    if(/\.(?:lua|luau)$/i.test(relative)){
+      for(const match of raw.matchAll(/^\s*function\s+([A-Za-z_][\w]*\.[A-Za-z_][\w.]*)\s*\(([^)]*)\)/gm)){
+        add('function '+match[1]+'('+match[2]+')');
+      }
+      for(const match of raw.matchAll(/^\s*([A-Za-z_][\w]*\.[A-Za-z_][\w.]*)\s*=\s*function\s*\(([^)]*)\)/gm)){
+        add(match[1]+'=function('+match[2]+')');
+      }
+    }else{
+      for(const match of raw.matchAll(/^\s*export\s+(?:async\s+)?function\s+([A-Za-z_][\w]*)\s*\(([^)]*)\)/gm)){
+        add('export function '+match[1]+'('+match[2]+')');
+      }
+      for(const match of raw.matchAll(/^\s*export\s+const\s+([A-Za-z_][\w]*)/gm)){
+        add('export const '+match[1]);
+      }
+    }
+    signatureCount+=signatures.length;
+    rows.push(relative+' :: '+(signatures.length?signatures.join(' | '):'NO_PUBLIC_API_SIGNATURE_DISCOVERED'));
+  }
+  return Object.freeze({
+    representedSourceCount:normalizedPaths.length,
+    availableSourceCount,
+    unavailableSourceCount:normalizedPaths.length-availableSourceCount,
+    signatureCount,
+    allSelectedSourcesRepresented:true,
+    text:rows.join('\n')
+  });
+}
+
+export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
   const selectedFamilies=new Set([
     ...Object.keys(contract.exactFamilies||{}),
@@ -2156,6 +2210,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     &&/\.(?:lua|luau|js|mjs)$/i.test(file)
   )).sort();
   if(!allSelectedPaths.length)return context;
+  const apiIndex=buildInternalAssetApiIndex({cwd,paths:allSelectedPaths});
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
   const start=((generation-1)*batchSize)%allSelectedPaths.length;
@@ -2174,7 +2229,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     remaining-=bytes;
     apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
   }
-  if(!apiFiles.length)return context;
+  if(!apiFiles.length&&!apiIndex.text)return context;
   return{
     ...context,
     files:[...context.files,...apiFiles],
@@ -2184,8 +2239,26 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     internalAssetApiContextBounded:true,
     internalAssetApiContextGeneration:generation,
     internalAssetApiContextEligibleSourceCount:allSelectedPaths.length,
-    internalAssetApiContextRotationStart:start
+    internalAssetApiContextRotationStart:start,
+    internalAssetApiIndex:apiIndex.text,
+    internalAssetApiIndexBytes:Buffer.byteLength(apiIndex.text||'','utf8'),
+    internalAssetApiIndexRepresentedSourceCount:apiIndex.representedSourceCount,
+    internalAssetApiIndexAvailableSourceCount:apiIndex.availableSourceCount,
+    internalAssetApiIndexUnavailableSourceCount:apiIndex.unavailableSourceCount,
+    internalAssetApiIndexSignatureCount:apiIndex.signatureCount,
+    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:apiIndex.allSelectedSourcesRepresented===true
   };
+}
+
+function internalAssetApiIndexGuidance(context={}){
+  const index=String(context?.internalAssetApiIndex||'').trim();
+  if(!index)return'';
+  return [
+    '[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]',
+    'Every selected internal source is represented here on every BUILD_UP. Detailed source excerpts still rotate by generation for compactness; rotation changes implementation detail context only and never removes a family, source, or compatible asset from current BUILD_UP eligibility.',
+    index,
+    '[END INTERNAL ASSET API INDEX]'
+  ].join('\n');
 }
 
 function internalAssetSourceUsageGuidance(order={}){
@@ -2208,14 +2281,14 @@ function internalAssetSourceUsageGuidance(order={}){
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
-    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
-    'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility in the current BUILD_UP. Detailed API source batching is only synchronization optimization and MUST NOT become a usage cap.',
+    'Detailed common-script source excerpts rotate by BUILD_UP generation, but the complete public API index for every selected source is present on every BUILD_UP. Rotation is detail-context scheduling only; it never defers an applicable family/source/asset to a later generation.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
     'The explicit signal matrix is a FLOOR, not a ceiling. Scan current responsible source for additional existing events/state names and use adaptiveSignalRouting semantic hints only to choose presentation families that are both selected and applicable. Unknown source events may use the generic presentation fallback, but may not create a new gameplay system, asset ID, factory, role, state, or authority.',
     'Reuse existing common asset scripts/factories when the selected source/API reference is available. Call them from the current responsible game code or bind their returned native objects there; do not fork/copy a common script into each game.',
-    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. They are read-only bounded implementation context and rotate across BUILD_UP cycles; prefer the existing API before new per-game presentation code.',
+    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. Their detailed source bodies rotate as read-only implementation context, while their public API signatures remain visible every BUILD_UP; prefer the existing API before new per-game presentation code.',
     'When an existing Inventory/Equipment/Quest/Shop/Map/Party/Crafting/Dialogue/NPC/Character/Settings/Search/Filter/Sort system needs UI, inspect the matching RobloxCommonUI Create* factory first and connect it to the existing responsible state instead of rebuilding the screen.',
     'Variant diversity must preserve exact role/body-plan and use existing state/context plus usage history/lineage; simple random asset swapping is forbidden. Prefer compatible variants, recombination and style adaptation without sacrificing fit.',
     'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
@@ -2765,6 +2838,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 internalAssetSourceUsageGuidance(order),
+internalAssetApiIndexGuidance(context),
 gameContextCapsuleGuidance(order,exploration,responsibleFiles),
 preSubmitSelfReviewGuidance(order),
 studioAssetQualityCoreGuidance(order),
@@ -4923,6 +4997,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetApiContextGeneration:Number(context.internalAssetApiContextGeneration||0),
     internalAssetApiContextEligibleSourceCount:Number(context.internalAssetApiContextEligibleSourceCount||0),
     internalAssetApiContextRotationStart:Number(context.internalAssetApiContextRotationStart||0),
+    internalAssetApiContextRotationPreserved:true,
+    internalAssetApiIndexBytes:Number(context.internalAssetApiIndexBytes||0),
+    internalAssetApiIndexRepresentedSourceCount:Number(context.internalAssetApiIndexRepresentedSourceCount||0),
+    internalAssetApiIndexAvailableSourceCount:Number(context.internalAssetApiIndexAvailableSourceCount||0),
+    internalAssetApiIndexUnavailableSourceCount:Number(context.internalAssetApiIndexUnavailableSourceCount||0),
+    internalAssetApiIndexSignatureCount:Number(context.internalAssetApiIndexSignatureCount||0),
+    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:context.internalAssetApiIndexAllSelectedSourcesEveryBuildUp===true,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',
