@@ -32,7 +32,9 @@ on:
         type: string
 
 concurrency:
-  group: company-development-confirmed-${{ inputs.game_id || (github.event_name == 'push' && 'main-push') || github.run_id }}
+  # Exact-game development runs must not hold a whole-game workflow lock.
+  # Only main push coordinators share a control-plane group; manual/exact-game runs are run-scoped.
+  group: company-development-confirmed-${{ (github.event_name == 'push' && 'main-push') || github.run_id }}
   cancel-in-progress: false
 
 permissions:

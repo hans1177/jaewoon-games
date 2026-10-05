@@ -39,7 +39,60 @@ function inferLearningTarget(task={}){
   return explicit||'system';
 }
 
-export function buildSystemAiLearningContext({task={},experienceInput={},codePatternsInput={},masteryInput={}}={}){
+const BOTTLENECK_PLAYBOOK_AUTHORITY='company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution';
+const BOTTLENECK_METHODS=Object.freeze([
+  ['CAUSAL_WAIT_GRAPH','대기열·pending workflow·reservation wait·runner startup·fan-in·release wait를 한 그래프로 묶고 가장 긴 실제 대기 경로부터 고친다. 단순 queue depth만 원인으로 취급하지 않는다.'],
+  ['LOGICAL_PHYSICAL_CAPACITY_SPLIT','정책상 논리 동시성 목표와 GitHub/외부 제공자 물리 용량을 분리한다. 일시적인 runner 부족을 내부 정책 cap으로 굳히지 않는다.'],
+  ['MINIMUM_LOCK_SCOPE','직렬화는 원자적 공유상태 쓰기·정확히 같은 책임 파일 충돌·정확한 중복 실행에만 둔다. 전역·게임 전체·source-root 전체 lock은 병목으로 간주한다.'],
+  ['STAGE_SCOPED_EXACT_DEDUPE','중복 억제 identity는 game+stage+source/control revision으로 좁힌다. 이미 실행 중인 유효 작업은 보존하고 queued 중복만 합친다.'],
+  ['CONTROL_PLANE_ISOLATION','reserve·refill·fan-in 같은 짧은 control-plane 작업을 무거운 build/runtime worker 압력과 분리해 head-of-line blocking과 convoy를 막는다.'],
+  ['EVENT_DRIVEN_REFILL','완료 micro-fan-in과 slot release를 다음 refill 신호로 사용한다. 결과 없는 control wake는 coalesce하되 결과를 가진 완료 이벤트와 증거는 버리지 않는다.'],
+  ['CHECKPOINT_PRESERVING_HANDOFF','runner/infra 실패는 stale reservation을 회수하고 마지막 검증 checkpoint에서 다른 worker로 이어간다. 인프라 실패를 작업 실패나 학습 패널티로 만들지 않는다.'],
+  ['REPRESENTATIVE_CANARY_COHORT','공통 failure signature가 반복되면 모든 작업을 동시에 재시도하지 말고 대표 canary 하나에서 원인을 증명한 뒤 동일 cohort를 재배선한다.'],
+  ['STALE_QA_TRIANGULATION','QA 실패는 현재 중앙정책·책임 구현·architecture/log projection·최근 검증 동작을 교차검증한다. 구현이 정책과 맞을 때만 stale QA를 고치고 assertion 약화는 금지한다.'],
+  ['MULTI_HYPOTHESIS_CAUSAL_REPAIR','최소 두 개의 원인 가설을 증거로 비교하고 반증된 가설을 버린다. known-good와 이전 실패 strategy fingerprint를 이용해 같은 실패 수리를 반복하지 않는다.'],
+  ['WORK_CONSERVING_DISJOINT_PARALLELISM','충돌 없는 고가치 작업은 빈 슬롯을 즉시 채우고 unrelated safe work를 계속 진행한다. 한 lane의 실패가 다른 독립 lane을 막지 않게 한다.'],
+  ['SPARE_CAPACITY_HEDGING','추측 실행은 남는 물리 용량에서만, 서로 독립된 후보에 한정한다. primary coverage를 먼저 보존하고 중복 side effect가 생기기 전에 fan-in에서 하나로 수렴한다.'],
+  ['CAUSE_SCOPED_BACKPRESSURE','압력 조절은 runner queue·checkout network·incremental QA·fan-in 등 실제 병목 원인과 lane에만 적용한다. 전체 시스템을 일괄 downshift하지 않는다.'],
+  ['OBSERVABILITY_TO_VERIFIED_LEARNING','failure stage·signature·class와 queue/start/fan-in 시간을 구조화해 수리 전후를 비교한다. 효과가 fresh deterministic QA로 확인된 결과만 재사용 지식으로 승격한다.']
+]);
+
+function bottleneckTask(task={}){
+  const text=[
+    clean(task.id),clean(task.taskType),clean(task.goal),clean(task.blocker),clean(task.failureStage),clean(task.failureSignature),
+    ...(task.evidence||[]).map(clean),...(task.responsibleFiles||[]).map(clean)
+  ].join(' ').toLowerCase();
+  return clean(task.taskType).toLowerCase()==='bottleneck-repair'
+    ||/(bottleneck|queue|runner|concurr|serial|fan[- ]?in|reservation|backpressure|workflow wait|lock contention|stale qa|control[- ]?plane)/i.test(text);
+}
+
+function advancedBottleneckPlaybook(task={},policy={}){
+  if(!bottleneckTask(task))return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],guidance:''};
+  const evolution=policy?.aiExecutionEfficiency?.systemAiEvolution||{};
+  const parallel=policy?.developmentSpeedExecution?.robloxEndToEndParallelExecution||{};
+  const lock=policy?.finalDevelopmentLock?.parallelismBoundary||{};
+  const policyReady=
+    evolution?.status==='IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME'
+    &&evolution?.bottleneckSensing?.enabled===true
+    &&evolution?.workerAutomaticHandoff?.enabled===true
+    &&evolution?.qaEvolution?.enabled===true
+    &&parallel?.workflowLevelGameWideSerializationForbidden===true
+    &&lock?.gameWideWorkflowSerializationForbidden===true;
+  if(!policyReady)return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],guidance:''};
+  const methods=BOTTLENECK_METHODS.map(([id,method])=>({id,method}));
+  return{
+    applied:true,
+    authority:BOTTLENECK_PLAYBOOK_AUTHORITY,
+    verifiedPolicyBound:true,
+    methods,
+    guidance:[
+      'POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK (advisory only; fresh verification remains mandatory):',
+      ...methods.map(row=>'- '+row.id+': '+row.method)
+    ].join('\n')
+  };
+}
+
+export function buildSystemAiLearningContext({task={},experienceInput={},codePatternsInput={},masteryInput={},policyInput=null}={}){
   const retrieval=retrieveUnifiedLearning({
     task:{...task,target:inferLearningTarget(task),taskType:clean(task.taskType)||'system-ai'},
     experienceInput,codePatternsInput,masteryInput,
@@ -49,6 +102,9 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
   const signature=failureSignature(task);
   const failedStrategies=failedStrategyFingerprints(task);
   const gameId=clean(task.gameId)||null;
+  const policy=policyInput&&typeof policyInput==='object'?policyInput:readJson('company-learning/platform-release-roadmap.json',{});
+  const bottleneckPlaybook=advancedBottleneckPlaybook(task,policy);
+  const baseGuidance=learningGuidance(retrieval);
   return {
     version:2,
     kind:'company-system-ai-verified-learning-context',
@@ -67,7 +123,8 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
     outcomeAttributionRequired:true,
     freshQaRequiredOnReuse:true,
     knowledgeTraceRequired:exactKnowledgeIds.length>0,
-    guidance:learningGuidance(retrieval),
+    bottleneckPlaybook,
+    guidance:[baseGuidance,bottleneckPlaybook.guidance].filter(Boolean).join('\n'),
     rawModelOutputIncluded:false,
     verifiedOnly:true,
     advisoryOnly:true,
@@ -81,7 +138,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     task:readJson(clean(a.task),{}),
     experienceInput:readJson(clean(a.experience),{records:[]}),
     codePatternsInput:readJson(clean(a.patterns),{patterns:[]}),
-    masteryInput:readJson(clean(a.mastery),{})
+    masteryInput:readJson(clean(a.mastery),{}),
+    policyInput:readJson(clean(a.roadmap)||'company-learning/platform-release-roadmap.json',{})
   });
   writeJson(clean(a.output)||'/tmp/company-system-ai-learning-context.json',result);
   console.log('SYSTEM_AI_VERIFIED_LEARNING_CONTEXT=PASS');

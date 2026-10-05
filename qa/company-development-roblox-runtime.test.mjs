@@ -1266,7 +1266,9 @@ test('verified learning refresh dispatches per game without a portfolio-wide swe
   assert.match(runtime,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=/);
   assert.match(runtime,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=/);
   assert.match(sweep,/run-name: Roblox verified learning sweep · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.game_id \|\| 'batch' \}\}-\$\{\{ github\.sha \}\}/);
+  assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(sweep,/cancel-in-progress: false/);
+  assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep-[^\n]*github\.sha/);
   assert.match(sweep,/--game-id="\$GAME_ID"/);
   assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep\s*\n/);
 });

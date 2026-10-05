@@ -188,8 +188,9 @@ test('native development trigger ownership avoids duplicate central plus child p
     'qa/company-upper-platform-admission.test.mjs',
     'qa/company-unity-web-gameplay-validation.test.mjs',
   ]) assert.ok(!developmentPush.includes(nonRuntimeWake),nonRuntimeWake);
-  assert.match(development,/group: company-development-confirmed-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
-  assert.match(development,/group: company-development-confirmed-[\s\S]{0,180}?cancel-in-progress: false/);
+  assert.match(development,/group: company-development-confirmed-\$\{\{ \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
+  assert.doesNotMatch(development,/group: company-development-confirmed-\$\{\{[^\n]*inputs\.game_id/);
+  assert.match(development,/group: company-development-confirmed-[\s\S]{0,260}?cancel-in-progress: false/);
   assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.doesNotMatch(unity.slice(0,unity.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.match(roblox,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
