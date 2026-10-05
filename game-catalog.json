@@ -1289,8 +1289,8 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-05T13:44:25.574Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-05T14:43:37.790Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1388,8 +1388,8 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-05T13:44:25.574Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-05T14:43:37.790Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1452,8 +1452,8 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-05T13:44:25.574Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-05T14:43:37.790Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1572,8 +1572,8 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-05T13:44:25.574Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-05T14:43:37.790Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2207,7 +2207,7 @@
         }
       },
       "catalogOrder": 9,
-      "selectedPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
       "nameEnglish": "Cozy Island: Build a Tiny Kingdom",
       "internationalTitle": "Cozy Island: Build a Tiny Kingdom",
       "updatedAt": "2026-09-22T19:15:00+09:00",
@@ -2445,7 +2445,11 @@
             "purpose": "MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE"
           }
         }
-      }
+      },
+      "targetPlatform": "UNITY",
+      "unityProjectPath": "unity-games/cozy-island",
+      "homepagePublicationApproved": false,
+      "publishTestBuildWhenReady": false
     },
     {
       "id": "fantasy-survival",
@@ -3606,8 +3610,8 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-05T13:44:25.574Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-05T14:43:37.790Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3724,8 +3728,8 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-05T13:44:25.574Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-05T14:43:37.790Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -9149,8 +9153,10 @@
     "homepageInfo": 45,
     "normalizedGames": 45,
     "ownerWebAdded": 0,
-    "ownerWebUpdated": 0,
-    "ownerWebDisabled": 0
+    "ownerWebUpdated": 30,
+    "ownerWebDisabled": 15,
+    "runtimeCatalogAdded": 0,
+    "actualWebPlayableReconciled": 30
   },
   "catalogSchemaVersion": 2,
   "normalization": {
