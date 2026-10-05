@@ -1,10 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
+
+// API 호출은 줄이되 실제 빌드·런타임·독립 QA·회귀의 기존 대기 시간은 보존한다.
+test('Unity child polling preserves stage deadlines with fewer requests and a long-running VM',()=>{
+  const text=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+  const block=text.slice(text.indexOf('\n  unity-technical-validation:'));
+  assert.match(block,/runs-on: ubuntu-latest/);assert.match(block,/timeout-minutes: 160/);
+  const waits=[...block.matchAll(/for _ in \$\(seq 1 (\d+)\); do([\s\S]*?)done/g)]
+    .filter(row=>/actions\/runs\/\$(?:RUN_ID|child)/.test(row[2])&&/sleep 15/.test(row[2]));
+  assert.deepEqual(waits.map(row=>Number(row[1])*15),[6600,2100,2100,1200]);
+  assert.equal(waits.reduce((count,row)=>count+Number(row[1]),0),800);
+});
 
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');

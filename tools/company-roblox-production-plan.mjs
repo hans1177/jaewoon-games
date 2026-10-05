@@ -1,5 +1,7 @@
-// Concrete design-to-source handoff inside the existing Roblox BUILD_UP worker.
-// These are implementation ideas, never runtime evidence or permission to change a baseline.
+// 파일명: tools/company-roblox-production-plan.mjs
+// 역할: 기존 로블 제작 계획을 웹·유니티의 같은 BUILD_UP 경로에서도 직접 사용한다.
+// 원칙: 제작 계획은 실제 구현·런타임 통과 증거가 아니며 기존 책임 소스만 연결한다.
+// 임포트
 import crypto from 'node:crypto';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
@@ -72,17 +74,29 @@ export const ROBLOX_PRODUCTION_PROFILES=Object.freeze([
     ['PROGRESSION_ROUTE','성장 결과가 다음 지역이나 플레이 선택을 열게 한다.','보상 목적과 후속 목표를 함께 연결']])
 ]);
 
-function sourceRole(file){
+function sourceRole(file,platform){
+  if(platform==='UNITY')return /\.(?:unity|prefab|mat|anim|controller|uxml|uss|shader)$/i.test(file)
+    ||/(?:UI|View|Visual|Camera|Audio|Motion|Animator|Presentation)(?:Controller|Manager)?\.cs$/i.test(file)
+    ?'CLIENT_PRESENTATION':/(?:Config|Definition|Data|Settings)\w*\.cs$|\.asset$/i.test(file)?'SHARED_DEFINITION':'GAMEPLAY_STATE';
+  if(platform==='WEB')return /\.(?:css|svg)$/i.test(file)?'CLIENT_PRESENTATION':/\.json$/i.test(file)?'SHARED_DEFINITION':'GAMEPLAY_AND_PRESENTATION';
   return /(?:^|\/)server\/|\.server\.luau?$/i.test(file)?'SERVER_AUTHORITY'
     :/(?:^|\/)client\/|\.client\.luau?$/i.test(file)?'CLIENT_PRESENTATION':'SHARED_DEFINITION';
 }
 
-export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={}}={}){
-  if(clean(platform).toUpperCase()!=='ROBLOX'||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
-  const id=clean(gameId),root='roblox-games/'+id+'/';
+// 메인: 같은 장르 계획을 플랫폼별 실제 책임 파일에 연결한다.
+export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={}}={}){
+  const requested=clean(platform).toUpperCase();
+  const target=['UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
+  if(!list(policy.platforms||['ROBLOX']).includes(target)||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
+  const id=clean(gameId),root=(target==='ROBLOX'?'roblox-games/':target==='UNITY'?'unity-games/':'web-games/')+id+'/';
+  if(!/^[a-z0-9][a-z0-9-]*$/i.test(id))return null;
+  const observedRoot=clean(sourceRoot||source.sourceRoot).replaceAll('\\','/').replace(/\/$/,'');
+  const roots=[root,...(target==='WEB'&&observedRoot===id?[id+'/']:[])];
+  const extensions=target==='ROBLOX'?/\.luau?$/i:target==='UNITY'?/\.(?:cs|unity|prefab|mat|anim|controller|asset|uxml|uss|shader)$/i:/\.(?:html?|css|[cm]?js|tsx?|jsx|json|svg)$/i;
   const files=unique([...responsibleFiles,...list(source.topFiles).map(row=>row.file)])
-    .filter(file=>file.startsWith(root)&&/\.luau?$/i.test(file)&&!file.split('/').includes('..'));
-  const roles=files.map(file=>({file,role:sourceRole(file)}));
+    .filter(file=>roots.some(prefix=>file.startsWith(prefix))&&extensions.test(file)&&!file.split('/').includes('..'));
+  if(!files.length)return null;
+  const roles=files.map(file=>({file,role:sourceRole(file,target)}));
   const explicit=clean([design.genre,design.subgenre].filter(Boolean).join(' '));
   const identity=clean(design.identity)||id;
   const selected=ROBLOX_PRODUCTION_PROFILES.find(row=>row.pattern.test(explicit))
@@ -95,7 +109,8 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const genreProfile=selected?.id||'DESIGN_DEFINED';
   const ownerFeatureChanges=latestOwnerChanges(design.ownerFeatureChanges);
   const ownerChangeFingerprint=hash(JSON.stringify(ownerFeatureChanges));
-  const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint?previousPlan:null;
+  const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint
+    &&(previousPlan.platform||'ROBLOX')===target&&previousPlan.gameId===id?previousPlan:null;
   const ideaRows=sourceOnly?[['SOURCE_REPAIR','현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.','새 규칙이나 콘텐츠를 추가하지 않는다.']]
     :presentationOnly?[['PLAY_READABILITY','현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.','판정·보상·저장 규칙은 유지하고 표현만 개선한다.']]
     :selected?.ideas||[['APPROVED_CORE_LOOP','승인된 핵심 루프에서 끊긴 행동·결과·다음 목표를 연결한다.','장르를 추측해 전투·수집·경제를 추가하지 않는다.']];
@@ -107,27 +122,38 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const options=pool.length?pool:ideas;
   const index=parseInt(hash(id+'|'+identity+'|'+explicit).slice(0,8),16)%options.length;
   const chosen=repair&&prior?prior:options[index];
-  const allowedRoles=presentationOnly?['CLIENT_PRESENTATION','SHARED_DEFINITION']:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'];
+  const allowedRoles=target==='ROBLOX'
+    ?(presentationOnly?['CLIENT_PRESENTATION','SHARED_DEFINITION']:['SERVER_AUTHORITY','CLIENT_PRESENTATION','SHARED_DEFINITION'])
+    :target==='UNITY'?['GAMEPLAY_STATE','CLIENT_PRESENTATION','SHARED_DEFINITION']:['GAMEPLAY_AND_PRESENTATION','CLIENT_PRESENTATION','SHARED_DEFINITION'];
   const packages=allowedRoles.map(role=>({role,files:roles.filter(row=>row.role===role).map(row=>row.file),
-    implementation:role==='SERVER_AUTHORITY'?chosen.implementation+' 기존 권한 상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
+    implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
   return {
-    version:1,executionBoundary:'EXISTING_BUILD_UP_ONLY',mode,gameId:id,genreProfile,
+    version:2,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
     systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
     approvedCoreLoop:coreLoop,signatureSystems:systems,progressionDirection:clean(design.progressionDirection),
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
-    handoffRule:'Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent a Remote or edit another file.',
+    qualityContract:{
+      reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
+      implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
+      required:['CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL','COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND','MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE','MOBILE_TOUCH_AND_SCREEN_READABILITY','EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION'],
+      runtimeSurface:target==='UNITY'?(requested==='UNITY_WEB'?'UNITY_WEBGL_ACTUAL_BROWSER_PLAY':'UNITY_NATIVE_AND_ANDROID_WHEN_TARGETED'):target==='WEB'?'ACTUAL_BROWSER_PLAY':'ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE',
+      markerOnlyCompletionAllowed:false,runtimeVerified:false
+    },
+    handoffRule:'Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.',
     contentRule:sourceOnly?'REPAIR_EXISTING_BEHAVIOR_ONLY':presentationOnly?'PRESENT_EXISTING_BEHAVIOR_ONLY':'CONNECT_ONE_PLAYABLE_CONTENT_PACKAGE_TO_EXISTING_CORE_LOOP',
     preservation:['APPROVED_CONCEPT','APPROVED_GENRE','STYLE_LOCK','SAVE_IDENTITY','BALANCE_AND_ECONOMY_MEANING','SERVER_AUTHORITY'],
     newWorkflow:false,newQaStage:false,implementationStatus:'PLANNED_NOT_IMPLEMENTED'
   };
 }
 
-export function robloxProductionPromptLines(plan,{prefix='ROBLOX_PRODUCTION_',responsibleFiles=[]}={}){
+// 작업 지시: 정상 생성과 재시도 모두 같은 계획·소스 권한을 유지한다.
+export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}={}){
   if(!plan)return[];
+  prefix=prefix||((plan.platform||'ROBLOX')+'_PRODUCTION_');
   const packages=list(plan.implementationPackages).map(row=>({...row,files:row.files.filter(file=>!responsibleFiles.length||responsibleFiles.some(owned=>{
     const path=clean(owned).replaceAll('\\','/').replace(/^\.\//,'');
     return path&&!path.split('/').includes('..')&&(file===path||file.endsWith('/'+path));
@@ -137,6 +163,7 @@ export function robloxProductionPromptLines(plan,{prefix='ROBLOX_PRODUCTION_',re
     prefix+'IDEA='+JSON.stringify(plan.selectedIdea),
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
+    ...(plan.qualityContract?[prefix+'QUALITY='+JSON.stringify(plan.qualityContract)]:[]),
     ...list(plan.ownerFeatureChanges).map(change=>prefix+'OWNER='+JSON.stringify(change)+'; latest owner intent wins; REMOVE must not be restored by autonomous expansion; ADD/UPDATE must be preserved within this request scope.'),
     prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];

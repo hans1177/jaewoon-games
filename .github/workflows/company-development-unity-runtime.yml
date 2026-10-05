@@ -452,6 +452,7 @@ jobs:
       fail-fast: false
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    # 긴 실제 빌드·검증 대기는 15분 제한이 있는 slim 실행기로 옮기지 않는다.
     runs-on: ubuntu-latest
     timeout-minutes: 160
     steps:
@@ -741,10 +742,10 @@ jobs:
             echo 'SINGLE_BUILD_OR_PACKAGE=REUSED'
             exit 0
           fi
-          for _ in $(seq 1 1320); do
+          for _ in $(seq 1 440); do
             status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq '.status')"
             [[ "$status" == completed ]] && break
-            sleep 5
+            sleep 15
           done
           jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100")"
           build="$(jq -r '[.jobs[]|select(.name=="build")|.conclusion][0]//"missing"' <<<"$jobs")"
@@ -818,7 +819,7 @@ jobs:
             echo "UNITY_RUNTIME_SMOKE_DISPATCHED_MANUAL=$child"
           fi
           echo "run_id=$child" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 420); do
+          for _ in $(seq 1 140); do
             row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
             if [[ "$status" == completed ]]; then
               if [[ "$conclusion" == success ]]; then
@@ -843,7 +844,7 @@ jobs:
               fi
               exit 6
             fi
-            sleep 5
+            sleep 15
           done
           exit 7
 
@@ -880,7 +881,7 @@ jobs:
             echo "UNITY_ANDROID_INDEPENDENT_QA_DISPATCHED=$BUILD_RUN:${child:-NONE}"
           fi
           [[ "$child" =~ ^[0-9]+$ ]]||exit 8; echo "run_id=$child" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 9;fi;sleep 5;done;exit 10
+          for _ in $(seq 1 140); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 9;fi;sleep 15;done;exit 10
 
       - name: Resolve independent QA checkpoint result
         id: independentstate
@@ -924,11 +925,11 @@ jobs:
           fi
           [[ "$child" =~ ^[0-9]+$ ]]||exit 11; echo "run_id=$child" >> "$GITHUB_OUTPUT"
           echo 'UNITY_F9_RUNTIME_REPLAY=NO'
-          for _ in $(seq 1 240); do
+          for _ in $(seq 1 80); do
             row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"
             s="${row%%$'\t'*}"; result="${row#*$'\t'}"
             if [[ "$s" == completed ]]; then [[ "$result" == success ]] && exit 0 || exit 12; fi
-            sleep 5
+            sleep 15
           done
           exit 13
 

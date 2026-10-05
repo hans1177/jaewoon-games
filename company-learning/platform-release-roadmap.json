@@ -1,5 +1,5 @@
 {
-  "version": 538,
+  "version": 539,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -17,7 +17,7 @@
     },
     "minimumPlatformDevelopment": {
       "UNITY": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE",
-      "WEB": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE"
+      "WEB": "TWO_DISTINCT_ACTIVE_GAMES_WHEN_ELIGIBLE_AND_CAPACITY_AVAILABLE"
     },
     "smallCapacitySelection": "WEIGHTED_OBSERVED_SERVICE_ROTATION",
     "robloxGamePriority": [
@@ -1335,6 +1335,20 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
+    },
+    "webGameFlow": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-06",
+      "enabled": true,
+      "targetConcurrentGames": 2,
+      "scope": "GAME_PRIMARY_WEB",
+      "counting": "DISTINCT_GAMES_WITH_ACTIVE_SOURCE_WORK",
+      "refillBeforeWeightedPlatformMix": true,
+      "refillThroughExistingPlannerAndCompletionEvents": true,
+      "waitingQaAndExternalRuntimeReleaseWorkerCapacity": true,
+      "existingRunningWorkNotCancelled": true,
+      "sameGameIndependentFilesMayRemainParallel": true,
+      "noNewWorkflowOrQueue": true
     }
   },
   "phases": [
@@ -8627,6 +8641,12 @@
       "scope": "EXISTING_ASSET_DEVELOPMENT_PLANNING_RESERVATION_AND_WORKER_CONTEXT",
       "lockedSequenceChanged": false,
       "verification": "PENDING_IMPLEMENTATION_QA_AND_LIVE_RESERVATION"
+    },
+    "crossPlatformFlowFinish20261006": {
+      "reason": "기존 로블 체인 대기 제거와 웹 두 게임 상시 배정, 유니티·웹 제작 품질 지시 연결",
+      "existingPipelineOnly": true,
+      "lockedSequenceAndGuardUnchanged": true,
+      "runtimeAndDeploymentPassNotClaimedByConfiguration": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -27181,10 +27201,10 @@
     "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
   },
   "robloxStudioProductionFlowContract": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-10-05",
-    "objective": "STUDIO_STYLE_GAME_SPECIFIC_CONCEPT_AND_GENRE_DESIGN_TO_CONNECTED_NATIVE_IMPLEMENTATION",
+    "objective": "SAME_GAME_SPECIFIC_CONNECTED_PLAY_AND_PRESENTATION_QUALITY_ACROSS_ROBLOX_UNITY_WEB",
     "executionBoundary": "EXISTING_BUILD_UP_AND_VIBE_SOURCE_WORKER",
     "implementation": "tools/company-roblox-production-plan.mjs",
     "designInput": [
@@ -27269,6 +27289,26 @@
       "resume": "CURRENT_MAIN_SOURCE_THROUGH_EXISTING_F0_F9_TO_NEXT_BUILD_UP",
       "manualRestartRequired": false,
       "newGlobalPause": false
-    }
+    },
+    "chainOptimization": {
+      "perGameF0PersistAndImmediateHandoff": true,
+      "exactLearningSweepCoalescing": true,
+      "existingFailureStageResumeAndEvidenceIdentityPreserved": true,
+      "unityStatusPollingIntervalSeconds": 15,
+      "unityExistingWaitBudgetsPreserved": true
+    },
+    "unityQualityParity": {
+      "reference": "ROBLOX_CONNECTED_CONTENT_AND_PRESENTATION_STANDARD",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "unityWebUsesCanonicalUnityProject": true,
+      "nativeRuntimeEvidenceRequiredForNativePass": true,
+      "webOrRobloxPassMayNotSubstituteUnityPass": true,
+      "markerOnlyOrPrimitiveOnlyCompletionForbidden": true
+    },
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ]
   }
 }

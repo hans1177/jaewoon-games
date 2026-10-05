@@ -3357,6 +3357,32 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
+test('queued Unity and Web directives adopt native production plans without rewriting running work or consuming a generation',()=>{
+  for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
+    const root=tempRepo();
+    writeStudioDesign(root,gameId);
+    const project={gameId,name:gameId,engine,releaseState:'development-confirmed',projectPath:`${engine}-games/${gameId}`};
+    const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+    assert.ok(generated?.buildUpDirective);
+    assert.equal(generated.buildUpDirective.productionPlan,null);
+    const running={...generated,id:gameId+'-running',status:'running',reservationRunId:'existing-run'};
+    const queued={...generated,id:gameId+'-queued',status:'queued'};
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']}}));
+    const result=planVibe2AutonomousTasks({
+      status:{projects:[{gameId,ownerDecision:'PASS',target,projectPath:project.projectPath,progress:80}]},
+      catalog:{games:[{id:gameId,name:gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',...(engine==='web'?{webPath:`/${project.projectPath}/`,hasWebArchive:true,homepageWebPlayable:true}:{})}]},
+      queue:{maxConcurrentTasks:20,tasks:[running,queued]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:2,planningBacklogMinimum:0
+    });
+    const updated=result.queue.tasks.find(row=>row.id===queued.id);
+    const untouched=result.queue.tasks.find(row=>row.id===running.id);
+    assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
+    assert.equal(updated.buildUpDirective.productionPlan.version,2);
+    assert.equal(updated.buildUpDirective.productionPlan.platform,engine.toUpperCase());
+    assert.equal(updated.buildUpDirective.productionPlan.qualityContract.runtimeVerified,false);
+    assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
+  }
+});
+
 test('stale queued directive rebinds to the active shared generation before reserve',()=>{
   const root=tempRepo();
   const gameId='stale-build-up-rebind';
