@@ -30,7 +30,7 @@ test('runtime QA rescans when the private candidate producer workflow changes',(
 });
 
 test('Studio asset binding promotion waits for exact accepted Roblox runtime',()=>{
-  assert.match(workflow,/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true/);
+  assert.match(workflow,/const studioAssetBindingRequired=\(item\.robloxStudioAssetBindingApplied===true\|\|item\.robloxStudioAssetBinding\?\.required===true\)/);
   assert.match(workflow,/&&runtimeAcceptanceForRelease/);
   assert.match(workflow,/result\.f5InputCameraUiPassed===true/);
   assert.match(workflow,/result\.f8GameplaySystemsPassed===true/);
@@ -291,7 +291,7 @@ test('runtime foundation critical path reuses current-main contract QA instead o
 });
 
 
-test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',()=>{
+test('Open Cloud runtime stays automatic while local Studio execution is disabled',()=>{
   const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
   const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
   assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
@@ -300,7 +300,7 @@ test('Open Cloud runtime stays automatic while Studio requires explicit opt-in',
   assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
-  assert.match(studioPlan,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
+  assert.match(studioPlan,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
   assert.doesNotMatch(studioPlan,/github\.event_name == 'push'/);
 });
 
@@ -331,10 +331,10 @@ test('exact transient Open Cloud retry is cancelled when source or artifact chan
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_SUPERSEDED_BY_CURRENT_SOURCE=/);
 });
 
-test('same exact Studio internal evidence is reused inside the cycle without fabricating external runtime PASS',()=>{
+test('cloud-only runtime reuse excludes cached local Studio proof',()=>{
   assert.match(workflow,/const exactExternalRuntimeEvidenceReusable=/);
   assert.match(workflow,/const exactStudioRuntimeEvidenceReusable=/);
-  assert.match(workflow,/const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable\|\|exactStudioRuntimeEvidenceReusable/);
+  assert.match(workflow,/const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable;/);
   assert.match(workflow,/reusedServerBootEvidence:exactExternalRuntimeEvidenceReusable/);
   assert.match(workflow,/reusedStudioInternalEvidence:exactStudioRuntimeEvidenceReusable/);
   assert.match(workflow,/EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED/);

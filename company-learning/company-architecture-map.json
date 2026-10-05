@@ -1,5 +1,5 @@
 {
-  "version": 310,
+  "version": 312,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4255,7 +4255,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -5302,7 +5302,7 @@
     "gameCatalogBackwardCompatibilityPreserved": true
   },
   "universalAssetFirstUpgradeTopology": {
-    "version": 1,
+    "version": 2,
     "policy": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
     "existingPipelineOnly": true,
     "noNewWorker": true,
@@ -5349,6 +5349,26 @@
       "vibe2Vibe3OwnActualGameSourceBinding": true,
       "actualBindingMustUseExistingResponsibleFiles": true,
       "markerOnlyBindingForbidden": true
+    },
+    "automaticDynamicBinding": {
+      "registry": "company-asset-library.json",
+      "planner": "tools/vibe2-asset-production-plan.mjs",
+      "sourceConsumer": "tools/vibe2-source-worker.mjs",
+      "implementationOrder": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "existingBuildUpOnly": true,
+      "allRegisteredLibrariesEvaluated": true,
+      "affectedBindingsRefreshedOnLibrarySelectionOrSourceChange": true,
+      "unchangedExactBindingsReused": true,
+      "generationDetailRotationPreserved": true,
+      "completeSelectedSourceApiIndexEveryBuildUp": true,
+      "noNewRealtimeService": true,
+      "platformQaRuntimeAndDeploymentRemainIndependent": true,
+      "everyExistingFloorCycleReevaluatesAndEvolvesAssets": true,
+      "verifiedSourceAssetAndContentOutcomesFeedNextBuildUp": true
     }
   },
   "vibeSourceGenerationFocusedRecoveryTopology": {
@@ -6874,6 +6894,67 @@
       "handback": "EXISTING_VIBE_AUTONOMOUS_LOOP",
       "vibeContinuesWithoutAssist": true,
       "noShadowManagerTopology": true
+    }
+  },
+  "allGameDynamicAssetBindingTopology": {
+    "version": 1,
+    "policy": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract",
+    "existingPipelineOnly": true,
+    "noNewWorker": true,
+    "noNewQueue": true,
+    "noNewScheduler": true,
+    "noShadowAssetPipeline": true,
+    "platformOrder": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ],
+    "sharedChain": [
+      "company-asset-library.json",
+      "tools/vibe2-asset-production-plan.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/vibe2-incremental-qa.mjs",
+      "TARGET_PLATFORM_PACKAGE_OR_BUILD",
+      "TARGET_PLATFORM_RUNTIME_QA",
+      "REGRESSION_SECURITY_FAN_IN",
+      "tools/vibe2-learning-motor.mjs"
+    ],
+    "libraryDiscovery": {
+      "fullRegistryEveryGameDevelopmentTask": true,
+      "allTwelveFamiliesEveryBuildUp": true,
+      "allSafeRightsPlatformRoleCompatibleCandidatesRemainEligible": true,
+      "baseMaterialAtomsNotCapped": true,
+      "qualityScoreNotEligibilityGate": true,
+      "detailContextRotationIsNotEligibilityRotation": true
+    },
+    "dynamicSynchronization": {
+      "libraryVersionBoundToSourceCandidate": true,
+      "selectionFingerprintBoundToSourceCandidate": true,
+      "sourceUsageFingerprintBoundToSourceCandidate": true,
+      "staleBindingInvalidatesCandidate": true,
+      "packageBuildMustMatchExactBinding": true,
+      "runtimeEvidenceMustMatchExactBinding": true,
+      "nextBuildUpReevaluatesLatestLibrary": true
+    },
+    "application": {
+      "existingResponsibleFilesFirst": true,
+      "actualNativeBindingRequired": true,
+      "markerOnlyForbidden": true,
+      "primitivePlainFallbackForbidden": true,
+      "existingSystemRequiresAppliedBinding": true,
+      "absentSystemAllowsEvidenceBackedNotApplicable": true,
+      "gameplaySemanticsRemainOwnedByExistingGameCode": true
+    },
+    "conversion": {
+      "order": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "sameGameSemanticsPreservedAcrossPlatforms": true,
+      "platformNativeRepresentationRequired": true,
+      "directCrossPlatformBinaryReuseForbidden": true,
+      "verifiedPlatformMayProceedWithoutWaitingForUnrelatedPlatformFailure": true
     }
   }
 }

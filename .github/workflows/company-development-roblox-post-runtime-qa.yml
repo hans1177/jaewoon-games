@@ -9,7 +9,7 @@ on:
         required: false
     inputs:
       run_studio:
-        description: Explicit opt-in to resource-intensive actual Studio playtests.
+        description: Deprecated compatibility input; cloud API validation only.
         type: boolean
         default: false
       retry_open_cloud_only:
@@ -45,7 +45,7 @@ on:
   workflow_dispatch:
     inputs:
       run_studio:
-        description: Run actual Studio playtests (opens Studio; default is static checks only).
+        description: Deprecated compatibility input; Studio execution is disabled.
         type: boolean
         default: false
       game_id:
@@ -382,7 +382,7 @@ jobs:
             }
             const runtime=item.robloxRuntimeFoundationEvidence||{};
             const post=item.robloxPostRuntimeQaEvidence||{};
-            const studioRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioRequired=(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true);
             const studio=item.robloxStudioAssetRuntimeBindingEvidence||{};
             const exactReusable=
               c.published===true
@@ -397,6 +397,8 @@ jobs:
               &&Number(runtime.candidateVersionNumber)===Number(c.versionNumber)
               &&runtime.runtimeFoundationPassed===true
               &&runtime.runtimeAcceptancePassed===true
+              &&runtime.validationProvider==='ROBLOX_OFFICIAL_CLOUD_API_ONLY'
+              &&runtime.openCloudImageEvidence?.imageContentPassed===true
               &&post.sourceRevision===sourceRevision
               &&post.artifactIdentity===artifactIdentity
               &&Number(post.candidateVersionNumber)===Number(c.versionNumber)
@@ -405,6 +407,11 @@ jobs:
                 &&studio.sourceRevision===sourceRevision
                 &&studio.artifactIdentity===artifactIdentity
                 &&Number(studio.candidateVersionNumber)===Number(c.versionNumber)
+                &&String(studio.expectedSelectionFingerprint||'')===String(item.robloxStudioAssetBinding?.selectionFingerprint||'')
+                &&String(studio.observedSelectionFingerprint||'')===String(item.robloxStudioAssetBinding?.selectionFingerprint||'')
+                &&Number(studio.expectedLibraryVersion||0)===Number(item.robloxStudioAssetBinding?.libraryVersion||0)
+                &&Number(studio.observedLibraryVersion||0)===Number(item.robloxStudioAssetBinding?.libraryVersion||0)
+                &&String(studio.buildUpAssetSourceUsageFingerprint||'')===String(item.robloxStudioAssetBinding?.buildUpAssetSourceUsageFingerprint||'')
               ));
             if(exactReusable){
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
@@ -416,6 +423,7 @@ jobs:
             return Number(b.gameId===requested)-Number(a.gameId===requested);
           });
           const probes=new Array(candidates.length);
+          const imageRequests=new Map(); // Coalesce image API reads for games sharing one universe.
           const probeConcurrency=Math.max(1,Math.min(8,candidates.length||1));
           console.log('ROBLOX_OPEN_CLOUD_PARALLEL_MODE=MAX8_FILL_AVAILABLE');
           console.log('ROBLOX_OPEN_CLOUD_REQUESTED_PRIORITY='+(requested||'NONE'));
@@ -428,33 +436,43 @@ jobs:
               if(index>=candidates.length)return;
               const item=candidates[index];
               const c=item.robloxRuntimeCandidateEvidence;
+              let imageEvidence=null;
               try{
-                const result=await probeRobloxOpenCloudEngine({
-                  universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
-                  apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
-                  networkRetryAttempts:6,networkRetryDelayMs:1000,
-                  expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
-                });
-                let imageEvidence;
-                try{
-                  imageEvidence=await probeRobloxOpenCloudImageEvidence({
-                    universeId:String(c.universeId),
-                    apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
-                    networkRetryAttempts:4,networkRetryDelayMs:750,
-                  });
-                }catch(error){
-                  const message=String(error?.message||error);
+                const universeKey=String(c.universeId);
+                if(!imageRequests.has(universeKey))imageRequests.set(universeKey,probeRobloxOpenCloudImageEvidence({
+                  universeId:universeKey,apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+                  networkRetryAttempts:4,networkRetryDelayMs:750,
+                }));
+                const [engineAttempt,imageAttempt]=await Promise.allSettled([
+                  probeRobloxOpenCloudEngine({
+                    universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
+                    apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
+                    networkRetryAttempts:6,networkRetryDelayMs:1000,
+                    expectedStudioAssetBinding:(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true)?item.robloxStudioAssetBinding:null,
+                  }),
+                  imageRequests.get(universeKey),
+                ]);
+                if(imageAttempt.status==='fulfilled')imageEvidence=imageAttempt.value;
+                else{
+                  const message=String(imageAttempt.reason?.message||imageAttempt.reason);
                   const status=Number(message.match(/_HTTP_(\d+)/)?.[1]||0);
                   imageEvidence={
                     available:false,permissionDenied:false,persistentFailure:true,status,
                     imageMetadataAvailable:false,thumbnailCount:0,imageUrls:[],
+                    imageContentChecked:false,imageContentPassed:false,imageVisualQualityVerified:false,
                     runtimeScreenshot:false,exactRuntimeVersionImage:false,
-                    state:'IMAGE_SANITY_UNAVAILABLE',
-                    error:message.slice(0,500),
+                    state:'IMAGE_SANITY_UNAVAILABLE',error:message.slice(0,500),
                     authority:'roblox-open-cloud-thumbnail-image-sanity',
                     limitation:'THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF',
                   };
                 }
+                imageEvidence={...imageEvidence,requestContext:{
+                  sourceRevision:String(item.robloxSourceCommit||''),artifactIdentity:String(item.robloxBuildArtifactIdentity||''),
+                  universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
+                  observedImageRevision:false,
+                }};
+                if(engineAttempt.status==='rejected')throw engineAttempt.reason;
+                const result=engineAttempt.value;
                 const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result,imageEvidence};
                 console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
                 console.log('ROBLOX_OPEN_CLOUD_IMAGE_CHECK='+item.gameId+':'+String(imageEvidence?.state||'UNKNOWN')+':count='+Number(imageEvidence?.thumbnailCount||0));
@@ -473,6 +491,7 @@ jobs:
                   exactPlace:false,
                   exactVersion:false,
                   failureStage:'PROBE',
+                  imageEvidence,
                   error:message.slice(0,500),
                 };
                 console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE='+JSON.stringify(probe));
@@ -533,7 +552,8 @@ jobs:
             JSON.parse(JSON.stringify(item)),
           ]));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const serverDiagnosticEnabled=String(process.env.SERVER_DIAGNOSTIC_ENABLED||'').toLowerCase()==='true';
+          const cloudApiOnly=true; // Owner directive: no local Studio evidence or execution.
+          const serverDiagnosticEnabled=cloudApiOnly||String(process.env.SERVER_DIAGNOSTIC_ENABLED||'').toLowerCase()==='true';
           const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const sharedUniverse=String(sharedTarget.universeId||'').trim();
           const sharedPlace=String(sharedTarget.placeId||'').trim();
@@ -667,9 +687,6 @@ jobs:
           });
           const f9Ids=[];
           const studioFollowupIds=[];
-          const initialStudioCandidates=new Map(candidates.map(item=>[
-            item.gameId,JSON.stringify(planLocalStudioCandidates({queue:{items:[item]},roadmap,requestedGameId:String(item.gameId||''),repoRoot:process.cwd()}).include||[])
-          ]));
           const stamp=new Date().toISOString();
           const multiplayerRequirementFor=item=>{
             const rel=String(item.designBaselineSource||'').trim();
@@ -703,16 +720,7 @@ jobs:
               clientSource:readLuauTree(root+'/client'),
             });
           };
-          const queueStudioFollowupIfEligible=item=>{
-            const matrix=planLocalStudioCandidates({
-              queue:{items:[item]},
-              roadmap,
-              requestedGameId:String(item.gameId||''),
-              repoRoot:process.cwd(),
-            });
-            if((matrix.include||[]).some(row=>row.gameId===item.gameId)
-              &&JSON.stringify(matrix.include||[])!==initialStudioCandidates.get(item.gameId))studioFollowupIds.push(item.gameId);
-          };
+          const queueStudioFollowupIfEligible=()=>{}; // Local execution disabled by cloud-only authority.
 
           for(const item of candidates){
             const candidate=candidateForItem(item);
@@ -777,10 +785,10 @@ jobs:
               console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PREBOUND='+item.gameId+':source='+sourceRevision);
             }
             let studioPlay=item.robloxInternalVibePlayEvidence||{};
-            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioAssetBindingRequired=(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true);
             const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
             const reusableLocalStudioArtifactEvidence=Boolean(
-              localPreF9Candidate
+              !cloudApiOnly&&localPreF9Candidate
               &&studioPlay.pass===true
               &&studioPlay.actualPlay===true
               &&studioPlay.runtimeVerified===true
@@ -821,7 +829,7 @@ jobs:
             );
             const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||staticMultiplayerCodePass;
             const exactStudioInternalValidation=
-              studioPlay.pass===true
+              !cloudApiOnly&&studioPlay.pass===true
               &&studioPlay.actualPlay===true
               &&studioPlay.runtimeVerified===true
               &&studioPlay.officialStudioMcp===true
@@ -843,6 +851,8 @@ jobs:
               &&Number(priorRuntime.candidateVersionNumber)===Number(candidate.versionNumber)
               &&priorRuntime.runtimeFoundationPassed===true
               &&priorRuntime.runtimeAcceptancePassed===true
+              &&priorRuntime.validationProvider==='ROBLOX_OFFICIAL_CLOUD_API_ONLY'
+              &&priorRuntime.openCloudImageEvidence?.imageContentPassed===true
               &&priorPost.sourceRevision===sourceRevision
               &&priorPost.artifactIdentity===artifactIdentity
               &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber)
@@ -864,7 +874,7 @@ jobs:
               &&priorPost.sourceRevision===sourceRevision
               &&priorPost.artifactIdentity===artifactIdentity
               &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber);
-            const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable||exactStudioRuntimeEvidenceReusable;
+            const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable;
             if(exactRuntimeEvidenceReusable){
               item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
               item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
@@ -929,7 +939,7 @@ jobs:
                 item.robloxMultiplayerQaPassed=true;
                 console.log('ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
               }
-              const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+              const studioAssetBindingRequired=(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true);
               const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
               item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
               item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
@@ -1101,6 +1111,36 @@ jobs:
               }
               console.log(`ROBLOX_FOUNDATION_PERMISSION_BLOCKED=${item.gameId}:requiredScope=${requiredScope}:HTTP_${Number(engineProbe.status)||0}`);
               pending++;
+              continue;
+            }
+
+            if(engineProbe?.worldEvidence?.spawnGroundingObserved===true
+              &&(Number(engineProbe.worldEvidence.floatingSpawns||0)>0||Number(engineProbe.worldEvidence.unsupportedSpawns||0)>0)){
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxIndependentQaPassed=false;
+              item.robloxRegressionPassed=false;
+              item.robloxFirstFrameGroundingEvidence=engineProbe.worldEvidence;
+              item.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+              item.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_FIRST_FRAME_GROUNDING_FAILED';
+              item.routingBlockers=['roblox-first-frame-grounding-failed'];
+              item.updatedAt=stamp;changed=true;failed++;
+              continue;
+            }
+            if(engineProbe?.imageEvidence?.imageContentPassed!==true){
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxIndependentQaPassed=false;
+              item.robloxRegressionPassed=false;
+              item.robloxCloudImageEvidence=engineProbe?.imageEvidence||null;
+              item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED';
+              item.routingBlockers=['roblox-cloud-image-content-unverified'];
+              item.updatedAt=stamp;changed=true;pending++;
+              console.log('ROBLOX_CLOUD_IMAGE_RETRY_REQUIRED='+item.gameId);
               continue;
             }
 
@@ -1343,10 +1383,12 @@ jobs:
             }
             const multiplayerReleasePassed=multiplayer.known===true
               &&(multiplayer.required!==true||staticMultiplayerCodePass);
-            const runtimeAcceptanceForRelease=result.developmentContinuationPassed===true&&multiplayerReleasePassed;
+            const cloudEnginePassed=engineProbe?.engineExecuted===true&&engineProbe?.exactPlace===true&&engineProbe?.exactVersion===true;
+            const runtimeAcceptanceForRelease=result.developmentContinuationPassed===true&&multiplayerReleasePassed&&cloudEnginePassed&&engineProbe?.imageEvidence?.imageContentPassed===true;
             const evidence={
               ...result,
               releaseRuntimeAcceptancePassed:runtimeAcceptanceForRelease,
+              validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
               f7MultiplayerSourceContractPassed:staticMultiplayerCodePass,
               multiplayerSourceContract,
               sourceRevision,
@@ -1411,6 +1453,14 @@ jobs:
               targetEngineStudioAssetApplied:engineProbe?.studioAssetApplied===true,
               targetEngineStudioAssetBindingVersion:Number(engineProbe?.studioAssetBindingVersion||0),
               targetEngineSelectionMatched:engineProbe?.studioAssetSelectionMatched===true,
+              targetEngineAtomMatch:engineProbe?.studioAssetAtomMatch===true,
+              targetEngineFingerprintMatch:engineProbe?.studioAssetFingerprintMatch===true,
+              targetEngineLibraryVersionMatch:engineProbe?.studioAssetLibraryVersionMatch===true,
+              expectedSelectionFingerprint:String(engineProbe?.expectedStudioAssetSelectionFingerprint||''),
+              observedSelectionFingerprint:String(engineProbe?.observedStudioAssetSelectionFingerprint||''),
+              expectedLibraryVersion:Number(engineProbe?.expectedStudioAssetLibraryVersion||0),
+              observedLibraryVersion:Number(engineProbe?.observedStudioAssetLibraryVersion||0),
+              buildUpAssetSourceUsageFingerprint:String(engineProbe?.expectedBuildUpAssetSourceUsageFingerprint||''),
               expectedStudioAssetAtoms:engineProbe?.expectedStudioAssetAtoms||[],
               observedStudioAssetAtoms:engineProbe?.observedStudioAssetAtoms||[],
               actualPlatformRuntime:true,
@@ -1899,7 +1949,7 @@ jobs:
           echo "ROBLOX_F9_EXACT_DEDUPED_COUNT=$deduped_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
-        if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
+        if: ${{ false }} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1940,11 +1990,11 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    # Studio is an explicit deferred actual-play lane. It never gates hosted runtime development.
+    # Owner requires cloud API validation only; the legacy local lane is disabled.
     # Planning is read-only control work. Only actual Studio execution consumes the shared Windows host.
     # A skipped job is never Studio actual-play PASS.
     # 계획과 실행은 요청 시점의 동일한 제어 리비전을 사용한다.
-    if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
+    if: ${{ false }} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
       group: roblox-studio-mcp-plan-${{ github.run_id }}
@@ -3500,4 +3550,3 @@ jobs:
           echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEDUPED_COUNT=$deduped_count"
           echo 'ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO'
           echo 'ROBLOX_STUDIO_PC_REBOOT_RESTARTS_FROM_BLANK=NO'
-

@@ -172,7 +172,9 @@ test('Open Cloud image check records thumbnail metadata as visual sanity without
  assert.equal(ok.thumbnailCount,1);
  assert.equal(ok.runtimeScreenshot,false);
  assert.equal(ok.exactRuntimeVersionImage,false);
- assert.equal(ok.state,'PASS_METADATA_AVAILABLE');
+ assert.equal(ok.state,'IMAGE_CONTENT_UNVERIFIED');
+ assert.equal(ok.imageContentPassed,false);
+ assert.equal(ok.imageVisualQualityVerified,false);
  assert.equal(ok.authority,'roblox-open-cloud-thumbnail-image-sanity');
 
  const denied=await probeRobloxOpenCloudImageEvidence({
@@ -182,6 +184,68 @@ test('Open Cloud image check records thumbnail metadata as visual sanity without
  assert.equal(denied.available,false);
  assert.equal(denied.permissionDenied,true);
  assert.equal(denied.requiredScope,'universe.thumbnail:read');
+});
+
+test('cloud image evidence fetches actual CDN bytes without leaking the API key or claiming rendered gameplay',async()=>{
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jS1sAAAAASUVORK5CYII=','base64');
+ const calls=[];
+ const result=await probeRobloxOpenCloudImageEvidence({universeId:'1',apiKey:'secret-test-key',networkRetryAttempts:1,fetchImpl:async(url,init)=>{
+  calls.push({url,init});
+  if(url.startsWith('https://apis.roblox.com/'))return new Response(JSON.stringify({thumbnails:[{imageUrl:'https://tr.rbxcdn.com/image.png'},{imageUrl:'https://tr.rbxcdn.com/image.png'}]}));
+  assert.equal(init.headers?.['x-api-key'],undefined);
+  assert.equal(init.redirect,'error');
+  return new Response(png,{headers:{'content-type':'image/png'}});
+ }});
+ assert.equal(calls.length,2,'same CDN image is read only once');
+ assert.equal(result.imageContentPassed,true);
+ assert.equal(result.imageContent[0].bytes,png.length);
+ assert.match(result.imageContent[0].sha256,/^[a-f0-9]{64}$/);
+ assert.equal(result.runtimeScreenshot,false);
+ assert.equal(result.exactRuntimeVersionImage,false);
+ assert.equal(result.imageVisualQualityVerified,false);
+});
+
+test('cloud image validation rejects unsafe URLs corrupt payloads and metadata-only responses',async()=>{
+ for(const [imageUrl,response,expected] of [
+  ['https://example.com/image.png',null,'UNTRUSTED_IMAGE_URL'],
+  ['https://tr.rbxcdn.com/image.png',new Response('<html>failure</html>',{headers:{'content-type':'text/html'}}),'IMAGE_CONTENT_TYPE_INVALID'],
+  ['https://tr.rbxcdn.com/image.png',new Response('corrupt',{headers:{'content-type':'image/png'}}),'IMAGE_SIGNATURE_INVALID'],
+  ['https://tr.rbxcdn.com/image.png',new Response('',{headers:{'content-type':'image/png','content-length':String(9*1024*1024)}}),'IMAGE_TOO_LARGE']
+ ]){
+  let calls=0;
+  const result=await probeRobloxOpenCloudImageEvidence({universeId:'1',apiKey:'k',networkRetryAttempts:1,fetchImpl:async url=>{
+   calls++;if(url.startsWith('https://apis.roblox.com/'))return new Response(JSON.stringify({thumbnails:[{imageUrl}]}));
+   return response;
+  }});
+  assert.equal(result.imageContentPassed,false,expected);
+  assert.equal(result.imageContent[0].error,expected);
+  if(expected==='UNTRUSTED_IMAGE_URL')assert.equal(calls,1);
+ }
+ const noUrl=await probeRobloxOpenCloudImageEvidence({universeId:'1',apiKey:'k',fetchImpl:async()=>new Response(JSON.stringify({thumbnails:[{homepageThumbnailId:'1'}]}))});
+ assert.equal(noUrl.imageContentPassed,false);
+ assert.equal(noUrl.state,'IMAGE_CONTENT_UNVERIFIED');
+});
+
+test('cloud workflow runs independent engine and image requests together and preserves sibling results on failure',async()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf('          const probes=new Array(candidates.length);');
+ const end=workflow.indexOf("          fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json'",start);
+ assert.ok(start>0&&end>start);
+ const run=new (Object.getPrototypeOf(async function(){}).constructor)('candidates','requested','process','probeRobloxOpenCloudEngine','probeRobloxOpenCloudImageEvidence','console',workflow.slice(start,end)+'\nreturn probes;');
+ let images=0,engines=0;
+ const rows=[1,2].map(n=>({gameId:'game-'+n,robloxSourceCommit:'source-'+n,robloxBuildArtifactIdentity:'artifact-'+n,robloxRuntimeCandidateEvidence:{universeId:'1',placeId:String(n),versionNumber:n}}));
+ const probes=await run(rows,'',{env:{ROBLOX_OPEN_CLOUD_API_KEY:'k'}},async({placeId})=>{
+  engines++;assert.equal(images,1,'image request starts before waiting for engine completion');
+  await Promise.resolve();if(placeId==='1')throw Error('ROBLOX_OPEN_CLOUD_HTTP_503');
+  return{engineExecuted:true,exactPlace:true,exactVersion:true};
+ },async()=>{images++;return{imageContentPassed:true,runtimeScreenshot:false,exactRuntimeVersionImage:false};},{log(){}});
+ assert.equal(images,1,'shared universe image read is coalesced');
+ assert.equal(engines,2);
+ assert.equal(probes[0].persistentFailure,true);
+ assert.equal(probes[0].imageEvidence.imageContentPassed,true);
+ assert.equal(probes[1].engineExecuted,true);
+ assert.equal(probes[1].imageEvidence.requestContext.sourceRevision,'source-2');
+ assert.equal(probes[1].imageEvidence.requestContext.observedImageRevision,false);
 });
 
 test('Open Cloud runtime reads retry transient DNS failures without weakening API errors',async()=>{
@@ -373,6 +437,65 @@ test('Open Cloud engine probe matches the declared current Studio asset binding 
  assert.equal(r.studioAssetSelectionMatched,true);
 });
 
+test('Open Cloud engine probe binds exact package selection fingerprint and library version on the deployed version',async()=>{
+ const fingerprint='a'.repeat(64);
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT='+fingerprint},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=109'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
+  ]}]}}
+ ];
+ const fetchImpl=async()=>{const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
+ const expected={
+  required:true,bindingVersion:2,libraryVersion:109,selectionFingerprint:fingerprint,
+  expectedAtomIds:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'],
+  buildUpAssetSourceUsageFingerprint:'b'.repeat(64)
+ };
+ const r=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:expected,
+ });
+ assert.equal(r.studioAssetBindingRequired,true);
+ assert.equal(r.studioAssetSelectionMatched,true);
+ assert.equal(r.studioAssetAtomMatch,true);
+ assert.equal(r.studioAssetFingerprintMatch,true);
+ assert.equal(r.studioAssetLibraryVersionMatch,true);
+ assert.equal(r.expectedStudioAssetSelectionFingerprint,fingerprint);
+ assert.equal(r.observedStudioAssetSelectionFingerprint,fingerprint);
+ assert.equal(r.expectedStudioAssetLibraryVersion,109);
+ assert.equal(r.observedStudioAssetLibraryVersion,109);
+ assert.equal(r.expectedBuildUpAssetSourceUsageFingerprint,'b'.repeat(64));
+
+ const mismatchResponses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t2',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT='+'c'.repeat(64)},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=108'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
+  ]}]}}
+ ];
+ const mismatch=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:expected,
+  fetchImpl:async()=>{const row=mismatchResponses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};},
+ });
+ assert.equal(mismatch.studioAssetSelectionMatched,false);
+ assert.equal(mismatch.studioAssetFingerprintMatch,false);
+ assert.equal(mismatch.studioAssetLibraryVersionMatch,false);
+});
+
 test('Open Cloud engine probe rejects a deployed Studio material selection mismatch',async()=>{
  const responses=[
   {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
@@ -395,7 +518,7 @@ test('Open Cloud engine probe rejects a deployed Studio material selection misma
 
 test('post-runtime QA requires target-engine Studio material selection match before binding PASS',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/expectedStudioAssetBinding:item\.robloxStudioAssetBindingApplied===true\?item\.robloxStudioAssetBinding:null/);
+ assert.match(workflow,/expectedStudioAssetBinding:\(item\.robloxStudioAssetBindingApplied===true\|\|item\.robloxStudioAssetBinding\?\.required===true\)\?item\.robloxStudioAssetBinding:null/);
  assert.match(workflow,/engineProbe\?\.studioAssetSelectionMatched===true/);
  assert.match(workflow,/if\(exactStudioPlay\)item\.robloxNativeFailureClass=null/);
  assert.match(workflow,/targetEngineSelectionMatched:engineProbe\?\.studioAssetSelectionMatched===true/);
@@ -580,14 +703,14 @@ test('F9 consumes exact deferred engine evidence without requiring Studio actual
 });
 
 
-test('runtime QA automatically validates the private candidate through Open Cloud while Studio stays deferred',()=>{
+test('runtime QA validates the private candidate through cloud APIs with local Studio disabled',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/Probe exact Roblox Open Cloud engine execution/);
  assert.doesNotMatch(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
  assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED: true/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_RUNTIME_VALIDATION/);
  assert.match(workflow,/const exactStudioInternalValidation=/);
- assert.match(workflow,/if: \$\{\{ inputs\.run_studio == true && inputs\.retry_open_cloud_only != true \}\}/);
+ assert.match(workflow,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
  assert.match(workflow,/internalStudioValidationOnly:true/);
  assert.match(workflow,/externalServerBootRequired:false/);
  assert.match(workflow,/authority:'roblox-internal-studio-single-session-qa'/);
@@ -946,6 +1069,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
       {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=42'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=2'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=1'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=1'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_MAX_SPAWN_GROUND_GAP=35.5'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS=true'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_FINITE=true'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE=100.00,20.00,80.00'},
@@ -963,6 +1090,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.equal(result.worldEvidence.sameLuauExecutionSession,true);
   assert.equal(result.worldEvidence.basePartCount,42);
   assert.equal(result.worldEvidence.spawnCount,2);
+  assert.equal(result.worldEvidence.spawnGroundingObserved,true);
+  assert.equal(result.worldEvidence.unsupportedSpawns,1);
+  assert.equal(result.worldEvidence.floatingSpawns,1);
+  assert.equal(result.worldEvidence.maximumSpawnGroundGap,35.5);
   assert.equal(result.worldEvidence.spawnsInBounds,true);
   assert.deepEqual(result.worldEvidence.boundsSize,{x:100,y:20,z:80});
   assert.equal(result.worldEvidence.landmarkCount,3);
@@ -973,6 +1104,9 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   const body=JSON.parse(calls[0].init.body);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE/);
   assert.match(body.script,/workspace:GetDescendants\(\)/);
+  assert.match(body.script,/not item:IsA\("SpawnLocation"\) and item.CanCollide/);
+  assert.match(body.script,/spawnParams.ExcludeInstances=spawnParts/);
+  assert.match(body.script,/spawnParams.RespectCanCollide=true/);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/openCloudWorldEvidence:engineProbe\?\.worldEvidence\|\|null/);
 });
@@ -997,4 +1131,12 @@ test('Open Cloud requested game is isolated while empty game_id keeps bounded cr
   assert.match(workflow,/if\(sharedRotationEnabled&&!requested\)\{/);
   assert.match(probeBlock,/ROBLOX_OPEN_CLOUD_429_SCOPE=PER_GAME_RETRY_ONLY/);
   assert.doesNotMatch(probeBlock,/ACTIVE_SERIAL|ACTIVE_MIN4_PARALLEL/);
+});
+
+
+test('cloud place and version checks reject numeric prefix collisions',async()=>{
+ const result=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,networkRetryAttempts:1,fetchImpl:async url=>new Response(JSON.stringify(url.includes('/logs?')?{luauExecutionSessionTaskLogs:[{messages:['JAEWOON_OPEN_CLOUD_ENGINE_PLACE=200','JAEWOON_OPEN_CLOUD_ENGINE_VERSION=200']}]}:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'COMPLETE'}))});
+ assert.equal(result.exactPlace,false);
+ assert.equal(result.exactVersion,false);
+ assert.equal(result.worldEvidence.observed,false);
 });

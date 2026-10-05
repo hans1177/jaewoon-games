@@ -418,8 +418,9 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   const product=f0Evidence?.gameplayProductReadiness||{};
   const req=product?.runtimeRequirements||{};
   const world=runtimeEvidence?.openCloudWorldEvidence||{};
-  const actualStudio=studioPlayEvidence?.actualPlay===true&&studioPlayEvidence?.runtimeVerified===true;
-  const actualRuntime=runtimeEvidence?.actualRuntimeEvidence===true||postRuntimeQaEvidence?.actualRuntimeEvidence===true||actualStudio;
+  const cloudProvider=runtimeEvidence?.validationProvider==='ROBLOX_OFFICIAL_CLOUD_API_ONLY';
+  const cloudImageContentPassed=runtimeEvidence?.openCloudImageEvidence?.imageContentPassed===true;
+  const actualRuntime=cloudProvider&&(runtimeEvidence?.actualRuntimeEvidence===true||postRuntimeQaEvidence?.actualRuntimeEvidence===true);
   const exactPublishedRuntime=runtimeEvidence?.exactGame===true&&runtimeEvidence?.exactPlace===true&&runtimeEvidence?.exactVersion===true;
   const exactEngine=(runtimeEvidence?.engineExecuted===true&&runtimeEvidence?.exactEngineVersion===true)
     ||(exactPublishedRuntime&&actualRuntime);
@@ -438,6 +439,10 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
   const landmark=!req.landmarkRequired||Number(world.landmarkCount||0)>=1;
   const objective=!req.objectiveRequired||Number(world.objectiveCount||0)>=1;
   const blockers=[];
+  if(!cloudProvider)blockers.push('F9_CLOUD_API_RUNTIME_EVIDENCE_MISSING');
+  if(!cloudImageContentPassed)blockers.push('F9_CLOUD_IMAGE_CONTENT_MISSING');
+  if(req.spawnRequired&&world.spawnGroundingObserved!==true)blockers.push('F9_CLOUD_SPAWN_GROUNDING_EVIDENCE_MISSING');
+  if(req.spawnRequired&&(Number(world.floatingSpawns||0)>0||Number(world.unsupportedSpawns||0)>0))blockers.push('F9_SPAWN_NOT_GROUNDED');
   if(product.pass!==true)blockers.push('F0_GAMEPLAY_PRODUCT_READINESS_MISSING');
   if(!product?.studioReadiness)blockers.push('F9_STUDIO_SOURCE_QUALITY_MISSING');
   else if(product.studioReadiness.f9SourceQualityReady!==true){
@@ -461,6 +466,8 @@ export function evaluateRobloxF9ProductReadiness({f0Evidence={},runtimeEvidence=
     serverBoot,
     simulation,
     actualRuntime,
+    cloudProvider,
+    cloudImageContentPassed,
     mobileRuntime,
     coreLoopRuntime,
     verticalSlicePassed:blockers.length===0,

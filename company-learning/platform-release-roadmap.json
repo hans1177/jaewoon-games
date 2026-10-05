@@ -1,5 +1,5 @@
 {
-  "version": 525,
+  "version": 529,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -670,7 +670,8 @@
       "objective": "EVERY_VIBE_VISUAL_OR_PRESENTATION_UPGRADE_MUST_EVALUATE_THE_FULL_COMPANY_ASSET_UNIVERSE_AND_MUST_BIND_REAL_COMPATIBLE_ASSETS_TO_EVERY_APPLICABLE_EXISTING_GAME_SYSTEM_BEFORE_THE_UPGRADE_CAN_PASS",
       "platforms": [
         "ROBLOX",
-        "UNITY"
+        "UNITY",
+        "WEB"
       ],
       "assetFamilies": [
         "CHARACTER",
@@ -788,6 +789,177 @@
         "tools/company-development-roblox-bootstrap.mjs",
         "assets/vibe-visual-quality-gate.js"
       ]
+    },
+    "allGameDynamicInternalAssetBindingContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "scope": "ALL_GAME_DEVELOPMENT_AND_BUILD_UP_WORK",
+      "objective": "BIND_ALL_SAFE_RIGHTS_PLATFORM_ROLE_COMPATIBLE_INTERNAL_ASSETS_TO_APPLICABLE_GAME_SYSTEMS_WITHOUT_ARTIFICIAL_CAPS",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "platformConversionOrder": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "assetFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "librarySources": [
+        "company-asset-library.json#assets",
+        "company-asset-library.json#baseMaterialLibrary",
+        "company-asset-library.json#studioAssetUniverse",
+        "company-asset-library.json#motionDirector",
+        "company-asset-library.json#motionBootstrap",
+        "company-asset-library.json#internalAssetCompositionContract",
+        "assets/*/catalog.json"
+      ],
+      "dynamicBinding": {
+        "required": true,
+        "bindingLineageMustPersistThroughPackageRuntimeAndReview": true,
+        "version": 1,
+        "registry": "company-asset-library.json",
+        "execution": "EXISTING_BUILD_UP_ASSET_PRODUCTION_PATH_ONLY",
+        "applicableExistingResponsibilitiesMustConsumeCompatibleAssets": true,
+        "entireLibraryBulkCopyIntoGameForbidden": true,
+        "absentGameplaySystemMayNotBeInvented": true,
+        "identity": [
+          "LIBRARY_VERSION",
+          "SELECTION_FINGERPRINT",
+          "SELECTED_SOURCE_CONTENT_HASHES",
+          "GAME_SOURCE_REVISION",
+          "PLATFORM_ARTIFACT_IDENTITY"
+        ],
+        "unchangedExactBindingReused": true,
+        "changedBindingRepairsAffectedResponsibilitiesOnly": true,
+        "libraryOrSelectionOrSelectedSourceChangeInvalidatesAffectedBinding": true,
+        "staleSelectionOrSourceHashCannotClaimSynchronized": true,
+        "generationDetailRotationPreserved": true,
+        "rotationMayNotLimitCurrentAssetEligibility": true,
+        "completeSelectedSourceApiIndexRequiredEveryBuildUp": true,
+        "actualResponsibleSourceBindingRequired": true,
+        "configMarkersAloneCannotProveUsage": true,
+        "runtimeEvidenceBoundToExactCandidateRequired": true,
+        "platformEvidenceCannotSubstituteForAnotherPlatform": true,
+        "missingCompatibleNativeAssetState": "AUTHORING_REQUIRED",
+        "missingBindingState": "ASSET_REPAIR_REQUIRED",
+        "repair": "EXISTING_EXACT_GAME_STAGE_CAUSAL_REPAIR_RETRY",
+        "realtimeShadowSyncServiceForbidden": true,
+        "lockedF0F9SequenceUnchanged": true,
+        "floorEvolution": {
+          "required": true,
+          "trigger": "EVERY_EXISTING_BUILD_UP_F0_F9_PUBLICATION_CYCLE",
+          "evaluateCurrentAssetsEveryCycle": true,
+          "automaticallyReplaceOrRecomposeApplicableAssets": true,
+          "replacementRequiresCompatibleRoleStyleLicenseAndPlatform": true,
+          "preserveVerifiedStrongAssetsUnlessReplacementHasGroundedBenefit": true,
+          "manualAndGameIdentityLocksPreserved": true,
+          "cycleHistoryAndLineageRequired": true,
+          "sameFailureRequiresNewCausalStrategy": true,
+          "assetCountOrRandomSwapCannotProveImprovement": true,
+          "sourceImprovementAndContentExpansionRemainRequiredWhenGapExists": true,
+          "existingGameIdentityBalanceSaveAndAuthorityPreserved": true,
+          "runtimeVerifiedOutcomeFeedsNextCycle": true,
+          "noTerminalGameCompletionState": true,
+          "commentFormattingOrUnchangedFullFileCannotEarnGrowthCredit": true,
+          "existingIndependentGameAndResponsibilityParallelismPreserved": true,
+          "duplicateCandidateBindingEvaluationForbidden": true
+        }
+      },
+      "selection": {
+        "fullInternalRegistryScanRequired": true,
+        "allTwelveFamiliesEvaluated": true,
+        "compatibleInternalCandidatesMustRemainEligible": true,
+        "compatibleBaseMaterialAtomsMustRemainEligible": true,
+        "noArtificialAssetCountCap": true,
+        "noArtificialFamilyCountCap": true,
+        "noAuditScoreUsageGate": true,
+        "lowScoreSafeCompatibleAssetUseAllowed": true,
+        "hardBlockersOnly": [
+          "SECURITY_BLOCKED",
+          "LICENSE_FORBIDDEN",
+          "CORRUPT_SOURCE",
+          "EXPLICIT_INTERNAL_USE_FORBIDDEN",
+          "PLATFORM_INCOMPATIBLE_WITH_NO_SAFE_NATIVE_ADAPTATION",
+          "ROLE_INCOMPATIBLE"
+        ],
+        "gameStyleAndRoleAdaptationRequiredWhenNeeded": true,
+        "applicationCountLimit": null,
+        "applicationCountMeaning": "UNLIMITED_WITH_ACTUAL_SOURCE_EVIDENCE_AND_EXISTING_SAFETY_COMPATIBILITY_PERFORMANCE_GATES",
+        "oldGraphicsReplacementMaximumCannotLimitAssetApplication": true
+      },
+      "application": {
+        "existingSystemRequiresAppliedBinding": true,
+        "absentSystemAllowsExplicitNotApplicableWithEvidence": true,
+        "notApplicableMayNotSkipExistingSystem": true,
+        "actualResponsibleSourceMutationRequiredWhenBindingMissingOrStale": true,
+        "selectionMarkerConfigOrManifestAloneCannotPass": true,
+        "primitivePlainDefaultUiOrDefaultMaterialSubstitutionCannotPass": true,
+        "allApplicableCompatibleAssetsShouldBeUsedInDetailedCompositionRatherThanSingleTokenPresence": true,
+        "reuseAndCompositionBeforeNewAuthoring": true,
+        "directCrossPlatformBinaryReuseForbidden": true,
+        "platformNativeAdaptationRequired": true,
+        "selectedValueMustReachNativeRenderConsumer": true,
+        "commentLogAndCountOnlyEvidenceForbidden": true,
+        "staticBindingChecksDoNotReplaceRuntimeEvidence": true
+      },
+      "preservation": {
+        "gameplayRulesImmutableForAssetReasons": true,
+        "balanceImmutableForAssetReasons": true,
+        "saveMeaningImmutableForAssetReasons": true,
+        "progressionEconomyImmutableForAssetReasons": true,
+        "networkAuthorityImmutableForAssetReasons": true,
+        "existingAssetLineagePreserved": true
+      },
+      "conversionSequence": [
+        "DOCUMENT_DYNAMIC_BINDING_AND_SYNC_CONTRACT",
+        "ROBLOX_ALL_GAMES_LIBRARY_CONVERSION",
+        "ROBLOX_EXACT_RUNTIME_VERIFICATION",
+        "UNITY_ALL_GAMES_LIBRARY_CONVERSION",
+        "UNITY_NATIVE_RUNTIME_VERIFICATION",
+        "WEB_ALL_GAMES_LIBRARY_CONVERSION",
+        "WEB_RUNTIME_VISUAL_INTERACTION_VERIFICATION",
+        "CROSS_PLATFORM_ASSET_LINEAGE_AND_SYNC_REVALIDATION"
+      ],
+      "existingCanonicalPipelineOnly": true,
+      "newPipelineWrapperShadowManagerForbidden": true,
+      "existingGameConversion": {
+        "required": true,
+        "orderScope": "THIS_OWNER_REQUESTED_LIBRARY_CONVERSION",
+        "globalPlatformAdmissionOrSchedulerRewrite": false,
+        "unrelatedSafeDevelopmentContinues": true,
+        "existingAndFutureGamesCovered": true,
+        "catalogAndDevelopmentAuthorityPreserved": true,
+        "perGamePlatformCoverageRequired": true,
+        "oldGamesHaveNoLibraryExemption": true,
+        "steps": [
+          "READ_CURRENT_SOURCE_AND_EXISTING_BINDINGS",
+          "EVALUATE_ALL_REGISTERED_LIBRARIES_AND_FAMILIES",
+          "CLASSIFY_APPLICABILITY_FROM_EXISTING_SYSTEMS",
+          "BIND_COMPATIBLE_ASSETS_IN_EXISTING_RESPONSIBLE_SOURCE",
+          "VERIFY_EXACT_SELECTION_SOURCE_AND_ARTIFACT_IDENTITY",
+          "EXISTING_PLATFORM_QA_RUNTIME_F0_F9_AND_DEPLOYMENT_VERIFICATION"
+        ],
+        "unityWebUsesSameCanonicalUnityProject": true,
+        "webRequiresActualBrowserAndCloudflareDeploymentEvidence": true,
+        "completeOnlyWithPerGamePlatformSourceRuntimeAndDeploymentEvidence": true,
+        "protectedGameplaySaveEconomyAndNetworkSemanticsUnchanged": true
+      }
     }
   },
   "platformRepresentativeSets": {
@@ -1319,6 +1491,54 @@
         "studioRequiredForOwnerDirectPublish": false,
         "postBuildUpVerificationLevel": "CODE_AND_STATIC_QA",
         "studioFailureDoesNotBlockOwnerDirectPublish": true
+      },
+      "validationProviderContract": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY",
+        "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
+        "engineExecution": "VERSION_PINNED_OPEN_CLOUD_LUAU_EXECUTION",
+        "runtimeObservation": "OPEN_CLOUD_DATASTORE_EXACT_PLACE_VERSION_SENTINEL",
+        "images": "OFFICIAL_THUMBNAIL_API_AND_AUTHENTICATED_RESPONSE_REFERENCED_ROBLOX_CDN",
+        "localStudioExecutionAllowed": false,
+        "studioMcpExecutionAllowed": false,
+        "localPlayerAutomationAllowed": false,
+        "localScreenshotsAllowed": false,
+        "cachedLocalEvidenceCannotSatisfyCloudValidation": true,
+        "engineAndImageRequestsRunInParallel": true,
+        "sameUniverseImageRequestCoalescedWithinRun": true,
+        "perGameFailureIsolationRequired": true,
+        "retryOnlyFailedRequest": true,
+        "thumbnailMetadataCannotProveImageContent": true,
+        "thumbnailContentCannotProveExactRuntimeScreenshot": true,
+        "imageBytesSignatureAndSha256Required": true,
+        "missingPermissionOrImageContentCannotPassImageCheck": true,
+        "requestSourceIdentityIsContextNotObservedImageRevision": true,
+        "noNewPipeline": true,
+        "requiredChecks": [
+          "EXACT_SOURCE_ARTIFACT_PLACE_VERSION",
+          "NATIVE_ENGINE_EXECUTION",
+          "SERVER_BOOT_AND_GAMEPLAY_SENTINEL",
+          "CLOUD_IMAGE_CONTENT_INTEGRITY",
+          "IMAGE_RENDER_PROOF_SCOPE_DISCLOSED",
+          "SCENE_GEOMETRY_AND_ASSET_BINDINGS",
+          "REAL_COLLIDABLE_SPAWN_SUPPORT",
+          "CHARACTER_PHYSICS_AND_MEASURED_MOVEMENT",
+          "CAMERA_INPUT_MOBILE_UI",
+          "SAVE_AND_REMOTE_BOUNDARY",
+          "MULTIPLAYER_CONTRACT_AND_RUNTIME_EVIDENCE_SCOPE",
+          "F9_EXACT_REVISION_REGRESSION"
+        ],
+        "firstFrameGrounding": {
+          "required": true,
+          "selfHitOrSpawnSelfSupportForbidden": true,
+          "excludeCharacterAndSpawnFromSupportRay": true,
+          "respectCollisionAndRigClearance": true,
+          "spawnRepositionOnlyToVerifiedExistingGround": true,
+          "noArtificialFloatingPlatformRepair": true,
+          "measuredContactAndMovementRequired": true,
+          "groundingFailureReturnsToExistingSourceRepair": true,
+          "sourceFixDoesNotClaimCloudRuntimePass": true
+        }
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -8284,6 +8504,20 @@
       "emptyGameIdBatchParallelismPreserved": true,
       "canonicalSequenceChanged": false,
       "finalDevelopmentLockChanged": false
+    },
+    "allGameDynamicAssetBinding20261005": {
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "scope": "ALL_GAME_INTERNAL_LIBRARY_CONSUMPTION_AND_DYNAMIC_SYNC",
+      "implementationOrder": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "contract": "livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract",
+      "implementationVerification": "REQUIRES_CURRENT_SOURCE_QA_RUNTIME_AND_DEPLOYMENT_EVIDENCE",
+      "canonicalSequenceChanged": false,
+      "generationDetailRotationPreserved": true,
+      "perpetualSourceAssetContentEvolutionRequired": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -14935,8 +15169,9 @@
       "finalAssetSelectionUsesExistingArtVariantTournament": true,
       "assetLicenseAndProvenanceMustRemainVerified": true,
       "mandatoryConsumers": [
+        "ROBLOX",
         "UNITY",
-        "ROBLOX"
+        "WEB"
       ],
       "companyLibraryLookupRequiredBeforeAssetChoice": true,
       "repositoryInventoryRequiredBeforeExternalAcquisition": true,
@@ -15849,8 +16084,9 @@
       },
       "consumption": {
         "appliesTo": [
+          "ROBLOX",
           "UNITY",
-          "ROBLOX"
+          "WEB"
         ],
         "requiredForEveryNativeGameDevelopment": true,
         "lookupBeforeAssetChoice": true,
@@ -15859,7 +16095,9 @@
         "externalAndNewAuthoringRequireLibraryGap": true,
         "styleLockAndGameIdentityOverrideGenericLibraryLook": true,
         "directCrossPlatformBinaryReuseForbidden": true,
-        "platformNativeVariantRequired": true
+        "platformNativeVariantRequired": true,
+        "requiredForEveryGameDevelopment": true,
+        "automaticDynamicBindingContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract.dynamicBinding"
       },
       "gapFill": {
         "enabled": true,
@@ -26547,7 +26785,20 @@
       "f9SuccessMustReturnToImmediateNextBuildUp": true,
       "noSourceChangeAllowedOnlyWhenNoImplementationGapExistsAndVerifiedEvidenceSupportsIt": true,
       "failureRoutesToExactGameStageRepairRetry": true,
-      "sourceGrowthDoesNotChangeLockedF0F9Order": true
+      "sourceGrowthDoesNotChangeLockedF0F9Order": true,
+      "assetAndContentEvolution": {
+        "required": true,
+        "unboundedIteration": true,
+        "eachCycleInspectsCurrentCodeQualityAndContentGaps": true,
+        "actualSourceImprovementRequiredForApplicableImplementationGaps": true,
+        "contentExpansionUsesVerifiedGameSpecificDesignAndExistingSystems": true,
+        "codeOnlyEvaluationOrMarkerChangeCannotClaimGrowth": true,
+        "sourceAssetSelectionArtifactAndRuntimeIdentityMustStayLinked": true,
+        "assetEvolutionContract": "livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract.dynamicBinding.floorEvolution",
+        "eachSuccessfulF9ReturnsToNextBuildUp": true,
+        "publicationFailureUsesExistingRetryAndCannotStopIndependentNextCycle": true,
+        "performanceStorageAndMobileBudgetsPreserved": true
+      }
     },
     "autonomousLearning": {
       "version": 1,

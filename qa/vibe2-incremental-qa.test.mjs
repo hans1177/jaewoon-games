@@ -840,3 +840,24 @@ for(const scenario of ['missing','scan-limit','byte-limit','issue-limit','cached
     assert.throws(()=>runIncrementalQa(options),expected);
   });
 }
+
+// 변경 목록 밖 자산 소스 변동으로 오래된 성공 캐시가 재사용되면 안 된다.
+test('asset source hashes are revalidated before cached incremental QA success',()=>{
+  const root=repo();
+  try{
+    fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+    const relative='assets/presentation.js',content='export const style = 1;\n';
+    fs.writeFileSync(path.join(root,relative),content);
+    const manifest=path.join(root,'candidate.json'),cacheFile=path.join(root,'cache.json');
+    const data={internalAssetSourceUsage:{selectedSourcePaths:[relative],selectedSourceHashes:[{path:relative,sha256:crypto.createHash('sha256').update(content).digest('hex')}],synchronization:{selectedSourceContentHashesRequired:true}}};
+    fs.writeFileSync(manifest,JSON.stringify(data));
+    const args={root,files:['a.js'],manifest,cacheFile};
+    assert.equal(runIncrementalQa(args).outcome,'PASS');
+    assert.equal(runIncrementalQa(args).cached,true);
+    fs.writeFileSync(path.join(root,relative),'export const style = 2;\n');
+    assert.throws(()=>runIncrementalQa(args),/INTERNAL_ASSET_SOURCE_HASH_MISMATCH/);
+    data.internalAssetSourceUsage.selectedSourceHashes=[];
+    fs.writeFileSync(manifest,JSON.stringify(data));
+    assert.throws(()=>runIncrementalQa(args),/INTERNAL_ASSET_SOURCE_HASH_COVERAGE_MISMATCH/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

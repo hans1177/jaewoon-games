@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -85,6 +85,247 @@ test('hero asset routing selects stronger local model without changing generatio
   assert.equal(route.cacheKey,'qwen3-4b-instruct');
   assert.equal(route.generationBudgetUnchanged,true);
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+});
+
+test('canonical game source work requires a full dynamic internal library contract',()=>{
+  const families=Object.fromEntries(ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]));
+  const plan={
+    required:true,libraryVersion:109,registryAssetCount:717,evaluatedAssetCount:717,
+    compatibleCandidateCount:701,baseMaterialAtomCount:360,fingerprint:'a'.repeat(64),
+    allRegistryAssetsScanned:true,allTwelveFamiliesEvaluated:true,
+    noArtificialAssetCountCap:true,noArtificialFamilyCountCap:true,
+    auditScoreIsUsageGate:false,lowScoreCompatibleAssetUseAllowed:true,
+    baseMaterialAllCompatibleAtomsSelected:true
+  };
+  const usage={
+    fingerprint:'b'.repeat(64),registryAssetCount:717,evaluatedAssetCount:717,
+    compatibleCandidateCount:701,allRegistryAssetsScanned:true,
+    applicationCoverage:{currentBuildUpAllCompatibleCandidatesEligible:true}
+  };
+  const order={
+    target:'unity',
+    compiledWorkContract:{version:1},
+    assetProduction:{
+      allGameDynamicLibraryBinding:plan,
+      baseMaterialLoadout:{families,universalAssetFirst:{allFamiliesEvaluated:true,missingFamilies:[]}}
+    }
+  };
+  const pass=assertAllGameDynamicAssetBindingContract({order,target:'unity',usageContract:usage});
+  assert.equal(pass.required,true);
+  assert.equal(pass.pass,true);
+  assert.equal(pass.registryAssetCount,717);
+  assert.equal(pass.compatibleCandidateCount,701);
+  assert.deepEqual(pass.platformOrder,['ROBLOX','UNITY','WEB']);
+
+  assert.throws(()=>assertAllGameDynamicAssetBindingContract({
+    order:{...order,assetProduction:{...order.assetProduction,allGameDynamicLibraryBinding:{...plan,evaluatedAssetCount:716}}},
+    target:'unity',usageContract:usage
+  }),/ALL_GAME_INTERNAL_LIBRARY_SCAN_INCOMPLETE/);
+});
+
+test('Unity dynamic asset binding requires actual native family consumption instead of registry-only markers',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'unity-games/demo');
+  write(path.join(root,'Assets/Game.cs'),'public class Game {}\n');
+  const bindingPlan={
+    required:true,libraryVersion:109,fingerprint:'c'.repeat(64),registryAssetCount:717,compatibleCandidateCount:701,
+    candidateCountsByFamily:{UI:20},baseMaterialFamilies:{UI:['FRAME_PANEL','BUTTON_PRIMARY']}
+  };
+  const applied=[
+    'using UnityEngine;',
+    'using UnityEngine.UI;',
+    'public class Game : MonoBehaviour {',
+    '  static readonly string[] UiAtoms = {"FRAME_PANEL","BUTTON_PRIMARY"};',
+    '  string[] InternalAssetFamily(string family) => family == "UI" ? UiAtoms : System.Array.Empty<string>();',
+    '  void RenderMenu(){',
+    '    var atoms = InternalAssetFamily("UI");',
+    '    var menuCanvas = GetComponent<Canvas>();',
+    '    if (menuCanvas != null) menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0]);',
+    '  }',
+    '}'
+  ].join('\n');
+  const pass=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'unity',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'Assets/Game.cs',content:applied}]}
+  });
+  assert.equal(pass.pass,true,pass.blockers.join(','));
+  assert.equal(pass.appliedCount,1);
+  assert.equal(pass.changedAppliedFamilyCount,1);
+  assert.equal(pass.familyResults.find(row=>row.family==='UI').actualBinding,true);
+
+  for(const unused of [
+    applied.replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','System.Console.WriteLine(atoms[0])'),
+    applied.replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','menuCanvas.enabled = atoms.Length > 0'),
+    applied.replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','/* menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0]); */ System.Console.WriteLine(atoms.Length)')
+  ]){
+    const unusedResult=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'unity',bindingPlan,
+      candidate:{replaceFiles:[{path:'Assets/Game.cs',content:unused}]}});
+    assert.equal(unusedResult.pass,false,'UI API near unused registry references cannot prove binding');
+  }
+
+  const markerOnly=applied.replace('var menuCanvas = GetComponent<Canvas>();','var menuCanvas = (object)null;')
+    .replace('menuCanvas.GetComponent<Image>().sprite = Resources.Load<Sprite>(atoms[0])','System.Console.WriteLine(atoms.Length)');
+  const rejected=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'unity',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'Assets/Game.cs',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI'));
+});
+
+test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family consumption',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/demo');
+  write(path.join(root,'index.html'),'<main></main>\n');
+  const bindingPlan={
+    required:true,libraryVersion:109,fingerprint:'d'.repeat(64),registryAssetCount:717,compatibleCandidateCount:701,
+    candidateCountsByFamily:{UI:20},baseMaterialFamilies:{UI:['FRAME_PANEL','BUTTON_PRIMARY']}
+  };
+  const applied=[
+    '<!doctype html><html><body><button id="menu">Open</button><canvas id="game"></canvas><script>',
+    'const internalAssetFamilies={UI:["FRAME_PANEL","BUTTON_PRIMARY"]};',
+    'const internalAssetFamily=family=>internalAssetFamilies[family]||[];',
+    'const menu=document.querySelector("#menu");',
+    'const atoms=internalAssetFamily("UI");',
+    'menu.classList.add(atoms[0]);',
+    '</script></body></html>'
+  ].join('\n');
+  const pass=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'web',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'index.html',content:applied}]}
+  });
+  assert.equal(pass.pass,true,pass.blockers.join(','));
+  assert.equal(pass.appliedCount,1);
+
+  for(const unused of [
+    applied.replace('menu.classList.add(atoms[0]);','console.log(atoms[0]);'),
+    applied.replace('menu.classList.add(atoms[0]);','if(atoms.length) menu.classList.add("marker-only");'),
+    applied.replace('menu.classList.add(atoms[0]);','// menu.classList.add(atoms[0]);\nconsole.log(atoms[0]);'),
+    applied.replace('menu.classList.add(atoms[0]);','/* menu.classList.add(atoms[0]); */')
+  ]){
+    const unusedResult=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'web',bindingPlan,
+      candidate:{replaceFiles:[{path:'index.html',content:unused}]}});
+    assert.equal(unusedResult.pass,false,'DOM near unused registry references cannot prove binding');
+  }
+
+  const markerOnly=[
+    '<!doctype html><html><body><script>',
+    'const internalAssetFamilies={UI:["FRAME_PANEL","BUTTON_PRIMARY"]};',
+    'const internalAssetFamily=family=>internalAssetFamilies[family]||[];',
+    'const menuState=true;',
+    'const atoms=internalAssetFamily("UI");',
+    'console.log(menuState,atoms.length);',
+    '</script></body></html>'
+  ].join('\n');
+  const rejected=evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'web',bindingPlan,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'index.html',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI'));
+});
+
+test('Roblox internal asset family binding requires actual family use and rejects false NOT_APPLICABLE',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'roblox-games/demo');
+  const expectedFamilies=Object.fromEntries(ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]));
+  const configFamilies=ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>family+' = { "'+family+'_ATOM" }').join(', ');
+  write(path.join(root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = { '+configFamilies+' } } }\n');
+  write(path.join(root,'client/Game.client.luau'),'local placeholder = true\n');
+  const statusRows=ROBLOX_INTERNAL_ASSET_FAMILIES
+    .map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`)
+    .join('\n');
+  const appliedUi=[
+    'local studioAssetFamilies = {}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    'local STUDIO_ASSET_FAMILY_STATUS = {',
+    statusRows,
+    '}',
+    'local root = Instance.new("Frame")',
+    'local stroke = Instance.new("UIStroke")',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end'
+  ].join('\n');
+  const pass=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi}]}
+  });
+  assert.equal(pass.pass,true);
+  assert.equal(pass.appliedCount,1);
+  assert.equal(pass.notApplicableCount,11);
+  assert.equal(pass.changedAppliedFamilyCount,1);
+
+  const falseNotApplicable=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi+'\nlocal enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'}]}
+  });
+  assert.equal(falseNotApplicable.pass,false);
+  assert.ok(falseNotApplicable.blockers.includes('ROBLOX_INTERNAL_ASSET_NOT_APPLICABLE_EXISTING_SYSTEM:CREATURE'));
+
+  const markerOnly=appliedUi
+    .replace('local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }','local STUDIO_ASSET_SELECTION = { UI = {"UI_ATOM"} }')
+    .replace('if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end','stroke.Thickness = 2');
+  const rejected=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
+});
+
+test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{
+  const cwd=tempRoot();
+  const sourcePaths=[];
+  for(let i=0;i<6;i++){
+    const relative=`assets/internal-api-${i}/Common${i}.luau`;
+    sourcePaths.push(relative);
+    write(path.join(cwd,relative),[
+      `local Common${i} = {}`,
+      `function Common${i}.Create${i}(options)`,
+      '  return options',
+      'end',
+      `return Common${i}`
+    ].join('\n')+'\n');
+  }
+  const contract={
+    target:'roblox',
+    exactFamilies:{},
+    flowSelections:[],
+    sourceCandidates:sourcePaths.map((relative,index)=>({
+      assetId:`asset-${index}`,
+      family:'CUSTOM',
+      sourceFiles:[relative],
+      path:null
+    })),
+    synchronization:{
+      apiContextBatchSize:4,
+      apiContextMaxBytes:18000,
+      apiContextPerFileMaxBytes:4500,
+      apiContextRotationByBuildUpGeneration:true
+    }
+  };
+  const first=attachSelectedInternalAssetApiContext(
+    {files:[],bytes:0},
+    {cwd,contract,order:{selectedTask:{buildUpGeneration:1}}}
+  );
+  const second=attachSelectedInternalAssetApiContext(
+    {files:[],bytes:0},
+    {cwd,contract,order:{selectedTask:{buildUpGeneration:2}}}
+  );
+  assert.equal(first.internalAssetApiContextFiles.length,4);
+  assert.equal(second.internalAssetApiContextFiles.length,4);
+  assert.equal(first.internalAssetApiContextRotationStart,0);
+  assert.equal(second.internalAssetApiContextRotationStart,4);
+  assert.notDeepEqual(first.internalAssetApiContextFiles,second.internalAssetApiContextFiles);
+  assert.equal(first.internalAssetApiContextEligibleSourceCount,6);
+  assert.equal(first.internalAssetApiIndexRepresentedSourceCount,6);
+  assert.equal(first.internalAssetApiIndexAvailableSourceCount,6);
+  assert.equal(first.internalAssetApiIndexUnavailableSourceCount,0);
+  assert.equal(first.internalAssetApiIndexSignatureCount,6);
+  assert.equal(first.internalAssetApiIndexAllSelectedSourcesEveryBuildUp,true);
+  assert.equal(second.internalAssetApiIndex,first.internalAssetApiIndex);
+  for(let i=0;i<6;i++)assert.match(first.internalAssetApiIndex,new RegExp(`Common${i}\\.Create${i}\\(options\\)`));
 });
 
 test('native asset authoring evidence requires real engine-native source delta and never claims runtime promotion',()=>{
@@ -500,6 +741,39 @@ test('candidate self review rejects comment-only game changes and keeps retryabl
 
   const good={edits:[{path:'index.html',find:'const score = 0;',replace:'const score = 1;'}],newFiles:[],replaceFiles:[]};
   assert.equal(evaluateCandidateSelfReview({candidate:good,order:workOrder,responsibleFiles:['index.html']}).pass,true);
+});
+
+test('BUILD_UP and self review reject inline block and formatting-only growth on every platform',()=>{
+  const cases=[
+    ['web','index.html','const score = 1;','const score = 1; /* source growth */'],
+    ['unity','Game.cs','int score = 1;','int score = 1; // source growth'],
+    ['roblox','Game.luau','local score = 1','local score = 1 --[=[ source growth ]=]'],
+    ['web','game.js','const score = 1;','const   score=1;'],
+    ['web','index.html','<canvas id="game"></canvas>','<canvas id="game"></canvas><!-- source growth -->']
+  ];
+  const contract={phase:'BUILD_UP',focusPillar:'CORE_FUN',requiredConnectedImprovements:{min:1}};
+  for(const [target,relative,before,after] of cases){
+    const candidate={edits:[{path:relative,find:before,replace:after}]};
+    assert.equal(evaluateCandidateSelfReview({candidate,order:{target}}).pass,false,relative);
+    assert.equal(evaluateStudioQualityCandidateDelta({candidate,contract}).sourceDeltaUnits,0,relative);
+  }
+  for(const [target,relative,before,after] of [
+    ['web','game.js','const url="https://assets/a";','const url="https://assets/b";'],
+    ['roblox','Game.luau','local text=[=[-- old]=]','local text=[=[-- new]=]'],
+    ['unity','Game.cs','var text=@"old // path";','var text=@"new // path";']
+  ]){
+    const candidate={edits:[{path:relative,find:before,replace:after}]};
+    assert.equal(evaluateCandidateSelfReview({candidate,order:{target}}).pass,true,relative);
+    assert.equal(evaluateStudioQualityCandidateDelta({candidate,contract}).sourceDeltaUnits,1,relative);
+  }
+});
+
+test('full-file candidates compare against their actual source before earning growth credit',()=>{
+  const sourceRoot=tempRoot();
+  write(path.join(sourceRoot,'game.js'),'const score = 1;\n');
+  const candidate={replaceFiles:[{path:'game.js',content:'const score = 1; /* claimed build-up */\n'}]};
+  assert.equal(evaluateCandidateSelfReview({candidate,sourceRoot,order:{target:'web'}}).pass,false);
+  assert.equal(evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:{phase:'BUILD_UP',requiredConnectedImprovements:{min:1}}}).pass,false);
 });
 
 test('repeated self-review failure changes strategy inside the existing retry budget',async()=>{
@@ -2090,6 +2364,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   };
   workOrder.assetProduction={
     baseMaterialLoadout:{
+      families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
       robloxSelectionHandoff:{
         handoffRequired:true,
         downstreamApplicationRequired:true,
@@ -2098,10 +2373,9 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     }
   };
   workOrder.goal='일반 Roblox BUILD_UP 소스 코딩에서 선택된 내부 자산을 실제 시각 책임 소스에 적용';
-  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
+  const configSource='return { GameId = "demo", StudioAssets = { Families = { UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" } } } }';
+  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),configSource+'\n');
   const clientSource=[
-    'local Players = game:GetService("Players")',
-    'local player = Players.LocalPlayer',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
     'root.BackgroundColor3 = Color3.fromRGB(18,28,48)',
@@ -2110,18 +2384,21 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   write(path.join(cwd,'roblox-games/demo/client/Game.client.luau'),clientSource);
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   write(bad,JSON.stringify({
-    edits:[{path:'shared/GameConfig.luau',find:'return { GameId = "demo" }',replace:'return { GameId = "demo", StudioAssets = true }'}]
+    edits:[{path:'shared/GameConfig.luau',find:configSource,replace:configSource.replace('GameId = "demo"','GameId = "demo", Marker = true')}]
   }));
   const bound=[
-    'local Players = game:GetService("Players")',
-    'local player = Players.LocalPlayer',
     'local STUDIO_ASSET_BINDING_VERSION = 2',
-    'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+    'local studioAssetFamilies = { UI = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"} }',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    'local STUDIO_ASSET_FAMILY_STATUS = { CHARACTER = "NOT_APPLICABLE", CREATURE = "NOT_APPLICABLE", BUILDING = "NOT_APPLICABLE", ENVIRONMENT = "NOT_APPLICABLE", WEAPON = "NOT_APPLICABLE", SKILL = "NOT_APPLICABLE", MATERIAL = "NOT_APPLICABLE", AUDIO = "NOT_APPLICABLE", VFX = "NOT_APPLICABLE", UI = "APPLIED", MOTION = "NOT_APPLICABLE", PROP = "NOT_APPLICABLE" }',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
+    'local stroke = Instance.new("UIStroke")',
     'root.BackgroundColor3 = Color3.fromRGB(22,34,58)',
     'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
-    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end',
     'root.Parent = gui'
   ].join('\n');
   write(good,JSON.stringify({
@@ -2134,6 +2411,8 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files/client/Game.client.luau'),'utf8');
   assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+  assert.match(candidate,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+  assert.match(candidate,/studioAssetFamily\("UI"\)/);
   assert.match(candidate,/StudioAssetAtoms/);
 });
 
@@ -4730,7 +5009,7 @@ test('graphics replacement report grounds every actual replacement in changed so
   assert.equal(valid.groundedCount,3);
 
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:0,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
-  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_EVIDENCE_MISSING');
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:[],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_SURFACES_MISSING');
   assert.match(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['RAW_COPY'],before:'a',after:'b'}},contract}).reason,/GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID/);
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING');
@@ -6431,3 +6710,15 @@ test('Luau focused anchors fall back to directive line hints when the symbolic l
   assert.ok(focused.spec.context.includes('local function renderQuestHud()'));
 });
 
+
+
+// 자산 적용은 실제 소스 근거가 있으면 개수 상한 없이 허용한다.
+test('graphics replacement accepts more than sixty grounded applications and still rejects duplicates',()=>{
+  const reuseMode='ADAPT_RESTYLE_AND_RETARGET';
+  const rows=Array.from({length:75},(_,i)=>({surface:'VFX',path:'effects.js',bindingKey:'effect'+i,reuseMode,sourceEvidence:'const effect'+i+' = createImpactVfx('+i+');'}));
+  const candidate={edits:[{path:'effects.js',find:'old',replace:rows.map(row=>row.sourceEvidence).join('\n')}],graphicsReplacementReport:{actualCount:rows.length,changedSurfaces:['VFX'],reuseModesUsed:[reuseMode],replacementEvidence:rows,before:'기존 효과',after:'호환 자산으로 연결한 효과'}};
+  const contract={required:true,adaptiveCount:{minimumActual:1,maximumActual:60},surfaces:['VFX'],reuseModes:[reuseMode]};
+  assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,true);
+  candidate.graphicsReplacementReport.replacementEvidence[74]=rows[0];
+  assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,false);
+});

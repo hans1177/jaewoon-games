@@ -1,5 +1,5 @@
 {
-  "version": 110,
+  "version": 111,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -69244,7 +69244,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 110,
+    "lastCatalogSynchronizedVersion": 111,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -77226,7 +77226,8 @@
         "DERIVE_VARIANT",
         "RECOMBINE_EXISTING",
         "LICENSE_VERIFIED_FREE_SOURCE_ADAPT_ON_DEMAND",
-        "NEW_AUTHORING_ONLY_IF_PRIOR_OPTIONS_FAIL",
+        "VERIFY_ROLE_IDENTITY_STYLE_QUALITY_DIVERSITY_GAP",
+        "NEW_AUTHORING_WHEN_VERIFIED_GAP_REMAINS_AFTER_REASONABLE_REUSE_ADAPT_OR_RECOMBINE",
         "RUN_EXISTING_ASSET_QA_AND_IDEMPOTENCY",
         "PERSIST_REGISTRY_IF_CHANGED",
         "REPEAT_UNTIL_RECOMMENDED_VOLUME_AND_REQUIRED_ROLES_PASS",
@@ -77235,6 +77236,7 @@
         "REPEAT_QUALITY_QA_UNTIL_INTERNAL_1000"
       ],
       "resumeSource": "company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions",
+      "newAuthoringPolicy": "NOT_GLOBALLY_BLOCKED_REQUIRES_VERIFIED_ROLE_IDENTITY_STYLE_QUALITY_DIVERSITY_OR_PLATFORM_GAP",
       "resumeAfterInterruption": true,
       "continueAfterSafeActionCompletion": true,
       "blockedActionPolicy": "QUARANTINE_BLOCKED_ASSET_AND_CONTINUE_NEXT_SAFE_ACTION",
@@ -79694,7 +79696,7 @@
       "lastChangeFingerprint": "c00df77b",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 110
+      "synchronizedRegistryVersion": 111
     },
     "studioVariationAxes": {
       "BUILDING": [

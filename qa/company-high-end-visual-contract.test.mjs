@@ -98,7 +98,7 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(library.promotionRules.preparedArtifactMayNotClaimProductionPass,true);
   assert.equal(library.promotionRules.runtimeVerifiedConsumerRequiredBeforeCompanyAssetPromotion,true);
   assert.equal(library.consumption.requiredForEveryNativeGameDevelopment,true);
-  assert.deepEqual(library.consumption.appliesTo,['UNITY','ROBLOX']);
+  assert.deepEqual(library.consumption.appliesTo,['ROBLOX','UNITY','WEB']);
   assert.equal(library.consumption.lookupBeforeAssetChoice,true);
   assert.equal(library.gapFill.enabled,true);
   assert.deepEqual(library.gapFill.order.slice(0,3),[
