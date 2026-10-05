@@ -13,11 +13,26 @@ test('Roblox package evidence proves build only and never invents later validati
     artifactPath:'/tmp/seed-roblox-test.rbxlx',
     artifactSha256:'b'.repeat(64),
     sourceValidationPassed:true,
+    internalAssetBinding:{
+      required:true,
+      allFamiliesBound:true,
+      primitiveOnly:false,
+      libraryVersion:109,
+      expectedSelectionFingerprint:'c'.repeat(64),
+      nativeFamilyCount:5,
+    },
     saveRequired:true,
   });
   assert.equal(evidence.buildOrPackagePassed,true);
   assert.equal(evidence.artifactIdentity,`sha256:${'b'.repeat(64)}`);
   assert.equal(evidence.luauOrSourceValidationPassed,true);
+  assert.equal(evidence.internalAssetLibraryRequired,true);
+  assert.equal(evidence.internalAssetAllFamiliesBound,true);
+  assert.equal(evidence.internalAssetPrimitiveOnlyForbidden,true);
+  assert.equal(evidence.internalAssetPrimitiveOnlyDetected,false);
+  assert.equal(evidence.internalAssetLibraryVersion,109);
+  assert.equal(evidence.internalAssetSelectionFingerprint,'c'.repeat(64));
+  assert.equal(evidence.internalAssetNativeFamilySignalCount,5);
   assert.equal(evidence.buildPreflightPassed,false);
   assert.equal(evidence.runtimePassed,false);
   assert.equal(evidence.independentQaPassed,false);
@@ -27,6 +42,16 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.failureStage,'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
   assert.equal(evidence.failureSignature,'ROBLOX_BUILD_PREFLIGHT_PENDING');
   assert.equal(evidence.releaseClaim,false);
+});
+
+test('Roblox package hard-gates current company asset library, all families, and primitive-only output even for verified handoff',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-package.mjs',import.meta.url),'utf8');
+  assert.match(source,/company-asset-library\.json/);
+  assert.match(source,/ROBLOX_INTERNAL_ASSET_PACKAGE_GATE_REQUIRED/);
+  assert.match(source,/ROBLOX_INTERNAL_ASSET_PACKAGE_ALL_FAMILIES_REQUIRED/);
+  assert.match(source,/ROBLOX_PRIMITIVE_ONLY_PACKAGE_FORBIDDEN/);
+  assert.match(source,/internalAssetBinding\.refreshRequired===true/);
+  assert.match(source,/validateExistingRobloxSourceTree\(\{root,baseline,assetLibrary,gameId:id\}\)/);
 });
 
 test('Roblox package source validation keeps ordinary static blockers authoritative',()=>{
