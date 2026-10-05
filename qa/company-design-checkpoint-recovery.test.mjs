@@ -88,12 +88,14 @@ test('checkpoint with hard failures cannot be promoted by deterministic recovery
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('workflow checks deterministic recovery before Gemini quota and gate never requires Gemini key',()=>{
+test('workflow reuses verified checkpoints before local authoring and never requires an external key',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const baseline=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
   const recoverAt=workflow.indexOf('Recover verified deterministic design checkpoint before external model wait');
-  const quotaAt=workflow.indexOf('Resolve checkpoint-aware Gemini quota lanes');
-  assert(recoverAt>=0&&quotaAt>recoverAt);
+  const authorAt=workflow.indexOf('Resolve local design authoring from the current checkpoint');
+  assert(recoverAt>=0&&authorAt>recoverAt);
+  assert.match(workflow,/DESIGN_EXTERNAL_AI_REQUIRED=NO/);
+  assert.match(workflow,/DESIGN_AI_REVIEW_LANES=NONE/);
   assert.match(workflow,/DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE/);
   assert.match(workflow,/GEMINI_API_KEY_REQUIRED_FOR_GATE=NO/);
   assert.doesNotMatch(workflow,/test -n .*GEMINI_API_KEY.*GEMINI_API_KEY_REQUIRED/);

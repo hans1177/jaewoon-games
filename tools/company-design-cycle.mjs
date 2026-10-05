@@ -23,25 +23,16 @@ const ai=directive.ai||{};
 const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 const localDesignerModel=clean(process.env.COMPANY_VIBE_LOCAL_MODEL||'qwen3:1.7b');
 const localDesignerFallbackReady=clean(process.env.COMPANY_LOCAL_DESIGN_FALLBACK_READY).toLowerCase()==='true';
-const authorizedLeadModelPool=uniq(ai.modelPool||[]);
-const policyLeadModelList=ROLES.map(role=>clean(ai.departmentLeadModels?.[role]));
-const departmentLeadModelsMustBeDistinct=ai.departmentLeadModelsMustBeDistinct!==false;
-if(policyLeadModelList.some(model=>!model))throw new Error('GEMINI_POLICY_LEAD_MODELS_MISSING');
-if(departmentLeadModelsMustBeDistinct&&new Set(policyLeadModelList).size!==ROLES.length)throw new Error('GEMINI_POLICY_LEAD_MODELS_INVALID');
-if(policyLeadModelList.some(model=>!authorizedLeadModelPool.includes(model)))throw new Error('GEMINI_POLICY_LEAD_MODEL_OUTSIDE_POOL');
-const configuredLeadModels=clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'').split(',').map(clean).filter(Boolean);
-const geminiLeadModelList=configuredLeadModels.length?configuredLeadModels:policyLeadModelList;
-if(geminiLeadModelList.some(model=>!authorizedLeadModelPool.includes(model)))throw new Error('GEMINI_UNAUTHORIZED_LEAD_MODEL');
+const externalAiEnabled=clean(process.env.COMPANY_EXTERNAL_AI_ENABLED||'false').toLowerCase()==='true';
 const authorizedDesignerModels=uniq([
   clean(ai.gameDesigner?.geminiModel),
   ...(ai.gameDesigner?.geminiFallbackModels||[])
 ]);
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||ai.gameDesigner?.geminiModel||'gemini-3.8-flash');
-if(!authorizedDesignerModels.includes(geminiDesignerModel))throw new Error('GEMINI_UNAUTHORIZED_DESIGNER_MODEL');
 const configuredDesignerFallbacks=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'').split(','));
 const geminiFallbackModelList=configuredDesignerFallbacks.length?configuredDesignerFallbacks:authorizedDesignerModels;
-if(geminiFallbackModelList.some(model=>!authorizedDesignerModels.includes(model)))throw new Error('GEMINI_UNAUTHORIZED_DESIGNER_FALLBACK_MODEL');
-const geminiLeadFallbackLaneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES||'');
+const externalDesignerConfigured=authorizedDesignerModels.includes(geminiDesignerModel)
+  &&geminiFallbackModelList.every(model=>authorizedDesignerModels.includes(model));
 const geminiUnavailableModels=new Map();
 function isDailyGeminiQuotaError(error){
   return /GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i.test(clean(error?.message||error));
@@ -84,31 +75,11 @@ function quarantineGeminiModel(model,status){
 function geminiThinkingConfigFor(model){
   return {thinkingLevel:'low'};
 }
-if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
-const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
-const distinctLeadModels=uniq(Object.values(leadModels));
-if(departmentLeadModelsMustBeDistinct&&distinctLeadModels.length<ROLES.length)throw new Error(`GEMINI_DISTINCT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
-const primaryLeadModelSet=new Set(distinctLeadModels);
-const configuredLeadFallbackModels=Object.fromEntries(ROLES.map(role=>[role,[]]));
-for(const entry of geminiLeadFallbackLaneSpec.split(';').map(clean).filter(Boolean)){
-  const at=entry.indexOf(':');
-  if(at<1)continue;
-  const role=clean(entry.slice(0,at));
-  if(!ROLES.includes(role))continue;
-  configuredLeadFallbackModels[role]=uniq(entry.slice(at+1).split('|')).filter(model=>authorizedLeadModelPool.includes(model)&&!primaryLeadModelSet.has(model));
-}
-const leadCandidateModels=Object.fromEntries(ROLES.map(role=>[role,uniq([leadModels[role],...configuredLeadFallbackModels[role]])]));
-const leadCandidateOwner=new Map();
-for(const role of ROLES)for(const model of leadCandidateModels[role]){const owner=leadCandidateOwner.get(model);if(departmentLeadModelsMustBeDistinct&&owner&&owner!==role)throw new Error(`GEMINI_LEAD_FAILOVER_COLLISION: ${model}:${owner}:${role}`);if(!owner)leadCandidateOwner.set(model,role);}
-console.log(`GEMINI_DISTINCT_LEAD_FAILOVER_LANES=${ROLES.map(role=>`${role}:${leadCandidateModels[role].join('>')}`).join(',')}`);
-const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,[leadModels[role]]]));
-const independentReviewTasks={};
-const independentReviewOrder=[];
-const reviewModelCount=1;
-const modelPhaseConcurrency=Math.min(5,Math.max(1,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||5)));
-const phaseConcurrency={five_lead_reviews:Math.min(5,modelPhaseConcurrency)};
-const maxLoadedModelLanes=5;
-const modelKeepAlive='GEMINI_API';
+// Department evidence is computed from the same deterministic gate; no AI review lanes.
+const leadModels={},departmentReviewModels={};
+const reviewModelCount=0,modelPhaseConcurrency=1,maxLoadedModelLanes=1;
+const phaseConcurrency={};
+const modelKeepAlive='PROVIDER_SPECIFIC';
 const modelCallTimeoutMs=Math.min(120000,Math.max(30000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||90000)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
@@ -191,9 +162,10 @@ let activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
 const coordinatorModel=geminiDesignerModel;
 console.log('GEMINI_THINKING_LEVEL=LOW');
-console.log(`GAME_DESIGNER_PROVIDER=GEMINI`);
+console.log('GAME_DESIGNER_PROVIDER='+(externalAiEnabled&&geminiApiKey&&externalDesignerConfigured?'OPTIONAL_GEMINI_WITH_VIBE_FALLBACK':'VIBE_LOCAL_OLLAMA'));
+console.log('DESIGN_EXTERNAL_AI_REQUIRED=NO');
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
-console.log(`GEMINI_LEAD_MODELS=${Object.entries(leadModels).map(([role,model])=>`${role}:${model}`).join(',')}`);
+console.log('DESIGN_AI_REVIEW_LANES=NONE');
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
 const submissionBase=path.join('artbook-submissions',gameId,date);
 const factPack=readJson(path.join(submissionBase,'fact-pack.json'),{});
@@ -1039,9 +1011,10 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
 }
 async function callDesignerModel(system,user,schema,options={}){
   let geminiError=null;
-  if(geminiApiKey){
+  if(externalAiEnabled&&geminiApiKey&&externalDesignerConfigured){
     try{
       const value=await callExternalDesignerModel(designerRoute,system,user,schema,options);
+      activeDesignerRoute=designerRoute;
       designCheckpoint.effectiveDesignerModel=designerRoute.id;
       designCheckpoint.effectiveDesignerProvider='GEMINI';
       persistDesignCheckpoint();
@@ -1051,12 +1024,14 @@ async function callDesignerModel(system,user,schema,options={}){
       console.log(`DESIGN_AUTHORING_GEMINI_UNAVAILABLE=${clip(clean(error?.message||error),500)}`);
     }
   }else{
-    geminiError=new Error('GEMINI_API_KEY_UNAVAILABLE');
-    console.log('DESIGN_AUTHORING_GEMINI_UNAVAILABLE=NO_API_KEY');
+    const reason=!externalAiEnabled?'OPTIONAL_EXTERNAL_AI_DISABLED':!geminiApiKey?'NO_API_KEY':'UNAUTHORIZED_MODEL_CONFIG';
+    geminiError=new Error(reason);
+    console.log('DESIGN_AUTHORING_EXTERNAL_SKIPPED='+reason);
   }
   try{
     const value=await callLocalDesignerModel(system,user,schema,options);
-    designCheckpoint.effectiveDesignerModel=`ollama:${localDesignerModel}`;
+    activeDesignerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
+    designCheckpoint.effectiveDesignerModel=activeDesignerRoute.id;
     designCheckpoint.effectiveDesignerProvider='VIBE_LOCAL_OLLAMA';
     persistDesignCheckpoint();
     return value;
@@ -1163,7 +1138,7 @@ if(!designIntelligence.implementationGate.allowed){
   persistDesignCheckpoint();
   throw new Error(designCheckpoint.lastError);
 }
-writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
 if(!preGatePass(preGate)){
   designCheckpoint.status='PRE_GATE_BLOCKED';
   designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
@@ -1227,7 +1202,7 @@ const revisedDesign=designDraft;
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-  gameSeedId:seed.seedId,gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,
+  gameSeedId:seed.seedId,gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
@@ -1341,5 +1316,5 @@ console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`)
 console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
 console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
 console.log('PAID_AI_ALLOWED=NO');
-console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'}`);
+console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'}`);
 console.log('DESIGN_GATE_PROVIDER=DETERMINISTIC_EVIDENCE_ENGINE');

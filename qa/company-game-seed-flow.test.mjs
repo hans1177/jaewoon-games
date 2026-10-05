@@ -288,7 +288,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '2'/);
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'/);
   assert.match(seedDesignWorkflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
-  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK/);
+  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI/);
   assert.match(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3\.5-flash-lite'/);
   assert.match(seedDesignWorkflow,/gemini-3\.5-flash-lite/);
   assert.match(seedDesignWorkflow,/GEMINI_API_KEY_REQUIRED_FOR_GATE=NO/);
@@ -340,10 +340,10 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/const geminiUnavailableModels=new Map\(\)/);
   assert.match(design,/function quarantineGeminiModel/);
   assert.match(design,/GEMINI_MODEL_QUARANTINED=/);
-  assert.match(design,/GEMINI_DISTINCT_LEAD_FAILOVER_LANES=/);
-  assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'\}/);
+  assert.match(design,/DESIGN_AI_REVIEW_LANES=NONE/);
+  assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'\}/);
   const checkpointInitialization=design.indexOf('let designCheckpoint=readJson(checkpointPath,null);');
-  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'}\`);");
+  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'}\`);");
   assert.ok(checkpointInitialization>=0&&checkpointProviderLog>checkpointInitialization,'AI provider logging happens only after checkpoint initialization');
   assert.match(design,/generativelanguage\.googleapis\.com/);
   assert.match(design,/responseJsonSchema:schema/);
@@ -416,22 +416,20 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
 
-test('DESIGN_ONLY Gemini workflow uses only centrally authorized model-pool entries without repopulating inactive department lead assignments',()=>{
-  const leadMatch=seedDesignWorkflow.match(/COMPANY_GEMINI_LEAD_MODELS:\s*'([^']+)'/);
+test('optional external authoring uses authorized models without department review lanes',()=>{
   const fallbackMatch=seedDesignWorkflow.match(/COMPANY_GEMINI_FALLBACK_MODELS:\s*'([^']+)'/);
-  assert.ok(leadMatch&&fallbackMatch);
-  const workflowLeads=leadMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
+  assert.ok(fallbackMatch);
   const workflowFallbacks=fallbackMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
   const roles=['planning','graphics','development','qa','audio'];
   const inactiveDepartmentLeads=roles.map(role=>directive.ai.departmentLeadModels[role]);
   assert.deepEqual(inactiveDepartmentLeads,Array(5).fill('llama3.2:1b'));
-  assert.equal(new Set(workflowLeads).size,5);
-  assert.notDeepEqual(workflowLeads,inactiveDepartmentLeads);
-  for(const model of workflowLeads)assert.ok(directive.ai.modelPool.includes(model),`unauthorized lead model: ${model}`);
+  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_LEAD_MODELS|COMPANY_GEMINI_LEAD_FALLBACK_LANES/);
+  assert.match(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:.*'false'/);
   const authorizedDesigner=new Set([directive.ai.gameDesigner.geminiModel,...directive.ai.gameDesigner.geminiFallbackModels]);
   for(const model of workflowFallbacks)assert.ok(authorizedDesigner.has(model),`unauthorized designer fallback: ${model}`);
-  assert.match(design,/GEMINI_UNAUTHORIZED_LEAD_MODEL/);
-  assert.match(design,/GEMINI_UNAUTHORIZED_DESIGNER_MODEL/);
-  assert.match(design,/GEMINI_UNAUTHORIZED_DESIGNER_FALLBACK_MODEL/);
-  assert.match(seedDesignWorkflow,/GEMINI_QUOTA_GOVERNOR_UNAUTHORIZED_LEAD_MODEL/);
+  assert.match(design,/authorizedDesignerModels\.includes\(geminiDesignerModel\)/);
+  assert.match(design,/geminiFallbackModelList\.every\(model=>authorizedDesignerModels\.includes\(model\)\)/);
+  assert.match(design,/externalAiEnabled&&geminiApiKey&&externalDesignerConfigured/);
+  assert.match(design,/UNAUTHORIZED_MODEL_CONFIG/);
+  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_WAIT=DISABLED/);
 });

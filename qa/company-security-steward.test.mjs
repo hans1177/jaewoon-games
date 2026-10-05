@@ -2,6 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { runInNewContext } from 'node:vm';
+import { spawnSync } from 'node:child_process';
 import { scanSecurityPatch, scanExternalInstruction } from '../tools/company-security-steward.mjs';
 import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
@@ -9,6 +11,32 @@ import { distillSecurityLearning } from '../tools/company-security-learning.mjs'
 const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
 const vibeCoreWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const vibe24hWorkflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+
+test('clean scans skip follow-up runners while findings and missing scan results still enforce',()=>{
+  const condition=(job,result,verdict,event='push')=>{
+    const section=securityWorkflow.slice(securityWorkflow.indexOf('\n  '+job+':'));
+    const expression=section.match(/\n    if: \$\{\{ (.+) \}\}/)?.[1];
+    assert.ok(expression);
+    return runInNewContext(expression,{always:()=>true,needs:{scan:{result,outputs:{verdict}}},github:{event_name:event}});
+  };
+  assert.equal(condition('enforce','success','PASS'),false);
+  assert.equal(condition('record_incident','success','PASS'),false);
+  for(const verdict of ['REVIEW','QUARANTINE']){
+    assert.equal(condition('enforce','success',verdict),true);
+    assert.equal(condition('record_incident','success',verdict),true);
+    assert.equal(condition('record_incident','success',verdict,'pull_request'),false);
+  }
+  for(const result of ['failure','cancelled','skipped']){
+    assert.equal(condition('enforce',result,''),true);
+    assert.equal(condition('record_incident',result,''),false);
+  }
+  const step=securityWorkflow.slice(securityWorkflow.indexOf('      - name: Enforce quarantine verdict'));
+  const script=step.split('        run: |\n')[1].replace(/^          /gm,'');
+  for(const verdict of ['', 'UNKNOWN', 'QUARANTINE']){
+    const run=spawnSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,VERDICT:verdict,HIGHEST:'',EVENT_NAME:'push'}});
+    assert.notEqual(run.status,0);
+  }
+});
 
 test('literal secret is quarantined and report stores only redacted evidence',()=>{
   const patch='diff --git a/x.txt b/x.txt\n+++ b/x.txt\n@@ -0,0 +1 @@\n+token=ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\n';

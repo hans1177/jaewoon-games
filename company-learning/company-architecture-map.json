@@ -1,5 +1,5 @@
 {
-  "version": 319,
+  "version": 320,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7016,6 +7016,13 @@
     "consumer": "tools/vibe2-source-worker.mjs",
     "existingBuildUpOnly": true,
     "newPipeline": false,
-    "ownerSourceReentry": ".github/workflows/company-roblox-source-drift-sync.yml"
+    "ownerSourceReentry": ".github/workflows/company-roblox-source-drift-sync.yml",
+    "designAuthoring": {
+      "owner": "tools/company-design-cycle.mjs",
+      "externalAi": "OPTIONAL_OPT_IN",
+      "defaultProvider": "VIBE_LOCAL_OLLAMA",
+      "aiReviewLanes": 0,
+      "continuation": ".github/workflows/company-seed-design-runtime.yml"
+    }
   }
 }

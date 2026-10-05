@@ -1,5 +1,5 @@
 {
-  "version": 74,
+  "version": 75,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1212,6 +1212,8 @@
     "noSyntheticRuntimePass": true,
     "saveEconomyNetworkAuthorityPreserved": true,
     "lockedSequenceAndGuardsUnchanged": true,
-    "ownerRemovalMustRemainExcludedUntilNewExplicitOwnerChange": true
+    "ownerRemovalMustRemainExcludedUntilNewExplicitOwnerChange": true,
+    "optionalAiDoesNotGrantPassAuthority": true,
+    "deterministicValidationAndSourceBoundReleaseEvidencePreserved": true
   }
 }
