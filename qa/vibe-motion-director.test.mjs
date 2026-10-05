@@ -26,6 +26,8 @@ import {
   SURVIVAL_WILDLIFE_MOTION_PACKS,
   MONSTER_BODY_PLAN_MOTION_DETAILS,
   resolveMonsterBodyPlanMotionDetail,
+  COMMON_R15_MONSTER_RETARGET_SOURCES,
+  createMonsterCommonActionRetargetPlan,
   createDuelCombatMotionLoadout,
   createDuelCombatAuthoringRecipe,
   createRobloxWalkTeachingRecipe,
@@ -447,6 +449,46 @@ test('creature profile exposes body-plan presentation detail without taking game
   assert.ok(MOTION_COMPOSITION_CHANNELS.includes('SWARM_FORMATION'));
   assert.ok(MOTION_COMPOSITION_CHANNELS.includes('TENTACLES'));
   assert.ok(MOTION_COMPOSITION_CHANNELS.includes('BODY_WAVE'));
+});
+
+test('common R15 actions retarget into monster body-plan roles without taking gameplay authority',()=>{
+  const scorpion=createMonsterCommonActionRetargetPlan({bodyPlan:'SCORPION',archetype:'SCORPION',group:'attacks',count:5});
+  assert.equal(scorpion.sourcePack,'roblox-common-motion-v1');
+  assert.ok(scorpion.sourceAtomIds.includes('LIGHT_ATTACK_1'));
+  assert.ok(scorpion.sourceAtomIds.includes('HEAVY_ATTACK_1'));
+  assert.ok(scorpion.targetRoleIds.includes('TAIL_STING'));
+  assert.equal(scorpion.mode,'BODY_PLAN_SEMANTIC_RETARGET');
+  assert.equal(scorpion.adaptation.visualLimbCount,8);
+  assert.equal(scorpion.preserve.damage,true);
+  assert.equal(scorpion.preserve.hitbox,true);
+  assert.equal(scorpion.preserve.cooldown,true);
+  assert.equal(scorpion.directCrossBodyPlanBinaryReuseForbidden,true);
+  assert.equal(scorpion.productionVerified,false);
+  assert.equal(scorpion.runtimeVerificationRequired,true);
+  assert.equal(scorpion.gameplayAuthority,false);
+
+  const humanoid=createMonsterCommonActionRetargetPlan({bodyPlan:'HUMANOID',archetype:'MUMMY',group:'reactions',count:2});
+  assert.equal(humanoid.mode,'R15_DIRECT_WHEN_COMPATIBLE_ELSE_RETARGET');
+  assert.equal(humanoid.directCrossBodyPlanBinaryReuseForbidden,false);
+  assert.ok(COMMON_R15_MONSTER_RETARGET_SOURCES.reactions.includes('HIT_FRONT'));
+  assert.equal(createMonsterCommonActionRetargetPlan({bodyPlan:'SWARM',group:'signature'}),null);
+});
+
+test('automatic gap fill falls back to common R15 retarget before raw semantic authoring',()=>{
+  const insect=createCreatureMotionSetProfile({id:'ant',archetype:'ANT',bodyPlan:'HEXAPOD_INSECT'});
+  const plan=buildAutomaticMotionGapFillPlan({profile:insect});
+  const attack=plan.actions.find(row=>row.group==='attacks');
+  const locomotion=plan.actions.find(row=>row.group==='locomotion');
+  const signature=plan.actions.find(row=>row.group==='signature');
+  assert.equal(attack.route,'RETARGET_COMPANY_COMMON_R15_MOTION');
+  assert.equal(attack.sourceId,'roblox-common-motion-v1');
+  assert.ok(attack.commonRetarget.sourceAtomIds.includes('LIGHT_ATTACK_1'));
+  assert.equal(attack.commonRetarget.promotionBlockedUntilRuntimeQa,true);
+  assert.equal(locomotion.route,'RETARGET_COMPANY_COMMON_R15_MOTION');
+  assert.equal(signature.route,'PREPARE_SEMANTIC_MOTION_SEED');
+  assert.equal(signature.commonRetarget,null);
+  assert.equal(attack.verifiedFill,false);
+  assert.equal(attack.promotionBlockedUntilRuntimeQa,true);
 });
 
 test('automatic gap fill uses detailed monster body-plan semantic roles',()=>{
