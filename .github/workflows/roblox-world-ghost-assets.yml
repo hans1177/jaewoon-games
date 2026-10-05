@@ -277,6 +277,8 @@ jobs:
         shell: bash
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
+          MOTION_BUILT: ${{ steps.asset_scope.outputs.motion }}
+          SPIDER_BUILT: ${{ steps.asset_scope.outputs.spider }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -284,13 +286,19 @@ jobs:
           git add \
             assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx \
             assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx \
-            assets/roblox/world-ghosts/native/build-evidence.json \
-            assets/roblox/world-ghosts/native/spider/spider.glb \
-            assets/roblox/world-ghosts/native/spider/spider.png \
-            assets/roblox/world-ghosts/native/spider/evidence.json \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json \
-            company-asset-library.json
+            assets/roblox/world-ghosts/native/build-evidence.json
+          if [[ "$SPIDER_BUILT" == 'true' ]]; then
+            git add \
+              assets/roblox/world-ghosts/native/spider/spider.glb \
+              assets/roblox/world-ghosts/native/spider/spider.png \
+              assets/roblox/world-ghosts/native/spider/evidence.json
+          fi
+          if [[ "$MOTION_BUILT" == 'true' ]]; then
+            git add \
+              assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb \
+              assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json \
+              company-asset-library.json
+          fi
           if git diff --cached --quiet; then
             echo "Authored asset artifacts already current"
             exit 0
