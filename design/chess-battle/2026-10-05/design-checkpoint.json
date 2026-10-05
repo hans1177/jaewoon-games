@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-05T14:31:45.182Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 330089,
-      "lastMs": 120000,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T14:48:38.317Z"
+      "jsonFailures": 1,
+      "totalMs": 381496,
+      "lastMs": 51407,
+      "lastError": "schema required missing: root.identity",
+      "updatedAt": "2026-10-05T14:49:29.726Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T14:31:42.018Z",
-  "updatedAt": "2026-10-05T14:48:38.317Z",
+  "updatedAt": "2026-10-05T14:49:29.727Z",
   "failedPhase": "designer_draft",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_NO_AVAILABLE_MODELS gemini-3.5-flash-lite:429,gemini-3.8-flash:429,gemini-3.7-flash:429,gemini-3.6-flash:429,gemini-3.5-flash:429,gemini-3.1-pro-preview:429,gemini-2.5-pro:404,gemini-2.5-flash:404,gemini-2.5-flash-lite:404,gemini-3.1-flash-lite:429 local=OLLAMA_DESIGN_TIMEOUT 90000ms"
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_NO_AVAILABLE_MODELS gemini-3.5-flash-lite:429,gemini-3.8-flash:429,gemini-3.7-flash:429,gemini-3.6-flash:429,gemini-3.5-flash:429,gemini-2.5-pro:404,gemini-2.5-flash:404,gemini-2.5-flash-lite:404,gemini-3.1-flash-lite:429,gemini-3.1-pro-preview:429 local=schema required missing: root.identity"
 }
