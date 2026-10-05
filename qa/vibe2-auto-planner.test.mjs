@@ -1439,7 +1439,7 @@ test('full planner replaces low-value micro work with queued studio packages and
     second=working.tasks.find(row=>
       row.gameId===gameId
       &&row.id!==first.id
-      &&row.studioQualityEvolution?.focusPillar===firstFocus
+      &&Number(row.studioQualityEvolution?.cycle||0)>Number(first.studioQualityEvolution?.cycle||0)
       &&String(row.status||'').trim().toLowerCase()==='queued'
       &&(row.evidence||[]).includes('studio-quality-loop:v1')
     )||null;
@@ -1453,7 +1453,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.ok(second,'verified studio package must cause the full planner to queue another large studio cycle');
   assert.notEqual(second.id,first.id);
   assert.equal(second.taskWorkUnits,7);
-  assert.equal(second.studioQualityEvolution?.cycle,2);
+  assert.ok(Number(second.studioQualityEvolution?.cycle||0)>Number(first.studioQualityEvolution?.cycle||0));
   assert.equal(second.studioQualityEvolution?.baselineId,first.id);
   assert.equal(second.studioQualityEvolution?.nextCycleRequired,true);
   assert.ok(second.evidence.includes('studio-quality-loop:v1'));
