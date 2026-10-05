@@ -9,6 +9,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '.gitattributes'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/company-development-roblox-runtime-continuation.yml'
       - '.github/workflows/company-development-roblox-headless-fast-mvp.yml'
@@ -50,6 +51,7 @@ env:
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '8'
   ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-
+    .gitattributes
     .github/workflows/company-development-roblox-runtime.yml
     tools/company-development-roblox-bootstrap.mjs
     tools/company-development-roblox-gameplay-product-readiness.mjs
@@ -2192,4 +2194,3 @@ jobs:
           fi
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"
-
