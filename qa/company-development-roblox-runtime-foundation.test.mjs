@@ -893,13 +893,13 @@ test('F9 keeps only newest same-identity run and scan clears stale queued F9 wor
   assert.match(workflow,/final-review:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
 });
 
-test('post-runtime dedupe job uses the lightweight controller runner without a same-game job lock',()=>{
+test('post-runtime dedupe job uses the lightweight controller runner with stage-scoped ingress coalescing',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   const start=workflow.indexOf('  dedupe:');
   const end=workflow.indexOf('\n  runtime-foundation-qa:',start);
   const block=workflow.slice(start,end);
   assert.match(block,/runs-on:\s*ubuntu-slim/);
-  assert.doesNotMatch(block,/\n\s+concurrency:/);
+  assert.match(block,/\n\s+concurrency:\n\s+group: roblox-runtime-foundation-dedupe-\$\{\{ github\.sha \}\}-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
   assert.match(block,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
 });
 

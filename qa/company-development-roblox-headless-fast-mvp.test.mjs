@@ -259,7 +259,7 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
   const validateStart=workflow.indexOf('\n  validate:\n',planStart);
   const planBlock=workflow.slice(planStart,validateStart);
   assert.match(planBlock,/runs-on:\s*ubuntu-slim/);
-  assert.doesNotMatch(planBlock,/concurrency:/);
+  assert.match(planBlock,/concurrency:\n\s+group: roblox-f0-plan-\$\{\{ github\.sha \}\}-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
   assert.match(planBlock,/ROBLOX_F0_PLAN_CONTROL_SHA=/);
   assert.match(planBlock,/String\(run\.head_sha\|\|''\)===currentSha/);
   assert.match(planBlock,/ROBLOX_F0_PLAN_ACTIVE_WINNER=/);
