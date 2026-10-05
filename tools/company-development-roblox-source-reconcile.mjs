@@ -54,6 +54,12 @@ export function studioAssetRefreshState({root='',assetLibrary={},gameId='',profi
   const clientConfigBound=/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(client);
   const clientVisibleBound=/StudioAssetFramePanel/.test(client)
     ||(/StudioAssetBindingVersion/.test(client)&&/StudioAssetAtoms/.test(client)&&/(FRAME_PANEL|BUTTON_PRIMARY|BAR_HEALTH)/.test(client)&&/(hasStudioAssetAtom|hasStudioAtom|studioAssetFamily)/.test(client));
+  const clientLibraryFolderBound=/CompanyAssets/.test(client);
+  const clientLibraryAutoload=/COMPANY_ASSET_LIBRARY_NAMES/.test(client)
+    &&/pcall\s*\(\s*require\s*,\s*moduleScript\s*\)/.test(client)
+    &&/ROBLOX_INTERNAL_LIBRARY_LOAD_FAILED/.test(client);
+  const clientLibraryTrace=/CompanyAssetLibrariesLoaded/.test(client)&&/CompanyAssetLibraryNames/.test(client);
+  const missingClientLibraries=Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).filter(moduleName=>!client.includes(moduleName));
   const clientVisualPrimitivePresent=/Instance\.new\(["'](?:Frame|TextButton|TextLabel|ImageLabel|ImageButton|ViewportFrame|Part|MeshPart|WedgePart)["']\)/.test(client);
   const assetAwareVisualBinding=/(hasStudioAssetAtom|hasStudioAtom|studioAssetFamily|StudioAssetAtoms)/.test(client);
   const plainPrimitiveVisual=clientVisualPrimitivePresent&&!assetAwareVisualBinding;
@@ -63,13 +69,18 @@ export function studioAssetRefreshState({root='',assetLibrary={},gameId='',profi
   if(missingConfigFamilies.length)blockers.push('ROBLOX_INTERNAL_ASSET_ALL_FAMILIES_REQUIRED');
   if(missingSelectedAtoms.length)blockers.push('ROBLOX_INTERNAL_ASSET_SELECTED_ATOMS_REQUIRED');
   if(clientBindingVersion!==expectedBindingVersion||!clientConfigBound||!clientVisibleBound)blockers.push('ROBLOX_INTERNAL_ASSET_VISUAL_BINDING_REQUIRED');
+  if(!clientLibraryFolderBound||!clientLibraryAutoload||!clientLibraryTrace||missingClientLibraries.length){
+    blockers.push('ROBLOX_INTERNAL_LIBRARY_AUTOLOAD_REQUIRED');
+  }
   if(plainPrimitiveVisual)blockers.push('ROBLOX_PLAIN_PRIMITIVE_VISUAL_FORBIDDEN');
   const refreshRequired=blockers.length>0;
   return {
     required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,
     bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,
     selectionFingerprint,expectedSelectionFingerprint:expected.selectionFingerprint,exactSelectionFingerprint,
-    requiredFamilies,missingConfigFamilies,missingSelectedAtoms,plainPrimitiveVisual,blockers,
+    requiredFamilies,missingConfigFamilies,missingSelectedAtoms,
+    clientLibraryFolderBound,clientLibraryAutoload,clientLibraryTrace,missingClientLibraries,
+    plainPrimitiveVisual,blockers,
     selectedAtomCount:Number(expected.selectedAtomCount||0),
     reason:refreshRequired?blockers[0]:null
   };
