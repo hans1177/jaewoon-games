@@ -4575,6 +4575,7 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
   assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
+  assert.equal(task.buildUpDirective.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
   assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));

@@ -2417,7 +2417,11 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     &&activeDirectiveSemanticCompatible
   );
   if(activeDirectiveMatchesCurrentSource){
-    const directive=applyRobloxQualityRepairDirective(activeDirectiveTask.buildUpDirective,project,platformLane);
+    const directive=applyRobloxQualityRepairDirective({
+      ...activeDirectiveTask.buildUpDirective,
+      playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,
+        studioQualityFailure:platformLane==='roblox'?project.queueRobloxQualityBuildUpEvidence||null:null}
+    },project,platformLane);
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -2534,7 +2538,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     repoRoot,
     sourceRoot:sourceRoots.join('|'),
     previousDirective:previous,
-    previousDirectiveOutcome,
+    previousDirectiveOutcome:packageAssetFailure?'repair_required':previousDirectiveOutcome,
     runtimeEvidence,
     qualitySignals,
     responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
