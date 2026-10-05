@@ -91,8 +91,8 @@ test('pre-F9 publish is isolated while final private publish requires exact F9 i
   assert.match(candidate,/publishStage==='final'/);
   assert.match(candidate,/finalEntry\?\.finalReviewPassed===true/);
   assert.match(candidate,/finalEntry\?\.f9ReleaseRegressionPassed===true/);
-  assert.match(candidate,/finalEntry\?\.sourceRevision===item\.robloxSourceCommit/);
-  assert.match(candidate,/finalEntry\?\.artifactIdentity===item\.robloxBuildArtifactIdentity/);
+  assert.match(candidate,/finalEntry\?\.f9Evidence\?\.sourceRevision===revision/);
+  assert.match(candidate,/finalEntry\?\.f9Evidence\?\.artifactIdentity===artifact/);
   assert.match(candidate,/evaluateInternalRelease/);
   assert.match(candidate,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
   assert.match(candidate,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_AND_RELEASE_CLASS/);
@@ -489,31 +489,61 @@ test('pre-F9 validation publish requires exact F0 but never current F9',()=>{
   assert.match(workflow,/ROBLOX_PUBLISH_LATEST_SOURCE_GATE=PASS:/);
 });
 
-test('upload rejects a superseded source, artifact or revoked quality/F9 evidence',()=>{
-  const sourceRevision='a'.repeat(40), artifactIdentity='sha256:build';
-  const item={robloxSourceCommit:sourceRevision,robloxBuildSourceRevision:sourceRevision,
-    robloxBuildArtifactIdentity:artifactIdentity,robloxFinalReviewPassed:true,
-    robloxF9ReleaseRegressionPassed:true,robloxF9ReleaseRegressionEvidence:{sourceRevision,artifactIdentity}};
-  const candidate={item,sourceRevision,artifactIdentity,sourceTree:'tree',latestSourceTree:'tree'};
+test('final publication retains exact F9 cycle while next BUILD_UP advances and rejects revoked or mixed evidence',()=>{
+  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+ 'b'.repeat(64),publishCycleId=sourceRevision+':'+artifactIdentity;
+  const entry={
+    gameId:'horror-escape-room',cycleId:publishCycleId,sourceRevision,artifactIdentity,artifactRunId:21,
+    validationUniverseId:'101',validationPlaceId:'202',validationVersionNumber:7,
+    status:'PENDING',enqueuedAt:'2026-10-05T00:00:00Z',authority:'roblox-f9-immutable-canonical-publish-queue',
+    finalReviewPassed:true,f9ReleaseRegressionPassed:true,
+    f9Evidence:{sourceRevision,artifactIdentity},
+    f0Evidence:{sourceRevision,artifactIdentity,artifactRunId:21,sourcePreflightPassed:true,f0SourceIntegrityPassed:true},
+    releaseSnapshot:{robloxRuntimeCandidateEvidence:{sourceRevision,artifactIdentity,published:true,universeId:'101',placeId:'202',versionNumber:7}}
+  };
+  const item={gameId:entry.gameId,robloxSourceCommit:'c'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+ 'd'.repeat(64),
+    robloxQualityBuildUpRequired:true,robloxFinalReviewPassed:false,robloxFoundationF0Passed:false,robloxCanonicalPublishQueue:[entry]};
+  const candidate={item,sourceRevision,artifactIdentity,sourceTree:'verified-old-tree',latestSourceTree:'next-tree',publishCycleId,publishStage:'final'};
   assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
-  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,latestSourceTree:'new-tree'}),/STALE_SOURCE_TREE/);
   for(const change of [
-    {robloxSourceCommit:'b'.repeat(40)},
-    {robloxBuildArtifactIdentity:'sha256:new'},
-    {robloxQualityBuildUpRequired:true},
-    {robloxStudioLocalPlayRepairRequired:true},
-    {robloxF9ReleaseRegressionPassed:false},
-    {robloxF9ReleaseRegressionEvidence:{sourceRevision:'old',artifactIdentity}}
-  ]) assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,...change}}),/ROBLOX_PUBLISH_/);
+    {sourceRevision:'e'.repeat(40)}, {artifactIdentity:'sha256:'+ 'f'.repeat(64)},
+    {finalReviewPassed:false}, {f9ReleaseRegressionPassed:false}, {status:'REVOKED'},
+    {artifactRunId:99}, {validationVersionNumber:8}, {f9Evidence:{sourceRevision:'old',artifactIdentity}},
+    {releaseSnapshot:{robloxRuntimeCandidateEvidence:{}}}
+  ]) assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxCanonicalPublishQueue:[{...entry,...change}]}}),/ROBLOX_PUBLISH_/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,publishCycleId:'unknown'}),/CURRENT_F9_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxSourceCommit:sourceRevision,robloxBuildArtifactIdentity:artifactIdentity}}),/CURRENT_QUALITY_REPAIR_REQUIRED/);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxCanonicalPublishQueue:[entry,{...entry,cycleId:'newer',status:'PUBLISHED',enqueuedAt:'2026-10-05T01:00:00Z'}]}}),/NEWER_CYCLE_ALREADY_PUBLISHED/);
   const upload=workflow.slice(workflow.indexOf('      - name: Publish exact package'),workflow.indexOf('      - name:',workflow.indexOf('      - name: Publish exact package')+15));
   assert.ok(upload.indexOf('while true; do')<upload.indexOf('git fetch --no-tags --depth=1 origin main'));
   assert.ok(upload.indexOf('assertRobloxLatestPublishCandidate({')<upload.indexOf('await publishRobloxPlace('));
+  assert.match(upload,/publishCycleId:process.env.PUBLISH_CYCLE_ID/);
+});
+
+test('F9 dispatch retries exact queued cycles independently of the next current BUILD_UP',()=>{
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const dispatch=finalReview.slice(finalReview.indexOf('      - name: Dispatch exact F9-verified artifact'),finalReview.indexOf('      - name: Immediately continue each successfully persisted Roblox F9 game'));
+  assert.match(dispatch,/row\.f9Evidence\?\.sourceRevision!==row\.sourceRevision/);
+  assert.match(dispatch,/currentCycle&&\(item\.robloxQualityBuildUpRequired===true/);
+  assert.doesNotMatch(dispatch,/if\(item\.robloxFinalReviewPassed!==true\|\|item\.robloxF9ReleaseRegressionPassed!==true\)continue/);
 });
 
 
-test('F9 dispatch does not launch obsolete or currently failed publication candidates',()=>{
-  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
-  const dispatch=finalReview.slice(finalReview.indexOf('      - name: Dispatch exact F9-verified artifact'));
-  assert.match(dispatch,/row\.sourceRevision!==item\.robloxSourceCommit\|\|row\.artifactIdentity!==item\.robloxBuildArtifactIdentity/);
-  assert.match(dispatch,/item\.robloxQualityBuildUpRequired===true\|\|item\.robloxStudioLocalPlayRepairRequired===true/);
+test('F0 checkpoint becomes dispatchable only after preflight and artifact upload',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const review=runtime.indexOf('      - name: Enforce fused package preflight and F0 result before checkpoint publication');
+  const upload=runtime.indexOf('      - name: Upload immutable Roblox package checkpoint');
+  const persist=runtime.indexOf('      - name: Persist successful F0 checkpoint immediately per game');
+  const dispatch=runtime.indexOf('ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=YES:');
+  assert.ok(review>0&&review<upload&&upload<persist&&persist<dispatch);
+  assert.match(runtime.slice(persist,persist+550),/steps\.checkpoint\.outcome == 'success'/);
+});
+
+test('final publication dedupe keeps distinct immutable cycles independent',()=>{
+  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  assert.match(header,/format\(' · \{0\}', inputs\.publish_cycle_id\)/);
+  assert.match(header,/group: roblox-publish-exact-[^\n]*inputs\.publish_cycle_id/);
+  const guard=workflow.slice(workflow.indexOf('  release-dedupe:'),workflow.indexOf('\n  release:'));
+  assert.match(guard,/PUBLISH_CYCLE_ID: \$\{\{ inputs\.publish_cycle_id/);
+  assert.match(guard,/stage==='final'\?' · '\+cycle:''/);
+  assert.match(guard,/String\(r\.display_title\|\|''\)===title/);
 });

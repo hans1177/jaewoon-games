@@ -143,6 +143,10 @@ function Manor:Get(p)
  local origin=Vector3.new(index*256,0,270)
  local folder=Instance.new("Model");folder.Name="PersonalManor_"..p.UserId;folder:SetAttribute("OwnerUserId",p.UserId)
  local scene=self.template:Clone();scene.Name="ManorScene";scene:PivotTo(CFrame.new(origin)*scene:GetPivot());scene.Parent=folder
+ -- 로딩 해제는 빈 Model 수신만으로 판단하지 않도록 실제 시각 파츠 수를 함께 보낸다.
+ local scenePartCount=0
+ for _,d in ipairs(scene:GetDescendants())do if d:IsA("BasePart")then scenePartCount+=1 end end
+ folder:SetAttribute("ManorScenePartCount",scenePartCount)
  part(folder,"PersonalGround",origin+Vector3.new(0,-.15,10),Vector3.new(160,1,156),true)
  for _,spec in ipairs({{-80,12,10,1,28,156},{80,12,10,1,28,156},{0,12,-68,160,28,1},{0,12,88,160,28,1}})do
   part(folder,"ManorBoundary",origin+Vector3.new(spec[1],spec[2],spec[3]),Vector3.new(spec[4],spec[5],spec[6]),false)
@@ -656,3 +660,4 @@ function Manor:Remove(p)
  self:RefreshVisitorCounts()
 end
 return Manor
+

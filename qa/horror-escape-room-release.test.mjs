@@ -777,7 +777,7 @@ test('투명 스폰은 공중 발판이 되지 않고 로비와 경기장 스폰
  assert.match(server,/local lobbyDestination=pos\.Z>=180/);
  assert.match(server,/local currentArena=arena/);
  assert.match(server,/currentArena=workspace:FindFirstChild\("MidnightArena"\)/);
- assert.match(server,/rootFolders=lobbyDestination and\{workspace:FindFirstChild\("MidnightLobby"\)\}or\{currentArena\}/);
+ assert.match(server,/rootFolders=lobbyDestination and\{room\}or\{currentArena\}/);
  assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
  assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
 });
@@ -803,7 +803,7 @@ test('실제 캐릭터 스폰은 목적 월드 바닥 Raycast와 아바타 높�
  assert.match(client,/local groundOffset=\(h and tonumber\(h\.HipHeight\)or 0\)\+\(rr\.Size\.Y\*\.5\)/);
  assert.match(client,/groundOffset=\(rr\.Size\.Y\*\.5\)\+\(leg and leg\.Size\.Y or 2\)/);
  assert.doesNotMatch(client,/local groundOffset=\(h and tonumber\(h\.HipHeight\)or 2\)/);
- assert.match(server,/if lobbyDestination then targetY=math\.clamp\(targetY,2\.8,5\.2\)else targetY=math\.clamp\(targetY,2\.8,6\.5\)end/);
+ assert.doesNotMatch(server,/targetY=math\.clamp/);
  const groundBlock=server.slice(server.indexOf('local function groundedRootTarget'),server.indexOf('local function teleport',server.indexOf('local function groundedRootTarget')));
  assert.match(groundBlock,/local maxGroundY=lobbyDestination and\(pos\.Y\+1\.5\)or\(pos\.Y\+3\)/);
  assert.doesNotMatch(groundBlock,/FilterType=Enum\.RaycastFilterType\.Exclude/);
@@ -851,7 +851,7 @@ test('대기 로비 캐릭터는 경기장 MapReady를 기다리지 않고 로�
  assert.match(block,/local destination,look=personalSpawn\(p\)/);
  assert.match(block,/p\.RespawnLocation=lobbyBootstrapSpawn/);
  assert.match(block,/teleport\(p,destination,look\)/);
- assert.match(block,/LobbySpawnGroundedAt/);
+ assert.doesNotMatch(block,/SetAttribute\("(?:LobbySpawnGroundedAt|RoundRespawnGroundedAt)",workspace:GetServerTimeNow\(\)\)/);
  const waitingBranch=block.slice(block.indexOf('if state~="RUNNING"then'),block.indexOf('local readyDeadline'));
  assert.doesNotMatch(waitingBranch,/MapReady/);
 });
@@ -886,4 +886,51 @@ test('저택 로비 UI는 Version 77 구조 위에서 내부 아이콘 기반 �
  assert.match(manorClient,/DarkCartoonWelcomeCard/);
  for(const text of ['"인간","정화·대시·직업 스킬"','"몬스터","추적·감염·고유 스킬"','"혼자 바로 시작","같은 서버에서 즉시 출정"'])assert.ok(manorClient.includes(text),text);
  assert.doesNotMatch(manorClient,/local mapGlyph=/);
+});
+
+
+
+test('생명주기 책임 테이블은 메서드 선언과 teleport 사용 전에 한 번만 초기화한다',()=>{
+ const declaration=server.indexOf('local BotAI={}');
+ const firstMethod=server.indexOf('function BotAI.');
+ const teleport=server.indexOf('local function teleport(');
+ assert.ok(declaration>=0&&declaration<firstMethod&&declaration<teleport);
+ assert.equal((server.match(/local BotAI=\{\}/g)||[]).length,1);
+});
+
+test('로비 스폰도 충돌 바닥과 리그 공간을 검수하고 관찰 없는 접지를 발급하지 않는다',()=>{
+ const ground=server.slice(server.indexOf('local function groundedRootTarget'),server.indexOf('local function teleport(p,pos,lookAtPos)'));
+ const teleport=server.slice(server.indexOf('local function teleport(p,pos,lookAtPos)'),server.indexOf('-- 월드 생성 전용 지역 범위:'));
+ const contact=server.slice(server.indexOf('function BotAI.validateCharacterFoundation'),server.indexOf('function BotAI.onCharacter'));
+ assert.match(ground,/d\.CanCollide and d\.Anchored/);
+ assert.match(ground,/SpawnMarkerOnly/);assert.match(ground,/not d:IsA\("SpawnLocation"\)/);
+ assert.match(ground,/params\.RespectCanCollide=true;params\.CollisionGroup=r\.CollisionGroup/);
+ assert.match(ground,/if not hit or hit\.Normal\.Y<\.75 then return nil end/);
+ assert.doesNotMatch(ground,/hit and hit\.Position\.Y or/);
+ assert.match(teleport,/local target,hit=groundedRootTarget\(p,pos\)/);
+ assert.doesNotMatch(teleport,/lobbyDestination and Vector3\.new/);
+ assert.match(teleport,/SPAWN_SUPPORT_MISSING/);assert.match(teleport,/SPAWN_CLEARANCE_BLOCKED/);
+ assert.match(teleport,/workspace:GetPartBoundsInBox/);
+ assert.match(teleport,/BotAI\.validateCharacterFoundation\(p,c,sequence\)/);
+ assert.match(contact,/p\.Character~=c/);assert.match(contact,/SpawnGroundingSequence/);
+ assert.match(contact,/groundedSamples>=3/);
+ assert.match(contact,/h\.FloorMaterial~=Enum\.Material\.Air/);
+ assert.match(contact,/groundY=hit\.Position\.Y/);
+ assert.doesNotMatch(contact,/groundY=repaired\.Position\.Y/);
+ assert.ok(contact.indexOf('groundedSamples>=3')<contact.indexOf('"SpawnGroundedAt",stamp'));
+});
+
+test('첫 화면은 현재 캐릭터 접지와 저택 장면 수신을 확인하고 경기 전환도 건너뛰지 않는다',()=>{
+ const loading=client.slice(client.indexOf('local loadingVisible=true'),client.indexOf('end -- 로딩 화면 생성 지역 범위'));
+ assert.match(loading,/character:GetAttribute\("SpawnGroundedSequence"\)==sequence/);
+ assert.match(loading,/character~=lastCharacter or sequence~=lastSequence/);
+ assert.match(loading,/params\.RespectCanCollide=true/);
+ assert.match(loading,/groundedSamples>=3/);
+ assert.match(loading,/sceneParts>=expectedParts/);
+ assert.match(manorServer,/folder:SetAttribute\("ManorScenePartCount",scenePartCount\)/);
+ const matchRelease=loading.indexOf('if inMatch and scope=="ARENA"');
+ assert.ok(loading.indexOf('if groundedSamples>=3 then')<matchRelease);
+ assert.ok(loading.indexOf('tween.Completed:Wait()')<loading.indexOf('p.Character~=character'));
+ assert.ok(loading.indexOf('loadingLayer:Destroy()')<loading.indexOf('p:SetAttribute("LobbyClientReady",true)'));
+ assert.match(manorClient,/SpawnGroundedSequence/);assert.match(manorClient,/character.AttributeChanged:Connect\(visibility\)/);
 });

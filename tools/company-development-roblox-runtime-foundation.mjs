@@ -1,3 +1,6 @@
+// 파일명: tools/company-development-roblox-runtime-foundation.mjs
+// 역할: 공식 클라우드 API의 정확한 버전·접지·실행 증거를 검증한다.
+
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
@@ -289,15 +292,17 @@ export async function probeRobloxOpenCloudEngine({
     'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
     'local descendants=workspace:GetDescendants()',
     'local scanLimit=#descendants',
-    'local basePartCount=0; local spawnCount=0; local landmarkCount=0; local objectiveCount=0; local spawnPositions={}; local spawnParts={}; local meshPartCount=0; local minX=math.huge; local minY=math.huge; local minZ=math.huge; local maxX=-math.huge; local maxY=-math.huge; local maxZ=-math.huge',
-    'for i=1,scanLimit do local item=descendants[i]; local lower=string.lower(item.Name); if item:IsA("BasePart") then basePartCount+=1; if item:IsA("MeshPart") then meshPartCount+=1 end; local p=item.Position; local h=item.Size*0.5; if not item:IsA("SpawnLocation") and item.CanCollide then minX=math.min(minX,p.X-h.X); minY=math.min(minY,p.Y-h.Y); minZ=math.min(minZ,p.Z-h.Z); maxX=math.max(maxX,p.X+h.X); maxY=math.max(maxY,p.Y+h.Y); maxZ=math.max(maxZ,p.Z+h.Z) end; if item:IsA("SpawnLocation") then spawnCount+=1; table.insert(spawnPositions,p); table.insert(spawnParts,item) end end; if string.find(lower,"landmark",1,true) or string.find(lower,"hub",1,true) then landmarkCount+=1 end; if string.find(lower,"objective",1,true) or string.find(lower,"goal",1,true) or string.find(lower,"quest",1,true) then objectiveCount+=1 end end',
+    'local basePartCount=0; local spawnCount=0; local markerSpawnCount=0; local landmarkCount=0; local objectiveCount=0; local spawnPositions={}; local spawnParts={}; local supportExclusions={}; local characters={}; local meshPartCount=0; local minX=math.huge; local minY=math.huge; local minZ=math.huge; local maxX=-math.huge; local maxY=-math.huge; local maxZ=-math.huge',
+    'for _,player in ipairs(Players:GetPlayers()) do if player.Character then table.insert(characters,player.Character); table.insert(supportExclusions,player.Character) end end',
+    'for i=1,scanLimit do local item=descendants[i]; local lower=string.lower(item.Name); if item:IsA("BasePart") then local characterPart=false; for _,character in ipairs(characters) do if item:IsDescendantOf(character) then characterPart=true; break end end; if not characterPart then basePartCount+=1; if item:IsA("MeshPart") then meshPartCount+=1 end; local isSpawn=item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true; local p=item.Position; local h=item.Size*0.5; if not isSpawn and item.CanCollide then minX=math.min(minX,p.X-h.X); minY=math.min(minY,p.Y-h.Y); minZ=math.min(minZ,p.Z-h.Z); maxX=math.max(maxX,p.X+h.X); maxY=math.max(maxY,p.Y+h.Y); maxZ=math.max(maxZ,p.Z+h.Z) end; if isSpawn then spawnCount+=1; if not item:IsA("SpawnLocation") then markerSpawnCount+=1 end; table.insert(spawnPositions,p); table.insert(spawnParts,item); table.insert(supportExclusions,item) end end end; if string.find(lower,"landmark",1,true) or string.find(lower,"hub",1,true) then landmarkCount+=1 end; if string.find(lower,"objective",1,true) or string.find(lower,"goal",1,true) or string.find(lower,"quest",1,true) then objectiveCount+=1 end end',
     'local finiteWorldBounds=basePartCount>0 and minX<math.huge and maxX>-math.huge',
     'local spawnOutsideBounds=0; if finiteWorldBounds then for _,p in ipairs(spawnPositions) do if p.X<minX or p.X>maxX or p.Y<minY or p.Y>maxY or p.Z<minZ or p.Z>maxZ then spawnOutsideBounds+=1 end end end',
     'local spawnInBounds=finiteWorldBounds and spawnCount>0 and spawnOutsideBounds==0',
-    'local spawnParams=RaycastParams.new(); spawnParams.ExcludeInstances=spawnParts; spawnParams.RespectCanCollide=true; spawnParams.IgnoreWater=true',
+    'local spawnParams=RaycastParams.new(); spawnParams.ExcludeInstances=supportExclusions; spawnParams.RespectCanCollide=true; spawnParams.IgnoreWater=true',
     'local unsupportedSpawns=0; local floatingSpawns=0; local maximumSpawnGroundGap=0',
-    'for _,spawn in ipairs(spawnParts) do spawnParams.CollisionGroup=spawn.CollisionGroup; local hit=workspace:Raycast(spawn.Position+Vector3.new(0,2,0),Vector3.new(0,-66,0),spawnParams); if not hit or hit.Normal.Y<0.55 then unsupportedSpawns+=1 else local gap=spawn.Position.Y-spawn.Size.Y*0.5-hit.Position.Y; maximumSpawnGroundGap=math.max(maximumSpawnGroundGap,gap); if gap>1 then floatingSpawns+=1 end end end',
-    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true")',
+    'for _,spawn in ipairs(spawnParts) do spawnParams.CollisionGroup=spawn.CollisionGroup; local hit=workspace:Raycast(spawn.Position+Vector3.new(0,2,0),Vector3.new(0,-66,0),spawnParams); if not hit or hit.Normal.Y<0.55 then unsupportedSpawns+=1 else local gap=spawn.Position.Y-spawn.Size.Y*0.5-hit.Position.Y; maximumSpawnGroundGap=math.max(maximumSpawnGroundGap,gap); if gap>1 then floatingSpawns+=1 elseif gap < -1 then unsupportedSpawns+=1 end end end',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED="..tostring(spawnCount>0))',
+    'print("JAEWOON_OPEN_CLOUD_WORLD_MARKER_SPAWNS="..tostring(markerSpawnCount))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS="..tostring(unsupportedSpawns))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS="..tostring(floatingSpawns))',
     'print("JAEWOON_OPEN_CLOUD_WORLD_MAX_SPAWN_GROUND_GAP="..tostring(maximumSpawnGroundGap))',
@@ -392,7 +397,11 @@ export async function probeRobloxOpenCloudEngine({
     basePartCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=(\d+)/)?.[1]||0),
     spawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0),
     spawnsInBounds:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWNS_IN_BOUNDS=true'),
-    spawnGroundingObserved:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true'),
+    markerSpawnCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MARKER_SPAWNS=(\d+)/)?.[1]||0),
+    spawnGroundingObserved:joined.includes('JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true')
+      &&Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=(\d+)/)?.[1]||0)>0
+      &&/^JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=\d+$/m.test(joined)
+      &&/^JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=\d+$/m.test(joined),
     unsupportedSpawns:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=(\d+)/)?.[1]||0),
     floatingSpawns:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=(\d+)/)?.[1]||0),
     maximumSpawnGroundGap:Number(joined.match(/JAEWOON_OPEN_CLOUD_WORLD_MAX_SPAWN_GROUND_GAP=([0-9.]+)/)?.[1]||0),
@@ -441,3 +450,4 @@ async function main(){
 }
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
 if(isMain){main().catch(error=>{console.error(error.stack||error);process.exitCode=1;});}
+

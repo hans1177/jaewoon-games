@@ -519,7 +519,9 @@ grade.Brightness=.04;grade.Contrast=0;grade.Saturation=0;grade.Enabled=false;gra
 local bloom=Instance.new("BloomEffect");bloom.Name="ManorCandleBloom";bloom.Intensity=.12;bloom.Size=12;bloom.Threshold=1.8;bloom.Enabled=false;bloom.Parent=Lighting
 visibility=function()
  local round=tostring(p:GetAttribute("RoundState")or"")
- local visible=p:GetAttribute("LobbyClientReady")==true and workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId and round~="RUNNING"and round~="SPECTATING"and not round:match("^RESULT_")
+ local character=p.Character
+ local grounded=character and character:GetAttribute("SpawnGroundedAt")~=nil and character:GetAttribute("SpawnGroundedSequence")==character:GetAttribute("SpawnGroundingSequence") and character:GetAttribute("SpawnGroundingScope")=="LOBBY"
+ local visible=grounded and p:GetAttribute("LobbyClientReady")==true and workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId and round~="RUNNING"and round~="SPECTATING"and not round:match("^RESULT_")
  gui.Enabled=visible
  if p:GetAttribute("RoomServer")==true then entered=true;releaseMainCamera()end
  welcome.Visible=visible and not entered;nav.Visible=visible and entered and notebookOpen;header.Visible=visible and entered;commands.Visible=visible and entered
@@ -562,7 +564,15 @@ visibility=function()
   atmosphere=nil;oldAtmosphere=nil
  end
 end
-p.AttributeChanged:Connect(visibility);workspace:GetAttributeChangedSignal("PhysicalLobbyReady"):Connect(visibility);visibility()
+local characterReadyConnection=nil
+local function bindCharacterReadiness(character)
+ if characterReadyConnection then characterReadyConnection:Disconnect();characterReadyConnection=nil end
+ if character then characterReadyConnection=character.AttributeChanged:Connect(visibility)end
+ visibility()
+end
+p.CharacterAdded:Connect(bindCharacterReadiness)
+p.CharacterRemoving:Connect(function()bindCharacterReadiness(nil);gui.Enabled=false end)
+p.AttributeChanged:Connect(visibility);workspace:GetAttributeChangedSignal("PhysicalLobbyReady"):Connect(visibility);bindCharacterReadiness(p.Character)
 -- 앞마당 스폰과 현관 정면축을 사람 눈높이에서 보여준다. 입장 후에는 기본 카메라/터치 조작을 쓴다.
 RunService.RenderStepped:Connect(function()
  applyManorLayout()
@@ -775,3 +785,4 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 end)
+
