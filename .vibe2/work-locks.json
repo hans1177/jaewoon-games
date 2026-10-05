@@ -1,5 +1,36 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ejynul",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-web-repair-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/generated/unity/daechung-rpg/background/asset.glb",
+        "assets/generated/unity/daechung-rpg/background/preview.png",
+        "assets/generated/unity/daechung-rpg/background/evidence.json",
+        "assets/generated/unity/daechung-rpg/item/asset.glb",
+        "assets/generated/unity/daechung-rpg/item/preview.png",
+        "assets/generated/unity/daechung-rpg/item/evidence.json",
+        "assets/generated/unity/daechung-rpg/prop/asset.glb",
+        "assets/generated/unity/daechung-rpg/prop/preview.png",
+        "assets/generated/unity/daechung-rpg/prop/evidence.json"
+      ],
+      "baseSha": "e8847a682197d34ac7dbfb7e8743ee0fec5241a2",
+      "runId": "37293246068",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T10:02:19.697Z",
+      "expiresAt": "2026-10-05T10:47:19.697Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-web-repair-v1"
+      ]
+    }
+  ]
 }
