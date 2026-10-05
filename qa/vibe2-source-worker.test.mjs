@@ -99,7 +99,9 @@ test('walk teacher reaches the existing source prompt once without promoting lea
   const assetRecipe=JSON.parse(prompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
   assert.deepEqual(assetRecipe.familyLessons.map(row=>row.family),['MOTION']);
   assert.deepEqual(assetRecipe.domainModules,[]);
-  assert.deepEqual(assetRecipe.applicationExamples.map(row=>row.id),['CRITICALLY_DAMPED_SECONDARY_MOTION','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND']);
+  assert.deepEqual(assetRecipe.applicationExamples.map(row=>row.id),['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND']);
+  assert.deepEqual(assetRecipe.studioMotion.lessons.map(row=>row.role),['COMBAT_LOCOMOTION']);
+  assert.equal(assetRecipe.studioMotion.productionVerified,false);
   assert.match(prompt,/motionRepairReport/);
   assert.equal(JSON.stringify(order),before);
   const internalPrompt=buildPrompt({...order,source:{internalAssetMotion:true}},context,['init.luau'],{motionCoaching:{block:'[INTERNAL MOTION COACHING BEGIN]\nexisting source-bound example\n[INTERNAL MOTION COACHING END]'}});
@@ -107,6 +109,11 @@ test('walk teacher reaches the existing source prompt once without promoting lea
   assert.ok(internalPrompt.includes('TWO_BONE_REACH_GEOMETRY'));
   assert.ok(internalPrompt.includes('existing source-bound example'));
   assert.ok(Buffer.byteLength(internalPrompt)<20000);
+  const attackPrompt=buildPrompt({...order,source:{internalAssetMotion:true},assetProduction:{...order.assetProduction,motionRepairWorkUnit:{...unit,clipId:'attack'}}},context,['init.luau']);
+  const attackRecipe=JSON.parse(attackPrompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(attackRecipe.studioMotion.lessons.map(row=>row.role),['LIGHT_COMBO']);
+  assert.ok(attackRecipe.applicationExamples.some(row=>row.id==='HERMITE_POSE_SEGMENT'));
+  assert.ok(!attackPrompt.includes('[MOTION TEACHER PRACTICE BEGIN]'));
   for(const other of [{...order,target:'web'},{...order,assetProductionLane:false},{...order,assetProduction:{}},{...order,assetProduction:{motionRepairWorkUnit:{...unit,clipId:'attack'}}}])assert.ok(!buildPrompt(other,context,['init.luau']).includes(marker));
 });
 

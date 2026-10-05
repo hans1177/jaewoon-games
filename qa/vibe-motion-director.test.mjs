@@ -1103,6 +1103,32 @@ test('Roblox motion director plan binds articulated smooth-motion system without
 });
 
 
+test('studio motion teacher reuses canonical action phases and native metrics without granting default tuning authority',()=>{
+  const plain=createStudioMotionActionProfile({platform:'ROBLOX'});
+  assert.ok(!Object.hasOwn(plain,'teaching'));
+  const all=createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:'ALL'}).teaching;
+  assert.equal(all.lessons.length,14);
+  for(const row of all.lessons){
+    assert.deepEqual(row.phases,(DUEL_COMBAT_AUTHORING_PHASES[row.role]||[]).map(phase=>phase.phase));
+    assert.ok(row.lesson.length>150);
+  }
+  for(const [clip,role] of [['walk','COMBAT_LOCOMOTION'],['attack','LIGHT_COMBO'],['heavy_attack_1','HEAVY_ATTACK'],['hit','HIT_REACTION'],['dodge','DODGE'],['jump','AIRBORNE_LOCOMOTION'],['land','AIRBORNE_LOCOMOTION']]){
+    const profile=createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:clip});
+    const {teaching,...base}=profile;
+    assert.deepEqual(base,plain);
+    assert.deepEqual(teaching.lessons.map(row=>row.role),[role]);
+    assert.equal(teaching.runtimeVerified,false);
+    assert.equal(teaching.productionVerified,false);
+    assert.equal(teaching.gameplayAuthority,false);
+    assert.deepEqual(teaching.nativeReview.metrics,plain.automatedQa.requiredMetrics);
+    assert.match(teaching.timing,/Never substitute generic normalized timestamps/);
+    assert.equal(teaching.needsSpecificClipBrief,false);
+  }
+  const unknown=createStudioMotionActionProfile({teachingClip:'unregistered_special_clip'}).teaching;
+  assert.equal(unknown.needsSpecificClipBrief,true);
+  assert.deepEqual(unknown.lessons,[]);
+});
+
 test('studio-grade motion profile binds pose matching warping contact IK reactions audio and mobile LOD without gameplay authority',()=>{
   const profile=createStudioMotionActionProfile({
     platform:'ROBLOX',actorClass:'CREATURE',bodyPlan:'ARACHNID',archetype:'SPIDER',

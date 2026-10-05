@@ -145,8 +145,8 @@ test('asset teacher covers every registered object family, base material family 
 
 test('asset teacher application code is scoped, original practice input and never quality authority',()=>{
   const all=createAssetProductionTeachingRecipe();
-  assert.equal(all.applicationExamples.length,15);
-  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,15);
+  assert.equal(all.applicationExamples.length,16);
+  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,16);
   for(const platform of ['UNITY','WEB']){
     const other=createAssetProductionTeachingRecipe({platform});
     assert.deepEqual(other.applicationExamples,[]);

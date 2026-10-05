@@ -74,10 +74,32 @@ const binary=process.env.VIBE2_LUAU_BINARY;
 const teacherBinary=process.env.VIBE2_LUAU_BINARY||process.env.VIBE2_TEACHER_LUA_BINARY;
 test('teacher application examples execute boundary timing placement inventory and lifecycle cases',{skip:!teacherBinary&&'Set a Lua/Luau teaching executor; native Roblox remains a separate gate'},()=>{
   const recipe=createAssetProductionTeachingRecipe();
-  assert.equal(recipe.applicationExamples.length,15);
+  assert.equal(recipe.applicationExamples.length,16);
   const script='local examples={}\n'+recipe.applicationExamples.map(row=>'examples['+JSON.stringify(row.id)+']=(function()\n'+row.code+'\nend)()').join('\n')+String.raw`
 local function near(a,b) assert(math.abs(a-b)<1e-9, tostring(a).." ~= "..tostring(b)) end
 local spring=examples.CRITICALLY_DAMPED_SECONDARY_MOTION
+local segment=examples.HERMITE_POSE_SEGMENT
+local p,v=segment(2,3,8,3,0,2);near(p,2);near(v,3)
+p,v=segment(2,3,8,3,2,2);near(p,8);near(v,3)
+for i=0,20 do
+  local t=i/10
+  p,v=segment(2,3,8,3,t,2);near(p,2+3*t);near(v,3)
+end
+local leftP,leftV=segment(-1,0,2,.7,.5,.5)
+local rightP,rightV=segment(2,.7,3,0,0,.8)
+near(leftP,rightP);near(leftV,rightV)
+for i=1,19 do
+  local t=i/20
+  p,v=segment(-1,.4,2,-.3,t,1)
+  local h=1e-5
+  local before=segment(-1,.4,2,-.3,t-h,1)
+  local after=segment(-1,.4,2,-.3,t+h,1)
+  assert(math.abs((after-before)/(2*h)-v)<1e-7)
+  local again=segment(-1,.4,2,-.3,t,1);near(p,again)
+end
+p,v=segment(2,0,8,0,-1,2);near(p,2);near(v,0)
+p,v=segment(2,0,8,0,3,2);near(p,8);near(v,0)
+assert(not pcall(segment,0,0,1,0,0,0))
 local x1,v1=spring(-2,3,5,6,1)
 for _,fps in ipairs({30,60,120}) do
   local x,v=-2,3

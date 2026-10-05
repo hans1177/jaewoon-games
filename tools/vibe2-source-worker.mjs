@@ -18,7 +18,7 @@ import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.m
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
-import {createRobloxWalkTeachingRecipe} from '../assets/vibe-motion-director.js';
+import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 
 const clean=value=>String(value??'').trim();
@@ -3295,9 +3295,10 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     families:motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)],
     styleBible:order.assetProduction?.styleBible||{styleFamily:order.selectedTask?.styleFamily||order.styleFamily}
   }):null;
-  // The walk teacher already carries the basic pose envelope; a single source window
-  // needs only advanced motion examples, not listener-lifecycle or duplicate basics.
-  const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify(motionUnit?{...assetTeaching,applicationExamples:assetTeaching.applicationExamples.filter(example=>['CRITICALLY_DAMPED_SECONDARY_MOTION','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND'].includes(example.id))}:assetTeaching)+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
+  const studioMotionTeaching=order.target==='roblox'&&assetTeaching?.familyLessons.some(row=>row.family==='MOTION')?createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:motionUnit?.clipId||'ALL'}).teaching:null;
+  // Bound motion functions keep pure samples; carrying new spring/lifecycle state is
+  // outside their responsibility. Full recipes retain those examples for other owners.
+  const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify({...assetTeaching,...(motionUnit?{advancedTechniques:assetTeaching.advancedTechniques.map(({id,when,check})=>({id,when,check})),applicationExamples:assetTeaching.applicationExamples.filter(example=>['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND'].includes(example.id))}:{}),...(studioMotionTeaching?{studioMotion:studioMotionTeaching}:{})})+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
   const singleMotionBlock=motionUnit?[
     '[SINGLE MOTION WORK UNIT BEGIN]',JSON.stringify(motionUnit),
     motionTeaching?'[MOTION TEACHER PRACTICE BEGIN]\n'+JSON.stringify(motionTeaching)+'\n[MOTION TEACHER PRACTICE END]':'',

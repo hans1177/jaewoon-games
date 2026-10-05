@@ -2239,6 +2239,23 @@ export function createRobloxMotionBlendProfile({
   });
 }
 
+const STUDIO_MOTION_TEACHER_LESSONS=Object.freeze({
+  READY_STANCE:"Readable rest silhouette, controlled breathing and gaze, stable contact and subtle asymmetry. Preserve species/body-plan identity and the authored idle loop; a combat guard is not appropriate for every creature.",
+  COMBAT_LOCOMOTION:"Stage load, push, swing and catch using the existing speed and support pattern. Match pose and contact phase at start/stop/turn boundaries; preserve multi-leg, floating and rolling locomotion instead of imposing biped footwork.",
+  LIGHT_COMBO:"Block clear anticipation, fast committed strike, confirmed contact and recovery poses. Drive the chain from support/pelvis through torso to the actual striking limb. Fit these visual phases to existing hit/cancel/combo markers, never the example percentages.",
+  HEAVY_ATTACK:"Show mass through preparation, a supported committed arc and controlled follow-through. Keep the hand/weapon grip and contact silhouette readable. Heavy presentation does not grant longer startup, extra damage, new hit-stop or slower gameplay.",
+  GAP_CLOSER:"Pose load, launch, controlled travel and braking against the existing root trajectory; match arrival contact without changing distance, speed, invulnerability or the active window.",
+  AERIAL_ATTACK:"Maintain clear airborne preparation, attack contact and recovery silhouettes along the authoritative jump/fall trajectory. Inspect weapon/body intersections and the actual landing transition; do not invent flight or suspension time.",
+  GUARD:"Move through readable guard raise/hold/return using compatible upper-body ownership; retain support and gaze. Preserve block state, shield collision and movement timing.",
+  PARRY_OR_COUNTER:"Align deflection and optional counter visuals to existing confirmed parry/counter events. Keep the contact limb/weapon readable and recovery connected; poses never create a successful parry.",
+  DODGE:"Show load, evade, replant and recovery over the existing displacement. Preserve dodge direction, distance, invulnerability and cancel windows; visible foot sliding needs native measurement.",
+  HIT_REACTION:"Use the confirmed impact direction, body region and existing strength tier. Recoil through a plausible joint chain while preserving hit-stun duration; blend back with compatible pose/velocity. Add no ragdoll authority.",
+  KNOCKDOWN:"Stage impact, balance loss, supported ground contact and the authored down pose. Check penetration and settling against native contact; preserve knockback, collision and down-state timing.",
+  GET_UP:"Support the body with its actual hands/knees/limbs before rising and replanting. Connect the down pose to the existing ready pose, preserving recovery timing and interruption rules.",
+  FINISHER:"Use a distinctive anticipation, commit/contact and signature follow-through within the existing single clip. Preserve target pairing, contact events and recovery; dramatic camera/audio remain within existing presentation ownership.",
+  AIRBORNE_LOCOMOTION:"Separate takeoff compression, airborne balance and landing absorption using existing events and root physics. Inspect clearance, grounded transitions and foot/body contact. A land clip cannot change jump height, airtime or movement authority."
+});
+
 export function createStudioMotionActionProfile({
   platform='UNITY',
   actorClass='HUMANOID_NPC',
@@ -2248,7 +2265,8 @@ export function createStudioMotionActionProfile({
   weightClass='STANDARD',
   combat=true,
   mobile=true,
-  limbCount=2
+  limbCount=2,
+  teachingClip=''
 }={}){
   const weight=upper(weightClass)||'STANDARD';
   const limbs=Math.max(2,Math.floor(Number(limbCount)||2));
@@ -2257,7 +2275,7 @@ export function createStudioMotionActionProfile({
     :weight==='LIGHT'
       ?{anticipation:.82,followThrough:.8,hitStopMs:28,cameraImpulse:.7}
       :{anticipation:1,followThrough:1,hitStopMs:45,cameraImpulse:1};
-  return Object.freeze({
+  const profile=Object.freeze({
     version:1,
     systems:freezeList([
       'POSE_MATCHING','UPPER_LOWER_BODY_LAYERING','ADDITIVE_MOTION','MOTION_WARPING','COMBAT_CONTACT_SOLVER',
@@ -2345,6 +2363,19 @@ export function createStudioMotionActionProfile({
     platform:upper(platform),
     gameplayAuthority:false
   });
+  if(!teachingClip)return profile;
+  const clip=upper(teachingClip).replace(/-/g,'_');
+  const aliases={IDLE:'READY_STANCE',WALK:'COMBAT_LOCOMOTION',JOG:'COMBAT_LOCOMOTION',RUN:'COMBAT_LOCOMOTION',SPRINT:'COMBAT_LOCOMOTION',START:'COMBAT_LOCOMOTION',STOP:'COMBAT_LOCOMOTION',TURN:'COMBAT_LOCOMOTION',TURN_90:'COMBAT_LOCOMOTION',ATTACK:'LIGHT_COMBO',LIGHT_ATTACK_1:'LIGHT_COMBO',LIGHT_ATTACK_2:'LIGHT_COMBO',LIGHT_ATTACK_3:'LIGHT_COMBO',HEAVY_ATTACK_1:'HEAVY_ATTACK',HIT:'HIT_REACTION',HIT_FRONT:'HIT_REACTION',EVADE:'DODGE',JUMP:'AIRBORNE_LOCOMOTION',JUMP_START:'AIRBORNE_LOCOMOTION',JUMP_AIR:'AIRBORNE_LOCOMOTION',FALL:'AIRBORNE_LOCOMOTION',LAND:'AIRBORNE_LOCOMOTION',LANDING:'AIRBORNE_LOCOMOTION'};
+  const role=aliases[clip]||clip;
+  const roles=clip==='ALL'?Object.keys(STUDIO_MOTION_TEACHER_LESSONS):STUDIO_MOTION_TEACHER_LESSONS[role]?[role]:[];
+  return Object.freeze({...profile,teaching:Object.freeze({
+    id:'STUDIO_MOTION_ACTION_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    clipId:text(teachingClip),needsSpecificClipBrief:roles.length===0,
+    lessons:freezeList(roles.map(id=>Object.freeze({role:id,phases:freezeList((DUEL_COMBAT_AUTHORING_PHASES[id]||[]).map(row=>row.phase)),lesson:STUDIO_MOTION_TEACHER_LESSONS[id]}))),
+    craft:'Inspect the exact rig/clip and weak axis first. Block silhouette and intent at the game camera, refine arcs and spacing, then contacts/grips, secondary overlap and transitions. Use compatible authored source and preserve strong axes. Hermite segments can match endpoint pose and velocity; C1 continuity alone does not prove contact or appeal.',
+    timing:'Phase names are staging references only. Read existing seconds/event markers, active/cancel/recovery windows and locks from the target source. Never substitute generic normalized timestamps, default speed, hit-stop, camera or LOD numbers. No new combo, gameplay event or root trajectory is authorized.',
+    nativeReview:Object.freeze({conditions:'Same rig, camera, root speed, clip, event timestamps and lighting before/after; inspect normal speed and slow/frame stepping, including interruption, loop and mobile conditions.',metrics:profile.automatedQa.requiredMetrics,acceptance:'Use existing target-native thresholds and captures. Declare inapplicable or unmeasured axes explicitly; source math, flags and teacher text cannot certify studio quality.'})
+  })});
 }
 
 const STUDIO_MOTION_PRODUCTION=Object.freeze({
