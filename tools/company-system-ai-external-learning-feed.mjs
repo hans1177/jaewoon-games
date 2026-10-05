@@ -32,6 +32,14 @@ function domainsFor(task={}){
     ['PROGRESSION',/progress|quest|level|unlock|stage|wave/],['ECONOMY',/econom|gold|coin|shop|price|currency/],
     ['DEBUGGING',/debug|repair|failure|regression|recovery/],['PERFORMANCE',/performance|fps|latency|memory|cache/],
     ['SECURITY',/security|secret|credential|quarantine|malware/],['ORCHESTRATION',/workflow|queue|dispatch|scheduler|orchestrat/],
+    ['ASSET_PRODUCTION',/asset|mesh|model|geometry|topology|uv|texture|rig|joint|bone|skin.?weight|morph|silhouette/],
+    ['ASSET_ADAPTATION',/asset.?adapt|style.?lock|material|roughness|metallic|normal.?map|palette|recolor|lighting|shader/],
+    ['LIVING_MOTION',/living.?motion|locomotion|idle|walk|run|gait|foot.?contact|center.?of.?mass|secondary.?motion|follow.?through/],
+    ['ANIMATION_FEEL',/animation|anticipation|overshoot|settle|recovery|pose|arc|timing|spacing|attack.?motion|hit.?reaction/],
+    ['VFX',/\bvfx\b|particle|trail|beam|aura|shockwave|hit.?flash|telegraph|impact.?effect/],
+    ['CAMERA_LANGUAGE',/camera|screen.?shake|camera.?shake|zoom|framing|composition|focal.?hierarchy/],
+    ['VISUAL_IDENTITY',/visual.?identity|art.?direction|shape.?language|silhouette|proportion|value.?group|color.?script|aesthetic|미적|실루엣|색감/],
+    ['ENVIRONMENT_COMPOSITION',/environment|world.?composition|landmark|biome|atmosphere|fog|environment.?light|negative.?space/],
     ['MARKETING',/marketing|growth|creator|retention|acquisition|store/],['NETWORKING',/network|server|client|replication|multiplayer/]
   ];
   for(const [name,re] of defs)if(re.test(text))rows.push(name);
@@ -43,6 +51,9 @@ function generalizedPatterns(task={}){
   const patterns=[];
   if(domains.length)patterns.push('For '+domains.join(', ')+' work, change only the verified responsible scope and rerun the exact deterministic checks before reuse.');
   if(files.length)patterns.push('Prefer direct responsible-file repair over wrapper or validation-only bypasses; preserve existing authority and regression gates.');
+  if(domains.some(domain=>['ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','VISUAL_IDENTITY','ENVIRONMENT_COMPOSITION'].includes(domain))){
+    patterns.push('For graphics work, preserve gameplay semantics and judge improvement from target-runtime before/after evidence: silhouette, articulation, contact, material response, focal readability, motion continuity, and mobile-scale clarity.');
+  }
   if(upper(task.retryPolicy)==='UNLIMITED_CAUSAL_REPAIR')patterns.push('On repeated failure, change causal implementation evidence before revalidating the same failure signature.');
   return uniq(patterns).filter(x=>x.length<=240).slice(0,6);
 }
