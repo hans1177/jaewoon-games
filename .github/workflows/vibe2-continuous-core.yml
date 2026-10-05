@@ -361,15 +361,17 @@ jobs:
           echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
 
       - name: Reserve conflict-free DAG batch
-        env:
-          VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '64'
         id: batch
         if: steps.main_wake.outputs.proceed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '64'
         shell: bash
         run: |
           set -euo pipefail
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            echo "VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=$VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS"
+          fi
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
           git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
