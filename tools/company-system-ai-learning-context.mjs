@@ -95,7 +95,7 @@ const BOTTLENECK_DIAGNOSTIC_PROTOCOL=Object.freeze([
 ]);
 
 function advancedBottleneckPlaybook(task={},policy={}){
-  if(!bottleneckTask(task))return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],diagnosticProtocol:[],guidance:''};
+  if(!bottleneckTask(task))return{applied:false,scope:'SYSTEM_AI_ONLY',authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],diagnosticProtocol:[],guidance:''};
   const evolution=policy?.aiExecutionEfficiency?.systemAiEvolution||{};
   const principles=evolution?.principles||{};
   const sensing=evolution?.bottleneckSensing||{};
@@ -118,6 +118,7 @@ function advancedBottleneckPlaybook(task={},policy={}){
   const diagnosticProtocol=BOTTLENECK_DIAGNOSTIC_PROTOCOL.map(row=>({phase:row.phase,requirements:[...row.requirements]}));
   return{
     applied:true,
+    scope:'SYSTEM_AI_ONLY',
     authority:BOTTLENECK_PLAYBOOK_AUTHORITY,
     verifiedPolicyBound:true,
     methods,
