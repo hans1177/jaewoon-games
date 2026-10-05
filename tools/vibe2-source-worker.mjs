@@ -2045,7 +2045,8 @@ export function buildInternalAssetSourceUsageContract(order={}){
       apiContextBatchSize:4,
       apiContextMaxBytes:18000,
       apiContextPerFileMaxBytes:4500,
-      apiContextRotationByBuildUpGeneration:true,
+      allSelectedApiSourcesEveryBuildUp:target==='roblox',
+      apiContextRotationByBuildUpGeneration:target!=='roblox',
       allSelectedApiSourcesRemainEligibleAcrossCycles:true
     }),
     eligibility:Object.freeze({
@@ -2108,9 +2109,11 @@ export function buildInternalAssetSourceUsageContract(order={}){
       noArtificialCombinationCap:true,
       allApplicableExistingSystemsEligible:true,
       allApplicableSelectedAssetsEligible:true,
+      allApplicableExistingSystemsMustUseSelectedInternalLibrary:true,
+      plainPrimitivePresentationForbidden:true,
       continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
       contextBudgetIsNotUsageCap:true,
-      apiContextBatchingAllowedForSynchronizationEfficiency:true,
+      apiContextBatchingAllowedForSynchronizationEfficiency:target!=='roblox',
       independentResponsibleFilesMayApplyInParallel:true,
       exactResponsibleFileConflictStillSerializes:true,
       hardBlockersOnly:Object.freeze(['SECURITY','LICENSE','CORRUPT_SOURCE','PLATFORM_INCOMPATIBLE','EXPLICIT_INTERNAL_USE_FORBIDDEN'])
@@ -2158,18 +2161,24 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
   if(!allSelectedPaths.length)return context;
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
-  const start=((generation-1)*batchSize)%allSelectedPaths.length;
-  const selectedPaths=[];
-  for(let i=0;i<Math.min(batchSize,allSelectedPaths.length);i++)selectedPaths.push(allSelectedPaths[(start+i)%allSelectedPaths.length]);
+  const allSelectedEveryBuildUp=clean(contract?.target).toLowerCase()==='roblox'&&contract?.synchronization?.allSelectedApiSourcesEveryBuildUp===true;
+  const start=allSelectedEveryBuildUp?0:((generation-1)*batchSize)%allSelectedPaths.length;
+  const selectedPaths=allSelectedEveryBuildUp
+    ?[...allSelectedPaths]
+    :Array.from({length:Math.min(batchSize,allSelectedPaths.length)},(_,index)=>allSelectedPaths[(start+index)%allSelectedPaths.length]);
   const existing=new Set(context.files.map(row=>posix(row?.path)));
   const apiFiles=[];
-  let remaining=Math.max(4500,Number(contract?.synchronization?.apiContextMaxBytes||18000));
-  for(const relative of selectedPaths){
+  let remaining=Math.max(allSelectedEveryBuildUp?24000:4500,Number(contract?.synchronization?.apiContextMaxBytes||18000));
+  for(let index=0;index<selectedPaths.length;index++){
+    const relative=selectedPaths[index];
     if(existing.has(relative)||remaining<=0)continue;
     const absolute=path.resolve(cwd,relative);
     if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
     const raw=fs.readFileSync(absolute,'utf8');
-    const excerpt=boundedPromptText(raw,Math.min(Number(contract?.synchronization?.apiContextPerFileMaxBytes||4500),remaining));
+    const remainingFiles=Math.max(1,selectedPaths.length-index);
+    const fairShare=allSelectedEveryBuildUp?Math.max(900,Math.floor(remaining/remainingFiles)):remaining;
+    const perFileLimit=Math.min(Number(contract?.synchronization?.apiContextPerFileMaxBytes||4500),fairShare,remaining);
+    const excerpt=boundedPromptText(raw,perFileLimit);
     const bytes=Buffer.byteLength(excerpt,'utf8');
     remaining-=bytes;
     apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
@@ -2184,6 +2193,8 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     internalAssetApiContextBounded:true,
     internalAssetApiContextGeneration:generation,
     internalAssetApiContextEligibleSourceCount:allSelectedPaths.length,
+    internalAssetApiContextCoverageCount:apiFiles.length+selectedPaths.filter(relative=>existing.has(relative)).length,
+    internalAssetApiContextAllSelectedEveryBuildUp:allSelectedEveryBuildUp,
     internalAssetApiContextRotationStart:start
   };
 }
@@ -2208,14 +2219,14 @@ function internalAssetSourceUsageGuidance(order={}){
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
-    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
-    'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility. For Roblox, every selected internal family/library must be considered in the same BUILD_UP cycle; NOT_APPLICABLE is allowed only when the corresponding game system truly does not exist. A blank/default/plain primitive presentation is never an acceptable fallback.',
+    'For Roblox, every selected common-script API source is injected into each BUILD_UP as bounded read-only context so the worker can consume all applicable libraries immediately. Rotation/batching is allowed only for non-Roblox targets; context budget is not a usage cap.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
     'The explicit signal matrix is a FLOOR, not a ceiling. Scan current responsible source for additional existing events/state names and use adaptiveSignalRouting semantic hints only to choose presentation families that are both selected and applicable. Unknown source events may use the generic presentation fallback, but may not create a new gameplay system, asset ID, factory, role, state, or authority.',
     'Reuse existing common asset scripts/factories when the selected source/API reference is available. Call them from the current responsible game code or bind their returned native objects there; do not fork/copy a common script into each game.',
-    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. They are read-only bounded implementation context and rotate across BUILD_UP cycles; prefer the existing API before new per-game presentation code.',
+    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. They are read-only bounded implementation context and are all exposed every BUILD_UP; prefer the existing API before new per-game presentation code.',
     'When an existing Inventory/Equipment/Quest/Shop/Map/Party/Crafting/Dialogue/NPC/Character/Settings/Search/Filter/Sort system needs UI, inspect the matching RobloxCommonUI Create* factory first and connect it to the existing responsible state instead of rebuilding the screen.',
     'Variant diversity must preserve exact role/body-plan and use existing state/context plus usage history/lineage; simple random asset swapping is forbidden. Prefer compatible variants, recombination and style adaptation without sacrificing fit.',
     'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
@@ -4922,6 +4933,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetApiContextBounded:context.internalAssetApiContextBounded===true,
     internalAssetApiContextGeneration:Number(context.internalAssetApiContextGeneration||0),
     internalAssetApiContextEligibleSourceCount:Number(context.internalAssetApiContextEligibleSourceCount||0),
+    internalAssetApiContextCoverageCount:Number(context.internalAssetApiContextCoverageCount||0),
+    internalAssetApiContextAllSelectedEveryBuildUp:context.internalAssetApiContextAllSelectedEveryBuildUp===true,
     internalAssetApiContextRotationStart:Number(context.internalAssetApiContextRotationStart||0),
     contextFiles:context.files.length,
     contextBytes:context.bytes,
