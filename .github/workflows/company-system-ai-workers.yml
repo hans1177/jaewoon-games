@@ -131,7 +131,9 @@ jobs:
             try{
               const raw=cp.execFileSync('gh',['api',`repos/${repo}/contents/.github/workflows/company-development-roblox-runtime.yml?ref=${sha}`,'--jq','.content'],{encoding:'utf8',stdio:['ignore','pipe','ignore']});
               const text=Buffer.from(raw.replace(/\s+/g,''),'base64').toString('utf8');
-              const newestGroup="group: roblox-runtime-source-plan-"+'
+              const expressionToken=String.fromCharCode(36,123,123)+" inputs.game_id || 'batch' "+String.fromCharCode(125,125);
+              const newestGroup='group: roblox-runtime-source-plan-'+expressionToken;
+              current=text.includes(newestGroup)&&text.includes('cancel-in-progress: true');
             }catch{}
             cache.set(sha,current);
             return current;
