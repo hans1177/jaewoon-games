@@ -9,21 +9,21 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-10-05T09:05:30.618Z",
+  "lastSuccessfulModelCallAt": "2026-10-05T09:27:34.137Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 1,
-      "failures": 6,
+      "calls": 10,
+      "successes": 2,
+      "failures": 8,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19166,
-      "lastMs": 3519,
+      "totalMs": 26330,
+      "lastMs": 2917,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T09:25:23.363Z"
+      "updatedAt": "2026-10-05T09:27:37.055Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -114,28 +114,28 @@
       "updatedAt": "2026-10-05T09:03:20.341Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 6,
+      "calls": 8,
       "successes": 0,
-      "failures": 6,
+      "failures": 8,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 60397,
-      "lastMs": 10922,
-      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T09:25:30.766Z"
+      "totalMs": 75933,
+      "lastMs": 8183,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-10-05T09:27:42.321Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 2,
+      "calls": 3,
       "successes": 0,
-      "failures": 2,
-      "timeouts": 2,
+      "failures": 3,
+      "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 240007,
-      "lastMs": 120003,
+      "totalMs": 360012,
+      "lastMs": 120005,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T09:07:36.804Z"
+      "updatedAt": "2026-10-05T09:27:31.030Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T09:25:31.023Z"
+  "updatedAt": "2026-10-05T09:27:42.321Z"
 }
