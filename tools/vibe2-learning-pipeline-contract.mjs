@@ -97,8 +97,8 @@ eq(portableWeb?.status, 'LEGACY_DISABLED', 'legacy Web learning status');
 
 eq(JSON.stringify(roadmap.canonicalLearningChain), JSON.stringify(expectedChain), 'central canonical learning chain');
 eq(roadmap.parallelLearningPipelineAllowed, false, 'central parallel learning pipeline policy');
-eq(roadmap.webCompanion?.role, 'UNITY_WEB_VALIDATION_SURFACE_ONLY', 'central Web role');
-eq(roadmap.webCompanion?.developmentAdmissionGate, false, 'central Web development admission');
+eq(roadmap.webCompanion?.role, 'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS', 'central Web role');
+eq(roadmap.webCompanion?.developmentAdmissionGate, true, 'central Web development admission');
 eq(roadmap.webCompanion?.cannotReplaceNativeRuntimeEvidence, true, 'central Web native evidence boundary');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
