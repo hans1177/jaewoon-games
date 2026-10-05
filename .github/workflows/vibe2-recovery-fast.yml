@@ -17,6 +17,13 @@ permissions:
   contents: write
   actions: write
 
+# Recovery Fast always re-reads the latest control queues and processes every currently scoped
+# recovery item. Preserve the active sweep, but coalesce redundant wakeups to one pending sweep.
+# This control-plane group does not serialize GAME_PRIMARY workers or the locked F0-F9 chain.
+concurrency:
+  group: vibe2-recovery-fast-control
+  cancel-in-progress: false
+
 jobs:
   recover:
     runs-on: ubuntu-slim
