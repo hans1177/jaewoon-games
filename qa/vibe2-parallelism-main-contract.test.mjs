@@ -444,6 +444,17 @@ test('24h runner defers new asset lane launch under repository-wide runner press
   assert.match(assetBlock,/needs\.plan\.outputs\.runner_pressure != 'YES' && needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
 });
 
+test('24h runner does not treat many workflow runs as runner saturation when queued jobs are zero',()=>{
+  const stateStart=runner.indexOf('      - name: Read queue continuation state');
+  const stateEnd=runner.indexOf('\n      - name: Recover reviewed winners stranded before release dispatch',stateStart);
+  assert.ok(stateStart>=0&&stateEnd>stateStart);
+  const stateBlock=runner.slice(stateStart,stateEnd);
+  assert.match(stateBlock,/if \[ "\$job_pressure_count" -eq 0 \]; then\n\s+runner_pressure='NO'/);
+  assert.match(stateBlock,/VIBE2_24H_RUNNER_ZERO_JOB_PRESSURE_BYPASS=YES/);
+  assert.match(stateBlock,/elif \[ "\$pressure_count" -lt "\$pressure_threshold" \] && \[ "\$job_pressure_count" -lt "\$job_pressure_threshold" \]; then/);
+  assert.match(stateBlock,/VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE=/);
+});
+
 test('failed worker releases its exact lock after immutable upload while PASS holds until fan-in',()=>{
   const upload=core.indexOf('- name: Upload worker result for fan-in');
   const release=core.indexOf('- name: Release failed worker Work Lock after immutable result upload');
