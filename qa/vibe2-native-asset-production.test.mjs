@@ -5,12 +5,32 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {assetProductionGuidance,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
+import {assetProductionGuidance,buildVibeAssetProductionPlan,buildRegisteredRobloxLibraryPackInventory,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('registered Roblox internal library inventory matches maintenance count and evaluates every registered pack',()=>{
+  const repoRoot=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
+  const inventory=buildRegisteredRobloxLibraryPackInventory({registry,repoRoot});
+  assert.equal(inventory.required,true);
+  assert.equal(inventory.packCount,registry.internalAssetLibraryAutomation.maintenance.packCount);
+  assert.equal(inventory.countMatchesMaintenance,true);
+  assert.equal(inventory.allPacksEvaluated,true);
+  assert.equal(inventory.allRegisteredPacksAutoDiscovery,true);
+  assert.equal(inventory.allApplicablePacksRequireRealSourceBinding,true);
+  assert.equal(inventory.plainDefaultPrimitiveFallbackForbidden,true);
+  assert.ok(inventory.packCount>=18);
+  assert.equal(inventory.packs.length,inventory.packCount);
+  assert.ok(inventory.packs.every(row=>row.root&&row.assetCount>0&&row.contextFile&&row.evaluationRequired===true));
+  const roots=new Set(inventory.packs.map(row=>row.root));
+  for(const root of ['common-ui-v1','common-vfx-v1','common-motion-v1','horror-lore-v1','monster-adventure-v1','survival-core-world-v1','world-ghosts'])assert.ok(roots.has(root),root);
+  assert.equal(roots.has('midnight-manor'),false);
+  assert.equal(roots.has('survival-wildlife'),false);
+});
 
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
   const order={
@@ -65,11 +85,15 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.applicationCoverage.noArtificialGameplaySignalCoverageCap,true);
   assert.equal(a.applicationCoverage.noArtificialCombinationCap,true);
   assert.equal(a.applicationCoverage.contextBudgetIsNotUsageCap,true);
+  assert.equal(a.applicationCoverage.allApplicableExistingSystemsMustUseSelectedInternalLibrary,true);
+  assert.equal(a.applicationCoverage.plainPrimitivePresentationForbidden,true);
   assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
   assert.equal(a.synchronization.selectedSubsetOnly,true);
   assert.equal(a.synchronization.changedFamilyRebindOnly,true);
+  assert.equal(a.synchronization.allSelectedApiSourcesEveryBuildUp,true);
+  assert.equal(a.synchronization.apiContextRotationByBuildUpGeneration,false);
   assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
-  assert.equal(a.version,3);
+  assert.equal(a.version,4);
   assert.ok(a.usageMatrix.length>=72);
   assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
   for(const signal of [
@@ -92,7 +116,7 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.match(a.usageMatrix.find(row=>row.signal==='EQUIPMENT_SOCKET_AND_STANCE_SYNC').rule,/equippedWeaponId/);
   assert.match(a.usageMatrix.find(row=>row.signal==='INTERACTION_ACTION_GRAMMAR').rule,/OPEN\/CLOSE\/GATHER\/MINE\/CHOP\/DIG\/CRAFT\/SIT\/PUSH\/PULL\/CARRY\/REVIVE\/MOUNT/);
   assert.equal(a.synchronization.selectedCommonSourceApiDiscovery,true);
-  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesOnly,true);
+  assert.equal(a.synchronization.selectedCommonSourcesDerivedFromSelectedFamiliesOnly,false);
   assert.equal(a.commonSourceReuse.existingFactoryBeforeNewImplementation,true);
   assert.equal(a.repetitionControl.simpleRandomVariantSelectionForbidden,true);
   assert.equal(a.repetitionControl.usageHistoryAndLineageMustBePreserved,true);
@@ -114,18 +138,28 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.deepEqual(a.sourceCandidates[0].sourceFiles,['assets/roblox/common-tools-v1/RobloxCommonTools.luau']);
 });
 
-test('Vibe source loads only selected internal asset API context with hard bounds',()=>{
+test('Vibe source exposes every selected Roblox internal asset API each BUILD_UP with hard bounds',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceApiContextOnlyForSelectedAssets:true/);
   assert.match(source,/fullLibraryReplicationForbidden:true/);
   assert.match(source,/fullCatalogPromptInjectionForbidden:true/);
   assert.match(source,/apiContextBatchSize:4/);
-  assert.match(source,/apiContextMaxBytes:18000/);
+  assert.match(source,/apiContextMaxBytes:24000/);
+  assert.match(source,/apiContextMinimumPerFileBytes:320/);
   assert.match(source,/apiContextPerFileMaxBytes:4500/);
-  assert.match(source,/apiContextRotationByBuildUpGeneration:true/);
+  assert.match(source,/allSelectedApiSourcesEveryBuildUp:target==='roblox'/);
+  assert.match(source,/apiContextRotationByBuildUpGeneration:target!=='roblox'/);
   assert.match(source,/allSelectedApiSourcesRemainEligibleAcrossCycles:true/);
-  assert.match(source,/const start=\(\(generation-1\)\*batchSize\)%allSelectedPaths\.length/);
+  assert.match(source,/registeredPackMetadataEveryBuildUp:target==='roblox'/);
+  assert.match(source,/registeredPackPrimaryContextEveryBuildUp:target==='roblox'/);
+  assert.match(source,/registeredPackContextPaths/);
+  assert.match(source,/internalAssetRegisteredPackCount/);
+  assert.match(source,/EVERY REGISTERED INTERNAL LIBRARY PACK is evaluated every BUILD_UP/);
+  assert.match(source,/const allSelectedEveryBuildUp=clean\(contract\?\.target\)\.toLowerCase\(\)==='roblox'/);
+  assert.match(source,/const selectedPaths=allSelectedEveryBuildUp/);
   assert.match(source,/internalAssetApiContextEligibleSourceCount:allSelectedPaths\.length/);
+  assert.match(source,/internalAssetApiContextCoverageCount/);
+  assert.match(source,/internalAssetApiContextAllSelectedEveryBuildUp/);
   assert.match(source,/internalAssetApiContext:true/);
   assert.match(source,/editable:false/);
   assert.match(source,/Do not invent an asset ID, pack, factory, source file, or role/);
@@ -134,9 +168,10 @@ test('Vibe source loads only selected internal asset API context with hard bound
   assert.match(source,/Internal quality score is NOT a usage gate/);
   assert.match(source,/leaving a blank\/default\/primitive presentation/);
   assert.match(source,/NO artificial asset-count, family-count, gameplay-signal, or combination cap/);
-  assert.match(source,/Context\/API batching is only synchronization optimization and MUST NOT become a usage cap/);
-  assert.match(source,/rotates by BUILD_UP generation/i);
-  assert.match(source,/every selected compatible source remains eligible for later cycles/i);
+  assert.match(source,/For Roblox, every selected internal family\/library must be considered in the same BUILD_UP cycle/i);
+  assert.match(source,/blank\/default\/plain primitive presentation is never an acceptable fallback/i);
+  assert.match(source,/every selected common-script API source is injected into each BUILD_UP/i);
+  assert.match(source,/Rotation\/batching is allowed only for non-Roblox targets/i);
   assert.match(source,/explicit signal matrix is a FLOOR, not a ceiling/i);
   assert.match(source,/Unknown source events may use the generic presentation fallback/i);
   assert.match(source,/never perform full-library resync/i);
@@ -1135,6 +1170,53 @@ test('native asset plan prefers verified company library then repository then ex
   }
 });
 
+
+test('low-score internal Roblox asset stays a first-class reuse candidate while corrupt and reference rows stay blocked',()=>{
+  const root=tempRoot();
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {
+          id:'low-ui',category:'UI',status:'REPO_ASSET',path:'assets/roblox/common-ui-v1/RobloxCommonUI.luau',
+          license:'project-original',platform:'ROBLOX',internalUseAllowed:true,internalAuditScore:120,internalAuditGrade:'REPAIR_REQUIRED',
+          productionVerified:false,verifiedCompanyReusable:false,lowScoreWouldStillBeUsable:true
+        },
+        {
+          id:'corrupt-ui',category:'UI',status:'REPO_ASSET',path:'assets/roblox/corrupt-ui.luau',
+          license:'project-original',platform:'ROBLOX',internalUseAllowed:true,internalAuditScore:990,corruptSource:true
+        },
+        {
+          id:'reference-ui',category:'UI',status:'REPO_ASSET',path:'assets/reference-ui.svg',
+          license:'project-original',platform:'WEB_REFERENCE',internalUseAllowed:true,internalAuditScore:990
+        }
+      ]
+    },null,2));
+    const plan=buildVibeAssetProductionPlan({
+      task:{gameId:'demo',goal:'UI 그래픽 개선'},target:'roblox',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    });
+    const row=plan.decisions.find(item=>item.type==='ui');
+    assert.ok(row);
+    const low=row.companyCandidates.find(item=>item.id==='low-ui');
+    assert.ok(low);
+    assert.equal(low.sourceTier,'COMPANY_INTERNAL_ASSET');
+    assert.equal(low.internalAuditScore,120);
+    assert.equal(low.internalUseAllowed,true);
+    assert.ok(!row.companyCandidates.some(item=>item.id==='corrupt-ui'));
+    assert.ok(!row.companyCandidates.some(item=>item.id==='reference-ui'));
+    const lowApply=row.applyFirst.candidates.find(item=>item.id==='low-ui');
+    assert.ok(lowApply);
+    assert.equal(lowApply.ready,true);
+    assert.equal(lowApply.qualityPassRequiredBeforeKeep,false);
+    assert.equal(lowApply.internalAuditScoreIsUsageGate,false);
+    assert.equal(lowApply.safeCompatibleLowScoreUseRequired,true);
+    assert.equal(lowApply.qualityDebtMayRemainOpen,true);
+    assert.ok(row.decisionOrder.includes('REUSE_COMPANY_INTERNAL_ASSET'));
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
 
 test('downloaded external asset keeps external provenance and must compare against internal assets before selection',()=>{
   const root=tempRoot();

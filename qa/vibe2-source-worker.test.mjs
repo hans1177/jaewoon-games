@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, buildInternalAssetSourceUsageContract } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -2135,6 +2135,98 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
   assert.match(candidate,/StudioAssetAtoms/);
+});
+
+test('Roblox BUILD_UP exposes every selected internal library API in the same cycle instead of rotating four at a time',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  write(path.join(cwd,root,relative),'local value = 1\n');
+  const apiByFamily={
+    CHARACTER:'assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau',
+    CREATURE:'assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau',
+    BUILDING:'assets/roblox/common-building-v1/RobloxCommonBuilding.luau',
+    SKILL:'assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau',
+    MATERIAL:'assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',
+    VFX:'assets/roblox/common-vfx-v1/RobloxCommonVFX.luau'
+  };
+  for(const [family,file] of Object.entries(apiByFamily))write(path.join(cwd,file),'local API = { Family = '+JSON.stringify(family)+' }\nreturn API\n');
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'all-internal-library-api-context'});
+  const packs=Object.entries(apiByFamily).map(([family,file])=>({
+    root:file.split('/')[2],packIds:['pack-'+family.toLowerCase()],families:[family],assetCount:1,contextFile:file,evaluationRequired:true
+  }));
+  workOrder.assetProduction={
+    baseMaterialLoadout:{families:Object.fromEntries(Object.keys(apiByFamily).map(family=>[family,[family+'_ATOM']]))},
+    registeredRobloxLibraryPacks:{
+      required:true,expectedPackCount:packs.length,packCount:packs.length,countMatchesMaintenance:true,
+      allPacksEvaluated:true,allRegisteredPacksAutoDiscovery:true,allApplicablePacksRequireRealSourceBinding:true,
+      notApplicableRequiresExistingSystemAbsenceEvidence:true,plainDefaultPrimitiveFallbackForbidden:true,packs
+    }
+  };
+  const contract=buildInternalAssetSourceUsageContract(workOrder);
+  assert.equal(contract.version,4);
+  assert.equal(contract.synchronization.allSelectedApiSourcesEveryBuildUp,true);
+  assert.equal(contract.synchronization.apiContextRotationByBuildUpGeneration,false);
+  assert.equal(contract.registeredPackInventory.packCount,packs.length);
+  assert.equal(contract.registeredPackInventory.countMatchesMaintenance,true);
+  assert.equal(contract.applicationCoverage.allApplicableExistingSystemsMustUseSelectedInternalLibrary,true);
+  assert.equal(contract.applicationCoverage.allRegisteredPacksMustBeEvaluated,true);
+  assert.equal(contract.applicationCoverage.allApplicableRegisteredPacksMustUseRealSourceBinding,true);
+  assert.equal(contract.applicationCoverage.plainPrimitivePresentationForbidden,true);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const response=path.join(cwd,'candidate.json');
+  write(response,JSON.stringify({edits:[{path:relative,find:'local value = 1',replace:'local value = 2'}]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[response]});
+  assert.equal(result.internalAssetApiContextAllSelectedEveryBuildUp,true);
+  assert.equal(result.internalAssetRegisteredPackCount,packs.length);
+  assert.equal(result.internalAssetExpectedRegisteredPackCount,packs.length);
+  assert.equal(result.internalAssetRegisteredPackCountMatchesMaintenance,true);
+  assert.equal(result.internalAssetApiContextEligibleSourceCount,6);
+  assert.equal(result.internalAssetApiContextCoverageCount,6);
+  assert.deepEqual(new Set(result.internalAssetRegisteredPackContextFiles),new Set(Object.values(apiByFamily)));
+  assert.deepEqual(new Set(result.internalAssetApiContextFiles),new Set(Object.values(apiByFamily)));
+});
+
+test('Roblox BUILD_UP rejects a registered library inventory whose actual pack count disagrees with maintenance',()=>{
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'pack-count-mismatch'});
+  workOrder.assetProduction={
+    registeredRobloxLibraryPacks:{
+      required:true,expectedPackCount:20,packCount:1,countMatchesMaintenance:false,
+      packs:[{root:'common-ui-v1',families:['UI'],assetCount:1,contextFile:'assets/roblox/common-ui-v1/RobloxCommonUI.luau',evaluationRequired:true}]
+    }
+  };
+  assert.throws(()=>buildInternalAssetSourceUsageContract(workOrder),/ROBLOX_INTERNAL_LIBRARY_PACK_COUNT_MISMATCH/);
+});
+
+test('Roblox internal asset application retries a bare visual Part and accepts materialized source',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source='local gui = Instance.new("ScreenGui")\n';
+  write(path.join(cwd,root,relative),source);
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'reject-plain-primitive'});
+  workOrder.assetProduction={baseMaterialLoadout:{robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,bindingVersion:2}}};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const bare=[
+    'local STUDIO_ASSET_BINDING_VERSION = 2',
+    'local STUDIO_ASSET_SELECTION = {"TREE_ATOM"}',
+    'local root = Instance.new("Frame")',
+    'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
+    'root.BackgroundColor3 = Color3.fromRGB(20,30,40)',
+    'local tree = Instance.new("Part")',
+    'tree.Name = "Tree"',
+    'tree.Parent = workspace'
+  ].join('\n');
+  const dressed=bare.replace('tree.Name = "Tree"','tree.Name = "Tree"\ntree.Material = Enum.Material.Grass');
+  const bad=path.join(cwd,'bare.json'),good=path.join(cwd,'dressed.json');
+  write(bad,JSON.stringify({edits:[{path:relative,find:source.trimEnd(),replace:bare}]}));
+  write(good,JSON.stringify({edits:[{path:relative,find:source.trimEnd(),replace:dressed}]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/tree\.Material\s*=\s*Enum\.Material\.Grass/);
 });
 
 test('Roblox internal asset handoff automatically expands general BUILD_UP responsibility to an existing visual owner',()=>{
