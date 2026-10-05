@@ -2993,14 +2993,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T15:47:49.312Z",
+      "updatedAt": "2026-10-05T15:49:21.496Z",
       "robloxSourceCommit": "9af61be761c423faee2970b5ea529a6b03dcaec7",
       "robloxSourceBootstrapPassedAt": "2026-10-04T09:34:12.374Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T15:19:35.727Z",
@@ -3091,7 +3091,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-bug-defense-37327263262",
       "unitySourceCommit": "df0b4e4772f7269d25c1760cad7a347e381d1942",
-      "unityBuildRunId": 37328067167,
+      "unityBuildRunId": null,
       "unityRuntimeSmokeRunId": 37329824757,
       "unityIndependentQaRunId": 37330186480,
       "unityRegressionRunId": 37331788851,
@@ -3149,7 +3149,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-05T15:31:54.813Z"
+        "verifiedAt": "2026-10-05T15:49:21.496Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -3164,7 +3164,7 @@
         "sourceRevision": "df0b4e4772f7269d25c1760cad7a347e381d1942",
         "sourceRootTreeSha": "f29ace9d9eba145670a1a7c558d525c373b08d55",
         "sourceFingerprint": "cb8c9d4217a48cdf257a7016926d50cc4acd17bbebda44443ae1fbd6d51a3efd",
-        "buildOrPackagePassed": true,
+        "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
         "independentQaPassed": false,
@@ -3188,7 +3188,7 @@
         "sourceRevision": "df0b4e4772f7269d25c1760cad7a347e381d1942",
         "sourceRootTreeSha": "f29ace9d9eba145670a1a7c558d525c373b08d55",
         "sourceFingerprint": "cb8c9d4217a48cdf257a7016926d50cc4acd17bbebda44443ae1fbd6d51a3efd",
-        "buildOrPackagePassed": true,
+        "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
         "independentQaPassed": false,
@@ -21716,7 +21716,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T15:47:49.312Z",
+  "updatedAt": "2026-10-05T15:49:23.568Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
