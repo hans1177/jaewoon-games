@@ -120,6 +120,22 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = 'push' ]; then
+            ROBLOX_INGRESS_FIX_SHA='99baeefb84a1846af862d71a515aeb8229ef9506'
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" --jq '.workflow_runs[] | select(.status=="queued" or .status=="pending" or .status=="requested" or .status=="waiting") | [.id,.head_sha] | @tsv' > /tmp/system-ai-roblox-runtime-active.tsv
+            stale_cancelled=0
+            while IFS=$'\t' read -r stale_run_id stale_run_sha; do
+              [ -n "$stale_run_id" ] || continue
+              [ -n "$stale_run_sha" ] || continue
+              [ "$stale_run_sha" != "$ROBLOX_INGRESS_FIX_SHA" ] || continue
+              relation="$(gh api "repos/$GITHUB_REPOSITORY/compare/$stale_run_sha...$ROBLOX_INGRESS_FIX_SHA" --jq '.status' 2>/dev/null || true)"
+              [ "$relation" = 'ahead' ] || continue
+              if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$stale_run_id/cancel" >/dev/null 2>&1; then
+                stale_cancelled=$((stale_cancelled+1))
+                echo "SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCELLED=$stale_run_id:$stale_run_sha"
+              fi
+            done < /tmp/system-ai-roblox-runtime-active.tsv
+            echo "SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCEL_COUNT=$stale_cancelled"
+            echo 'SYSTEM_AI_STALE_ROBLOX_INGRESS_IN_PROGRESS_CANCEL=NO'
             echo 'matrix={"include":[]}' >> "$GITHUB_OUTPUT"
             echo 'count=0' >> "$GITHUB_OUTPUT"
             echo 'targeted_security_recovery=NO' >> "$GITHUB_OUTPUT"
