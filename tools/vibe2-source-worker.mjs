@@ -1871,6 +1871,23 @@ export function buildInternalAssetSourceUsageContract(order={}){
   const assetProduction=order?.assetProduction||{};
   const loadout=assetProduction?.baseMaterialLoadout||{};
   const flowLoadout=assetProduction?.flowAssetLoadout||{};
+  const packInventory=assetProduction?.registeredRobloxLibraryPacks||{};
+  const registeredPacks=(Array.isArray(packInventory?.packs)?packInventory.packs:[]).map(row=>Object.freeze({
+    root:clean(row?.root)||null,
+    packIds:Object.freeze(unique(row?.packIds||[]).sort()),
+    families:Object.freeze(unique((row?.families||[]).map(value=>clean(value).toUpperCase()).filter(Boolean)).sort()),
+    assetCount:Math.max(0,Number(row?.assetCount||0)),
+    contextFile:posix(row?.contextFile)||null,
+    evaluationRequired:row?.evaluationRequired!==false,
+    applicationRule:clean(row?.applicationRule)||'APPLY_WHEN_COMPATIBLE_EXISTING_SYSTEM_ELSE_NOT_APPLICABLE_WITH_ABSENCE_EVIDENCE'
+  })).filter(row=>row.root).sort((a,b)=>a.root.localeCompare(b.root));
+  const expectedRegisteredPackCount=Math.max(0,Number(packInventory?.expectedPackCount||0));
+  const registeredPackCount=registeredPacks.length;
+  const registeredPackCountMatchesMaintenance=packInventory?.countMatchesMaintenance!==false
+    &&(expectedRegisteredPackCount<=0||registeredPackCount===expectedRegisteredPackCount);
+  if(target==='roblox'&&packInventory?.required===true&&!registeredPackCountMatchesMaintenance){
+    throw new Error('ROBLOX_INTERNAL_LIBRARY_PACK_COUNT_MISMATCH:expected='+expectedRegisteredPackCount+':actual='+registeredPackCount);
+  }
   const familyEntries=Object.entries(loadout?.families||{})
     .map(([family,atoms])=>[clean(family).toUpperCase(),unique((atoms||[]).map(clean).filter(Boolean)).sort()])
     .filter(([family,atoms])=>family&&atoms.length)
@@ -1904,8 +1921,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
   const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
   const payload={
-    version:3,target,gameId,libraryVersion,
+    version:4,target,gameId,libraryVersion,
     exactFamilies,
+    registeredPacks:registeredPacks.map(row=>({root:row.root,packIds:[...row.packIds],families:[...row.families],assetCount:row.assetCount,contextFile:row.contextFile,applicationRule:row.applicationRule})),
+    expectedRegisteredPackCount,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
   };
@@ -2023,12 +2042,24 @@ export function buildInternalAssetSourceUsageContract(order={}){
     })
   });
   return Object.freeze({
-    version:3,
+    version:4,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
     fingerprint,
     exactFamilies,
+    registeredPackInventory:Object.freeze({
+      required:packInventory?.required===true,
+      expectedPackCount:expectedRegisteredPackCount,
+      packCount:registeredPackCount,
+      countMatchesMaintenance:registeredPackCountMatchesMaintenance,
+      allPacksEvaluated:packInventory?.allPacksEvaluated===true||registeredPackCount>0,
+      allRegisteredPacksAutoDiscovery:packInventory?.allRegisteredPacksAutoDiscovery===true,
+      allApplicablePacksRequireRealSourceBinding:packInventory?.allApplicablePacksRequireRealSourceBinding===true,
+      notApplicableRequiresExistingSystemAbsenceEvidence:packInventory?.notApplicableRequiresExistingSystemAbsenceEvidence!==false,
+      plainDefaultPrimitiveFallbackForbidden:packInventory?.plainDefaultPrimitiveFallbackForbidden!==false
+    }),
+    registeredPacks:Object.freeze(registeredPacks),
     flowSelections:Object.freeze(flowSelections),
     sourceCandidates:Object.freeze(dedupedSources),
     synchronization:Object.freeze({
@@ -2040,10 +2071,13 @@ export function buildInternalAssetSourceUsageContract(order={}){
       changedFamilyRebindOnly:true,
       sourceApiContextOnlyForSelectedAssets:true,
       selectedCommonSourceApiDiscovery:true,
-      selectedCommonSourcesDerivedFromSelectedFamiliesOnly:true,
+      selectedCommonSourcesDerivedFromSelectedFamiliesOnly:false,
+      registeredPackMetadataEveryBuildUp:target==='roblox',
+      registeredPackPrimaryContextEveryBuildUp:target==='roblox',
       selectedCommonSourceApiContextReadOnly:true,
       apiContextBatchSize:4,
-      apiContextMaxBytes:18000,
+      apiContextMaxBytes:24000,
+      apiContextMinimumPerFileBytes:320,
       apiContextPerFileMaxBytes:4500,
       allSelectedApiSourcesEveryBuildUp:target==='roblox',
       apiContextRotationByBuildUpGeneration:target!=='roblox',
@@ -2110,6 +2144,11 @@ export function buildInternalAssetSourceUsageContract(order={}){
       allApplicableExistingSystemsEligible:true,
       allApplicableSelectedAssetsEligible:true,
       allApplicableExistingSystemsMustUseSelectedInternalLibrary:true,
+      allRegisteredPacksMustBeEvaluated:target==='roblox',
+      allApplicableRegisteredPacksMustUseRealSourceBinding:target==='roblox',
+      registeredPackCount,
+      expectedRegisteredPackCount,
+      registeredPackCountMatchesMaintenance,
       plainPrimitivePresentationForbidden:true,
       continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
       contextBudgetIsNotUsageCap:true,
@@ -2146,7 +2185,9 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     };
     for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
   }
+  const registeredPackContextPaths=(contract.registeredPacks||[]).map(row=>row?.contextFile).filter(Boolean);
   const allSelectedPaths=unique([
+    ...registeredPackContextPaths,
     ...selectedCommonSourcePaths,
     ...(contract.flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).flatMap(row=>row?.sourceFiles||[]),
@@ -2156,7 +2197,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     &&!path.isAbsolute(file)
     &&!file.split('/').includes('..')
     &&/^assets\//.test(file)
-    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
+    &&/\.(?:lua|luau|js|mjs|json)$/i.test(file)
   )).sort();
   if(!allSelectedPaths.length)return context;
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
@@ -2168,7 +2209,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     :Array.from({length:Math.min(batchSize,allSelectedPaths.length)},(_,index)=>allSelectedPaths[(start+index)%allSelectedPaths.length]);
   const existing=new Set(context.files.map(row=>posix(row?.path)));
   const apiFiles=[];
-  let remaining=Math.max(allSelectedEveryBuildUp?24000:4500,Number(contract?.synchronization?.apiContextMaxBytes||18000));
+  let remaining=Math.max(allSelectedEveryBuildUp?24000:4500,Number(contract?.synchronization?.apiContextMaxBytes||24000));
   for(let index=0;index<selectedPaths.length;index++){
     const relative=selectedPaths[index];
     if(existing.has(relative)||remaining<=0)continue;
@@ -2176,7 +2217,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
     const raw=fs.readFileSync(absolute,'utf8');
     const remainingFiles=Math.max(1,selectedPaths.length-index);
-    const fairShare=allSelectedEveryBuildUp?Math.max(900,Math.floor(remaining/remainingFiles)):remaining;
+    const fairShare=allSelectedEveryBuildUp?Math.max(Number(contract?.synchronization?.apiContextMinimumPerFileBytes||320),Math.floor(remaining/remainingFiles)):remaining;
     const perFileLimit=Math.min(Number(contract?.synchronization?.apiContextPerFileMaxBytes||4500),fairShare,remaining);
     const excerpt=boundedPromptText(raw,perFileLimit);
     const bytes=Buffer.byteLength(excerpt,'utf8');
@@ -2194,6 +2235,10 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     internalAssetApiContextGeneration:generation,
     internalAssetApiContextEligibleSourceCount:allSelectedPaths.length,
     internalAssetApiContextCoverageCount:apiFiles.length+selectedPaths.filter(relative=>existing.has(relative)).length,
+    internalAssetRegisteredPackCount:Number(contract?.registeredPackInventory?.packCount||0),
+    internalAssetExpectedRegisteredPackCount:Number(contract?.registeredPackInventory?.expectedPackCount||0),
+    internalAssetRegisteredPackCountMatchesMaintenance:contract?.registeredPackInventory?.countMatchesMaintenance!==false,
+    internalAssetRegisteredPackContextFiles:registeredPackContextPaths,
     internalAssetApiContextAllSelectedEveryBuildUp:allSelectedEveryBuildUp,
     internalAssetApiContextRotationStart:start
   };
@@ -2201,26 +2246,28 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
 
 function internalAssetSourceUsageGuidance(order={}){
   const contract=buildInternalAssetSourceUsageContract(order);
-  if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
+  if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length&&!contract.registeredPacks.length)return'';
   const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
   const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
   const sourceRows=contract.sourceCandidates
     .filter(row=>row.sourceFiles.length||row.path)
     .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
     .join('; ');
+  const packRows=contract.registeredPacks.map(row=>row.root+'['+(row.families.join('|')||'UNCLASSIFIED')+']'+(row.contextFile?'@'+row.contextFile:'')).join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
+    'Registered Roblox library packs: '+(packRows||'NONE')+'; count='+contract.registeredPackInventory.packCount+'; expected='+contract.registeredPackInventory.expectedPackCount+'; countMatch='+contract.registeredPackInventory.countMatchesMaintenance+'.',
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
     'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
-    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility. For Roblox, every selected internal family/library must be considered in the same BUILD_UP cycle; NOT_APPLICABLE is allowed only when the corresponding game system truly does not exist. A blank/default/plain primitive presentation is never an acceptable fallback.',
-    'For Roblox, every selected common-script API source is injected into each BUILD_UP as bounded read-only context so the worker can consume all applicable libraries immediately. Rotation/batching is allowed only for non-Roblox targets; context budget is not a usage cap.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility. For Roblox, EVERY REGISTERED INTERNAL LIBRARY PACK is evaluated every BUILD_UP, not only the packs already selected by a family shortcut. A compatible registered pack for an existing system must be actually bound in the existing responsible source; NOT_APPLICABLE is allowed only when the corresponding game system truly does not exist. A blank/default/plain primitive presentation is never an acceptable fallback.',
+    'For Roblox, one primary code/catalog context file from every registered internal library pack plus every selected common-script API source is injected into each BUILD_UP as bounded read-only context. This guarantees full registered-pack discovery without copying the library into game source. Rotation/batching is allowed only for non-Roblox targets; context budget is not a usage cap.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
@@ -4947,6 +4994,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetApiContextGeneration:Number(context.internalAssetApiContextGeneration||0),
     internalAssetApiContextEligibleSourceCount:Number(context.internalAssetApiContextEligibleSourceCount||0),
     internalAssetApiContextCoverageCount:Number(context.internalAssetApiContextCoverageCount||0),
+    internalAssetRegisteredPackCount:Number(context.internalAssetRegisteredPackCount||0),
+    internalAssetExpectedRegisteredPackCount:Number(context.internalAssetExpectedRegisteredPackCount||0),
+    internalAssetRegisteredPackCountMatchesMaintenance:context.internalAssetRegisteredPackCountMatchesMaintenance!==false,
+    internalAssetRegisteredPackContextFiles:Object.freeze([...(context.internalAssetRegisteredPackContextFiles||[])]),
     internalAssetApiContextAllSelectedEveryBuildUp:context.internalAssetApiContextAllSelectedEveryBuildUp===true,
     internalAssetApiContextRotationStart:Number(context.internalAssetApiContextRotationStart||0),
     contextFiles:context.files.length,
