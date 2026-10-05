@@ -4618,8 +4618,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     &&systemRegressionFiles.length>0
     &&systemSourceFiles.length>0
     &&(order?.selectedTask?.completionCriteria||[]).some(value=>/BEFORE_AFTER|CAUSAL_PROOF|STRUCTURAL_CAUSE/i.test(clean(value)));
-  const robloxStudioAssetBackfillRequired=target==='roblox'&&order?.selectedTask?.studioAssetBackfill===true;
-  const robloxStudioAssetVisualOwners=robloxStudioAssetBackfillRequired?responsibleFiles.filter(file=>
+  const robloxInternalAssetApplicationRequired=target==='roblox'
+    &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
+    &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
+  const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>
     /(?:^|\/)client\/|VisualStyle\.luau$|BattleVisual\.luau$/i.test(clean(file))
   ):[];
   const candidateValidator=candidate=>{
@@ -4680,10 +4682,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         }
       }
     }
-    if(robloxStudioAssetBackfillRequired){
-      if(!robloxStudioAssetVisualOwners.length)throw new Error('ROBLOX_STUDIO_ASSET_VISUAL_OWNER_REQUIRED:NO_VISUAL_OWNER_IN_RESPONSIBLE_FILES');
-      const touchedVisual=robloxStudioAssetVisualOwners.filter(file=>touched.has(file));
-      if(!touchedVisual.length)throw new Error('ROBLOX_STUDIO_ASSET_VISUAL_OWNER_REQUIRED:'+robloxStudioAssetVisualOwners.join('|'));
+    if(robloxInternalAssetApplicationRequired){
+      if(!robloxInternalAssetVisualOwners.length)throw new Error('ROBLOX_INTERNAL_ASSET_VISUAL_OWNER_REQUIRED:NO_VISUAL_OWNER_IN_RESPONSIBLE_FILES');
+      const touchedVisual=robloxInternalAssetVisualOwners.filter(file=>touched.has(file));
+      if(!touchedVisual.length)throw new Error('ROBLOX_INTERNAL_ASSET_VISUAL_OWNER_REQUIRED:'+robloxInternalAssetVisualOwners.join('|'));
       const visualChangeText=[
         ...(candidate.edits||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.replace||'')),
         ...(candidate.newFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||'')),
@@ -4699,7 +4701,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
       ];
       if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_STUDIO_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
       }
     }
     if(bootstrap&&target==='unity'){
