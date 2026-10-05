@@ -1563,7 +1563,9 @@ test('Vibe2 control-plane and heavy jobs use their selected runner pools',()=>{
   assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-latest/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && matrix\.target == 'roblox' && 'ubuntu-latest' \|\| \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'\) \}\}/);
-  assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-24\.04-arm/);
+  assert.match(runnerWorkflow,/\n  exact_plan_wake:\n[\s\S]{0,220}?runs-on: ubuntu-slim/);
+  assert.match(runnerWorkflow,/Coalesce exact same-main 24H plan wakes/);
+  assert.match(runnerWorkflow,/\n  plan:\n\s+needs: exact_plan_wake\n\s+if: [^\n]+\n\s+runs-on: ubuntu-24\.04-arm/);
   assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
 });
 
