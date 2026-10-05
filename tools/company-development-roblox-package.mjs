@@ -471,7 +471,15 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     if(!validation.pass)throw new Error(`exact-source validation failed: ${validation.blockers.join(',')}`);
     const assetLibrary=readJson(path.join(worktree,'company-asset-library.json'));
     const assetThreshold=validateRobloxPackageAssetThreshold({root,gameId:id,baseline,assetLibrary});
-    if(!assetThreshold.pass)throw new Error('ROBLOX_PACKAGE_ASSET_THRESHOLD_FAILED:'+assetThreshold.blockers.join(','));
+    if(!assetThreshold.pass){
+      const error=new Error('ROBLOX_PACKAGE_ASSET_THRESHOLD_FAILED:'+assetThreshold.blockers.join(','));
+      error.evidence={
+        ...createRobloxBuildEvidence({gameId:id,sourcePath:relativeSource,sourceRevision:revision,assetThreshold}),
+        failureStage:'TARGET_PLATFORM_ASSET_BINDING',failureSignature:'ROBLOX_PACKAGE_ASSET_THRESHOLD_FAILED',
+        assetBindingFailed:true,blockers:[...assetThreshold.blockers],
+      };
+      throw error;
+    }
     if(expectedSelectionFingerprint&&clean(assetThreshold.selectionFingerprint)!==expectedSelectionFingerprint){
       throw new Error('ROBLOX_PACKAGE_BUILD_UP_SELECTION_FINGERPRINT_MISMATCH');
     }
@@ -519,7 +527,9 @@ function runCli(){
   const runtimeBranch=clean(process.env.COMPANY_RUNTIME_BRANCH);
   const runtimeRef=arg('runtime-ref',runtimeBranch?`origin/${runtimeBranch}`:'');
   const verifiedSourceTreeSha=verifiedVibe2SourceTreeShaFromRuntime({repoRoot,runtimeRef,gameId});
-  const evidence=packageRobloxSource({
+  let evidence;
+  try{
+    evidence=packageRobloxSource({
     repoRoot,
     gameId,
     sourcePath:arg('source-path'),
@@ -532,7 +542,14 @@ function runCli(){
     buildUpAssetSourceUsageLibraryVersion:Number(arg('build-up-asset-library-version','0')),
     expectedAssetSelectionFingerprint:arg('expected-asset-selection-fingerprint'),
     expectedAssetLibraryVersion:Number(arg('expected-asset-library-version','0')),
-  });
+    });
+  }catch(error){
+    if(error.evidence?.assetBindingFailed===true){
+      fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
+      fs.writeFileSync(evidenceFile,`${JSON.stringify(error.evidence,null,2)}\n`);
+    }
+    throw error;
+  }
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
   fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`);
   console.log(`ROBLOX_BUILD_PACKAGE=PASS:${evidence.gameId}`);

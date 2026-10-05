@@ -1363,7 +1363,12 @@ jobs:
           const packagePassed=!superseded&&process.env.PACKAGE_OUTCOME==='success';
           const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
           let evidence=null;
-          if(packagePassed&&process.env.BUILD_EVIDENCE&&fs.existsSync(process.env.BUILD_EVIDENCE))evidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
+          const buildEvidencePath=process.env.BUILD_EVIDENCE||path.join('/tmp/roblox-technical/results',safe+'.build.json');
+          if(fs.existsSync(buildEvidencePath))evidence=JSON.parse(fs.readFileSync(buildEvidencePath,'utf8'));
+          const assetBindingFailed=!superseded&&!packagePassed
+            &&evidence?.gameId===id&&evidence?.sourceRevision===process.env.SOURCE_REVISION
+            &&evidence?.assetBindingFailed===true&&evidence?.assetThreshold?.pass===false
+            &&Array.isArray(evidence?.assetThreshold?.blockers)&&evidence.assetThreshold.blockers.length>0;
           const preflightPath=path.join('/tmp/roblox-technical/results',safe+'.preflight.json');
           const f0Path=path.join('/tmp/roblox-technical/results',safe+'.headless.json');
           const preflightEvidence=fs.existsSync(preflightPath)?JSON.parse(fs.readFileSync(preflightPath,'utf8')):null;
@@ -1379,12 +1384,14 @@ jobs:
             f0Pass,
             preflightEvidence,
             f0Evidence,
+            assetBindingFailed,
+            assetThreshold:assetBindingFailed?evidence.assetThreshold:null,
             secondaryOwnerFocus:secondary,
             sourcePath:process.env.SOURCE_PATH,
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:evidence?.artifactIdentity||null,
             saveRequired:evidence?.saveRequired===true,
-            failure:superseded?'roblox-technical-superseded':!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
+            failure:superseded?'roblox-technical-superseded':assetBindingFailed?'roblox-package-asset-binding-failed':!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
           };
           fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
           console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${superseded?'SUPERSEDED':result.pass?'PASS':'FAIL'}`);
@@ -1789,6 +1796,24 @@ jobs:
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
                 robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',
                 routingBlockers:[`roblox-build-package:${result.failure||'ROBLOX_BUILD_PACKAGE_FAILED'}`],updatedAt:stamp,
+                ...(result.assetBindingFailed===true&&result.assetThreshold?.pass===false&&Array.isArray(result.assetThreshold?.blockers)&&result.assetThreshold.blockers.length>0?{
+                  robloxQualityBuildUpRequired:true,
+                  robloxQualityBuildUpSourceRevision:result.sourceRevision,
+                  robloxQualityFailureClass:'INTERNAL_ASSET_SOURCE_BINDING',
+                  robloxQualityBuildUpEvidence:{
+                    version:1,gameId:item.gameId,sourceRevision:result.sourceRevision,artifactIdentity:null,
+                    authority:'roblox-package-asset-binding-failure',workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,testedAt:stamp,
+                    qualityFailureKinds:[...result.assetThreshold.blockers],
+                    assetThreshold:result.assetThreshold,
+                    repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
+                    assetRepairPolicy:{mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true},
+                    qualityFailureDetails:result.assetThreshold.blockers.map(id=>({
+                      id:String(id),repairSurface:'INTERNAL_ASSET_SOURCE_BINDING',priority:'P0',
+                      hint:'Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.',
+                      observed:{libraryVersion:result.assetThreshold.libraryVersion,selectionFingerprint:result.assetThreshold.selectionFingerprint,familyResult:(result.assetThreshold.familyResults||[]).find(row=>String(id).endsWith(':'+row.family))||null}
+                    }))
+                  }
+                }:{}),
               });
               failCount++;
             }
@@ -1864,7 +1889,7 @@ jobs:
             if(!ids.has(item.gameId))continue;
             if(item.robloxQualityBuildUpRequired!==true)continue;
             if(String(item.robloxQualityBuildUpSourceRevision||'')!==String(item.robloxSourceCommit||''))continue;
-            if(String(item.robloxQualityBuildUpEvidence?.authority||'')!=='roblox-f0-gameplay-product-readiness-failure')continue;
+            if(!['roblox-f0-gameplay-product-readiness-failure','roblox-package-asset-binding-failure'].includes(String(item.robloxQualityBuildUpEvidence?.authority||'')))continue;
             console.log(item.gameId);
           }
           NODE
