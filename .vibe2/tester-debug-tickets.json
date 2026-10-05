@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-05T09:42:56.030Z",
+  "updatedAt": "2026-10-05T10:30:08.240Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -4828,7 +4828,8 @@
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"74e980574272e59d284d0ea57020bef9d0faa20034c12f95025f7fc7f659cc0c\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"9f809c5bd2c4722001023097e8013fc3e5253576\",\"sourceRootTreeSha\":\"9fb7672b482b8f3fb81914dffbbe150f9663c3b3\",\"sourceFingerprint\":\"da94ef0e2ce1cf3821eb47998c232592e51fddcca2c85e0e2ad6c0d70083bcae\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4837,8 +4838,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T12:16:33.532Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 158
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 159
     },
     {
       "id": "bug-ba7de0058247e1c56192",
@@ -4853,7 +4854,8 @@
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"74e980574272e59d284d0ea57020bef9d0faa20034c12f95025f7fc7f659cc0c\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec98f80bd1b96f8eb1a327c787760b0a49bd878c\",\"sourceRootTreeSha\":\"ee9c302e4f2e8c33b5031466415390ae6f7025d8\",\"sourceFingerprint\":\"f54f33d2acb330ce5531dfb0885050a699207be0fa9e6d06ad44e4efb0ac1838\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"9f809c5bd2c4722001023097e8013fc3e5253576\",\"sourceRootTreeSha\":\"9fb7672b482b8f3fb81914dffbbe150f9663c3b3\",\"sourceFingerprint\":\"da94ef0e2ce1cf3821eb47998c232592e51fddcca2c85e0e2ad6c0d70083bcae\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d2f2831c8381c68a869381d8821b94d7dff445ceb7078a56c3b36fca3e8cd1cc\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4862,8 +4864,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T12:16:33.532Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 158
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 159
     },
     {
       "id": "bug-7dcb6f730a3788cd6de4",
@@ -5044,7 +5046,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a3e36f0517855f15e4c903b8418d0353da459c5d\",\"sourceRootTreeSha\":\"d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b\",\"sourceFingerprint\":\"9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a3e36f0517855f15e4c903b8418d0353da459c5d\",\"sourceRootTreeSha\":\"d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b\",\"sourceFingerprint\":\"9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"c6b5423dd3a787d36d0f27c4fda8841dd3ebb11c\",\"sourceRootTreeSha\":\"3f74ad480175ef0c3a2f2235892a02990c23eecb\",\"sourceFingerprint\":\"051bb60c9df0114875b46c58560be10cb0c3befe678abb95d059206c952e8d99\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5053,8 +5056,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 476
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 477
     },
     {
       "id": "bug-fd76025ae58f67c545ad",
@@ -5068,7 +5071,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ce1112ea78581b5a2ea212fd55b0141e7b3e1eda\",\"sourceRootTreeSha\":\"e607a1edde76eac8dff375f2e21ddf58306d6154\",\"sourceFingerprint\":\"73c5806b36e796dde549ee97fca73f97a0a218228893521922ab2f2de5de991a\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a3e36f0517855f15e4c903b8418d0353da459c5d\",\"sourceRootTreeSha\":\"d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b\",\"sourceFingerprint\":\"9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a3e36f0517855f15e4c903b8418d0353da459c5d\",\"sourceRootTreeSha\":\"d9a7a0fff90488bdaa714fa6c81f3c3b1e435f3b\",\"sourceFingerprint\":\"9ea948b81627d7019fc773544ca08c4b3381d82e552532a46886025c3e11645b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"c6b5423dd3a787d36d0f27c4fda8841dd3ebb11c\",\"sourceRootTreeSha\":\"3f74ad480175ef0c3a2f2235892a02990c23eecb\",\"sourceFingerprint\":\"051bb60c9df0114875b46c58560be10cb0c3befe678abb95d059206c952e8d99\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"88963f22cae59064c15fda0ee1bd9036136c2a17975a71de693644478c4d261e\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5077,8 +5081,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 476
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 477
     },
     {
       "id": "bug-90de0bdb99f218cbda83",
@@ -5092,7 +5096,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"13e77591ab95d630647d5252dbdf03c774182a38343eec27b357c980735cc9e7\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bed6fb0c2c171b05b6205242f810f7dfc0676a85\",\"sourceRootTreeSha\":\"1e266b07659ff8e878cb302da93bf79ef8005a91\",\"sourceFingerprint\":\"be86a09b005cba2db277acb155d3186b8243c97bf11ca8bf1168fcb95ba3f1ab\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bed6fb0c2c171b05b6205242f810f7dfc0676a85\",\"sourceRootTreeSha\":\"1e266b07659ff8e878cb302da93bf79ef8005a91\",\"sourceFingerprint\":\"be86a09b005cba2db277acb155d3186b8243c97bf11ca8bf1168fcb95ba3f1ab\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"597a4ad69d5522200afd240ed4013714f282d5e0\",\"sourceRootTreeSha\":\"f4061b3ecb8785879cb4479d2ab85967f86733fb\",\"sourceFingerprint\":\"695375f7031337b290a93a9e061136ee40549b9365f60c4934cb4cd1b5abbdf2\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5101,8 +5106,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 357
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 358
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5116,7 +5121,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"13e77591ab95d630647d5252dbdf03c774182a38343eec27b357c980735cc9e7\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bed6fb0c2c171b05b6205242f810f7dfc0676a85\",\"sourceRootTreeSha\":\"1e266b07659ff8e878cb302da93bf79ef8005a91\",\"sourceFingerprint\":\"be86a09b005cba2db277acb155d3186b8243c97bf11ca8bf1168fcb95ba3f1ab\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bed6fb0c2c171b05b6205242f810f7dfc0676a85\",\"sourceRootTreeSha\":\"1e266b07659ff8e878cb302da93bf79ef8005a91\",\"sourceFingerprint\":\"be86a09b005cba2db277acb155d3186b8243c97bf11ca8bf1168fcb95ba3f1ab\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"597a4ad69d5522200afd240ed4013714f282d5e0\",\"sourceRootTreeSha\":\"f4061b3ecb8785879cb4479d2ab85967f86733fb\",\"sourceFingerprint\":\"695375f7031337b290a93a9e061136ee40549b9365f60c4934cb4cd1b5abbdf2\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"3837e5850d5baab625f3df16277c5218a8c9c008ae4a1a72f56f3e0e488a54ad\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5125,8 +5131,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 357
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 358
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -5140,7 +5146,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0\",\"sourceRootTreeSha\":\"d05aed7d004cf8f382f5a0988faf571528196844\",\"sourceFingerprint\":\"978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0\",\"sourceRootTreeSha\":\"d05aed7d004cf8f382f5a0988faf571528196844\",\"sourceFingerprint\":\"978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4c40becd54def5958cd86eb1f21469887611a59e\",\"sourceRootTreeSha\":\"9c609e498ab3705aac7c203c6f3f0402c5e593e8\",\"sourceFingerprint\":\"d70ddf3857b9961042bed9f1be4c1e810de54cda31e0bf1c56b74083c826c1b7\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5149,8 +5156,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 191
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 192
     },
     {
       "id": "bug-21a9483913fbc47f4745",
@@ -5164,7 +5171,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3d6828a8d5630f47b94a720cf8489224af780c4f\",\"sourceRootTreeSha\":\"ea381518a699ad3d1a3e2a2da167a43c2b6679a9\",\"sourceFingerprint\":\"fbc4210488f51c0535150820935072a2a0d28dc5fcae49aaa48910a665f88378\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0\",\"sourceRootTreeSha\":\"d05aed7d004cf8f382f5a0988faf571528196844\",\"sourceFingerprint\":\"978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"566e1489d88a1fbf1e61e0b0b4bf7e0acf8aadb0\",\"sourceRootTreeSha\":\"d05aed7d004cf8f382f5a0988faf571528196844\",\"sourceFingerprint\":\"978486934107a6bed9a0dfb88fc4833b39da21dbd675fbe9489613404e0d7981\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4c40becd54def5958cd86eb1f21469887611a59e\",\"sourceRootTreeSha\":\"9c609e498ab3705aac7c203c6f3f0402c5e593e8\",\"sourceFingerprint\":\"d70ddf3857b9961042bed9f1be4c1e810de54cda31e0bf1c56b74083c826c1b7\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5173,8 +5181,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 191
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 192
     },
     {
       "id": "bug-b5588ff2b4ec06cf2a70",
@@ -5188,7 +5196,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"de506fdbc81793b769e3bbbb5095eb023b83e4d2\",\"sourceRootTreeSha\":\"041b4d2842d3ad836c7388337fa4f22a61bb80f1\",\"sourceFingerprint\":\"ad53c0e8e41bf876795c530e784de3799a3500394db382fb0148835470353d9d\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"67bae3aea07a0c39628743d40ecbc5c026a7f629\",\"sourceRootTreeSha\":\"c4bd5c8fb6fd31378cc36ddd3414ac7853c3a774\",\"sourceFingerprint\":\"dcb30c4a04e8e65f8124a2dd29e3aad6b16047767e5a874c4664e39bba52c10b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"67bae3aea07a0c39628743d40ecbc5c026a7f629\",\"sourceRootTreeSha\":\"c4bd5c8fb6fd31378cc36ddd3414ac7853c3a774\",\"sourceFingerprint\":\"dcb30c4a04e8e65f8124a2dd29e3aad6b16047767e5a874c4664e39bba52c10b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ca9ee30594081beeb2705668c437ff864403c9c3\",\"sourceRootTreeSha\":\"4938af0ee2fd04c762fec76817f1ff51cc696f0e\",\"sourceFingerprint\":\"37a6c19aa22f4dea5c5ae880b0f4afa3f457ffa76834cc2b018445d528d91880\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5197,8 +5206,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 357
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 358
     },
     {
       "id": "bug-f516510d1b674c9f0600",
@@ -5212,7 +5221,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"de506fdbc81793b769e3bbbb5095eb023b83e4d2\",\"sourceRootTreeSha\":\"041b4d2842d3ad836c7388337fa4f22a61bb80f1\",\"sourceFingerprint\":\"ad53c0e8e41bf876795c530e784de3799a3500394db382fb0148835470353d9d\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"67bae3aea07a0c39628743d40ecbc5c026a7f629\",\"sourceRootTreeSha\":\"c4bd5c8fb6fd31378cc36ddd3414ac7853c3a774\",\"sourceFingerprint\":\"dcb30c4a04e8e65f8124a2dd29e3aad6b16047767e5a874c4664e39bba52c10b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"67bae3aea07a0c39628743d40ecbc5c026a7f629\",\"sourceRootTreeSha\":\"c4bd5c8fb6fd31378cc36ddd3414ac7853c3a774\",\"sourceFingerprint\":\"dcb30c4a04e8e65f8124a2dd29e3aad6b16047767e5a874c4664e39bba52c10b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ca9ee30594081beeb2705668c437ff864403c9c3\",\"sourceRootTreeSha\":\"4938af0ee2fd04c762fec76817f1ff51cc696f0e\",\"sourceFingerprint\":\"37a6c19aa22f4dea5c5ae880b0f4afa3f457ffa76834cc2b018445d528d91880\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5221,8 +5231,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 357
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 358
     },
     {
       "id": "bug-af160e0477c6c79bfed3",
@@ -5236,7 +5246,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3aebc33f093c8668ed6d3b55dc7c469bc7ce687a\",\"sourceRootTreeSha\":\"d18e2b11621eca1afadd94cdd25573f3ee7e045f\",\"sourceFingerprint\":\"ffa266e5554ab245de4cc297538009392e1c402a4db09e621676c24fd06177ca\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f653a705109ad223f3dbbd5cf772b76227c002b2\",\"sourceRootTreeSha\":\"88362b7500a7c013345c3538085f17ed91c7d1e5\",\"sourceFingerprint\":\"2bff87bf69faf7e7d9162eb10d564b300652151301866d4b8e4d4c2cedcbb230\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f653a705109ad223f3dbbd5cf772b76227c002b2\",\"sourceRootTreeSha\":\"88362b7500a7c013345c3538085f17ed91c7d1e5\",\"sourceFingerprint\":\"2bff87bf69faf7e7d9162eb10d564b300652151301866d4b8e4d4c2cedcbb230\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"42233ec6fbaeb3038dbfc18772fdf750679d5d09\",\"sourceRootTreeSha\":\"e360e088208ebdf5740ccc87599ba8108fbbce3f\",\"sourceFingerprint\":\"a1850d2f4f3dc72427988cbc892655e6cb0df9e46fce3ec7d466a8ba8a2edf52\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5245,8 +5256,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 476
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 477
     },
     {
       "id": "bug-a8d2b957fc2b22115227",
@@ -5260,7 +5271,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"3aebc33f093c8668ed6d3b55dc7c469bc7ce687a\",\"sourceRootTreeSha\":\"d18e2b11621eca1afadd94cdd25573f3ee7e045f\",\"sourceFingerprint\":\"ffa266e5554ab245de4cc297538009392e1c402a4db09e621676c24fd06177ca\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f653a705109ad223f3dbbd5cf772b76227c002b2\",\"sourceRootTreeSha\":\"88362b7500a7c013345c3538085f17ed91c7d1e5\",\"sourceFingerprint\":\"2bff87bf69faf7e7d9162eb10d564b300652151301866d4b8e4d4c2cedcbb230\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f653a705109ad223f3dbbd5cf772b76227c002b2\",\"sourceRootTreeSha\":\"88362b7500a7c013345c3538085f17ed91c7d1e5\",\"sourceFingerprint\":\"2bff87bf69faf7e7d9162eb10d564b300652151301866d4b8e4d4c2cedcbb230\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"42233ec6fbaeb3038dbfc18772fdf750679d5d09\",\"sourceRootTreeSha\":\"e360e088208ebdf5740ccc87599ba8108fbbce3f\",\"sourceFingerprint\":\"a1850d2f4f3dc72427988cbc892655e6cb0df9e46fce3ec7d466a8ba8a2edf52\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5269,8 +5281,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 476
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 477
     },
     {
       "id": "bug-2c14b904d6aeb3e17198",
@@ -5284,7 +5296,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7ff69c6e50d3937841819d892247ed0ec3b7f435\",\"sourceRootTreeSha\":\"fc8e532a76a4d3e37f738ede4a2edbc4bf04620c\",\"sourceFingerprint\":\"6a954561e41169e5823c0d3a54a24622e9c21a6d4e87946fecf81fce70d802c6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"590d73a3d9d0a3c4ee491a520f3670b1fb7b3ac2\",\"sourceRootTreeSha\":\"a8d9970b0ba3079e033c791e7fcefc7cc8339c7e\",\"sourceFingerprint\":\"a88f72ff245fb6d8c6d1fd73ad7d2658f6754d5f0dedf2a05f23c9ab86d75a21\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"590d73a3d9d0a3c4ee491a520f3670b1fb7b3ac2\",\"sourceRootTreeSha\":\"a8d9970b0ba3079e033c791e7fcefc7cc8339c7e\",\"sourceFingerprint\":\"a88f72ff245fb6d8c6d1fd73ad7d2658f6754d5f0dedf2a05f23c9ab86d75a21\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"c82683992a34a05135cf558d43a4254edc06b381\",\"sourceRootTreeSha\":\"9a9033a0d02225ef952baaf5445386311355eab4\",\"sourceFingerprint\":\"0658e1dd6bc706f4a388992cb73410d0dbf7b0ca90fd30923ce50bf6eb65358b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5293,8 +5306,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 194
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 195
     },
     {
       "id": "bug-3c0bdee1b5468f57a0bb",
@@ -5308,7 +5321,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7ff69c6e50d3937841819d892247ed0ec3b7f435\",\"sourceRootTreeSha\":\"fc8e532a76a4d3e37f738ede4a2edbc4bf04620c\",\"sourceFingerprint\":\"6a954561e41169e5823c0d3a54a24622e9c21a6d4e87946fecf81fce70d802c6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"590d73a3d9d0a3c4ee491a520f3670b1fb7b3ac2\",\"sourceRootTreeSha\":\"a8d9970b0ba3079e033c791e7fcefc7cc8339c7e\",\"sourceFingerprint\":\"a88f72ff245fb6d8c6d1fd73ad7d2658f6754d5f0dedf2a05f23c9ab86d75a21\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"590d73a3d9d0a3c4ee491a520f3670b1fb7b3ac2\",\"sourceRootTreeSha\":\"a8d9970b0ba3079e033c791e7fcefc7cc8339c7e\",\"sourceFingerprint\":\"a88f72ff245fb6d8c6d1fd73ad7d2658f6754d5f0dedf2a05f23c9ab86d75a21\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"c82683992a34a05135cf558d43a4254edc06b381\",\"sourceRootTreeSha\":\"9a9033a0d02225ef952baaf5445386311355eab4\",\"sourceFingerprint\":\"0658e1dd6bc706f4a388992cb73410d0dbf7b0ca90fd30923ce50bf6eb65358b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5317,8 +5331,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 194
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 195
     },
     {
       "id": "bug-25e94dca8ade9aea96e7",
@@ -5332,7 +5346,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"06bc967c543e1825930a53c3716c7e3a80711078\",\"sourceRootTreeSha\":\"74243b3582ca35ba9069dc2d81d3eed7a171a40d\",\"sourceFingerprint\":\"fbb690981076748d6a36ff0cdca3efe2d5b6f4e35d32323690976f7d6dc4604f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"8998de2310017a93419bbac6f58dd027ac8c1d16\",\"sourceRootTreeSha\":\"f2b4b6da7f3793172ccec5b16fe58dc177c00c11\",\"sourceFingerprint\":\"dbb3ae1f3f7bdedd7ab237f5828cebb96030ca83a7e2e4c530f4270dbc485b47\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"8998de2310017a93419bbac6f58dd027ac8c1d16\",\"sourceRootTreeSha\":\"f2b4b6da7f3793172ccec5b16fe58dc177c00c11\",\"sourceFingerprint\":\"dbb3ae1f3f7bdedd7ab237f5828cebb96030ca83a7e2e4c530f4270dbc485b47\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7afcf9bce8242fc9755395e371311e5c93c67edf\",\"sourceRootTreeSha\":\"6c581c2a5fbfcf7a7ea9e380aa088d8b5fa0f35d\",\"sourceFingerprint\":\"46f0b780e73fd9f3f3b9bcd858a2289bf1c8534394bd4da994c861cef532c73b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5341,8 +5356,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 351
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 352
     },
     {
       "id": "bug-e775cd1958cd4f0f247c",
@@ -5356,7 +5371,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"06bc967c543e1825930a53c3716c7e3a80711078\",\"sourceRootTreeSha\":\"74243b3582ca35ba9069dc2d81d3eed7a171a40d\",\"sourceFingerprint\":\"fbb690981076748d6a36ff0cdca3efe2d5b6f4e35d32323690976f7d6dc4604f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"8998de2310017a93419bbac6f58dd027ac8c1d16\",\"sourceRootTreeSha\":\"f2b4b6da7f3793172ccec5b16fe58dc177c00c11\",\"sourceFingerprint\":\"dbb3ae1f3f7bdedd7ab237f5828cebb96030ca83a7e2e4c530f4270dbc485b47\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"8998de2310017a93419bbac6f58dd027ac8c1d16\",\"sourceRootTreeSha\":\"f2b4b6da7f3793172ccec5b16fe58dc177c00c11\",\"sourceFingerprint\":\"dbb3ae1f3f7bdedd7ab237f5828cebb96030ca83a7e2e4c530f4270dbc485b47\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7afcf9bce8242fc9755395e371311e5c93c67edf\",\"sourceRootTreeSha\":\"6c581c2a5fbfcf7a7ea9e380aa088d8b5fa0f35d\",\"sourceFingerprint\":\"46f0b780e73fd9f3f3b9bcd858a2289bf1c8534394bd4da994c861cef532c73b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5365,8 +5381,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 351
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 352
     },
     {
       "id": "bug-c2d3a1169668b0efacd1",
@@ -5380,7 +5396,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"561f3077d84db2273fc3d5bbb6fe971d3df444ca\",\"sourceRootTreeSha\":\"740fbf2b59da1a8bf0047d4f59b8a1c38f142703\",\"sourceFingerprint\":\"d0ddfd97819c88a315399941063a95ea5c027d774de9ac6c4e58acfa434f9ea5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"cbf2353021018e76bc8adff6bda712a0aa9bb9b5\",\"sourceRootTreeSha\":\"397df58a2dcf380d4077784919bab7793b922af0\",\"sourceFingerprint\":\"6c5719f15cc0a9fb4ffdcc5e29ef111a703cdb89efce54db6d299412158ba592\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"cbf2353021018e76bc8adff6bda712a0aa9bb9b5\",\"sourceRootTreeSha\":\"397df58a2dcf380d4077784919bab7793b922af0\",\"sourceFingerprint\":\"6c5719f15cc0a9fb4ffdcc5e29ef111a703cdb89efce54db6d299412158ba592\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec6a158e2255b494f8fe2532008a54e7f96eeef3\",\"sourceRootTreeSha\":\"f7f60b21ccab17f889c6830708bfe65828c7b74e\",\"sourceFingerprint\":\"80683a6417985543fef04e3add1cb62dfc84e51a07968e48e04797c8bda08c6f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5389,8 +5406,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 425
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 426
     },
     {
       "id": "bug-ab4cd36474b0527e2ece",
@@ -5404,7 +5421,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"561f3077d84db2273fc3d5bbb6fe971d3df444ca\",\"sourceRootTreeSha\":\"740fbf2b59da1a8bf0047d4f59b8a1c38f142703\",\"sourceFingerprint\":\"d0ddfd97819c88a315399941063a95ea5c027d774de9ac6c4e58acfa434f9ea5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"cbf2353021018e76bc8adff6bda712a0aa9bb9b5\",\"sourceRootTreeSha\":\"397df58a2dcf380d4077784919bab7793b922af0\",\"sourceFingerprint\":\"6c5719f15cc0a9fb4ffdcc5e29ef111a703cdb89efce54db6d299412158ba592\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"cbf2353021018e76bc8adff6bda712a0aa9bb9b5\",\"sourceRootTreeSha\":\"397df58a2dcf380d4077784919bab7793b922af0\",\"sourceFingerprint\":\"6c5719f15cc0a9fb4ffdcc5e29ef111a703cdb89efce54db6d299412158ba592\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ec6a158e2255b494f8fe2532008a54e7f96eeef3\",\"sourceRootTreeSha\":\"f7f60b21ccab17f889c6830708bfe65828c7b74e\",\"sourceFingerprint\":\"80683a6417985543fef04e3add1cb62dfc84e51a07968e48e04797c8bda08c6f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"cd5c366dbf3d2fd93d216f4f76bc126f00fdcf6381ea91b805fe044d163a17b7\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5413,8 +5431,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 425
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 426
     },
     {
       "id": "bug-1c6129dad74bac44976e",
@@ -5521,7 +5539,8 @@
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"e521068400ed4ffa48301811a35e57ad93f44397\",\"sourceRootTreeSha\":\"3246743ecf8d5ecc708c13c4a9871bd9b6039605\",\"sourceFingerprint\":\"d2980bbfcb9a7946b0f745bd858d3c36a9d1f799b242666782b4d131bdf0b87f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd5c7abbaf1eec3f06ca5d07b821d67f6cec10cb\",\"sourceRootTreeSha\":\"7d441247fa440247ee731d0cddaa7b96bb6fbac3\",\"sourceFingerprint\":\"9b4639ae4f48fef655f7c5806309326302b7bba6fb71a2ef2b1e5e13057a470b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5530,8 +5549,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 356
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 357
     },
     {
       "id": "bug-ad9dae5e09804b30a45f",
@@ -5546,7 +5565,8 @@
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"e521068400ed4ffa48301811a35e57ad93f44397\",\"sourceRootTreeSha\":\"3246743ecf8d5ecc708c13c4a9871bd9b6039605\",\"sourceFingerprint\":\"d2980bbfcb9a7946b0f745bd858d3c36a9d1f799b242666782b4d131bdf0b87f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd5c7abbaf1eec3f06ca5d07b821d67f6cec10cb\",\"sourceRootTreeSha\":\"7d441247fa440247ee731d0cddaa7b96bb6fbac3\",\"sourceFingerprint\":\"9b4639ae4f48fef655f7c5806309326302b7bba6fb71a2ef2b1e5e13057a470b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5555,8 +5575,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 356
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 357
     },
     {
       "id": "bug-4591ef62527e5cb1e58b",
@@ -5570,7 +5590,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"188da3bb77d8184afc3e315552024915536a573a\",\"sourceRootTreeSha\":\"48aa3265eb90442eb642f42a2bc102c619476328\",\"sourceFingerprint\":\"a1c5c41c99ea0b53d1e8bbcbf02bdef8949e88a4e7de82a4de033b4b9c2cd201\",\"buildOrPackagePassed\":true,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a33285c469b39bc78a528035989674437d5c1412\",\"sourceRootTreeSha\":\"abffe58b0cb11a060ad9782f29a40d46b91ef0aa\",\"sourceFingerprint\":\"80a9ef80431c3a507776d099c44401878ed8f40d420f1c759dba4197313487c6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a33285c469b39bc78a528035989674437d5c1412\",\"sourceRootTreeSha\":\"abffe58b0cb11a060ad9782f29a40d46b91ef0aa\",\"sourceFingerprint\":\"80a9ef80431c3a507776d099c44401878ed8f40d420f1c759dba4197313487c6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4965d78061cd1a6af16472aa590dd68d8801f113\",\"sourceRootTreeSha\":\"19771a892048b30e3f72e443a6bbb78474fcbdda\",\"sourceFingerprint\":\"2fd9918443be8116750bc2a041209b173796f7f76ac423f52ece83270fd86723\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5579,8 +5600,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T08:54:59.020Z",
-      "occurrenceCount": 195
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 196
     },
     {
       "id": "bug-56464a8b672b9c04b27c",
@@ -5594,7 +5615,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"188da3bb77d8184afc3e315552024915536a573a\",\"sourceRootTreeSha\":\"48aa3265eb90442eb642f42a2bc102c619476328\",\"sourceFingerprint\":\"a1c5c41c99ea0b53d1e8bbcbf02bdef8949e88a4e7de82a4de033b4b9c2cd201\",\"buildOrPackagePassed\":true,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a33285c469b39bc78a528035989674437d5c1412\",\"sourceRootTreeSha\":\"abffe58b0cb11a060ad9782f29a40d46b91ef0aa\",\"sourceFingerprint\":\"80a9ef80431c3a507776d099c44401878ed8f40d420f1c759dba4197313487c6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a33285c469b39bc78a528035989674437d5c1412\",\"sourceRootTreeSha\":\"abffe58b0cb11a060ad9782f29a40d46b91ef0aa\",\"sourceFingerprint\":\"80a9ef80431c3a507776d099c44401878ed8f40d420f1c759dba4197313487c6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4965d78061cd1a6af16472aa590dd68d8801f113\",\"sourceRootTreeSha\":\"19771a892048b30e3f72e443a6bbb78474fcbdda\",\"sourceFingerprint\":\"2fd9918443be8116750bc2a041209b173796f7f76ac423f52ece83270fd86723\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5603,8 +5625,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T08:54:59.020Z",
-      "occurrenceCount": 195
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 196
     },
     {
       "id": "bug-8832e82ed03edad848cc",
@@ -5618,7 +5640,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"348df0432e88cc64bb59755a5d24bfc3e202e9ad\",\"sourceRootTreeSha\":\"6684c0278102e15d93a7765b9ce5dfefcf304bd0\",\"sourceFingerprint\":\"2dc2bd5c2bd3c4a54dec157c74832193aa3325cb317f01600b561b2792d0e3ab\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"61fe8b387ae13993b031f289c9ff993cb05b35b2\",\"sourceRootTreeSha\":\"ab35d3b7a267739aa9bac78465bb0638e3bbfff7\",\"sourceFingerprint\":\"3b93da4499761f6183049f6e6d18fc4b0eaeb528af0e57db206dcbbb148939ff\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"61fe8b387ae13993b031f289c9ff993cb05b35b2\",\"sourceRootTreeSha\":\"ab35d3b7a267739aa9bac78465bb0638e3bbfff7\",\"sourceFingerprint\":\"3b93da4499761f6183049f6e6d18fc4b0eaeb528af0e57db206dcbbb148939ff\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"c2423c479e3711d57173a165e89487cc3be2ba47\",\"sourceRootTreeSha\":\"7dc17952330a0cda56e6621f092e5abb461038be\",\"sourceFingerprint\":\"92a8503d292d66825ea98ebfb2b1ce9624af82df42d5a3b569ab51117b865530\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5627,8 +5650,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 356
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 357
     },
     {
       "id": "bug-ed88b9a0af2e14105e09",
@@ -5642,7 +5665,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"348df0432e88cc64bb59755a5d24bfc3e202e9ad\",\"sourceRootTreeSha\":\"6684c0278102e15d93a7765b9ce5dfefcf304bd0\",\"sourceFingerprint\":\"2dc2bd5c2bd3c4a54dec157c74832193aa3325cb317f01600b561b2792d0e3ab\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"61fe8b387ae13993b031f289c9ff993cb05b35b2\",\"sourceRootTreeSha\":\"ab35d3b7a267739aa9bac78465bb0638e3bbfff7\",\"sourceFingerprint\":\"3b93da4499761f6183049f6e6d18fc4b0eaeb528af0e57db206dcbbb148939ff\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"61fe8b387ae13993b031f289c9ff993cb05b35b2\",\"sourceRootTreeSha\":\"ab35d3b7a267739aa9bac78465bb0638e3bbfff7\",\"sourceFingerprint\":\"3b93da4499761f6183049f6e6d18fc4b0eaeb528af0e57db206dcbbb148939ff\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"c2423c479e3711d57173a165e89487cc3be2ba47\",\"sourceRootTreeSha\":\"7dc17952330a0cda56e6621f092e5abb461038be\",\"sourceFingerprint\":\"92a8503d292d66825ea98ebfb2b1ce9624af82df42d5a3b569ab51117b865530\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"d9613979e3d5e475814fc43d8ebf96e4c1063129f851afdd5ab07a777b381152\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5651,8 +5675,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 356
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 357
     },
     {
       "id": "bug-9bbef74d19fb4096288d",
@@ -5689,7 +5713,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"fde475338b62e538dc4f449f6effdf7042c00758\",\"sourceRootTreeSha\":\"0ecb2ed56e2669c548ff2580db98cfa892f1d90c\",\"sourceFingerprint\":\"73d23ddec2074d3998de1db026d0b5e1365f29c2b0922b299904976f99e08927\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"7672fe4c33a71e1a9048d2273ee798640ceb5bcd480e94119397e933a502015a\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"fde475338b62e538dc4f449f6effdf7042c00758\",\"sourceRootTreeSha\":\"0ecb2ed56e2669c548ff2580db98cfa892f1d90c\",\"sourceFingerprint\":\"73d23ddec2074d3998de1db026d0b5e1365f29c2b0922b299904976f99e08927\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"7672fe4c33a71e1a9048d2273ee798640ceb5bcd480e94119397e933a502015a\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"963291056650bbd655df776e83cbdd8112996f29\",\"sourceRootTreeSha\":\"cb245d6796010557b0276a7d395362004f88e398\",\"sourceFingerprint\":\"317150037980c3227d6016c5b49ecc295201770d17e55c5be639aa1ee49cef53\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"7672fe4c33a71e1a9048d2273ee798640ceb5bcd480e94119397e933a502015a\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5698,8 +5723,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:13:52.233Z",
-      "updatedAt": "2026-10-05T08:54:59.020Z",
-      "occurrenceCount": 178
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 179
     },
     {
       "id": "bug-485efab0d0c4686b2964",
@@ -5712,7 +5737,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"fde475338b62e538dc4f449f6effdf7042c00758\",\"sourceRootTreeSha\":\"0ecb2ed56e2669c548ff2580db98cfa892f1d90c\",\"sourceFingerprint\":\"73d23ddec2074d3998de1db026d0b5e1365f29c2b0922b299904976f99e08927\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"7672fe4c33a71e1a9048d2273ee798640ceb5bcd480e94119397e933a502015a\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"fde475338b62e538dc4f449f6effdf7042c00758\",\"sourceRootTreeSha\":\"0ecb2ed56e2669c548ff2580db98cfa892f1d90c\",\"sourceFingerprint\":\"73d23ddec2074d3998de1db026d0b5e1365f29c2b0922b299904976f99e08927\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"7672fe4c33a71e1a9048d2273ee798640ceb5bcd480e94119397e933a502015a\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"963291056650bbd655df776e83cbdd8112996f29\",\"sourceRootTreeSha\":\"cb245d6796010557b0276a7d395362004f88e398\",\"sourceFingerprint\":\"317150037980c3227d6016c5b49ecc295201770d17e55c5be639aa1ee49cef53\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"7672fe4c33a71e1a9048d2273ee798640ceb5bcd480e94119397e933a502015a\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5721,8 +5747,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:13:52.233Z",
-      "updatedAt": "2026-10-05T08:54:59.020Z",
-      "occurrenceCount": 178
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 179
     },
     {
       "id": "bug-82c6f5ddcd3737c8292e",
@@ -5783,7 +5809,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f7020e73f8a1f138e7ee26fcaf9418ef856d607c\",\"sourceRootTreeSha\":\"e1881c7ed91be0212bd4ae33267e61b44755addb\",\"sourceFingerprint\":\"46e12ee22867e458c04965de10a51660f9ad0ecdf09c379bba28b49c3c921ca3\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceRootTreeSha\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceRootTreeSha\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"271923a08b3347ccc23136ebbc1998c61aaa06d7\",\"sourceRootTreeSha\":\"4f78ac171b6238460faff6f8deb1dd0edfbe4d60\",\"sourceFingerprint\":\"94b0d6a82da4ba83baf5a5a1f11a8e666d0a274165e6c5901c9b0bd978e59c5f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5792,8 +5819,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 337
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 338
     },
     {
       "id": "bug-c2f825be7c318eb119f7",
@@ -5807,7 +5834,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f7020e73f8a1f138e7ee26fcaf9418ef856d607c\",\"sourceRootTreeSha\":\"e1881c7ed91be0212bd4ae33267e61b44755addb\",\"sourceFingerprint\":\"46e12ee22867e458c04965de10a51660f9ad0ecdf09c379bba28b49c3c921ca3\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceRootTreeSha\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceRootTreeSha\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"271923a08b3347ccc23136ebbc1998c61aaa06d7\",\"sourceRootTreeSha\":\"4f78ac171b6238460faff6f8deb1dd0edfbe4d60\",\"sourceFingerprint\":\"94b0d6a82da4ba83baf5a5a1f11a8e666d0a274165e6c5901c9b0bd978e59c5f\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"6cd523fe9883766cecb110dcc95936fec55a7a98168f3fdfc2ebef23836edb8a\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5816,8 +5844,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T16:09:44.715Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 337
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 338
     },
     {
       "id": "bug-77b2b4cecf5a663c0e0b",
@@ -5830,7 +5858,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4c6172b71055f76cba6c9198015d184b44027c9f\",\"sourceRootTreeSha\":\"2189c55a7a047c29c27781dae2de775e1fd85352\",\"sourceFingerprint\":\"ca4be9219237f35d4f90898c1105f963e09286c05350e4f5b117931dab1f6cf5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"176f0e6f29cd19a81a1c5d522056761e32b387f28ed9f9bcb856e60370f5063c\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4c6172b71055f76cba6c9198015d184b44027c9f\",\"sourceRootTreeSha\":\"2189c55a7a047c29c27781dae2de775e1fd85352\",\"sourceFingerprint\":\"ca4be9219237f35d4f90898c1105f963e09286c05350e4f5b117931dab1f6cf5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"176f0e6f29cd19a81a1c5d522056761e32b387f28ed9f9bcb856e60370f5063c\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f90c133c1f5f50283ab21e8fa1b8bf86afe6ffee\",\"sourceRootTreeSha\":\"0135a03c233b2569fcd38876b0b749c2fcb80b13\",\"sourceFingerprint\":\"9a5f5f0c964c3a107814faa5833b42685c8cd97b547155ff9c45b6c0988cc166\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"176f0e6f29cd19a81a1c5d522056761e32b387f28ed9f9bcb856e60370f5063c\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5839,8 +5868,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 282
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 283
     },
     {
       "id": "bug-fcd7e3b7410acdcb39be",
@@ -5853,7 +5882,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4c6172b71055f76cba6c9198015d184b44027c9f\",\"sourceRootTreeSha\":\"2189c55a7a047c29c27781dae2de775e1fd85352\",\"sourceFingerprint\":\"ca4be9219237f35d4f90898c1105f963e09286c05350e4f5b117931dab1f6cf5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"176f0e6f29cd19a81a1c5d522056761e32b387f28ed9f9bcb856e60370f5063c\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"4c6172b71055f76cba6c9198015d184b44027c9f\",\"sourceRootTreeSha\":\"2189c55a7a047c29c27781dae2de775e1fd85352\",\"sourceFingerprint\":\"ca4be9219237f35d4f90898c1105f963e09286c05350e4f5b117931dab1f6cf5\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"176f0e6f29cd19a81a1c5d522056761e32b387f28ed9f9bcb856e60370f5063c\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"f90c133c1f5f50283ab21e8fa1b8bf86afe6ffee\",\"sourceRootTreeSha\":\"0135a03c233b2569fcd38876b0b749c2fcb80b13\",\"sourceFingerprint\":\"9a5f5f0c964c3a107814faa5833b42685c8cd97b547155ff9c45b6c0988cc166\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"176f0e6f29cd19a81a1c5d522056761e32b387f28ed9f9bcb856e60370f5063c\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5862,8 +5892,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 282
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 283
     },
     {
       "id": "bug-cfadf0bcd8b805cea6a8",
@@ -5876,7 +5906,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"05d4cbfd4f2aaf87e9d44ca354d3d365d9c1b6e4\",\"sourceRootTreeSha\":\"b76197de49cc5556170a3bfa1a608ab2c21d43d0\",\"sourceFingerprint\":\"553fc333d2d7152f625813dbac6c8b7d0bb0b1f5afd5959c1ad94763917e3491\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfca7a945f5ec9fe007700810f7234710f23674daf4765f72e2b123c0e6d113a\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"05d4cbfd4f2aaf87e9d44ca354d3d365d9c1b6e4\",\"sourceRootTreeSha\":\"b76197de49cc5556170a3bfa1a608ab2c21d43d0\",\"sourceFingerprint\":\"553fc333d2d7152f625813dbac6c8b7d0bb0b1f5afd5959c1ad94763917e3491\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfca7a945f5ec9fe007700810f7234710f23674daf4765f72e2b123c0e6d113a\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"26be085eb745bf647f056b6880cfa1b020ae9f14\",\"sourceRootTreeSha\":\"a20184696d1d359f7e4740966dbbd3f82c1c1025\",\"sourceFingerprint\":\"3f40f80cc4ac72716445d9c206799a5faac039d6829b1a2f09db51668930bbe1\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfca7a945f5ec9fe007700810f7234710f23674daf4765f72e2b123c0e6d113a\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5885,8 +5916,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-04T02:24:21.797Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 173
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 174
     },
     {
       "id": "bug-178860af5b9a4e2eb4af",
@@ -5899,7 +5930,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"05d4cbfd4f2aaf87e9d44ca354d3d365d9c1b6e4\",\"sourceRootTreeSha\":\"b76197de49cc5556170a3bfa1a608ab2c21d43d0\",\"sourceFingerprint\":\"553fc333d2d7152f625813dbac6c8b7d0bb0b1f5afd5959c1ad94763917e3491\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfca7a945f5ec9fe007700810f7234710f23674daf4765f72e2b123c0e6d113a\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"05d4cbfd4f2aaf87e9d44ca354d3d365d9c1b6e4\",\"sourceRootTreeSha\":\"b76197de49cc5556170a3bfa1a608ab2c21d43d0\",\"sourceFingerprint\":\"553fc333d2d7152f625813dbac6c8b7d0bb0b1f5afd5959c1ad94763917e3491\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfca7a945f5ec9fe007700810f7234710f23674daf4765f72e2b123c0e6d113a\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"26be085eb745bf647f056b6880cfa1b020ae9f14\",\"sourceRootTreeSha\":\"a20184696d1d359f7e4740966dbbd3f82c1c1025\",\"sourceFingerprint\":\"3f40f80cc4ac72716445d9c206799a5faac039d6829b1a2f09db51668930bbe1\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfca7a945f5ec9fe007700810f7234710f23674daf4765f72e2b123c0e6d113a\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5908,8 +5940,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-04T02:24:21.797Z",
-      "updatedAt": "2026-10-05T09:42:56.027Z",
-      "occurrenceCount": 173
+      "updatedAt": "2026-10-05T10:30:08.236Z",
+      "occurrenceCount": 174
     },
     {
       "id": "bug-0e7cbf02f6c9ed5ceffa",
