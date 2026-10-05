@@ -24,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 12, 'contract.version');
+eq(contract.version, 13, 'contract.version');
 eq(contract.authority, 'CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT', 'contract.authority');
 eq(contract.sourceOfTruth, 'company-learning/platform-release-roadmap.json#canonicalLearningChain', 'contract.sourceOfTruth');
 eq(contract.policyAuthority, false, 'contract.policyAuthority');
@@ -67,6 +67,19 @@ eq(contract.studioAssetUniverseEvidence?.rawCoverageTelemetryDirectTraining, fal
 eq(contract.studioAssetUniverseEvidence?.verifiedOutcomeMayBecomeTrainingSample, true, 'verified asset outcome may become training sample');
 eq(contract.studioAssetUniverseEvidence?.existingThresholdsHoldoutCanaryUnchanged, true, 'studio asset universe learning thresholds unchanged');
 eq(contract.studioAssetUniverseEvidence?.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate, true, 'asset platform evidence separation');
+
+const robloxCloud=contract.robloxOpenCloudVerifiedLearning;
+eq(robloxCloud?.enabled, true, 'Roblox Open Cloud verified learning enabled');
+eq(robloxCloud?.provider, 'ROBLOX_OFFICIAL_CLOUD_API_ONLY', 'Roblox cloud learning provider');
+eq(robloxCloud?.exactCandidateRequired, true, 'Roblox cloud exact candidate required');
+eq(robloxCloud?.cachedLocalEvidenceCannotSatisfyCloudRuntime, true, 'Roblox cached local evidence cannot satisfy cloud runtime');
+eq(robloxCloud?.studioLocalEvidenceCannotSatisfyCloudRuntime, true, 'Roblox Studio local evidence cannot satisfy cloud runtime');
+eq(robloxCloud?.productionMasteryRequiresCloudRuntime, true, 'Roblox cloud production mastery requires cloud runtime');
+eq(robloxCloud?.canonicalIngress, 'tools/vibe2-learning-motor.mjs#collectVerifiedRobloxCloudRuntimeExperience', 'Roblox cloud canonical learning ingress');
+eq(robloxCloud?.separatePipelineForbidden, true, 'Roblox cloud separate learning pipeline forbidden');
+eq(robloxCloud?.separateTrainerForbidden, true, 'Roblox cloud separate trainer forbidden');
+if (!(robloxCloud?.requiredOutcomeGates||[]).includes('SERVER_CLIENT_AUTHORITY_AND_REMOTE_SECURITY_PASS')) fail('Roblox cloud server/client gate missing');
+if (!(robloxCloud?.conditionalOutcomeGates||[]).includes('DATASTORE_REJOIN_PASS_WHEN_SAVE_REQUIRED')) fail('Roblox cloud DataStore conditional gate missing');
 
 const portableWeb=contract.portableWebLearning;
 eq(portableWeb?.enabled, false, 'legacy portable Web learning disabled');
