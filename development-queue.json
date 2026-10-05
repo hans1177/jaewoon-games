@@ -1603,17 +1603,17 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-05T11:43:24.444Z",
-      "robloxSourceCommit": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
-      "robloxSourceBootstrapPassedAt": "2026-10-05T09:10:14.852Z",
+      "updatedAt": "2026-10-05T11:44:37.512Z",
+      "robloxSourceCommit": "b3db0a2b10bc123aad9714e975868c5afe171c55",
+      "robloxSourceBootstrapPassedAt": "2026-10-05T11:44:37.512Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-05T09:54:39.971Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -1656,9 +1656,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-asset-binding-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -1705,9 +1705,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "f6627f156cf6c166b71026ac2ada6bef89d03d38",
-        "newSourceRevision": "af4ebef46d306ba02110dd60fedbb8d231bf307c",
-        "invalidatedAt": "2026-10-05T08:04:45.129Z"
+        "previousSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "newSourceRevision": "b3db0a2b10bc123aad9714e975868c5afe171c55",
+        "invalidatedAt": "2026-10-05T11:44:37.512Z"
       },
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-horror-escape-room-37296779408",
@@ -21382,7 +21382,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T11:44:10.152Z",
+  "updatedAt": "2026-10-05T11:44:37.512Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
