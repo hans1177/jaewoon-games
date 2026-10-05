@@ -1192,6 +1192,7 @@ test('F0 private validation defers same-source quality repair and resumes for re
     robloxBuildOrPackagePassed:true,
     robloxBuildInternalAssetContractVersion:1,
     robloxBuildInternalAssetBindingPassed:true,
+    robloxBuildInternalLibraryAutoLoadPassed:true,
     robloxBuildInternalLibraryModulesPackaged:true,
     robloxBuildInternalLibraryRequiredModuleCount:15,
     robloxBuildInternalLibraryPackagedModuleCount:15,
