@@ -320,12 +320,66 @@ jobs:
           for(const [id,reason] of [...cancel.entries()].sort((a,b)=>a[0]-b[0]))console.log(String(id)+'|'+reason);
           NODE
 
+          # 2026-10-05 owner cloud-only validation disabled local Studio/MCP execution.
+          # Retire only legacy candidate-release tails whose only unfinished work is queued Studio MCP.
+          # Never cancel an active job or any current hosted/Open Cloud validation.
+          cloud_only_cutoff='2026-10-05T06:44:59Z'
+          CLOUD_ONLY_CUTOFF="$cloud_only_cutoff" node <<'NODE' > /tmp/director-legacy-studio-run-ids
+          const fs=require('fs');
+          const pages=fs.readFileSync('/tmp/director-run-drain.ndjson','utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
+          const byId=new Map();
+          for(const page of pages)for(const run of page.workflow_runs||[])byId.set(Number(run.id),run);
+          const waiting=new Set(['queued','pending','requested','waiting']);
+          const cutoff=Date.parse(String(process.env.CLOUD_ONLY_CUTOFF||''));
+          if(!Number.isFinite(cutoff))throw new Error('DIRECTOR_CLOUD_ONLY_CUTOFF_INVALID');
+          for(const run of byId.values()){
+            if(String(run.path||'')!=='.github/workflows/vibe2-candidate-release.yml')continue;
+            if(!waiting.has(String(run.status||'').toLowerCase()))continue;
+            const created=Date.parse(String(run.created_at||''));
+            if(!Number.isFinite(created)||created>=cutoff)continue;
+            console.log(run.id);
+          }
+          NODE
+
+          legacy_studio_candidates=0
+          legacy_studio_enqueued=0
+          while read -r run_id; do
+            [ -n "$run_id" ] || continue
+            legacy_studio_candidates=$((legacy_studio_candidates+1))
+            jobs_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" 2>/dev/null || true)"
+            [ -n "$jobs_json" ] || continue
+            decision="$(printf '%s' "$jobs_json" | node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const jobs=(JSON.parse(s).jobs||[]);
+                const waiting=new Set(['queued','pending','requested','waiting']);
+                const unfinished=jobs.filter(j=>String(j.status||'').toLowerCase()!=='completed');
+                const active=jobs.filter(j=>String(j.status||'').toLowerCase()==='in_progress');
+                const legacyStudio=unfinished.filter(j=>
+                  String(j.name||'').includes('Official Studio MCP actual play ')
+                  &&waiting.has(String(j.status||'').toLowerCase())
+                );
+                process.stdout.write(active.length===0&&unfinished.length>0&&legacyStudio.length===unfinished.length?'RETIRE':'PRESERVE');
+              });
+            ")"
+            if [ "$decision" != 'RETIRE' ]; then
+              echo "DIRECTOR_LEGACY_STUDIO_TAIL_PRESERVED=${run_id}:${decision}"
+              continue
+            fi
+            if ! grep -q "^${run_id}|" /tmp/director-run-cancel.list; then
+              echo "${run_id}|ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY" >> /tmp/director-run-cancel.list
+              legacy_studio_enqueued=$((legacy_studio_enqueued+1))
+              echo "DIRECTOR_LEGACY_STUDIO_TAIL_ENQUEUED=${run_id}"
+            fi
+          done < /tmp/director-legacy-studio-run-ids
+          echo "DIRECTOR_LEGACY_STUDIO_BACKLOG_CANDIDATE_COUNT=$legacy_studio_candidates"
+          echo "DIRECTOR_LEGACY_STUDIO_BACKLOG_CANCEL_ENQUEUED_COUNT=$legacy_studio_enqueued"
+
           cancelled=0
           failed=0
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
             safe_force_cancel=false
-            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' ]]; then
+            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
               safe_force_cancel=true
             fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
