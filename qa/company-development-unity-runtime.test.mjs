@@ -21,6 +21,8 @@ const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';
 
 test('cloud build metadata binds the checkout tree before runtime and F9 download it',()=>{
+  assert.doesNotMatch(cloudBuildSource,/git\s+push\s+origin\s+HEAD:main/,'cloud producer must not bypass the canonical homepage publisher');
+  assert.match(cloudBuildSource,/UNITY_HOMEPAGE_PUBLICATION_AUTHORITY=COMPANY_RUNTIME_THEN_HOMEPAGE_MANAGER/);
   const block=cloudBuildSource.split('      - name: Create pre-gate build metadata\n')[1]?.split('\n      - name: ')[0];
   assert.ok(block,'cloud metadata producer must exist');
   const script=block.split('        run: |\n')[1].split('\n').map(line=>line.replace(/^          /,'')).join('\n');
@@ -31,7 +33,7 @@ test('cloud build metadata binds the checkout tree before runtime and F9 downloa
     'steps.artifact.outputs.release_tag':'test-amusement-tycoon-17-1',
     'steps.artifact.outputs.sha256':'a'.repeat(64),
     'steps.artifact.outputs.bytes':'1024',
-    'steps.request.outputs.publish_homepage':'false'
+    'steps.request.outputs.publish_homepage':'true'
   };
   const runnable=script.replace(/\$\{\{\s*([^}]+?)\s*\}\}/g,(_,key)=>{
     assert.ok(key in values,`unexpected workflow input: ${key}`);return values[key];
@@ -53,6 +55,8 @@ test('cloud build metadata binds the checkout tree before runtime and F9 downloa
     assert.equal(metadata.sourceCommit,commit);assert.equal(metadata.sourceTreeSha,tree);
     assert.equal(metadata.sha256,values['steps.artifact.outputs.sha256']);
     assert.equal(metadata.installAndLaunchVerified,false,'metadata is not runtime acceptance');
+    assert.equal(metadata.homepagePublicationApproved,true);
+    assert.equal(metadata.homepagePublished,false,'publication approval is not deployed evidence');
     const drift=spawnSync('bash',['-c',runnable],{cwd:root,env:{...env,GITHUB_SHA:'b'.repeat(40)},encoding:'utf8'});
     assert.notEqual(drift.status,0,'wrong checkout cannot claim the requested source');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
