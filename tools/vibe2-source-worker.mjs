@@ -1250,6 +1250,7 @@ export function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FU
     line('Goal:'),
     verifiedExternalLearningBlockFromPrompt(promptText),
     buildUpDirectiveBlockFromPrompt(promptText),
+    compactInternalAssetSourceUsageBlockFromPrompt(promptText),
     line('Allowed edit paths:'),
     line('Full Web generation target after automatic expansion:')||line('Full Web generation target:'),
     'Preserve the exact responsible path and existing playable systems. Do not widen scope.'
@@ -2143,18 +2144,25 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     };
     for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
   }
+  const contextTarget=clean(contract.target).toLowerCase();
+  const selectedFlowAssetIds=new Set((contract.flowSelections||[]).map(row=>clean(row?.assetId)).filter(Boolean));
+  const selectedSourceCandidates=(contract.sourceCandidates||[]).filter(row=>
+    contextTarget!=='web'||!selectedFlowAssetIds.size||selectedFlowAssetIds.has(clean(row?.assetId))
+  );
   const allSelectedPaths=unique([
     ...selectedCommonSourcePaths,
     ...(contract.flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(contract.sourceCandidates||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(contract.sourceCandidates||[]).map(row=>row?.path)
-  ].map(posix).filter(file=>
-    file
-    &&!path.isAbsolute(file)
-    &&!file.split('/').includes('..')
-    &&/^assets\//.test(file)
-    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
-  )).sort();
+    ...selectedSourceCandidates.flatMap(row=>row?.sourceFiles||[]),
+    ...selectedSourceCandidates.map(row=>row?.path)
+  ].map(value=>posix(value).replace(/^\/+/, '')).filter(file=>{
+    if(!file||file.split('/').includes('..'))return false;
+    if(contextTarget==='web'){
+      return /^(?:assets|web-games|godot-games)\//.test(file)
+        &&/\.(?:js|mjs|css|svg|html?|json)$/i.test(file);
+    }
+    return /^assets\//.test(file)
+      &&/\.(?:lua|luau|js|mjs)$/i.test(file);
+  })).sort();
   if(!allSelectedPaths.length)return context;
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
@@ -2192,7 +2200,11 @@ function internalAssetSourceUsageGuidance(order={}){
   const contract=buildInternalAssetSourceUsageContract(order);
   if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
   const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
-  const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
+  const flowRows=contract.flowSelections.map(row=>{
+    const identity=[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':');
+    const sources=(row.sourceFiles||[]).map(posix).filter(Boolean).join('|');
+    return identity+(sources?'@'+sources:'');
+  }).join('; ');
   const sourceRows=contract.sourceCandidates
     .filter(row=>row.sourceFiles.length||row.path)
     .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
@@ -2209,6 +2221,9 @@ function internalAssetSourceUsageGuidance(order={}){
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
     'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
+    clean(contract.target).toLowerCase()==='web'
+      ?'WEB ALL-LIBRARY AUTO-USE HARD RULE: every selected browser-usable internal asset/reference for this BUILD_UP must be bound into executable existing Web source in the same candidate unless it is already bound. Applying only one selected asset while leaving another compatible selected asset unused is a failure. Comments, IDs, manifests, or metadata alone never count as use.'
+      :'',
     'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
@@ -2221,6 +2236,150 @@ function internalAssetSourceUsageGuidance(order={}){
     'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
     '[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'
   ].join('\n');
+}
+
+
+function internalAssetSourceUsageBlockFromPrompt(prompt=''){
+  const raw=String(prompt??'');
+  const begin='[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]';
+  const end='[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]';
+  const start=raw.indexOf(begin);
+  if(start<0)return'';
+  const finish=raw.indexOf(end,start+begin.length);
+  if(finish<0)return'';
+  return raw.slice(start,finish+end.length);
+}
+function compactInternalAssetSourceUsageBlockFromPrompt(prompt=''){
+  const block=internalAssetSourceUsageBlockFromPrompt(prompt);
+  if(!block)return'';
+  if(Buffer.byteLength(block,'utf8')<=7000)return block;
+  const keepPrefixes=[
+    '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'syncFingerprint=',
+    'Exact selected family IDs only:',
+    'Exact flow selections:',
+    'Selected source/API references:',
+    'Source consumption sequence:',
+    'WEB ALL-LIBRARY AUTO-USE HARD RULE:',
+    '[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'
+  ];
+  const rows=block.split('\n').filter(line=>keepPrefixes.some(prefix=>line.startsWith(prefix)));
+  const end='[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]';
+  const at=rows.indexOf(end);
+  const hard='WEB continuation rule: bind every directly browser-usable selected internal asset not already present. Partial selected-asset coverage is invalid; comments/metadata never count.';
+  if(at>=0)rows.splice(at,0,hard);
+  else rows.push(hard,end);
+  return rows.join('\n');
+}
+
+function webInternalAssetReference(value=''){
+  const relative=posix(value).replace(/^\/+/, '');
+  if(!relative||relative.split('/').includes('..'))return'';
+  if(!/^(?:assets|web-games|godot-games)\//.test(relative))return'';
+  if(!/\.(?:js|mjs|css|svg|png|webp|jpe?g|gif|avif|mp3|ogg|wav|webm|mp4)$/i.test(relative))return'';
+  return relative;
+}
+function executableWebAssetText(value=''){
+  return String(value??'')
+    .replace(/<!--[\s\S]*?-->/g,'')
+    .replace(/\/\*[\s\S]*?\*\//g,'')
+    .split('\n')
+    .filter(line=>!/^\s*\/\//.test(line))
+    .join('\n');
+}
+function webAssetReferenceUsed(value='',relative=''){
+  const text=executableWebAssetText(value);
+  const source=webInternalAssetReference(relative);
+  if(!source||!text.trim())return false;
+  if(![source,'/'+source].some(reference=>text.includes(reference)))return false;
+  return /(?:\bsrc\s*=|\bhref\s*=|\bbackground(?:-image|Image)?\s*[:=]|\burl\s*\(|\bnew\s+(?:Image|Audio)\s*\(|\bdrawImage\s*\(|\bfetch\s*\(|\bimport\s*\(|\bsetAttribute\s*\(\s*["'](?:src|href)["']|<(?:img|audio|source|script|link|image|use)\b)/i.test(text);
+}
+function currentWebSourceText(sourceRoot=''){
+  if(!sourceRoot||!fs.existsSync(sourceRoot)||!fs.statSync(sourceRoot).isDirectory())return'';
+  const rows=[],stack=[sourceRoot];
+  while(stack.length&&rows.length<200){
+    const current=stack.pop();
+    let entries=[];
+    try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+    for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+      if(['node_modules','.git','build','dist','Library','Temp','Logs'].includes(entry.name))continue;
+      const full=path.join(current,entry.name);
+      if(entry.isDirectory()){stack.push(full);continue;}
+      if(!entry.isFile()||!/\.(?:html?|css|js|mjs|cjs|svg)$/i.test(entry.name))continue;
+      try{rows.push(fs.readFileSync(full,'utf8'));}catch{}
+      if(rows.length>=200)break;
+    }
+  }
+  return rows.join('\n');
+}
+export function evaluateWebInternalAssetSourceBinding({order={},candidate={},sourceRoot=''}={}){
+  const target=clean(order?.target).toLowerCase();
+  const selectedTask=order?.selectedTask||{};
+  const buildUpBound=Boolean(
+    clean(selectedTask?.buildUpDirectiveId||selectedTask?.buildUpDirective?.directiveId||order?.buildUpDirectiveId||order?.buildUpDirective?.directiveId)
+    ||selectedTask?.studioQualityEvolution
+    ||order?.workPackage?.sharedContext?.studioQualityEvolution
+  );
+  const contract=buildInternalAssetSourceUsageContract(order);
+  const sourceByAssetId=new Map((contract.sourceCandidates||[]).map(row=>[clean(row?.assetId),row]));
+  const blockedModes=new Set(['NATIVE_REAUTHOR_BASE','KEEP_CURRENT_AND_ITERATE','AUTHORING_REQUIRED']);
+  const selections=(contract.flowSelections||[]).map(row=>{
+    const sourceCandidate=sourceByAssetId.get(clean(row?.assetId))||{};
+    const refs=unique([
+      ...(row?.sourceFiles||[]),
+      ...(sourceCandidate?.sourceFiles||[]),
+      sourceCandidate?.path
+    ].map(webInternalAssetReference).filter(Boolean));
+    return{...row,sourceFiles:refs};
+  }).filter(row=>
+    clean(row?.assetId)
+    &&!blockedModes.has(clean(row?.applicationMode).toUpperCase())
+    &&row.sourceFiles.length
+  );
+  const required=target==='web'&&buildUpBound&&selections.length>0;
+  if(!required)return Object.freeze({
+    required:false,pass:true,reason:'NOT_REQUIRED',selectionCount:selections.length,
+    existingBound:0,newlyBound:0,missing:0,allSelectedRequired:false
+  });
+
+  const selectionKey=row=>clean(row?.requirementId||row?.assetId)||[row?.family,row?.role].map(clean).join(':');
+  const boundIn=(row,text)=>row.sourceFiles.some(reference=>webAssetReferenceUsed(text,reference));
+  const currentText=currentWebSourceText(sourceRoot);
+  const existingBoundSelections=selections.filter(row=>boundIn(row,currentText));
+  const existingKeys=new Set(existingBoundSelections.map(selectionKey));
+  const missingSelections=selections.filter(row=>!existingKeys.has(selectionKey(row)));
+
+  if(!missingSelections.length)return Object.freeze({
+    required:true,pass:true,reason:'ALL_SELECTED_WEB_ASSETS_ALREADY_BOUND',
+    selectionCount:selections.length,existingBound:existingBoundSelections.length,newlyBound:0,missing:0,
+    allSelectedRequired:true,existingAssetIds:Object.freeze(existingBoundSelections.map(row=>row.assetId)),
+    missingAssetIds:Object.freeze([])
+  });
+
+  const changedText=[
+    ...(candidate?.edits||[]).map(row=>String(row?.replace??'')),
+    ...(candidate?.newFiles||[]).map(row=>String(row?.content??'')),
+    ...(candidate?.replaceFiles||[]).map(row=>String(row?.content??''))
+  ].join('\n');
+  const newlyBoundSelections=missingSelections.filter(row=>boundIn(row,changedText));
+  const newlyBoundKeys=new Set(newlyBoundSelections.map(selectionKey));
+  const stillMissing=missingSelections.filter(row=>!newlyBoundKeys.has(selectionKey(row)));
+  const pass=stillMissing.length===0;
+
+  return Object.freeze({
+    required:true,
+    pass,
+    reason:pass?'ALL_SELECTED_WEB_INTERNAL_ASSETS_BOUND':'SELECTED_WEB_INTERNAL_ASSETS_PARTIAL_OR_MISSING',
+    selectionCount:selections.length,
+    existingBound:existingBoundSelections.length,
+    newlyBound:newlyBoundSelections.length,
+    missing:stillMissing.length,
+    allSelectedRequired:true,
+    existingAssetIds:Object.freeze(existingBoundSelections.map(row=>row.assetId)),
+    newlyBoundAssetIds:Object.freeze(newlyBoundSelections.map(row=>row.assetId)),
+    missingAssetIds:Object.freeze(stillMissing.map(row=>row.assetId)),
+    newlyBoundSourceFiles:Object.freeze(unique(newlyBoundSelections.flatMap(row=>row.sourceFiles)))
+  });
 }
 
 function universalAssetWorkerGuidance(order={}) {
@@ -2988,6 +3147,7 @@ export function generationFailureClass(error){
   if(/GRAPHICS_REPLACEMENT_REPORT_REQUIRED/i.test(message))return'GRAPHICS_REPLACEMENT_REPORT';
   if(/STUDIO_QUALITY_DELTA_REQUIRED/i.test(message))return'STUDIO_QUALITY_DELTA';
   if(/GENERATED_ASSET_BINDING_REQUIRED/i.test(message))return'GENERATED_ASSET_BINDING';
+  if(/WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED/i.test(message))return'WEB_INTERNAL_ASSET_APPLICATION';
   if(/WEB_NATIVE_AUTHORING_DELTA_REQUIRED/i.test(message))return'WEB_NATIVE_AUTHORING';
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
@@ -2996,11 +3156,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_INTERNAL_ASSET_APPLICATION','GENERATED_ASSET_BINDING','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
-function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_INTERNAL_ASSET_APPLICATION','GENERATED_ASSET_BINDING','WEB_INTERNAL_ASSET_APPLICATION','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
+function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT','WEB_INTERNAL_ASSET_APPLICATION'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|GENERATED_ASSET_BINDING_REQUIRED|WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -3223,6 +3383,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
+      compactInternalAssetSourceUsageBlockFromPrompt(raw),
       gameContextCapsuleBlockFromPrompt(raw),
       preSubmitSelfReviewBlockFromPrompt(raw),
       studioAssetQualityCoreBlockFromPrompt(raw),
@@ -3439,6 +3600,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       compactGoalLine,
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
+      compactInternalAssetSourceUsageBlockFromPrompt(rawPrompt),
       gameContextCapsuleBlockFromPrompt(rawPrompt),
       preSubmitSelfReviewBlockFromPrompt(rawPrompt),
       studioAssetQualityCoreBlockFromPrompt(rawPrompt),
@@ -3513,6 +3675,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           compactGoalLine,
           compactVerifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
+          compactInternalAssetSourceUsageBlockFromPrompt(rawPrompt),
           gameContextCapsuleBlockFromPrompt(rawPrompt),
           preSubmitSelfReviewBlockFromPrompt(rawPrompt),
           studioAssetQualityCoreBlockFromPrompt(rawPrompt),
@@ -4219,7 +4382,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const focusedPrimaryBudgetRetry=!allowFullRewrite&&focusedReplaceOnly&&!speculativeVariant&&focusedFinalRetryAllowed(error)&&attempt<maxAttempts;
       if(focusedPrimaryBudgetRetry)console.log(`VIBE2_FOCUSED_PRIMARY_BUDGET_RETRY=${attempt}->${attempt+1}:${candidateVariant}:${failureClass}`);
-      const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
+      const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT','WEB_INTERNAL_ASSET_APPLICATION'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const zeroOutputCircuitOpen=consecutiveZeroOutputTimeouts>=2;
       if(zeroOutputCircuitOpen)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN=${attempt}:${candidateVariant}`);
@@ -4725,6 +4888,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(presentationDelta.required&&!presentationDelta.pass)throw new Error('PRESENTATION_PATCH_DELTA_REQUIRED:'+presentationDelta.presentationPass);
     const graphicsReplacementReport=evaluateGraphicsReplacementReport({candidate,contract:order?.presentationQuality?.graphicsReplacement||{}});
     if(graphicsReplacementReport.required&&!graphicsReplacementReport.pass)throw new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:'+graphicsReplacementReport.reason);
+    const webInternalAssetSourceBinding=evaluateWebInternalAssetSourceBinding({order,candidate,sourceRoot});
+    if(webInternalAssetSourceBinding.required&&!webInternalAssetSourceBinding.pass){
+      throw new Error('WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:'+webInternalAssetSourceBinding.reason+':MISSING='+(webInternalAssetSourceBinding.missingAssetIds||[]).join(','));
+    }
     const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
     let studioAssetQualityAxes=null;
     if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
@@ -4773,7 +4940,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes};
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,webInternalAssetSourceBinding,studioQualityDelta,studioAssetQualityAxes};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
