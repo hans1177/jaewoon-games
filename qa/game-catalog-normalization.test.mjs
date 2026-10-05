@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
-import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
+import crypto from 'node:crypto';
+import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog, validatedHomepageMedia, webTreeFingerprint } from '../tools/game-catalog-normalization.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -264,3 +265,69 @@ console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconc
 }
 
 assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeatureExpansionFreezeForbidden,true);
+
+// Cover bytes, titles and per-game typography must survive the canonical/runtime merge.
+{
+  const manifest=JSON.parse(fs.readFileSync('assets/homepage-covers/manifest.json','utf8'));
+  const entries=Object.values(manifest.games);
+  assert(entries.length>0);
+  assert.equal(new Set(entries.map(x=>x.typography)).size,entries.length,'each cover has its own title lettering');
+  for(const row of entries){
+    assert(validatedHomepageMedia(row.gameId,row),'valid cover rejected: '+row.gameId);
+    for(const [kind,limit] of [['small',40960],['cover',143360]]){
+      const bytes=fs.readFileSync(row[kind].src);
+      assert(bytes.length<=limit);
+      assert.equal(bytes.toString('ascii',0,4),'RIFF');
+      assert.equal(bytes.toString('ascii',8,12),'WEBP');
+    }
+    assert.equal(validatedHomepageMedia(row.gameId,{...row,gameId:'unrelated-game'}),null);
+    assert.equal(validatedHomepageMedia(row.gameId,{...row,small:{...row.small,sha256:'0'.repeat(64)}}),null);
+    assert.equal(validatedHomepageMedia(row.gameId,{...row,small:{...row.small,src:'../outside.webp'}}),null);
+    assert.equal(validatedHomepageMedia(row.gameId,{...row,small:{...row.small,bytes:row.small.bytes+1}}),null);
+  }
+  const row=entries[0];
+  const normalized={games:[{id:row.gameId,name:'native name',productionClass:'DEVELOPMENT_CONFIRMED',marketingThumbnail:'assets/native-unchanged.webp'}]};
+  normalizeCatalog(normalized);
+  assert.equal(normalized.games[0].canonical.marketing.homepageMedia.titleEn,row.titleEn);
+  assert.equal(normalized.games[0].canonical.marketing.thumbnail,'assets/native-unchanged.webp');
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-video-binding-'));
+  try{
+    const root=path.join(temp,'web-games',row.gameId);fs.mkdirSync(root,{recursive:true});
+    fs.writeFileSync(path.join(root,'index.html'),'<canvas>source revision one</canvas>');
+    for(const asset of [row.small,row.cover]){const dest=path.join(temp,asset.src);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.copyFileSync(asset.src,dest);}
+    const bytes=Buffer.from('fixture: only metadata binding is exercised here');
+    const src=`assets/homepage-media/${row.gameId}.mp4`;
+    fs.mkdirSync(path.join(temp,'assets/homepage-media'),{recursive:true});fs.writeFileSync(path.join(temp,src),bytes);
+    const video={gameId:row.gameId,platform:'WEB',sourceRevision:'a'.repeat(40),artifactIdentity:webTreeFingerprint(fs,root),capturedAt:'2026-10-05T00:00:00Z',src,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),dependencies:[{path:`web-games/${row.gameId}/index.html`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'index.html'))).digest('hex')}],runtimeVerification:{pass:true,inputEvents:2,visualChangeObserved:true}};
+    assert(validatedHomepageMedia(row.gameId,{...row,video},{root:temp}).video);
+    assert(!validatedHomepageMedia(row.gameId,{...row,video:{...video,platform:'ROBLOX'}},{root:temp}).video,'web capture cannot claim Roblox native footage');
+    fs.appendFileSync(path.join(root,'index.html'),'changed source');
+    assert(!validatedHomepageMedia(row.gameId,{...row,video},{root:temp}).video,'stale capture cannot follow a changed runtime');
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+  assert(homepage.includes('preload="none"'));
+  assert(homepage.includes('data-src='));
+}
+
+// Withdraw only the audited simple implementations; unrelated/native targets remain intact.
+{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-simple-click-'));
+  try{
+    const blocked=roadmap.catalogNormalization.ownerWebAutoIngest.webExposureQuality.withdrawnEntrySha256;
+    for(const id of Object.keys(blocked)){
+      fs.mkdirSync(path.join(root,id),{recursive:true});
+      fs.copyFileSync(`web-games/${id}/index.html`,path.join(root,id,'index.html'));
+    }
+    const fixture={games:Object.keys(blocked).map(id=>({id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,robloxUrl:'https://www.roblox.com/games/12345'}))};
+    ingestOwnerWebGameIds(fixture,[],{rootDir:root});
+    for(const game of fixture.games){assert.equal(game.homepageWebPlayable,false);assert.equal(game.robloxUrl,'https://www.roblox.com/games/12345');}
+    const workerSource=fs.readFileSync('_worker.js','utf8');
+    const edge=await import('data:text/javascript;base64,'+Buffer.from(workerSource).toString('base64'));
+    for(const id of Object.keys(blocked)){
+      const html=fs.readFileSync(`web-games/${id}/index.html`,'utf8').trim();
+      const env={ASSETS:{fetch:async request=>new URL(request.url).pathname==='/game-catalog.json'?Response.json({webExposurePolicy:roadmap.catalogNormalization.ownerWebAutoIngest.webExposureQuality,games:[]}):new Response(html,{headers:{'Content-Type':'text/html'}})}};
+      const response=await edge.default.fetch(new Request(`https://example.test/web-games/${id}/`),env);
+      assert.equal(response.status,410,id+' direct route must be withdrawn');
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+}
+console.log('PASS compact unique typography covers, media integrity/source binding, lazy video and four audited click-only withdrawals');

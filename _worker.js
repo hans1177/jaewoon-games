@@ -228,7 +228,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,ca
     const source=canonicalById.get(runtime.id);
     if(!source)return {...runtime,homepageWebPlayable:false,hasWebArchive:false,canonical:{...runtime.canonical,sources:{...runtime.canonical?.sources,web:{...runtime.canonical?.sources?.web,playable:false,archive:false}}}};
     return {...runtime,name:source.name,webPath:source.webPath,hasWebArchive:source.hasWebArchive,homepageWebPlayable:source.homepageWebPlayable,ownerWebSourceState:source.ownerWebSourceState,
-      canonical:{...runtime.canonical,identity:source.canonical?.identity||runtime.canonical?.identity,sources:{...runtime.canonical?.sources,web:source.canonical?.sources?.web||{path:source.webPath,playable:source.homepageWebPlayable,archive:source.hasWebArchive,state:source.ownerWebSourceState}}}};
+      canonical:{...runtime.canonical,identity:source.canonical?.identity||runtime.canonical?.identity,marketing:source.canonical?.marketing||runtime.canonical?.marketing,sources:{...runtime.canonical?.sources,web:source.canonical?.sources?.web||{path:source.webPath,playable:source.homepageWebPlayable,archive:source.hasWebArchive,state:source.ownerWebSourceState}}}};
   });
   const baseGames=allBaseGames.filter(game=>['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
   const projects=Array.isArray(portfolio?.projects)?portfolio.projects:[];
@@ -430,7 +430,9 @@ export default{
         const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
         const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map(match=>match[1].split(/[?#]/)[0]);
         const source=catalog.games?.find(game=>game.id===webEntry[1]);
-        const withdrawn=policy.enabled===true&&(source?.ownerWebSourceState==='WITHDRAWN_SIMPLE_PROTOTYPE'||(policy.withdrawnEntryTitles||[]).includes(title)||scripts.some(src=>(policy.withdrawnRuntimeScripts||[]).includes(src)));
+        const blockedHash=policy.withdrawnEntrySha256?.[webEntry[1]];
+        const digest=blockedHash?Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(html.trim())))).map(byte=>byte.toString(16).padStart(2,'0')).join(''):'';
+        const withdrawn=policy.enabled===true&&(source?.ownerWebSourceState==='WITHDRAWN_SIMPLE_PROTOTYPE'||(policy.withdrawnEntryTitles||[]).includes(title)||scripts.some(src=>(policy.withdrawnRuntimeScripts||[]).includes(src))||(policy.withdrawnImplementationMarkers||[]).some(marker=>html.includes(marker))||(blockedHash&&blockedHash===digest));
         if(withdrawn)return new Response(request.method==='HEAD'?null:'<!doctype html><html lang="ko"><meta charset="utf-8"><title>게임 개선 중</title><main><h1>게임 개선 중</h1><p>이 웹 버전은 내려갔어. 실제 게임플레이와 콘텐츠를 개선한 뒤 다시 공개할게.</p><a href="/">게임 목록으로</a></main></html>',{status:410,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
       }
     }

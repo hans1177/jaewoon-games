@@ -129,6 +129,8 @@ jobs:
             /company-learning/catalog-homepage-normalization.json
             /tools/
             /assets/homepage-enhancements.js
+            /assets/homepage-covers/
+            /assets/homepage-media/
             /assets/artbook-viewer.js
             /qa/homepage-manager-publication-order.test.mjs
             /qa/company-homepage-runtime-propagation.test.mjs
@@ -140,6 +142,7 @@ jobs:
             /company-asset-library.json
             /game-catalog.json
             /homepage-platform-exposure.json
+            /web-games/*/index.html
             /roblox-games/*/default.project.json
 
       - name: Run impact-scoped homepage QA
@@ -319,6 +322,21 @@ jobs:
           git worktree prune
           echo 'HOMEPAGE_PLATFORM_EXPOSURE_RUNTIME_SYNC=PASS'
 
+      - name: Plan source-bound release gameplay capture
+        id: media_plan
+        run: node tools/homepage-manager.mjs --plan-release-media
+
+      - name: Capture compact release gameplay inside existing self-QA
+        continue-on-error: true
+        if: steps.media_plan.outputs.needed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix /tmp/homepage-capture-tools --no-audit --no-fund --ignore-scripts playwright@1.62.1
+          node /tmp/homepage-capture-tools/node_modules/playwright/cli.js install --with-deps chromium
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq; sudo apt-get install -y -qq ffmpeg; }
+          HOMEPAGE_PLAYWRIGHT_MODULE=/tmp/homepage-capture-tools/node_modules/playwright node tools/homepage-manager.mjs --capture-release-media
+
       - name: Prepare verified runtime status/catalog candidate
         if: env.HOMEPAGE_PUBLIC_STATUS_SYNC == 'YES'
         shell: bash
@@ -461,7 +479,7 @@ jobs:
           candidate_dir='.homepage-candidate'
           rm -rf "$candidate_dir"
           mkdir -p "$candidate_dir"
-          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions assets/homepage-covers assets/homepage-media)
           base_sha="$(git rev-parse HEAD)"
           git add -- "${published_paths[@]}"
           git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
@@ -477,7 +495,7 @@ jobs:
             changed:process.env.CANDIDATE_CHANGED==='true',
             policyFingerprint:process.env.HOMEPAGE_POLICY_SHA256,
             supportedPlatforms:JSON.parse(process.env.HOMEPAGE_SUPPORTED_PLATFORMS_JSON||'[]'),
-            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
+            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions','assets/homepage-covers','assets/homepage-media'],
           },null,2)+'\n');
           NODE
           git reset --quiet
@@ -597,7 +615,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-homepage-manager'
           git config user.email 'homepage-manager@users.noreply.github.com'
-          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions assets/homepage-covers assets/homepage-media)
           git add -- "${published_paths[@]}"
           if git diff --cached --quiet; then
             echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'

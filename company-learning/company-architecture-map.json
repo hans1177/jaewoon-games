@@ -1,5 +1,5 @@
 {
-  "version": 316,
+  "version": 317,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6991,5 +6991,15 @@
     "sharedBindingsSerialized": true,
     "nativeQualityPassRequiresActualPlayback": true,
     "status": "IMPLEMENTATION_PENDING_MAIN_QA"
+  },
+  "homepageGameMediaTopology": {
+    "sourcePolicy": "homepageGameMediaContract",
+    "existingFlow": [
+      "SOURCE_BOUND_MEDIA_CAPTURE",
+      "HOMEPAGE_SELF_QA",
+      "DIRECTOR_REVIEW",
+      "MAIN_PUBLICATION"
+    ],
+    "newPipeline": false
   }
 }
