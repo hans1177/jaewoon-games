@@ -238,6 +238,10 @@ const recipes=[
 {id:'toxic-furnace',name:'독가스 용광로',where:'junglebench',cost:{monopolyStone:15,ironIngot:25,goldIngot:17,wood:20},desc:'안 구운 독점석 15개 · 구운철 25개 · 구운금 17개 · 나무 20개 · 태양석을 20초에 제련',kind:'structure'},
 {id:'sunstone-bench',name:'태양석 제작대',where:'junglebench',repeatHandAfterBuilt:true,cost:{sunstoneOre:8,monopolyIngot:6,goldIngot:4,wood:3},desc:'독점석 제작대에서 제작 · 한 번 설치 후 맨손 재설치 가능',kind:'structure'},
 {id:'sunstone-pick',name:'태양석 곡괭이',where:'sunstonebench',cost:{sunstoneOre:8,monopolyIngot:5,wood:3},desc:'태양석 광맥 전용 5티어 곡괭이',kind:'tool',target:'sunstone',mult:1},
+// 메인: 구운 태양석 무기 · 기존 장비 및 유도 투사체 흐름 사용
+{id:'sunstone-greatsword',name:'태양석 대검',where:'sunstonebench',cost:{sunstoneIngot:12,monopolyIngot:8,goldIngot:6},desc:'5티어 · 공격력 480 · 공격 간격 1.2초 · 긴 근접 범위 · 양손무기',kind:'weapon',power:480,range:130,cooldown:1200},
+{id:'sunstone-dagger',name:'태양석 암살 단검',where:'sunstonebench',cost:{sunstoneIngot:10,monopolyIngot:4,goldIngot:4},desc:'5티어 · 공격력 180 · 공격 간격 0.35초 · 짧은 사거리 · 25% 확률로 출혈 추가 피해 90',kind:'weapon',power:180,range:62,cooldown:350,bleedChance:.25,bleedDamage:90},
+{id:'sunstone-orb',name:'태양석 마법 구슬',where:'sunstonebench',cost:{sunstoneIngot:14,monopolyIngot:6,goldIngot:5},desc:'5티어 · 공격력 300 · 공격 간격 0.9초 · 사거리 780 · 유도 마법 공격 · 탄약 불필요',kind:'weapon',power:300,range:780,cooldown:900,ranged:'spore',sunMagic:true},
 {id:'sunstone-scorpion-blade',name:'맹독 전갈검',where:'sunstonebench',cost:{sunstoneOre:10,monopolyIngot:5,goldIngot:4},desc:'황야 사막 5티어 무기',kind:'weapon',power:360,range:92,cooldown:850},
 {id:'sunstone-scorpion-heavy',name:'맹독 전갈 중갑',where:'sunstonebench',cost:{sunstoneOre:12,monopolyIngot:6,flowerLeather:4},desc:'황야 사막 5티어 방어구 · 최대 체력 +500 · 피해 40% 감소',kind:'armor',maxHp:500,reduce:.40},
 {id:'sunstone-scorpion-light',name:'맹독 전갈 경갑',where:'sunstonebench',cost:{sunstoneOre:10,monopolyIngot:5,flowerLeather:5},desc:'황야 사막 5티어 방어구 · 최대 체력 +360 · 공격력 +25',kind:'armor',maxHp:360,reduce:.28,bonusDamage:25},
@@ -372,12 +376,12 @@ registerAllCookingCombos();
 const ITEM_TIER_2=new Set(['flower-leather','rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','spore-seeker','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
 const ITEM_TIER_3=new Set(['mantis-scythe','spider-fang-blade','spider-silk-spear','spider-silk-armor','gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
 const ITEM_TIER_4=new Set(['swamp-golem-armor','fear-bear-claw','fear-bear-armor','fear-bear-hunter-armor','sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','deep-diver-armor','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','tiger-dagger','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
-const ITEM_TIER_5=new Set(['toxic-spore-seeker','toxic-mycelium-armor','yeti-horn-maul','yeti-armor','monopoly-pick','sunstone-bench','sunstone-pick','sunstone-scorpion-blade','sunstone-scorpion-heavy','sunstone-scorpion-light']);
+const ITEM_TIER_5=new Set(['toxic-spore-seeker','toxic-mycelium-armor','yeti-horn-maul','yeti-armor','monopoly-pick','sunstone-bench','sunstone-pick','sunstone-greatsword','sunstone-dagger','sunstone-orb','sunstone-scorpion-blade','sunstone-scorpion-heavy','sunstone-scorpion-light']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const BOW_IDS=new Set(['wood-bow','reinforced-bow','iron-bow','gold-bow','jungle-bow']);
 const ARROW_IDS=['wood-arrow','iron-arrow','spider-arrow','firewolf-arrow','shark-arrow','yeti-arrow'];
 const LEGACY_ARROW_MIGRATION={'stone-arrow':'firewolf-arrow','gold-arrow':'yeti-arrow'};
-const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
+const TWO_HANDED_WEAPONS=new Set(['sunstone-greatsword','gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
 const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,jungletigerleader:5,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4,swampPrimitiveSpearman:3,swampPrimitiveArcher:3,swampPrimitiveGuard:3,sandSpirit:4,giantVenomScorpion:4};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
@@ -1486,7 +1490,7 @@ function drawMap(){
  }
  if(state.discovered.flowerfield){m.strokeStyle='#d39bc6';m.lineWidth=2;m.strokeRect(FLOWER_FIELD.x*sx,FLOWER_FIELD.y*sy,FLOWER_FIELD.w*sx,FLOWER_FIELD.h*sy);m.fillStyle='#ffd9ef';m.font='bold 11px system-ui';m.fillText('꽃밭',(FLOWER_FIELD.x+FLOWER_FIELD.w*.38)*sx,(FLOWER_FIELD.y+FLOWER_FIELD.h*.5)*sy)}
  if(state.discovered.giantgarden){m.strokeStyle='#b66ea8';m.lineWidth=2;m.strokeRect(GIANT_GARDEN.x*sx,GIANT_GARDEN.y*sy,GIANT_GARDEN.w*sx,GIANT_GARDEN.h*sy);m.fillStyle='#ffc9ef';m.font='bold 10px system-ui';m.fillText('거대화원',(GIANT_GARDEN.x+GIANT_GARDEN.w*.5)*sx,(GIANT_GARDEN.y+GIANT_GARDEN.h*.5)*sy)}
- if(state.discovered.desert){m.strokeStyle='#d4aa65';m.lineWidth=2;m.strokeRect(WILDERNESS_DESERT.x*sx,WILDERNESS_DESERT.y*sy,WILDERNESS_DESERT.w*sx,WILDERNESS_DESERT.h*sy);m.fillStyle='#ffe5a9';m.font='bold 11px system-ui';m.textAlign='center';m.fillText('황야 사막',(WILDERNESS_DESERT.x+WILDERNESS_DESERT.w/2)*sx,(WILDERNESS_DESERT.y+WILDERNESS_DESERT.h/2)*sy)}
+ {m.strokeStyle='#d4aa65';m.lineWidth=2;m.strokeRect(WILDERNESS_DESERT.x*sx,WILDERNESS_DESERT.y*sy,WILDERNESS_DESERT.w*sx,WILDERNESS_DESERT.h*sy);m.fillStyle='#ffe5a9';m.font='bold 11px system-ui';m.textAlign='center';m.fillText('황야 사막',(WILDERNESS_DESERT.x+WILDERNESS_DESERT.w/2)*sx,(WILDERNESS_DESERT.y+WILDERNESS_DESERT.h/2)*sy)}
  if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,(SNOW_REGION.y+SNOW_REGION.h/2)*sy);for(const o of SNOW_OUTPOSTS){m.fillStyle='#7ba0ad';m.fillRect(o.x*sx-3,o.y*sy-3,6,6)}}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
  if(state.discovered.swamp){m.strokeStyle='#536b4d';m.lineWidth=2;m.strokeRect(SWAMP_REGION.x*sx,SWAMP_REGION.y*sy,SWAMP_REGION.w*sx,SWAMP_REGION.h*sy);m.fillStyle='#b8c9a8';m.font='bold 11px system-ui';m.textAlign='center';m.fillText('늪지대',(SWAMP_REGION.x+SWAMP_REGION.w/2)*sx,(SWAMP_REGION.y+SWAMP_REGION.h/2)*sy)}
@@ -1583,7 +1587,7 @@ function drawMiniMap(now=performance.now()){
   const a=toMini(rect.x,rect.y),b=toMini(rect.x+rect.w,rect.y+rect.h);
   m.strokeStyle=stroke;m.lineWidth=width;m.strokeRect(a.x,a.y,b.x-a.x,b.y-a.y)
  };
- if(state.discovered.desert)drawRect(WILDERNESS_DESERT,'#d4aa6588',1);drawRect(SNOW_REGION,'#d7f4ff77',1);if(state.discovered.flowerfield)drawRect(FLOWER_FIELD,'#ffd1ef88',1);if(state.discovered.giantgarden)drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);if(state.discovered.swamp)drawRect(SWAMP_REGION,'#71886688',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
+ drawRect(WILDERNESS_DESERT,'#d4aa6588',1);drawRect(SNOW_REGION,'#d7f4ff77',1);if(state.discovered.flowerfield)drawRect(FLOWER_FIELD,'#ffd1ef88',1);if(state.discovered.giantgarden)drawRect(GIANT_GARDEN,'#e28bcf88',1);drawRect(JUNGLE_REGION,'#78b86c77',1);if(state.discovered.swamp)drawRect(SWAMP_REGION,'#71886688',1);drawRect(CRYSTAL_REGION,'#c1a7ff66',1);
  const landmark=(x,y,color,size=3)=>{
   const q=toMini(x,y);if((q.x-cx)*(q.x-cx)+(q.y-cy)*(q.y-cy)>r*r)return;
   m.fillStyle=color;m.beginPath();m.arc(q.x,q.y,size,0,Math.PI*2);m.fill()
@@ -2390,7 +2394,7 @@ function remotePlayerState(payload){
  if(!payload||payload.id===multiplayer.playerId)return;
  const previous=multiplayer.remote.get(payload.id),now=performance.now(),special=payload.pet?.special;
  const specialToken=special?.token||null,specialStartedAt=specialToken&&specialToken===previous?.petSpecialToken?previous.petSpecialStartedAt:special?.phase==='prepare'?now:0;
- multiplayer.remote.set(payload.id,{...payload,seenAt:now,petAttackAt:previous?.petAttackAt||0,petSpecialHitToken:previous?.petSpecialHitToken||null,petSpecialToken:specialToken,petSpecialStartedAt:specialStartedAt});
+ multiplayer.remote.set(payload.id,{...payload,seenAt:now,petAttackAt:previous?.petAttackAt||0,sunOrbAt:previous?.sunOrbAt||0,petSpecialHitToken:previous?.petSpecialHitToken||null,petSpecialToken:specialToken,petSpecialStartedAt:specialStartedAt});
  if(state.panelMode==='map'&&ui.sheet.classList.contains('open'))drawMap()
 }
 function sharedStructurePos(v){
@@ -2620,7 +2624,15 @@ function grantRemoteKillReward(payload){
  state.dirty=true;updateHud()
 }
 function hostApplyRemoteSpore(a){
- if(!multiIsHost()||!a?.ownerId)return;const remote=multiplayer.remote.get(String(a.ownerId));if(!remote||remote.area!==a.area)return;const target=state.enemies.find(e=>e.netId===String(a.targetId||'')&&e.hp>0&&e.area===a.area);if(!target)return;const dx=target.x-(Number(a.x)||remote.x),dy=target.y-(Number(a.y)||remote.y),d=Math.hypot(dx,dy)||1,speed=360;state.projectiles.push({x:Number(a.x)||remote.x,y:Number(a.y)||remote.y,vx:dx/d*speed,vy:dy/d*speed,speed,damage:0,createdAt:performance.now(),life:2000,area:a.area,sourceId:String(a.ownerId),ownerId:String(a.ownerId),kind:'sporeOrb',targetId:target.netId,playerOwned:true})
+ if(!multiIsHost()||!a?.ownerId)return;
+ const remote=multiplayer.remote.get(String(a.ownerId)),w=item(remote?.weapon),now=performance.now();
+ if(!remote||remote.area!==a.area||w?.ranged!=='spore')return;
+ if(w.sunMagic&&now-(remote.sunOrbAt||0)<w.cooldown)return;
+ const target=state.enemies.find(e=>e.netId===String(a.targetId||'')&&e.hp>0&&e.area===a.area);if(!target)return;
+ const x=Number(remote.x)||0,y=Number(remote.y)||0,dx=target.x-x,dy=target.y-y,d=Math.hypot(dx,dy)||1,speed=w.sunMagic?460:360;
+ if(w.sunMagic&&d>w.range+target.type.r)return;
+ if(w.sunMagic)remote.sunOrbAt=now;
+ state.projectiles.push({x,y,vx:dx/d*speed,vy:dy/d*speed,speed,damage:w.sunMagic?w.power+effectiveStat(remote.armor,'bonusDamage'):0,createdAt:now,life:2000,area:a.area,sourceId:String(a.ownerId),ownerId:String(a.ownerId),kind:w.sunMagic?'sunOrb':'sporeOrb',targetId:target.netId,enhanced:!!w.enhancedSpore,playerOwned:true})
 }
 function hostApplyRemoteArrow(a){
  if(!multiIsHost()||!a?.ownerId)return;const remote=multiplayer.remote.get(String(a.ownerId));if(!remote||remote.area!==a.area)return;
@@ -2892,8 +2904,8 @@ function nearestSporeTarget(p,w){
  return best
 }
 function fireSporeSeeker(now,p,w,target){
- const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=360;
- const projectile={x:p.x+dx/d*28,y:p.y+dy/d*28,vx:dx/d*speed,vy:dy/d*speed,speed,damage:0,createdAt:now,life:2000,area:state.area,sourceId:multiplayer.playerId,ownerId:multiplayer.playerId,kind:'sporeOrb',targetId:target.netId,enhanced:!!w.enhancedSpore,playerOwned:true};
+ const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=w.sunMagic?460:360;
+ const projectile={x:p.x+dx/d*28,y:p.y+dy/d*28,vx:dx/d*speed,vy:dy/d*speed,speed,damage:w.sunMagic?currentDamage():0,createdAt:now,life:2000,area:state.area,sourceId:multiplayer.playerId,ownerId:multiplayer.playerId,kind:w.sunMagic?'sunOrb':'sporeOrb',targetId:target.netId,enhanced:!!w.enhancedSpore,playerOwned:true};
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2')multiSend('player-spore',{ownerId:multiplayer.playerId,area:state.area,x:p.x,y:p.y,targetId:target.netId});else state.projectiles.push(projectile)
 }
 function currentArrowAimTarget(){
@@ -4188,7 +4200,7 @@ function updateProjectiles(dt,now){
  const p=state.player;
  for(let i=state.projectiles.length-1;i>=0;i--){
   const q=state.projectiles[i];
-  if(q.kind==='sporeOrb'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
+  if(q.kind==='sporeOrb'||q.kind==='sunOrb'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
   if(q.kind==='toxicGasShot'&&now>=(q.nextSlowAt||0)){
    q.nextSlowAt=(q.nextSlowAt||now)+500;
    q.speedRatio=Math.max(.5,(Number(q.speedRatio)||1.5)-.1);
@@ -5459,6 +5471,7 @@ function drawProjectiles(cx,cy){
   if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;
   ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);
   if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
+  else if(q.kind==='sunOrb'){ctx.fillStyle='#ffd567';ctx.strokeStyle='#fff3bf';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}
