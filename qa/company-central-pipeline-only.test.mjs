@@ -443,6 +443,16 @@ test('director runner drain advances latest scheduler without cancelling running
   assert.doesNotMatch(director,/VIBE2_STALE_UNSTARTED_SCHEDULER[\s\S]{0,400}in_progress/);
 });
 
+test('runner drain force-settles only still-queued safe duplicates after accepted cancel',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/safe_force_cancel=false/);
+  assert.match(director,/DUPLICATE_TITLE_STALE_QUEUED/);
+  assert.match(director,/current_state=.*actions\/runs\/\$\{run_id\}/);
+  assert.match(director,/current_state.*'queued'.*'pending'.*'requested'.*'waiting'/s);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED_AFTER_ACCEPTED_CANCEL=/);
+  assert.doesNotMatch(director,/current_state.*in_progress.*force-cancel/s);
+});
+
 test('director coalesces pending pre-supervision wakes while preserving active completion',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
