@@ -6458,7 +6458,7 @@ test('Web BUILD_UP keeps internal asset contract through full expansion and retr
     responsibleFiles:['index.html'],
     attempt:2
   });
-  assert.match(retry,/WEB continuation rule:/);
+  assert.match(retry,/WEB ALL-LIBRARY AUTO-USE HARD RULE|WEB continuation rule:/);
   assert.equal(generationFailureClass(new Error('WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:x')),'WEB_INTERNAL_ASSET_APPLICATION');
   assert.equal(shouldRetryGenerationError(new Error('WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:x')),true);
 });
