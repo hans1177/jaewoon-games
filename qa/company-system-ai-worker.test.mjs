@@ -399,6 +399,48 @@ test('bottleneck sensor recommendation is consumed by the existing impact-aware 
   assert.deepEqual(reserved.preferredIds,['cohort-a']);
 });
 
+
+test('System AI bottleneck sensor preserves primary game runner capacity under repository pressure',()=>{
+  const queue=normalizeSystemAiQueue({tasks:[
+    {id:'repair-a',status:'queued',priority:'critical',responsibleFiles:['tools/a.mjs']},
+    {id:'repair-b',status:'queued',priority:'high',responsibleFiles:['tools/b.mjs']},
+    {id:'repair-c',status:'queued',priority:'normal',responsibleFiles:['tools/c.mjs']}
+  ]});
+  const snapshot=analyzeSystemAiBottlenecks({
+    systemAiQueue:queue,
+    gameQueue:{tasks:[]},
+    maxBatch:32,
+    at:Date.parse('2026-10-06T00:00:00Z'),
+    workflowMetrics:{
+      runnerQueuedRuns:40,
+      runnerInProgressRuns:4,
+      primaryGameQueuedRuns:18,
+      duplicateWorkflowRuns:11,
+      stalePrimaryRuns:23
+    }
+  });
+  assert.equal(snapshot.workflow.runnerPressure,true);
+  assert.equal(snapshot.reserveCeiling,1);
+  assert.equal(snapshot.recommendedBatch,1);
+  assert.ok(snapshot.actions.includes('PRESERVE_PRIMARY_GAME_RUNNER_CAPACITY'));
+  assert.ok(snapshot.actions.includes('COLLAPSE_EXACT_DUPLICATE_INGRESS'));
+  assert.ok(snapshot.actions.includes('CANCEL_STALE_PRIMARY_REVISION_INGRESS'));
+});
+
+test('System AI workflow feeds repository runner pressure into the existing bottleneck sensor',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
+  assert.match(workflow,/SYSTEM_AI_RUNNER_QUEUED_RUNS=/);
+  assert.match(workflow,/SYSTEM_AI_RUNNER_IN_PROGRESS_RUNS=/);
+  assert.match(workflow,/SYSTEM_AI_PRIMARY_GAME_QUEUED_RUNS=/);
+  assert.match(workflow,/SYSTEM_AI_DUPLICATE_WORKFLOW_RUNS=/);
+  assert.match(workflow,/SYSTEM_AI_STALE_PRIMARY_RUNS=/);
+  assert.match(workflow,/--runner-queued-runs="\$runner_queued_runs"/);
+  assert.match(workflow,/--primary-game-queued-runs="\$primary_game_queued_runs"/);
+  assert.match(workflow,/--duplicate-workflow-runs="\$duplicate_workflow_runs"/);
+  assert.match(workflow,/--stale-primary-runs="\$stale_primary_runs"/);
+  assert.doesNotMatch(workflow,/shadow-runner-pressure|new-bottleneck-scheduler/i);
+});
+
 test('hard bottleneck repair critic may revise the proposal before any file edit is applied',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
