@@ -1,5 +1,5 @@
 {
-  "version": 525,
+  "version": 526,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -788,6 +788,110 @@
         "tools/company-development-roblox-bootstrap.mjs",
         "assets/vibe-visual-quality-gate.js"
       ]
+    },
+    "allGameDynamicInternalAssetBindingContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "scope": "ALL_GAME_DEVELOPMENT_AND_BUILD_UP_WORK",
+      "objective": "EVERY_GAME_DEVELOPMENT_TASK_MUST_DISCOVER_SYNCHRONIZE_AND_BIND_ALL_SAFE_RIGHTS_COMPATIBLE_PLATFORM_AND_ROLE_COMPATIBLE_INTERNAL_LIBRARY_ASSETS_TO_EVERY_APPLICABLE_EXISTING_GAME_SYSTEM_WITHOUT_ARTIFICIAL_COUNT_SCORE_OR_CONTEXT_CAPS",
+      "platforms": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "platformConversionOrder": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "assetFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "librarySources": [
+        "company-asset-library.json#assets",
+        "company-asset-library.json#baseMaterialLibrary",
+        "company-asset-library.json#studioAssetUniverse",
+        "company-asset-library.json#motionDirector",
+        "company-asset-library.json#motionBootstrap",
+        "company-asset-library.json#internalAssetCompositionContract",
+        "assets/*/catalog.json"
+      ],
+      "dynamicBinding": {
+        "required": true,
+        "everyBuildUpReevaluatesCurrentLibrary": true,
+        "exactLibraryVersionAndSelectionFingerprintRequired": true,
+        "selectedBindingsRemainSynchronizedWithCurrentGameSource": true,
+        "changedLibraryOrGameResponsibilityTriggersRebindEvaluation": true,
+        "detailContextRotationAllowed": true,
+        "contextRotationMayNotReduceEligibility": false,
+        "contextRotationIsDetailSchedulingOnly": true,
+        "allCompatibleAssetsRemainEligibleInSameBuildUp": true,
+        "staleBindingMayNotPass": true,
+        "bindingLineageMustPersistThroughPackageRuntimeAndReview": true
+      },
+      "selection": {
+        "fullInternalRegistryScanRequired": true,
+        "allTwelveFamiliesEvaluated": true,
+        "compatibleInternalCandidatesMustRemainEligible": true,
+        "compatibleBaseMaterialAtomsMustRemainEligible": true,
+        "noArtificialAssetCountCap": true,
+        "noArtificialFamilyCountCap": true,
+        "noAuditScoreUsageGate": true,
+        "lowScoreSafeCompatibleAssetUseAllowed": true,
+        "hardBlockersOnly": [
+          "SECURITY_BLOCKED",
+          "LICENSE_FORBIDDEN",
+          "CORRUPT_SOURCE",
+          "EXPLICIT_INTERNAL_USE_FORBIDDEN",
+          "PLATFORM_INCOMPATIBLE_WITH_NO_SAFE_NATIVE_ADAPTATION",
+          "ROLE_INCOMPATIBLE"
+        ],
+        "gameStyleAndRoleAdaptationRequiredWhenNeeded": true
+      },
+      "application": {
+        "existingSystemRequiresAppliedBinding": true,
+        "absentSystemAllowsExplicitNotApplicableWithEvidence": true,
+        "notApplicableMayNotSkipExistingSystem": true,
+        "actualResponsibleSourceMutationRequiredWhenBindingMissingOrStale": true,
+        "selectionMarkerConfigOrManifestAloneCannotPass": true,
+        "primitivePlainDefaultUiOrDefaultMaterialSubstitutionCannotPass": true,
+        "allApplicableCompatibleAssetsShouldBeUsedInDetailedCompositionRatherThanSingleTokenPresence": true,
+        "reuseAndCompositionBeforeNewAuthoring": true,
+        "directCrossPlatformBinaryReuseForbidden": true,
+        "platformNativeAdaptationRequired": true
+      },
+      "preservation": {
+        "gameplayRulesImmutableForAssetReasons": true,
+        "balanceImmutableForAssetReasons": true,
+        "saveMeaningImmutableForAssetReasons": true,
+        "progressionEconomyImmutableForAssetReasons": true,
+        "networkAuthorityImmutableForAssetReasons": true,
+        "existingAssetLineagePreserved": true
+      },
+      "conversionSequence": [
+        "DOCUMENT_DYNAMIC_BINDING_AND_SYNC_CONTRACT",
+        "ROBLOX_ALL_GAMES_LIBRARY_CONVERSION",
+        "ROBLOX_EXACT_RUNTIME_VERIFICATION",
+        "UNITY_ALL_GAMES_LIBRARY_CONVERSION",
+        "UNITY_NATIVE_RUNTIME_VERIFICATION",
+        "WEB_ALL_GAMES_LIBRARY_CONVERSION",
+        "WEB_RUNTIME_VISUAL_INTERACTION_VERIFICATION",
+        "CROSS_PLATFORM_ASSET_LINEAGE_AND_SYNC_REVALIDATION"
+      ],
+      "existingCanonicalPipelineOnly": true,
+      "newPipelineWrapperShadowManagerForbidden": true
     }
   },
   "platformRepresentativeSets": {
