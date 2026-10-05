@@ -762,6 +762,18 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   const familySignals=robloxAssetFamilySignals(fullText);
   const applicableFamilies=UNIVERSAL_ASSET_FAMILIES.filter(family=>familySignals[family]===true);
   const allApplicableFamiliesApplied=applicableFamilies.every(family=>familyStatus[family]==='APPLIED');
+  const registeredPackInventory=data?.assetProduction?.registeredRobloxLibraryPacks||{};
+  const registeredPacks=Array.isArray(registeredPackInventory?.packs)?registeredPackInventory.packs:[];
+  const registeredPackInventoryRequired=registeredPackInventory?.required===true;
+  const registeredPackExpectedCount=Math.max(0,Number(registeredPackInventory?.expectedPackCount||0));
+  const registeredPackActualCount=registeredPacks.length;
+  const registeredPackCountMatches=registeredPackInventory?.countMatchesMaintenance!==false
+    &&(registeredPackExpectedCount<=0||registeredPackActualCount===registeredPackExpectedCount);
+  const everyRegisteredPackEvaluated=registeredPackInventory?.allPacksEvaluated===true
+    &&registeredPacks.every(row=>clean(row?.root)&&row?.evaluationRequired!==false);
+  const everyRegisteredPackHasContext=registeredPacks.every(row=>clean(row?.contextFile));
+  const applicablePackBindingRequired=registeredPackInventory?.allApplicablePacksRequireRealSourceBinding===true;
+  const plainFallbackForbidden=registeredPackInventory?.plainDefaultPrimitiveFallbackForbidden!==false;
   const assignedParts=[...fullText.matchAll(/\blocal\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\s*\(\s*["']Part["']\s*\)/g)];
   const totalPartCreations=(fullText.match(/Instance\.new\s*\(\s*["']Part["']\s*\)/g)||[]).length;
   const plainVisualParts=[];
@@ -785,6 +797,14 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   require('ROBLOX_RUNTIME_OBSERVABLE_SELECTION',runtimeObservable);
   require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=3);
   if(universalRequired){
+    if(registeredPackInventoryRequired){
+      require('ROBLOX_REGISTERED_INTERNAL_LIBRARY_PACK_INVENTORY_PRESENT',registeredPackActualCount>0);
+      require('ROBLOX_REGISTERED_INTERNAL_LIBRARY_PACK_COUNT_MATCH',registeredPackCountMatches);
+      require('ROBLOX_REGISTERED_INTERNAL_LIBRARY_PACKS_ALL_EVALUATED',everyRegisteredPackEvaluated);
+      require('ROBLOX_REGISTERED_INTERNAL_LIBRARY_PACK_CONTEXT_COMPLETE',everyRegisteredPackHasContext);
+      require('ROBLOX_REGISTERED_INTERNAL_LIBRARY_APPLICABLE_BINDING_REQUIRED',applicablePackBindingRequired);
+      require('ROBLOX_REGISTERED_INTERNAL_LIBRARY_PLAIN_FALLBACK_FORBIDDEN',plainFallbackForbidden);
+    }
     require('ROBLOX_ALL_APPLICABLE_INTERNAL_LIBRARIES_APPLIED',allApplicableFamiliesApplied);
     for(const family of UNIVERSAL_ASSET_FAMILIES){
       const status=familyStatus[family];
@@ -805,6 +825,8 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
     universalAssetFirst:universalRequired,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
     applicableFamilies:Object.freeze(applicableFamilies),allApplicableFamiliesApplied:universalRequired?allApplicableFamiliesApplied:null,
+    registeredPackInventoryRequired,registeredPackExpectedCount,registeredPackActualCount,registeredPackCountMatches,
+    everyRegisteredPackEvaluated,everyRegisteredPackHasContext,applicablePackBindingRequired,plainFallbackForbidden,
     plainVisualPrimitiveCount:plainVisualParts.length+unboundPlainParts,plainVisualPrimitiveVariables:Object.freeze(plainVisualParts),
     mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,plainPrimitiveForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
