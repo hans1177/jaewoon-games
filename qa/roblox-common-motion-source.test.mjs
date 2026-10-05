@@ -73,10 +73,46 @@ const binary=process.env.VIBE2_LUAU_BINARY;
 // and lifecycle mocks only; native Roblox and the authored R15 suite still require their own gate.
 const teacherBinary=process.env.VIBE2_LUAU_BINARY||process.env.VIBE2_TEACHER_LUA_BINARY;
 test('teacher application examples execute boundary timing placement inventory and lifecycle cases',{skip:!teacherBinary&&'Set a Lua/Luau teaching executor; native Roblox remains a separate gate'},()=>{
-  const recipe=createAssetProductionTeachingRecipe();
-  assert.equal(recipe.applicationExamples.length,16);
+  const recipe=createAssetProductionTeachingRecipe({cinematic:true});
+  assert.equal(recipe.applicationExamples.length,19);
   const script='local examples={}\n'+recipe.applicationExamples.map(row=>'examples['+JSON.stringify(row.id)+']=(function()\n'+row.code+'\nend)()').join('\n')+String.raw`
 local function near(a,b) assert(math.abs(a-b)<1e-9, tostring(a).." ~= "..tostring(b)) end
+local curve=examples.CUBIC_BEZIER_CAMERA_COMPONENT
+near(curve(0,1,2,3,0),0);near(curve(0,1,2,3,1),3)
+near(curve(0,1,2,3,-1),0);near(curve(0,1,2,3,2),3)
+for i=0,100 do
+  local t=i/100
+  near(curve(0,1,2,3,t),3*t)
+  local p=curve(-2,7,-4,3,t);assert(p>=-4 and p<=7);near(p,curve(-2,7,-4,3,t))
+end
+local cues=examples.MONOTONIC_CINEMATIC_CUES
+local token1,token2={},{}
+local cueState={active=true,token=token1,time=-1}
+local cueList={{id="start",time=0},{id="cut",time=.5},{id="sound",time=.5},{id="return",time=2}}
+local ids=cues(cueState,token1,0,cueList);assert(#ids==1 and ids[1]=="start")
+ids=cues(cueState,token1,1,cueList);assert(#ids==2 and ids[1]=="cut" and ids[2]=="sound")
+assert(#cues(cueState,token1,1,cueList)==0)
+assert(#cues(cueState,token1,.1,cueList)==0 and cueState.time==1)
+ids=cues(cueState,token1,20,cueList);assert(#ids==1 and ids[1]=="return")
+cueState.active=false;assert(#cues(cueState,token1,30,cueList)==0 and cueState.time==20)
+cueState.active=true;cueState.token=token2;cueState.time=-1
+assert(#cues(cueState,token1,30,cueList)==0 and cueState.time==-1)
+ids=cues(cueState,token2,0,cueList);assert(#ids==1 and ids[1]=="start")
+local release=examples.RELEASE_CINEMATIC_OWNERSHIP
+local calls=0
+local state={active=true,token=token1,snapshot={fov=70}}
+local function restore(snapshot)assert(snapshot.fov==70);calls=calls+1 end
+assert(not release(state,token2,restore) and calls==0)
+assert(release(state,token1,restore));assert(not state.active and state.token==nil and calls==1)
+assert(not release(state,token1,restore) and calls==1)
+state={active=true,token=token2,snapshot={fov=70}}
+local ok,err=release(state,token2,function()error("restore interrupted")end)
+assert(not ok and err and state.active and not state.releasing and state.token==token2)
+assert(release(state,token2,function(snapshot)
+  assert(not release(state,token2,restore))
+  restore(snapshot)
+end))
+assert(calls==2 and not state.active)
 local spring=examples.CRITICALLY_DAMPED_SECONDARY_MOTION
 local segment=examples.HERMITE_POSE_SEGMENT
 local p,v=segment(2,3,8,3,0,2);near(p,2);near(v,3)

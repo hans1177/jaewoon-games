@@ -174,6 +174,25 @@ test('asset teacher application code is scoped, original practice input and neve
   assert.ok(!ui.applicationExamples.some(row=>row.id==='SUPPORT_PLANE_OFFSET'));
 });
 
+test('cinematic teacher supplies scoped direction ideas and lifecycle code only when explicitly selected',()=>{
+  const recipe=createAssetProductionTeachingRecipe({platform:'ROBLOX',cinematic:true});
+  assert.equal(recipe.cinematicDirection.lessons.length,8);
+  assert.equal(recipe.cinematicDirection.ideas.length,6);
+  assert.equal(recipe.applicationExamples.length,19);
+  assert.equal(recipe.cinematicDirection.runtimeVerified,false);
+  assert.equal(recipe.cinematicDirection.gameplayAuthority,false);
+  for(const row of recipe.cinematicDirection.ideas){assert.equal(row.beats.length,4);assert.ok(row.guard.length>50);}
+  const ordinary=createAssetProductionTeachingRecipe({families:['MOTION']});
+  assert.equal(ordinary.cinematicDirection,null);
+  assert.ok(!ordinary.applicationExamples.some(row=>row.cinematicOnly));
+  const ui=createAssetProductionTeachingRecipe({families:['UI'],cinematic:true});
+  assert.ok(ui.applicationExamples.some(row=>row.id==='RELEASE_CINEMATIC_OWNERSHIP'));
+  assert.ok(!ui.applicationExamples.some(row=>row.id==='CUBIC_BEZIER_CAMERA_COMPONENT'));
+  const unity=createAssetProductionTeachingRecipe({platform:'UNITY',cinematic:true});
+  assert.equal(unity.cinematicDirection,null);
+  assert.deepEqual(unity.applicationExamples,[]);
+});
+
 test('advanced teacher selects applicable techniques with failure checks and preserves authority boundaries',()=>{
   const all=createAssetProductionTeachingRecipe({platform:'roblox'});
   assert.equal(all.advancedTechniques.length,8);

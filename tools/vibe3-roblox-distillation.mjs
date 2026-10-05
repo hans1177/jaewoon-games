@@ -28,6 +28,87 @@ const PRINCIPLES=Object.freeze({
   MESH_ASSET_BINDING:'Use explicit Roblox-native asset bindings for primary presentation instead of treating primitive placeholders as final art.'
 });
 
+// Concrete source references remain hashes/symbols in the ledger. Only the source worker
+// reads a bounded excerpt from its current responsible files; source review is not runtime proof.
+const SOURCE_LESSONS=Object.freeze([
+  {id:'BOOTSTRAP_SPAWN',level:'BASIC',symbols:['bootstrapLobbyCharacter','bindBootstrapLobbySpawn','spawnPlayer'],terms:'spawn 스폰 로비',principle:'Make the first character appear over an existing safe floor before the larger world is ready.',apply:'Keep one engine bootstrap spawn; choose later destinations through the existing server placement owner.',failure:'Competing SpawnLocations or removing bootstrap support can drop a new character before initialization.',check:'Cold join, slow world creation and repeated respawn must reach visible supported ground.'},
+  {id:'CHARACTER_LIFECYCLE',level:'BASIC',symbols:['onCharacter','bindCharacter','initializeCharacter'],terms:'character 캐릭터 리스폰',principle:'A player and its replaceable character have different lifetimes.',apply:'Bind CharacterAdded and already-present characters; after each wait, confirm the same character is still current.',failure:'A delayed callback can move an obsolete character or reset the new one twice.',check:'Respawn during loading and during a round; old callbacks must stop without modifying the replacement.'},
+  {id:'GROUND_CONTACT',level:'APPLIED',symbols:['groundedRootTarget','validateCharacterFoundation','teleport'],terms:'ground floor 접지 바닥 낙하',principle:'A plausible spawn coordinate does not prove physical ground contact.',apply:'Use the current ground query and character clearance, then observe live support after placement.',failure:'Markers, decorative geometry, anchored roots and stale grounding sequences can produce false readiness.',check:'Inspect floor contact, live root anchoring, boundary spawns and ground that appears late.'},
+  {id:'NPC_CONSTRUCTION',level:'BASIC',symbols:['createBotAvatar','spawnNPC','spawnEnemy','createMonster','bot'],terms:'mob monster npc 몹 생성 제작',principle:'Create one coherent NPC model with an explicit root, body, rig and owner.',apply:'Reuse the existing model factory and configure role, position and native visual binding before exposing the actor.',failure:'A decorative model without the actual actor binding does not become a working enemy.',check:'Confirm the visible model and authoritative actor are the same spawn, with one root and valid cleanup.'},
+  {id:'NPC_MOVEMENT',level:'APPLIED',symbols:['moveBotDirection','steerBotAroundObstacle','moveEnemy'],terms:'move movement path 이동 추적 장애물',principle:'Separate movement intent, obstacle response and the final authoritative transform.',apply:'Use delta time once, preserve arena bounds, and apply existing separation before one movement write.',failure:'Double movement writes, unbounded dt and normalizing a zero vector cause jumps or invalid positions.',check:'Compare different frame rates, dense groups, corners and blocked paths without changing configured speed.'},
+  {id:'TARGET_SELECTION',level:'KNOW_HOW',symbols:['distributedSurvivorTarget','distributedMonsterTarget','findNearestTarget','nearestMonsterSource'],terms:'target chase ai 시야 타깃 추적',principle:'Target selection should consider validity, visibility and crowd distribution, not distance alone.',apply:'Keep target memory and reevaluation with the existing AI owner; invalidate departed or eliminated targets.',failure:'Rapid target switching and every mob choosing one target create jitter and pileups.',check:'Test lost line of sight, a removed target, multiple players and return-to-patrol behavior.'},
+  {id:'SERVER_ATTACK',level:'APPLIED',symbols:['infectAttack','purify','applyDamage','performAttack'],terms:'attack damage hit 공격 피격 피해',principle:'The server decides whether an attack is valid and applies its outcome once.',apply:'Keep phase, role, cooldown, range, facing, energy and valid-target checks before the existing state mutation; bind visual feedback to its result.',failure:'Client-declared damage, spending resources before finding a target, or duplicate hits break authority and feedback.',check:'Exercise no target, out of range, cooldown spam, target removal and two simultaneous players.'},
+  {id:'ELIMINATION_AND_REMOVAL',level:'APPLIED',symbols:['eliminateMonsterPlayer','removeBot','onDied'],terms:'death died eliminate 사망 제거 정화',principle:'Elimination is an authoritative lifecycle transition with a visible result and cleanup.',apply:'Preserve the game-specific eliminated/dead/infected distinction and stop further actions through the current state owner.',failure:'Hiding a model alone leaves a live attacker; treating infection as death changes the game rules.',check:'Confirm the actor cannot attack after removal, feedback appears once and the next round resets correctly.'},
+  {id:'ROUND_RESPAWN',level:'KNOW_HOW',symbols:['configure','startRound','endRound'],terms:'round respawn 라운드 재스폰 리셋',principle:'Round setup, active play and reset must share a consistent lifecycle boundary.',apply:'Wait for the map and role assignment before placement, then reset per-round movement and cooldown state through the existing owner.',failure:'Joining or respawning during a phase change can apply a lobby destination to an active-round character.',check:'Join mid-transition, respawn at round end, and start another round without stale actors or roles.'},
+  {id:'LIFETIME_CLEANUP',level:'KNOW_HOW',symbols:['clearBots','cleanupCharacter','disconnectCharacter','destroyNPC'],terms:'cleanup leak clear 정리 중복',principle:'Every spawned actor, connection and temporary visual has a bounded lifetime.',apply:'Destroy owned instances, disconnect owned signals and remove entries from the authoritative collection together.',failure:'Destroying visuals while retaining references or callbacks leaks work into later rounds.',check:'Repeat creation/removal and multiple rounds; actor and callback counts must return to baseline.'},
+  {id:'SAVE_REJOIN',level:'APPLIED',symbols:['load','save','loadPlayerData','savePlayerData'],terms:'save datastore load 저장 재접속',principle:'Persistent progression and temporary match state need separate meanings.',apply:'Reuse the existing versioned server save path; preserve defaults, migration and the current retry/error policy.',failure:'Saving a transient role or overwriting a failed load with defaults can erase valid progression.',check:'Rejoin after progression, test unavailable storage and preserve an older compatible save.'},
+  {id:'RIG_STATE_BINDING',level:'APPLIED',symbols:['bindCharacterMotion','bindAuthoredCombatMotion','applyMotionJoint'],terms:'animation rig motion 모션 리그 관절',principle:'Animate real bound joints using the current actor state and existing rest transforms.',apply:'Bind once per actor and unbind on replacement; preserve locomotion root authority and action timing.',failure:'Invented joints, resetting the root or stacking rest transforms causes invisible motion and drift.',check:'Observe idle/walk/action transitions, actor replacement and repeated loops on the actual rig.'},
+  {id:'ACTION_FEEDBACK',level:'KNOW_HOW',symbols:['playMonsterAttackEffect','playMonsterAbilityEffect','playHumanAbilityEffect','playVerifiedLearningActionFeedback'],terms:'feedback effect vfx 액션 효과 타격감',principle:'Client feedback presents a real server-approved outcome; it does not grant damage authority.',apply:'Use the existing event identity, position and actor binding; bound the visual lifetime and preserve mobile readability.',failure:'Decorative attacks without an outcome or duplicate feedback from repeated events mislead the player.',check:'Match action, target and impact timing in two clients; verify effect cleanup and a no-hit case.'},
+  {id:'ASYNC_GENERATION_FENCE',level:'STUDIO',symbols:['validateCharacterFoundation','onCharacter','bootstrapLobbyCharacter'],terms:'async race sequence 비동기 경쟁 스폰',principle:'A delayed operation belongs to one actor generation and one lifecycle phase.',apply:'Capture the current character and generation/sequence before yielding; revalidate both and phase ownership before each final mutation. Abort superseded work through the existing owner.',failure:'Checking identity only before a wait permits a stale teleport, readiness flag or role write after respawn.',check:'Force two rapid respawns and a map transition during delayed loading; only the newest generation may reach ready.'},
+  {id:'CROWD_STEERING_COMPOSITION',level:'STUDIO',symbols:['botSeparationVector','steerBotAroundObstacle','moveBotDirection'],terms:'crowd steering avoidance separation 군집 회피 분리',principle:'Crowd separation, obstacle avoidance and goal seeking must compose into one bounded movement decision.',apply:'Normalize only nonzero vectors, bound the separation contribution, preserve wall checks and map bounds, and make one final movement write with dt.',failure:'Unbounded repulsion or competing controllers create oscillation, wall penetration and frame-dependent speed.',check:'Use the same crowd seed at a bottleneck and arena edge; compare overlaps, stuck time and frame cost against the unchanged baseline.'},
+  {id:'PREDICTIVE_TARGET_MEMORY',level:'STUDIO',symbols:['predictedTargetPosition','rememberTarget','distributedSurvivorTarget'],terms:'prediction memory hysteresis 예측 기억 추적',principle:'Prediction and target memory should stabilize pursuit while respecting current visibility and validity.',apply:'Bound look-ahead by observed motion and distance; retain a valid target through small score changes and expire stale observations through the existing AI state.',failure:'Unbounded prediction overshoots; memory without expiry tracks absent actors; instant reselection causes target thrashing.',check:'Compare sharp direction changes, occlusion, teleport and player departure; record overshoot and target-switch frequency.'},
+  {id:'ACTION_EVENT_DEDUPLICATION',level:'STUDIO',symbols:['markCombatSkinAttack','playMonsterAttackEffect','broadcastMultiplayerSync'],terms:'network event sync duplicate 네트워크 동기화 중복',principle:'One authoritative action should produce one bounded visual event per receiving actor.',apply:'Use the existing event stamp/identity and current actor binding, reject stale or duplicate presentation events, and align the action clock without moving hit timing.',failure:'Late events animate replacement actors, repeated messages duplicate impact, and client visual timing accidentally changes damage authority.',check:'Replay duplicate and delayed events across two clients; verify one impact, correct actor and unchanged server outcome.'},
+  {id:'ANIMATION_LAYER_OWNERSHIP',level:'STUDIO',symbols:['bindAuthoredCombatMotion','applyMotionJoint','bindCharacterMotion'],terms:'blend layer rig joint 애니메이션 블렌딩 레이어',principle:'Each joint needs a deliberate composition order between rest, locomotion, action and secondary offsets.',apply:'Read the current rest transform and existing joint writer, compose bounded local offsets once, then blend action entry/recovery while leaving root authority and impact timing intact.',failure:'Multiple writers, multiplying last-frame transforms, or lerping the gameplay root produces drift and fighting animations.',check:'Repeat walk-to-attack-to-idle transitions, interruption and actor replacement; inspect seam velocity, grip stability and root drift.'},
+  {id:'FRAME_BUDGET_AND_LIFETIME',level:'STUDIO',symbols:['render','clearBots','bindFootsteps'],terms:'performance budget memory pooling lod 성능 메모리 최적화',principle:'Performance improvements require a measured hot path and complete resource lifetimes.',apply:'Measure the current update/effect cost; reduce repeated searches and allocations only in the observed hot path. Reuse or distance-throttle visuals only when reset and cancellation are correct.',failure:'Blind pooling retains stale state, throttling gameplay changes outcomes, and fast average frames hide transition spikes.',check:'Measure median and tail frame times plus live instances/connections over repeated rounds on the target mobile budget; compare identical scenes.'},
+  {id:'SOURCE_BOUND_RUNTIME_REGRESSION',level:'STUDIO',symbols:['foundationCheckpoint','validateCharacterFoundation','verifiedLearningMotionFailureReason'],terms:'qa regression evidence runtime 검증 회귀 증거',principle:'A studio quality claim needs the exact changed artifact and repeatable observable acceptance criteria.',apply:'Bind source revision and artifact identity to the existing runtime observation; keep the same camera, actor, state and scenario for before/after review.',failure:'A declaration, mock fixture, green wrapper job or stale screenshot can pass while the live behavior is unchanged.',check:'Require source delta, exact-artifact execution, negative cases and same-condition captures; preserve missing evidence as unverified.'}
+]);
+
+export function buildRobloxSourceCurriculum({gameId='',sourceFiles={}}={}){
+  const files=Object.entries(sourceFiles).map(([file,code])=>({file,code:String(code),lines:String(code).split(/\r?\n/),sha256:sha(code)}));
+  const lessons=[];
+  for(const lesson of SOURCE_LESSONS){
+    let reference=null;
+    for(const symbol of lesson.symbols){
+      for(const file of files){
+        const start=file.lines.findIndex(line=>{
+          const name=line.match(/^\s*(?:local\s+)?function\s+([\w.:]+)\s*\(/)?.[1];
+          return name&&(name===symbol||name.endsWith('.'+symbol)||name.endsWith(':'+symbol));
+        });
+        if(start<0)continue;
+        reference={path:file.file,sha256:file.sha256,symbol,startLine:start+1};break;
+      }
+      if(reference)break;
+    }
+    if(reference)lessons.push({id:lesson.id,level:lesson.level,terms:lesson.terms,principle:lesson.principle,application:lesson.apply,failureMode:lesson.failure,transferCheck:lesson.check,sourceReference:reference});
+  }
+  return {version:1,kind:'roblox-source-curriculum',gameId:clean(gameId),lessons,missingTopics:SOURCE_LESSONS.filter(row=>!lessons.some(x=>x.id===row.id)).map(row=>row.id),sourceReviewedOnly:true,runtimeVerified:false,weightTraining:false,rawCodeStored:false,freshTransferQaRequired:true};
+}
+
+export function buildRobloxSourceCoaching({cwd=process.cwd(),order={},responsibleFiles=[]}={}){
+  const empty={block:'',evidence:{retrieved:false,sourceReviewedOnly:true,runtimeVerified:false,weightTraining:false}};
+  if(clean(order.target).toLowerCase()!=='roblox'||order.source?.internalAssetMotion===true)return empty;
+  const relative=clean(order.source?.root).replaceAll('\\','/');
+  if(!/^roblox-games\/[a-z0-9-]+$/.test(relative))return empty;
+  try{
+    const root=fs.realpathSync(path.resolve(cwd,relative)),sourceFiles={};
+    for(const file of responsibleFiles){
+      if(!/\.luau$/.test(file)||file.includes('..')||path.isAbsolute(file))continue;
+      const absolute=fs.realpathSync(path.join(root,file));
+      if(!absolute.startsWith(root+path.sep)||fs.statSync(absolute).size>800000)continue;
+      sourceFiles[relative+'/'+file]=fs.readFileSync(absolute,'utf8');
+    }
+    const curriculum=buildRobloxSourceCurriculum({gameId:order.gameId,sourceFiles});
+    const goal=(clean(order.selectedTask?.goal)||clean(order.originalGoal)||clean(order.goal)).slice(0,2000).toLowerCase();
+    const ranked=curriculum.lessons.map((row,index)=>({row,index,score:row.terms.split(' ').filter(term=>/^[a-z]+$/.test(term)?new RegExp('\\b'+term+'\\b').test(goal):goal.includes(term)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
+    const selected=ranked.slice(0,3).map(x=>x.row);
+    if(!selected.length)return empty;
+    const evidence={retrieved:true,kind:'ROBLOX_SOURCE_CURRICULUM',sourceReviewedOnly:true,applicationVerified:false,runtimeVerified:false,weightTraining:false,lessonIds:selected.map(row=>row.id),references:selected.map(row=>row.sourceReference),missingTopics:curriculum.missingTopics};
+    const block=['[ROBLOX SOURCE COACHING BEGIN]',JSON.stringify(evidence),'Distilled source-reading lessons, applied code excerpts and transfer exercises. These are current implementation observations, not approved runtime outcomes. Preserve the current responsible paths and gameplay authority.'];
+    for(const row of selected){
+      const ref=row.sourceReference,lines=sourceFiles[ref.path].split(/\r?\n/);
+      const excerptLines=[];let excerptBytes=0;
+      for(const line of lines.slice(ref.startLine-1,ref.startLine+15)){
+        const size=Buffer.byteLength(line+'\n','utf8');if(excerptBytes+size>1200)break;
+        excerptLines.push(line);excerptBytes+=size;
+      }
+      const excerpt=excerptLines.join('\n');
+      block.push(JSON.stringify(row),'READ-ONLY SOURCE EXCERPT (partial function; do not paste as a complete replacement): '+ref.path+':'+ref.startLine+'\n'+excerpt);
+    }
+    block.push('Adapt only the assigned responsibility. Use exact current editable anchors and independently verify the result; a retrieved lesson is not successful application.','[ROBLOX SOURCE COACHING END]');
+    return {block:block.join('\n'),evidence};
+  }catch{return empty;}
+}
+
 export function extractRobloxSourcePatterns({serverSource='',clientSource='',sharedSource=''}={}){
   const server=String(serverSource||''),client=String(clientSource||''),shared=String(sharedSource||''),all=[server,client,shared].join('\n');
   const patterns=[];
@@ -57,7 +138,12 @@ export function buildInternalRobloxDistillation({
   if(multiplayerQaEvidence&&Object.keys(multiplayerQaEvidence).length&&multiplayerQaEvidence.multiplayerQaPassed!==true)throw new Error('ROBLOX_INTERNAL_MULTIPLAYER_QA_REQUIRED_WHEN_EVIDENCE_PRESENT');
   const patterns=extractRobloxSourcePatterns(source);
   if(!patterns.length)throw new Error('ROBLOX_INTERNAL_DISTILLABLE_PATTERN_MISSING');
-  const principles=patterns.map(pattern=>PRINCIPLES[pattern]).filter(Boolean);
+  const sourceCurriculum=buildRobloxSourceCurriculum({gameId:id,sourceFiles:{
+    [`roblox-games/${id}/server/Game.server.luau`]:source.serverSource||'',
+    [`roblox-games/${id}/client/Game.client.luau`]:source.clientSource||'',
+    [`roblox-games/${id}/shared/GameConfig.luau`]:source.sharedSource||''
+  }});
+  const principles=unique([...patterns.map(pattern=>PRINCIPLES[pattern]).filter(Boolean),...sourceCurriculum.lessons.map(row=>`${row.id}: ${row.principle} Apply: ${row.application} Avoid: ${row.failureMode} Verify: ${row.transferCheck}`)]);
   return Object.freeze({
     version:1,
     id:`roblox-internal-${safeId(id)}-${revision.slice(0,12)}`,
@@ -73,6 +159,7 @@ export function buildInternalRobloxDistillation({
     observationKind:'SOURCE_PLUS_RUNTIME_VERIFIED',
     patterns:Object.freeze(patterns),
     principles:Object.freeze(principles),
+    sourceCurriculum:Object.freeze(sourceCurriculum),
     evidence:Object.freeze(unique([
       `source-revision:${revision}`,
       `artifact:${artifact}`,

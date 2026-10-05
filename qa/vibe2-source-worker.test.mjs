@@ -80,6 +80,23 @@ test('asset teacher survives initial compaction and retries at the model request
     assert.ok(request.prompt.includes('init.luau'));
     assert.ok(Buffer.byteLength(request.prompt)<20000);
   }
+  requests.length=0;
+  const cinemaWork={...work,goal:'cinematic cutscene UI '+('detail '.repeat(20000)),assetProduction:{decisions:[{type:'ui'}],styleBible:{styleFamily:'COZY'}}};
+  const sourceCoaching='[ROBLOX SOURCE COACHING BEGIN]\nexisting source-bound lifecycle evidence\n[ROBLOX SOURCE COACHING END]';
+  const cinemaPrompt=buildPrompt(cinemaWork,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau'],{robloxSourceCoaching:{block:sourceCoaching}});
+  await generateCandidateWithRecovery({prompt:cinemaPrompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
+  assert.equal(requests.length,2);
+  for(const request of requests){
+    const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+    assert.equal(request.prompt.split(marker).length-1,1);
+    const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+    assert.equal(recipe.cinematicDirection.ideas.length,6);
+    assert.equal(request.prompt.split(sourceCoaching).length-1,1);
+    assert.equal(recipe.cinematicDirection.productionVerified,false);
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='RELEASE_CINEMATIC_OWNERSHIP'&&row.code.includes('pcall')));
+    assert.ok(!recipe.applicationExamples.some(row=>row.id==='CUBIC_BEZIER_CAMERA_COMPONENT'));
+    assert.ok(Buffer.byteLength(request.prompt)<30000);
+  }
 });
 
 test('walk teacher reaches the existing source prompt once without promoting learning or changing task scope',()=>{
@@ -102,6 +119,10 @@ test('walk teacher reaches the existing source prompt once without promoting lea
   assert.deepEqual(assetRecipe.applicationExamples.map(row=>row.id),['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND']);
   assert.deepEqual(assetRecipe.studioMotion.lessons.map(row=>row.role),['COMBAT_LOCOMOTION']);
   assert.equal(assetRecipe.studioMotion.productionVerified,false);
+  const noCinema=buildPrompt({...order,goal:'cinematic cutscene'},context,['init.luau']);
+  const noCinemaRecipe=JSON.parse(noCinema.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.equal(noCinemaRecipe.cinematicDirection,null);
+  assert.ok(!noCinemaRecipe.applicationExamples.some(row=>row.cinematicOnly));
   assert.match(prompt,/motionRepairReport/);
   assert.equal(JSON.stringify(order),before);
   const internalPrompt=buildPrompt({...order,source:{internalAssetMotion:true}},context,['init.luau'],{motionCoaching:{block:'[INTERNAL MOTION COACHING BEGIN]\nexisting source-bound example\n[INTERNAL MOTION COACHING END]'}});

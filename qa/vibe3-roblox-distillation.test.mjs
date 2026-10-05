@@ -1,7 +1,13 @@
 // 파일명: qa/vibe3-roblox-distillation.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
 import {
+  buildRobloxSourceCurriculum,
+  buildRobloxSourceCoaching,
   buildInternalRobloxDistillation,
   normalizeExternalRobloxBlackBoxObservation,
   mergeRobloxDistillationLedger,
@@ -11,6 +17,49 @@ import { createRobloxVibe3LearningContext, existingRobloxGameLearningProfile } f
 
 const REV='a'.repeat(40);
 const ART='sha256:'+'b'.repeat(64);
+
+test('Roblox curriculum binds basic and studio lessons to real symbols and records missing topics honestly',()=>{
+  const file='roblox-games/demo/server/Game.server.luau';
+  const code='-- function createBotAvatar() is not executable\nlocal function bootstrapLobbyCharacter(player,character)\n return character\nend\nfunction BotAI.validateCharacterFoundation(p,c,sequence)\n return p.Character==c\nend';
+  const c=buildRobloxSourceCurriculum({gameId:'demo',sourceFiles:{[file]:code}});
+  assert.ok(c.lessons.some(x=>x.id==='BOOTSTRAP_SPAWN'));
+  assert.ok(c.lessons.some(x=>x.id==='ASYNC_GENERATION_FENCE'&&x.level==='STUDIO'));
+  assert.ok(c.missingTopics.includes('NPC_CONSTRUCTION'));
+  assert.equal(c.runtimeVerified,false);assert.equal(c.weightTraining,false);assert.equal(c.rawCodeStored,false);
+  for(const row of c.lessons){
+    assert.equal(row.sourceReference.path,file);
+    assert.equal(row.sourceReference.sha256,crypto.createHash('sha256').update(code).digest('hex'));
+    assert.ok(row.application&&row.failureMode&&row.transferCheck);
+  }
+  assert.equal(JSON.stringify(c).includes('return p.Character==c'),false);
+});
+
+test('Roblox applied code coaching stays in current responsible files, ranks advanced work and caps excerpts',t=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-coaching-'));t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='roblox-games/demo',file='server/Game.server.luau';fs.mkdirSync(path.join(cwd,root,'server'),{recursive:true});
+  const source='local function bootstrapLobbyCharacter(p,c)\n return c\nend\nfunction BotAI.validateCharacterFoundation(p,c,sequence)\n'+Array(30).fill(' local detail="'+('x'.repeat(500))+'"').join('\n')+'\nend';
+  fs.writeFileSync(path.join(cwd,root,file),source);
+  const order={target:'roblox',gameId:'demo',source:{root},goal:'비동기 경쟁 sequence'};
+  const result=buildRobloxSourceCoaching({cwd,order,responsibleFiles:[file]});
+  assert.equal(result.evidence.retrieved,true);
+  assert.equal(result.evidence.lessonIds[0],'ASYNC_GENERATION_FENCE');
+  assert.ok(Buffer.byteLength(result.block)<10000);
+  assert.match(result.block,/partial function/);
+  assert.equal(result.evidence.applicationVerified,false);assert.equal(result.evidence.runtimeVerified,false);
+  assert.equal(buildRobloxSourceCoaching({cwd,order,responsibleFiles:['../outside.luau']}).evidence.retrieved,false);
+  assert.equal(buildRobloxSourceCoaching({cwd,order:{...order,source:{...order.source,internalAssetMotion:true}},responsibleFiles:[file]}).evidence.retrieved,false);
+  const changed=source+'\n-- updated source';fs.writeFileSync(path.join(cwd,root,file),changed);
+  assert.notEqual(buildRobloxSourceCoaching({cwd,order,responsibleFiles:[file]}).evidence.references[0].sha256,result.evidence.references[0].sha256);
+});
+
+test('verified Roblox distillation carries application and failure lessons without raw code or automatic promotion',()=>{
+  const row=buildInternalRobloxDistillation({gameId:'demo',sourceRevision:REV,artifactIdentity:ART,runtimeEvidence:{runtimePassed:true},postRuntimeQaEvidence:{exactRevision:true,regressionPassed:true},source:{serverSource:'local remote=Instance.new("RemoteEvent")\nremote.OnServerEvent:Connect(function()end)\nlocal function bootstrapLobbyCharacter(p,c)\n return c\nend'}});
+  assert.ok(row.principles.some(x=>x.startsWith('BOOTSTRAP_SPAWN:')&&x.includes('Avoid:')&&x.includes('Verify:')));
+  assert.equal(row.sourceCurriculum.lessons[0].sourceReference.symbol,'bootstrapLobbyCharacter');
+  assert.equal(row.sourceCurriculum.runtimeVerified,false);
+  assert.equal(row.automaticCapabilityPromotion,false);
+  assert.equal(JSON.stringify(row).includes('return c'),false);
+});
 
 test('internal Roblox distillation requires exact runtime and regression evidence and stores no raw code',()=>{
   const patterns=extractRobloxSourcePatterns({
