@@ -1,5 +1,5 @@
 {
-  "version": 111,
+  "version": 112,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -1869,7 +1869,41 @@
       "internalUseAllowed": true,
       "lowScoreWouldStillBeUsable": true,
       "higherCompatibleInternalScoreAutoPreferred": true,
-      "productionVerificationSeparate": true
+      "productionVerificationSeparate": true,
+      "previewClips": {
+        "idle": {
+          "path": "/assets/roblox/world-ghosts/native/mesh/idle.mp4",
+          "sourceClips": [
+            "idle"
+          ],
+          "sourceStartSeconds": 0,
+          "durationSeconds": 3.2,
+          "frameCount": 64,
+          "frameRate": 20,
+          "width": 406,
+          "height": 526,
+          "bytes": 217876,
+          "sha256": "efe6b88aac6dc8291a8f5abcd865a55ae605e5d3777f43af801efb9df07af4ba",
+          "runtimeProof": false
+        },
+        "attack": {
+          "path": "/assets/roblox/world-ghosts/native/mesh/attack.mp4",
+          "sourceClips": [
+            "attack",
+            "idle"
+          ],
+          "sourceStartSeconds": 3.2,
+          "durationSeconds": 3.2,
+          "frameCount": 64,
+          "frameRate": 20,
+          "width": 406,
+          "height": 526,
+          "bytes": 233918,
+          "sha256": "fb82bf3b88078397141b6b3100e267dc572d7cb9a24291301dc426f0895bd39e",
+          "runtimeProof": false
+        }
+      },
+      "previewEvidenceRef": "assets/roblox/world-ghosts/native/mesh/evidence.json#inspectionPreviews"
     },
     {
       "id": "roblox-world-ghost-mongdal",
@@ -69244,7 +69278,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 111,
+    "lastCatalogSynchronizedVersion": 112,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -79696,7 +79730,7 @@
       "lastChangeFingerprint": "c00df77b",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 111
+      "synchronizedRegistryVersion": 112
     },
     "studioVariationAxes": {
       "BUILDING": [
