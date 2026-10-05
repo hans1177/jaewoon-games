@@ -1098,14 +1098,14 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without w
 });
 
 
-test('source-plan dedupe uses a stage-scoped lock and the fixed control runner',()=>{
+test('source-plan dedupe keeps only the newest same-game ingress on the fixed control runner',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('\n  source-plan:\n');
   const end=workflow.indexOf('\n  source-worker:\n',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-\$\{\{ github\.sha \}\}-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: false/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: true/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
