@@ -1871,6 +1871,15 @@ export function buildInternalAssetSourceUsageContract(order={}){
   const assetProduction=order?.assetProduction||{};
   const loadout=assetProduction?.baseMaterialLoadout||{};
   const flowLoadout=assetProduction?.flowAssetLoadout||{};
+  const commonPackPlan=assetProduction?.commonPackAutoUse||{};
+  const commonPackIds=unique(commonPackPlan?.packIds||[]).sort();
+  const commonPackSourceFiles=unique(commonPackPlan?.sourceFiles||[]).map(posix).filter(Boolean).sort();
+  const commonPacks=(commonPackPlan?.packs||[]).map(row=>Object.freeze({
+    packId:clean(row?.packId),
+    domain:clean(row?.domain).toUpperCase()||null,
+    catalogPath:posix(row?.catalogPath)||null,
+    sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).sort())
+  })).filter(row=>row.packId);
   const familyEntries=Object.entries(loadout?.families||{})
     .map(([family,atoms])=>[clean(family).toUpperCase(),unique((atoms||[]).map(clean).filter(Boolean)).sort()])
     .filter(([family,atoms])=>family&&atoms.length)
@@ -1904,8 +1913,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
   const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
   const payload={
-    version:3,target,gameId,libraryVersion,
+    version:4,target,gameId,libraryVersion,
     exactFamilies,
+    commonPackIds,
+    commonPackSourceFiles,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
   };
@@ -2023,7 +2034,7 @@ export function buildInternalAssetSourceUsageContract(order={}){
     })
   });
   return Object.freeze({
-    version:3,
+    version:4,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
@@ -2031,22 +2042,42 @@ export function buildInternalAssetSourceUsageContract(order={}){
     exactFamilies,
     flowSelections:Object.freeze(flowSelections),
     sourceCandidates:Object.freeze(dedupedSources),
+    commonPackAutoUse:Object.freeze({
+      enabled:target==='roblox'&&commonPackPlan?.enabled===true,
+      mode:clean(commonPackPlan?.mode)||null,
+      packCount:commonPackIds.length,
+      packIds:Object.freeze(commonPackIds),
+      sourceFiles:Object.freeze(commonPackSourceFiles),
+      packs:Object.freeze(commonPacks),
+      completeAgainstDiscoveredCatalogs:commonPackPlan?.completeAgainstDiscoveredCatalogs===true,
+      everyPackEvaluatedEveryBuildUp:commonPackPlan?.everyPackEvaluatedEveryBuildUp===true,
+      applyEveryCompatiblePackToExistingSystems:commonPackPlan?.applyEveryCompatiblePackToExistingSystems===true,
+      qualityScoreIsUsageGate:false,
+      lowScoreCompatibleAssetsRemainEligible:true,
+      primitiveOnlyFallbackForbidden:true,
+      contextBatchingIsNotUsageCap:true
+    }),
     synchronization:Object.freeze({
       mode:'INCREMENTAL_SELECTION_FINGERPRINT',
       fullLibraryReplicationForbidden:true,
       fullCatalogPromptInjectionForbidden:true,
-      selectedSubsetOnly:true,
+      selectedSubsetOnly:false,
+      usageEligibilitySubsetOnly:false,
+      allCommonPacksAutoEligible:target==='roblox'&&commonPackPlan?.enabled===true,
       unchangedFingerprintReusePreferred:true,
       changedFamilyRebindOnly:true,
-      sourceApiContextOnlyForSelectedAssets:true,
+      sourceApiContextOnlyForSelectedAssets:false,
       selectedCommonSourceApiDiscovery:true,
-      selectedCommonSourcesDerivedFromSelectedFamiliesOnly:true,
+      selectedCommonSourcesDerivedFromSelectedFamiliesOnly:false,
+      allCommonPackSourceApiDiscovery:true,
       selectedCommonSourceApiContextReadOnly:true,
       apiContextBatchSize:4,
       apiContextMaxBytes:18000,
       apiContextPerFileMaxBytes:4500,
       apiContextRotationByBuildUpGeneration:true,
-      allSelectedApiSourcesRemainEligibleAcrossCycles:true
+      apiContextBatchedButEligibilityComplete:true,
+      allSelectedApiSourcesRemainEligibleAcrossCycles:true,
+      allCommonPackSourcesRemainEligibleAcrossCycles:true
     }),
     eligibility:Object.freeze({
       genreRestrictionApplied:false,
@@ -2084,7 +2115,8 @@ export function buildInternalAssetSourceUsageContract(order={}){
     ]),
     commonSourceReuse:Object.freeze({
       enabled:true,
-      selectedFamilyOnly:true,
+      selectedFamilyOnly:false,
+      allCommonPacksAutoEligible:target==='roblox'&&commonPackPlan?.enabled===true,
       targetNativeOnly:true,
       readOnlyApiContext:true,
       existingFactoryBeforeNewImplementation:true,
@@ -2108,6 +2140,8 @@ export function buildInternalAssetSourceUsageContract(order={}){
       noArtificialCombinationCap:true,
       allApplicableExistingSystemsEligible:true,
       allApplicableSelectedAssetsEligible:true,
+      allCompatibleCommonPacksEligible:target==='roblox'&&commonPackPlan?.enabled===true,
+      primitiveOnlyFallbackForbidden:true,
       continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
       contextBudgetIsNotUsageCap:true,
       apiContextBatchingAllowedForSynchronizationEfficiency:true,
