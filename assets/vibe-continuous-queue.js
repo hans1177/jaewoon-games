@@ -6,6 +6,53 @@ const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const freezeList = (values = []) => freeze(unique(values));
+// 같은 모션의 실제 제작/검수 시간을 기존 큐에서 이어 간다. 경과시간은 품질 증거가 아니다.
+export const MOTION_REFINEMENT_MINUTES = 300;
+export const MOTION_REFINEMENT_PASSES = freeze([
+  freeze({id:'POSE_INTENT',minutes:40}),
+  freeze({id:'WEIGHT_CONTACT',minutes:65}),
+  freeze({id:'ARCS_TIMING_SPACING',minutes:60}),
+  freeze({id:'OVERLAP_SECONDARY',minutes:45}),
+  freeze({id:'TRANSITIONS',minutes:50}),
+  freeze({id:'COMPARE_POLISH',minutes:40})
+]);
+export function motionRefinementState(task={}) {
+  const pass=clean(task.presentationPass).toUpperCase()
+    ||clean(clean(task.goal).match(/\[PRESENTATION_PASS:(LIVING_MOTION|ANIMATION_FEEL)\]/)?.[1]);
+  const assetLane=task.assetProductionLane===true||(task.evidence||[]).includes('asset-production-parallel:v1');
+  if(!assetLane||!['LIVING_MOTION','ANIMATION_FEEL'].includes(pass))return null;
+  const scope=[clean(task.id),clean(task.gameId),clean(task.sourceRoot),pass,...unique(task.responsibleFiles||[]).sort()].join('|');
+  const prior=task.motionRefinement?.scope===scope?task.motionRefinement:{};
+  const seen=new Set();
+  const samples=(Array.isArray(prior.samples)?prior.samples:[]).filter(row=>{
+    if(!/^[a-f0-9]{40}$/.test(clean(row?.candidateSha))||!clean(row?.reservationId)
+      ||!Number.isSafeInteger(row?.activeMs)||row.activeMs<=0||row.activeMs>22*60000||seen.has(row.candidateSha))return false;
+    seen.add(row.candidateSha);return true;
+  }).map(row=>freeze({candidateSha:row.candidateSha,reservationId:clean(row.reservationId),activeMs:row.activeMs}));
+  const activeWorkMs=samples.reduce((total,row)=>total+row.activeMs,0);
+  let end=0;
+  const currentPass=MOTION_REFINEMENT_PASSES.find(row=>{end+=row.minutes*60000;return activeWorkMs<end;})||MOTION_REFINEMENT_PASSES.at(-1);
+  return freeze({version:1,scope,focus:pass==='LIVING_MOTION'?'PRIMARY_IDLE_AND_LOCOMOTION_TRANSITION':'PRIMARY_ATTACK_AND_RECOVERY',
+    minimumActiveMinutes:MOTION_REFINEMENT_MINUTES,activeWorkMs,remainingMs:Math.max(0,MOTION_REFINEMENT_MINUTES*60000-activeWorkMs),
+    currentPass:currentPass.id,samples:freeze(samples),resumeSameTask:true,elapsedTimeIsQualityProof:false,qualityScoreBlocksUsage:false});
+}
+export function recordMotionRefinementWork(task={},row={}) {
+  const state=motionRefinementState(task);
+  if(!state)return null;
+  const metrics=row.metrics||{};
+  const candidateSha=(row.evidence||[]).map(clean).findLast(value=>/^candidate-sha:[a-f0-9]{40}$/.test(value))?.slice(14);
+  const reservationId=clean(row.reservationId||metrics.reservationId);
+  const durationNames=['candidateMs','qaMs','workerTotalMs','checkoutMs','modelPrepMs','changedFileCount','addedLineCount','deletedLineCount'];
+  if(clean(row.outcome)!=='PASS'||clean(row.taskId)!==clean(task.id)||!candidateSha
+    ||!reservationId||reservationId!==clean(task.reservationId)
+    ||durationNames.some(key=>!Number.isFinite(metrics[key])||metrics[key]<0)
+    ||Number(metrics.changedFileCount)<1||!(Number(metrics.addedLineCount)+Number(metrics.deletedLineCount)>0)
+    ||state.samples.some(sample=>sample.candidateSha===candidateSha))return state;
+  const activeMs=Math.floor(Math.min(metrics.candidateMs+metrics.qaMs,
+    Math.max(0,metrics.workerTotalMs-metrics.checkoutMs-metrics.modelPrepMs),22*60000));
+  if(activeMs<=0)return state;
+  return motionRefinementState({...task,motionRefinement:{...state,samples:[...state.samples,{candidateSha,reservationId,activeMs}]}});
+}
 const CANONICAL_POLICY_EVIDENCE='central-policy:company-learning/platform-release-roadmap.json';
 const LEGACY_POLICY_EVIDENCE='central-policy:COMPANY_FLOW.md';
 function normalizeEvidence(values=[]){
@@ -410,6 +457,7 @@ function normalizeTask(input = {}, index = 0) {
     completionCriteria: freezeList(input.completionCriteria || [])
   };
   task.shard = inferShard(task);
+  task.motionRefinement = motionRefinementState({...task,motionRefinement:input.motionRefinement});
   return freeze(task);
 }
 
@@ -655,7 +703,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
         const pa=platform(a.task),pb=platform(b.task);
         const sa=weights[pa] ? (virtualService[pa]+1)/weights[pa] : 2;
         const sb=weights[pb] ? (virtualService[pb]+1)/weights[pb] : 2;
-        return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
+        const motionPriority=laneMode==='asset-development'
+          ?Number(Boolean(b.task.motionRefinement))-Number(Boolean(a.task.motionRefinement)):0;
+        return motionPriority || sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
       });
       const next=tier[0];
       ordered.push(next);
@@ -913,6 +963,11 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     if (task.id !== id) return task;
     found = true;
     const mergedEvidence = freezeList([...(task.evidence || []), ...(evidence || [])]);
+    if(normalizedOutcome==='PASS'&&task.motionRefinement?.remainingMs>0){
+      const retained=mergedEvidence.filter(value=>! /^(?:role-result:|package-review:|candidate-sha:|vibe2\/candidate\/|web-(?:f0-f9-|f9-|publish-|publication-|main-sha:|runtime-source-tree:|cloudflare-|deploy-|static-qa-)|main-pr-merged$)/.test(value));
+      return freeze({...task,...CLEARED_RESERVATION,status:'queued',blocker:null,lastOutcome:'MOTION_REFINEMENT_CONTINUE',
+        neuronExpectedVariants:0,neuronResults:[],evidence:freezeList([...retained,'motion-refinement:RESUME_SAME_TASK','motion-duration-is-quality-proof:NO'])});
+    }
     if (normalizedOutcome === 'PASS') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'verified', evidence: freezeList([...mergedEvidence,'signal-state:VERIFIED_CHECKPOINT','signal-continuity:NEXT_CAUSAL_INPUT']), lastOutcome: 'PASS', blocker: null });
     if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
     if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
@@ -932,7 +987,7 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
   const next = selectVibeQueueBatch(nextQueue);
   return freeze({
     updated: found,
-    outcome: normalizedOutcome,
+    outcome: nextQueue.tasks.find(task=>task.id===id)?.lastOutcome==='MOTION_REFINEMENT_CONTINUE'?'CONTINUE':normalizedOutcome,
     queue: nextQueue,
     next,
     dependencyReadyTaskIds,

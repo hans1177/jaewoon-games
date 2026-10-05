@@ -834,6 +834,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     target:plan.target, shard:task.shard, sourceRootLock:task.sourceRoot || adapter.source.root,
     workMode:route.route==='analysis-only'?'analysis-only':route.route==='learning-web-artifact'?'learning-web-artifact':route.route==='engine-editor'?'engine-editor-task':'source-change-candidate',
     executionRoute:route.route, route, goal:executionGoal, originalGoal:task.goal, department:task.department, priority:task.priority, releaseState, maxWorkMinutes,
+    motionRefinement:assetProduction.motionRefinement,
     source:freeze({
       root:adapter.source.root, writable:adapter.mayWriteSource, maintenanceOnly:adapter.source.maintenanceOnly === true,
       candidateFiles:freezeList(adapter.source.candidateFiles), textWritablePatterns:freezeList(adapter.source.textWritablePatterns || []),

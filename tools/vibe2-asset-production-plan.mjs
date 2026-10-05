@@ -13,6 +13,7 @@ import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,c
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
+import {motionRefinementState,MOTION_REFINEMENT_PASSES} from '../assets/vibe-continuous-queue.js';
 
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
@@ -2140,6 +2141,10 @@ export function buildVibeAssetProductionPlan({
   const targetResolution=resolveAssetProductionTarget({target,task,repoRoot});
   const resolvedTarget=targetResolution.target;
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
+  const assetQualityPolicy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.assetProductionParallelContract?.motionFirstQualityWork||{};
+  const motionFirstQuality=assetQualityPolicy.enabled===true
+    &&(clean(executionLane).toLowerCase()==='asset-development'||task.assetProductionLane===true);
+  const motionRefinement=motionFirstQuality?motionRefinementState(task):null;
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
   const companyRegistry=librarySync.registry;
@@ -2444,7 +2449,10 @@ export function buildVibeAssetProductionPlan({
       ?[
         ...taskLocalReferenceVolumeActions,
         ...activeNextVolumeActions.filter(row=>!referenceDrivenAssetIdeas.some(idea=>idea.ideaId===row?.ideaId))
-      ].slice(0,96).map((row,index)=>{
+      ].filter(row=>!motionFirstQuality||(
+        !motionRefinement&&Number(row.internalReuseCandidateCount)===0
+        &&flowAssetRequirements.some(requirement=>requirement.required!==false&&requirement.family===clean(row.domain).toUpperCase())
+      )).slice(0,motionFirstQuality?1:96).map((row,index)=>{
         const domain=clean(row?.domain).toUpperCase();
         return freeze({
           ...row,
@@ -2457,7 +2465,12 @@ export function buildVibeAssetProductionPlan({
       })
       :[]
   );
-  const effectiveAutonomousNextAction=executionLibraryPlan.focusPhase==='QUALITY_UP_1000'
+  const motionFirstAction=motionFirstQuality
+    ?internalLibraryEvolution.nextQualityActions.find(row=>motionRefinement?row.family==='MOTION':flowAssetRequirements.some(requirement=>requirement.family===row.family))||null:null;
+  const effectiveAutonomousNextAction=motionFirstQuality&&!effectiveNextVolumeActions.length
+    ?freeze({kind:motionRefinement?'REFINE_EXISTING_MOTION':'IMPROVE_EXISTING_ASSET',phase:'MOTION_QUALITY_FIRST',action:motionFirstAction,continueWithoutHuman:true,
+      responsibilityScopeUnchanged:true,minimumActiveMinutes:300,effortIsNotQualityProof:true})
+    :executionLibraryPlan.focusPhase==='QUALITY_UP_1000'
     ?freeze({
       kind:'QUALITY_UP_1000',
       phase:'QUALITY_UP_1000',
@@ -2482,9 +2495,10 @@ export function buildVibeAssetProductionPlan({
       });
   const effectiveInternalLibraryEvolution=freeze({
     ...internalLibraryEvolution,
+    ...(motionFirstQuality?{phase:'MOTION_QUALITY_FIRST',primaryAttention:'EXISTING_MOTION_DETAIL',consumePersistedNextVolumeActionsFirst:false}:{}),
     nextVolumeActions:effectiveNextVolumeActions,
     activeNextVolumeAction:effectiveNextVolumeActions[0]||null,
-    activeDetailImprovement:internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===effectiveNextVolumeActions[0]?.detailImprovementAssetId)||null,
+    activeDetailImprovement:motionFirstAction||internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===effectiveNextVolumeActions[0]?.detailImprovementAssetId)||null,
     autonomousNextAction:effectiveAutonomousNextAction,
     worklistSource:taskLocalReferenceVolumeActions.length
       ?'TASK_REFERENCE_IMAGE_OVERLAY_ON_'+internalLibraryEvolution.worklistSource
@@ -2811,6 +2825,12 @@ export function buildVibeAssetProductionPlan({
     productionProfile:selector.production||null,
     commercialDistillation,
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
+    motionRefinement:motionRefinement?freeze({...motionRefinement,samples:undefined,passes:MOTION_REFINEMENT_PASSES,qualityTarget:'FEATURE_ANIMATION_NATURALNESS',qualityTargetVerified:false,
+      reviewSpeeds:freezeList([1,.25]),reviewViews:freezeList(['GAME_CAMERA','FRONT','SIDE','CONTACT_CLOSEUP']),
+      checks:freezeList(['ACTING_INTENT','WEIGHT_TRANSFER','FOOT_PLANT_SLIDE','JOINT_ARCS','ACCELERATION_DECELERATION','ASYMMETRY','FOLLOW_THROUGH','HAIR_CLOTH_HAND_LAG','LOOP_SEAM','START_STOP_TURN_INTERRUPTION','IMPACT_EVENT_SYNC','MOBILE_FRAME_BUDGET']),
+      newMotionIdentityPerTask:1,newUnrelatedAssetAuthoringAllowed:false}):null,
+    limitedNewAuthoring:freeze({enabled:motionFirstQuality,maxGapActionsPerCycle:motionFirstQuality?1:null,
+      eligibility:'CURRENT_REQUIRED_FAMILY_WITH_NO_INTERNAL_REUSE_CANDIDATE',motionRefinementAllowsNewUnrelatedAssets:false,existingAssetUseUnrestricted:true}),
     flowAssetRequirements,
     flowAssetLoadout:freeze({
       libraryVersion:studioUniversePlan?.loadout?.libraryVersion||0,
@@ -3326,8 +3346,10 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.limitedNewAuthoring?.enabled?'[MOTION QUALITY FIRST] 새 종류·색상 파생 양산을 보류하고 기존 자산의 모션·애니메이션 디테일을 우선 개선한다. 신규 제작은 현재 작업의 필수 family가 내부 재사용·변형으로 해결되지 않는 경우 회차당 부족 항목 1개만 허용한다. 기존 자산은 점수와 관계없이 모두 사용 가능하다. 책임 파일 범위를 넓히지 않는다.':'',
+    plan.motionRefinement?`[MOTION REFINEMENT SESSION] ${JSON.stringify(plan.motionRefinement)}. 같은 actor/clip 또는 연결 동작 하나를 먼저 지정하고 최소 300분의 실제 제작·검수 시간을 기존 작업 ID로 누적한다. 현재 pass=${plan.motionRefinement.currentPass}; 남은 실제 작업=${Math.ceil(plan.motionRefinement.remainingMs/60000)}분. 대기·설치·sleep·동일 SHA 중복 결과는 작업시간이 아니다. 이름·마커·점수만 바꾸지 말고 포즈와 관절 곡선을 수정한다. 연기 의도→중심 이동/발 접지→호/타이밍/spacing→겹침/후행→시작·정지·회전·중단 전환→동일 조건 재생 비교를 동작별로 반복한다. 1배/0.25배, 정면/측면/게임 카메라/접촉 근접에서 실패 프레임과 원인을 찾아 다시 수정한다. 5시간 충족은 품질 PASS가 아니며 실제 캡처·측정이 없으면 UNVERIFIED다. feature animation은 자연스러움 목표이지 달성 점수나 Disney급 검증 선언이 아니다. 히트·이동·쿨다운·저장 권한은 그대로 유지한다.`:'',
     plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
-    plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 권장 볼륨과 필수 role이 충족되는 즉시 QUALITY_UP_1000 최약 내부감사 축 개선으로 자동 전환한다.`:'',
+    plan.internalLibraryEvolution?.phase&&plan.internalLibraryEvolution.phase!=='MOTION_QUALITY_FIRST'?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 모든 권장 범위와 필수 role이 충족된 뒤에만 QUALITY_UP_1000으로 전환하며, 이 단계에서는 내부감사 최약 축을 980→1000 구간 중심으로 개선한다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 권장 볼륨과 필수 role이 충족되는 즉시 QUALITY_UP_1000 최약 내부감사 축 개선으로 자동 전환한다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',

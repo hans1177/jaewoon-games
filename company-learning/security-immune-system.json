@@ -1,5 +1,5 @@
 {
-  "version": 67,
+  "version": 68,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1160,5 +1160,17 @@
     ],
     "failureAction": "REPAIR_EXACT_GAME_ASSET_BINDING_AND_REVALIDATE_FROM_FIRST_INVALIDATED_STAGE",
     "unrelatedGamesMayContinue": true
+  },
+  "motionRefinementWorkSecurity": {
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.motionFirstQualityWork",
+    "hostMetricsOnlyAfterCandidateIdentityAndReviewPass": true,
+    "duplicateOrForeignReservationCreditForbidden": true,
+    "sourceScopeChangeResetsEffort": true,
+    "effortMayNotPromoteQualityRuntimeOrRelease": true,
+    "scopeAndProtectedGameplayUnchanged": true,
+    "sleepAndIdlePaddingForbidden": true,
+    "ownerReleaseAndSecurityPriorityPreserved": true,
+    "noNewWorkerOrPaidResourceAuthority": true,
+    "canonicalFlowSequenceUnchanged": true
   }
 }

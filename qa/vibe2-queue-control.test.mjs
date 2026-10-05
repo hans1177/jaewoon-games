@@ -29,7 +29,10 @@ import {
   verifyVibeWorkerSynchronization,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
-import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch, motionRefinementState, recordMotionRefinementWork, MOTION_REFINEMENT_MINUTES, MOTION_REFINEMENT_PASSES } from '../assets/vibe-continuous-queue.js';
+
+import {finalizeVibe2FanInReview} from '../tools/vibe2-fan-in-review.mjs';
+import {buildVibeAssetProductionPlan,assetProductionGuidance} from '../tools/vibe2-asset-production-plan.mjs';
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
@@ -2352,4 +2355,107 @@ test('reservation policy follows the main executable checkout rather than stale 
     assert.equal(reserveNextVibeTask(queue,{maxConcurrentTasks:1}).task.id,'fresh');
     assert.deepEqual(reserveVibeTaskBatch(queue,{maxConcurrentTasks:1}).tasks.map(t=>t.id),['fresh']);
   }finally{process.chdir(previous);fs.rmSync(root,{recursive:true,force:true});}
+});
+
+function motionTask(overrides={}){
+  return {id:'motion-one',gameId:'motion-demo',target:'web',sourceRoot:'web-games/motion-demo',responsibleFiles:['web-games/motion-demo/index.html'],
+    goal:'[PRESENTATION_PASS:LIVING_MOTION] refine primary authored motion',presentationPass:'LIVING_MOTION',assetProductionLane:true,
+    status:'running',reservationId:'motion-reservation',blocker:'candidate-awaiting-qa-and-deployment',...overrides};
+}
+function motionResult(task=motionTask(),index=1){
+  const branch='vibe2/candidate/motion-'+index;
+  return {taskId:task.id,outcome:'PASS',reservationId:task.reservationId,candidateBranch:branch,baseMainSha:'base',
+    candidateIdentity:{taskId:task.id,gameId:task.gameId,target:task.target,sourceRoot:task.sourceRoot,baseMainSha:'base'},
+    evidence:[branch,'candidate-sha:'+index.toString(16).padStart(40,'0')],
+    metrics:{candidateMs:9*60000,qaMs:60000,workerTotalMs:13*60000,checkoutMs:60000,modelPrepMs:2*60000,changedFileCount:1,addedLineCount:20,deletedLineCount:10}};
+}
+
+test('motion refinement counts reviewed active work without idle time, duplicate or foreign results',()=>{
+  const task=motionTask(),row=motionResult(task);
+  let state=recordMotionRefinementWork(task,row);
+  assert.equal(state.activeWorkMs,10*60000);
+  assert.equal(state.minimumActiveMinutes,300);
+  assert.equal(state.remainingMs,290*60000);
+  assert.equal(state.elapsedTimeIsQualityProof,false);
+  const credited={...task,motionRefinement:state};
+  assert.equal(recordMotionRefinementWork(credited,row).activeWorkMs,state.activeWorkMs);
+  for(const bad of [{...row,outcome:'FAIL'},{...row,reservationId:'foreign'},{...row,taskId:'other'},
+    {...row,metrics:{...row.metrics,changedFileCount:0}},{...row,metrics:{...row.metrics,qaMs:NaN}},
+    {...row,metrics:{...row.metrics,addedLineCount:0,deletedLineCount:0}}]){
+    assert.equal(recordMotionRefinementWork(task,bad).activeWorkMs,0);
+  }
+  const poisoned={...credited,motionRefinement:{...state,activeWorkMs:999999999,remainingMs:0}};
+  assert.equal(motionRefinementState(poisoned).activeWorkMs,10*60000);
+  assert.equal(motionRefinementState({...credited,responsibleFiles:['web-games/other/index.html']}).activeWorkMs,0);
+  assert.equal(motionRefinementState({...task,assetProductionLane:false}),null);
+});
+
+test('motion session resumes the same work until 300 active minutes and preserves dependency gates',()=>{
+  let task=motionTask();
+  for(let i=1;i<=29;i++){
+    task={...task,motionRefinement:recordMotionRefinementWork(task,motionResult(task,i))};
+    if(i===4)assert.equal(task.motionRefinement.currentPass,'WEIGHT_CONTACT');
+    if(i===11)assert.equal(task.motionRefinement.currentPass,'ARCS_TIMING_SPACING');
+  }
+  const dependent={id:'next',gameId:'next',target:'web',goal:'dependent polish',status:'queued',dependencies:[task.id]};
+  let result=settleVibeTask({tasks:[task,dependent]},{taskId:task.id,outcome:'PASS',evidence:['web-publication-retry-resolved','role-result:review:PASS']});
+  assert.equal(result.outcome,'CONTINUE');
+  assert.equal(result.queue.tasks[0].status,'queued');
+  assert.equal(result.queue.tasks[0].id,task.id);
+  assert.equal(result.queue.tasks[0].reservationId,null);
+  assert.deepEqual(result.dependencyReadyTaskIds,[]);
+  assert.ok(!result.queue.tasks[0].evidence.includes('web-publication-retry-resolved'));
+  task={...result.queue.tasks[0],status:'running',reservationId:'next-reservation'};
+  task={...task,motionRefinement:recordMotionRefinementWork(task,motionResult(task,30))};
+  assert.equal(task.motionRefinement.activeWorkMs,300*60000);
+  result=settleVibeTask({tasks:[task,dependent]},{taskId:task.id,outcome:'PASS'});
+  assert.equal(result.outcome,'PASS');
+  assert.equal(result.queue.tasks[0].status,'verified');
+  assert.deepEqual(result.dependencyReadyTaskIds,['next']);
+  const failed=settleVibeTask({tasks:[task]},{taskId:task.id,outcome:'FAIL'});
+  assert.notEqual(failed.queue.tasks[0].status,'verified','five hours cannot turn failed QA into a pass');
+});
+
+test('fan-in credits motion only after source identity and all review roles pass',()=>{
+  const task=motionTask(),row=motionResult(task);
+  task.evidence=[row.candidateBranch,...['exploration','implementation','test','performance'].map(role=>'role-result:'+role+':PASS')];
+  const accepted=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[row]});
+  assert.equal(accepted.pass,true);
+  assert.equal(accepted.queue.tasks[0].motionRefinement.activeWorkMs,10*60000);
+  assert.equal(accepted.releaseCandidates.length,1,'existing verified checkpoint can deploy before overall effort completion');
+  const normalized=createVibeContinuousQueue(accepted.queue);
+  assert.equal(normalized.tasks[0].motionRefinement.samples.length,1);
+  const rejected=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[{...row,candidateIdentity:{...row.candidateIdentity,sourceRoot:'foreign'}}]});
+  assert.equal(rejected.releaseCandidates.length,0);
+  assert.equal(motionRefinementState(rejected.queue.tasks[0]).activeWorkMs,0);
+  const missingRole=finalizeVibe2FanInReview({queue:{tasks:[{...task,evidence:[row.candidateBranch]}]},results:[row]});
+  assert.equal(motionRefinementState(missingRole.queue.tasks[0]).activeWorkMs,0);
+});
+
+test('asset lane favors eligible motion while owner priority and exact file conflicts stay intact',()=>{
+  const motion=motionTask({status:'queued',reservationId:null,blocker:null});
+  const prop={...motion,id:'prop',presentationPass:'ASSET_ADAPTATION',goal:'polish props',gameId:'prop',sourceRoot:'web-games/prop',responsibleFiles:['web-games/prop/index.html']};
+  const selected=selectVibeQueueBatch({tasks:[prop,motion],maxConcurrentTasks:1},{lane:'asset-development'});
+  assert.equal(selected.selected[0].id,motion.id);
+  const owner=selectVibeQueueBatch({tasks:[{...prop,ownerDirective:true},motion],maxConcurrentTasks:1},{lane:'asset-development'});
+  assert.equal(owner.selected[0].id,prop.id);
+  const busy={...motion,id:'busy',assetProductionLane:false,presentationPass:null,goal:'existing source work',status:'running'};
+  const conflict=selectVibeQueueBatch({tasks:[busy,motion],maxConcurrentTasks:2},{lane:'asset-development'});
+  assert.equal(conflict.selected.length,0);
+});
+
+test('motion quality work order suppresses speculative volume and keeps duration separate from quality',()=>{
+  const plan=buildVibeAssetProductionPlan({task:motionTask(),target:'web',executionLane:'asset-development'});
+  assert.equal(plan.internalLibraryEvolution.phase,'MOTION_QUALITY_FIRST');
+  assert.equal(plan.internalLibraryEvolution.nextVolumeActions.length,0);
+  assert.equal(plan.motionRefinement.minimumActiveMinutes,300);
+  assert.equal(plan.motionRefinement.currentPass,'POSE_INTENT');
+  assert.equal(plan.motionRefinement.qualityTargetVerified,false);
+  assert.equal(plan.limitedNewAuthoring.existingAssetUseUnrestricted,true);
+  assert.match(assetProductionGuidance(plan),/MOTION REFINEMENT SESSION/);
+  assert.match(assetProductionGuidance(plan),/0.25/);
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).assetProductionParallelContract.motionFirstQualityWork;
+  assert.equal(MOTION_REFINEMENT_MINUTES,policy.minimumActiveWorkMinutesPerMotionTask);
+  assert.deepEqual(MOTION_REFINEMENT_PASSES,policy.passes);
+  assert.equal(MOTION_REFINEMENT_PASSES.reduce((sum,row)=>sum+row.minutes,0),300);
 });

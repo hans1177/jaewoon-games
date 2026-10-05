@@ -1,5 +1,5 @@
 {
-  "version": 529,
+  "version": 530,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -20047,6 +20047,87 @@
         "anotherPlatformRuntimeMayNotSubstitute": true,
         "robloxRuntimeDispatchForbidden": true
       }
+    },
+    "motionFirstQualityWork": {
+      "version": 1,
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "scope": "EXISTING_ASSET_DEVELOPMENT_LANE",
+      "priority": "EXISTING_MOTION_ANIMATION_BEFORE_SPECULATIVE_NEW_ASSETS",
+      "minimumActiveWorkMinutesPerMotionTask": 300,
+      "timeAccounting": "REVIEWED_SOURCE_CANDIDATE_AND_INCREMENTAL_QA_HOST_METRICS",
+      "excludedTime": [
+        "QUEUE_WAIT",
+        "RUNNER_CHECKOUT",
+        "MODEL_INSTALL",
+        "SLEEP",
+        "DUPLICATE_CANDIDATE_SHA",
+        "FAILED_OR_UNREVIEWED_CANDIDATE"
+      ],
+      "continuation": "RESUME_SAME_TASK_AFTER_EXISTING_VERIFIED_CHECKPOINT_AND_DEPLOYMENT_CALLBACK",
+      "sameResponsibleScopeRequired": true,
+      "motionTasks": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "passes": [
+        {
+          "id": "POSE_INTENT",
+          "minutes": 40
+        },
+        {
+          "id": "WEIGHT_CONTACT",
+          "minutes": 65
+        },
+        {
+          "id": "ARCS_TIMING_SPACING",
+          "minutes": 60
+        },
+        {
+          "id": "OVERLAP_SECONDARY",
+          "minutes": 45
+        },
+        {
+          "id": "TRANSITIONS",
+          "minutes": 50
+        },
+        {
+          "id": "COMPARE_POLISH",
+          "minutes": 40
+        }
+      ],
+      "maxNewRequiredGapActionsPerCycle": 1,
+      "newAuthoringRequiresCurrentRequiredFamilyAndNoInternalReuseCandidate": true,
+      "unrelatedNewAssetsDuringMotionRefinement": false,
+      "qualityTarget": "FEATURE_ANIMATION_NATURALNESS",
+      "qualityTargetIsVerifiedClaim": false,
+      "elapsedTimeIsQualityProof": false,
+      "qualityScoreBlocksAssetUsage": false,
+      "reviewSpeeds": [
+        1,
+        0.25
+      ],
+      "reviewViews": [
+        "GAME_CAMERA",
+        "FRONT",
+        "SIDE",
+        "CONTACT_CLOSEUP"
+      ],
+      "actualCaptureAndSourceIdentityRequiredForQualityClaim": true,
+      "missingMeasurementsRemainUnverified": true,
+      "sameSourceDuplicateCreditForbidden": true,
+      "idlePaddingForbidden": true,
+      "existingWorkerTimeoutAndDAGPreserved": true,
+      "existingNativeAndReleaseGatesPreserved": true,
+      "newWorkflowSchedulerQueueWrapperForbidden": true,
+      "preserve": [
+        "GAMEPLAY",
+        "SAVE",
+        "BALANCE",
+        "HIT_TIMING",
+        "NETWORK_AUTHORITY",
+        "ORIGINAL_ASSETS"
+      ]
     }
   },
   "weatherPresentationContract": {
