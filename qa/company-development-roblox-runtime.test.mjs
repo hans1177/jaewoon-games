@@ -907,13 +907,18 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.match(client,/StudioAssetBindingVersion/);
     assert.match(client,/StudioAssetAtoms/);
     assert.match(client,/FRAME_PANEL/);
+    assert.match(client,/COMPANY_ASSET_LIBRARY_NAMES/);
+    assert.match(client,/ROBLOX_INTERNAL_LIBRARY_LOAD_FAILED/);
+    assert.match(client,/CompanyAssetLibrariesLoaded/);
     assert.match(server,/native-foundation-sentinel-v1/);
     assert.match(server,/RuntimeFoundationReport/);
     assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
     assert.equal(project.tree.Lighting.$properties.LightingStyle,'Soft');
     assert.equal(project.tree.Lighting.$properties.PrioritizeLightingQuality,false);
     assert.equal(project.tree.Lighting.CompatibilityToneMap,undefined);
-    assert.equal(result.changedFiles.some(file=>file.endsWith('default.project.json')),false);
+    assert.equal(result.changedFiles.some(file=>file.endsWith('default.project.json')),true);
+    assert.ok(project.tree.ReplicatedStorage.CompanyAssets);
+    assert.ok(Object.keys(project.tree.ReplicatedStorage.CompanyAssets).length>=15);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
@@ -1188,6 +1193,12 @@ test('F0 private validation defers same-source quality repair and resumes for re
     robloxFoundationF0Passed:true,
     robloxBuildPreflightPassed:true,
     robloxBuildOrPackagePassed:true,
+    robloxBuildInternalAssetContractVersion:2,
+    robloxBuildInternalAssetBindingPassed:true,
+    robloxBuildInternalLibraryAutoLoadPassed:true,
+    robloxBuildInternalLibraryModulesPackaged:true,
+    robloxBuildInternalLibraryRequiredModuleCount:15,
+    robloxBuildInternalLibraryPackagedModuleCount:15,
     robloxFoundationF0Evidence:{sourceRevision:'new',artifactIdentity:'artifact',artifactRunId:1},
     robloxFailureStage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
     robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',

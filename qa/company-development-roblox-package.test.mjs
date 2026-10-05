@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactInternalAssetBinding,validateRobloxArtifactInternalLibraryInventory,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {ROBLOX_COMMON_LIBRARY_PROJECT_MODULES} from '../tools/company-development-roblox-bootstrap.mjs';
+import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -14,10 +16,36 @@ test('Roblox package evidence proves build only and never invents later validati
     artifactSha256:'b'.repeat(64),
     sourceValidationPassed:true,
     saveRequired:true,
+    internalAssetBinding:{
+      pass:true,
+      contractVersion:ROBLOX_PACKAGE_TOOL.internalAssetContractVersion,
+      libraryVersion:109,
+      bindingVersion:2,
+      selectionFingerprint:'asset-fingerprint',
+      familyCount:12,
+      selectedAtomCount:36,
+      primitiveOnlyVisualsForbidden:true,
+      allLibrariesAutoLoaded:true,
+    },
+    internalLibraryInventory:{
+      pass:true,
+      requiredCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
+      packagedCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
+      packagedModules:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES),
+    },
   });
   assert.equal(evidence.buildOrPackagePassed,true);
   assert.equal(evidence.artifactIdentity,`sha256:${'b'.repeat(64)}`);
   assert.equal(evidence.luauOrSourceValidationPassed,true);
+  assert.equal(evidence.internalAssetPackageBindingPassed,true);
+  assert.equal(evidence.internalAssetContractVersion,ROBLOX_PACKAGE_TOOL.internalAssetContractVersion);
+  assert.equal(evidence.internalAssetFamilyCount,12);
+  assert.equal(evidence.primitiveOnlyVisualsForbidden,true);
+  assert.equal(evidence.internalLibraryAutoLoadPassed,true);
+  assert.equal(evidence.internalLibraryModulesPackaged,true);
+  assert.equal(evidence.internalLibraryRequiredModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
+  assert.equal(evidence.internalLibraryPackagedModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
+  assert.deepEqual(evidence.internalLibraryPackagedModules,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES));
   assert.equal(evidence.buildPreflightPassed,false);
   assert.equal(evidence.runtimePassed,false);
   assert.equal(evidence.independentQaPassed,false);
@@ -27,6 +55,58 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.failureStage,'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
   assert.equal(evidence.failureSignature,'ROBLOX_BUILD_PREFLIGHT_PENDING');
   assert.equal(evidence.releaseClaim,false);
+});
+
+test('Roblox build preflight requires all internal asset source families and package contract proof',()=>{
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const item={
+    gameId:'seed-roblox-test',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'ROBLOX',
+    targetPlatform:'ROBLOX',
+    status:'ACTIVE',
+    robloxSourceBootstrapPassedAt:'2026-10-05T00:00:00Z',
+    robloxSourceCommit:'a'.repeat(40),
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),
+    robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    robloxStudioAssetBindingApplied:true,
+    robloxStudioAssetBinding:{
+      bindingVersion:2,
+      libraryVersion:109,
+      selectionFingerprint:'package-selection-fingerprint',
+      families:Object.fromEntries(families.map(family=>[family,[family+'_ATOM']]))
+    },
+    robloxBuildInternalAssetContractVersion:ROBLOX_PACKAGE_TOOL.internalAssetContractVersion,
+    robloxBuildInternalAssetBindingPassed:true,
+    robloxBuildInternalLibraryAutoLoadPassed:true,
+    robloxBuildInternalLibraryModulesPackaged:true,
+    robloxBuildInternalLibraryRequiredModuleCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
+    robloxBuildInternalLibraryPackagedModuleCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
+  };
+  const directive={ai:{robloxPreflightModel:'llama3.2:1b',modelPool:['llama3.2:1b'],minDistinctLeadModelsAcrossDepartments:1}};
+  const pass=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.build.internalAssetSourceBindingComplete,true);
+  assert.equal(pass.build.internalAssetPackageBindingPassed,true);
+  assert.equal(pass.build.internalLibraryAutoLoadPassed,true);
+  assert.equal(pass.build.internalLibraryModulesPackaged,true);
+  assert.equal(pass.build.internalLibraryPackagedModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
+  assert.equal(pass.build.internalAssetMissingFamilies.length,0);
+
+  const stale=inspectRobloxBuildPreflight({
+    item:{...item,robloxBuildInternalAssetContractVersion:0,robloxBuildInternalAssetBindingPassed:false,robloxBuildInternalLibraryAutoLoadPassed:false},
+    directive
+  });
+  assert.equal(stale.pass,false);
+  assert.ok(stale.blockers.includes('internal-asset-package-contract-version-required'));
+  assert.ok(stale.blockers.includes('internal-asset-package-binding-pass-required'));
+
+  const missingFamily=structuredClone(item);
+  delete missingFamily.robloxStudioAssetBinding.families.PROP;
+  const familyBlocked=inspectRobloxBuildPreflight({item:missingFamily,directive});
+  assert.equal(familyBlocked.pass,false);
+  assert.ok(familyBlocked.blockers.includes('internal-asset-all-families-source-binding-required'));
 });
 
 test('Roblox package source validation keeps ordinary static blockers authoritative',()=>{
@@ -59,6 +139,105 @@ test('Roblox package source validation rejects a verified Vibe2 handoff when the
   assert.equal(validation.pass,false);
   assert.deepEqual(validation.blockers,['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']);
   assert.equal(validation.authority,'verified-vibe2-source-handoff');
+});
+
+test('verified Vibe2 handoff cannot bypass internal asset hard blockers',()=>{
+  const tree='c'.repeat(40);
+  const validation=resolvePackageSourceValidation({
+    staticVerdict:{pass:false,blockers:['CLIENT_SERVER_ACTION_REQUIRED','ROBLOX_INTERNAL_ASSET_ALL_FAMILIES_REQUIRED'],saveRequired:false},
+    verifiedSourceTreeSha:tree,
+    actualSourceTreeSha:tree,
+  });
+  assert.equal(validation.pass,false);
+  assert.deepEqual(validation.blockers,['ROBLOX_INTERNAL_ASSET_ALL_FAMILIES_REQUIRED']);
+  assert.equal(validation.authority,'verified-vibe2-source-handoff-plus-internal-asset-hard-gate');
+});
+
+test('Roblox package artifact requires all internal asset families atoms fingerprint and runtime-visible binding',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-asset-package-'));
+  try{
+    const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+    const expectedPlan={
+      applied:true,
+      libraryVersion:109,
+      bindingVersion:2,
+      selectionFingerprint:'0123456789abcdef',
+      universalAssetFirst:{allFamilies:families},
+      families:Object.fromEntries(families.map(family=>[family,[family+'_ATOM']]))
+    };
+    const artifact=path.join(root,'bound.rbxlx');
+    const familyRows=families.map(family=>family+' = { "'+family+'_ATOM'" }').join('\n');
+    fs.writeFileSync(artifact,[
+      '<roblox>',
+      '<Item class="ModuleScript"><Properties><ProtectedString name="Source"><![CDATA[',
+      'StudioAssets = { Applied = true, BindingVersion = 2, SelectionFingerprint = "0123456789abcdef", Families = {',
+      familyRows,
+      '} }',
+      ']]></ProtectedString></Properties></Item>',
+      '<Item class="LocalScript"><Properties><ProtectedString name="Source"><![CDATA[',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
+      'local companyAssetFolder = game:GetService("ReplicatedStorage"):WaitForChild("CompanyAssets")',
+      'local COMPANY_ASSET_LIBRARY_NAMES = {"RobloxCommonUI"}',
+      'local moduleScript = companyAssetFolder:WaitForChild(COMPANY_ASSET_LIBRARY_NAMES[1])',
+      'local ok, library = pcall(require, moduleScript)',
+      'if not ok then error("ROBLOX_INTERNAL_LIBRARY_LOAD_FAILED:" .. tostring(library)) end',
+      'local function studioAssetFamily() return {} end',
+      'root:SetAttribute("StudioAssetAtoms", "UI_ATOM")',
+      'root:SetAttribute("CompanyAssetLibrariesLoaded", #COMPANY_ASSET_LIBRARY_NAMES)',
+      'root:SetAttribute("CompanyAssetLibraryNames", table.concat(COMPANY_ASSET_LIBRARY_NAMES, ","))',
+      'local panel = Instance.new("Frame")',
+      ']]></ProtectedString></Properties></Item>',
+      '</roblox>'
+    ].join('\n'));
+    const ok=validateRobloxArtifactInternalAssetBinding({artifactPath:artifact,expectedPlan});
+    assert.equal(ok.pass,true);
+    assert.equal(ok.familyCount,12);
+    assert.equal(ok.selectedAtomCount,12);
+    assert.equal(ok.primitiveOnlyVisualsForbidden,true);
+
+    const missing=path.join(root,'missing.rbxlx');
+    fs.writeFileSync(missing,fs.readFileSync(artifact,'utf8').replace('PROP_ATOM','PROP_MISSING'));
+    assert.throws(
+      ()=>validateRobloxArtifactInternalAssetBinding({artifactPath:missing,expectedPlan}),
+      /ROBLOX_INTERNAL_ASSET_PACKAGE_SELECTED_ATOMS_REQUIRED/
+    );
+
+    const primitive=path.join(root,'primitive.rbxlx');
+    fs.writeFileSync(primitive,fs.readFileSync(artifact,'utf8')
+      .replace('local function studioAssetFamily() return {} end\n','')
+      .replace('root:SetAttribute("StudioAssetAtoms", "UI_ATOM")\n','')
+      .replace('root:SetAttribute("CompanyAssetLibrariesLoaded", #COMPANY_ASSET_LIBRARY_NAMES)\n','')
+      .replace('root:SetAttribute("CompanyAssetLibraryNames", table.concat(COMPANY_ASSET_LIBRARY_NAMES, ","))\n',''));
+    assert.throws(
+      ()=>validateRobloxArtifactInternalAssetBinding({artifactPath:primitive,expectedPlan}),
+      /ROBLOX_INTERNAL_ASSET_PACKAGE_RUNTIME_BINDING_REQUIRED|ROBLOX_PLAIN_PRIMITIVE_PACKAGE_FORBIDDEN/
+    );
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Roblox package artifact contains every canonical common library module',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-library-artifact-'));
+  try{
+    const names=Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES);
+    const complete=path.join(root,'complete.rbxlx');
+    fs.writeFileSync(complete,'<roblox>'+names.map((name,index)=>'<Item class="ModuleScript" referent="'+(index+1)+'"><Properties><string name="Name">'+name+'</string></Properties></Item>').join('')+'</roblox>');
+    const pass=validateRobloxArtifactInternalLibraryInventory({artifactPath:complete});
+    assert.equal(pass.pass,true);
+    assert.equal(pass.requiredCount,names.length);
+    assert.equal(pass.packagedCount,names.length);
+    assert.deepEqual(pass.packagedModules,names);
+
+    const incomplete=path.join(root,'incomplete.rbxlx');
+    fs.writeFileSync(incomplete,'<roblox>'+names.slice(1).map((name,index)=>'<Item class="ModuleScript" referent="'+(index+1)+'"><Properties><string name="Name">'+name+'</string></Properties></Item>').join('')+'</roblox>');
+    assert.throws(
+      ()=>validateRobloxArtifactInternalLibraryInventory({artifactPath:incomplete}),
+      new RegExp('ROBLOX_INTERNAL_LIBRARY_ARTIFACT_MODULES_MISSING:'+names[0])
+    );
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{

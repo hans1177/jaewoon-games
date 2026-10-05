@@ -782,6 +782,8 @@ jobs:
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,robloxBuildFailedAt:null,
+                 robloxBuildInternalAssetContractVersion:null,robloxBuildInternalAssetBindingPassed:false,robloxBuildInternalAssetFamilyCount:null,robloxBuildInternalAssetAtomCount:null,robloxBuildInternalAssetSelectionFingerprint:null,
+                 robloxBuildInternalLibraryAutoLoadPassed:false,robloxBuildInternalLibraryModulesPackaged:false,robloxBuildInternalLibraryRequiredModuleCount:null,robloxBuildInternalLibraryPackagedModuleCount:null,
                 robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
                 robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
                 robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
@@ -1097,7 +1099,13 @@ jobs:
             const artifactIdentity=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
-              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
+                &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
+                &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
+                &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.robloxBuildInternalLibraryModulesPackaged===true;
             if(!/^[0-9a-f]{40}$/i.test(sourceRevision))continue;
             if(exactBuild&&productF0Current)continue;
             rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus,productF0RevalidationNeeded});
@@ -1265,14 +1273,43 @@ jobs:
           const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
           if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
           const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
+          const buildEvidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
+          if(
+            buildEvidence.internalAssetPackageBindingPassed!==true
+            ||Number(buildEvidence.internalAssetContractVersion||0)<2
+            ||buildEvidence.internalLibraryAutoLoadPassed!==true
+            ||buildEvidence.internalLibraryModulesPackaged!==true
+            ||Number(buildEvidence.internalLibraryRequiredModuleCount||0)<=0
+            ||Number(buildEvidence.internalLibraryPackagedModuleCount||0)!==Number(buildEvidence.internalLibraryRequiredModuleCount||0)
+          ){
+            throw new Error('ROBLOX_INTERNAL_ASSET_PACKAGE_EVIDENCE_REQUIRED:'+process.env.GAME_ID);
+          }
           if(secondary){
             item.ownerFocusRobloxBuildOrPackagePassed=true;
             item.ownerFocusRobloxBuildSourceRevision=process.env.SOURCE_REVISION;
             item.ownerFocusRobloxBuildArtifactIdentity=process.env.ARTIFACT_IDENTITY;
+            item.ownerFocusRobloxBuildInternalAssetContractVersion=Number(buildEvidence.internalAssetContractVersion||0);
+            item.ownerFocusRobloxBuildInternalAssetBindingPassed=buildEvidence.internalAssetPackageBindingPassed===true;
+            item.ownerFocusRobloxBuildInternalAssetFamilyCount=Number(buildEvidence.internalAssetFamilyCount||0);
+            item.ownerFocusRobloxBuildInternalAssetAtomCount=Number(buildEvidence.internalAssetAtomCount||0);
+            item.ownerFocusRobloxBuildInternalAssetSelectionFingerprint=String(buildEvidence.internalAssetSelectionFingerprint||'');
+            item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed=buildEvidence.internalLibraryAutoLoadPassed===true;
+            item.ownerFocusRobloxBuildInternalLibraryModulesPackaged=buildEvidence.internalLibraryModulesPackaged===true;
+            item.ownerFocusRobloxBuildInternalLibraryRequiredModuleCount=Number(buildEvidence.internalLibraryRequiredModuleCount||0);
+            item.ownerFocusRobloxBuildInternalLibraryPackagedModuleCount=Number(buildEvidence.internalLibraryPackagedModuleCount||0);
           }else{
             item.robloxBuildOrPackagePassed=true;
             item.robloxBuildSourceRevision=process.env.SOURCE_REVISION;
             item.robloxBuildArtifactIdentity=process.env.ARTIFACT_IDENTITY;
+            item.robloxBuildInternalAssetContractVersion=Number(buildEvidence.internalAssetContractVersion||0);
+            item.robloxBuildInternalAssetBindingPassed=buildEvidence.internalAssetPackageBindingPassed===true;
+            item.robloxBuildInternalAssetFamilyCount=Number(buildEvidence.internalAssetFamilyCount||0);
+            item.robloxBuildInternalAssetAtomCount=Number(buildEvidence.internalAssetAtomCount||0);
+            item.robloxBuildInternalAssetSelectionFingerprint=String(buildEvidence.internalAssetSelectionFingerprint||'');
+            item.robloxBuildInternalLibraryAutoLoadPassed=buildEvidence.internalLibraryAutoLoadPassed===true;
+            item.robloxBuildInternalLibraryModulesPackaged=buildEvidence.internalLibraryModulesPackaged===true;
+            item.robloxBuildInternalLibraryRequiredModuleCount=Number(buildEvidence.internalLibraryRequiredModuleCount||0);
+            item.robloxBuildInternalLibraryPackagedModuleCount=Number(buildEvidence.internalLibraryPackagedModuleCount||0);
           }
           fs.writeFileSync('/tmp/roblox-technical/preflight-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
@@ -1381,6 +1418,15 @@ jobs:
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:evidence?.artifactIdentity||null,
             saveRequired:evidence?.saveRequired===true,
+            internalAssetContractVersion:Number(evidence?.internalAssetContractVersion||0),
+            internalAssetPackageBindingPassed:evidence?.internalAssetPackageBindingPassed===true,
+            internalAssetFamilyCount:Number(evidence?.internalAssetFamilyCount||0),
+            internalAssetAtomCount:Number(evidence?.internalAssetAtomCount||0),
+            internalAssetSelectionFingerprint:String(evidence?.internalAssetSelectionFingerprint||''),
+            internalLibraryAutoLoadPassed:evidence?.internalLibraryAutoLoadPassed===true,
+            internalLibraryModulesPackaged:evidence?.internalLibraryModulesPackaged===true,
+            internalLibraryRequiredModuleCount:Number(evidence?.internalLibraryRequiredModuleCount||0),
+            internalLibraryPackagedModuleCount:Number(evidence?.internalLibraryPackagedModuleCount||0),
             failure:superseded?'roblox-technical-superseded':!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
           };
           fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
@@ -1430,6 +1476,10 @@ jobs:
             &&item.robloxBuildPreflightPassed===true
             &&item.robloxBuildSourceRevision===revision
             &&item.robloxBuildArtifactIdentity===artifact
+            &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2
+            &&item.robloxBuildInternalAssetBindingPassed===true
+            &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.robloxBuildInternalLibraryModulesPackaged===true
             &&item.robloxFoundationF0Evidence?.sourceRevision===revision
             &&item.robloxFoundationF0Evidence?.artifactIdentity===artifact;
           if(alreadyExact){
@@ -1454,6 +1504,15 @@ jobs:
             robloxBuildOrPackagePassed:true,
             robloxBuildSourceRevision:revision,
             robloxBuildArtifactIdentity:artifact,
+            robloxBuildInternalAssetContractVersion:Number(result.internalAssetContractVersion||0),
+            robloxBuildInternalAssetBindingPassed:result.internalAssetPackageBindingPassed===true,
+            robloxBuildInternalAssetFamilyCount:Number(result.internalAssetFamilyCount||0),
+            robloxBuildInternalAssetAtomCount:Number(result.internalAssetAtomCount||0),
+            robloxBuildInternalAssetSelectionFingerprint:String(result.internalAssetSelectionFingerprint||''),
+            robloxBuildInternalLibraryAutoLoadPassed:result.internalLibraryAutoLoadPassed===true,
+            robloxBuildInternalLibraryModulesPackaged:result.internalLibraryModulesPackaged===true,
+            robloxBuildInternalLibraryRequiredModuleCount:Number(result.internalLibraryRequiredModuleCount||0),
+            robloxBuildInternalLibraryPackagedModuleCount:Number(result.internalLibraryPackagedModuleCount||0),
             robloxBuildPassedAt:stamp,
             robloxBuildFailedAt:null,
             robloxBuildPreflightPassed:true,
@@ -1693,7 +1752,17 @@ jobs:
               if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
                 Object.assign(item,{
                   ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
-                  ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
+                  ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,
+                  ownerFocusRobloxBuildInternalAssetContractVersion:Number(result.internalAssetContractVersion||0),
+                  ownerFocusRobloxBuildInternalAssetBindingPassed:result.internalAssetPackageBindingPassed===true,
+                  ownerFocusRobloxBuildInternalAssetFamilyCount:Number(result.internalAssetFamilyCount||0),
+                  ownerFocusRobloxBuildInternalAssetAtomCount:Number(result.internalAssetAtomCount||0),
+                  ownerFocusRobloxBuildInternalAssetSelectionFingerprint:String(result.internalAssetSelectionFingerprint||''),
+                  ownerFocusRobloxBuildInternalLibraryAutoLoadPassed:result.internalLibraryAutoLoadPassed===true,
+                  ownerFocusRobloxBuildInternalLibraryModulesPackaged:result.internalLibraryModulesPackaged===true,
+                  ownerFocusRobloxBuildInternalLibraryRequiredModuleCount:Number(result.internalLibraryRequiredModuleCount||0),
+                  ownerFocusRobloxBuildInternalLibraryPackagedModuleCount:Number(result.internalLibraryPackagedModuleCount||0),
+                  ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
                   ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightPassedAt:null,ownerFocusRobloxBuildPreflightFailedAt:null,
                   ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimePassedAt:null,ownerFocusRobloxRuntimeFailedAt:null,
                   ownerFocusRobloxAssetPipelineState:'BUILD_READY',updatedAt:stamp,
@@ -1727,6 +1796,15 @@ jobs:
                 currentStep:f0Exact?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
                 canonicalState:f0Exact?'F0_SOURCE_PREFLIGHT_PASSED':preflightExact?'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED':'TARGET_PLATFORM_REPAIR_REQUIRED',
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
+                robloxBuildInternalAssetContractVersion:Number(result.internalAssetContractVersion||0),
+                robloxBuildInternalAssetBindingPassed:result.internalAssetPackageBindingPassed===true,
+                robloxBuildInternalAssetFamilyCount:Number(result.internalAssetFamilyCount||0),
+                robloxBuildInternalAssetAtomCount:Number(result.internalAssetAtomCount||0),
+                robloxBuildInternalAssetSelectionFingerprint:String(result.internalAssetSelectionFingerprint||''),
+                robloxBuildInternalLibraryAutoLoadPassed:result.internalLibraryAutoLoadPassed===true,
+                robloxBuildInternalLibraryModulesPackaged:result.internalLibraryModulesPackaged===true,
+                robloxBuildInternalLibraryRequiredModuleCount:Number(result.internalLibraryRequiredModuleCount||0),
+                robloxBuildInternalLibraryPackagedModuleCount:Number(result.internalLibraryPackagedModuleCount||0),
                 robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
                 robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
                 robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:(f0Exact||gameplayProductFailure)?result.f0Evidence:null,
@@ -1939,7 +2017,13 @@ jobs:
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
-              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+              &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
+                &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.robloxBuildInternalLibraryModulesPackaged===true;
             if(exactBuild&&productF0Current)continue;
             if(secondaryOwnerFocus&&!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))continue;
             count++;
@@ -2005,6 +2089,10 @@ jobs:
               &&x.robloxFoundationF0Passed===true
               &&x.robloxBuildPreflightPassed===true
               &&x.robloxBuildOrPackagePassed===true
+              &&Number(x.robloxBuildInternalAssetContractVersion||0)>=2
+              &&x.robloxBuildInternalAssetBindingPassed===true
+              &&x.robloxBuildInternalLibraryAutoLoadPassed===true
+              &&x.robloxBuildInternalLibraryModulesPackaged===true
               &&x.robloxBuildSourceRevision===revision
               &&f0.sourceRevision===revision
               &&f0.artifactIdentity===artifact
@@ -2096,7 +2184,13 @@ jobs:
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
-              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+              &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
+                &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.robloxBuildInternalLibraryModulesPackaged===true;
             if(exactBuild){
               const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
               const runtimePassed=secondaryOwnerFocus?item.ownerFocusRobloxRuntimePassed:item.robloxRuntimePassed;

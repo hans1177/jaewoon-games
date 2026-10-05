@@ -39,12 +39,37 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const sourceRevision=clean(secondary?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit);
   const buildSourceRevision=clean(secondary?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision);
   const artifactIdentity=clean(secondary?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity);
+  const studioAssetBinding=secondary?item.ownerFocusRobloxStudioAssetBinding:item.robloxStudioAssetBinding;
+  const studioAssetApplied=secondary?item.ownerFocusRobloxStudioAssetBindingApplied===true:item.robloxStudioAssetBindingApplied===true;
+  const packageAssetContractVersion=Number(secondary?item.ownerFocusRobloxBuildInternalAssetContractVersion:item.robloxBuildInternalAssetContractVersion)||0;
+  const packageAssetBindingPassed=secondary?item.ownerFocusRobloxBuildInternalAssetBindingPassed===true:item.robloxBuildInternalAssetBindingPassed===true;
+  const packageLibrariesAutoLoaded=secondary?item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true:item.robloxBuildInternalLibraryAutoLoadPassed===true;
+  const packageLibrariesPackaged=secondary?item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true:item.robloxBuildInternalLibraryModulesPackaged===true;
+  const packageRequiredLibraryCount=Number(secondary?item.ownerFocusRobloxBuildInternalLibraryRequiredModuleCount:item.robloxBuildInternalLibraryRequiredModuleCount)||0;
+  const packagePackagedLibraryCount=Number(secondary?item.ownerFocusRobloxBuildInternalLibraryPackagedModuleCount:item.robloxBuildInternalLibraryPackagedModuleCount)||0;
+  const requiredAssetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const boundFamilies=studioAssetBinding?.families&&typeof studioAssetBinding.families==='object'?studioAssetBinding.families:{};
+  const missingAssetFamilies=requiredAssetFamilies.filter(family=>!Array.isArray(boundFamilies[family])||boundFamilies[family].length===0);
+  const selectedAssetAtomCount=Object.values(boundFamilies).reduce((sum,rows)=>sum+(Array.isArray(rows)?rows.length:0),0);
+  const sourceAssetBindingComplete=studioAssetApplied
+    &&Number(studioAssetBinding?.bindingVersion||0)>=2
+    &&Number(studioAssetBinding?.libraryVersion||0)>0
+    &&clean(studioAssetBinding?.selectionFingerprint)
+    &&missingAssetFamilies.length===0
+    &&selectedAssetAtomCount>=requiredAssetFamilies.length;
   if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))blockers.push('confirmed-production-class-required');
   if(!secondary&&!robloxLaneEligible)blockers.push('roblox-platform-required');
   if(!buildOrPackagePassed)blockers.push('build-package-not-passed');
   if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');
   if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
   if(!SHA256.test(artifactIdentity))blockers.push('artifact-identity-invalid');
+  if(!sourceAssetBindingComplete)blockers.push('internal-asset-all-families-source-binding-required');
+  if(packageAssetContractVersion<2)blockers.push('internal-asset-package-contract-version-required');
+  if(!packageAssetBindingPassed)blockers.push('internal-asset-package-binding-pass-required');
+  if(!packageLibrariesAutoLoaded)blockers.push('internal-library-package-autoload-required');
+  if(!packageLibrariesPackaged||packageRequiredLibraryCount<=0||packagePackagedLibraryCount!==packageRequiredLibraryCount){
+    blockers.push('internal-library-package-all-modules-required');
+  }
   if(distinct.length<minDistinct)blockers.push('shared-review-model-missing');
   if(!sharedModel)blockers.push('shared-review-model-missing');
   else if(!pool.has(sharedModel))blockers.push('shared-review-model-not-in-model-pool');
@@ -68,6 +93,19 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
       sourceEligibilityAuthority:buildOrPackagePassed?'exact-immutable-roblox-package':secondary?'owner-focused-secondary-roblox':verifiedVibe2Handoff?'verified-vibe2-source-handoff':'source-bootstrap',
       sourceValidationPassed:sourceValidationPassed||buildOrPackagePassed,
       buildOrPackagePassed,
+      internalAssetSourceBindingApplied:studioAssetApplied,
+      internalAssetSourceBindingComplete:sourceAssetBindingComplete,
+      internalAssetMissingFamilies:Object.freeze(missingAssetFamilies),
+      internalAssetSelectedAtomCount:selectedAssetAtomCount,
+      internalAssetLibraryVersion:Number(studioAssetBinding?.libraryVersion||0),
+      internalAssetSelectionFingerprint:clean(studioAssetBinding?.selectionFingerprint)||null,
+      internalAssetPackageContractVersion:packageAssetContractVersion,
+      internalAssetPackageBindingPassed:packageAssetBindingPassed,
+      internalLibraryAutoLoadPassed:packageLibrariesAutoLoaded,
+      internalLibraryModulesPackaged:packageLibrariesPackaged,
+      internalLibraryRequiredModuleCount:packageRequiredLibraryCount,
+      internalLibraryPackagedModuleCount:packagePackagedLibraryCount,
+      primitiveOnlyVisualsForbidden:true,
     }),
   });
 }

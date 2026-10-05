@@ -84,7 +84,13 @@ jobs:
             const artifactIdentity=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifactIdentity.startsWith('sha256:')
-              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifactIdentity.startsWith('sha256:');
+                &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifactIdentity.startsWith('sha256:')
+                &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
+                &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+                &&item.robloxBuildInternalLibraryModulesPackaged===true;
             const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed===true:item.robloxBuildPreflightPassed===true;
             if(!exactBuild||preflightPassed)continue;
             const buildPassedAt=Date.parse(String(secondaryOwnerFocus?item.ownerFocusRobloxBuildPassedAt:item.robloxBuildPassedAt||''));
@@ -115,6 +121,10 @@ jobs:
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
             return item.robloxBuildOrPackagePassed===true
+              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2
+              &&item.robloxBuildInternalAssetBindingPassed===true
+              &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+              &&item.robloxBuildInternalLibraryModulesPackaged===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxFoundationF0Passed!==true
               &&item.robloxBuildSourceRevision===revision
@@ -353,6 +363,10 @@ jobs:
             const ready=String(item.status||'').toUpperCase()==='ACTIVE'
               &&String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
               &&item.robloxBuildOrPackagePassed===true
+              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2
+              &&item.robloxBuildInternalAssetBindingPassed===true
+              &&item.robloxBuildInternalLibraryAutoLoadPassed===true
+              &&item.robloxBuildInternalLibraryModulesPackaged===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxFoundationF0Passed!==true
               &&item.robloxBuildSourceRevision===revision

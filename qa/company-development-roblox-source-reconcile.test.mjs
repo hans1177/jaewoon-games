@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
-import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,studioAssetRefreshState,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
@@ -69,6 +69,40 @@ function writeCompiledTree(root){
   fs.writeFileSync(path.join(root,'server','Game.server.luau'),compiled.result.serverCode);
   fs.writeFileSync(path.join(root,'client','Game.client.luau'),compiled.result.clientCode);
 }
+
+test('Roblox source reconciliation requires exact game-specific all-family internal asset binding',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-assets-'));
+  try{
+    writeCompiledTree(root);
+    const profile=robloxBuildProfileFromBaseline(baseline);
+    const ready=studioAssetRefreshState({root,assetLibrary:companyAssetLibrary,gameId,profile});
+    assert.equal(ready.required,true);
+    assert.equal(ready.refreshRequired,false);
+    assert.equal(ready.exactSelectionFingerprint,true);
+    assert.deepEqual(ready.missingConfigFamilies,[]);
+    assert.deepEqual(ready.missingSelectedAtoms,[]);
+    assert.equal(ready.clientLibraryFolderBound,true);
+    assert.equal(ready.clientLibraryAutoload,true);
+    assert.equal(ready.clientLibraryTrace,true);
+    assert.deepEqual(ready.missingClientLibraries,[]);
+    assert.ok(ready.selectedAtomCount>=12);
+
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const original=fs.readFileSync(configFile,'utf8');
+    const withoutProp=original.replace(/\n\s*PROP\s*=\s*\{[^\n]*\},?/,'');
+    fs.writeFileSync(configFile,withoutProp);
+    const missingFamily=studioAssetRefreshState({root,assetLibrary:companyAssetLibrary,gameId,profile});
+    assert.equal(missingFamily.refreshRequired,true);
+    assert.ok(missingFamily.blockers.includes('ROBLOX_INTERNAL_ASSET_ALL_FAMILIES_REQUIRED'));
+
+    fs.writeFileSync(configFile,original.replace(/SelectionFingerprint\s*=\s*["'][^"']+["']/,'SelectionFingerprint = "stale-fingerprint"'));
+    const staleFingerprint=studioAssetRefreshState({root,assetLibrary:companyAssetLibrary,gameId,profile});
+    assert.equal(staleFingerprint.refreshRequired,true);
+    assert.ok(staleFingerprint.blockers.includes('ROBLOX_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH'));
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
 
 function staleItem(){
   return {
