@@ -30,7 +30,7 @@ test('runtime QA rescans when the private candidate producer workflow changes',(
 });
 
 test('Studio asset binding promotion waits for exact accepted Roblox runtime',()=>{
-  assert.match(workflow,/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true/);
+  assert.match(workflow,/const studioAssetBindingRequired=\(item\.robloxStudioAssetBindingApplied===true\|\|item\.robloxStudioAssetBinding\?\.required===true\)/);
   assert.match(workflow,/&&runtimeAcceptanceForRelease/);
   assert.match(workflow,/result\.f5InputCameraUiPassed===true/);
   assert.match(workflow,/result\.f8GameplaySystemsPassed===true/);
