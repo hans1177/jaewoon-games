@@ -1272,6 +1272,132 @@ function stableMaterialAtoms(values=[],key=''){
   for(let i=0;i<rows.length;i++)out.push(rows[(start+i)%rows.length]);
   return freezeList(out);
 }
+function internalAssetHardBlockReason(asset={}){
+  const status=clean(asset?.status).toUpperCase();
+  const license=clean(asset?.license).toUpperCase();
+  if(/SECURITY_BLOCKED|QUARANTINED/.test(status))return'SECURITY_BLOCKED';
+  if(/CORRUPT|BROKEN_SOURCE/.test(status))return'CORRUPT_SOURCE';
+  if(/EXPLICIT_INTERNAL_USE_FORBIDDEN|USE_FORBIDDEN/.test(status))return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
+  if(/NON.?COMMERCIAL|\bNC\b|FORBIDDEN|NO_DERIVATIVES/.test(license))return'LICENSE_FORBIDDEN';
+  if(!license)return'LICENSE_METADATA_MISSING';
+  return'';
+}
+function internalAssetPlatformApplicationMode(asset={},target=''){
+  const resolved=clean(target).toUpperCase();
+  const platform=clean(asset?.platform).toUpperCase();
+  const targets=unique([...(asset?.targetPlatforms||[]),...(asset?.platforms||[])].map(value=>clean(value).toUpperCase()));
+  const variants=Object.keys(asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}).map(value=>clean(value).toUpperCase());
+  if(platform===resolved||targets.includes(resolved)||variants.includes(resolved))return'USE_AS_IS';
+  if(/^SHARED_/.test(platform)||platform==='SHARED'||targets.length===0&&variants.length===0)return'STYLE_ADAPT';
+  if(['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
+  return'NOT_SUPPORTED';
+}
+export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target='',gameId='',baseMaterialLoadout={}}={}){
+  const resolved=clean(target).toLowerCase();
+  const required=['roblox','unity','web'].includes(resolved);
+  const assets=Array.isArray(companyRegistry?.assets)?companyRegistry.assets:[];
+  const familySet=new Set(UNIVERSAL_ASSET_FAMILIES);
+  const familyCandidates=Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[family,[]]));
+  const evaluated=[];
+  let hardBlockedCount=0,classifiableCount=0,compatibleCandidateCount=0;
+  for(const asset of assets){
+    const family=clean(asset?.family).toUpperCase();
+    const hardBlockReason=internalAssetHardBlockReason(asset);
+    const applicationMode=internalAssetPlatformApplicationMode(asset,resolved);
+    const familyClassified=familySet.has(family);
+    if(familyClassified)classifiableCount+=1;
+    if(hardBlockReason)hardBlockedCount+=1;
+    const compatible=familyClassified&&!hardBlockReason&&applicationMode!=='NOT_SUPPORTED';
+    if(compatible){
+      compatibleCandidateCount+=1;
+      const row=freeze({
+        assetId:clean(asset?.id),
+        family,
+        subfamily:clean(asset?.subfamily)||null,
+        role:clean(asset?.role)||null,
+        platform:clean(asset?.platform)||null,
+        applicationMode,
+        status:clean(asset?.status)||null,
+        license:clean(asset?.license)||null,
+        path:clean(asset?.path)||null,
+        sourceFiles:freezeList(asset?.sourceFiles||[]),
+        companyCommonBase:asset?.companyCommonBase===true,
+        verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
+        roleCompatibility:'EVALUATE_AGAINST_EXISTING_GAME_SYSTEM',
+        gameplayAuthority:false
+      });
+      familyCandidates[family].push(row);
+    }
+    evaluated.push(freeze({
+      assetId:clean(asset?.id)||null,
+      family:familyClassified?family:null,
+      familyClassified,
+      hardBlockReason:hardBlockReason||null,
+      applicationMode,
+      eligibleForRoleEvaluation:compatible
+    }));
+  }
+  const baseMaterialFamilies=Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[
+    family,freezeList(baseMaterialLoadout?.families?.[family]||[])
+  ]));
+  const baseMaterialAtomCount=Object.values(baseMaterialFamilies).reduce((sum,rows)=>sum+rows.length,0);
+  const candidateCountsByFamily=Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[family,familyCandidates[family].length]));
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify({
+    version:1,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
+    baseMaterialFamilies:Object.fromEntries(Object.entries(baseMaterialFamilies).map(([family,rows])=>[family,[...rows].sort()])),
+    candidates:Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[
+      family,familyCandidates[family].map(row=>[row.assetId,row.applicationMode,row.path,[...row.sourceFiles]]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
+    ]))
+  })).digest('hex');
+  return freeze({
+    version:1,
+    required,
+    authority:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract',
+    gameId:clean(gameId)||null,
+    target:resolved||null,
+    platformOrder:freezeList(['ROBLOX','UNITY','WEB']),
+    libraryVersion:Number(companyRegistry?.version||0),
+    registryAssetCount:assets.length,
+    evaluatedAssetCount:evaluated.length,
+    familyClassifiedAssetCount:classifiableCount,
+    unclassifiedAssetCount:Math.max(0,assets.length-classifiableCount),
+    hardBlockedAssetCount:hardBlockedCount,
+    compatibleCandidateCount,
+    candidateCountsByFamily:freeze(candidateCountsByFamily),
+    allRegistryAssetsScanned:evaluated.length===assets.length,
+    allTwelveFamiliesEvaluated:UNIVERSAL_ASSET_FAMILIES.every(family=>Object.hasOwn(familyCandidates,family)),
+    noArtificialAssetCountCap:true,
+    noArtificialFamilyCountCap:true,
+    auditScoreIsUsageGate:false,
+    lowScoreCompatibleAssetUseAllowed:true,
+    baseMaterialAtomCount,
+    baseMaterialFamilies:freeze(baseMaterialFamilies),
+    baseMaterialAllCompatibleAtomsSelected:UNIVERSAL_ASSET_FAMILIES.every(family=>
+      (baseMaterialFamilies[family]||[]).length===(companyRegistry?.baseMaterialLibrary?.families?.[family]||[]).length
+    ),
+    familyCandidates:freeze(Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[family,freezeList(familyCandidates[family])]))),
+    evaluatedAssets:freezeList(evaluated),
+    fingerprint,
+    dynamicSynchronization:freeze({
+      everyBuildUpReevaluatesCurrentLibrary:true,
+      exactLibraryVersionAndSelectionFingerprintRequired:true,
+      sourceUsageFingerprintRequired:true,
+      detailContextRotationIsNotEligibilityRotation:true,
+      allCompatibleCandidatesRemainEligibleInSameBuildUp:true,
+      staleBindingInvalidatesCandidate:true
+    }),
+    application:freeze({
+      existingSystemRequiresAppliedBinding:true,
+      absentSystemAllowsEvidenceBackedNotApplicable:true,
+      markerConfigManifestOnlyCannotPass:true,
+      primitivePlainFallbackCannotPass:true,
+      directCrossPlatformBinaryReuseForbidden:true,
+      platformNativeAdaptationRequired:true,
+      reuseAndCompositionBeforeNewAuthoring:true
+    })
+  });
+}
+
 function baseMaterialRecipeForRequest(request='',templates=[]){
   const text=clean(request);
   const id=/BOSS|보스/i.test(text)?'BOSS_VARIANT'
@@ -2450,6 +2576,9 @@ export function buildVibeAssetProductionPlan({
     companyRegistry,studioUniversePlan,decisions,gameId:clean(task.gameId),target:resolvedTarget,request,
     robloxProfile:robloxAssetSelectionProfile
   });
+  const allGameDynamicLibraryBinding=buildAllGameDynamicLibraryBindingPlan({
+    companyRegistry,target:resolvedTarget,gameId:task.gameId,baseMaterialLoadout
+  });
   const motionStyle=deriveMotionStyleVariant({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
     styles:requestedConcept.styles,modifiers:task.motionStyleModifiers||{}
@@ -2656,6 +2785,7 @@ export function buildVibeAssetProductionPlan({
     modelRouting,
     nativeAuthoringExecution,
     baseMaterialLoadout,
+    allGameDynamicLibraryBinding,
     assetCustomization,
     qualityDNA,
     studioQuality120:freeze(studioUniversePlan?.quality120||{}),
