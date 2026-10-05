@@ -4714,6 +4714,22 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       if(required.some(pattern=>!pattern.test(visualChangeText))){
         throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
       }
+      const partBindings=[...visualChangeText.matchAll(/\blocal\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\s*\(\s*["']Part["']\s*\)/g)];
+      for(const match of partBindings){
+        const variable=match[1];
+        const escaped=variable.replace(/[.*+?^\${}()|[\]\\]/g,'\\      if(required.some(pattern=>!pattern.test(visualChangeText))){
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+      }
+    }');
+        const utilityName=new RegExp('(?:^|_)(?:hitbox|collider|trigger|root|spawn|boundary|anchor|probe|marker|detector|zone)(?:_|$)','i').test(variable);
+        const invisibleUtility=new RegExp('\\b'+escaped+'\\.Transparency\\s*=\\s*1\\b[\\s\\S]{0,500}\\b'+escaped+'\\.CanCollide\\s*=\\s*false\\b','i').test(visualChangeText)
+          ||new RegExp('\\b'+escaped+'\\.CanCollide\\s*=\\s*false\\b[\\s\\S]{0,500}\\b'+escaped+'\\.Transparency\\s*=\\s*1\\b','i').test(visualChangeText);
+        if(utilityName||invisibleUtility)continue;
+        const materialized=new RegExp('\\b'+escaped+'\\.(?:Material|BrickColor)\\s*=','i').test(visualChangeText)
+          ||new RegExp('(?:SpecialMesh|SurfaceAppearance)[\\s\\S]{0,800}\\.Parent\\s*=\\s*'+escaped+'\\b','i').test(visualChangeText)
+          ||new RegExp('\\b'+escaped+'[\\s\\S]{0,800}(?:SpecialMesh|SurfaceAppearance)','i').test(visualChangeText);
+        if(!materialized)throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:PLAIN_PRIMITIVE_FORBIDDEN:'+variable);
+      }
     }
     if(bootstrap&&target==='unity'){
       for(const relative of responsibleFiles)if(!touched.has(relative))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:'+relative);
