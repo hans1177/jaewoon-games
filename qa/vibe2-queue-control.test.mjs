@@ -51,13 +51,13 @@ test('enqueue and reservation retain the exact single-object motion source bindi
   assert.deepEqual(reserved.task.motionRepairWorkUnit,queue.tasks[0].motionRepairWorkUnit);
 });
 
-test('internal asset focus reserves 64 independent objects without consuming game presentation tasks',()=>{
+test('internal asset focus reserves 63 independent objects without consuming game presentation tasks',()=>{
   const tasks=Array.from({length:100},(_,i)=>({id:'motion-'+i,gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',goal:'motion',assetProductionLane:true,ownerDirective:true,priority:'critical',status:'queued',sourceRoot:'assets/roblox/world-ghosts/motions',responsibleFiles:['assets/roblox/world-ghosts/motions/ghost-'+i+'.luau'],motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'ghost-'+i,clipId:'walk'}}));
   tasks.push({id:'game-presentation',gameId:'other',target:'roblox',goal:'game',assetProductionLane:true,status:'queued',priority:'critical',ownerDirective:true,responsibleFiles:['roblox-games/other/client/Game.client.luau']});
   const policy={assetProductionParallelContract:{parallelism:{internalAssetFocus:{enabled:true}}}};
   const batch=reserveVibeTaskBatch({tasks,maxConcurrentTasks:256},{lane:'asset-development',maxConcurrentTasks:64,policy});
-  assert.equal(batch.tasks.length,64);
-  assert.equal(new Set(batch.tasks.flatMap(task=>task.responsibleFiles)).size,64);
+  assert.equal(batch.tasks.length,63);
+  assert.equal(new Set(batch.tasks.flatMap(task=>task.responsibleFiles)).size,63);
   assert.ok(batch.tasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'));
   assert.equal(batch.queue.tasks.find(task=>task.id==='game-presentation').status,'queued');
   const next=reserveVibeTaskBatch(batch.queue,{lane:'asset-development',maxConcurrentTasks:64,policy});
@@ -2379,4 +2379,21 @@ test('reservation policy follows the main executable checkout rather than stale 
     assert.equal(reserveNextVibeTask(queue,{maxConcurrentTasks:1}).task.id,'fresh');
     assert.deepEqual(reserveVibeTaskBatch(queue,{maxConcurrentTasks:1}).tasks.map(t=>t.id),['fresh']);
   }finally{process.chdir(previous);fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 자산 품질 우선: 오래된 64 입력·대기열·출시 수요와 파일 충돌을 함께 검증한다.
+test('quality-first asset lane fixes 63 slots and prioritizes current Roblox consumers over bulk library work',()=>{
+  const policy={assetProductionParallelContract:{parallelism:{assetDevelopmentLaneMax:63,internalAssetFocus:{enabled:true,exclusive:false},qualityFirstDevelopment:{qualityBeforeVolume:true}}}};
+  const tasks=Array.from({length:70},(_,i)=>({id:'bulk-'+i,gameId:'horror-escape-room',target:'roblox',type:'implementation',goal:'library',assetProductionLane:true,ownerDirective:true,priority:'critical',status:'queued',sourceRoot:'assets/roblox/world-ghosts/motions',responsibleFiles:['assets/roblox/world-ghosts/motions/'+i+'.luau'],motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY'}}));
+  for(let i=0;i<65;i++)tasks.push({id:'live-'+i,gameId:'live',target:'roblox',goal:'repair current asset',assetProductionLane:true,status:'queued',priority:'normal',releaseState:'release-confirmed',sourceRoot:'roblox-games/live',responsibleFiles:['roblox-games/live/object-'+i+'.luau']});
+  const batch=reserveVibeTaskBatch({tasks,maxConcurrentTasks:256},{lane:'asset-development',maxConcurrentTasks:256,policy});
+  assert.equal(batch.tasks.length,63);assert.equal(batch.workerCount,63);
+  assert.ok(batch.tasks.every(task=>task.id.startsWith('live-')));
+  assert.equal(reserveVibeTaskBatch(batch.queue,{lane:'asset-development',maxConcurrentTasks:999,policy}).tasks.length,0);
+  const drained={...batch.queue,tasks:batch.queue.tasks.map((task,i)=>task.id===batch.tasks[0].id?{...task,status:'verified'}:task)};
+  const refill=reserveVibeTaskBatch(drained,{lane:'asset-development',maxConcurrentTasks:1,policy});
+  assert.equal(refill.tasks.length,1);assert.ok(refill.tasks[0].id.startsWith('live-'));
+  const overfull={...batch.queue,tasks:[...batch.queue.tasks,{...tasks[0],id:'legacy-running',status:'running'}]};
+  const held=reserveVibeTaskBatch(overfull,{lane:'asset-development',policy});
+  assert.equal(held.tasks.length,0);assert.equal(held.queue.tasks.filter(t=>t.status==='running').length,64);
 });

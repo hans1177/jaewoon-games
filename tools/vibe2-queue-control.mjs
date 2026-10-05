@@ -439,11 +439,14 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
 export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
-  const internalAssetOnly=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus?.enabled===true;
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
+  const focus=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
+  const internalAssetOnly=focus?.enabled===true&&focus?.exclusive!==false;
+  const assetDemandFirst=policy?.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment?.qualityBeforeVolume===true;
+  if(clean(lane).toLowerCase()==='asset-development')maxConcurrentTasks=Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation, lane, internalAssetOnly });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation, lane, internalAssetOnly, assetDemandFirst });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
@@ -451,8 +454,11 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue=synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
   const laneMode=clean(lane||'game-primary').toLowerCase();
-  const internalAssetOnly=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus?.enabled===true;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode, internalAssetOnly });
+  const focus=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
+  const internalAssetOnly=focus?.enabled===true&&focus?.exclusive!==false;
+  const assetDemandFirst=policy?.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment?.qualityBeforeVolume===true;
+  if(clean(lane).toLowerCase()==='asset-development')maxConcurrentTasks=Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode, internalAssetOnly, assetDemandFirst });
   let tasks = started.tasks || [];
   const reservedTaskOrder = tasks.map((task) => task.id);
   const workerBudget = Math.max(

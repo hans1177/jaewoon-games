@@ -3344,12 +3344,12 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
 
 export function findSafeTasks(project,repoRoot,queue){
   const focus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
-  if(focus?.enabled===true&&project.engine==='roblox'&&project.gameId===focus.gameId){
+  if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
     const motionRoot='assets/roblox/world-ghosts/motions';
     const registry=readJson(path.join(repoRoot,'company-asset-library.json'),{});
     const tasks=[];
     for(const asset of registry.assets||[]){
-      if(!/^roblox-world-ghost-[a-z0-9-]+$/.test(asset.id)||(asset.intendedConsumerGameIds||[]).includes(project.gameId)!==true)continue;
+      if(!/^roblox-world-ghost-[a-z0-9-]+$/.test(asset.id)||(focus.requireCurrentGameUse===true?asset.consumerGameIds||[]:asset.intendedConsumerGameIds||[]).includes(project.gameId)!==true)continue;
       const object=asset.id.slice('roblox-world-ghost-'.length),sourcePath='init.luau',sourceRoot=motionRoot+'/'+object;
       const taskId='internal-motion-'+object+'-walk-v1';
       if((queue.tasks||[]).some(row=>row.id===taskId))continue;
@@ -3373,7 +3373,7 @@ export function findSafeTasks(project,repoRoot,queue){
           sourceHash:crypto.createHash('sha256').update(source).digest('hex'),sourceWindow,
           objectBindingEvidence,clipBindingEvidence,objectCount:1,motionCount:1,estimatedModificationMinutes:60,
           lockedSource:[objectBindingEvidence,clipBindingEvidence,'local state="walk"'],preservedAxes:{}},
-        evidence:['asset-production-parallel:v1','single-object-motion-repair:v1','internal-asset-only:v1','owner-motion-depth-request:2026-10-05','native-before-after-qa:required']});
+        evidence:[...((asset.consumerGameIds||[]).includes(project.gameId)?['asset-current-consumer:'+project.gameId]:[]),'asset-production-parallel:v1','single-object-motion-repair:v1','internal-asset-only:v1','owner-motion-depth-request:2026-10-05','native-before-after-qa:required']});
     }
     if(tasks.length)return tasks;
   }
@@ -3681,7 +3681,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
   const internalAssetFocus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
-  const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,64-internalMotionActive):0;
+  const assetLaneMax=Number(centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
+  const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,assetLaneMax-internalMotionActive):0;
   const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity);
   const planningBacklog={
     target:backlogTarget,
@@ -3702,7 +3703,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   };
   if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
-  const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort((a,b)=>Number(b.gameId===internalAssetFocus?.gameId)-Number(a.gameId===internalAssetFocus?.gameId)||projectSort(a,b));
+  const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
   if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;

@@ -1,5 +1,5 @@
 {
-  "version": 536,
+  "version": 537,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -8621,6 +8621,12 @@
       "policy": "homepageGameMediaContract",
       "newPipeline": false,
       "robloxGameMutation": false
+    },
+    "assetQualityFirst63_20261006": {
+      "ownerRequest": "자산 동시 개발 63개 고정, 볼륨보다 퀄리티, 현재 로블록스 출시 게임 수요 우선",
+      "scope": "EXISTING_ASSET_DEVELOPMENT_PLANNING_RESERVATION_AND_WORKER_CONTEXT",
+      "lockedSequenceChanged": false,
+      "verification": "PENDING_IMPLEMENTATION_QA_AND_LIVE_RESERVATION"
     }
   },
   "vibeExecutionLaneContract": {
@@ -15185,7 +15191,7 @@
       "assetDevelopmentSpeculativeVariantsSuppressed": true,
       "assetDevelopmentDistinctTaskParallelismPreserved": true,
       "assetDevelopmentSpeculativeSuppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK_WHILE_PRESERVING_PARALLEL_DISTINCT_ASSET_TASKS",
-      "assetDevelopmentLaneMax": 64,
+      "assetDevelopmentLaneMax": 63,
       "assetDevelopmentLaneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch": true,
       "assetDevelopmentFanInOptimisticRetryHardAttemptCap": false,
       "assetDevelopmentFanInOptimisticRetryMode": "RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE",
@@ -15202,7 +15208,7 @@
         "enabled": true,
         "gameId": "horror-escape-room",
         "sourceRoot": "assets/roblox/world-ghosts/motions",
-        "concurrentSlots": 64,
+        "concurrentSlots": 63,
         "targetObjectCount": 100,
         "firstMotion": "walk",
         "oneObjectPerTask": true,
@@ -15213,7 +15219,37 @@
         "repeatOnVerifiedReviewFeedback": true,
         "unconditionalSelfRequeue": false,
         "nativeBeforeAfterQaRequired": true,
-        "preparationIsNotMotionQualityPass": true
+        "preparationIsNotMotionQualityPass": true,
+        "exclusive": false,
+        "requireCurrentGameUse": true,
+        "allRobloxConsumers": true
+      },
+      "qualityFirstDevelopment": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-06",
+        "concurrentSlots": 63,
+        "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
+        "normalOperationsOwner": "VIBE2_VIBE3",
+        "priority": [
+          "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
+          "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
+          "OTHER_ACTIVE_GAME_CURRENT_ASSET",
+          "REUSABLE_LIBRARY_QUALITY",
+          "DEMAND_BOUND_MISSING_ASSET"
+        ],
+        "qualityBeforeVolume": true,
+        "recommendedVolumeBlocksQuality": false,
+        "quantityQuotaRequiresNewAsset": false,
+        "currentConsumerEvidenceRequired": true,
+        "intendedConsumerAloneIsNotActualUse": true,
+        "sameFailedObjectAndMotionRepairRequired": true,
+        "sourceScopeAndGameplaySemanticsPreserved": true,
+        "sameFileParallelForbidden": true,
+        "runningTasksDrainWithoutCancellation": true,
+        "safeWorkShortageMayLeaveSlotsIdle": true,
+        "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
+        "sourceOnlyPassIsNotQualityPass": true,
+        "newWorkflowQueueOrScheduler": false
       }
     },
     "failureHandling": {

@@ -38,6 +38,12 @@ test('internal motion planning binds 100 registered parents to one current walk 
     assert.equal(findSafeTasks(project,root,{tasks:tasks.slice(0,64)}).length,36);
     fs.writeFileSync(path.join(root,sourceRoot,'unregistered.luau'),'function Motion.walk()end');
     assert.equal(findSafeTasks(project,root,{tasks:[]}).length,100);
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({assetProductionParallelContract:{parallelism:{internalAssetFocus:{enabled:true,gameId:'horror-escape-room',requireCurrentGameUse:true}}}}));
+    assets[0].consumerGameIds=['horror-escape-room'];
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets}));
+    const current=findSafeTasks(project,root,{tasks:[]});
+    assert.equal(current.length,1);
+    assert.ok(current[0].evidence.includes('asset-current-consumer:horror-escape-room'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

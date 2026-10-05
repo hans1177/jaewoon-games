@@ -1,5 +1,5 @@
 {
-  "version": 319,
+  "version": 320,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3132,7 +3132,7 @@
       "speculativeVariantsSuppressed": true,
       "distinctTaskParallelismPreserved": true,
       "suppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK",
-      "laneMax": 64,
+      "laneMax": 63,
       "laneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch": true,
       "fanInOptimisticRetryHardAttemptCap": false,
       "fanInOptimisticRetryMode": "RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE",
@@ -6734,7 +6734,7 @@
     "gameStudyMayRemainIdleOnly": true,
     "externalRunnerQueueOwnsCapacity": true,
     "gamePrimaryBoundary": 256,
-    "assetDevelopmentBoundary": 64,
+    "assetDevelopmentBoundary": 63,
     "responsibleFileConflictProtectionPreserved": true,
     "atomicSharedStateIntegrityPreserved": true,
     "exactDuplicateHeavyExecutionProtectionPreserved": true,
@@ -7017,5 +7017,32 @@
     "existingBuildUpOnly": true,
     "newPipeline": false,
     "ownerSourceReentry": ".github/workflows/company-roblox-source-drift-sync.yml"
+  },
+  "assetQualityFirstDevelopment": {
+    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
+    "version": 1,
+    "concurrentSlots": 63,
+    "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
+    "normalOperationsOwner": "VIBE2_VIBE3",
+    "priority": [
+      "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
+      "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
+      "OTHER_ACTIVE_GAME_CURRENT_ASSET",
+      "REUSABLE_LIBRARY_QUALITY",
+      "DEMAND_BOUND_MISSING_ASSET"
+    ],
+    "qualityBeforeVolume": true,
+    "recommendedVolumeBlocksQuality": false,
+    "quantityQuotaRequiresNewAsset": false,
+    "currentConsumerEvidenceRequired": true,
+    "intendedConsumerAloneIsNotActualUse": true,
+    "sameFailedObjectAndMotionRepairRequired": true,
+    "sourceScopeAndGameplaySemanticsPreserved": true,
+    "sameFileParallelForbidden": true,
+    "runningTasksDrainWithoutCancellation": true,
+    "safeWorkShortageMayLeaveSlotsIdle": true,
+    "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
+    "sourceOnlyPassIsNotQualityPass": true,
+    "newWorkflowQueueOrScheduler": false
   }
 }
