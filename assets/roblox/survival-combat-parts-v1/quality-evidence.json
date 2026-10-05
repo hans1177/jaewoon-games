@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-survival-combat-parts-v1",
   "gameId": "survival",
   "staticAuthoringChecklist": {
@@ -102,91 +102,82 @@
   },
   "qualityImprovementPlan": {
     "version": 1,
-    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "scope": "PACK_LEVEL_SOURCE_QUALITY_REPAIR",
     "currentScore": 800.5,
     "currentGrade": "DEVELOPMENT_READY",
+    "currentAuditPass": false,
     "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
     "stages": [
       {
         "id": "COMMERCIAL_READY_880",
         "targetScore": 880,
-        "projectedSourceAuditScore": 890.2,
         "requiredAxisFloor": {
           "IDENTITY_SILHOUETTE": 90,
           "FORM_STRUCTURE": 88,
-          "MATERIAL_SURFACE": 88,
-          "STYLE_COHERENCE": 90,
-          "DETAIL_FINISH": 90,
+          "MATERIAL_SURFACE": 86,
+          "COLOR_LIGHTING": 84,
+          "STYLE_COHERENCE": 88,
+          "DETAIL_FINISH": 86,
           "READABILITY_SCALE": 90,
           "MOTION_RIG": 86,
-          "FEEDBACK_STATES": 86,
-          "UI_UX_SYSTEM": 86,
-          "VARIATION_BREADTH": 90,
-          "ACCESSIBILITY_INPUT": 86,
+          "FEEDBACK_STATES": 82,
+          "UI_UX_SYSTEM": 78,
+          "MODULAR_REUSE": 94,
+          "VARIATION_BREADTH": 84,
+          "PERFORMANCE_LOD": 90,
+          "ACCESSIBILITY_INPUT": 78,
+          "PROVENANCE_MAINTAINABILITY": 98,
           "INTEGRATION_READINESS": 90
         },
         "requiredEvidence": [
-          "RIG_BINDING_PROFILE_FOR_CHARACTER_AND_CREATURE_PARTS",
-          "WEAPON_GRIP_SOCKET_AND_CONTACT_AUTHORING",
-          "LOCOMOTION_ATTACK_HIT_DEATH_PRESENTATION_FOR_CREATURE_PARTS",
-          "MATERIAL_REGION_EDGE_WEAR_AND_DAMAGE_DETAIL",
-          "NON_COLOR_ONLY_VARIATION",
-          "WORLD_EQUIP_DROP_UI_LINEAGE_WHEN_ITEM_LIKE",
-          "MOBILE_LOD_OR_DETAIL_TIER_EVIDENCE"
+          "RIG_FIT_AND_DEFORMATION_SOURCE_EVIDENCE",
+          "WEAPON_GRIP_SOCKET_AND_CONTACT_PLAN",
+          "CREATURE_LOCOMOTION_ATTACK_HIT_DEATH_BINDING_PLAN",
+          "ROLE_SPECIFIC_NON_COLOR_VARIANTS",
+          "GAME_CAMERA_AND_VIEWPORT_READABILITY_REVIEW"
         ]
       },
       {
         "id": "HERO_920",
         "targetScore": 920,
-        "projectedSourceAuditScore": 934,
-        "requiredAxisFloor": {
-          "IDENTITY_SILHOUETTE": 94,
-          "FORM_STRUCTURE": 92,
-          "MATERIAL_SURFACE": 92,
-          "COLOR_LIGHTING": 90,
-          "STYLE_COHERENCE": 94,
-          "DETAIL_FINISH": 94,
-          "READABILITY_SCALE": 94,
-          "MOTION_RIG": 94,
-          "FEEDBACK_STATES": 92,
-          "UI_UX_SYSTEM": 92,
-          "VARIATION_BREADTH": 94,
-          "PERFORMANCE_LOD": 94,
-          "ACCESSIBILITY_INPUT": 92,
-          "INTEGRATION_READINESS": 94
-        },
         "requiredEvidence": [
-          "DISTINCT_WEAPON_CHARACTER_CREATURE_PRESENTATION_IDENTITIES",
-          "RIG_AND_CONTACT_READY_NATIVE_VARIANTS",
-          "HERO_LEVEL_MATERIAL_AND_DAMAGE_DETAIL",
-          "MOBILE_GAME_CAMERA_READABILITY",
-          "VARIANT_BREADTH_WITHOUT_DUPLICATE_OR_COLOR_ONLY_SPAM"
+          "DISTINCT_WEAPON_GEAR_CREATURE_SILHOUETTE_LANGUAGE",
+          "MATERIAL_REGION_AND_CAUSE_BASED_WEAR_DETAIL",
+          "CONTACT_READABLE_MOTION_AND_REACTION_STATES",
+          "WORLD_EQUIP_DROP_VIEWPORT_LINEAGE",
+          "MOBILE_LOD_AND_CROWD_READABILITY"
         ]
       }
     ],
     "repairOrder": [
-      "MOTION_RIG_AND_CONTACT",
+      "MOTION_RIG",
       "IDENTITY_SILHOUETTE",
-      "DETAIL_AND_MATERIAL",
-      "FEEDBACK_AND_ITEM_PRESENTATION",
-      "VARIATION_AND_LOD"
+      "FEEDBACK_STATES",
+      "VARIATION_BREADTH",
+      "INTEGRATION_READINESS",
+      "DETAIL_FINISH"
     ],
     "newVolumeAuthoring": {
       "allowed": true,
       "globallyBlocked": false,
       "mayRunInParallelWithQualityRepair": true,
       "allowWhen": [
-        "ROLE_GAP_REMAINS",
-        "DISTINCT_SILHOUETTE_OR_BODY_PART_GAP_REMAINS",
-        "EXISTING_ADAPTATION_WOULD_LOSE_QUALITY_OR_IDENTITY"
+        "DISTINCT_WEAPON_GEAR_OR_CREATURE_ROLE_GAP_REMAINS",
+        "BODY_PLAN_OR_EQUIPMENT_SILHOUETTE_GAP_REMAINS",
+        "REUSE_DERIVATION_OR_RECOMBINATION_CANNOT_MEET_ROLE_WITHOUT_QUALITY_LOSS"
+      ],
+      "resolutionOrder": [
+        "REUSE_EXISTING",
+        "DERIVE_VARIANT",
+        "RECOMBINE_EXISTING",
+        "NEW_AUTHORING"
       ],
       "exactDuplicateSpamForbidden": true,
-      "colorOnlyVolumeDoesNotCount": true
+      "recolorOnlyVolumeDoesNotCount": true
     },
     "safeguards": {
-      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
       "productionVerifiedMayNotBeInferredFromPlan": true,
-      "runtimeVerificationStillRequiredForProductionPromotion": true,
       "gameplayDamageHitboxMovementSaveNetworkAuthorityUnchanged": true
     }
   }
