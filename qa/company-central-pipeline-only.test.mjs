@@ -468,6 +468,17 @@ test('director drains only queued stale exact-game coordinator ingress when curr
   assert.doesNotMatch(director,/CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN[\s\S]{0,240}in_progress/);
 });
 
+test('director coalesces only exact same-head central game ingress and preserves running representative',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/const exactSameHeadGroups=new Map/);
+  assert.match(director,/const key=\[gameId,head,title\]\.join\('\|'\)/);
+  assert.match(director,/const running=group[\s\S]*?\.filter\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)/);
+  assert.match(director,/const winner=running\[0\]\|\|\[\.\.\.group\]\.sort\(\(a,b\)=>Number\(b\.id\)-Number\(a\.id\)\)\[0\]/);
+  assert.match(director,/CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD/);
+  assert.match(director,/queued\.has\(String\(stale\.status\|\|''\)\.toLowerCase\(\)\)\)add\(stale,'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD'\)/);
+  assert.doesNotMatch(director,/CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD[\s\S]{0,220}cancel.*in_progress/i);
+});
+
 test('director drain QA changes wake the existing runner drain',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const pushBlock=director.slice(director.indexOf('  push:'),director.indexOf('\npermissions:',director.indexOf('  push:')));
