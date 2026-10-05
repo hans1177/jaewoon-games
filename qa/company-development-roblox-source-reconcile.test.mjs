@@ -81,6 +81,10 @@ test('Roblox source reconciliation requires exact game-specific all-family inter
     assert.equal(ready.exactSelectionFingerprint,true);
     assert.deepEqual(ready.missingConfigFamilies,[]);
     assert.deepEqual(ready.missingSelectedAtoms,[]);
+    assert.equal(ready.clientLibraryFolderBound,true);
+    assert.equal(ready.clientLibraryAutoload,true);
+    assert.equal(ready.clientLibraryTrace,true);
+    assert.deepEqual(ready.missingClientLibraries,[]);
     assert.ok(ready.selectedAtomCount>=12);
 
     const configFile=path.join(root,'shared','GameConfig.luau');
