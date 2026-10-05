@@ -193,6 +193,63 @@ test('cinematic teacher supplies scoped direction ideas and lifecycle code only 
   assert.deepEqual(unity.applicationExamples,[]);
 });
 
+test('actor AI teacher reuses actual decision contracts and scopes four intent examples to assigned actors',async()=>{
+  const recipe=createAssetProductionTeachingRecipe({families:['monster','companion','npc'],actorAI:true});
+  assert.deepEqual(recipe.unmappedFamilies,[]);
+  assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CREATURE','CHARACTER']);
+  assert.equal(recipe.actorAI.lessons.length,8);
+  assert.equal(recipe.applicationExamples.filter(row=>row.actorAIOnly).length,4);
+  for(const row of recipe.actorAI.sources){
+    const api=await import('../'+row.source);
+    for(const name of row.exports)assert.equal(typeof api[name],'function',name);
+  }
+  const {JaewoonCommonAI}=await import('../assets/common-ai.js');
+  const {validateVibeAIAction}=await import('../assets/vibe-ai-role-director.js');
+  const ai=new JaewoonCommonAI();
+  for(const method of recipe.actorAI.sources[0].methods)assert.equal(typeof ai[method],'function');
+  for(const [context,state] of [[{entityKind:'monster',patrolReady:true},'PATROL'],[{entityKind:'npc',canInteract:true},'INTERACT'],[{entityKind:'companion',ownerDistance:20},'FOLLOW']]){
+    const intent=ai.decide(context);assert.equal(intent.state,state);assert.equal(intent.gameplayAuthority,false);
+    assert.equal(validateVibeAIAction(intent).safe,true);
+  }
+  assert.equal(validateVibeAIAction({state:'ATTACK',damage:999}).safe,false);
+  for(const input of [{families:['MOTION']},{families:['UI']},{families:['UNKNOWN']},{families:['CREATURE'],platform:'UNITY'},{families:['CREATURE'],platform:'WEB'}]){
+    const excluded=createAssetProductionTeachingRecipe({...input,actorAI:true});
+    assert.equal(excluded.actorAI,null);assert.ok(!excluded.applicationExamples.some(row=>row.actorAIOnly));
+  }
+  assert.equal(createAssetProductionTeachingRecipe({families:['CREATURE'],visualReference:true}).actorAI,null);
+  assert.equal(recipe.productionVerified,false);assert.equal(recipe.gameplayAuthority,false);
+});
+
+test('material and creature teacher scope native craft, body plans and original applications without certifying assets',()=>{
+  const recipe=createAssetProductionTeachingRecipe({families:['animal'],platform:'ROBLOX',surfaceCraft:true,creatureCraft:true,styleBible:{styleFamily:'LOW_POLY'}});
+  assert.equal(recipe.surfaceCraft.lessons.length,12);
+  assert.equal(recipe.creatureCraft.lessons.length,9);
+  assert.equal(recipe.style.profileKey,'LOW_POLY');
+  for(const craft of [recipe.surfaceCraft,recipe.creatureCraft]){
+    const source=fs.readFileSync(new URL('../'+craft.source,import.meta.url),'utf8');
+    for(const api of craft.apis)assert.ok(source.includes('.'+api+'('),api);
+    assert.equal(new Set(craft.lessons.map(row=>row.id)).size,craft.lessons.length);
+    for(const row of craft.lessons)assert.ok(row.lesson.length>100&&row.check.length>40,row.id);
+  }
+  assert.match(recipe.surfaceCraft.nativeContract,/preservePhysics=true/);
+  assert.match(recipe.surfaceCraft.nativeContract,/not PBR texture maps/);
+  assert.match(recipe.creatureCraft.nativeContract,/not a working NPC rig/);
+  assert.match(recipe.creatureCraft.designContract,/fallback bear/);
+  assert.ok(recipe.applicationExamples.some(row=>row.id==='TAPERED_APPENDAGE_WAVE'));
+  assert.ok(recipe.applicationExamples.some(row=>row.id==='DIRECTIONAL_SURFACE_MASK'));
+  assert.equal(recipe.runtimeVerified,false);assert.equal(recipe.productionVerified,false);assert.equal(recipe.gameplayAuthority,false);
+  const material=createAssetProductionTeachingRecipe({families:['MATERIAL'],surfaceCraft:true,creatureCraft:true});
+  assert.ok(material.surfaceCraft);assert.equal(material.creatureCraft,null);
+  assert.deepEqual(material.applicationExamples.filter(row=>row.creatureOnly),[]);
+  for(const input of [{families:['MOTION']},{families:['UI']},{families:['UNKNOWN']},{families:['CREATURE'],platform:'UNITY'},{families:['CREATURE'],platform:'WEB'}]){
+    const excluded=createAssetProductionTeachingRecipe({...input,surfaceCraft:true,creatureCraft:true});
+    assert.equal(excluded.surfaceCraft,null);assert.equal(excluded.creatureCraft,null);
+    assert.ok(!excluded.applicationExamples.some(row=>row.surfaceOnly||row.creatureOnly));
+  }
+  const ordinary=createAssetProductionTeachingRecipe({families:['CREATURE']});
+  assert.equal(ordinary.surfaceCraft,null);assert.equal(ordinary.creatureCraft,null);
+});
+
 test('photo and world layout teacher separate pixel evidence from construction and reuse canonical layout APIs',async()=>{
   const photo=createAssetProductionTeachingRecipe({families:['CREATURE'],visualReference:true});
   assert.equal(photo.photoReferenceLessons.length,7);

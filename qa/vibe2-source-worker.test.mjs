@@ -52,6 +52,9 @@ test('photo teacher reaches actual image-byte observation and keeps inferred geo
   const prompt=buildPrompt({...order,imageAssetObservation:observation},{files:[]},[]);
   const recipe=JSON.parse(prompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
   assert.equal(recipe.photoReferenceLessons.length,7);
+  assert.equal(recipe.surfaceCraft.lessons.length,12);
+  assert.equal(recipe.creatureCraft.lessons.length,9);
+  assert.equal(recipe.actorAI,null);
   assert.ok(prompt.includes(hash));
   assert.equal(recipe.productionVerified,false);
   await assert.rejects(observeAssetReferenceImages({order,cwd:root,model:''}),/IMAGE_ASSET_VISION_MODEL_REQUIRED/);
@@ -73,6 +76,31 @@ test('asset teacher consumes canonical production decisions and styles in the re
   assert.equal(recipe.runtimeVerified,false);
   assert.ok(!buildPrompt({...order,selectedTask:{}},context,[]).includes(marker));
   assert.ok(!prompt.includes('[MOTION TEACHER PRACTICE BEGIN]'));
+});
+
+test('craft teacher selects explicit production requests and excludes unrelated families and engines',()=>{
+  const extract=order=>JSON.parse(buildPrompt(order,{files:[]},[]).split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  for(const goal of ['동물 몬스터 털 비늘 재질 제작','animal creature surface texture creation']){
+    const recipe=extract({target:'roblox',assetProductionLane:true,goal,assetProduction:{decisions:[{type:'creature'}]}});
+    assert.equal(recipe.surfaceCraft.lessons.length,12);assert.equal(recipe.creatureCraft.lessons.length,9);
+  }
+  const base={target:'roblox',assetProductionLane:true,goal:'monster material',assetProduction:{decisions:[{type:'ui'}]}};
+  assert.equal(extract(base).surfaceCraft,null);assert.equal(extract(base).creatureCraft,null);
+  for(const target of ['web','unity',undefined]){
+    const recipe=extract({...base,target,assetProduction:{decisions:[{type:'creature'}]}});
+    assert.equal(recipe.surfaceCraft,null);assert.equal(recipe.creatureCraft,null);
+  }
+});
+
+test('actor AI teacher reaches monster companion and NPC source prompts only for an assigned AI task',()=>{
+  const extract=order=>JSON.parse(buildPrompt(order,{files:[]},[]).split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  for(const type of ['monster','companion','npc']){
+    const order={target:'roblox',assetProductionLane:true,goal:'몬스터 동료 NPC AI 관련 코드',assetProduction:{decisions:[{type}]}};
+    const recipe=extract(order);
+    assert.equal(recipe.actorAI.lessons.length,8);assert.equal(recipe.applicationExamples.filter(row=>row.actorAIOnly).length,4);
+    assert.equal(extract({...order,goal:'appearance only'}).actorAI,null);
+    assert.equal(extract({...order,target:'web'}).actorAI,null);
+  }
 });
 
 test('asset teacher survives initial compaction and retries at the model request boundary',async(t)=>{
@@ -123,6 +151,34 @@ test('asset teacher survives initial compaction and retries at the model request
     assert.ok(!recipe.applicationExamples.some(row=>row.id==='CUBIC_BEZIER_CAMERA_COMPONENT'));
     assert.ok(Buffer.byteLength(request.prompt)<30000);
   }
+  requests.length=0;
+  const craftWork={...work,goal:'동물 몬스터 털 비늘 재질 제작 '+('detail '.repeat(20000))};
+  const craftPrompt=buildPrompt(craftWork,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau']);
+  await generateCandidateWithRecovery({prompt:craftPrompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
+  assert.equal(requests.length,2);
+  for(const request of requests){
+    const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+    assert.equal(request.prompt.split(marker).length-1,1);
+    const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+    assert.equal(recipe.surfaceCraft.lessons.length,12);assert.equal(recipe.creatureCraft.lessons.length,9);
+    assert.equal(recipe.style.profileKey,'COZY');assert.equal(recipe.productionVerified,false);
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='TAPERED_APPENDAGE_WAVE'&&row.code.includes('math.sin')));
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='DIRECTIONAL_SURFACE_MASK'));
+    assert.ok(Buffer.byteLength(request.prompt)<35000);
+  }
+  requests.length=0;
+  const aiWork={...work,goal:'몬스터 동료 NPC AI 관련 코드 '+('detail '.repeat(20000))};
+  const aiPrompt=buildPrompt(aiWork,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau']);
+  await generateCandidateWithRecovery({prompt:aiPrompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
+  assert.equal(requests.length,2);
+  for(const request of requests){
+    const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+    assert.equal(request.prompt.split(marker).length-1,1);
+    const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+    assert.equal(recipe.actorAI.lessons.length,8);assert.equal(recipe.applicationExamples.filter(row=>row.actorAIOnly).length,4);
+    assert.equal(recipe.productionVerified,false);assert.equal(recipe.gameplayAuthority,false);
+    assert.ok(Buffer.byteLength(request.prompt)<40000);
+  }
 });
 
 test('walk teacher reaches the existing source prompt once without promoting learning or changing task scope',()=>{
@@ -145,9 +201,11 @@ test('walk teacher reaches the existing source prompt once without promoting lea
   assert.deepEqual(assetRecipe.applicationExamples.map(row=>row.id),['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND']);
   assert.deepEqual(assetRecipe.studioMotion.lessons.map(row=>row.role),['COMBAT_LOCOMOTION']);
   assert.equal(assetRecipe.studioMotion.productionVerified,false);
-  const noCinema=buildPrompt({...order,goal:'cinematic cutscene'},context,['init.luau']);
+  const noCinema=buildPrompt({...order,goal:'cinematic cutscene 동물 몬스터 털 재질 NPC AI',selectedTask:{surfaceCraft:true,creatureCraft:true,actorAI:true}},context,['init.luau']);
   const noCinemaRecipe=JSON.parse(noCinema.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
   assert.equal(noCinemaRecipe.cinematicDirection,null);
+  assert.equal(noCinemaRecipe.surfaceCraft,null);assert.equal(noCinemaRecipe.creatureCraft,null);
+  assert.equal(noCinemaRecipe.actorAI,null);assert.ok(!noCinemaRecipe.applicationExamples.some(row=>row.actorAIOnly));
   assert.ok(!noCinemaRecipe.applicationExamples.some(row=>row.cinematicOnly));
   assert.match(prompt,/motionRepairReport/);
   assert.equal(JSON.stringify(order),before);
