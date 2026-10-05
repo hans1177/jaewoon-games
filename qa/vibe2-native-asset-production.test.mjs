@@ -114,17 +114,17 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.deepEqual(a.sourceCandidates[0].sourceFiles,['assets/roblox/common-tools-v1/RobloxCommonTools.luau']);
 });
 
-test('Vibe source loads only selected internal asset API context with hard bounds',()=>{
+test('Vibe source loads every selected Roblox internal asset API context in the same BUILD_UP generation',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceApiContextOnlyForSelectedAssets:true/);
   assert.match(source,/fullLibraryReplicationForbidden:true/);
   assert.match(source,/fullCatalogPromptInjectionForbidden:true/);
-  assert.match(source,/apiContextBatchSize:4/);
-  assert.match(source,/apiContextMaxBytes:18000/);
-  assert.match(source,/apiContextPerFileMaxBytes:4500/);
-  assert.match(source,/apiContextRotationByBuildUpGeneration:true/);
+  assert.match(source,/apiContextBatchSize:robloxAllLibraryAutoUse\?64:4/);
+  assert.match(source,/apiContextMaxBytes:robloxAllLibraryAutoUse\?48000:18000/);
+  assert.match(source,/apiContextPerFileMaxBytes:robloxAllLibraryAutoUse\?3200:4500/);
+  assert.match(source,/allSelectedApiSourcesRequiredInSameGeneration:robloxAllLibraryAutoUse/);
+  assert.match(source,/apiContextRotationByBuildUpGeneration:!robloxAllLibraryAutoUse/);
   assert.match(source,/allSelectedApiSourcesRemainEligibleAcrossCycles:true/);
-  assert.match(source,/const start=\(\(generation-1\)\*batchSize\)%allSelectedPaths\.length/);
   assert.match(source,/internalAssetApiContextEligibleSourceCount:allSelectedPaths\.length/);
   assert.match(source,/internalAssetApiContext:true/);
   assert.match(source,/editable:false/);
@@ -134,9 +134,8 @@ test('Vibe source loads only selected internal asset API context with hard bound
   assert.match(source,/Internal quality score is NOT a usage gate/);
   assert.match(source,/leaving a blank\/default\/primitive presentation/);
   assert.match(source,/NO artificial asset-count, family-count, gameplay-signal, or combination cap/);
-  assert.match(source,/Context\/API batching is only synchronization optimization and MUST NOT become a usage cap/);
-  assert.match(source,/rotates by BUILD_UP generation/i);
-  assert.match(source,/every selected compatible source remains eligible for later cycles/i);
+  assert.match(source,/Roblox mandatory auto-use: load every selected common-script\/factory API source/);
+  assert.match(source,/Blank\/default\/primitive-only presentation is forbidden/);
   assert.match(source,/explicit signal matrix is a FLOOR, not a ceiling/i);
   assert.match(source,/Unknown source events may use the generic presentation fallback/i);
   assert.match(source,/never perform full-library resync/i);
@@ -144,6 +143,7 @@ test('Vibe source loads only selected internal asset API context with hard bound
   assert.match(source,/assets\/roblox\/common-vfx-v1\/RobloxCommonVFX\.luau/);
   assert.match(source,/assets\/roblox\/common-motion-v1\/RobloxCommonMotion\.luau/);
   assert.match(source,/assets\/roblox\/common-environment-v1\/RobloxCommonEnvironment\.luau/);
+  assert.match(source,/AUDIO:\['assets\/roblox\/common-environment-v1\/RobloxCommonEnvironment\.luau','assets\/roblox\/common-world-props-v1\/RobloxCommonWorldProps\.luau','assets\/roblox\/common-skill-v1\/RobloxCommonSkillPresentation\.luau'\]/);
   assert.match(source,/assets\/vibe-motion-director\.js/);
   assert.match(source,/selected-family common API candidates include RobloxCommonUI/);
   assert.match(source,/simple random asset swapping is forbidden/);
@@ -361,7 +361,7 @@ test('motion planning reuses company clips per state and does not invent coverag
       {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],states:['skill']}
     ]}});
     const motion=plan.decisions.find(row=>row.type==='animation');
-    assert.equal(motion.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
+    assert.equal(motion.decisionOrder[1],'REUSE_COMPANY_INTERNAL_ASSET_REGARDLESS_OF_SCORE');
     assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion','external-motion']);
     assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,['external-motion']);
     assert.deepEqual(motion.motionReusePlan.unresolvedStates,['hit','skill','death']);
@@ -825,7 +825,7 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     });
     const background=withCompany.decisions.find(row=>row.type==='background');
     assert.ok(background);
-    assert.equal(background.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
+    assert.equal(background.decisionOrder[1],'REUSE_COMPANY_INTERNAL_ASSET_REGARDLESS_OF_SCORE');
     assert.equal(background.reuseCandidates[0].id,'verified-company-nature');
 
     const other=buildVibeAssetProductionPlan({
@@ -876,7 +876,7 @@ test('Roblox visual planning selects concrete base material atoms and requires n
     assert.ok(plan.baseMaterialLoadout.families.UI.includes('FRAME_PANEL'));
     assert.equal(plan.baseMaterialLoadout.runtimeVerificationRequired,true);
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/ROBLOX STUDIO ASSET SELECTION HANDOFF/);
+    assert.match(guidance,/ROBLOX INTERNAL ASSET AUTO APPLY/);
     assert.match(guidance,/STUDIO_ASSET_BINDING_VERSION/);
     assert.match(guidance,/FRAME_PANEL/);
 
@@ -919,6 +919,9 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.ok(studio.families.UI.includes('FRAME_PANEL'));
   assert.equal(studio.productionVerified,false);
   assert.equal(studio.runtimeVerificationRequired,true);
+  assert.equal(studio.universalAssetFirst.allLibrariesAutoUseRequired,true);
+  assert.equal(studio.universalAssetFirst.allTwelveFamiliesSelectedRequired,true);
+  assert.equal(studio.universalAssetFirst.plainPrimitiveFallbackForbidden,true);
 
   const built=compileRobloxSource({
     gameId:'demo-bootstrap',gameName:'Demo Bootstrap',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks(),recombination:{},roadmap:{},assetLibrary:registry
@@ -927,11 +930,17 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.equal(built.studioAssets.applied,true);
   assert.match(built.result.sharedConfig,/StudioAssets\s*=/);
   assert.match(built.result.sharedConfig,/FRAME_PANEL/);
+  assert.match(built.result.sharedConfig,/AutoApplyAllLibraries\s*=\s*true/);
+  assert.match(built.result.sharedConfig,/PlainFallbackForbidden\s*=\s*true/);
   assert.match(built.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(built.result.clientCode,/Config\.StudioAssets/);
   assert.match(built.result.clientCode,/local studioAssetFamilies = Config\.StudioAssets and Config\.StudioAssets\.Families or \{\}/);
   assert.match(built.result.clientCode,/local function studioAssetFamily\(family\)/);
-  assert.match(built.result.clientCode,/hasStudioAtom\("UI", "FRAME_PANEL"\)/);
+  assert.match(built.result.clientCode,/requiredStudioAssetFamilies/);
+  assert.match(built.result.clientCode,/requireStudioAtom\("UI", "FRAME_PANEL"\)/);
+  assert.match(built.result.clientCode,/requireStudioAtom\("UI", "BUTTON_PRIMARY"\)/);
+  assert.match(built.result.clientCode,/requireStudioAtom\("UI", "BAR_HEALTH"\)/);
+  assert.doesNotMatch(built.result.clientCode,/hasStudioAtom\("UI", "FRAME_PANEL"\) and/);
   assert.match(built.result.clientCode,/StudioHealthTrack/);
   assert.match(built.result.clientCode,/Instance\.new\("Frame"\)/);
 });
@@ -975,10 +984,22 @@ test('Roblox visual plan selects stable base material atoms and requires source 
     assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.downstreamApplicationRequired,true);
     assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.postApplicationVerificationRequired,true);
     assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.markerOnlyApplicationForbidden,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.allTwelveFamiliesSelectedRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.allSelectedLibrariesAutoApplyRequired,true);
+    assert.equal(first.baseMaterialLoadout.robloxSelectionHandoff.plainPrimitiveFallbackForbidden,true);
+    assert.equal(first.baseMaterialLoadout.universalAssetFirst.allLibrariesAutoUseRequired,true);
+    assert.equal(first.baseMaterialLoadout.universalAssetFirst.blankDefaultPresentationForbidden,true);
     assert.deepEqual(first.baseMaterialLoadout.families,second.baseMaterialLoadout.families);
     const guidance=assetProductionGuidance(first);
-    assert.match(guidance,/ROBLOX STUDIO ASSET SELECTION HANDOFF/);
+    assert.match(guidance,/ROBLOX INTERNAL ASSET AUTO APPLY/);
     assert.match(guidance,/STUDIO_ASSET_BINDING_VERSION/);
+    const incomplete=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+    delete incomplete.baseMaterialLibrary.families.PROP;
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(incomplete,null,2));
+    const blocked=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    assert.equal(blocked.baseMaterialLoadout.status,'BLOCKED_REQUIRED_LIBRARY_FAMILY_MISSING');
+    assert.equal(blocked.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,true);
+    assert.ok(blocked.baseMaterialLoadout.universalAssetFirst.missingFamilies.includes('PROP'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -1046,6 +1067,8 @@ test('new Roblox bootstrap binds Studio material atoms into generated Luau witho
   assert.equal(compiled.studioAssets.applied,true);
   assert.equal(compiled.studioAssets.productionVerified,false);
   assert.equal(compiled.studioAssets.runtimeVerificationRequired,true);
+  assert.equal(compiled.studioAssets.universalAssetFirst.allLibrariesAutoUseRequired,true);
+  assert.equal(compiled.studioAssets.universalAssetFirst.plainPrimitiveFallbackForbidden,true);
   assert.match(compiled.result.sharedConfig,/StudioAssets\s*=/);
   assert.match(compiled.result.sharedConfig,/FRAME_PANEL/);
   assert.match(compiled.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
@@ -1054,19 +1077,25 @@ test('new Roblox bootstrap binds Studio material atoms into generated Luau witho
   assert.doesNotMatch(compiled.result.sharedConfig,/ProductionVerified\s*=\s*true/);
 });
 
-test('existing Roblox visual candidate must bind selected Studio atoms to real native source',()=>{
+test('existing Roblox visual candidate must consume all selected internal library families and reject plain fallback',()=>{
   const root=tempRoot();
   try{
     const relative='roblox-games/demo/client/Game.client.luau';
     const file=path.join(root,...relative.split('/'));
     fs.mkdirSync(path.dirname(file),{recursive:true});
-    const manifestPath=path.join(root,'manifest-roblox-studio-binding.json');
+    const manifestPath=path.join(root,'manifest-roblox-internal-binding.json');
+    const families={
+      CHARACTER:['TORSO_CLOTH'],CREATURE:['HEAD_CANINE'],BUILDING:['FOUNDATION_RECT'],ENVIRONMENT:['TREE_TRUNK_THICK'],
+      WEAPON:['BLADE_LONG'],SKILL:['CAST_HAND'],MATERIAL:['WOOD'],AUDIO:['ENV_WIND'],VFX:['IMPACT_FLASH'],UI:['FRAME_PANEL'],
+      MOTION:['IDLE_RELAXED'],PROP:['CHEST']
+    };
+    const atoms=Object.values(families).flat();
     const manifest={
       target:'roblox',
       changedFiles:[relative],
       assetProduction:{
         baseMaterialLoadout:{
-          families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
+          families,
           robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,plannerSourceMutationForbidden:true}
         }
       }
@@ -1074,27 +1103,72 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
     fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2));
     fs.writeFileSync(file,[
       'local STUDIO_ASSET_BINDING_VERSION = 2',
-      'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+      'local STUDIO_ASSET_SELECTION = {'+atoms.map(atom=>JSON.stringify(atom)).join(',')+'}',
+      'local function studioAssetFamily(family) return family == "UI" and STUDIO_ASSET_SELECTION or {} end',
+      'local studioUi = studioAssetFamily("UI")',
       'local root = Instance.new("Frame")',
       'root.BackgroundColor3 = Color3.fromRGB(22, 34, 58)',
       'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
       'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))'
     ].join('\n'));
-    const result=runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-binding',force:true});
+    const result=runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-internal-binding',force:true});
     assert.equal(result.outcome,'PASS');
     assert.equal(result.robloxStudioAssetBindingQa.status,'STATIC_PASS');
+    assert.equal(result.robloxStudioAssetBindingQa.allTwelveFamiliesSelected,true);
+    assert.equal(result.robloxStudioAssetBindingQa.libraryRuntimeConsumption,true);
     assert.equal(result.robloxStudioAssetBindingQa.runtimeStillRequired,true);
-    assert.equal(result.robloxStudioAssetBindingQa.companyAssetPromotionBlockedUntilRuntime,true);
 
     fs.writeFileSync(file,[
       'local STUDIO_ASSET_BINDING_VERSION = 2',
-      'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+      'local STUDIO_ASSET_SELECTION = {'+atoms.map(atom=>JSON.stringify(atom)).join(',')+'}',
+      'local root = Instance.new("Frame")',
+      'root.BackgroundColor3 = Color3.fromRGB(22, 34, 58)',
       'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
       'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))'
     ].join('\n'));
     assert.throws(()=>runIncrementalQa({
-      root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-marker-only',force:true
-    }),/ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:.*ROBLOX_NATIVE_VISUAL_BINDING/);
+      root,manifest:manifestPath,files:[relative],namespace:'roblox-internal-plain-fallback',force:true
+    }),/ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:.*ROBLOX_INTERNAL_LIBRARY_RUNTIME_CONSUMPTION/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('low-score safe internal assets remain mandatory-use candidates while corrupt sources stay excluded',()=>{
+  const root=tempRoot();
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {id:'low-score-sword',title:'Low score sword',category:'WEAPON',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',path:'assets/roblox/low-score-sword.glb',license:'project-original',internalUseAllowed:true,internalAuditScore:580.6,internalAuditPassScore:880,lowScoreWouldStillBeUsable:true,qualityScoreBlocksBinding:false,verifiedCompanyReusable:false,productionVerified:false,sourceHash:'low-score-sword-v1',types:['item'],tags:['item','weapon','sword']},
+        {id:'corrupt-sword',title:'Corrupt sword',category:'WEAPON',family:'WEAPON',platform:'ROBLOX',status:'REPO_ASSET',path:'assets/roblox/corrupt-sword.glb',license:'project-original',internalUseAllowed:true,internalAuditScore:999,internalAuditPassScore:880,corruptSource:true,verifiedCompanyReusable:false,productionVerified:false,sourceHash:'corrupt-sword-v1',types:['item'],tags:['item','weapon','sword']}
+      ],
+      baseMaterialLibrary:{
+        status:'PREPARED_SEMANTIC_ATOM_LIBRARY',
+        families:{
+          CHARACTER:['TORSO_CLOTH'],CREATURE:['HEAD_CANINE'],BUILDING:['FOUNDATION_RECT'],ENVIRONMENT:['TREE_TRUNK_THICK'],
+          WEAPON:['BLADE_LONG'],SKILL:['CAST_HAND'],MATERIAL:['WOOD'],AUDIO:['ENV_WIND'],VFX:['IMPACT_FLASH'],UI:['FRAME_PANEL'],
+          MOTION:['IDLE_RELAXED'],PROP:['CHEST']
+        },
+        combinationRules:{colorOnlyVariantDoesNotCount:true,actualRuntimeQaRequiredBeforeVerifiedPromotion:true}
+      },
+      variantRecipeTemplates:[{id:'NORMAL_VARIANT',mutationStrength:'LIGHT',minimumDistinctAxes:2}]
+    },null,2));
+    const plan=buildVibeAssetProductionPlan({
+      target:'roblox',repoRoot:root,
+      task:{gameId:'low-score-demo',goal:'sword weapon item 그래픽을 내부 자산으로 적용'},
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    });
+    const item=plan.decisions.find(row=>row.type==='item');
+    assert.ok(item);
+    assert.ok(item.companyCandidates.some(row=>row.id==='low-score-sword'));
+    assert.equal(item.companyCandidates.some(row=>row.id==='corrupt-sword'),false);
+    const candidate=item.applyFirst.candidates.find(row=>row.id==='low-score-sword');
+    assert.ok(candidate);
+    assert.equal(candidate.companyInternal,true);
+    assert.equal(candidate.internalAuditScore,580.6);
+    assert.equal(candidate.lowScoreCompanyInternalUseRequired,true);
+    assert.equal(candidate.qualityPassRequiredBeforeKeep,false);
+    assert.equal(candidate.qualityDebtRemainsOpen,true);
+    assert.equal(candidate.productionVerified,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -1124,7 +1198,7 @@ test('native asset plan prefers verified company library then repository then ex
     assert.deepEqual(row.externalCandidates.map(item=>item.id),['external-ui']);
     assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui','repo-ui']);
     assert.deepEqual(row.decisionOrder.slice(1,4),[
-      'REUSE_VERIFIED_COMPANY_ASSET',
+      'REUSE_COMPANY_INTERNAL_ASSET_REGARDLESS_OF_SCORE',
       'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
       'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'
     ]);
@@ -1380,6 +1454,8 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   WEAPON = "APPLIED", SKILL = "APPLIED", MATERIAL = "APPLIED", AUDIO = "APPLIED",
   VFX = "APPLIED", UI = "APPLIED", MOTION = "APPLIED", PROP = "APPLIED"
 }
+local function studioAssetFamily(family) return family == "UI" and STUDIO_ASSET_SELECTION or {} end
+local studioUi = studioAssetFamily("UI")
 local character = Instance.new("Model"); character.Name = "Character"
 local humanoid = Instance.new("Humanoid"); humanoid.Parent = character
 local enemy = Instance.new("Model"); enemy.Name = "Enemy"
@@ -1418,6 +1494,8 @@ panel:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ",")
 
     fs.writeFileSync(file,`local STUDIO_ASSET_BINDING_VERSION = 2
 local STUDIO_ASSET_SELECTION = {${atoms.map(atom=>JSON.stringify(atom)).join(',')}}
+local function studioAssetFamily(family) return family == "UI" and STUDIO_ASSET_SELECTION or {} end
+local studioUi = studioAssetFamily("UI")
 local panel = Instance.new("Frame")
 panel.BackgroundColor3 = Color3.fromRGB(22,34,58)
 panel:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)

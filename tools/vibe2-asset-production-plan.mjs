@@ -1103,9 +1103,15 @@ const COMPANY_CATEGORY_TYPES=freeze({
   WEAPON:freeze(['item'])
 });
 
-function verifiedCompanyManifestAssets(registry={}){
+function usableCompanyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()))
+    .filter(asset=>
+      clean(asset?.id)
+      &&clean(asset?.license)
+      &&asset?.internalUseAllowed!==false
+      &&asset?.corruptSource!==true
+      &&clean(asset?.sourceState).toUpperCase()!=='CORRUPT_SOURCE'
+    )
     .map(asset=>({
       ...asset,
       id:clean(asset.id),
@@ -1114,7 +1120,11 @@ function verifiedCompanyManifestAssets(registry={}){
       tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
       platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
       downloaded:true,
-      companyVerified:true,
+      companyInternal:true,
+      companyVerified:asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()),
+      productionVerified:asset?.productionVerified===true,
+      qualityScoreBlocksBinding:false,
+      lowScoreCompatibleAssetUseAllowed:true,
       source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
     }))
     .filter(asset=>asset.id);
@@ -1123,13 +1133,14 @@ function verifiedCompanyManifestAssets(registry={}){
 function mergeManifestWithCompanyLibrary(manifest={},registry={}){
   const rows=[...(Array.isArray(manifest?.assets)?manifest.assets:[])];
   const byId=new Map(rows.map(asset=>[clean(asset?.id),asset]));
-  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
+  for(const asset of usableCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
   return {...manifest,assets:[...byId.values()]};
 }
 
 function sourceTierFor(asset={}){
   if(asset?.sameGameExistingRoblox===true)return 'SAME_GAME_EXISTING_ROBLOX_ASSET';
   if(asset?.companyVerified===true)return 'VERIFIED_COMPANY_ASSET';
+  if(asset?.companyInternal===true)return 'COMPANY_INTERNAL_ASSET';
   const assetPath=clean(asset.path);
   const sourceUrl=clean(asset.sourceUrl);
   if(asset?.downloaded!==false&&!sourceUrl)return 'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET';
@@ -1186,14 +1197,19 @@ function matchedForType(selector={},type='',manifest={},target=''){
       source:clean(row.source||asset.source)||null,
       sourceUrl:clean(asset.sourceUrl)||null,
       downloaded:asset.downloaded!==false,
-      acquiredExternal:Boolean(asset.companyVerified!==true&&asset.sameGameExistingRoblox!==true&&clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)),
-      acquisitionOrigin:asset.companyVerified===true?'COMPANY_INTERNAL':asset.sameGameExistingRoblox===true?'SAME_GAME':clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)?'EXTERNAL_ACQUIRED':'REPOSITORY_INTERNAL',
+      acquiredExternal:Boolean(asset.companyInternal!==true&&asset.companyVerified!==true&&asset.sameGameExistingRoblox!==true&&clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)),
+      acquisitionOrigin:asset.companyInternal===true||asset.companyVerified===true?'COMPANY_INTERNAL':asset.sameGameExistingRoblox===true?'SAME_GAME':clean(asset.sourceUrl||asset.externalSourceUrl||asset.acquiredFrom)?'EXTERNAL_ACQUIRED':'REPOSITORY_INTERNAL',
       animated:adaptationBaseOnly?false:row.animated===true,
       motionMode:adaptationBaseOnly?null:clean(row.motionMode)||null,
       motionStates:freezeList(unique([...(Array.isArray(asset.states)?asset.states:[]),...(Array.isArray(asset.animations)?asset.animations:[])].filter(value=>typeof value==='string').map(value=>clean(value).toLowerCase()))),
       rigType:clean(asset.rigType)||null,
       sourceTier:sourceTierFor(asset),
+      companyInternal:asset.companyInternal===true,
       companyVerified:asset.companyVerified===true,
+      internalUseAllowed:asset.internalUseAllowed!==false,
+      internalAuditScore:Number.isFinite(Number(asset.internalAuditScore))?Number(asset.internalAuditScore):null,
+      qualityScoreBlocksBinding:false,
+      lowScoreCompatibleAssetUseAllowed:true,
       sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
       robloxAssetId:clean(asset.robloxAssetId)||null,
       sourceHash:clean(asset.sourceHash||asset.sourceSha256||asset.contentHash||asset.sha256)||null,
@@ -1278,7 +1294,9 @@ function baseMaterialRecipeForRequest(request='',templates=[]){
 function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePlan=null,decisions=[],gameId='',target='',request=''}={}){
   const configured=companyRegistry?.baseMaterialLibrary?.families||{};
   const productionActive=studioUniversePlan?.baseMaterialRotation?.productionActive||configured;
-  const nativeTarget=['roblox','unity','web'].includes(clean(target).toLowerCase());
+  const resolvedTarget=clean(target).toLowerCase();
+  const robloxTarget=resolvedTarget==='roblox';
+  const nativeTarget=['roblox','unity','web'].includes(resolvedTarget);
   const familySet=new Set(nativeTarget?UNIVERSAL_ASSET_FAMILIES:[]);
   for(const row of decisions||[])for(const family of BASE_MATERIAL_FAMILIES_BY_ASSET_TYPE[clean(row?.type).toLowerCase()]||[])familySet.add(family);
   const families={};
@@ -1291,8 +1309,9 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
   const selectedAtomCount=Object.values(families).reduce((n,rows)=>n+rows.length,0);
   const missingFamilies=UNIVERSAL_ASSET_FAMILIES.filter(family=>nativeTarget&&!(families[family]||[]).length);
   return freeze({
-    status:selectedAtomCount&&missingFamilies.length===0?'READY':selectedAtomCount?'PARTIAL_FAMILY_COVERAGE':'NO_COMPATIBLE_ATOMS',
+    status:robloxTarget&&missingFamilies.length?'BLOCKED_REQUIRED_LIBRARY_FAMILY_MISSING':selectedAtomCount&&missingFamilies.length===0?'READY':selectedAtomCount?'PARTIAL_FAMILY_COVERAGE':'NO_COMPATIBLE_ATOMS',
     source:'company-asset-library.json#baseMaterialLibrary',
+    libraryVersion:Number(companyRegistry?.version||0),
     atomState:clean(companyRegistry?.baseMaterialLibrary?.status)||null,
     selectedAtomCount,
     families:freeze(Object.fromEntries(Object.entries(families).map(([family,rows])=>[family,freezeList(rows)]))),
@@ -1307,23 +1326,31 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
       familyResultRequired:'APPLIED_OR_EXPLICIT_NOT_APPLICABLE',
       notApplicableRequiresSystemAbsenceEvidence:true,
       primitiveOnlyUpgradeForbidden:true,
-      markerOnlyApplicationForbidden:true
+      markerOnlyApplicationForbidden:true,
+      allLibrariesAutoUseRequired:robloxTarget,
+      allTwelveFamiliesSelectedRequired:robloxTarget,
+      plainPrimitiveFallbackForbidden:robloxTarget,
+      blankDefaultPresentationForbidden:robloxTarget
     }),
     recipe,
     gameSpecificStableSelection:true,
     colorOnlyVariantForbidden:companyRegistry?.baseMaterialLibrary?.combinationRules?.colorOnlyVariantDoesNotCount===true,
     runtimeVerificationRequired:companyRegistry?.baseMaterialLibrary?.combinationRules?.actualRuntimeQaRequiredBeforeVerifiedPromotion===true,
     robloxSelectionHandoff:freeze({
-      selectionRequired:clean(target).toLowerCase()==='roblox',
-      handoffRequired:clean(target).toLowerCase()==='roblox'&&selectedAtomCount>0,
+      selectionRequired:robloxTarget,
+      handoffRequired:robloxTarget,
       plannerSourceMutationForbidden:true,
       downstreamApplicationOwner:'VIBE2_VIBE3_GAME_SOURCE_IMPLEMENTATION',
-      downstreamApplicationRequired:clean(target).toLowerCase()==='roblox'&&selectedAtomCount>0,
+      downstreamApplicationRequired:robloxTarget,
       bindingVersion:2,
       requiredSourceMarker:'STUDIO_ASSET_BINDING_VERSION',
       postApplicationVerificationRequired:true,
       actualNativeBindingRequired:true,
       allTwelveFamiliesEvaluated:true,
+      allTwelveFamiliesSelectedRequired:true,
+      missingFamilyBlocksSourceBuildUp:true,
+      allSelectedLibrariesAutoApplyRequired:true,
+      plainPrimitiveFallbackForbidden:true,
       familyResultRequired:'APPLIED_OR_EXPLICIT_NOT_APPLICABLE',
       markerOnlyApplicationForbidden:true,
       preserveGameplayAuthority:true,
@@ -1417,7 +1444,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
   const variant=asset?.platformVariants?.[platform.toUpperCase()]||asset?.platformVariants?.[platform]||null;
   const sameGame=asset.sameGameExistingRoblox===true&&platform==='roblox';
   const hasNativeReference=Boolean(sameGame&&(asset.path||asset.robloxAssetId)||variant?.path||asset.path||asset.robloxAssetId);
-  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true);
+  const nativeReady=Boolean(sameGame||variant?.path||asset.productionVerified===true||asset.companyInternal===true);
   const adaptable=Boolean(!nativeReady&&hasNativeReference&&(asset.retargetable===true||asset.rigType||asset.sourceHash));
   const lane=nativeReady?(sameGame?'A_SAME_GAME_BOUND':'B_NATIVE_READY'):adaptable?'C_MINIMAL_ADAPT':'D_AUTHORING_REQUIRED';
   const bindingCost=lane==='A_SAME_GAME_BOUND'?0:lane==='B_NATIVE_READY'?1:lane==='C_MINIMAL_ADAPT'?2:3;
@@ -1455,11 +1482,15 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     sourceHash:asset.sourceHash||null,
     acquiredExternal:asset.acquiredExternal===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
+    companyInternal:asset.companyInternal===true,
+    internalAuditScore:Number.isFinite(Number(asset.internalAuditScore))?Number(asset.internalAuditScore):null,
     productionVerified:asset.productionVerified===true,
     ready:Boolean(hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
     adaptationAllowed:true,
     adaptationAxes:freezeList(lane==='C_MINIMAL_ADAPT'?['RIG_RETARGET','MATERIAL_REMAP','SOCKET_REBIND','SCALE_AXIS_PIVOT_NORMALIZE','LOD_GENERATION']:[]),
-    qualityPassRequiredBeforeKeep:true,
+    qualityPassRequiredBeforeKeep:asset.companyInternal!==true,
+    lowScoreCompanyInternalUseRequired:asset.companyInternal===true,
+    qualityDebtRemainsOpen:asset.companyInternal===true&&asset.productionVerified!==true,
     runtimeCheckRequiredAfterApply:true,
     qualityDNA,
     qualityAxes:freezeList(qualityAxes),
@@ -1644,7 +1675,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const qualityDNA=qualityDnaForType(type);
   const matched=matchedForType(selector,type,manifest,target);
   const sameGameCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='SAME_GAME_EXISTING_ROBLOX_ASSET'));
-  const companyCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='VERIFIED_COMPANY_ASSET'));
+  const companyCandidates=freezeList(matched.filter(asset=>['VERIFIED_COMPANY_ASSET','COMPANY_INTERNAL_ASSET'].includes(asset.sourceTier)));
   const repositoryCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET'));
   const externalCandidates=freezeList(matched.filter(asset=>asset.sourceTier==='LICENSE_VERIFIED_EXTERNAL_ASSET'));
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
@@ -1657,7 +1688,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const preferredCandidateId=postDownloadComparison.required?null:(applyFirstCandidates[0]?.id||null);
   const decisionOrder=unique([
     'COMPARE_TARGET_GAME_QUALITY',
-    companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
+    companyCandidates.length?'REUSE_COMPANY_INTERNAL_ASSET_REGARDLESS_OF_SCORE':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
     externalCandidates.length?'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET':'',
@@ -2384,14 +2415,21 @@ export function buildVibeAssetProductionPlan({
           ||(family==='MATERIAL'&&categories.some(category=>['VFX','ENVIRONMENT'].includes(category)));
         return /LICENSE_VERIFIED/.test(clean(row?.status).toUpperCase())&&categoryMatch;
       });
-      const verifiedReuse=(companyRegistry?.assets||[]).some(row=>row.verifiedCompanyReusable===true&&clean(row.category||row.family).toUpperCase()===family);
+      const internalReuse=(companyRegistry?.assets||[]).some(row=>
+        clean(row.category||row.family).toUpperCase()===family
+        &&clean(row.license)
+        &&row.internalUseAllowed!==false
+        &&row.corruptSource!==true
+        &&clean(row.sourceState).toUpperCase()!=='CORRUPT_SOURCE'
+      );
       universeSignals[key]={
         activeGameDemand:activeDemand[family]?.[subfamily]>0,
         gameConsumerCount:activeDemand[family]?.[subfamily]>0?1:0,
         playerVisibleFrequencyHigh:['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','VFX','UI'].includes(family)&&activeDemand[family]?.[subfamily]>0,
         heroBossLandmark:/보스|BOSS|주인공|HERO|랜드마크|LANDMARK/i.test(request)&&['CHARACTER','CREATURE','BUILDING','ENVIRONMENT'].includes(family),
         externalSourceReady:externalReady,
-        verifiedReuseAvailable:verifiedReuse
+        verifiedReuseAvailable:internalReuse,
+        internalReuseAvailableRegardlessOfScore:internalReuse
       };
     }
   }
@@ -2923,7 +2961,7 @@ export function buildVibeAssetProductionPlan({
         externalLicensedMotionGapFill:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.searchExternalLicensedMotionBeforeAuthoringMissingCoverage===true,
         platformNativeRuntimeVerificationRequired:companyLibrary?.unarmedCombatStudio?.externalMotionUse?.retargetCleanupAndPlatformNativeRuntimeValidationRequired===true
       }),
-      verifiedCompanyAssetCount:verifiedCompanyManifestAssets(companyRegistry).length,
+      usableCompanyInternalAssetCount:usableCompanyManifestAssets(companyRegistry).length,
       externalSourceCount:Array.isArray(companyRegistry?.externalSources)?companyRegistry.externalSources.length:0,
       externalSourceIds:freezeList((companyRegistry?.externalSources||[]).map(row=>clean(row.id)).filter(Boolean))
     }),
@@ -3181,7 +3219,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',
     plan.baseMaterialLoadout?.selectedAtomCount?`Game Base Material Loadout recipe=${plan.baseMaterialLoadout.recipe?.id||'NORMAL_VARIANT'}; atoms=${Object.entries(plan.baseMaterialLoadout.families||{}).map(([family,atoms])=>family+':'+atoms.join(',')).join('|')}`:'',
-    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired?'[ROBLOX STUDIO ASSET SELECTION HANDOFF] 플래너는 소스를 수정하지 않는다. CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 12개 계열을 모두 평가하고 선택 결과를 Vibe2/Vibe3에 전달한다. Vibe2/Vibe3는 현재 게임에 존재하는 각 시스템을 APPLIED 또는 근거가 있는 NOT_APPLICABLE로 판정하고 APPLIED 계열을 기존 책임 소스의 실제 네이티브 표현에 바인딩한다. Roblox 적용 증거는 local STUDIO_ASSET_BINDING_VERSION = 2, local STUDIO_ASSET_SELECTION = {...}, local STUDIO_ASSET_FAMILY_STATUS = { CHARACTER = "APPLIED" 또는 "NOT_APPLICABLE", ... } 형태로 12개 계열을 전부 기록한다. 이 증거 테이블은 실제 Instance/Model/MeshPart/Material/Sound/Particle/Trail/UI/Animator 바인딩을 대신할 수 없다. 배경·지형·마을·집·학교·상점·건물·랜드마크·나무·바위·가구·표지판 등 맵 구성도 ENVIRONMENT/BUILDING/PROP 자산을 실제 사용한다. 마커/선택 목록만 추가하는 no-op, 단순 Part 반복, 색상 변경만으로 업그레이드 완료 처리하는 것은 금지한다. 게임에 없는 시스템은 에셋 조건 때문에 새로 만들지 말고 NOT_APPLICABLE 근거를 기록한다. 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
+    plan.target==='roblox'&&plan.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired?'[ROBLOX INTERNAL ASSET AUTO APPLY] Studio 실행 여부와 무관하게 CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP 12개 내부 라이브러리를 같은 BUILD_UP 회차에 모두 선택·주입한다. 12개 중 하나라도 선택 불가하면 민짜/default/primitive fallback으로 진행하지 말고 source build-up을 차단한다. Vibe2/Vibe3는 현재 게임에 존재하는 각 시스템을 APPLIED 또는 근거가 있는 NOT_APPLICABLE로 판정하고 APPLIED 계열을 기존 책임 소스의 실제 네이티브 표현에 바인딩한다. 호환성 때문에 local STUDIO_ASSET_BINDING_VERSION = 2, local STUDIO_ASSET_SELECTION = {...}, local STUDIO_ASSET_FAMILY_STATUS = { CHARACTER = "APPLIED" 또는 "NOT_APPLICABLE", ... } trace 이름은 유지하지만 Studio 런타임은 적용 조건이 아니다. 이 증거 테이블은 실제 Instance/Model/MeshPart/Material/Sound/Particle/Trail/UI/Animator 바인딩을 대신할 수 없다. 배경·지형·마을·집·학교·상점·건물·랜드마크·나무·바위·가구·표지판 등 맵 구성도 ENVIRONMENT/BUILDING/PROP 자산을 실제 사용한다. 마커/선택 목록만 추가하는 no-op, 민짜 Part/UI/재질 fallback, 단순 Part 반복, 색상 변경만으로 업그레이드 완료 처리하는 것은 금지한다. 게임에 없는 시스템은 에셋 조건 때문에 새로 만들지 말고 NOT_APPLICABLE 근거를 기록한다. 게임 규칙·데미지·쿨다운·저장·진행·네트워크 권한은 바꾸지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialRotation?.policy?.status==='ACTIVE_AUTOMATIC_ROTATION'?`Base Material Rotation=AUTO; retire=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.retireCount||0}; graduate=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.graduateCount||0}; refill=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialRotation.current.refillCount||0}; 중복/검증실패/반복 호환실패/장기 미사용 재료는 제작 활성 풀에서 제외하고, 마스터 재료는 제작 재사용은 유지한 채 학습·확장 풀에서 졸업시켜 기존 24H Gap Fill이 새 다양성 슬롯을 같은 사이클에 채운다.`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Universal Coverage=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.overallCoveragePercent||0}%; missingSlots=${plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount||0}; preparedSeeds=${plan.companyGraphicsLibrary.studioAssetUniverse.plannedSemanticSeedCount}; highestGap=${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.family||'none'}:${plan.companyGraphicsLibrary.studioAssetUniverse.highestPriorityGap?.subfamily||'none'}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.conceptDirector?.enabled?`Concept Director=${(plan.companyGraphicsLibrary.studioAssetUniverse.conceptDirector.requested?.weightedStyles||[]).map(x=>x.family+':'+Math.round(x.weight*100)).join('|')||'adaptive'}; 자유 혼합 컨셉은 캐릭터·몬스터·무기·모션·VFX·오디오·건축·바이옴·조명·UI·서사 표현에 함께 전파하고 게임별 Style Lock이 최종 우선한다.`:'',

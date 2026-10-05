@@ -1867,6 +1867,7 @@ function gatedRetryStrategyGuidance(order = {}) {
 
 export function buildInternalAssetSourceUsageContract(order={}){
   const target=clean(order?.target).toLowerCase();
+  const robloxAllLibraryAutoUse=target==='roblox';
   const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
   const assetProduction=order?.assetProduction||{};
   const loadout=assetProduction?.baseMaterialLoadout||{};
@@ -2042,10 +2043,11 @@ export function buildInternalAssetSourceUsageContract(order={}){
       selectedCommonSourceApiDiscovery:true,
       selectedCommonSourcesDerivedFromSelectedFamiliesOnly:true,
       selectedCommonSourceApiContextReadOnly:true,
-      apiContextBatchSize:4,
-      apiContextMaxBytes:18000,
-      apiContextPerFileMaxBytes:4500,
-      apiContextRotationByBuildUpGeneration:true,
+      apiContextBatchSize:robloxAllLibraryAutoUse?64:4,
+      apiContextMaxBytes:robloxAllLibraryAutoUse?48000:18000,
+      apiContextPerFileMaxBytes:robloxAllLibraryAutoUse?3200:4500,
+      apiContextRotationByBuildUpGeneration:!robloxAllLibraryAutoUse,
+      allSelectedApiSourcesRequiredInSameGeneration:robloxAllLibraryAutoUse,
       allSelectedApiSourcesRemainEligibleAcrossCycles:true
     }),
     eligibility:Object.freeze({
@@ -2110,7 +2112,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
       allApplicableSelectedAssetsEligible:true,
       continueAcrossBuildUpCyclesUntilApplicableCoverage:true,
       contextBudgetIsNotUsageCap:true,
-      apiContextBatchingAllowedForSynchronizationEfficiency:true,
+      apiContextBatchingAllowedForSynchronizationEfficiency:!robloxAllLibraryAutoUse,
+      allSelectedLibrariesAutoApplyRequired:robloxAllLibraryAutoUse,
+      plainPrimitiveFallbackForbidden:robloxAllLibraryAutoUse,
+      blankDefaultPresentationForbidden:robloxAllLibraryAutoUse,
       independentResponsibleFilesMayApplyInParallel:true,
       exactResponsibleFileConflictStillSerializes:true,
       hardBlockersOnly:Object.freeze(['SECURITY','LICENSE','CORRUPT_SOURCE','PLATFORM_INCOMPATIBLE','EXPLICIT_INTERNAL_USE_FORBIDDEN'])
@@ -2136,6 +2141,7 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
       WEAPON:['assets/roblox/common-tools-v1/RobloxCommonTools.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau'],
       SKILL:['assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau'],
       MATERIAL:['assets/roblox/common-materials-v1/RobloxCommonMaterials.luau'],
+      AUDIO:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau','assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau','assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau'],
       VFX:['assets/roblox/common-vfx-v1/RobloxCommonVFX.luau'],
       UI:['assets/roblox/common-ui-v1/RobloxCommonUI.luau','assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau'],
       MOTION:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','assets/vibe-motion-director.js'],
@@ -2208,14 +2214,16 @@ function internalAssetSourceUsageGuidance(order={}){
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
-    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API batching is only synchronization optimization and MUST NOT become a usage cap.',
-    'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
+    'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility and continue coverage across BUILD_UP cycles. Context/API limits MUST NOT become a usage cap.',
+    contract.synchronization.allSelectedApiSourcesRequiredInSameGeneration
+      ?'Roblox mandatory auto-use: load every selected common-script/factory API source in the same BUILD_UP generation. Blank/default/primitive-only presentation is forbidden when a selected compatible internal library family exists.'
+      :'Selected common-script API context rotates by BUILD_UP generation when more sources are eligible than fit in one compact prompt. The current batch is only the implementation context for this generation; every selected compatible source remains eligible for later cycles until applicable coverage is complete.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
     'The explicit signal matrix is a FLOOR, not a ceiling. Scan current responsible source for additional existing events/state names and use adaptiveSignalRouting semantic hints only to choose presentation families that are both selected and applicable. Unknown source events may use the generic presentation fallback, but may not create a new gameplay system, asset ID, factory, role, state, or authority.',
     'Reuse existing common asset scripts/factories when the selected source/API reference is available. Call them from the current responsible game code or bind their returned native objects there; do not fork/copy a common script into each game.',
-    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. They are read-only bounded implementation context and rotate across BUILD_UP cycles; prefer the existing API before new per-game presentation code.',
+    'For Roblox, selected-family common API candidates include RobloxCommonUI, RobloxCommonVFX, RobloxCommonMotion, RobloxCommonEnvironment, RobloxCommonSkillPresentation, RobloxCommonBuilding, RobloxCommonCharacterGear, RobloxCommonCreatureParts, RobloxCommonMaterials, RobloxCommonTools, RobloxCommonItems, RobloxCommonWorldProps, RobloxCommonPresentation, and vibe-motion-director. AUDIO semantic roles are supplied from existing environment/world-prop/skill contracts until a dedicated audio factory exists. In Roblox mandatory auto-use mode every selected source is loaded in the SAME BUILD_UP generation; prefer these existing APIs/contracts before new per-game presentation code.',
     'When an existing Inventory/Equipment/Quest/Shop/Map/Party/Crafting/Dialogue/NPC/Character/Settings/Search/Filter/Sort system needs UI, inspect the matching RobloxCommonUI Create* factory first and connect it to the existing responsible state instead of rebuilding the screen.',
     'Variant diversity must preserve exact role/body-plan and use existing state/context plus usage history/lineage; simple random asset swapping is forbidden. Prefer compatible variants, recombination and style adaptation without sacrificing fit.',
     'One gameplay event may consume several presentation families together. Prefer coherent bundles such as motion+VFX+audio+UI/camera over isolated color changes, while preserving every gameplay/save/network authority boundary.',
@@ -4580,6 +4588,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     :null;
   if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
   const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order);
+  if(target==='roblox'&&order?.assetProduction?.baseMaterialLoadout){
+    const requiredFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+    const loadoutFamilies=order.assetProduction.baseMaterialLoadout.families||{};
+    const missingFamilies=requiredFamilies.filter(family=>!Array.isArray(loadoutFamilies[family])||loadoutFamilies[family].length===0);
+    if(missingFamilies.length){
+      throw new Error('ROBLOX_INTERNAL_ASSET_LIBRARY_REQUIRED_FAMILIES_MISSING:'+missingFamilies.join('|'));
+    }
+  }
   let context=unityBootstrapContext
     ||(!sourceRootExists&&bootstrap
       ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
@@ -4618,12 +4634,32 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     &&systemRegressionFiles.length>0
     &&systemSourceFiles.length>0
     &&(order?.selectedTask?.completionCriteria||[]).some(value=>/BEFORE_AFTER|CAUSAL_PROOF|STRUCTURAL_CAUSE/i.test(clean(value)));
-  const robloxInternalAssetApplicationRequired=target==='roblox'
-    &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
-    &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
-  const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>
+  const robloxInternalAssetLoadout=order?.assetProduction?.baseMaterialLoadout||{};
+  const robloxInternalAssetHandoff=robloxInternalAssetLoadout?.robloxSelectionHandoff||{};
+  const robloxInternalAssetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const robloxInternalAssetAtoms=unique(Object.values(robloxInternalAssetLoadout?.families||{}).flat().map(clean).filter(Boolean));
+  const robloxInternalAssetVisualOwners=target==='roblox'?responsibleFiles.filter(file=>
     /(?:^|\/)client\/|VisualStyle\.luau$|BattleVisual\.luau$/i.test(clean(file))
   ):[];
+  const robloxCurrentVisualText=target==='roblox'&&sourceRootExists?robloxInternalAssetVisualOwners.map(relative=>{
+    const absolute=path.resolve(sourceRoot,relative);
+    return fs.existsSync(absolute)&&fs.statSync(absolute).isFile()?fs.readFileSync(absolute,'utf8'):'';
+  }).join('\n'):'';
+  const robloxCurrentSelectionBody=robloxCurrentVisualText.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const robloxCurrentSelectedAtoms=new Set([...robloxCurrentSelectionBody.matchAll(/["']([A-Z][A-Z0-9_]{2,})["']/g)].map(match=>clean(match[1])));
+  const robloxCurrentStatusBody=robloxCurrentVisualText.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const robloxCurrentFamilyStatus=Object.fromEntries([...robloxCurrentStatusBody.matchAll(/\b([A-Z][A-Z0-9_]*)\s*=\s*["'](APPLIED|NOT_APPLICABLE)["']/g)].map(match=>[clean(match[1]),clean(match[2])]));
+  const robloxInternalAssetAlreadyBound=target==='roblox'
+    &&robloxInternalAssetAtoms.length>0
+    &&robloxInternalAssetAtoms.every(atom=>robloxCurrentSelectedAtoms.has(atom))
+    &&robloxInternalAssetFamilies.every(family=>['APPLIED','NOT_APPLICABLE'].includes(robloxCurrentFamilyStatus[family]))
+    &&/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(robloxCurrentVisualText)
+    &&/StudioAssetBindingVersion/.test(robloxCurrentVisualText)
+    &&/StudioAssetAtoms/.test(robloxCurrentVisualText);
+  const robloxInternalAssetApplicationRequired=target==='roblox'
+    &&robloxInternalAssetHandoff?.handoffRequired===true
+    &&robloxInternalAssetHandoff?.downstreamApplicationRequired===true
+    &&!robloxInternalAssetAlreadyBound;
   const candidateValidator=candidate=>{
     const touched=new Set([
       ...(candidate.edits||[]).map(row=>row.path),
@@ -4696,13 +4732,23 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const required=[
         new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+studioBindingVersion+'\\b'),
         /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
+        /\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/,
         /StudioAssetBindingVersion/,
         /StudioAssetAtoms/,
+        /(?:hasStudioAssetAtom|hasStudioAtom|studioAssetFamily|table\.find\s*\(\s*STUDIO_ASSET_SELECTION)/,
         /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
       ];
       if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_ALL_FAMILY_STATUS_RUNTIME_ATTRIBUTES_LIBRARY_GATED_NATIVE_CHANGE');
       }
+      const selectionBody=visualChangeText.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+      const selectedAtoms=new Set([...selectionBody.matchAll(/["']([A-Z][A-Z0-9_]{2,})["']/g)].map(match=>clean(match[1])));
+      const missingAtoms=robloxInternalAssetAtoms.filter(atom=>!selectedAtoms.has(atom));
+      if(missingAtoms.length)throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:SELECTED_ATOMS_MISSING:'+missingAtoms.join('|'));
+      const statusBody=visualChangeText.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+      const familyStatus=Object.fromEntries([...statusBody.matchAll(/\b([A-Z][A-Z0-9_]*)\s*=\s*["'](APPLIED|NOT_APPLICABLE)["']/g)].map(match=>[clean(match[1]),clean(match[2])]));
+      const missingStatuses=robloxInternalAssetFamilies.filter(family=>!['APPLIED','NOT_APPLICABLE'].includes(familyStatus[family]));
+      if(missingStatuses.length)throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:FAMILY_STATUS_MISSING:'+missingStatuses.join('|'));
     }
     if(bootstrap&&target==='unity'){
       for(const relative of responsibleFiles)if(!touched.has(relative))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:'+relative);

@@ -742,6 +742,7 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   if(!text.trim())throw new Error('ROBLOX_STUDIO_ASSET_BINDING_SOURCE_REQUIRED');
   const checks=[],issues=[];
   const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
+  const selectedFamilyCoverage=UNIVERSAL_ASSET_FAMILIES.every(family=>Array.isArray(loadout.families?.[family])&&loadout.families[family].length>0);
   const atoms=Object.values(loadout.families||{}).flat().map(clean).filter(Boolean);
   const selectionBody=text.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
   const selectedAtoms=[...selectionBody.matchAll(/["']([A-Z][A-Z0-9_]{2,})["']/g)].map(match=>clean(match[1])).filter(Boolean);
@@ -760,6 +761,9 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
   const familySignals=robloxAssetFamilySignals(fullText);
+  const libraryConsumptionSignal=/(?:hasStudioAssetAtom|hasStudioAtom|studioAssetFamily)\s*\(|\bRobloxCommon(?:UI|VFX|Motion|Environment|Building|WorldProps|Materials|Tools|Items|Skill|Character|Creature)/.test(fullText);
+  require('ROBLOX_INTERNAL_LIBRARY_ALL_12_SELECTED',selectedFamilyCoverage);
+  require('ROBLOX_INTERNAL_LIBRARY_RUNTIME_CONSUMPTION',libraryConsumptionSignal);
   require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));
   require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
@@ -783,7 +787,8 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     requiredRuntimeEvidence:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
     companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
     selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
-    universalAssetFirst:universalRequired,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
+    universalAssetFirst:universalRequired,allTwelveFamiliesSelected:selectedFamilyCoverage,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
+    libraryRuntimeConsumption:libraryConsumptionSignal,plainPrimitiveFallbackForbidden:true,
     mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
 }
