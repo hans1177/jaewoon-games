@@ -162,8 +162,8 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.workManagement.controlStateRecovery.parallelismContractVersion,4);
   assert.equal(runtime.workManagement.controlStateRecovery.nonEmptyMalformedJsonFailClosed,true);
   assert.equal(runtime.adaptiveBackpressure.mode,'GAME_PRIMARY_FIXED_64_RESERVATION_WITH_TELEMETRY_ONLY_SPECULATIVE_PRESSURE_CONTROL');
-  assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY');
-  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
+  assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY_NO_RESERVATION_AUTHORITY');
+  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'FIXED_REPEAT_DEVELOPMENT_64');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationDownshiftAllowed,false);
   assert.equal(runtime.continuous.atomicNeuronStream.neuralGatedExecution,true);
   assert.equal(runtime.continuous.atomicNeuronStream.retryStrategyMutationRequiresVerifiedRootCause,true);
@@ -213,6 +213,9 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,64);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,64);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,64);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,64);
+  assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.fixedRepeatDevelopmentSlots,64);
+  assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.reservationTargetMutationAllowed,false);
   assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,64);
   assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,64);
   assert.equal(runtime.adaptiveBackpressure.externalBatchMax,64);
@@ -962,7 +965,7 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_THRESHOLD='));
   assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
   assert(safetyNetWorkflow.includes('const effectiveMax=configuredMax;'));
-  assert(safetyNetWorkflow.includes("echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'"));
+  assert(safetyNetWorkflow.includes("echo 'VIBE2_PARALLELISM_POLICY=FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64'"));
   assert.equal(safetyNetWorkflow.includes('Math.min(configuredMax,controlTarget)'),false);
   assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_64'));
   assert(safetyNetWorkflow.includes("lane_max: '64'"));
