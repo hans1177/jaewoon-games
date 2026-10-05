@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-f8pkdp",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/generated/unity/amusement-tycoon/background/asset.glb",
+        "assets/generated/unity/amusement-tycoon/background/preview.png",
+        "assets/generated/unity/amusement-tycoon/background/evidence.json",
+        "assets/generated/unity/amusement-tycoon/item/asset.glb",
+        "assets/generated/unity/amusement-tycoon/item/preview.png",
+        "assets/generated/unity/amusement-tycoon/item/evidence.json",
+        "assets/generated/unity/amusement-tycoon/prop/asset.glb",
+        "assets/generated/unity/amusement-tycoon/prop/preview.png",
+        "assets/generated/unity/amusement-tycoon/prop/evidence.json"
+      ],
+      "baseSha": "f6627f156cf6c166b71026ac2ada6bef89d03d38",
+      "runId": "37281157024",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T08:08:47.344Z",
+      "expiresAt": "2026-10-05T08:53:47.344Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
