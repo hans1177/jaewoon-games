@@ -86,8 +86,10 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
     ||!truncation
     ||!exactIds
     ||fingerprint!==clean(expectedContract.fingerprint)
-    ||nativeBindingVersion!==ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
-    ||clientNativeBindingVersion!==ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+    // The sweep preserves newer game-owned clients. Version is a minimum
+    // capability requirement; exact learning/schema/content checks still apply.
+    ||nativeBindingVersion<ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+    ||clientNativeBindingVersion<nativeBindingVersion
     ||semanticMappingVersion!==ROBLOX_SEMANTIC_MAPPING_VERSION
     ||semanticMappingFingerprint!==clean(expectedLearning.semanticMappingFingerprint)
     ||!semanticVariant
