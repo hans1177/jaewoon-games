@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 3,
   "packId": "roblox-monster-adventure-v1",
   "gameId": "monster-adventure",
   "createdForCurrentRobloxNeed": true,
@@ -106,81 +106,78 @@
   },
   "qualityImprovementPlan": {
     "version": 1,
-    "scope": "PACK_LEVEL_SOURCE_QUALITY_REPAIR",
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
     "currentScore": 813.9,
     "currentGrade": "DEVELOPMENT_READY",
-    "currentAuditPass": false,
     "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
     "stages": [
       {
         "id": "COMMERCIAL_READY_880",
         "targetScore": 880,
+        "projectedSourceAuditScore": 893.5,
         "requiredAxisFloor": {
-          "IDENTITY_SILHOUETTE": 92,
-          "FORM_STRUCTURE": 90,
-          "MATERIAL_SURFACE": 88,
-          "COLOR_LIGHTING": 88,
-          "STYLE_COHERENCE": 90,
-          "DETAIL_FINISH": 88,
-          "READABILITY_SCALE": 92,
           "MOTION_RIG": 86,
-          "FEEDBACK_STATES": 82,
-          "MODULAR_REUSE": 82,
-          "VARIATION_BREADTH": 90,
-          "PERFORMANCE_LOD": 86,
-          "PROVENANCE_MAINTAINABILITY": 98,
-          "INTEGRATION_READINESS": 90
+          "FEEDBACK_STATES": 84,
+          "MODULAR_REUSE": 86,
+          "PERFORMANCE_LOD": 90,
+          "INTEGRATION_READINESS": 90,
+          "DETAIL_FINISH": 90
         },
         "requiredEvidence": [
-          "SPECIES_SPECIFIC_RIG_PROFILE",
-          "LOCOMOTION_ATTACK_HIT_DEATH_SET_PER_BODY_PLAN",
-          "CONTACT_AND_RECOVERY_READABILITY",
-          "MOBILE_LOD_SOURCE_PLAN",
-          "SHARED_REUSABLE_SPECIES_PART_LINEAGE"
+          "NATIVE_RIG_PROFILE_PER_COMPATIBLE_BODY_PLAN",
+          "LOCOMOTION_ATTACK_HIT_DEATH_SET",
+          "CONTACT_AND_RECOVERY_PRESENTATION",
+          "MOBILE_LOD_VARIANT",
+          "SPECIES_PART_OR_SOCKET_REUSE_METADATA"
         ]
       },
       {
         "id": "HERO_920",
         "targetScore": 920,
+        "projectedSourceAuditScore": 921.1,
+        "requiredAxisFloor": {
+          "MOTION_RIG": 92,
+          "FEEDBACK_STATES": 90,
+          "MODULAR_REUSE": 92,
+          "PERFORMANCE_LOD": 92,
+          "INTEGRATION_READINESS": 94,
+          "DETAIL_FINISH": 94,
+          "MATERIAL_SURFACE": 92,
+          "STYLE_COHERENCE": 94
+        },
         "requiredEvidence": [
           "STARTER_HERO_MOTION_IDENTITY",
-          "ZONE_ROLE_SPECIFIC_CREATURE_ACTING",
-          "ELITE_BOSS_DERIVATIVE_STRUCTURE",
-          "REACTION_AND_STATE_FEEDBACK_BREADTH",
-          "MOBILE_GAME_CAMERA_SILHOUETTE_REVIEW"
+          "SPECIES_SPECIFIC_ATTACK_AND_REACTION_LANGUAGE",
+          "SURFACE_AND_MATERIAL_BREAKUP",
+          "CAMERA_DISTANCE_READABILITY",
+          "RUNTIME_READY_NATIVE_VARIANT_METADATA"
         ]
       }
     ],
     "repairOrder": [
       "MOTION_RIG",
-      "FEEDBACK_STATES",
+      "REACTION_AND_CONTACT_FEEDBACK",
+      "DETAIL_FINISH",
       "MODULAR_REUSE",
-      "INTEGRATION_READINESS",
-      "PERFORMANCE_LOD",
-      "DETAIL_FINISH"
+      "MOBILE_LOD"
     ],
     "newVolumeAuthoring": {
       "allowed": true,
       "globallyBlocked": false,
       "mayRunInParallelWithQualityRepair": true,
       "allowWhen": [
-        "NEW_SPECIES_OR_BODY_PLAN_ROLE_GAP_REMAINS",
-        "ZONE_ECOLOGY_NEEDS_DISTINCT_SILHOUETTE_NOT_COVERED_BY_EXISTING_SPECIES",
-        "EXISTING_SPECIES_DERIVATIVE_WOULD_COLLAPSE_IDENTITY_OR_READABILITY"
+        "NEW_SPECIES_ROLE_GAP_REMAINS",
+        "BOSS_SIGNATURE_GAP_REMAINS",
+        "EXISTING_SPECIES_CANNOT_COVER_BODY_PLAN_OR_ECOLOGY_ROLE"
       ],
-      "resolutionOrder": [
-        "REUSE_EXISTING",
-        "DERIVE_VARIANT",
-        "RECOMBINE_EXISTING",
-        "NEW_AUTHORING"
-      ],
-      "exactDuplicateSpamForbidden": true,
-      "recolorOnlyVolumeDoesNotCount": true
+      "exactDuplicateSpeciesSpamForbidden": true,
+      "recolorOnlySpeciesDoesNotCount": true
     },
     "safeguards": {
-      "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
       "productionVerifiedMayNotBeInferredFromPlan": true,
-      "gameplayStatsAiDropsSaveNetworkAuthorityUnchanged": true
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "gameplayStatsAiDamageDropSaveNetworkAuthorityUnchanged": true
     }
   }
 }
