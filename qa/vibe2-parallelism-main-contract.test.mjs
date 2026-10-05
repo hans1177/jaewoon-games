@@ -17,7 +17,9 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.match(recoveryFast,/concurrency:\n  group: vibe2-recovery-fast-control\n  cancel-in-progress: false/);
   assert.match(recoveryFast,/\n  recover:\n    runs-on: ubuntu-slim/);
   assert.match(recoveryFast,/company-recovery-dispatch\.mjs --route=all/);
-  assert.match(recoveryFast,/ref=vibe2-unreal-core/);
+  assert.match(recoveryFast,/with:\n\s+ref: main/);
+  assert.match(recoveryFast,/git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main \+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core --quiet/);
+  assert.match(recoveryFast,/git worktree add --detach \/tmp\/vibe2-recovery-control origin\/vibe2-unreal-core/);
   assert.doesNotMatch(recoveryFast,/game-primary.*concurrency|F0.*concurrency|F9.*concurrency/i);
   assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,64);
 });
