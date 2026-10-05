@@ -1188,6 +1188,8 @@ test('F0 private validation defers same-source quality repair and resumes for re
     robloxFoundationF0Passed:true,
     robloxBuildPreflightPassed:true,
     robloxBuildOrPackagePassed:true,
+    robloxBuildInternalAssetContractVersion:1,
+    robloxBuildInternalAssetBindingPassed:true,
     robloxFoundationF0Evidence:{sourceRevision:'new',artifactIdentity:'artifact',artifactRunId:1},
     robloxFailureStage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
     robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
