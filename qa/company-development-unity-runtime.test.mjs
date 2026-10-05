@@ -101,6 +101,11 @@ test('creates Unity target-platform prototypes after admission without embedding
     assert.match(meta.generatorFingerprint,/^[0-9a-f]{64}$/);
     assert.equal(meta.androidGraphicsCompatibilityProfile,'OPEN_GLES3_ES30_MINIMUM');
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
+    assert.match(runtimeScript,/private Animator animator;/);
+    assert.match(runtimeScript,/AvatarIKGoal\.LeftFoot/);
+    assert.match(runtimeScript,/Physics\.Raycast\(/);
+    assert.equal(manifest.dependencies['com.unity.modules.animation'],'1.0.0','generated Animator and IK code requires AnimationModule');
+    assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0','generated foot-contact raycasts require PhysicsModule');
     assert.match(buildScript,/SeedAndroidBuild/);
     assert.match(buildScript,/targetArchitectures = AndroidArchitecture\.ARM64;/);
     assert.doesNotMatch(buildScript,/AndroidArchitecture\.X86_64/);
@@ -119,6 +124,35 @@ test('creates Unity target-platform prototypes after admission without embedding
     assert.match(linkerConfig,/<type fullname="Unity\.Loading\.ContentLoadingSystem" preserve="all"\s*\/>/);
     assert.equal(projectVersion.trim(),`m_EditorVersion: ${expectedUnityEditorVersion}\nm_EditorVersionWithRevision: ${expectedUnityEditorVersion} (${expectedUnityEditorRevision})`);
   }
+});
+
+test('Unity bootstrap repairs existing motion dependencies and preserves custom manifest content on repeated entry',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-manifest-'));
+  try{
+    const {baseline,playbooks}=fixtures(root);
+    const sandbox=path.join(root,'sandbox');
+    fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
+    fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
+    const project=path.join(sandbox,'unity-games/seed-puzzle-chromatic-cascade');
+    const manifestFile=path.join(project,'Packages/manifest.json');
+    fs.mkdirSync(path.dirname(manifestFile),{recursive:true});
+    const existing={dependencies:{'com.unity.modules.imgui':'1.0.0','com.example.gameplay':'file:../../custom-gameplay'},scopedRegistries:[{name:'Game packages',url:'https://packages.example.invalid',scopes:['com.example']}]};
+    fs.writeFileSync(manifestFile,JSON.stringify(existing));
+    const args=['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade',`--baseline=${baseline}`,`--playbooks=${playbooks}`];
+    for(let attempt=0;attempt<2;attempt++){
+      const run=spawnSync(process.execPath,args,{cwd:sandbox,encoding:'utf8'});
+      assert.equal(run.status,0,run.stderr||run.stdout);
+      assert.deepEqual(JSON.parse(fs.readFileSync(manifestFile,'utf8')),{...existing,dependencies:{...existing.dependencies,'com.unity.modules.animation':'1.0.0','com.unity.modules.physics':'1.0.0'}});
+    }
+    const runtime=fs.readFileSync(path.join(project,'Assets/Scripts/SeedTechnicalPrototype.cs'),'utf8');
+    assert.match(runtime,/AvatarIKGoal\.LeftFoot/);
+    assert.match(runtime,/Physics\.Raycast\(/);
+    fs.writeFileSync(manifestFile,'{"dependencies":[]}');
+    const rejected=spawnSync(process.execPath,args,{cwd:sandbox,encoding:'utf8'});
+    assert.notEqual(rejected.status,0);
+    assert.match(rejected.stderr,/UNITY_PACKAGE_MANIFEST_INVALID/);
+    assert.equal(fs.readFileSync(path.join(project,'Assets/Scripts/SeedTechnicalPrototype.cs'),'utf8'),runtime,'invalid manifest must fail before replacing the project');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Unity native generator ignores legacy Web evidence and emits no WebGL path',()=>{
@@ -434,21 +468,87 @@ test('Unity executor admits source-bind work through the shared platform router 
 });
 
 
-test('Unity parent accepts only actual runtime verification and avoids duplicate fresh-build smoke dispatch',()=>{
+test('Unity parent accepts actual runtime verification and reuses the exact build without waiting for a Cloud automatic trigger',()=>{
   assert.match(workflowSource,/select\(\.name=="Install and launch exact APK on matching ARM64 runtime"\)\|\.conclusion/);
   assert.match(workflowSource,/runtime_passed=.*legacy_verify.*success/);
   assert.match(workflowSource,/LEGACY_RUNTIME_VERIFY_CONCLUSION=\$legacy_verify/);
   assert.match(workflowSource,/if: steps\.buildstate\.outputs\.build_passed == 'true' && steps\.buildstate\.outputs\.runtime_passed != 'true'/);
   assert.doesNotMatch(workflowSource,/runtime_passed != 'true' && steps\.plan\.outputs\.reuse_build == 'true'/);
-  assert.match(workflowSource,/REUSE: \$\{\{ steps\.plan\.outputs\.reuse_build \}\}/);
-  assert.match(workflowSource,/runs\?event=workflow_run&per_page=50/);
-  assert.match(workflowSource,/UNITY_RUNTIME_SMOKE_REUSED_AUTO=/);
+  assert.match(workflowSource,/UNITY_RUNTIME_SMOKE_REUSED_EXACT_BUILD=/);
   assert.match(workflowSource,/UNITY_RUNTIME_SMOKE_DISPATCHED_MANUAL=/);
-  const reuseAuto=workflowSource.indexOf('UNITY_RUNTIME_SMOKE_REUSED_AUTO=');
+  const reuseExact=workflowSource.indexOf('UNITY_RUNTIME_SMOKE_REUSED_EXACT_BUILD=');
   const manualDispatch=workflowSource.indexOf('jq -n --arg ref main --arg run "$BUILD_RUN"');
-  assert.ok(reuseAuto>0&&manualDispatch>reuseAuto,'fresh build must reuse the auto runtime smoke before any manual fallback dispatch');
+  assert.ok(reuseExact>0&&manualDispatch>reuseExact,'exact build runtime must be considered before manual dispatch');
 });
 
+
+test('Unity runtime dispatch shell reuses exact build runs and immediately dispatches Cloud checkpoints without accepting skipped evidence',()=>{
+  const block=workflowSource.split('      - name: Resume target-platform runtime only from its failed checkpoint\n')[1]?.split('\n      - name:')[0];
+  assert.ok(block,'runtime checkpoint step must exist');
+  const script=block.split('        run: |\n')[1].split('\n').map(line=>line.startsWith('          ')?line.slice(10):line).join('\n');
+  const syntax=spawnSync('bash',['-n'],{input:script,encoding:'utf8'});
+  assert.equal(syntax.status,0,syntax.stderr);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-runtime-dispatch-'));
+  try{
+    const bin=path.join(root,'bin');
+    fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin,'gh'),String.raw`#!/usr/bin/env node
+const fs=require('fs');
+const args=process.argv.slice(2);
+const config=JSON.parse(process.env.MOCK_CONFIG);
+const log=process.env.MOCK_LOG;
+fs.appendFileSync(log,JSON.stringify(args)+'\n');
+const api='repos/example/repository/actions/workflows/unity-android-runtime-smoke.yml';
+const endpoint=args.find(value=>value.startsWith('repos/'));
+if(args.includes('POST')){
+  const payload=JSON.parse(fs.readFileSync(0,'utf8'));
+  if(payload.ref!=='main'||payload.inputs?.run_id!==process.env.BUILD_RUN)process.exit(91);
+  fs.writeFileSync(process.env.MOCK_DISPATCHED,'yes');
+  console.log('{}');
+}else if(endpoint===api+'/runs?per_page=100'){
+  if(config.discoveryFailure)process.exit(42);
+  console.log(JSON.stringify({workflow_runs:config.runs}));
+}else if(endpoint===api+'/runs?branch=main&event=workflow_dispatch&per_page=20'){
+  if(args.includes('--jq'))console.log(800);
+  else console.log(JSON.stringify({workflow_runs:[
+    {id:950,display_title:'Unity Android Runtime Smoke 99999'},
+    {id:901,display_title:'Unity Android Runtime Smoke '+process.env.BUILD_RUN}
+  ]}));
+}else if(endpoint?.startsWith('repos/example/repository/actions/runs/')){
+  console.log('completed\t'+(config.result||'success'));
+}else if(args[0]==='run'&&args[1]==='download'){
+  process.exit(1);
+}else{
+  console.error('unexpected gh invocation '+JSON.stringify(args));
+  process.exit(92);
+}
+`,{mode:0o755});
+    fs.writeFileSync(path.join(bin,'sleep'),'#!/bin/sh\nprintf "%s\\n" "$*" >> "$MOCK_SLEEP_LOG"\n',{mode:0o755});
+    const row=(id,build,status,event='workflow_dispatch',conclusion=null)=>({id,display_title:'Unity Android Runtime Smoke '+build,status,event,conclusion});
+    const cases=[
+      {name:'active manual',runs:[row(410,12345,'in_progress'),row(799,54321,'queued')],expected:410,dispatch:false},
+      {name:'active automatic',runs:[row(420,12345,'queued','workflow_run')],expected:420,dispatch:false},
+      {name:'successful exact checkpoint',runs:[row(430,12345,'completed','workflow_dispatch','success')],expected:430,dispatch:false},
+      {name:'fresh Cloud build',runs:[row(790,54321,'in_progress'),row(791,12345,'completed','workflow_dispatch','skipped'),row(792,12345,'completed','workflow_dispatch','failure'),row(793,12345,'completed','workflow_dispatch','cancelled')],expected:901,dispatch:true},
+      {name:'reused failed runtime',runs:[row(440,12345,'in_progress')],expected:440,dispatch:false,result:'failure',status:6},
+      {name:'API failure',runs:[],discoveryFailure:true,dispatch:false,status:42},
+    ];
+    for(const [index,scenario] of cases.entries()){
+      const output=path.join(root,index+'.output');
+      const log=path.join(root,index+'.log');
+      const sleepLog=path.join(root,index+'.sleeps');
+      const dispatched=path.join(root,index+'.dispatch');
+      const run=spawnSync('bash',['-c',script],{encoding:'utf8',env:{...process.env,PATH:bin+path.delimiter+process.env.PATH,BUILD_RUN:'12345',GITHUB_REPOSITORY:'example/repository',GITHUB_OUTPUT:output,MOCK_CONFIG:JSON.stringify(scenario),MOCK_LOG:log,MOCK_SLEEP_LOG:sleepLog,MOCK_DISPATCHED:dispatched}});
+      assert.equal(run.status,scenario.status||0,scenario.name+': '+run.stderr+run.stdout);
+      assert.equal(fs.existsSync(dispatched),scenario.dispatch,scenario.name);
+      assert.equal(fs.existsSync(sleepLog)?fs.readFileSync(sleepLog,'utf8'):'','',scenario.name+' must not wait for a missing automatic trigger');
+      const calls=fs.readFileSync(log,'utf8').trim().split('\n').map(JSON.parse);
+      assert.equal(calls.filter(args=>args.includes('POST')).length,scenario.dispatch?1:0,scenario.name);
+      if(scenario.expected)assert.match(fs.readFileSync(output,'utf8'),new RegExp('run_id='+scenario.expected+'\\n'),scenario.name);
+      else assert.equal(fs.existsSync(output),false,'failed discovery must not claim a runtime checkpoint');
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('legacy Genymotion runtime gate cannot block canonical Redroid validation when credentials are absent',()=>{
   assert.match(cloudBuildSource,/Resolve legacy Genymotion gate availability/);
@@ -732,4 +832,3 @@ test('Unity runtime has no whole-game top-level serialization',()=>{
   const header=workflowSource.slice(0,workflowSource.indexOf('\njobs:\n'));
   assert.doesNotMatch(header,/\nconcurrency:\n/);
 });
-

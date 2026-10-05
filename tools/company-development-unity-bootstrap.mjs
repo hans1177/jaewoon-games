@@ -1,3 +1,4 @@
+// 파일명: tools/company-development-unity-bootstrap.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -138,9 +139,20 @@ const generatorFingerprint=createHash('sha256').update(fs.readFileSync(new URL(i
 const csharpArray=values=>(values||[]).map(value=>`        "${csharp(value)}",`).join('\n');
 const developmentLearning=verifiedExternalLearning.gameDevelopmentProfile;
 
+// 프로젝트 의존성: 기존 선언은 보존하고 생성 소스가 사용하는 내장 모듈만 보충한다.
+const manifestPath=path.join(output,'Packages/manifest.json');
+const manifest=fs.existsSync(manifestPath)?readJson(manifestPath):{dependencies:{}};
+if(!manifest||typeof manifest!=='object'||Array.isArray(manifest)
+  ||(manifest.dependencies!==undefined&&(!manifest.dependencies||typeof manifest.dependencies!=='object'||Array.isArray(manifest.dependencies)))){
+  throw new Error('UNITY_PACKAGE_MANIFEST_INVALID');
+}
+manifest.dependencies??={};
+for(const module of ['animation','imgui','physics']){
+  manifest.dependencies['com.unity.modules.'+module]??='1.0.0';
+}
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
-fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
+fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),`m_EditorVersion: ${UNITY_EDITOR_VERSION}\nm_EditorVersionWithRevision: ${UNITY_EDITOR_VERSION} (${UNITY_EDITOR_REVISION})\n`);
 fs.writeFileSync(path.join(output,'Assets/link.xml'),`<linker>\n  <assembly fullname="UnityEngine.ContentLoadModule">\n    <type fullname="Unity.Loading.ContentLoadingSystem" preserve="all" />\n  </assembly>\n</linker>\n`);
 
