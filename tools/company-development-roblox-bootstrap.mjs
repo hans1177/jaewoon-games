@@ -193,17 +193,22 @@ function selectBootstrapAtoms(values=[],preferred=[],key='',count=3){
 export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetLibrary={}}={}){
   const families=assetLibrary?.baseMaterialLibrary?.families||{};
   const selected={};
+  const familySelectionTargets={};
   for(const [family,preferred] of Object.entries(ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES)){
+    const targetCount=family==='MOTION'?11:(family==='ENVIRONMENT'||family==='BUILDING'?4:3);
+    familySelectionTargets[family]=Math.min(targetCount,(families?.[family]||[]).length);
     selected[family]=selectBootstrapAtoms(
       families?.[family]||[],
       preferred,
       `${gameId}|${profile?.genre||''}|${family}`,
-      family==='MOTION'?11:(family==='ENVIRONMENT'||family==='BUILDING'?4:3)
+      targetCount
     );
   }
   const selectedAtomCount=Object.values(selected).reduce((n,rows)=>n+rows.length,0);
   const requiredFamilies=Object.freeze(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
+  const requiredSelectedAtomCount=requiredFamilies.reduce((total,family)=>total+Number(familySelectionTargets[family]||0),0);
   const missingFamilies=requiredFamilies.filter(family=>!(selected[family]||[]).length);
+  const underfilledFamilies=requiredFamilies.filter(family=>(selected[family]||[]).length<Number(familySelectionTargets[family]||0));
   const motionAtoms=Object.freeze([...(selected.MOTION||[])]);
   const selectionFingerprint=studioAssetSelectionFingerprint({
     gameId,profile,libraryVersion:Number(assetLibrary?.version||0),families:selected
@@ -211,7 +216,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
   return Object.freeze({
     version:3,
     bindingVersion:2,
-    applied:selectedAtomCount>=12&&missingFamilies.length===0,
+    applied:missingFamilies.length===0&&underfilledFamilies.length===0&&selectedAtomCount===requiredSelectedAtomCount,
     source:'company-asset-library.json#baseMaterialLibrary',
     libraryVersion:Number(assetLibrary?.version||0),
     selectionFingerprint,
@@ -224,12 +229,16 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     }),
     atomState:clean(assetLibrary?.baseMaterialLibrary?.status)||null,
     selectedAtomCount,
+    requiredSelectedAtomCount,
+    familySelectionTargets:Object.freeze({...familySelectionTargets}),
     families:Object.freeze(selected),
     universalAssetFirst:Object.freeze({
       required:true,
       allFamilies:requiredFamilies,
       allFamiliesEvaluated:true,
       missingFamilies:Object.freeze(missingFamilies),
+      underfilledFamilies:Object.freeze(underfilledFamilies),
+      selectionCoverageRequiredPct:100,
       familyResultRequired:'APPLIED_OR_EXPLICIT_NOT_APPLICABLE',
       actualSourceBindingRequired:true,
       markerOnlyApplicationForbidden:true,
