@@ -145,11 +145,12 @@ test('asset teacher covers every registered object family, base material family 
 
 test('asset teacher application code is scoped, original practice input and never quality authority',()=>{
   const all=createAssetProductionTeachingRecipe();
-  assert.equal(all.applicationExamples.length,10);
-  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,10);
+  assert.equal(all.applicationExamples.length,15);
+  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,15);
   for(const platform of ['UNITY','WEB']){
     const other=createAssetProductionTeachingRecipe({platform});
     assert.deepEqual(other.applicationExamples,[]);
+    assert.deepEqual(other.advancedTechniques,[]);
     assert.equal(other.familyLessons.length,12);
   }
   for(const family of STUDIO_ASSET_FAMILIES){
@@ -171,6 +172,28 @@ test('asset teacher application code is scoped, original practice input and neve
   const ui=createAssetProductionTeachingRecipe({families:['UI']});
   assert.ok(ui.applicationExamples.some(row=>row.id==='LATEST_VIEW_RESULT_ONLY'));
   assert.ok(!ui.applicationExamples.some(row=>row.id==='SUPPORT_PLANE_OFFSET'));
+});
+
+test('advanced teacher selects applicable techniques with failure checks and preserves authority boundaries',()=>{
+  const all=createAssetProductionTeachingRecipe({platform:'roblox'});
+  assert.equal(all.advancedTechniques.length,8);
+  for(const family of STUDIO_ASSET_FAMILIES){
+    const recipe=createAssetProductionTeachingRecipe({families:[family],platform:'roblox'});
+    assert.ok(recipe.advancedTechniques.length>0,family);
+    for(const row of recipe.advancedTechniques){
+      assert.ok(row.families.includes(family));
+      assert.ok(row.when.length>30&&row.lesson.length>100&&row.check.length>80,row.id);
+    }
+    assert.equal(recipe.runtimeVerified,false);
+    assert.equal(recipe.gameplayAuthority,false);
+  }
+  const motion=createAssetProductionTeachingRecipe({families:['MOTION']});
+  assert.deepEqual(motion.advancedTechniques.map(row=>row.id),['CONTACT_IK_AND_REACH','INERTIAL_SECONDARY_RESPONSE','ROTATION_SPACE_AND_BLENDING']);
+  assert.ok(motion.applicationExamples.some(row=>row.id==='TWO_BONE_REACH_GEOMETRY'));
+  assert.ok(!motion.applicationExamples.some(row=>row.id==='SPATIAL_HASH_DECORATIVE_SPACING'));
+  const ui=createAssetProductionTeachingRecipe({families:['UI']});
+  assert.ok(ui.applicationExamples.some(row=>row.id==='VIRTUALIZED_FIXED_ROW_WINDOW'));
+  assert.ok(!ui.advancedTechniques.some(row=>row.id==='PBR_UV_AND_STYLE_LOCK'));
 });
 
 test('asset teacher details buildings settlements weather items inventory and menus using existing native APIs',()=>{

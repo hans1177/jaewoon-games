@@ -74,9 +74,89 @@ const binary=process.env.VIBE2_LUAU_BINARY;
 const teacherBinary=process.env.VIBE2_LUAU_BINARY||process.env.VIBE2_TEACHER_LUA_BINARY;
 test('teacher application examples execute boundary timing placement inventory and lifecycle cases',{skip:!teacherBinary&&'Set a Lua/Luau teaching executor; native Roblox remains a separate gate'},()=>{
   const recipe=createAssetProductionTeachingRecipe();
-  assert.equal(recipe.applicationExamples.length,10);
+  assert.equal(recipe.applicationExamples.length,15);
   const script='local examples={}\n'+recipe.applicationExamples.map(row=>'examples['+JSON.stringify(row.id)+']=(function()\n'+row.code+'\nend)()').join('\n')+String.raw`
 local function near(a,b) assert(math.abs(a-b)<1e-9, tostring(a).." ~= "..tostring(b)) end
+local spring=examples.CRITICALLY_DAMPED_SECONDARY_MOTION
+local x1,v1=spring(-2,3,5,6,1)
+for _,fps in ipairs({30,60,120}) do
+  local x,v=-2,3
+  for i=1,fps do x,v=spring(x,v,5,6,1/fps) end
+  near(x,x1);near(v,v1)
+end
+local x,v=spring(-2,3,5,6,0);near(x,-2);near(v,3)
+x,v=spring(-2,3,5,6,-1);near(x,-2);near(v,3)
+x,v=spring(-2,3,5,6,10);near(x,5);near(v,0)
+assert(not pcall(spring,0,0,1,0,1))
+local ik=examples.TWO_BONE_REACH_GEOMETRY
+local function length(x,y)return math.sqrt(x*x+y*y)end
+for _,bones in ipairs({{2,2},{3,1},{1,3}}) do
+  for _,distance in ipairs({0,.2,2,4,8}) do
+    for angle=0,330,30 do
+      local tx,ty=distance*math.cos(angle*math.pi/180),distance*math.sin(angle*math.pi/180)
+      for _,side in ipairs({-1,1}) do
+        local jx,jy,ex,ey,clamped=ik(bones[1],bones[2],tx,ty,side)
+        near(length(jx,jy),bones[1]);near(length(ex-jx,ey-jy),bones[2])
+        local reach=math.max(math.abs(bones[1]-bones[2]),math.min(bones[1]+bones[2],length(tx,ty)))
+        near(length(ex,ey),reach)
+        if not clamped then near(ex,tx);near(ey,ty) end
+      end
+    end
+  end
+end
+local ax,ay=ik(2,2,2,0,1);local bx,by=ik(2,2,2,0,-1)
+near(ax,bx);near(ay,-by);assert(ay>0)
+assert(not pcall(ik,0,1,1,0,1))
+local blendRotation=examples.SHORTEST_QUATERNION_BLEND
+local identity,quarter={0,0,0,1},{0,0,math.sqrt(.5),math.sqrt(.5)}
+for i=0,10 do
+  local t=i/10
+  local q=blendRotation(identity,quarter,t)
+  near(q[1],0);near(q[2],0);near(q[3],math.sin(t*math.pi/4));near(q[4],math.cos(t*math.pi/4))
+  near(q[1]^2+q[2]^2+q[3]^2+q[4]^2,1)
+end
+for _,target in ipairs({{0,0,0,-2},{0,0,1e-10,1}}) do
+  local q=blendRotation(identity,target,.5)
+  assert(q[4]>.999999);near(q[1]^2+q[2]^2+q[3]^2+q[4]^2,1)
+end
+local q=blendRotation(identity,quarter,-1);near(q[4],1)
+q=blendRotation(identity,quarter,2);near(q[3],quarter[3])
+assert(identity[4]==1 and quarter[3]==math.sqrt(.5))
+assert(not pcall(blendRotation,{0,0,0,0},identity,.5))
+local window=examples.VIRTUALIZED_FIXED_ROW_WINDOW
+local first,last,total=window(0,20,0,100,2);assert(first==1 and last==0 and total==0)
+first,last,total=window(100,20,0,0,2);assert(first==1 and last==0 and total==2000)
+first,last,total=window(100,20,-40,100,0);assert(first==1 and last==5 and total==2000)
+first,last=window(100,20,20,100,0);assert(first==2 and last==6)
+first,last=window(100,20,21,100,0);assert(first==2 and last==7)
+first,last=window(100,20,5000,100,0);assert(first==96 and last==100)
+first,last=window(3,20,100,200,2);assert(first==1 and last==3)
+for offset=0,20000000,137931 do
+  first,last,total=window(1000000,20,offset,101,2)
+  assert(first>=1 and last<=1000000 and last-first+1<=11 and total==20000000)
+end
+assert(not pcall(window,10,0,0,100,2));assert(not pcall(window,10,20,0,100,-1))
+local spacing=examples.SPATIAL_HASH_DECORATIVE_SPACING
+local candidates={{id="origin",x=0,z=0},{id="duplicate",x=0,z=0},{id="edge",x=1,z=0}}
+for i=-30,30 do
+  for j=-3,3 do
+    table.insert(candidates,{id=tostring(i).."/"..tostring(j),x=i*.37,z=j*.41+(i%3)*.13})
+  end
+end
+local expected={}
+for _,p in ipairs(candidates) do
+  local clear=true
+  for _,q in ipairs(expected) do
+    local dx,dz=p.x-q.x,p.z-q.z
+    if dx*dx+dz*dz<1 then clear=false end
+  end
+  if clear then table.insert(expected,p) end
+end
+local chosen,again=spacing(candidates,1),spacing(candidates,1)
+assert(#chosen==#expected and #again==#expected and #candidates==430)
+for i,p in ipairs(chosen) do assert(p==expected[i] and p==again[i]) end
+assert(chosen[1].id=="origin" and chosen[2].id=="edge" and candidates[2].id=="duplicate")
+assert(not pcall(spacing,candidates,0))
 local follow = examples.FRAME_RATE_INDEPENDENT_FOLLOW
 for _, fps in ipairs({30,60,120}) do
   local value=0
