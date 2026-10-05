@@ -234,29 +234,37 @@ function nativeDomainsForEngine(engine=''){
   if(['uefn','fortnite_uefn','fortnite-uefn','fortnite'].includes(e))return UEFN_NATIVE_ONLY;
   return null;
 }
+function matchingRobloxCloudRuntimePassEvidence(record={}){
+  if(lower(record?.engine||record?.target)!=='roblox')return true;
+  if(record?.cloudRuntimeVerified===true)return true;
+  const evidence=(record?.evidence||[]).map(clean).filter(Boolean);
+  const runtimePass=evidence.some(value=>value==='roblox-open-cloud-runtime:PASS'||value.startsWith('roblox-open-cloud-runtime:PASS:'));
+  const exactCandidate=evidence.some(value=>value==='roblox-open-cloud-exact-candidate:PASS'||value.startsWith('roblox-open-cloud-exact-candidate:PASS:'));
+  return runtimePass&&exactCandidate;
+}
 function matchingNativeRuntimePassEvidence(record={}){
   const e=lower(record?.engine||record?.target);
   const nativeDomains=nativeDomainsForEngine(e);
   if(!nativeDomains)return true;
+  if(e==='roblox')return matchingRobloxCloudRuntimePassEvidence(record);
   if(record?.engineQaVerified===true||record?.nativeRuntimeVerified===true||record?.runtimeVerified===true)return true;
   const evidence=(record?.evidence||[]).map(clean).filter(Boolean);
   const text=evidence.join(' ').toLowerCase();
-  if(e==='roblox')return /roblox[^\n]*(?:runtime|studio|playtest|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*roblox[^\n]*(?:runtime|studio|playtest|qa)/i.test(text);
   if(e==='unity')return /unity[^\n]*(?:runtime|playmode|build|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*unity[^\n]*(?:runtime|playmode|build|qa)/i.test(text);
   return /(?:uefn|fortnite)[^\n]*(?:runtime|verse|playtest|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*(?:uefn|fortnite)[^\n]*(?:runtime|verse|playtest|qa)/i.test(text);
 }
-const ROBLOX_STUDIO_ASSET_RUNTIME_REQUIRED_DOMAINS=new Set(['ASSET_PRODUCTION','ASSET_ADAPTATION']);
-function matchingRobloxStudioAssetRuntimePassEvidence(record={}){
+const ROBLOX_CLOUD_ASSET_RUNTIME_REQUIRED_DOMAINS=new Set(['ASSET_PRODUCTION','ASSET_ADAPTATION']);
+function matchingRobloxCloudAssetRuntimePassEvidence(record={}){
   if(lower(record?.engine||record?.target)!=='roblox')return true;
-  if(record?.studioAssetRuntimeBindingPassed===true)return true;
+  if(record?.cloudAssetRuntimeBindingPassed===true)return true;
   const evidence=(record?.evidence||[]).map(clean).filter(Boolean);
-  return evidence.some(value=>value==='ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS'||value.startsWith('ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS:'));
+  return evidence.some(value=>value==='ROBLOX_OPEN_CLOUD_ASSET_RUNTIME_BINDING_PASS'||value.startsWith('ROBLOX_OPEN_CLOUD_ASSET_RUNTIME_BINDING_PASS:'));
 }
 function nativePositiveMasteryAllowed(record={},domain=''){
   const engine=lower(record?.engine||record?.target);
   const normalizedDomain=upper(domain);
-  if(engine==='roblox'&&ROBLOX_STUDIO_ASSET_RUNTIME_REQUIRED_DOMAINS.has(normalizedDomain)){
-    return matchingNativeRuntimePassEvidence(record)&&matchingRobloxStudioAssetRuntimePassEvidence(record);
+  if(engine==='roblox'&&ROBLOX_CLOUD_ASSET_RUNTIME_REQUIRED_DOMAINS.has(normalizedDomain)){
+    return matchingRobloxCloudRuntimePassEvidence(record)&&matchingRobloxCloudAssetRuntimePassEvidence(record);
   }
   const nativeDomains=nativeDomainsForEngine(engine);
   if(!nativeDomains||!nativeDomains.has(normalizedDomain))return true;
@@ -1176,15 +1184,16 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     else if(sameFailure){score+=90;reasons.push('same-failure');}
     if(sameGame){score+=40;reasons.push('same-game');}
     if(engine&&lower(record.engine)===engine){score+=20;reasons.push('same-engine');}
-    const robloxNativeVerified=Boolean(
+    const robloxCloudVerified=Boolean(
       engine==='roblox'
       &&lower(record.engine)==='roblox'
       &&(
-        clean(record.taskType)==='roblox-studio-local-internal-play'
-        ||(record.evidence||[]).some(value=>/roblox-native-(?:failure-class|actual-play-feedback)|roblox-studio-local-runtime/i.test(clean(value)))
+        clean(record.taskType)==='roblox-open-cloud-runtime'
+        ||record.cloudRuntimeVerified===true
+        ||(record.evidence||[]).some(value=>/roblox-open-cloud-runtime:PASS|provider:ROBLOX_OFFICIAL_CLOUD_API_ONLY/i.test(clean(value)))
       )
     );
-    if(robloxNativeVerified){score+=35;reasons.push('roblox-native-verified');}
+    if(robloxCloudVerified){score+=45;reasons.push('roblox-open-cloud-verified');}
     const rWords=words([record.problem,record.goal,record.change,record.failureCause,...(record.reusablePatterns||[]),...(record.avoidPatterns||[])].filter(Boolean).join(' '));
     const overlap=overlapScore(qWords,rWords);
     if(overlap){score+=Math.min(20,overlap*2);reasons.push('keyword-overlap:'+overlap);}
@@ -1283,7 +1292,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:[...(taskAssetMotionIdentity?['EXACT_ASSET_AND_MOTION_VERIFIED']:[]),'SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:[...(taskAssetMotionIdentity?['EXACT_ASSET_AND_MOTION_VERIFIED']:[]),'SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_OPEN_CLOUD_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
     failureFingerprint,
     domainClassification,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
@@ -1311,7 +1320,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
   const exactAssetMotionPriority=(context.priority||[]).includes('EXACT_ASSET_AND_MOTION_VERIFIED');
-  const lines=['[VIBE VERIFIED LEARNING MOTOR]',exactAssetMotionPriority?'우선순위=exact-asset+motion > same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.':'우선순위=same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  const lines=['[VIBE VERIFIED LEARNING MOTOR]',exactAssetMotionPriority?'우선순위=exact-asset+motion > same-game+same-failure > Roblox target이면 verified Open Cloud runtime > same-failure > same-game > same-engine > system-match > general. Studio-local 또는 캐시된 로컬 증거는 cloud production runtime PASS를 대신하지 않는다.':'우선순위=same-game+same-failure > Roblox target이면 verified Open Cloud runtime > same-failure > same-game > same-engine > system-match > general. Studio-local 또는 캐시된 로컬 증거는 cloud production runtime PASS를 대신하지 않는다.'];
   if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
   if(context.domainClassification)lines.push(`- learning-domains=PRIMARY[${(context.domainClassification.primary||[]).join(',')||'none'}] SECONDARY[${(context.domainClassification.secondary||[]).join(',')||'none'}]`);
   for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);
@@ -1393,7 +1402,7 @@ function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput
 
 export function buildBenchmarkLadder(masteryInput={},experienceInput={},companyQueueInput={}){
   const state=createMasteryState(masteryInput);
-  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],UNITY_NATIVE:['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE'],FORTNITE_UEFN_NATIVE:['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE','MAIN_STORY_GENERATION'],QUEST_DESIGN:['QUEST_DESIGN','QUEST_GRAPH'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE','CHARACTER_VOICE'],CONCEPT_DIRECTION:['CONCEPT_DIRECTION'],WORLD_GENERATION:['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN'],STREAMING_OPTIMIZATION:['STREAMING_OPTIMIZATION'],FORESHADOWING_PAYOFF:['FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN'],CHARACTER_BEHAVIOR:['CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY'],RELATIONSHIP_MEMORY:['CHARACTER_RELATIONSHIP_MEMORY','WORLD_NARRATIVE_BINDING']};
+  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER','ROBLOX_TOUCH_INPUT','ROBLOX_CHARACTER_STATE','ROBLOX_UI_STATE'],UNITY_NATIVE:['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE'],FORTNITE_UEFN_NATIVE:['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE','MAIN_STORY_GENERATION'],QUEST_DESIGN:['QUEST_DESIGN','QUEST_GRAPH'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE','CHARACTER_VOICE'],CONCEPT_DIRECTION:['CONCEPT_DIRECTION'],WORLD_GENERATION:['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN'],STREAMING_OPTIMIZATION:['STREAMING_OPTIMIZATION'],FORESHADOWING_PAYOFF:['FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN'],CHARACTER_BEHAVIOR:['CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY'],RELATIONSHIP_MEMORY:['CHARACTER_RELATIONSHIP_MEMORY','WORLD_NARRATIVE_BINDING']};
   const cases=[];
   for(const [track,domains] of Object.entries(mapping)){
     const avg=domains.reduce((n,d)=>n+(state.domains[d]?.level||1),0)/domains.length;
@@ -2413,6 +2422,118 @@ export function mergeVerifiedRobloxStudioPlayExperienceMemory(experienceInput={}
   };
 }
 
+
+function verifiedRobloxCloudRuntimeBinding(item={}){
+  const candidate=item?.robloxRuntimeCandidateEvidence||item?.robloxInternalReleaseEvidence||{};
+  const runtime=item?.robloxRuntimeEvidence||item?.robloxRuntimeFoundationEvidence||{};
+  const sourceRevision=clean(item?.robloxSourceCommit);
+  const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
+  const artifactRunId=Number(item?.robloxFoundationF0Evidence?.artifactRunId||candidate?.artifactRunId||runtime?.artifactRunId||0);
+  const universeId=clean(candidate?.universeId);
+  const placeId=clean(candidate?.placeId);
+  const versionNumber=Number(candidate?.versionNumber||0);
+  const exactCandidate=Boolean(
+    candidate?.published===true
+    &&/^[0-9a-f]{40}$/i.test(sourceRevision)
+    &&/^sha256:[0-9a-f]{64}$/i.test(artifactIdentity)
+    &&clean(candidate?.sourceRevision)===sourceRevision
+    &&clean(candidate?.artifactIdentity)===artifactIdentity
+    &&/^[1-9][0-9]*$/.test(universeId)
+    &&/^[1-9][0-9]*$/.test(placeId)
+    &&Number.isInteger(versionNumber)&&versionNumber>0
+    &&(!Number(candidate?.artifactRunId)||Number(candidate.artifactRunId)===artifactRunId)
+  );
+  const runtimeAuthority=lower(runtime?.authority);
+  const cloudObserved=Boolean(
+    runtime?.provider==='ROBLOX_OFFICIAL_CLOUD_API_ONLY'
+    ||(runtime?.actualRuntimeEvidence===true&&/roblox-(?:runtime-foundation-sentinel|open-cloud)/i.test(runtimeAuthority))
+    ||/roblox-open-cloud/i.test(runtimeAuthority)
+  );
+  const runtimePlace=clean(runtime?.placeId||runtime?.candidatePlaceId);
+  const runtimeVersion=Number(runtime?.placeVersion||runtime?.versionNumber||runtime?.candidateVersionNumber||0);
+  const exactRuntimeIdentity=(!runtimePlace||runtimePlace===placeId)&&(!runtimeVersion||runtimeVersion===versionNumber);
+  const foundationPassed=item?.robloxRuntimeFoundationPassed===true||runtime?.runtimeFoundationPassed===true;
+  const runtimePassed=item?.robloxRuntimePassed===true||runtime?.runtimeAcceptancePassed===true;
+  const serverClientPassed=item?.robloxServerClientBoundaryPassed===true;
+  const mobileUiPassed=item?.robloxMobileControlUiPassed===true;
+  const independentQaPassed=item?.robloxIndependentQaPassed===true;
+  const regressionPassed=item?.robloxRegressionPassed===true;
+  const datastorePassed=item?.robloxDatastoreRejoinPassed===true;
+  const multiplayerPassed=item?.robloxMultiplayerQaPassed===true;
+  const saveRequired=runtime?.requirements?.saveEnabled===true;
+  const multiplayerRequired=runtime?.requirements?.multiplayerRequired===true;
+  const assetBindingRequired=runtime?.studioAssetBindingRequired===true;
+  const assetBindingPassed=!assetBindingRequired||runtime?.studioAssetSelectionMatched===true;
+  const pass=Boolean(
+    exactCandidate&&cloudObserved&&exactRuntimeIdentity&&foundationPassed&&runtimePassed
+    &&serverClientPassed&&mobileUiPassed&&independentQaPassed&&regressionPassed
+    &&(!saveRequired||datastorePassed)&&(!multiplayerRequired||multiplayerPassed)&&assetBindingPassed
+  );
+  return{pass,candidate,runtime,sourceRevision,artifactIdentity,artifactRunId,universeId,placeId,versionNumber,datastorePassed,multiplayerPassed,saveRequired,multiplayerRequired,assetBindingRequired,assetBindingPassed};
+}
+function verifiedRobloxCloudReusablePatterns(binding={}){
+  const domains=['ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_CHARACTER_STATE','ROBLOX_TOUCH_INPUT','ROBLOX_UI_STATE'];
+  if(binding?.datastorePassed===true)domains.push('ROBLOX_DATASTORE');
+  if(binding?.multiplayerPassed===true)domains.push('ROBLOX_MULTIPLAYER');
+  return uniq(domains.map(domain=>'verified-open-cloud-runtime:'+lower(domain).replaceAll('_','-')));
+}
+export function collectVerifiedRobloxCloudRuntimeExperience(companyQueueInput={}){
+  const records=[];
+  for(const item of companyQueueInput?.items||companyQueueInput?.projects||[]){
+    const gameId=clean(item?.gameId||item?.id);
+    if(!gameId)continue;
+    const binding=verifiedRobloxCloudRuntimeBinding(item);
+    if(!binding.pass)continue;
+    const patterns=verifiedRobloxCloudReusablePatterns(binding);
+    const outcomeId='roblox_open_cloud_runtime_'+hash([
+      gameId,binding.sourceRevision,binding.artifactIdentity,String(binding.artifactRunId),
+      binding.universeId,binding.placeId,String(binding.versionNumber)
+    ].join('|'));
+    const evidence=[
+      'roblox-open-cloud-runtime:PASS',
+      'roblox-open-cloud-exact-candidate:PASS',
+      'provider:ROBLOX_OFFICIAL_CLOUD_API_ONLY',
+      'roblox-runtime-foundation:PASS',
+      'roblox-server-client-boundary:PASS',
+      binding.datastorePassed?'roblox-datastore-rejoin:PASS':'roblox-datastore-rejoin:NOT_REQUIRED',
+      'roblox-mobile-control-ui:PASS',
+      binding.multiplayerPassed?'roblox-multiplayer:PASS':'roblox-multiplayer:NOT_REQUIRED',
+      'roblox-independent-qa:PASS',
+      'roblox-regression:PASS',
+      binding.assetBindingRequired&&binding.assetBindingPassed?'ROBLOX_OPEN_CLOUD_ASSET_RUNTIME_BINDING_PASS':null,
+      'source-revision:'+binding.sourceRevision,
+      'artifact-id:'+binding.artifactIdentity,
+      'artifact-run-id:'+String(binding.artifactRunId),
+      'universe-id:'+binding.universeId,
+      'place-id:'+binding.placeId,
+      'place-version:'+String(binding.versionNumber),
+      'roblox-open-cloud-outcome-id:'+outcomeId
+    ].filter(Boolean);
+    records.push({
+      id:outcomeId,gameId,engine:'roblox',departments:['development','qa','learning'],
+      taskType:'roblox-open-cloud-runtime',
+      problem:'exact Roblox cloud candidate must preserve server authority, replication, persistence, mobile UI, QA, and regression on the published version',
+      goal:'reuse only verified Open Cloud runtime and QA/regression coding outcomes for future Roblox development',
+      change:patterns.join(' | '),outcome:'PASS',failureCause:null,
+      qa:['ROBLOX_OFFICIAL_CLOUD_API_ONLY','EXACT_SOURCE_ARTIFACT_UNIVERSE_PLACE_VERSION','SERVER_CLIENT_BOUNDARY','MOBILE_UI','INDEPENDENT_QA','REGRESSION'],
+      build:binding.artifactIdentity,evidence,reusablePatterns:patterns,avoidPatterns:[],
+      verified:true,reusable:true,confirmations:1,nativeRuntimeVerified:true,runtimeVerified:true,cloudRuntimeVerified:true,
+      cloudAssetRuntimeBindingPassed:binding.assetBindingRequired&&binding.assetBindingPassed,
+      createdAt:clean(item?.robloxRegressionPassedAt)||clean(item?.robloxRuntimePassedAt)||clean(item?.updatedAt)||null,
+      lastVerifiedAt:clean(item?.robloxRegressionPassedAt)||clean(item?.robloxRuntimePassedAt)||clean(item?.updatedAt)||null
+    });
+  }
+  return{version:1,kind:'verified-roblox-open-cloud-runtime-experience',records,positive:records.length,negative:0,authority:'roblox-official-cloud-runtime-to-existing-learning-motor-only'};
+}
+export function mergeVerifiedRobloxCloudRuntimeExperienceMemory(experienceInput={},companyQueueInput={}){
+  const current=createVibeExperienceMemory(experienceInput);
+  const extracted=collectVerifiedRobloxCloudRuntimeExperience(companyQueueInput);
+  const persisted=new Set((current.records||[]).flatMap(row=>row?.evidence||[]).map(clean).filter(value=>value.startsWith('roblox-open-cloud-outcome-id:')));
+  const fresh=extracted.records.filter(row=>!persisted.has('roblox-open-cloud-outcome-id:'+clean(row.id)));
+  if(!fresh.length)return{memory:current,changed:false,added:0,positive:0,negative:0,candidates:extracted.records.length};
+  return{memory:createVibeExperienceMemory({records:[...(current.records||[]),...fresh]}),changed:true,added:fresh.length,positive:fresh.length,negative:0,candidates:extracted.records.length};
+}
+
 function lastGraphicsEvolutionMarker(evidence=[],prefix=''){
   return (evidence||[]).map(clean).filter(value=>value.startsWith(prefix)).at(-1)?.slice(prefix.length)||'';
 }
@@ -2477,11 +2598,11 @@ function learningStateSemanticSnapshot(input={}){
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
   const priorStateSemantic=learningStateSemanticSnapshot(stateInput);
   const specializedExperience=mergeVerifiedSpecializedQueueExperienceMemory(experienceInput,queueInput);
-  const studioExperience=mergeVerifiedRobloxStudioPlayExperienceMemory(specializedExperience.memory,companyQueueInput);
-  const studioExtracted=collectVerifiedRobloxStudioPlayExperience(companyQueueInput);
+  const cloudExperience=mergeVerifiedRobloxCloudRuntimeExperienceMemory(specializedExperience.memory,companyQueueInput);
+  const cloudExtracted=collectVerifiedRobloxCloudRuntimeExperience(companyQueueInput);
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
-  const studioApplied=applyVerifiedExperienceToMastery(applied.state,studioExtracted);
-  const specializedApplied=applyVerifiedSpecializedQueueOutcomes(studioApplied.state,queueInput);
+  const cloudApplied=applyVerifiedExperienceToMastery(applied.state,cloudExtracted);
+  const specializedApplied=applyVerifiedSpecializedQueueOutcomes(cloudApplied.state,queueInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(specializedApplied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
   const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
@@ -2496,15 +2617,16 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     graphicsApplied.state.updatedAt=clean(stateInput?.updatedAt)||null;
     graphicsApplied.state.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
   }
-  const benchmark=buildBenchmarkLadder(graphicsApplied.state,studioExperience.memory,companyQueueInput);
+  const benchmark=buildBenchmarkLadder(graphicsApplied.state,cloudExperience.memory,companyQueueInput);
   const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark);
   const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
     state:graphicsApplied.state,
     stateChanged,
-    addedExperience:(applied.added||0)+(studioApplied.added||0),
-    addedRobloxStudioVerifiedOutcomes:studioApplied.added||0,
+    addedExperience:(applied.added||0)+(cloudApplied.added||0),
+    addedRobloxCloudVerifiedOutcomes:cloudApplied.added||0,
+    addedRobloxStudioVerifiedOutcomes:0,
     addedSpecializedVerifiedOutcomes:specializedApplied.added||0,
     specializedVerifiedPositiveOutcomes:specializedApplied.positive||0,
     specializedVerifiedNegativeOutcomes:specializedApplied.negative||0,
@@ -2525,17 +2647,21 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
     idlePractice,
-    experience:studioExperience.memory,
-    experienceChanged:specializedExperience.changed===true||studioExperience.changed===true,
+    experience:cloudExperience.memory,
+    experienceChanged:specializedExperience.changed===true||cloudExperience.changed===true,
     specializedExperienceChanged:specializedExperience.changed===true,
-    studioExperienceChanged:studioExperience.changed===true,
-    studioExperiencePersisted:studioExperience.added||0,
-    studioExperiencePersistedPositive:studioExperience.positive||0,
-    studioExperiencePersistedNegative:studioExperience.negative||0,
+    cloudExperienceChanged:cloudExperience.changed===true,
+    cloudExperiencePersisted:cloudExperience.added||0,
+    cloudExperiencePersistedPositive:cloudExperience.positive||0,
+    cloudExperiencePersistedNegative:cloudExperience.negative||0,
+    studioExperienceChanged:false,
+    studioExperiencePersisted:0,
+    studioExperiencePersistedPositive:0,
+    studioExperiencePersistedNegative:0,
     specializedExperiencePersisted:specializedExperience.added||0,
     specializedExperiencePersistedPositive:specializedExperience.positive||0,
     specializedExperiencePersistedNegative:specializedExperience.negative||0,
-    handoffs:buildWebRobloxHandoffs(companyQueueInput,studioExperience.memory,practice.queue,roadmapInput),
+    handoffs:buildWebRobloxHandoffs(companyQueueInput,cloudExperience.memory,practice.queue,roadmapInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,
@@ -2567,10 +2693,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_LEARNING_STATE_CHANGED=${result.stateChanged?'YES':'NO'}`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
   console.log(`VIBE2_SPECIALIZED_EXPERIENCE_PERSISTED=${result.specializedExperiencePersisted||0}`);
-  console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=${result.studioExperiencePersisted||0}`);
-  console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_OUTCOMES_ADDED=${result.addedRobloxStudioVerifiedOutcomes||0}`);
-  console.log(`VIBE2_ROBLOX_STUDIO_VERIFIED_FAILURES_PERSISTED=${result.studioExperiencePersistedNegative||0}`);
-  console.log(`ROBLOX_NATIVE_LEARNING_REUSE=PASS:positive=${result.studioExperiencePersistedPositive||0}:negative=${result.studioExperiencePersistedNegative||0}`);
+  console.log(`VIBE2_ROBLOX_OPEN_CLOUD_EXPERIENCE_PERSISTED=${result.cloudExperiencePersisted||0}`);
+  console.log(`VIBE2_ROBLOX_OPEN_CLOUD_VERIFIED_OUTCOMES_ADDED=${result.addedRobloxCloudVerifiedOutcomes||0}`);
+  console.log(`VIBE2_ROBLOX_STUDIO_EXPERIENCE_PERSISTED=0`);
+  console.log(`VIBE2_ROBLOX_STUDIO_NEW_INGRESS=DISABLED_CLOUD_RUNTIME_ACTIVE`);
+  console.log(`ROBLOX_NATIVE_LEARNING_REUSE=PASS:positive=${result.cloudExperiencePersistedPositive||0}:negative=${result.cloudExperiencePersistedNegative||0}:authority=ROBLOX_OFFICIAL_CLOUD_API_ONLY`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
