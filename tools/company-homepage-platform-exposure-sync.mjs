@@ -84,6 +84,7 @@ function robloxState(item={},policy={}){
     regressionPassed:regression,
     internalReleaseReady:internalReady,
     releaseReadiness,
+    executionAvailable:!staleSharedTarget&&/^[1-9][0-9]*$/.test(placeId)&&(published||preservedInternalRelease),
     historicalInternalRelease:preservedInternalRelease,
     internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':preservedInternalRelease?'DEPLOYED_REVALIDATING':'NOT_READY',
     publicReleaseReady,
@@ -103,6 +104,8 @@ function unityState(item={},policy={}){
   const regression=bool(evidence.regressionPassed)||num(item.unityRegressionRunId)!==null;
   const sourceReady=Boolean(item.unityProjectPath||item.unitySourceCommit||item.unityCandidateBranch||item.targetSourcePaths?.UNITY);
   const buildUrl=clean(item.unityInternalBuildUrl||item.unityBuildUrl||item.unityDownloadUrl);
+  const executionAvailable=Boolean(buildUrl)&&(/^https:\/\//.test(buildUrl)||buildUrl.startsWith('/'))
+    &&(evidence.runtimePassed===true||evidence.rawStageResults?.runtime===true||item.unityRuntimeEvidence?.runtimeVerified===true||item.unityRuntimeEvidence?.pass===true);
   const releaseReadiness=evaluateInternalRelease(item,'UNITY',policy);
   const internalReady=releaseReadiness.homepageReady;
   const publicRelease=bool(item.unityPublicRelease)||bool(item.unityExternalReleaseEvidence?.published);
@@ -111,6 +114,7 @@ function unityState(item={},policy={}){
     completion:verifiedCompletionHistory(item,'UNITY'),
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
     buildRunId:build,
+    executionAvailable,
     runtimePassed:runtime,
     independentQaPassed:qa,
     regressionPassed:regression,

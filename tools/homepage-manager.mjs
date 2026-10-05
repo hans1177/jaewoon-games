@@ -171,6 +171,7 @@ async function captureReleaseMedia(planOnly=false){
   const exposure=json('homepage-platform-exposure.json');
   const gameFilter=process.argv.find(x=>x.startsWith('--media-game='))?.slice(13);
   const candidates=[];
+  const captureVersion=2;
   for(const game of catalog.games||[]){
     const id=game.canonical?.identity?.gameId||game.id;
     if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||gameFilter&&gameFilter!==id)continue;
@@ -183,7 +184,7 @@ async function captureReleaseMedia(planOnly=false){
     const current=validatedHomepageMedia(id,media.games[id]);
     if(current?.video?.artifactIdentity===artifactIdentity)continue;
     const attempt=media.games[id].captureAttempt;
-    if(attempt?.artifactIdentity===artifactIdentity&&Date.now()-Date.parse(attempt.at)<86400000)continue;
+    if(attempt?.captureVersion===captureVersion&&attempt?.artifactIdentity===artifactIdentity&&Date.now()-Date.parse(attempt.at)<86400000)continue;
     candidates.push({id,artifactIdentity,platform:/createUnityInstance|\.loader\.js/.test(fs.readFileSync(entry,'utf8'))?'UNITY_WEB':'WEB'});
   }
   console.log('HOMEPAGE_RELEASE_MEDIA_PENDING='+candidates.length);
@@ -236,12 +237,13 @@ async function captureReleaseMedia(planOnly=false){
           }
         });
         page.on('pageerror',e=>errors.push(e.message));
-        page.setDefaultTimeout(10000);
+        page.setDefaultTimeout(30000);
         await page.goto(`${origin}/web-games/${id}/`,{waitUntil:'networkidle',timeout:45000});
         const known={ 'horror-escape-room':'#startHuman', 'daechung-rpg':'#startBtn', 'ant-simulator':'#startOffline' };
         let start=known[id]?page.locator(known[id]):page.getByRole('button',{name:/^(게임 시작|혼자 시작|시작하기|모험 시작|새 게임|Start|Play)$/i}).first();
         if(id==='cozy-island'){
-          await page.locator('#actionButton').click();
+          // This game starts directly; Space is its real interaction binding.
+          await page.keyboard.press('Space');
         }else{
           if(!await start.isVisible())throw Error('VISIBLE_GAME_START_REQUIRED');
           await start.click();
@@ -250,7 +252,6 @@ async function captureReleaseMedia(planOnly=false){
         await page.locator('canvas').first().waitFor({state:'visible'});
         await page.waitForTimeout(700);
         const clipStart=await page.evaluate(()=>performance.now()/1000);
-        const before=await page.screenshot();
         let inputEvents=1;
         for(const key of ['ArrowRight','ArrowUp','ArrowLeft','ArrowDown']){
           await page.keyboard.down(key);inputEvents++;
@@ -258,9 +259,7 @@ async function captureReleaseMedia(planOnly=false){
           await page.waitForTimeout(2900);
           await page.keyboard.up(key);inputEvents++;
         }
-        const after=await page.screenshot();
         const digest=b=>createHash('sha256').update(b).digest('hex');
-        if(digest(before)===digest(after))throw Error('NO_VISIBLE_RUNTIME_CHANGE');
         if(errors.length)throw Error('RUNTIME_SCRIPT_ERROR');
         const dependencies=[...loadedFiles].sort().map(path=>({path,sha256:digest(fs.readFileSync(path))}));
         if(!dependencies.length)throw Error('CAPTURE_DEPENDENCIES_MISSING');
@@ -272,14 +271,19 @@ async function captureReleaseMedia(planOnly=false){
         const duration=Number(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',temporaryOutput],{encoding:'utf8'}).trim());
         const bytes=fs.readFileSync(temporaryOutput);
         if(duration<10||duration>12.5||bytes.length<2048||bytes.length>3145728)throw Error('VIDEO_DURATION_OR_SIZE_INVALID');
+        // Compare decoded recording frames after the browser has closed, so
+        // screenshots cannot stall a CPU-limited runner while it records.
+        const frameAt=second=>execFileSync('ffmpeg',['-v','error','-ss',String(second),'-i',temporaryOutput,'-frames:v','1','-vf','scale=64:36','-f','rawvideo','-pix_fmt','rgb24','pipe:1'],{timeout:15000});
+        const firstFrame=frameAt(.5),lastFrame=frameAt(9);
+        if(firstFrame.length!==64*36*3||lastFrame.length!==64*36*3||digest(firstFrame)===digest(lastFrame))throw Error('NO_VISIBLE_RUNTIME_CHANGE');
         // Publish only after a complete successful capture. Existing media survives failures.
         fs.copyFileSync(temporaryOutput,output);
         media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt:new Date().toISOString(),src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
         delete media.games[id].captureAttempt;
         console.log(`HOMEPAGE_RELEASE_MEDIA_CAPTURED=${id} PLATFORM=${platform} BYTES=${bytes.length}`);
       }catch(error){
-        media.games[id].captureAttempt={artifactIdentity,at:new Date().toISOString(),state:'CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN',reason:String(error.message||error).slice(0,160)};
-        console.log(`HOMEPAGE_RELEASE_MEDIA_PENDING=${id}`);
+        media.games[id].captureAttempt={artifactIdentity,captureVersion,at:new Date().toISOString(),state:'CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN',reason:String(error.message||error).slice(0,500)};
+        console.log(`HOMEPAGE_RELEASE_MEDIA_PENDING=${id} REASON=${String(error.message||error).split('\n')[0]}`);
       }finally{if(context)await context.close();}
     }
     fs.writeFileSync(manifestPath,JSON.stringify(media,null,2)+'\n');
