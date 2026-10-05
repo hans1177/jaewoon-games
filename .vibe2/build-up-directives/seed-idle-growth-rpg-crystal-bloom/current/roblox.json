@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g13-e640c96ca880",
-  "directiveFingerprint": "e640c96ca8809b8b2b5c7f38f03110ec6f3dfdd5f764c2d73ddf0e2c97e2286b",
-  "previousDirectiveFingerprint": "89ac5d312e66625787841d480c4e650003f71a3a2e84dbbcd56461919dedc116",
-  "forbiddenRepeatFingerprint": "89ac5d312e66625787841d480c4e650003f71a3a2e84dbbcd56461919dedc116",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g14-6c60864ac4e7",
+  "directiveFingerprint": "6c60864ac4e7b2c0417fcefab4da54efe47e46d913cc2c88d5670fd0b204534b",
+  "previousDirectiveFingerprint": "e640c96ca8809b8b2b5c7f38f03110ec6f3dfdd5f764c2d73ddf0e2c97e2286b",
+  "forbiddenRepeatFingerprint": "e640c96ca8809b8b2b5c7f38f03110ec6f3dfdd5f764c2d73ddf0e2c97e2286b",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 13,
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
+  "sourceTreeFingerprint": "f303d51a623baae38a94fba6c234fe26d7e432077609703d04198b97a916cf4b",
   "designFingerprint": "ef35a29bbdc82e258294cf850dba5b5e5b90ae0c4b91c74ed85f48a7f1a8a708",
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
@@ -258,9 +258,9 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "cb34a429092fc3d3469fcdd5b674aa6322f65e595f5c065fd6f4fcbe49562f64",
-    "currentSourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
+    "currentSourceTreeFingerprint": "f303d51a623baae38a94fba6c234fe26d7e432077609703d04198b97a916cf4b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -271,7 +271,7 @@
       "artifactIdentity": "sha256:47b655e4c7be36a08a42a08ccbcc9cef7d57db47f1c5793ae8cb7b72c4e71579",
       "authority": "roblox-f0-gameplay-product-readiness-failure",
       "workflowRunId": 37244731892,
-      "testedAt": "2026-10-05T00:23:15.484Z",
+      "testedAt": "2026-10-05T00:26:53.447Z",
       "repairSurfaces": [
         "CORE_GAMEPLAY",
         "COMBAT_FEEL",
@@ -385,9 +385,25 @@
         }
       ]
     },
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "blockers": [
+      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+      "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
+      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+      "MISSING_GAMEPLAY_CAPABILITY:BOSS",
+      "MISSING_GAMEPLAY_CAPABILITY:INFECTION",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+      "GENERIC_SCOPE_HANDLER_SKELETON"
+    ],
     "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -1541,7 +1557,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1586,8 +1602,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=5.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=5; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1597,7 +1613,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1608,7 +1624,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1646,7 +1662,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2390,15 +2406,15 @@
     "expectedPlayerEffect": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
+      "reason": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "runtimeObserved": true
     },
     "baseline": {
-      "sourceTreeFingerprint": "03fc4d47aa993bc7bca4847883bbe157700da27fc42d20b3c273079a535ff8d9",
-      "runtimeObserved": false,
+      "sourceTreeFingerprint": "f303d51a623baae38a94fba6c234fe26d7e432077609703d04198b97a916cf4b",
+      "runtimeObserved": true,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2410,7 +2426,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2441,7 +2457,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2514,5 +2530,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T22:37:08.366Z"
+  "generatedAt": "2026-10-05T00:30:39.187Z"
 }
