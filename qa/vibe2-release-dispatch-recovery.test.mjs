@@ -1,7 +1,9 @@
+// 파일명: qa/vibe2-release-dispatch-recovery.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {selectReviewedWinnerRecoveries} from '../tools/vibe2-release-dispatch-recovery.mjs';
+import {markVibeTaskAwaiting} from '../tools/vibe2-queue-control.mjs';
 
 const winner=(extra=[])=>({
   id:'task-1',gameId:'game-1',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
@@ -45,6 +47,25 @@ test('verified checkpoint tasks never re-enter release gate recovery',()=>{
   assert.equal(selectReviewedWinnerRecoveries({tasks:[row]}).count,0);
 });
 
+test('exact F9 Web publication waits remain recoverable until deployment is resolved',()=>{
+  const row={...winner(['web-f0-f9-verified','web-f9-verified','web-publish-after-f9-required']),target:'web',status:'verified',blocker:null};
+  row.evidence=row.evidence.filter(value=>!value.startsWith('candidate-sha:'));
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[row]}).count,0,'missing exact revision must fail closed');
+  row.evidence.push('candidate-sha:'+'a'.repeat(40));
+  const result=selectReviewedWinnerRecoveries({tasks:[row]});
+  assert.equal(result.count,1);
+  assert.equal(result.selected[0].candidateSha,'a'.repeat(40));
+  assert.equal(row.status,'verified');
+  for(const required of ['web-f0-f9-verified','web-f9-verified','web-publish-after-f9-required','role-result:review:PASS']){
+    assert.equal(selectReviewedWinnerRecoveries({tasks:[{...row,evidence:row.evidence.filter(value=>value!==required)}]}).count,0,required);
+  }
+  row.evidence.push('release-dispatch-recovery-at:1000000');
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[row]},{nowMs:1119999}).count,0);
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[row]},{nowMs:1120001}).count,1);
+  row.evidence.push('web-publication-retry-resolved');
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[row]}).count,0);
+});
+
 
 test('24H recovery verifies exact candidate SHA before marking and dispatching',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
@@ -69,6 +90,25 @@ test('24H recovery verifies exact candidate SHA before marking and dispatching',
   assert.ok(retry>0&&refresh>retry&&reselection>refresh&&semanticMark>reselection&&directPush>semanticMark);
   assert.ok(section.includes('VIBE2_RELEASE_RECOVERY_OPTIMISTIC_ATTEMPT='));
   assert.ok(section.includes('VIBE2_RELEASE_RECOVERY_PUSH_RETRY='));
+});
+
+test('24H Web recovery adds dispatch evidence without reopening or self-verifying the task',()=>{
+  const branch='vibe2/candidate/web-exact',sha='b'.repeat(40);
+  const row={...winner(),target:'web',status:'verified',blocker:null,evidence:[
+    branch,'candidate-sha:'+sha,'web-f0-f9-verified','web-f9-verified','web-publish-after-f9-required',
+    'package-review:all-required-roles-pass','role-result:regression:PASS','role-result:review:PASS'
+  ]};
+  const evidence=['release-dispatch-recovery-requested:'+branch,'release-dispatch-recovery-candidate-sha:'+sha,'release-dispatch-recovery-at:1000000'];
+  const mark=(task,extra=evidence)=>markVibeTaskAwaiting({tasks:[task]},{taskId:task.id,blocker:'candidate-awaiting-qa-and-deployment',evidence:extra});
+  const updated=mark(row).tasks[0];
+  assert.equal(updated.status,'verified');
+  assert.equal(updated.blocker,null);
+  assert.ok(updated.evidence.includes(evidence[2]));
+  assert.equal(mark(updated).tasks[0].evidence.length,updated.evidence.length);
+  assert.throws(()=>mark(row,evidence.map(value=>value.replace(sha,'c'.repeat(40)))),/await requires running/);
+  assert.throws(()=>mark({...row,evidence:row.evidence.filter(value=>value!=='web-f9-verified')}),/await requires running/);
+  assert.throws(()=>mark({...row,evidence:[...row.evidence,'web-publication-retry-resolved']}),/await requires running/);
+  assert.throws(()=>mark({...row,target:'unity'}),/await requires running/);
 });
 
 test('24H runner reads and mutates control queue only through latest main tooling',()=>{

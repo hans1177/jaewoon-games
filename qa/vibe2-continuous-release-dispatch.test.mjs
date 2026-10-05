@@ -6,6 +6,40 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
+// 웹 배포 책임 범위는 후보와 같은 소스 및 생성 자산 집합이어야 한다.
+test('Web promotion keeps generated assets and checks drift across the complete candidate boundary',()=>{
+  const section=releaseWorkflow.slice(releaseWorkflow.indexOf('      - name: Promote approved web source root'),releaseWorkflow.indexOf('      - name: Settle web result'));
+  assert.match(section,/GENERATED_ASSET_FILES: \$\{\{ needs\.inspect\.outputs\.generated_asset_files \}\}/);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-promotion-assets-'));
+  const git=(...args)=>execFileSync('git',args,{cwd:temp,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git('init','-b','main');git('config','user.name','QA');git('config','user.email','qa@example.invalid');
+    fs.mkdirSync(path.join(temp,'web-games/demo'),{recursive:true});
+    fs.mkdirSync(path.join(temp,'assets/demo'),{recursive:true});
+    fs.writeFileSync(path.join(temp,'web-games/demo/index.html'),'old');
+    fs.writeFileSync(path.join(temp,'assets/demo/motion.json'),'old asset');
+    git('add','.');git('commit','-qm','base');const base=git('rev-parse','HEAD');
+    git('checkout','-qb','candidate');
+    fs.writeFileSync(path.join(temp,'web-games/demo/index.html'),'new source');
+    fs.writeFileSync(path.join(temp,'assets/demo/motion.json'),'new asset');
+    git('commit','-qam','candidate');const candidate=git('rev-parse','HEAD');
+    git('checkout','main');
+    const checkout=section.split('\n').find(line=>line.trim().startsWith('git checkout "$CANDIDATE_SHA"'));
+    const stage=section.split('\n').find(line=>line.trim().startsWith('git add '));
+    assert.ok(checkout&&stage);
+    execFileSync('bash',['-euc','mapfile -t generated_asset_files < <(node -e \'for(const file of JSON.parse(process.env.GENERATED_ASSET_FILES))console.log(file)\'); promotion_paths=("$SOURCE_ROOT" "${generated_asset_files[@]}");\n'+checkout+'\n'+stage],{cwd:temp,env:{...process.env,SOURCE_ROOT:'web-games/demo',CANDIDATE_SHA:candidate,GENERATED_ASSET_FILES:'["assets/demo/motion.json"]'},stdio:'pipe'});
+    assert.equal(git('show',':assets/demo/motion.json'),'new asset');
+    assert.deepEqual(git('diff','--cached','--name-only').split('\n'),['assets/demo/motion.json','web-games/demo/index.html']);
+    const comparisons=section.split('\n').filter(line=>line.includes('git diff')&&!line.includes('--cached')&&!line.includes('diff --check'));
+    assert.equal(comparisons.length,5);
+    for(const line of comparisons)assert.ok(line.includes('"${promotion_paths[@]}"'),line);
+    git('reset','--hard',base);
+    fs.writeFileSync(path.join(temp,'assets/demo/motion.json'),'concurrent asset edit');git('commit','-qam','asset drift');
+    assert.equal(git('diff','--name-only',base,'HEAD','--','web-games/demo','assets/demo/motion.json'),'assets/demo/motion.json');
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
+
 const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
 const unityWebWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
