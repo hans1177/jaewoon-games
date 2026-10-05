@@ -73,10 +73,80 @@ const binary=process.env.VIBE2_LUAU_BINARY;
 // and lifecycle mocks only; native Roblox and the authored R15 suite still require their own gate.
 const teacherBinary=process.env.VIBE2_LUAU_BINARY||process.env.VIBE2_TEACHER_LUA_BINARY;
 test('teacher application examples execute boundary timing placement inventory and lifecycle cases',{skip:!teacherBinary&&'Set a Lua/Luau teaching executor; native Roblox remains a separate gate'},()=>{
-  const recipe=createAssetProductionTeachingRecipe({cinematic:true});
-  assert.equal(recipe.applicationExamples.length,20);
+  const recipe=createAssetProductionTeachingRecipe({cinematic:true,surfaceCraft:true,creatureCraft:true,actorAI:true});
+  assert.equal(recipe.applicationExamples.length,26);
   const script='local examples={}\n'+recipe.applicationExamples.map(row=>'examples['+JSON.stringify(row.id)+']=(function()\n'+row.code+'\nend)()').join('\n')+String.raw`
 local function near(a,b) assert(math.abs(a-b)<1e-9, tostring(a).." ~= "..tostring(b)) end
+local choose=examples.AI_TARGET_STICKINESS
+local a={id="a",score=10,alive=true,perceived=true,allowed=true}
+local b={id="b",score=12,alive=true,perceived=true,allowed=true}
+assert(choose({a,b},"a",2)=="a");assert(choose({b,a},"a",1)=="b")
+assert(choose({a,b},"missing",3)=="b")
+b.score=10;assert(choose({b,a},nil,0)=="a");assert(choose({a,b},nil,0)=="a")
+assert(choose({a,b},"b",0)=="b")
+b.score=100;b.alive=false;assert(choose({a,b},"b",2)=="a")
+b.alive=true;b.perceived=false;assert(choose({a,b},nil,0)=="a")
+b.perceived=true;b.allowed=false;assert(choose({a,b},nil,0)=="a")
+b.allowed=true;b.score=0/0;assert(choose({a,b},nil,0)=="a")
+b.score=math.huge;assert(choose({a,b},nil,0)=="a")
+assert(choose({},"a",0)==nil);assert(not pcall(choose,{},nil,-1))
+local follow=examples.AI_FOLLOW_HYSTERESIS
+assert(not follow(true,3,3,5));assert(follow(false,5,3,5))
+for _,distance in ipairs({3.01,3.9,4.7,4.1,3.8,4.99}) do
+  assert(follow(true,distance,3,5));assert(not follow(false,distance,3,5))
+end
+assert(not pcall(follow,false,1,3,3));assert(not pcall(follow,false,-1,3,5))
+local dwell=examples.AI_STATE_DWELL
+local intent,entered=dwell("PATROL","SEARCH",10.2,10,.5,false);assert(intent=="PATROL" and entered==10)
+intent,entered=dwell("PATROL","SEARCH",10.5,10,.5,false);assert(intent=="SEARCH" and entered==10.5)
+intent,entered=dwell("SEARCH","SEARCH",30,10.5,.5,false);assert(intent=="SEARCH" and entered==10.5)
+intent,entered=dwell("SEARCH","STUNNED",10.6,10.5,.5,true);assert(intent=="STUNNED" and entered==10.6)
+assert(not pcall(dwell,"A","B",9,10,.5,false));assert(not pcall(dwell,"A","B",10,10,-1,false))
+local accept=examples.AI_PATH_RESULT_GUARD
+local pathState={active=true,actorId="wolf",targetId="p1",revision=2,pending="r2"}
+local oldRequest={id="r1",actorId="wolf",targetId="p1",revision=1}
+local currentRequest={id="r2",actorId="wolf",targetId="p1",revision=2}
+local waypoints={{x=0},{x=1}}
+local path,reason=accept(pathState,oldRequest,true,waypoints);assert(path==nil and reason=="stale" and pathState.pending=="r2")
+pathState.targetId="p2";path=accept(pathState,currentRequest,true,waypoints);assert(path==nil and pathState.pending=="r2")
+pathState.targetId="p1";pathState.actorId="replacement";path=accept(pathState,currentRequest,true,waypoints);assert(path==nil)
+pathState.actorId="wolf";pathState.revision=3;path=accept(pathState,currentRequest,true,waypoints);assert(path==nil)
+pathState.revision=2;pathState.active=false;path=accept(pathState,currentRequest,true,waypoints);assert(path==nil)
+pathState.active=true;path,reason=accept(pathState,currentRequest,true,waypoints);assert(path==waypoints and reason=="ready" and pathState.pending==nil)
+path,reason=accept(pathState,currentRequest,true,waypoints);assert(path==nil and reason=="stale")
+pathState.pending="r2";path,reason=accept(pathState,currentRequest,false,waypoints);assert(path==nil and reason=="failed" and pathState.pending==nil)
+pathState.pending="r2";path,reason=accept(pathState,currentRequest,true,{});assert(path==nil and reason=="failed")
+local wave=examples.TAPERED_APPENDAGE_WAVE
+near(wave(0,1,.7,.3),0);near(wave(-1,1,.7,.3),0)
+near(wave(1,math.pi/2,0,.3),.3);near(wave(2,math.pi/2,0,.3),.3)
+near(wave(.7,1,.7,0),0)
+for i=0,100 do
+  local s=i/100
+  for j=-8,8 do
+    local phase=j*.41
+    local value=wave(s,phase,.7,.3)
+    assert(math.abs(value)<=.3+1e-12)
+    near(value,wave(s,phase+2*math.pi,.7,.3))
+    near(value,wave(s,phase,.7,.3))
+  end
+end
+local samples={}
+for i=0,100 do samples[i]=wave(.7,i/100,.7,.3) end
+for i=100,0,-1 do near(wave(.7,i/100,.7,.3),samples[i]) end
+assert(not pcall(wave,.5,0,0,-1))
+local mask=examples.DIRECTIONAL_SURFACE_MASK
+near(mask(-2,0,1,1),0);near(mask(2,0,1,1),1)
+near(mask(0,0,1,1),0);near(mask(1,0,1,1),1)
+near(mask(.5,0,1,1),.5);near(mask(.5,0,1,.4),.2)
+near(mask(1,0,1,-1),0);near(mask(1,0,1,2),1)
+local previous=0
+for i=0,100 do
+  local value=mask(-1+2*i/100,-.5,.75,.8)
+  assert(value>=previous and value>=0 and value<=.8)
+  previous=value
+end
+assert(not pcall(mask,0,1,1,1));assert(not pcall(mask,0,.5,-.5,1))
+assert(not pcall(mask,0,-2,1,1));assert(not pcall(mask,0,-1,2,1))
 local pathDistance=examples.PATH_SEGMENT_CLEARANCE
 near(pathDistance(5,2,0,0,10,0),4)
 near(pathDistance(-2,0,0,0,10,0),4)
@@ -299,14 +369,14 @@ local connections={{Disconnect=function()a=a+1 end},{Disconnect=function()b=b+1 
 local unrelated={Disconnect=function()other=other+1 end}
 disconnect(connections);disconnect(connections)
 assert(a==1 and b==1 and #connections==0 and other==0)
-print("TEACHER_APPLICATION_EXAMPLES=10_PASS")
+print("TEACHER_APPLICATION_EXAMPLES=26_PASS")
 `;
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'asset-teacher-'));
   try{
     const file=path.join(dir,'teacher-examples.luau');fs.writeFileSync(file,script);
     const result=spawnSync(teacherBinary,[file],{encoding:'utf8',timeout:15000,maxBuffer:1024*1024});
     assert.equal(result.status,0,result.error?.message||result.stderr||result.stdout);
-    assert.match(result.stdout,/TEACHER_APPLICATION_EXAMPLES=10_PASS/);
+    assert.match(result.stdout,/TEACHER_APPLICATION_EXAMPLES=26_PASS/);
     assert.equal(recipe.runtimeVerified,false);
     assert.equal(recipe.productionVerified,false);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
