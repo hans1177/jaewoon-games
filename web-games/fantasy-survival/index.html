@@ -36,7 +36,7 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=68,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:72000,h:28800},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=69,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=36000*14400/5; // 기존 특수지역 설계 기준 면적 · 확장분은 일반 마력숲
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 기존 수정 지대 크기 유지
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -2541,6 +2541,7 @@ function serializeWorld(){
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0,speedRatio:q.speedRatio||0,nextSlowAt:q.nextSlowAt||0,gasBatchId:q.gasBatchId||null,gasPlayerSpeed:q.gasPlayerSpeed||0})),
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
+  mummyGases:state.mummyGases.map(g=>({x:g.x,y:g.y,r:g.r,until:g.until,sourceId:g.sourceId||null})),
   swampTrees:state.swampTrees.map(n=>({id:n.id,kind:'swamptree',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   sunstones:state.sunstones.map(n=>({id:n.id,kind:'sunstone',x:n.x,y:n.y,hp:n.hp,maxHp:n.maxHp,dead:!!n.dead,respawnAt:n.respawnAt||0})),
   structures:sharedStructureSnapshot(),
@@ -2557,7 +2558,7 @@ function applyWorldSnapshot(w){
   const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0),hitAt=old&&Number(n.hp)<Number(old.hp)?now+110:(old?.hitAt||0);
   return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase}
  }).filter(Boolean);
- state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];
+ state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];if(Array.isArray(w.mummyGases))state.mummyGases=w.mummyGases.map(g=>({x:Number(g.x)||0,y:Number(g.y)||0,r:Number(g.r)||126,until:Number(g.until)||0,nextPlayerTick:0,nextHealTick:Infinity,sourceId:g.sourceId||null}));
  if(Array.isArray(w.sunstones))state.sunstones=w.sunstones.filter(n=>n&&String(n.kind||'sunstone')==='sunstone'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('sunstone'+i)),kind:'sunstone',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:10,dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(Array.isArray(w.swampTrees))state.swampTrees=w.swampTrees.filter(n=>n&&String(n.kind||'swamptree')==='swamptree'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('swamptree'+i)),kind:'swamptree',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:Math.max(1,Number(n.maxHp)||8),dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(w.structures&&typeof w.structures==='object'){
@@ -3695,6 +3696,15 @@ function updateMummyGases(now){
   }
   if(state.area==='surface'&&dist(p.x,p.y,g.x,g.y)<=g.r&&now>=(g.nextPlayerTick||0)){
    g.nextPlayerTick=now+500;damagePlayer(4,true,source)
+  }
+  if(multiplayer.connected&&multiIsHost()){
+   g.remoteNext=g.remoteNext||{};
+   for(const [id,r] of multiplayer.remote){
+    if(!r||r.area!=='surface'||now-(r.seenAt||0)>1500||(Number(r.hp)||0)<=0)continue;
+    if(dist(Number(r.x)||0,Number(r.y)||0,g.x,g.y)>g.r)continue;
+    if(now<(g.remoteNext[id]||0))continue;
+    g.remoteNext[id]=now+500;multiSend('enemy-hit',{targetId:id,damage:4,force:true,sourceId:g.sourceId||null})
+   }
   }
  }
 }
