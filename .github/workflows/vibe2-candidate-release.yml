@@ -56,6 +56,8 @@ jobs:
       generated_asset_files: ${{ steps.gate.outputs.generated_asset_files }}
       asset_source_usage_fingerprint: ${{ steps.gate.outputs.asset_source_usage_fingerprint }}
       asset_source_usage_library_version: ${{ steps.gate.outputs.asset_source_usage_library_version }}
+      asset_selection_fingerprint: ${{ steps.gate.outputs.asset_selection_fingerprint }}
+      asset_selection_library_version: ${{ steps.gate.outputs.asset_selection_library_version }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -115,6 +117,8 @@ jobs:
           const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
           const assetSourceUsageFingerprint=String(m?.codingMethod?.internalAssetSourceUsageFingerprint||'').trim();
           const assetSourceUsageLibraryVersion=Math.max(0,Math.floor(Number(m?.codingMethod?.internalAssetSourceUsageLibraryVersion)||0));
+          const assetSelectionFingerprint=String(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'').trim();
+          const assetSelectionLibraryVersion=Math.max(0,Math.floor(Number(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion)||0));
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
           const productionClass=String(row?.productionClass||'').trim().toUpperCase();
           const legacyState=String(row?.homepageCategory||'other').toLowerCase();
@@ -126,6 +130,8 @@ jobs:
           else if(target==='roblox' && root!==`roblox-games/${game}`) reason='roblox-source-root-mismatch';
           else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSourceUsageFingerprint)) reason='roblox-build-up-asset-fingerprint-missing';
           else if(target==='roblox' && assetSourceUsageLibraryVersion<=0) reason='roblox-build-up-asset-library-version-missing';
+          else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSelectionFingerprint)) reason='roblox-build-up-selection-fingerprint-missing';
+          else if(target==='roblox' && assetSelectionLibraryVersion<=0) reason='roblox-build-up-selection-library-version-missing';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
           else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
@@ -136,6 +142,7 @@ jobs:
           put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
           put('target',target); put('execution_surface',executionSurface); put('source_root',root); put('base_sha',base); put('transport_base_sha',transportBase); put('release_state',state); put('production_class',productionClass); put('origin',origin);
           put('asset_source_usage_fingerprint',assetSourceUsageFingerprint); put('asset_source_usage_library_version',assetSourceUsageLibraryVersion);
+          put('asset_selection_fingerprint',assetSelectionFingerprint); put('asset_selection_library_version',assetSelectionLibraryVersion);
           const promotionCandidates=(Array.isArray(m.runtimePromotionCandidates)?m.runtimePromotionCandidates:[]).slice(0,64).map(row=>({
             assetId:String(row?.assetId||'').trim(),
             family:String(row?.family||'').trim(),
@@ -817,6 +824,8 @@ jobs:
       BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
       BUILD_UP_ASSET_FINGERPRINT: ${{ needs.inspect.outputs.asset_source_usage_fingerprint }}
       BUILD_UP_ASSET_LIBRARY_VERSION: ${{ needs.inspect.outputs.asset_source_usage_library_version }}
+      BUILD_UP_SELECTION_FINGERPRINT: ${{ needs.inspect.outputs.asset_selection_fingerprint }}
+      BUILD_UP_SELECTION_LIBRARY_VERSION: ${{ needs.inspect.outputs.asset_selection_library_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -897,7 +906,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json --build-up-asset-fingerprint="$BUILD_UP_ASSET_FINGERPRINT" --build-up-asset-library-version="$BUILD_UP_ASSET_LIBRARY_VERSION"
+          node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json --build-up-asset-fingerprint="$BUILD_UP_ASSET_FINGERPRINT" --build-up-asset-library-version="$BUILD_UP_ASSET_LIBRARY_VERSION" --expected-asset-selection-fingerprint="$BUILD_UP_SELECTION_FINGERPRINT" --expected-asset-library-version="$BUILD_UP_SELECTION_LIBRARY_VERSION"
           mapfile -d '' place_files < <(find /tmp/roblox-candidate/package/packages -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) -print0)
           [ "${#place_files[@]}" -eq 1 ] || { echo 'roblox-place-package-count-invalid' >&2; exit 1; }
           node <<'NODE'
@@ -906,7 +915,8 @@ jobs:
           if(build.buildOrPackagePassed!==true||build.sourceRevision!==process.env.CANDIDATE_SHA)throw Error('candidate package invalid');
           if(build.buildUpAssetSourceUsageFingerprint!==process.env.BUILD_UP_ASSET_FINGERPRINT)throw Error('candidate package BUILD_UP asset fingerprint mismatch');
           if(Number(build.buildUpAssetSourceUsageLibraryVersion||0)!==Number(process.env.BUILD_UP_ASSET_LIBRARY_VERSION||0))throw Error('candidate package BUILD_UP asset library mismatch');
-          if(!/^[0-9a-f]{64}$/i.test(String(build.assetSelectionFingerprint||''))||Number(build.assetLibraryVersion||0)<=0)throw Error('candidate package asset selection identity missing');
+          if(build.assetSelectionFingerprint!==process.env.BUILD_UP_SELECTION_FINGERPRINT)throw Error('candidate package BUILD_UP selection fingerprint mismatch');
+          if(Number(build.assetLibraryVersion||0)!==Number(process.env.BUILD_UP_SELECTION_LIBRARY_VERSION||0))throw Error('candidate package BUILD_UP selection library mismatch');
           const selectedFamilies=build.assetThreshold?.selectedFamilies||{};
           const expectedAtomIds=[...new Set(Object.values(selectedFamilies).flat().map(String).filter(Boolean))].sort();
           const familyResults=Array.isArray(build.assetThreshold?.familyResults)?build.assetThreshold.familyResults:[];
