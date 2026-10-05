@@ -26,6 +26,7 @@ import {
   SURVIVAL_WILDLIFE_MOTION_PACKS,
   createDuelCombatMotionLoadout,
   createDuelCombatAuthoringRecipe,
+  createRobloxWalkTeachingRecipe,
   createHeroStandardMotionProfile,
   createMountRiderMotionProfile,
   createSurvivalPlayerMotionProfile,
@@ -77,6 +78,21 @@ const studioReviewFixture=()=>({
   sourceRevision:'a'.repeat(40),clipVersion:'clip-v1',referenceCapture:'fixture/reference.mp4',candidateCapture:'fixture/candidate.mp4',
   sameCamera:true,samePlaybackSpeed:true,playerCount:2,runtimeRunId:'fixture-run',gameplayTimingPreserved:true,
   stages:Object.fromEntries(createMotionDirectorPlan().studioProduction.stages.map(stage=>[stage,{pass:true,evidence:'fixture/'+stage}]))
+});
+
+test('walk teacher stays scoped to an internal Roblox walk and never grants verified authority',()=>{
+  const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-bai-wuchang',clipId:'walk',sourcePath:'init.luau'};
+  const recipe=createRobloxWalkTeachingRecipe(unit);
+  assert.equal(recipe.objectId,unit.objectId);
+  assert.equal(recipe.status,'PRACTICE_ONLY');
+  assert.equal(recipe.runtimeVerified,false);
+  assert.equal(recipe.productionVerified,false);
+  assert.equal(recipe.gameplayAuthority,false);
+  assert.equal(new Set(recipe.lessons.map(row=>row.axis)).size,6);
+  assert.match(recipe.lessons.find(row=>row.axis==='CONTACT_AND_CONSTRAINTS').repair,/world-space foot drift/);
+  assert.match(recipe.lessons.find(row=>row.axis==='POSE_AND_STAGING').repair,/floating.*wheel.*multi-leg/);
+  assert.match(recipe.lessons.find(row=>row.axis==='LOOP_AND_TRANSITION').repair,/finite-difference velocities/);
+  for(const invalid of [null,{}, {...unit,scope:'GAME'}, {...unit,clipId:'attack'}, {...unit,sourcePath:'shared.luau'}, {...unit,objectId:'roblox-world-ghost-../other'}])assert.equal(createRobloxWalkTeachingRecipe(invalid),null);
 });
 
 test('basic motion work gets one hour without changing runtime verification or gameplay timing',()=>{
@@ -1086,6 +1102,32 @@ test('Roblox motion director plan binds articulated smooth-motion system without
   assert.equal(director.robloxCharacterMotion.actorClass,'CREATURE');
 });
 
+
+test('studio motion teacher reuses canonical action phases and native metrics without granting default tuning authority',()=>{
+  const plain=createStudioMotionActionProfile({platform:'ROBLOX'});
+  assert.ok(!Object.hasOwn(plain,'teaching'));
+  const all=createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:'ALL'}).teaching;
+  assert.equal(all.lessons.length,14);
+  for(const row of all.lessons){
+    assert.deepEqual(row.phases,(DUEL_COMBAT_AUTHORING_PHASES[row.role]||[]).map(phase=>phase.phase));
+    assert.ok(row.lesson.length>150);
+  }
+  for(const [clip,role] of [['walk','COMBAT_LOCOMOTION'],['attack','LIGHT_COMBO'],['heavy_attack_1','HEAVY_ATTACK'],['hit','HIT_REACTION'],['dodge','DODGE'],['jump','AIRBORNE_LOCOMOTION'],['land','AIRBORNE_LOCOMOTION']]){
+    const profile=createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:clip});
+    const {teaching,...base}=profile;
+    assert.deepEqual(base,plain);
+    assert.deepEqual(teaching.lessons.map(row=>row.role),[role]);
+    assert.equal(teaching.runtimeVerified,false);
+    assert.equal(teaching.productionVerified,false);
+    assert.equal(teaching.gameplayAuthority,false);
+    assert.deepEqual(teaching.nativeReview.metrics,plain.automatedQa.requiredMetrics);
+    assert.match(teaching.timing,/Never substitute generic normalized timestamps/);
+    assert.equal(teaching.needsSpecificClipBrief,false);
+  }
+  const unknown=createStudioMotionActionProfile({teachingClip:'unregistered_special_clip'}).teaching;
+  assert.equal(unknown.needsSpecificClipBrief,true);
+  assert.deepEqual(unknown.lessons,[]);
+});
 
 test('studio-grade motion profile binds pose matching warping contact IK reactions audio and mobile LOD without gameplay authority',()=>{
   const profile=createStudioMotionActionProfile({

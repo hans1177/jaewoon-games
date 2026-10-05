@@ -31,6 +31,139 @@ test.afterEach(() => {
 });
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
+test('photo teacher reaches actual image-byte observation and keeps inferred geometry unverified',async t=>{
+  const {observeAssetReferenceImages}=await import('../tools/vibe2-source-worker.mjs');
+  const {createVibeReferenceImageStudyRequest}=await import('../assets/vibe-environment-director.js');
+  const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l1EAAAAASUVORK5CYII=','base64');
+  fs.writeFileSync(path.join(root,'reference.png'),bytes);
+  const hash=crypto.createHash('sha256').update(bytes).digest('hex');
+  const request=createVibeReferenceImageStudyRequest({sourceId:'fixture',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',imageRef:'reference.png',sourceHash:hash,purpose:'ASSET_CREATION'});
+  const order={target:'roblox',assetProductionLane:true,assetProduction:{decisions:[{type:'creature'}],imageAssetCreation:{enabled:true,studies:[{request}]}}};
+  let sent;
+  const observation=await observeAssetReferenceImages({order,cwd:root,model:'test-vision-model',requestModel:async(prompt,options)=>{sent={prompt,options};return JSON.stringify(Object.fromEntries(request.requestedFields.map(key=>[key,'Test fixture proposal; not an observed real subject.'])));}});
+  assert.equal(sent.options.images[0],bytes.toString('base64'));
+  assert.match(sent.prompt,/ordinary photographs/);
+  assert.match(sent.prompt,/not a measured top-down map/);
+  assert.equal(observation.observations[0].sourceHash,hash);
+  assert.equal(observation.observations[0].pixelInputDelivered,true);
+  assert.equal(observation.observations[0].verifiedAgainstSource,false);
+  assert.equal(observation.observations[0].creativeCompletion.observedGeometry,false);
+  const prompt=buildPrompt({...order,imageAssetObservation:observation},{files:[]},[]);
+  const recipe=JSON.parse(prompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.equal(recipe.photoReferenceLessons.length,7);
+  assert.ok(prompt.includes(hash));
+  assert.equal(recipe.productionVerified,false);
+  await assert.rejects(observeAssetReferenceImages({order,cwd:root,model:''}),/IMAGE_ASSET_VISION_MODEL_REQUIRED/);
+});
+
+test('asset teacher consumes canonical production decisions and styles in the real source prompt',()=>{
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'demo',goal:'character enemy boss background item prop effect ui animation',styleFamily:'COZY'},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const order={target:'roblox',goal:'asset production',selectedTask:{assetProductionLane:true},assetProduction:plan};
+  const context={files:[]},marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+  const prompt=buildPrompt(order,context,[]);
+  assert.equal(prompt.split(marker).length-1,1);
+  const recipe=JSON.parse(prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(recipe.unmappedFamilies,[]);
+  for(const family of ['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','PROP','VFX','UI','MOTION'])assert.ok(recipe.familyLessons.some(row=>row.family===family),family);
+  for(const id of ['MODERN_BUILDINGS','MEDIEVAL_BUILDINGS','SETTLEMENT_LAYOUT','BACKGROUND_LAYERS','WEATHER_PRESENTATION','SET_DRESSING','ITEM_REPRESENTATIONS','INVENTORY_VARIANTS','MENU_NAVIGATION','SYSTEM_SCREENS'])assert.ok(recipe.domainModules.some(row=>row.id===id),id);
+  assert.equal(recipe.style.profileKey,'COZY');
+  assert.equal(recipe.style.expression.axes.MOTION_ENERGY,'SUBTLE');
+  assert.equal(recipe.status,'PRACTICE_ONLY');
+  assert.equal(recipe.runtimeVerified,false);
+  assert.ok(!buildPrompt({...order,selectedTask:{}},context,[]).includes(marker));
+  assert.ok(!prompt.includes('[MOTION TEACHER PRACTICE BEGIN]'));
+});
+
+test('asset teacher survives initial compaction and retries at the model request boundary',async(t)=>{
+  const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const source='local sway = 0.025\nreturn sway';
+  write(path.join(root,'init.luau'),source);
+  const work={target:'roblox',assetProductionLane:true,goal:'refine existing visual sway '+('detail '.repeat(20000)),assetProduction:{decisions:[{type:'creature'}],styleBible:{styleFamily:'COZY'}}};
+  const prompt=buildPrompt(work,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau']);
+  const requests=[];
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      const request=JSON.parse(body);requests.push(request);
+      const response=requests.length===1?{edits:[{path:'outside.luau',find:'local sway = 0.025',replace:'local sway = 0.035'}]}:request.format?.required?.includes('replace')?{replace:'local sway = 0.035'}:{edits:[{path:'init.luau',find:'local sway = 0.025',replace:'local sway = 0.035'}]};
+      res.end(JSON.stringify({response:JSON.stringify(response),done:true})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await generateCandidateWithRecovery({prompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
+  assert.equal(requests.length,2);
+  for(const request of requests){
+    const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+    assert.equal(request.prompt.split(marker).length-1,1);
+    const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+    assert.equal(recipe.style.profileKey,'COZY');assert.equal(recipe.runtimeVerified,false);
+    assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CREATURE']);
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='FRAME_RATE_INDEPENDENT_FOLLOW'&&row.code.includes('math.exp')));
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='TWO_BONE_REACH_GEOMETRY'&&row.code.includes('math.sqrt')));
+    assert.ok(recipe.advancedTechniques.some(row=>row.id==='CONTACT_IK_AND_REACH'));
+    assert.ok(!recipe.applicationExamples.some(row=>row.id==='STABLE_INVENTORY_FILTER'));
+    assert.ok(request.prompt.includes('init.luau'));
+    assert.ok(Buffer.byteLength(request.prompt)<20000);
+  }
+  requests.length=0;
+  const cinemaWork={...work,goal:'cinematic cutscene UI '+('detail '.repeat(20000)),assetProduction:{decisions:[{type:'ui'}],styleBible:{styleFamily:'COZY'}}};
+  const sourceCoaching='[ROBLOX SOURCE COACHING BEGIN]\nexisting source-bound lifecycle evidence\n[ROBLOX SOURCE COACHING END]';
+  const cinemaPrompt=buildPrompt(cinemaWork,{files:[{path:'init.luau',editable:true,content:source}]},['init.luau'],{robloxSourceCoaching:{block:sourceCoaching}});
+  await generateCandidateWithRecovery({prompt:cinemaPrompt,target:'roblox',responsibleFiles:['init.luau'],sourceRoot:root,sourceRootRelative:'roblox-games/demo',allowFullRewrite:false});
+  assert.equal(requests.length,2);
+  for(const request of requests){
+    const marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+    assert.equal(request.prompt.split(marker).length-1,1);
+    const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+    assert.equal(recipe.cinematicDirection.ideas.length,6);
+    assert.equal(request.prompt.split(sourceCoaching).length-1,1);
+    assert.equal(recipe.cinematicDirection.productionVerified,false);
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='RELEASE_CINEMATIC_OWNERSHIP'&&row.code.includes('pcall')));
+    assert.ok(!recipe.applicationExamples.some(row=>row.id==='CUBIC_BEZIER_CAMERA_COMPONENT'));
+    assert.ok(Buffer.byteLength(request.prompt)<30000);
+  }
+});
+
+test('walk teacher reaches the existing source prompt once without promoting learning or changing task scope',()=>{
+  const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-bai-wuchang',clipId:'walk',sourcePath:'init.luau',sourceWindow:'function Motion.walk(form, bones, time) return {} end',sourceHash:'a'.repeat(64)};
+  const order={target:'roblox',assetProductionLane:true,goal:'Improve the existing walk',assetProduction:{motionRepairWorkUnit:unit}};
+  const before=JSON.stringify(order);
+  const context={files:[{path:'init.luau',editable:true,content:unit.sourceWindow}]};
+  const prompt=buildPrompt(order,context,['init.luau']);
+  const marker='[MOTION TEACHER PRACTICE BEGIN]';
+  assert.equal(prompt.split(marker).length-1,1);
+  const recipe=JSON.parse(prompt.split(marker+'\n')[1].split('\n[MOTION TEACHER PRACTICE END]')[0]);
+  assert.equal(recipe.id,'ROBLOX_WALK_TEACHER_V1');
+  assert.deepEqual(recipe.lessons.map(row=>row.axis),SINGLE_MOTION_DEPTH_AXES);
+  assert.equal(recipe.runtimeVerified,false);
+  assert.equal(recipe.status,'PRACTICE_ONLY');
+  assert.match(recipe.example.source,/leftSwing \* leftSwing/);
+  const assetRecipe=JSON.parse(prompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(assetRecipe.familyLessons.map(row=>row.family),['MOTION']);
+  assert.deepEqual(assetRecipe.domainModules,[]);
+  assert.deepEqual(assetRecipe.applicationExamples.map(row=>row.id),['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND']);
+  assert.deepEqual(assetRecipe.studioMotion.lessons.map(row=>row.role),['COMBAT_LOCOMOTION']);
+  assert.equal(assetRecipe.studioMotion.productionVerified,false);
+  const noCinema=buildPrompt({...order,goal:'cinematic cutscene'},context,['init.luau']);
+  const noCinemaRecipe=JSON.parse(noCinema.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.equal(noCinemaRecipe.cinematicDirection,null);
+  assert.ok(!noCinemaRecipe.applicationExamples.some(row=>row.cinematicOnly));
+  assert.match(prompt,/motionRepairReport/);
+  assert.equal(JSON.stringify(order),before);
+  const internalPrompt=buildPrompt({...order,source:{internalAssetMotion:true}},context,['init.luau'],{motionCoaching:{block:'[INTERNAL MOTION COACHING BEGIN]\nexisting source-bound example\n[INTERNAL MOTION COACHING END]'}});
+  assert.equal(internalPrompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]').length-1,1);
+  assert.ok(internalPrompt.includes('TWO_BONE_REACH_GEOMETRY'));
+  assert.ok(internalPrompt.includes('existing source-bound example'));
+  assert.ok(Buffer.byteLength(internalPrompt)<20000);
+  const attackPrompt=buildPrompt({...order,source:{internalAssetMotion:true},assetProduction:{...order.assetProduction,motionRepairWorkUnit:{...unit,clipId:'attack'}}},context,['init.luau']);
+  const attackRecipe=JSON.parse(attackPrompt.split('[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(attackRecipe.studioMotion.lessons.map(row=>row.role),['LIGHT_COMBO']);
+  assert.ok(attackRecipe.applicationExamples.some(row=>row.id==='HERMITE_POSE_SEGMENT'));
+  assert.ok(!attackPrompt.includes('[MOTION TEACHER PRACTICE BEGIN]'));
+  for(const other of [{...order,target:'web'},{...order,assetProductionLane:false},{...order,assetProduction:{}},{...order,assetProduction:{motionRepairWorkUnit:{...unit,clipId:'attack'}}}])assert.ok(!buildPrompt(other,context,['init.luau']).includes(marker));
+});
+
 function singleMotionFixture(t){
   const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const before=['pose = t','weight = t','arc = t','contact = t','overlap = t','settle = t'];

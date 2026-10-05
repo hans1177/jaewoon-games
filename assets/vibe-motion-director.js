@@ -12,6 +12,43 @@ const unique = values => [...new Set((values || []).map(text).filter(Boolean))];
 const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
 
 export const MOTION_DIRECTOR_TARGET='HIGH_END_COMPOSABLE_MOTION_DIRECTOR';
+// 작성자가 제공한 연습용 교재다. 런타임에서 검증된 학습 기록이나 모델 가중치가 아니다.
+export function createRobloxWalkTeachingRecipe(unit={}){
+  if(!unit||typeof unit!=='object')return null;
+  const objectId=text(unit.objectId),slug=objectId.replace(/^roblox-world-ghost-/,'');
+  if(unit.scope!=='INTERNAL_ASSET_LIBRARY'||!objectId.startsWith('roblox-world-ghost-')||
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||unit.clipId!=='walk'||unit.sourcePath!=='init.luau')return null;
+  return Object.freeze({
+    id:'ROBLOX_WALK_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',
+    runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    objectId,clipId:'walk',
+    use:'Adapt only applicable lessons inside the bound Motion.walk sourceWindow. Keep lockedSource, preservedAxes, existing rate/duration, rig names and non-target form branches. Diagnose from source first; visual improvement still needs native observation.',
+    lessons:freezeList([
+      Object.freeze({axis:'POSE_AND_STAGING',cause:'Equal motion on every joint hides the support leg and silhouette.',repair:'Keep the existing form and pose helper. Stage torso lean over the support side; use a smaller opposing shoulder rotation. Keep the head readable. Preserve floating, wheel, bound, serpent and multi-leg behavior; never paste a biped gait over them.'}),
+      Object.freeze({axis:'WEIGHT_AND_BALANCE',cause:'Independent bob frequencies drift away from the stepping rhythm.',repair:'Derive gait-related sway and bob from the existing phase. A two-step bob uses cos(2*phase); torso sway uses sin(phase). These are visual cues, not a center-of-mass or ground-contact solution. Keep separate breathing only if the existing blend/loop contract allows it.'}),
+      Object.freeze({axis:'JOINT_ARCS_AND_SPACING',cause:'A clipped sine lift has a velocity corner at contact.',repair:'For a compatible swing envelope use max(0,sin(phase)) squared: height and first derivative meet zero at either contact boundary. Opposite legs use phase+pi. Fit amplitude and local axis to the existing rig; do not add unknown knee bones.'}),
+      Object.freeze({axis:'CONTACT_AND_CONSTRAINTS',cause:'A local foot offset cannot lock a foot in world space.',repair:'Use the zero-lift half-cycle as an intended stance interval only. Measure world-space foot drift and floor penetration on the actual moving rig. Let the existing root/IK owner resolve contact; never change root movement or claim planting from this envelope alone.'}),
+      Object.freeze({axis:'OVERLAP_AND_SETTLE',cause:'All joints reversing together looks rigid.',repair:'Use a small bounded phase delay for an existing tail, sleeve or head channel; reduce distal amplitude as needed. Delay means phase-lag in radians, not an accumulating offset. Keep sampling a pure function of time so frame order cannot change the result.'}),
+      Object.freeze({axis:'LOOP_AND_TRANSITION',cause:'Position matching alone can still leave a velocity snap.',repair:'For periodic gait channels compare poses and finite-difference velocities at 0 and T=2*pi/rate, including nearby samples. Do not modulo Euler angles into a discontinuity. Inspect the existing idle/walk transition and blends in-engine; source continuity alone is not native QA.'})
+    ]),
+    example:Object.freeze({
+      contract:'Luau scalar example; phase is the EXISTING time*rate in radians. Insert selected expressions in the existing function, then feed only compatible existing pose channels. Coefficients are starting points, not verified rig values. No shared helper, new file, root edit or replacement of the entire motion is required.',
+      source:[
+        'local leftSwing = math.max(0, math.sin(phase))',
+        'local rightSwing = math.max(0, math.sin(phase + math.pi))',
+        'local leftLift = 0.06 * leftSwing * leftSwing',
+        'local rightLift = 0.06 * rightSwing * rightSwing',
+        'local torsoSway = 0.025 * math.sin(phase)',
+        'local torsoBob = 0.015 * (1 - math.cos(2 * phase))',
+        'local shoulderCounter = -0.6 * torsoSway',
+        'local followThrough = 0.035 * math.sin(phase - 0.25)'
+      ].join('\n')
+    }),
+    exercise:'Choose the weakest applicable axis; make a real executable before/after edit in its responsible pose channel. Use the existing six-axis motionRepairReport; preserve only predeclared sound axes. Renaming constants, adding unused helpers, or returning this lesson text is not a source refinement.',
+    checks:freezeList(['Sample the full existing cycle and contact boundaries; all original bones retain finite bounded x/y/z/rx/ry/rz and Root stays unchanged.','Sample times in reverse order too: identical inputs must yield identical poses.','On native same-camera/speed before-after captures inspect silhouette, support, foot drift, penetration, overlap and the loop/transition. Record uncertainty; do not self-promote to VERIFIED.'])
+  });
+}
+
 export const ROBLOX_CHARACTER_MOTION_FAILURE='CHARACTER_MOTION_MANNEQUIN';
 export const ROBLOX_ACTOR_CLASSES=Object.freeze(['PLAYER','HUMANOID_NPC','CREATURE']);
 export const ROBLOX_MOTION_SOURCE_PRIORITY=Object.freeze([
@@ -2202,6 +2239,23 @@ export function createRobloxMotionBlendProfile({
   });
 }
 
+const STUDIO_MOTION_TEACHER_LESSONS=Object.freeze({
+  READY_STANCE:"Readable rest silhouette, controlled breathing and gaze, stable contact and subtle asymmetry. Preserve species/body-plan identity and the authored idle loop; a combat guard is not appropriate for every creature.",
+  COMBAT_LOCOMOTION:"Stage load, push, swing and catch using the existing speed and support pattern. Match pose and contact phase at start/stop/turn boundaries; preserve multi-leg, floating and rolling locomotion instead of imposing biped footwork.",
+  LIGHT_COMBO:"Block clear anticipation, fast committed strike, confirmed contact and recovery poses. Drive the chain from support/pelvis through torso to the actual striking limb. Fit these visual phases to existing hit/cancel/combo markers, never the example percentages.",
+  HEAVY_ATTACK:"Show mass through preparation, a supported committed arc and controlled follow-through. Keep the hand/weapon grip and contact silhouette readable. Heavy presentation does not grant longer startup, extra damage, new hit-stop or slower gameplay.",
+  GAP_CLOSER:"Pose load, launch, controlled travel and braking against the existing root trajectory; match arrival contact without changing distance, speed, invulnerability or the active window.",
+  AERIAL_ATTACK:"Maintain clear airborne preparation, attack contact and recovery silhouettes along the authoritative jump/fall trajectory. Inspect weapon/body intersections and the actual landing transition; do not invent flight or suspension time.",
+  GUARD:"Move through readable guard raise/hold/return using compatible upper-body ownership; retain support and gaze. Preserve block state, shield collision and movement timing.",
+  PARRY_OR_COUNTER:"Align deflection and optional counter visuals to existing confirmed parry/counter events. Keep the contact limb/weapon readable and recovery connected; poses never create a successful parry.",
+  DODGE:"Show load, evade, replant and recovery over the existing displacement. Preserve dodge direction, distance, invulnerability and cancel windows; visible foot sliding needs native measurement.",
+  HIT_REACTION:"Use the confirmed impact direction, body region and existing strength tier. Recoil through a plausible joint chain while preserving hit-stun duration; blend back with compatible pose/velocity. Add no ragdoll authority.",
+  KNOCKDOWN:"Stage impact, balance loss, supported ground contact and the authored down pose. Check penetration and settling against native contact; preserve knockback, collision and down-state timing.",
+  GET_UP:"Support the body with its actual hands/knees/limbs before rising and replanting. Connect the down pose to the existing ready pose, preserving recovery timing and interruption rules.",
+  FINISHER:"Use a distinctive anticipation, commit/contact and signature follow-through within the existing single clip. Preserve target pairing, contact events and recovery; dramatic camera/audio remain within existing presentation ownership.",
+  AIRBORNE_LOCOMOTION:"Separate takeoff compression, airborne balance and landing absorption using existing events and root physics. Inspect clearance, grounded transitions and foot/body contact. A land clip cannot change jump height, airtime or movement authority."
+});
+
 export function createStudioMotionActionProfile({
   platform='UNITY',
   actorClass='HUMANOID_NPC',
@@ -2211,7 +2265,8 @@ export function createStudioMotionActionProfile({
   weightClass='STANDARD',
   combat=true,
   mobile=true,
-  limbCount=2
+  limbCount=2,
+  teachingClip=''
 }={}){
   const weight=upper(weightClass)||'STANDARD';
   const limbs=Math.max(2,Math.floor(Number(limbCount)||2));
@@ -2220,7 +2275,7 @@ export function createStudioMotionActionProfile({
     :weight==='LIGHT'
       ?{anticipation:.82,followThrough:.8,hitStopMs:28,cameraImpulse:.7}
       :{anticipation:1,followThrough:1,hitStopMs:45,cameraImpulse:1};
-  return Object.freeze({
+  const profile=Object.freeze({
     version:1,
     systems:freezeList([
       'POSE_MATCHING','UPPER_LOWER_BODY_LAYERING','ADDITIVE_MOTION','MOTION_WARPING','COMBAT_CONTACT_SOLVER',
@@ -2308,6 +2363,19 @@ export function createStudioMotionActionProfile({
     platform:upper(platform),
     gameplayAuthority:false
   });
+  if(!teachingClip)return profile;
+  const clip=upper(teachingClip).replace(/-/g,'_');
+  const aliases={IDLE:'READY_STANCE',WALK:'COMBAT_LOCOMOTION',JOG:'COMBAT_LOCOMOTION',RUN:'COMBAT_LOCOMOTION',SPRINT:'COMBAT_LOCOMOTION',START:'COMBAT_LOCOMOTION',STOP:'COMBAT_LOCOMOTION',TURN:'COMBAT_LOCOMOTION',TURN_90:'COMBAT_LOCOMOTION',ATTACK:'LIGHT_COMBO',LIGHT_ATTACK_1:'LIGHT_COMBO',LIGHT_ATTACK_2:'LIGHT_COMBO',LIGHT_ATTACK_3:'LIGHT_COMBO',HEAVY_ATTACK_1:'HEAVY_ATTACK',HIT:'HIT_REACTION',HIT_FRONT:'HIT_REACTION',EVADE:'DODGE',JUMP:'AIRBORNE_LOCOMOTION',JUMP_START:'AIRBORNE_LOCOMOTION',JUMP_AIR:'AIRBORNE_LOCOMOTION',FALL:'AIRBORNE_LOCOMOTION',LAND:'AIRBORNE_LOCOMOTION',LANDING:'AIRBORNE_LOCOMOTION'};
+  const role=aliases[clip]||clip;
+  const roles=clip==='ALL'?Object.keys(STUDIO_MOTION_TEACHER_LESSONS):STUDIO_MOTION_TEACHER_LESSONS[role]?[role]:[];
+  return Object.freeze({...profile,teaching:Object.freeze({
+    id:'STUDIO_MOTION_ACTION_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    clipId:text(teachingClip),needsSpecificClipBrief:roles.length===0,
+    lessons:freezeList(roles.map(id=>Object.freeze({role:id,phases:freezeList((DUEL_COMBAT_AUTHORING_PHASES[id]||[]).map(row=>row.phase)),lesson:STUDIO_MOTION_TEACHER_LESSONS[id]}))),
+    craft:'Inspect the exact rig/clip and weak axis first. Block silhouette and intent at the game camera, refine arcs and spacing, then contacts/grips, secondary overlap and transitions. Use compatible authored source and preserve strong axes. Hermite segments can match endpoint pose and velocity; C1 continuity alone does not prove contact or appeal.',
+    timing:'Phase names are staging references only. Read existing seconds/event markers, active/cancel/recovery windows and locks from the target source. Never substitute generic normalized timestamps, default speed, hit-stop, camera or LOD numbers. No new combo, gameplay event or root trajectory is authorized.',
+    nativeReview:Object.freeze({conditions:'Same rig, camera, root speed, clip, event timestamps and lighting before/after; inspect normal speed and slow/frame stepping, including interruption, loop and mobile conditions.',metrics:profile.automatedQa.requiredMetrics,acceptance:'Use existing target-native thresholds and captures. Declare inapplicable or unmeasured axes explicitly; source math, flags and teacher text cannot certify studio quality.'})
+  })});
 }
 
 const STUDIO_MOTION_PRODUCTION=Object.freeze({

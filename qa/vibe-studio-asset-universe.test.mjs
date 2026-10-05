@@ -9,7 +9,9 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
+  createAssetProductionTeachingRecipe,
   STUDIO_ASSET_FAMILIES,
+  ASSET_STYLE_FAMILIES,
   STUDIO_ASSET_QUALITY_MAX,
   STUDIO_ASSET_QUALITY_WEIGHTS,
   INTERNAL_ASSET_AUDIT_MAX,
@@ -119,6 +121,148 @@ const fullQualityEvidence=Object.freeze({
   VFX_AUDIO_COHESION:100,
   ORIGINALITY_IDENTITY:100,
   MOBILE_PERFORMANCE:100
+});
+
+test('asset teacher covers every registered object family, base material family and canonical style',()=>{
+  const registry=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+  const before=JSON.stringify(registry);
+  const families=[...new Set([...registry.assets.map(row=>row.family||row.category),...Object.keys(registry.baseMaterialLibrary.families)])];
+  assert.deepEqual([...families].sort(),[...STUDIO_ASSET_FAMILIES].sort());
+  for(const styleFamily of ASSET_STYLE_FAMILIES){
+    const recipe=createAssetProductionTeachingRecipe({families,styleBible:{styleFamily}});
+    assert.deepEqual(recipe.unmappedFamilies,[],styleFamily);
+    assert.equal(recipe.familyLessons.length,families.length,styleFamily);
+    assert.equal(recipe.style.needsSpecificBrief,false,styleFamily);
+    assert.ok(recipe.style.lesson.length>40,styleFamily);
+    assert.equal(recipe.runtimeVerified,false);
+    assert.equal(recipe.productionVerified,false);
+  }
+  assert.equal(JSON.stringify(registry),before);
+  const unknown=createAssetProductionTeachingRecipe({families:['UNKNOWN_FAMILY'],styleBible:{styleFamily:'UNKNOWN_STYLE'}});
+  assert.deepEqual(unknown.unmappedFamilies,['UNKNOWN_FAMILY']);
+  assert.equal(unknown.style.needsSpecificBrief,true);
+});
+
+test('asset teacher application code is scoped, original practice input and never quality authority',()=>{
+  const all=createAssetProductionTeachingRecipe();
+  assert.equal(all.applicationExamples.length,17);
+  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,17);
+  for(const platform of ['UNITY','WEB']){
+    const other=createAssetProductionTeachingRecipe({platform});
+    assert.deepEqual(other.applicationExamples,[]);
+    assert.deepEqual(other.advancedTechniques,[]);
+    assert.equal(other.familyLessons.length,12);
+  }
+  for(const family of STUDIO_ASSET_FAMILIES){
+    const recipe=createAssetProductionTeachingRecipe({families:[family]});
+    assert.ok(recipe.applicationExamples.length>0,family);
+    for(const row of recipe.applicationExamples){
+      assert.ok(row.families.includes(family));
+      assert.match(row.code,/local function/);
+      assert.match(row.code,/return \w+$/);
+      assert.ok(row.checks.length>50);
+    }
+    assert.equal(recipe.provenance,'TEACHER_AUTHORED');
+    assert.equal(recipe.status,'PRACTICE_ONLY');
+    assert.equal(recipe.runtimeVerified,false);
+  }
+  const motion=createAssetProductionTeachingRecipe({families:['MOTION']});
+  assert.ok(motion.applicationExamples.some(row=>row.id==='PERIODIC_SWING_ENVELOPE'));
+  assert.ok(!motion.applicationExamples.some(row=>row.id==='STABLE_INVENTORY_FILTER'));
+  const ui=createAssetProductionTeachingRecipe({families:['UI']});
+  assert.ok(ui.applicationExamples.some(row=>row.id==='LATEST_VIEW_RESULT_ONLY'));
+  assert.ok(!ui.applicationExamples.some(row=>row.id==='SUPPORT_PLANE_OFFSET'));
+});
+
+test('cinematic teacher supplies scoped direction ideas and lifecycle code only when explicitly selected',()=>{
+  const recipe=createAssetProductionTeachingRecipe({platform:'ROBLOX',cinematic:true});
+  assert.equal(recipe.cinematicDirection.lessons.length,8);
+  assert.equal(recipe.cinematicDirection.ideas.length,6);
+  assert.equal(recipe.applicationExamples.length,20);
+  assert.equal(recipe.cinematicDirection.runtimeVerified,false);
+  assert.equal(recipe.cinematicDirection.gameplayAuthority,false);
+  for(const row of recipe.cinematicDirection.ideas){assert.equal(row.beats.length,4);assert.ok(row.guard.length>50);}
+  const ordinary=createAssetProductionTeachingRecipe({families:['MOTION']});
+  assert.equal(ordinary.cinematicDirection,null);
+  assert.ok(!ordinary.applicationExamples.some(row=>row.cinematicOnly));
+  const ui=createAssetProductionTeachingRecipe({families:['UI'],cinematic:true});
+  assert.ok(ui.applicationExamples.some(row=>row.id==='RELEASE_CINEMATIC_OWNERSHIP'));
+  assert.ok(!ui.applicationExamples.some(row=>row.id==='CUBIC_BEZIER_CAMERA_COMPONENT'));
+  const unity=createAssetProductionTeachingRecipe({platform:'UNITY',cinematic:true});
+  assert.equal(unity.cinematicDirection,null);
+  assert.deepEqual(unity.applicationExamples,[]);
+});
+
+test('photo and world layout teacher separate pixel evidence from construction and reuse canonical layout APIs',async()=>{
+  const photo=createAssetProductionTeachingRecipe({families:['CREATURE'],visualReference:true});
+  assert.equal(photo.photoReferenceLessons.length,7);
+  assert.equal(photo.worldLayoutLessons.length,0);
+  assert.equal(photo.runtimeVerified,false);
+  assert.deepEqual(createAssetProductionTeachingRecipe({families:['CREATURE']}).photoReferenceLessons,[]);
+  const world=createAssetProductionTeachingRecipe({families:['ENVIRONMENT','BUILDING']});
+  assert.equal(world.worldLayoutLessons.length,6);
+  assert.ok(world.applicationExamples.some(row=>row.id==='PATH_SEGMENT_CLEARANCE'));
+  const routeLesson=world.worldLayoutLessons.find(row=>row.id==='ROUTE_GRAPH_BEFORE_DRESSING');
+  const api=await import('../'+routeLesson.source);
+  for(const name of routeLesson.apis)assert.equal(typeof api[name],'function');
+  const nodes=[{id:'entry',role:'spawn'},{id:'door',role:'entrance'},{id:'goal',role:'objective'}];
+  const blocked=api.createVibeRouteGraph({nodes,edges:[{from:'entry',to:'door'}]});
+  assert.equal(blocked.pass,false);assert.deepEqual(blocked.unreachable,['goal']);
+  const connected=api.createVibeRouteGraph({nodes,edges:[{from:'entry',to:'door'},{from:'door',to:'goal'}]});
+  assert.equal(connected.pass,true);
+  assert.match(routeLesson.lesson,/only an abstract proposal/);
+});
+
+test('advanced teacher selects applicable techniques with failure checks and preserves authority boundaries',()=>{
+  const all=createAssetProductionTeachingRecipe({platform:'roblox'});
+  assert.equal(all.advancedTechniques.length,8);
+  for(const family of STUDIO_ASSET_FAMILIES){
+    const recipe=createAssetProductionTeachingRecipe({families:[family],platform:'roblox'});
+    assert.ok(recipe.advancedTechniques.length>0,family);
+    for(const row of recipe.advancedTechniques){
+      assert.ok(row.families.includes(family));
+      assert.ok(row.when.length>30&&row.lesson.length>100&&row.check.length>80,row.id);
+    }
+    assert.equal(recipe.runtimeVerified,false);
+    assert.equal(recipe.gameplayAuthority,false);
+  }
+  const motion=createAssetProductionTeachingRecipe({families:['MOTION']});
+  assert.deepEqual(motion.advancedTechniques.map(row=>row.id),['CONTACT_IK_AND_REACH','INERTIAL_SECONDARY_RESPONSE','ROTATION_SPACE_AND_BLENDING']);
+  assert.ok(motion.applicationExamples.some(row=>row.id==='TWO_BONE_REACH_GEOMETRY'));
+  assert.ok(!motion.applicationExamples.some(row=>row.id==='SPATIAL_HASH_DECORATIVE_SPACING'));
+  const ui=createAssetProductionTeachingRecipe({families:['UI']});
+  assert.ok(ui.applicationExamples.some(row=>row.id==='VIRTUALIZED_FIXED_ROW_WINDOW'));
+  assert.ok(!ui.advancedTechniques.some(row=>row.id==='PBR_UV_AND_STYLE_LOCK'));
+});
+
+test('asset teacher details buildings settlements weather items inventory and menus using existing native APIs',()=>{
+  const recipe=createAssetProductionTeachingRecipe({families:['modern_building','medieval_building','village','city','weather','background_prop','item','inventory','menu','system_ui']});
+  assert.deepEqual(recipe.unmappedFamilies,[]);
+  assert.deepEqual(recipe.familyLessons.map(row=>row.family),['BUILDING','ENVIRONMENT','PROP','UI']);
+  assert.deepEqual(recipe.domainModules.map(row=>row.id),['MODERN_BUILDINGS','MEDIEVAL_BUILDINGS','SETTLEMENT_LAYOUT','BACKGROUND_LAYERS','WEATHER_PRESENTATION','SET_DRESSING','ITEM_REPRESENTATIONS','INVENTORY_VARIANTS','MENU_NAVIGATION','SYSTEM_SCREENS']);
+  for(const module of recipe.domainModules){
+    const source=fs.readFileSync(new URL('../'+module.source,import.meta.url),'utf8');
+    for(const api of module.apis)assert.match(source,new RegExp('function\\s+\\w+\\.'+api+'\\s*\\('),module.id+':'+api);
+    assert.ok(module.lesson.length>100);
+    assert.ok(module.check.length>60);
+  }
+  assert.deepEqual(recipe.domainModules.find(row=>row.id==='WEATHER_PRESENTATION').states,COMMON_ENVIRONMENT_STATE_EXPECTATIONS);
+  assert.deepEqual(createAssetProductionTeachingRecipe({families:['MOTION']}).domainModules,[]);
+  assert.equal(recipe.gameplayAuthority,false);
+  assert.equal(recipe.runtimeVerified,false);
+});
+
+test('asset teacher maps production aliases and respects a selected art lock without conflating cozy and cartoon',()=>{
+  const recipe=createAssetProductionTeachingRecipe({families:['npc','monster','animal','plant','background','item','effect','animation'],styleBible:{styleFamily:'DARK_CARTOON'}});
+  assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CHARACTER','CREATURE','ENVIRONMENT','PROP','VFX','MOTION']);
+  assert.equal(recipe.style.profileKey,'TOON_NOIR');
+  const cozy=createStyleBible({styleFamily:'COZY'}),cartoon=createStyleBible({styleFamily:'CARTOON'});
+  assert.notEqual(cozy.shapeLanguage,cartoon.shapeLanguage);
+  assert.equal(cozy.styleExpression.axes.MOTION_ENERGY,'SUBTLE');
+  assert.equal(cartoon.styleExpression.axes.MOTION_ENERGY,'EXAGGERATED');
+  const locked=createAssetProductionTeachingRecipe({styleBible:{...cozy,shapeLanguage:'OWNER_SHAPE',styleExpression:{axes:{MOTION_ENERGY:'EXPRESSIVE'}}}});
+  assert.equal(locked.style.shape,'OWNER_SHAPE');
+  assert.equal(locked.style.expression.axes.MOTION_ENERGY,'EXPRESSIVE');
 });
 
 function sharedCustomizationFixture(){
