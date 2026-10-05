@@ -80,10 +80,10 @@ env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
-  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
-  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
-  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '64'
+  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '64'
+  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'
+  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
@@ -94,7 +94,7 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '63') || inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
+  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '63') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && '64') || inputs.lane_max || '64' }}
 
 jobs:
   reserve:
@@ -361,6 +361,8 @@ jobs:
           echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
 
       - name: Reserve conflict-free DAG batch
+        env:
+          VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '64'
         id: batch
         if: steps.main_wake.outputs.proceed == 'true'
         env:
@@ -2420,7 +2422,7 @@ jobs:
           const workerFinishedAt=Date.now();
           const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
           const metrics={
-            requestedMax:Number(process.env.REQUESTED_MAX||256),effectiveMax:Number(process.env.EFFECTIVE_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
+            requestedMax:Number(process.env.REQUESTED_MAX||64),effectiveMax:Number(process.env.EFFECTIVE_MAX||64),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
