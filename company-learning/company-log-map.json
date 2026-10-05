@@ -1108,7 +1108,10 @@
     "unrelatedGraphicsRuntimeOrReleaseFailureMayNotBeLoggedAsGameWideDevelopmentBlocker": true,
     "internalConcurrencyCapForbidden": true,
     "externalProviderCapacityMayQueueWork": true,
-    "queueingFromExternalCapacityIsNotGameQualityFailure": true
+    "queueingFromExternalCapacityIsNotGameQualityFailure": true,
+    "fixedRepeatDevelopmentSlots": 64,
+    "externalProviderBoundary": 256,
+    "externalProviderBoundaryIsPhysicalOnly": true
   },
   "focusedCaretakerMaximumParallelismContract": {
     "version": 1,
@@ -3252,5 +3255,21 @@
       "SOURCE_DIFF",
       "NATIVE_BEFORE_AFTER_AND_MOBILE_QA"
     ]
+  },
+  "fixedRepeatDevelopment64EvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency",
+    "requiredMarkers": [
+      "VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=64",
+      "VIBE2_LANE_RESERVATION_MAX=64",
+      "VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX=64",
+      "VIBE2_GAME_PRIMARY_REFILL_TARGET=64"
+    ],
+    "runtimeStateField": "vibe2-unreal-core:.vibe2/parallelism-control.json#currentMax",
+    "requiredRuntimeState": 64,
+    "assetDevelopmentSlotsMustRemain": 63,
+    "adaptiveTargetMutationForbidden": true,
+    "qaReleaseRecoveryLaneCapacityClaim": false,
+    "sequenceChangeClaim": false
   }
 }
