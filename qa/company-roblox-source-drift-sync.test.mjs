@@ -365,6 +365,17 @@ test('source-sync contract edits wake runtime control while game edits use exact
 });
 
 
+test('stale exact-game cleanup never cancels in-progress Roblox work',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=runtime.indexOf('      - name: Cancel stale exact-game runtime runs after contract change');
+  const end=runtime.indexOf('      - name: Bind Roblox source-plan contract fingerprint',start);
+  const block=runtime.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/const states=new Set\(\['queued','pending','requested'\]\)/);
+  assert.doesNotMatch(block,/const states=new Set\(\[[^\]]*in_progress/);
+  assert.match(block,/ROBLOX_STALE_EXACT_RUNTIME_CANCEL_COUNT=/);
+});
+
 test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.doesNotMatch(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n/);
