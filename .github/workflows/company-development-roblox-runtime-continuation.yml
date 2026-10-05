@@ -85,8 +85,10 @@ jobs:
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifactIdentity.startsWith('sha256:')
                 &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=1&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+                &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifactIdentity.startsWith('sha256:')
-                &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1&&item.robloxBuildInternalAssetBindingPassed===true;
+                &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1&&item.robloxBuildInternalAssetBindingPassed===true
+                &&item.robloxBuildInternalLibraryModulesPackaged===true;
             const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed===true:item.robloxBuildPreflightPassed===true;
             if(!exactBuild||preflightPassed)continue;
             const buildPassedAt=Date.parse(String(secondaryOwnerFocus?item.ownerFocusRobloxBuildPassedAt:item.robloxBuildPassedAt||''));
@@ -119,6 +121,7 @@ jobs:
             return item.robloxBuildOrPackagePassed===true
               &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1
               &&item.robloxBuildInternalAssetBindingPassed===true
+              &&item.robloxBuildInternalLibraryModulesPackaged===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxFoundationF0Passed!==true
               &&item.robloxBuildSourceRevision===revision
@@ -359,6 +362,7 @@ jobs:
               &&item.robloxBuildOrPackagePassed===true
               &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1
               &&item.robloxBuildInternalAssetBindingPassed===true
+              &&item.robloxBuildInternalLibraryModulesPackaged===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxFoundationF0Passed!==true
               &&item.robloxBuildSourceRevision===revision
