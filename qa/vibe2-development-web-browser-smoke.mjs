@@ -110,6 +110,8 @@ class CdpClient{
     this.pending=new Map();
     this.waiters=new Map();
     this.exceptions=[];
+    this.networkFailures=[];
+    this.networkResponses=[];
   }
 
   async connect(){
@@ -137,6 +139,25 @@ class CdpClient{
           lineNumber:Number(details.lineNumber||0),
           columnNumber:Number(details.columnNumber||0),
           description:String(details.exception?.description||details.exception?.value||'')
+        });
+      }
+      if(message.method==='Network.loadingFailed'){
+        this.networkFailures.push({
+          url:String(message.params?.requestId||''),
+          requestId:String(message.params?.requestId||''),
+          errorText:String(message.params?.errorText||''),
+          blockedReason:String(message.params?.blockedReason||''),
+          canceled:message.params?.canceled===true
+        });
+      }
+      if(message.method==='Network.responseReceived'){
+        const response=message.params?.response||{};
+        this.networkResponses.push({
+          requestId:String(message.params?.requestId||''),
+          url:String(response.url||''),
+          status:Number(response.status||0),
+          mimeType:String(response.mimeType||''),
+          resourceType:String(message.params?.type||'')
         });
       }
       const waiters=this.waiters.get(message.method);
@@ -215,10 +236,13 @@ try{
   await cdp.connect();
   await cdp.send('Page.enable');
   await cdp.send('Runtime.enable');
+  await cdp.send('Network.enable');
 
   const results=[];
   for(const gameId of gameIds){
     cdp.exceptions.length=0;
+    cdp.networkFailures.length=0;
+    cdp.networkResponses.length=0;
     const missingStart=local404.length;
     const loaded=cdp.waitEvent('Page.loadEventFired',12000);
     const url=`http://127.0.0.1:${sitePort}/web-games/${encodeURIComponent(gameId)}/index.html`;
@@ -262,12 +286,90 @@ try{
       href:location.href
     }))()`);
 
+    const assetAudit=await cdp.evaluate(`(async()=>{
+      const sameOrigin=url=>{
+        try{
+          const parsed=new URL(url,location.href);
+          return parsed.origin===location.origin && /^https?:$/.test(parsed.protocol);
+        }catch{return false;}
+      };
+      const normalize=url=>{
+        try{return new URL(url,location.href).href}catch{return''}
+      };
+      const imageUrls=new Set();
+      const resourceUrls=new Set();
+      for(const node of document.querySelectorAll('img[src],audio[src],video[src],source[src]')){
+        const raw=node.getAttribute('src');
+        if(!raw)continue;
+        const absolute=normalize(raw);
+        if(!sameOrigin(absolute))continue;
+        resourceUrls.add(absolute);
+        if(node.tagName==='IMG')imageUrls.add(absolute);
+      }
+      for(const node of document.querySelectorAll('*')){
+        const bg=getComputedStyle(node).backgroundImage||'';
+        for(const match of bg.matchAll(/url\\(["']?([^"'()]+)["']?\\)/g)){
+          const absolute=normalize(match[1]);
+          if(!sameOrigin(absolute))continue;
+          resourceUrls.add(absolute);
+          imageUrls.add(absolute);
+        }
+      }
+      const fetchFailures=[];
+      for(const url of resourceUrls){
+        try{
+          const response=await fetch(url,{cache:'no-store'});
+          if(!response.ok)fetchFailures.push({url,status:response.status});
+        }catch(error){
+          fetchFailures.push({url,status:0,error:String(error?.message||error)});
+        }
+      }
+      const imageDecodeFailures=[];
+      for(const url of imageUrls){
+        const result=await new Promise(resolve=>{
+          const image=new Image();
+          let settled=false;
+          const done=(ok,error='')=>{
+            if(settled)return;
+            settled=true;
+            resolve({ok,error});
+          };
+          const timer=setTimeout(()=>done(false,'IMAGE_DECODE_TIMEOUT'),4000);
+          image.onload=()=>{
+            clearTimeout(timer);
+            if(image.naturalWidth>0&&image.naturalHeight>0)done(true);
+            else done(false,'ZERO_DIMENSIONS');
+          };
+          image.onerror=()=>{
+            clearTimeout(timer);
+            done(false,'IMAGE_ERROR');
+          };
+          image.src=url+(url.includes('?')?'&':'?')+'vibe_asset_probe=1';
+        });
+        if(!result.ok)imageDecodeFailures.push({url,error:result.error});
+      }
+      return{
+        localResourceCount:resourceUrls.size,
+        localImageCount:imageUrls.size,
+        fetchFailures,
+        imageDecodeFailures
+      };
+    })()`);
+
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');
     const exceptions=cdp.exceptions.filter(error=>
       /TypeError|ReferenceError|SyntaxError|Error/i.test(error.description||error.text)
     );
+    const originPrefix=`http://127.0.0.1:${sitePort}/`;
+    const badResponses=cdp.networkResponses.filter(row=>row.url.startsWith(originPrefix)&&row.status>=400);
+    const failedRequestIds=new Set(cdp.networkFailures.map(row=>row.requestId));
+    const failedLocalResponses=cdp.networkResponses.filter(row=>failedRequestIds.has(row.requestId)&&row.url.startsWith(originPrefix));
 
     assert.equal(missing.length,0,`${gameId}: local browser requests missing ${missing.join(',')}`);
+    assert.equal(badResponses.length,0,`${gameId}: browser asset/http response failed ${JSON.stringify(badResponses)}`);
+    assert.equal(failedLocalResponses.length,0,`${gameId}: browser local resource loading failed ${JSON.stringify(failedLocalResponses)}`);
+    assert.equal(assetAudit?.fetchFailures?.length||0,0,`${gameId}: local asset fetch failed ${JSON.stringify(assetAudit?.fetchFailures||[])}`);
+    assert.equal(assetAudit?.imageDecodeFailures?.length||0,0,`${gameId}: local image decode failed ${JSON.stringify(assetAudit?.imageDecodeFailures||[])}`);
     assert.equal(exceptions.length,0,`${gameId}: uncaught browser exception ${JSON.stringify(exceptions)}`);
     assert.ok(state?.title,`${gameId}: document title missing after browser boot`);
     assert.ok(Number(state?.bodyChildren||0)>0,`${gameId}: empty body after browser boot`);
@@ -277,7 +379,9 @@ try{
       gameId,
       clickedStart:Boolean(start?.clicked),
       startTarget:start?.target||'',
-      canvasCount:Number(state?.canvasCount||0)
+      canvasCount:Number(state?.canvasCount||0),
+      localResourceCount:Number(assetAudit?.localResourceCount||0),
+      localImageCount:Number(assetAudit?.localImageCount||0)
     });
   }
 

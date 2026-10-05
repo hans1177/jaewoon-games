@@ -66,9 +66,38 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.applicationCoverage.noArtificialCombinationCap,true);
   assert.equal(a.applicationCoverage.contextBudgetIsNotUsageCap,true);
   assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
-  assert.equal(a.synchronization.selectedSubsetOnly,true);
+  assert.equal(a.synchronization.selectedSubsetOnly,false);
+  assert.equal(a.synchronization.fullLibraryEvaluatedEveryBuildUp,true);
+  assert.equal(a.synchronization.automaticMatchingEveryBuildUp,true);
+  assert.equal(a.synchronization.automaticConnectionEveryBuildUp,true);
+  assert.equal(a.synchronization.automaticRebindOnLibraryChange,true);
+  assert.equal(a.synchronization.manualRefreshRequired,false);
+  assert.equal(a.synchronization.manualAssetPinRequired,false);
   assert.equal(a.synchronization.changedFamilyRebindOnly,true);
   assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
+  const refreshA=buildInternalAssetSourceUsageContract({
+    ...order,
+    assetProduction:{
+      ...order.assetProduction,
+      flowAssetLoadout:{
+        ...order.assetProduction.flowAssetLoadout,
+        libraryEvaluation:{evaluationFingerprint:'library-a',allLibrarySourcesEvaluated:true,staleSelectionReuseForbidden:true}
+      }
+    }
+  });
+  const refreshB=buildInternalAssetSourceUsageContract({
+    ...order,
+    assetProduction:{
+      ...order.assetProduction,
+      flowAssetLoadout:{
+        ...order.assetProduction.flowAssetLoadout,
+        libraryEvaluation:{evaluationFingerprint:'library-b',allLibrarySourcesEvaluated:true,staleSelectionReuseForbidden:true}
+      }
+    }
+  });
+  assert.notEqual(refreshA.fingerprint,refreshB.fingerprint);
+  assert.equal(refreshA.synchronization.libraryEvaluationFingerprintBound,true);
+  assert.equal(refreshA.synchronization.staleSelectionReuseForbidden,true);
   assert.equal(a.version,3);
   assert.ok(a.usageMatrix.length>=72);
   assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
@@ -1826,6 +1855,44 @@ test('quality DNA keeps hero floors higher than background floors without invent
   const guidance=assetProductionGuidance(plan);
   assert.match(guidance,/QUALITY DNA/);
   assert.match(guidance,/최소 제작 하한/);
+});
+
+test('Web BUILD_UP evaluates registry manifest and every internal catalog before asset use',()=>{
+  const root=process.cwd();
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const manifest=JSON.parse(fs.readFileSync(path.join(root,'assets','asset-manifest.json'),'utf8'));
+  const catalogs=[];
+  const walk=dir=>{
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      if(entry.name.startsWith('.')||['node_modules','generated','previews'].includes(entry.name))continue;
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())walk(full);
+      else if(entry.isFile()&&entry.name==='catalog.json')catalogs.push(full);
+    }
+  };
+  walk(path.join(root,'assets'));
+  const plan=buildVibeAssetProductionPlan({
+    target:'web',
+    task:{
+      gameId:'web-all-library-fixture',
+      goal:'Web BUILD_UP 전체 내부 라이브러리 자동사용',
+      assetRequirements:[
+        {id:'hud',family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',assetIdPinned:false,gameplayAuthority:false}
+      ]
+    }
+  });
+  const audit=plan.flowAssetLoadout.libraryEvaluation;
+  assert.equal(audit.registryAssetCount,(registry.assets||[]).length);
+  assert.equal(audit.manifestAssetCount,(manifest.assets||[]).length);
+  assert.equal(audit.allCatalogCount,catalogs.length);
+  assert.equal(audit.registryEvaluated,true);
+  assert.equal(audit.manifestEvaluated,true);
+  assert.equal(audit.allCatalogsEvaluated,true);
+  assert.equal(audit.allLibrarySourcesEvaluated,true);
+  assert.equal(audit.qualityScoreIsUsageGate,false);
+  assert.equal(audit.lowScoreCompatibleAssetUseRequired,true);
+  assert.equal(plan.flowAssetLoadout.allCompatibleAssetsAutoUseRequired,true);
+  assert.equal(plan.flowAssetLoadout.lowQualityBindingAllowedRegardlessOfScore,true);
 });
 
 test('flow asset requirements resolve through the latest company library and are exposed to source workers',()=>{

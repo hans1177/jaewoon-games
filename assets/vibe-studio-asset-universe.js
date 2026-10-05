@@ -3216,7 +3216,7 @@ export function buildStudioAssetQuality120Program({assets=[],qualityEvidenceByAs
     evolutionQueue:Object.freeze(evolutionQueue),
     belowCommercialCount:assessments.filter(row=>row.score<100).length,
     belowMasterCount:assessments.filter(row=>row.score<116).length,
-    lowScoreBindingPolicy:'USE_WHEN_NO_BETTER_SAFE_COMPATIBLE_ALTERNATIVE_AND_KEEP_VISUAL_DEBT_OPEN',
+    lowScoreBindingPolicy:'USE_WHEN_SAFE_LICENSE_PLATFORM_ROLE_COMPATIBLE_REGARDLESS_OF_SCORE_AND_KEEP_VISUAL_DEBT_OPEN',
     qualityScoreIsNotADevelopmentBindingGate:true,
     productionVerificationRemainsRuntimeEvidenceBased:true,
     verifiedOutcomeOnlyLearning:true
@@ -4085,12 +4085,46 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={},requirem
 export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},usageByAsset={}}={}){
   const normalized=(assets||[]).map(asset=>({asset,row:normalizeRegistryAsset(asset)}));
   const selections=[];
-  for(const requirement of requirements||[]){
+  const compatibleAssets=[];
+  for(const [requirementIndex,requirement] of (requirements||[]).entries()){
     const family=upper(requirement.family),subfamily=upper(requirement.subfamily);
+    const requirementId=text(requirement.requirementId||requirement.id)||[family,subfamily||'ANY',requirementIndex+1].join(':');
     const lockedAssetId=text(requirement.lockedAssetId||requirement.manualAssetId||requirement.gameLockedAssetId);
     const currentAssetId=text(requirement.currentAssetId);
     const familyCandidates=normalized.filter(({row})=>row.family===family);
     const currentAsset=currentAssetId?familyCandidates.find(({row})=>row.id===currentAssetId)?.asset||null:null;
+    const compatibleRows=familyCandidates.map(({asset,row})=>{
+      const reuse=evaluateInternalAssetReuse({asset,gameDna,requirement:{...requirement,family,subfamily,lockedAssetId},usage:usageByAsset[row.id]||{}});
+      if(!reuse.usable||reuse.hardBlockers.length)return null;
+      const scored=scoreStudioAssetCandidate({
+        asset,gameDna,usage:usageByAsset[row.id]||{},requirement:{...requirement,family,subfamily}
+      });
+      return Object.freeze({
+        requirementId,
+        family,subfamily,
+        assetId:row.id,
+        score:scored?.score??null,
+        quality120:scored?.quality120?.score??null,
+        internalAuditScore:scored?.internalAuditScore??null,
+        internalAuditGrade:scored?.internalAuditGrade??null,
+        applicationMode:scored?.applicationMode||reuse.mode||null,
+        directBindingReady:scored?.directBindingReady===true||reuse.directBindingReady===true,
+        adaptationReady:scored?.adaptationReady===true||reuse.adaptationReady===true,
+        packId:row.packId||null,
+        path:row.path||null,
+        license:row.license||null,
+        sourceFiles:row.sourceFiles||Object.freeze([]),
+        machineTags:row.machineTags||Object.freeze([]),
+        usageContract:row.usageContract||null,
+        companyCommonBase:row.companyCommonBase===true,
+        lowQuality:Boolean(Number(scored?.internalAuditScore||0)<INTERNAL_ASSET_AUDIT_PASS),
+        qualityScoreBlocksBinding:false,
+        internalAuditScoreBlocksBinding:false,
+        lowScoreUseRequiredWhenOtherwiseCompatible:true
+      });
+    }).filter(Boolean);
+    compatibleAssets.push(...compatibleRows);
+
     const choice=chooseInternalAssetReplacement({
       currentAsset,
       candidates:familyCandidates.map(row=>row.asset),
@@ -4103,6 +4137,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       asset:picked.asset,gameDna,usage:usageByAsset[picked.row.id]||{},requirement:{...requirement,family,subfamily}
     }):null;
     selections.push(Object.freeze({
+      requirementId,
       family,subfamily,required:requirement.required!==false,
       assetId:picked?.row.id||null,
       score:scored?.score??null,
@@ -4122,6 +4157,9 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       lowQualityFallback:Boolean(picked&&Number(scored?.internalAuditScore||0)<INTERNAL_ASSET_AUDIT_PASS),
       qualityScoreBlocksBinding:false,
       internalAuditScoreBlocksBinding:false,
+      lowScoreUseRequiredWhenOtherwiseCompatible:true,
+      compatibleAssetCount:compatibleRows.length,
+      compatibleAssetIds:Object.freeze(compatibleRows.map(row=>row.assetId)),
       lockedAssetId:lockedAssetId||null,
       lockedChoiceApplied:choice.replacementAction==='KEEP_LOCKED',
       currentAssetId:currentAssetId||null,
@@ -4131,6 +4169,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       replacementReason:choice.replacementRecommended?'HIGHER_EFFECTIVE_INTERNAL_QUALITY_AFTER_ADAPTATION':null,
       effectiveGain:choice.effectiveGain,
       packId:picked?.row.packId||null,
+      path:picked?.row.path||null,
       sourceFiles:picked?.row.sourceFiles||Object.freeze([]),
       machineTags:picked?.row.machineTags||Object.freeze([]),
       usageContract:picked?.row.usageContract||null,
@@ -4144,17 +4183,26 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       unresolved:!picked
     }));
   }
+  const compatibleByAssetId=[...new Map(compatibleAssets.map(row=>[
+    [row.requirementId,row.assetId].join('|'),row
+  ])).values()];
   return Object.freeze({
     selections:Object.freeze(selections),
+    compatibleAssets:Object.freeze(compatibleByAssetId),
+    compatibleAssetCount:compatibleByAssetId.length,
+    allCompatibleAssetsMustRemainUsageEligible:true,
+    allCompatibleAssetsAutoUseRequired:true,
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
     complete:selections.every(row=>!row.required||!row.unresolved),
-    lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
+    lowQualityFallbackCount:compatibleByAssetId.filter(row=>row.lowQuality).length,
     lowQualityBindingAllowed:true,
-    lowQualityBindingAllowedWhenNoBetterSafeCompatibleAsset:true,
+    lowQualityBindingAllowedRegardlessOfScore:true,
+    lowQualityBindingAllowedWhenNoBetterSafeCompatibleAsset:false,
+    lowScoreCompatibleAssetMustRemainUsageEligible:true,
     internalAuditScoreIsNotBindingGate:true,
     qualityScoreIsNotBindingGate:true,
     adaptationBeforeRejectionPreferred:true,
-    higherCompatibleInternalAuditScoreAutoPreferred:true,
+    higherCompatibleInternalAuditScoreMayRankPrimaryButCannotExcludeOtherCompatibleAssets:true,
     automaticReplacementUsesEffectiveQuality:true,
     automaticReplacementStudioRequired:false,
     automaticReplacementNativeRuntimeRequired:false,
@@ -4168,12 +4216,11 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     flowOwnership:false,
     flowMutationAllowed:false,
     machineReadableDiscovery:true,
-    selectionContractVersion:3,
+    selectionContractVersion:4,
     newPipelineCreated:false,
     gameplayAuthority:false
   });
 }
-
 export function buildFutureAssetDemandForecast({gameDemands=[],coverageReport={}}={}){
   const demand=new Map();
   for(const game of gameDemands||[]){
@@ -4642,6 +4689,8 @@ function normalizeRegistryAsset(asset={}){
     tags:(asset.tags||asset.capabilities||asset.machineTags||[]).map(upper),
     machineTags:(asset.machineTags||asset.tags||asset.capabilities||[]).map(upper),
     packId:text(asset.packId),
+    path:text(asset.path),
+    license:text(asset.license||asset.policy),
     sourceFiles:Object.freeze([...(asset.sourceFiles||[])]),
     companyCommonBase:asset.companyCommonBase===true,
     usageContract:asset.usageContract||asset.bindingHint||asset.assemblyContract||asset.introContract||null,
