@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g21-ce5d6aeb2656",
-  "directiveFingerprint": "ce5d6aeb26561e8a0d5303eb9c3a4165ba3d19ca15ffc6d90b987fc38f1eb551",
-  "previousDirectiveFingerprint": "248aaae585a3bfd5fd019c283de3b6b67cb7aa659ea4852a1d1e98d506f17b17",
-  "forbiddenRepeatFingerprint": "248aaae585a3bfd5fd019c283de3b6b67cb7aa659ea4852a1d1e98d506f17b17",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g22-d4a5c44b4c0a",
+  "directiveFingerprint": "d4a5c44b4c0ae218241664e398eabba2c4dfd25f395e57bb5e09750aac1df73c",
+  "previousDirectiveFingerprint": "ce5d6aeb26561e8a0d5303eb9c3a4165ba3d19ca15ffc6d90b987fc38f1eb551",
+  "forbiddenRepeatFingerprint": "ce5d6aeb26561e8a0d5303eb9c3a4165ba3d19ca15ffc6d90b987fc38f1eb551",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 21,
+  "generation": 22,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "53cb0a1363d41973dd6b11ab6c22a0cd059c4b9a09ba483b80a8d5435bdc51a7",
+  "sourceTreeFingerprint": "4c4ff225ced5fd540347600f42eda9f4299dc6967a8f995d5b47ecc2e384dffa",
   "designFingerprint": "491530ac1f5db9c62af2793e2ee12a69b743f3c5da0750f0b2628d384ed75efb",
   "gameIdentityAndNonNegotiables": {
     "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
@@ -257,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 20,
-    "previousSourceTreeFingerprint": "ee4976dbae6b0c215dcb32d6d958f9c9f18f179f5f3dc222ab0a67e23338baa3",
-    "currentSourceTreeFingerprint": "53cb0a1363d41973dd6b11ab6c22a0cd059c4b9a09ba483b80a8d5435bdc51a7",
+    "previousGeneration": 21,
+    "previousSourceTreeFingerprint": "53cb0a1363d41973dd6b11ab6c22a0cd059c4b9a09ba483b80a8d5435bdc51a7",
+    "currentSourceTreeFingerprint": "4c4ff225ced5fd540347600f42eda9f4299dc6967a8f995d5b47ecc2e384dffa",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1442,15 +1442,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 5,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=4.",
+    "themeDepth": 6,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 5,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
@@ -1464,7 +1464,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1500,7 +1500,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 120,
+        "score": 102,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1616,11 +1616,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 21,
-    "previousGeneration": 20,
+    "generation": 22,
+    "previousGeneration": 21,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "53cb0a1363d41973dd6b11ab6c22a0cd059c4b9a09ba483b80a8d5435bdc51a7",
-    "priorSourceFingerprint": "ee4976dbae6b0c215dcb32d6d958f9c9f18f179f5f3dc222ab0a67e23338baa3",
+    "sourceFingerprint": "4c4ff225ced5fd540347600f42eda9f4299dc6967a8f995d5b47ecc2e384dffa",
+    "priorSourceFingerprint": "53cb0a1363d41973dd6b11ab6c22a0cd059c4b9a09ba483b80a8d5435bdc51a7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2255,7 +2255,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "53cb0a1363d41973dd6b11ab6c22a0cd059c4b9a09ba483b80a8d5435bdc51a7",
+      "sourceTreeFingerprint": "4c4ff225ced5fd540347600f42eda9f4299dc6967a8f995d5b47ecc2e384dffa",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2302,7 +2302,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 22,
+    "nextGeneration": 23,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2370,5 +2370,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:05:39.033Z"
+  "generatedAt": "2026-10-05T07:46:05.629Z"
 }

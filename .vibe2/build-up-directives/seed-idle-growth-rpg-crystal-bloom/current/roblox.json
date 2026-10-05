@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g17-5dbdfa2051fd",
-  "directiveFingerprint": "5dbdfa2051fd3878b082b046822fbae430a0ee7dd416960917ad41011e570839",
-  "previousDirectiveFingerprint": "c4103a1cea37fbcda5b390ce3947dfc3e8ca490dd3b7617feebe714a71d63c5f",
-  "forbiddenRepeatFingerprint": "c4103a1cea37fbcda5b390ce3947dfc3e8ca490dd3b7617feebe714a71d63c5f",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g18-ff56649488c9",
+  "directiveFingerprint": "ff56649488c98e10715f483e87fc8fc9dba211bd7205d75362342066b8f846fe",
+  "previousDirectiveFingerprint": "5dbdfa2051fd3878b082b046822fbae430a0ee7dd416960917ad41011e570839",
+  "forbiddenRepeatFingerprint": "5dbdfa2051fd3878b082b046822fbae430a0ee7dd416960917ad41011e570839",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
+  "sourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
   "designFingerprint": "ef35a29bbdc82e258294cf850dba5b5e5b90ae0c4b91c74ed85f48a7f1a8a708",
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
@@ -257,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "38d0848915c072afd07bd3b6d9fe0d69ece8b2cf86a05d889a05b9b8ddc5c454",
-    "currentSourceTreeFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
+    "currentSourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1442,8 +1442,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1453,14 +1453,14 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1502,7 +1502,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 84,
+        "score": 66,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1618,11 +1618,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
-    "priorSourceFingerprint": "38d0848915c072afd07bd3b6d9fe0d69ece8b2cf86a05d889a05b9b8ddc5c454",
+    "sourceFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
+    "priorSourceFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2257,7 +2257,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
+      "sourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2304,7 +2304,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2372,5 +2372,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:00:29.669Z"
+  "generatedAt": "2026-10-05T07:46:05.602Z"
 }
