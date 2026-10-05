@@ -18,6 +18,37 @@ test('headless FAST_MVP passes complete release checklist without Studio',()=>{
  for(const field of ['gameStartPassed','serverBootPassed','worldFoundationPassed','characterFoundationPassed','physicsAndMovementPassed','runtimeFoundationPassed','actualRuntimeEvidence','internalReleaseReady'])assert.equal(r[field],false,field);
 });
 
+test('headless F0 binds exact BUILD_UP asset fingerprint and source selection identity',()=>{
+ const buildUpFingerprint='d'.repeat(64);
+ const selectionFingerprint='e'.repeat(64);
+ const assetConfig=config.replace(' return Config',` Config.StudioAssets={LibraryVersion=109,SelectionFingerprint="${selectionFingerprint}"} return Config`);
+ const pass=inspectHeadlessSourceTexts({
+   gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+   buildUpAssetSourceUsageFingerprint:buildUpFingerprint,
+   assetSelectionFingerprint:selectionFingerprint,assetLibraryVersion:109,
+   config:assetConfig,server,client,project
+ });
+ assert.equal(pass.pass,true,pass.blockers.join(','));
+ assert.equal(pass.buildUpAssetSourceUsageFingerprint,buildUpFingerprint);
+ assert.equal(pass.assetSelectionFingerprint,selectionFingerprint);
+ assert.equal(pass.observedAssetSelectionFingerprint,selectionFingerprint);
+ assert.equal(pass.assetLibraryVersion,109);
+ assert.equal(pass.observedAssetLibraryVersion,109);
+
+ const mismatch=inspectHeadlessSourceTexts({
+   gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,
+   buildUpAssetSourceUsageFingerprint:buildUpFingerprint,
+   assetSelectionFingerprint:'f'.repeat(64),assetLibraryVersion:109,
+   config:assetConfig,server,client,project
+ });
+ assert.equal(mismatch.pass,false);
+ assert.ok(mismatch.blockers.includes('assetSelectionFingerprint'));
+});
+
 test('headless FAST_MVP blocks artifact drift',()=>{
  const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server,client,project});
  assert.equal(r.pass,false);
@@ -243,5 +274,5 @@ test('F0 blocks generic scope handlers when an exact survival design baseline is
  assert.ok(r.blockers.includes('gameplayProductReadiness'));
  assert.ok(r.gameplayProductReadiness.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
  assert.ok(r.gameplayProductReadiness.blockers.some(x=>x.includes('CRAFTING')));
- assert.equal(r.version,4);
+ assert.equal(r.version,5);
 });
