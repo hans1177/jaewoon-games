@@ -101,6 +101,13 @@ Web PASS는 Roblox/Unity/UEFN native build/runtime/independent QA/regression PAS
 
 ### 폴리시 / 성능
 
+- 내부 자산 정례 점검은 기존 `ASSET_DEVELOPMENT` 계획 실행마다 `synchronizeCompanyCommonAssetRegistry`에서 수행한다. 별도 스케줄러나 승인 대기 단계를 만들지 않는다.
+- `internalAssetLibraryAutomation.nextVolumeActions`는 같은 종류의 현재 활성 자산만으로 역할 누락을 판정한다. 비활성·격리·폐기 검토 자산은 재사용 후보에서 제외하되 원본은 삭제하지 않는다.
+- `nextQualityActions`와 선택된 `activeDetailImprovement`는 자산 ID, 책임 파일, 최약 감사 축, 세부 수정, 보존할 강한 축, 동일 조건 비교를 포함한다. 미측정 항목은 먼저 측정하고 임의 점수를 만들지 않는다. 생성·등록·내부 점수는 실제 게임 검증을 대신하지 않는다.
+- 소스·축별 감사·분류·역할 변경 시 기존 점검 목록을 재계산하고 같은 소스의 같은 수정은 중복 생성하지 않는다. 점검 결과가 같으면 장부 버전도 그대로 유지한다.
+- 자산 검색은 현재 장부에서 이름·역할·태그·종류·플랫폼을 색인한다. 화면의 내부 품질 정렬은 찾기 위한 보조 정보이며 생산 검증 여부를 바꾸지 않는다.
+- `buildStudioAssetLoadout`의 파츠 검색은 종류와 `atomId` 색인을 사용한다. 동적 연결 묶음은 동일 `librarySnapshotId`의 ID·원본 경로·버전만 포함하며 필수 자산이 없거나 예상 스냅샷이 다르면 비워 두고 재선택한다. 이 연결은 기존 소스 작업자가 적용할 입력이며 실행 중 게임을 임의 교체하거나 런타임 검증을 승인하지 않는다.
+
 - 큰 표현 변경은 동일 장면 before/after로 가독성·모션 연속성·타격감·음향 동기화·혼잡도·프레임 안정성을 비교한다.
 - 목표는 가능한 기기에서 60FPS이며 저사양에서는 표현 비용을 줄여도 게임 의미는 유지한다.
 - 실사·고해상도 마감은 Living Motion과 Audio Feel 기준을 통과한 뒤 선택적으로 진행한다.

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
@@ -3224,7 +3225,7 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   });
   assert.equal(loadout.complete,true);
   assert.equal(loadout.machineReadableDiscovery,true);
-  assert.equal(loadout.selectionContractVersion,3);
+  assert.equal(loadout.selectionContractVersion,4);
   assert.equal(loadout.newPipelineCreated,false);
   assert.equal(loadout.selections[0].assetId,'common-forest-kit');
   assert.equal(loadout.selections[0].packId,'roblox-common-environment-v1');
@@ -3850,6 +3851,127 @@ test('internal asset maintenance refreshes on type role and quality evolution wi
   assert.equal(second.continueWithoutChatgpt,true);
 });
 
+test('internal maintenance excludes inactive donors and binds detail repairs to current audit axes',()=>{
+  const assets=[
+    {id:'active',family:'PROP',internalAuditScore:1000,sourceHash:'source-a',sourceFiles:['assets/props.js'],internalAuditEvidence:{DETAIL_FINISH:20,MATERIAL_SURFACE:90}},
+    {id:'stale',family:'PROP',catalogActive:false,internalAuditScore:1000},
+    {id:'quarantined',family:'PROP',status:'QUARANTINED',internalAuditScore:1000},
+    {id:'unknown',family:'PROP',internalAuditScore:null}
+  ];
+  const first=buildInternalAssetMaintenanceSnapshot({assets});
+  assert.deepEqual(first.qualityDonorCandidates.map(row=>row.id),['active']);
+  const inspect=first.nextQualityActions.find(row=>row.assetId==='unknown');
+  assert.equal(inspect.kind,'INSPECT_ASSET_QUALITY');
+  assert.equal(inspect.currentAxisScore,null);
+  const repair=first.nextQualityActions.find(row=>row.assetId==='active');
+  assert.deepEqual(repair.sourceFiles,['assets/props.js']);
+  assert.equal(repair.productionPromotionAllowed,false);
+  assert.ok(repair.preserveAxes.includes('MATERIAL_SURFACE'));
+  const second=buildInternalAssetMaintenanceSnapshot({assets:assets.map(row=>row.id==='active'?{...row,sourceHash:'source-b',internalAuditEvidence:{DETAIL_FINISH:90,MATERIAL_SURFACE:20}}:row),previous:first});
+  assert.notEqual(second.qualityFingerprint,first.qualityFingerprint);
+  assert.ok(second.refreshReasons.includes('QUALITY_METADATA_CHANGED'));
+  assert.deepEqual(first,buildInternalAssetMaintenanceSnapshot({assets:[...assets].reverse()}));
+  assert.equal(assets[0].internalAuditScore,1000);
+});
+
+test('internal role coverage cannot be satisfied by a different family or stale object',()=>{
+  const assets=[
+    {id:'audio-weather',family:'AUDIO',role:'WEATHER',companyCommonBase:true},
+    {id:'old-weather',family:'ENVIRONMENT',role:'WEATHER',companyCommonBase:true,catalogActive:false}
+  ];
+  const plan=buildInternalAssetLibraryAutomationPlan({assets});
+  const environment=plan.domains.find(row=>row.domain==='ENVIRONMENT');
+  assert.ok(environment.missingDepthRoles.includes('WEATHER'));
+  assert.ok(environment.suggestedIdeas.some(row=>row.role==='WEATHER'));
+  assert.ok(plan.nextVolumeActions.every(row=>!row.internalReuseCandidatePreview.some(candidate=>candidate.id==='old-weather')));
+});
+
+test('internal quality detail repair dedupes shared source and reaudits perfect axes',()=>{
+  const allAxes=scoreInternalAssetAudit1000({asset:{family:'PROP'}}).applicableAxes;
+  const complete=Object.fromEntries(allAxes.map(axis=>[axis,100]));
+  const assets=[
+    {id:'a',family:'PROP',sourceFiles:['assets/props.js'],internalAuditEvidence:{...complete,DETAIL_FINISH:30}},
+    {id:'b',family:'PROP',sourceFiles:['assets/props.js'],internalAuditEvidence:{...complete,DETAIL_FINISH:30}},
+    {id:'perfect',family:'PROP',sourceFiles:['assets/perfect.js'],internalAuditEvidence:complete}
+  ];
+  const plan=buildInternalAssetMaintenanceSnapshot({assets});
+  assert.equal(plan.nextQualityActions.length,2);
+  assert.equal(plan.nextQualityActions[0].weakestAxis,'DETAIL_FINISH');
+  assert.ok(plan.nextQualityActions[0].detailSteps.includes('SEAMS_FASTENERS_EDGE_PROFILES_AND_CONTACT_DETAIL'));
+  assert.equal(plan.nextQualityActions[1].kind,'REAUDIT_ASSET_QUALITY');
+});
+
+test('catalog synchronization cannot inherit or manufacture production verification',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-proof-'));
+  try{
+    const dir=path.join(root,'assets/roblox/common-items-v1');fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'catalog.json'),JSON.stringify({packId:'roblox-common-items-v1',version:1,items:[{assetId:'NEW',productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_RUNTIME'}]}));
+    const registry={version:1,assets:[{id:'roblox-common-items-v1',family:'PROP',packId:'roblox-common-items-v1',productionVerified:true,verifiedCompanyReusable:true,runtimeVerificationState:'VERIFIED_RUNTIME',internalAuditScore:1000,consumerGameIds:['existing-game']}]};
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
+    const added=first.registry.assets.find(row=>row.id!=='roblox-common-items-v1');
+    assert.equal(added.productionVerified,false);
+    assert.equal(added.verifiedCompanyReusable,false);
+    assert.equal(added.runtimeVerificationState,'PENDING_STUDIO');
+    assert.equal(added.internalAuditScore,undefined);
+    assert.deepEqual(added.consumerGameIds,[]);
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
+    assert.equal(second.changed,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('atomic asset search resolves exact atoms from one snapshot and rejects stale dynamic links',()=>{
+  const assets=Array.from({length:1000},(_,i)=>({id:'asset-'+i,atomId:'PART_'+i,family:i===999?'WEAPON':'PROP',platform:'ROBLOX',license:'project-original',status:'REPO_ASSET',path:'assets/parts/'+i+'.luau',internalAuditScore:900}));
+  const args={assets,requirements:[{family:'WEAPON',atomId:'PART_999'}],gameDna:{targetPlatform:'ROBLOX'},libraryVersion:12,librarySnapshotId:'snapshot-12'};
+  const first=buildStudioAssetLoadout(args);
+  assert.equal(first.complete,true);
+  assert.equal(first.searchStats.candidateVisits,1);
+  assert.equal(first.atomicBindingReady,true);
+  assert.equal(first.bindingBatch[0].atomId,'PART_999');
+  assert.deepEqual(first.bindingBatch[0].sourceFiles,['assets/parts/999.luau']);
+  assert.equal(first.bindingBatch[0].librarySnapshotId,'snapshot-12');
+  const stale=buildStudioAssetLoadout({...args,expectedSnapshotId:'snapshot-11'});
+  assert.equal(stale.complete,false);
+  assert.equal(stale.atomicBindingReady,false);
+  assert.deepEqual(stale.bindingBatch,[]);
+  assert.equal(stale.bindingAction,'RESELECT_CURRENT_LIBRARY_SNAPSHOT');
+  const missing=buildStudioAssetLoadout({...args,requirements:[...args.requirements,{family:'WEAPON',atomId:'ABSENT'}]});
+  assert.equal(missing.atomicBindingReady,false);
+  assert.deepEqual(missing.bindingBatch,[]);
+  assert.equal(missing.unresolved.length,1);
+  const updated=buildStudioAssetLoadout({...args,libraryVersion:13,librarySnapshotId:'snapshot-13',assets:assets.map(row=>row.id==='asset-999'?{...row,path:'assets/parts/revised.luau'}:row)});
+  assert.deepEqual(updated.bindingBatch[0].sourceFiles,['assets/parts/revised.luau']);
+  assert.equal(updated.bindingBatch[0].libraryVersion,13);
+  assert.equal(updated.bindingBatchIsRuntimeProof,false);
+  const zero=buildStudioAssetLoadout({...args,assets:assets.map(row=>({...row,internalAuditScore:0}))});
+  assert.equal(zero.complete,true);
+  assert.equal(zero.atomicBindingReady,true);
+  assert.equal(zero.selections[0].internalAuditScore,0);
+  assert.equal(zero.selections[0].qualityScoreBlocksBinding,false);
+});
+
+test('asset gallery searches atoms and platforms without hiding zero quality and limits initial DOM work',async()=>{
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const html=fs.readFileSync(path.join(root,'asset-library.html'),'utf8');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  registry.assets.push({id:'zero-atom',atomId:'ZERO_TEST_ATOM',title:'영점 시험 소품',category:'PROP',platform:'ROBLOX',internalAuditScore:0,path:'assets/test.luau'});
+  const elements=new Map();
+  const element=id=>{if(!elements.has(id))elements.set(id,{value:id==='assetPlatform'?'ALL':id==='assetSort'?'RELEVANCE':'',checked:false,innerHTML:'',textContent:'',hidden:false,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}});return elements.get(id);};
+  const context=vm.createContext({document:{getElementById:element,querySelectorAll:()=>[]},fetch:async()=>({ok:true,json:async()=>registry}),setTimeout,clearTimeout});
+  vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],context);
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal((element('assetGrid').innerHTML.match(/class="card"/g)||[]).length,48);
+  element('moreAssets').listeners.click();
+  assert.equal((element('assetGrid').innerHTML.match(/class="card"/g)||[]).length,96);
+  element('assetQuery').value='ZERO_TEST_ATOM';
+  vm.runInContext('visibleAssets=48;renderAssetResults()',context);
+  assert.match(element('assetGrid').innerHTML,/영점 시험 소품/);
+  assert.match(element('assetGrid').innerHTML,/내부 0\/1000/);
+  assert.doesNotMatch(element('assetGrid').innerHTML,/<img[^>]+\.luau/);
+  element('assetPlatform').value='UNITY';element('assetPlatform').listeners.change();
+  assert.match(element('assetGrid').innerHTML,/조건에 맞는 자산이 없어/);
+  assert.equal(element('moreAssets').hidden,true);
+});
+
 test('studio audio breadth covers music ambience creature howls spatial layers and continuous quality',()=>{
   assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
   assert.equal(INTERNAL_AUDIO_STUDIO_BREADTH_CONTRACT.roleTargetMin,180);
@@ -3909,7 +4031,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,11);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,12);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -4137,7 +4259,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,11);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,12);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
 
@@ -4211,7 +4333,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,11);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,12);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4270,7 +4392,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,11);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,12);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
@@ -4308,4 +4430,3 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.wrapperCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
 });
-

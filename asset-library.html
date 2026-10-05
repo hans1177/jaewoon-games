@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="7">
+<html lang="ko" data-asset-library-version="8">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -16,6 +16,7 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
 .notice{margin-top:15px;padding:11px 13px;border:1px solid #33506e;border-radius:12px;background:#0c1a2a;color:#9fb8ce;font-size:11px;line-height:1.55}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 22px}.stat{padding:16px;border:1px solid var(--line);border-radius:15px;background:#101b2b}.stat b{display:block;font-size:26px}.stat span{display:block;margin-top:4px;color:var(--muted);font-size:10px;font-weight:850}
 .toolbar{display:flex;flex-wrap:wrap;gap:7px;margin:20px 0 12px}.chip{border:1px solid var(--line);border-radius:999px;background:#101b2b;color:#b9c7d5;padding:9px 12px;font-size:10px;font-weight:950}.chip.active{background:#eaf4ff;color:#0b579e;border-color:#d5eaff}
+.assetSearch{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.assetSearch label{display:grid;gap:6px;font-size:12px;color:var(--muted)}.assetSearch label:first-child{flex:1;min-width:180px}.assetSearch input,.assetSearch select{min-height:44px;max-width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel);color:var(--ink);font:inherit}.assetSearch .activeOnly{display:flex;align-items:center;min-height:44px}.assetSearch input[type=checkbox]{min-height:auto}.chip{min-height:44px}.moreAssets{display:block;min-height:44px;margin:16px auto;padding:10px 24px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)}.moreAssets[hidden]{display:none}
 .section{margin-top:26px}.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:11px}.sectionHead h2{margin:0;font-size:22px}.sectionHead p{margin:0;color:var(--muted);font-size:10px}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#101b2b}.thumb{height:160px;background:#091321;display:flex;align-items:center;justify-content:center;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:cover}.body{padding:13px}.tagrow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}.tag{padding:4px 6px;border-radius:6px;background:#192941;color:#9eb4c9;font-size:8px;font-weight:950}.tag.real{background:#12362b;color:#6ce1aa}.tag.research{background:#3b2c13;color:#ffd18e}.body h3{margin:0 0 6px;font-size:15px}.body p{margin:0;color:#93a5b8;font-size:9px;line-height:1.55}.assetOpen{display:flex;align-items:center;justify-content:center;min-height:42px;margin-top:11px;border:1px solid #3976ad;border-radius:10px;background:#102a43;color:#d9edff;text-decoration:none;font-size:11px;font-weight:950}.assetOpen:active{transform:translateY(1px)}
 .motionGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.motionCard{border:1px solid var(--line);border-radius:16px;background:#101b2b;overflow:hidden}.motionStage{height:170px;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 50% 65%,#17314e,transparent 48%),#091321}.fighter{position:relative;width:72px;height:96px;transform-origin:50% 80%}.head{position:absolute;left:25px;top:2px;width:22px;height:22px;border-radius:50%;background:#d9e9f7}.torso{position:absolute;left:22px;top:24px;width:28px;height:40px;border-radius:12px;background:#55a8ff}.arm,.leg{position:absolute;width:12px;border-radius:8px;background:#b9d7ef;transform-origin:50% 5px}.arm{height:42px;top:28px}.arm.l{left:14px}.arm.r{right:14px}.leg{height:44px;top:58px}.leg.l{left:22px}.leg.r{right:22px}.blade{position:absolute;right:-24px;top:31px;width:45px;height:7px;border-radius:5px;background:linear-gradient(90deg,#dcecff,#74b8ff);transform-origin:5px 50%}
@@ -45,7 +46,13 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
   <div class="stat"><b id="robloxCount">7</b><span>Roblox 라이브러리 계열</span></div>
 </section>
 <div class="toolbar" id="filters"></div>
-<section class="section"><div class="sectionHead"><div><h2>실제 에셋 갤러리</h2><p>현재 repo에 존재하는 시각 자료</p></div><p id="assetSummary"></p></div><div class="grid" id="assetGrid"></div></section>
+<div class="assetSearch" role="search" aria-label="내부 자산 검색">
+  <label>이름·역할·태그 검색<input id="assetQuery" type="search" placeholder="예: 소품, 검, 문, FOOTSTEP" autocomplete="off"></label>
+  <label>플랫폼<select id="assetPlatform"><option value="ALL">전체</option><option value="ROBLOX">로블록스</option><option value="UNITY">유니티</option><option value="WEB">웹</option></select></label>
+  <label>정렬<select id="assetSort"><option value="RELEVANCE">관련도순</option><option value="QUALITY">내부 품질순</option><option value="NAME">이름순</option></select></label>
+  <label class="activeOnly"><input id="assetActive" type="checkbox">활성 자산만</label>
+</div>
+<section class="section"><div class="sectionHead"><div><h2>실제 에셋 갤러리</h2><p>0점도 공개·검색·사용 가능해. 점수는 내부 개선 기준이야.</p></div><p id="assetSummary" role="status" aria-live="polite"></p></div><div class="grid" id="assetGrid"></div><button id="moreAssets" class="moreAssets" type="button" hidden>더 보기</button></section>
 <section class="section"><div class="sectionHead"><div><h2>액션 모션 연구 프리뷰</h2><p>모션 언어 확인용 · 실제 네이티브 리그와는 별도</p></div></div>
   <div class="motionGrid">
     <article class="motionCard"><div class="motionStage idle"><div class="fighter"><i class="head"></i><i class="torso"></i><i class="arm l"></i><i class="arm r"></i><i class="leg l"></i><i class="leg r"></i><i class="blade"></i></div></div><div class="body"><div class="tagrow"><span class="tag research">연구중</span><span class="tag">IDLE</span></div><h3>Living Idle</h3><p>호흡, 미세 체중 이동, 팔·무기 후행을 기계적 반복 없이 구성.</p></div></article>
@@ -72,18 +79,47 @@ a{color:inherit}.shell{width:min(1220px,100%);margin:auto;padding:18px 20px 56px
 </main>
 <script>
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let data=null,filter='ALL';
-const labels={ALL:'전체',CHARACTER:'캐릭터/몹',MOTION:'모션',VFX:'VFX',ENVIRONMENT:'환경',UI:'UI'};
-async function load(){const r=await fetch('/company-asset-library.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('library');data=await r.json();render();}
+let data=null,filter='ALL',assetIndex=[],visibleAssets=48,searchTimer;
+const labels={ALL:'전체',CHARACTER:'캐릭터/몹',MOTION:'모션',VFX:'시각 효과',ENVIRONMENT:'환경',BUILDING:'건물',PROP:'소품',WEAPON:'무기',SKILL:'스킬',MATERIAL:'재질',AUDIO:'소리',UI:'화면·아이콘'};
+const searchText=v=>String(v??'').normalize('NFKC').toLocaleLowerCase('ko').replace(/[_\-\s]+/g,' ').trim();
+async function load(){
+  const r=await fetch('/company-asset-library.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('library');data=await r.json();
+  assetIndex=(data.assets||[]).map((asset,index)=>({asset,index,id:searchText(asset.id),title:searchText(asset.title),hay:searchText([asset.id,asset.title,asset.note,asset.family,asset.category,asset.subfamily,labels[asset.category],asset.role,asset.itemRole,asset.toolRole,asset.gearRole,asset.worldRole,asset.environmentRole,asset.atomId,asset.assetId,...(asset.roles||[]),...(asset.tags||[]),...(asset.systemRoles||[]),...(asset.capabilities||[])].join(' ')),platforms:new Set([asset.platform,...(asset.platformTargets||[]),...(asset.platforms||[])].filter(Boolean).map(v=>String(v).toUpperCase()))}));
+  render();
+}
+// 검색/표시: 정규화 색인은 로드 시 한 번 만들고, 한 화면에는 48개씩 그린다.
+function renderAssetResults(){
+  if(!data)return;
+  const query=searchText(document.getElementById('assetQuery').value),terms=query.split(/\s+/).filter(Boolean);
+  const platform=document.getElementById('assetPlatform').value,sort=document.getElementById('assetSort').value,activeOnly=document.getElementById('assetActive').checked;
+  const found=assetIndex.filter(row=>{
+    const x=row.asset,category=x.category||x.family;
+    return(filter==='ALL'||category===filter||(filter==='CHARACTER'&&category==='CREATURE'))
+      &&(platform==='ALL'||row.platforms.has(platform)||(platform==='WEB'&&row.platforms.has('UNITY_WEB')))
+      &&(!activeOnly||(x.catalogActive!==false&&!/STALE|QUARANTIN|RETIRED|REJECTED/.test(String(x.catalogState||'')+' '+String(x.status||''))))
+      &&terms.every(term=>row.hay.includes(term));
+  }).map(row=>({...row,relevance:query?(row.id===query?100:0)+(row.title===query?80:0)+(row.title.startsWith(query)?40:0)+terms.filter(term=>row.title.includes(term)).length*10:0}));
+  const quality=x=>typeof x.internalAuditScore==='number'&&Number.isFinite(x.internalAuditScore)?x.internalAuditScore:-1;
+  found.sort((a,b)=>sort==='NAME'?String(a.asset.title||a.asset.id).localeCompare(String(b.asset.title||b.asset.id),'ko'):sort==='QUALITY'?quality(b.asset)-quality(a.asset)||a.index-b.index:b.relevance-a.relevance||a.index-b.index);
+  const shown=found.slice(0,visibleAssets);
+  document.getElementById('assetSummary').textContent=found.length+'개 중 '+shown.length+'개 표시';
+  document.getElementById('assetGrid').innerHTML=shown.length?shown.map(({asset:x})=>{
+    const preview=x.previewPath||x.path||'',isImage=/\.(png|jpe?g|webp|svg|gif|avif)(\?|$)/i.test(preview);
+    return '<article class="card"><div class="thumb">'+(isImage?'<img src="'+esc(preview)+'" alt="'+esc(x.title)+'" loading="lazy">':'<span>미리보기 없음</span>')+'</div><div class="body"><div class="tagrow"><span class="tag real">등록 자산</span><span class="tag">'+esc(x.category)+'</span><span class="tag">'+esc(x.platform)+'</span></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.note)+' · '+esc(x.license)+(quality(x)>=0?' · 내부 '+esc(quality(x))+'/1000':'')+'</p>'+(x.viewerPath?'<a class="assetOpen" href="'+esc(x.viewerPath)+'">'+esc(x.viewerLabel||'3D 모델 보기')+'</a>':'')+'</div></article>';
+  }).join(''):'<div class="empty">조건에 맞는 자산이 없어. 검색어나 필터를 바꿔봐.</div>';
+  document.getElementById('moreAssets').hidden=shown.length>=found.length;
+}
+document.getElementById('assetQuery').addEventListener('input',event=>{clearTimeout(searchTimer);if(event.isComposing)return;searchTimer=setTimeout(()=>{visibleAssets=48;renderAssetResults();},120)});
+document.getElementById('assetQuery').addEventListener('compositionend',()=>{clearTimeout(searchTimer);visibleAssets=48;renderAssetResults()});
+for(const id of ['assetPlatform','assetSort','assetActive'])document.getElementById(id).addEventListener('change',()=>{visibleAssets=48;renderAssetResults()});
+document.getElementById('moreAssets').addEventListener('click',()=>{visibleAssets+=48;renderAssetResults()});
 function render(){
   document.getElementById('realCount').textContent=data.assets.length;
   document.getElementById('researchCount').textContent=data.research.length;
   document.getElementById('externalCount').textContent=(data.externalSources||[]).length;
   document.getElementById('filters').innerHTML=Object.keys(labels).map(k=>'<button class="chip '+(filter===k?'active':'')+'" data-filter="'+k+'">'+labels[k]+'</button>').join('');
-  document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;render()});
-  const assets=data.assets.filter(x=>filter==='ALL'||x.category===filter||(filter==='CHARACTER'&&x.category==='CREATURE'));
-  document.getElementById('assetSummary').textContent=assets.length+'개 표시';
-  document.getElementById('assetGrid').innerHTML=assets.length?assets.map(x=>'<article class="card"><div class="thumb"><img src="'+esc(x.path)+'" alt="'+esc(x.title)+'" loading="lazy"></div><div class="body"><div class="tagrow"><span class="tag real">실제 repo 자산</span><span class="tag">'+esc(x.category)+'</span><span class="tag">'+esc(x.platform)+'</span></div><h3>'+esc(x.title)+'</h3><p>'+esc(x.note)+' · '+esc(x.license)+'</p>'+(x.viewerPath?'<a class="assetOpen" href="'+esc(x.viewerPath)+'">'+esc(x.viewerLabel||'3D 모델 보기')+'</a>':'')+'</div></article>').join(''):'<div class="empty">이 분류의 실제 자산 프리뷰가 아직 없어.</div>';
+  document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;visibleAssets=48;render()});
+  renderAssetResults();
   const external=(data.externalSources||[]).filter(x=>filter==='ALL'||x.category===filter||(filter==='CHARACTER'&&x.category==='CREATURE'));
   document.getElementById('externalGrid').innerHTML=external.length?external.map(x=>'<article class="card"><div class="body"><div class="tagrow"><span class="tag research">외부 후보</span><span class="tag">'+esc(x.category)+'</span><span class="tag">'+esc(x.license)+'</span></div><h3>'+esc(x.name)+'</h3><p>'+esc((x.capabilities||[]).join(' · '))+' · '+esc((x.platformTargets||[]).join('/'))+'</p></div></article>').join(''):'<div class="empty">이 분류의 외부 검증 후보가 아직 없어.</div>';
   const research=data.research.filter(x=>filter==='ALL'||x.category===filter);
