@@ -1106,12 +1106,12 @@ const COMPANY_CATEGORY_TYPES=freeze({
 function companyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
     .filter(asset=>{
-      const id=clean(asset?.id),assetPath=clean(asset?.path).replace(/^\//,'');
+      const id=clean(asset?.id);
       const status=clean(asset?.status).toUpperCase();
       const license=clean(asset?.license||asset?.policy),licenseLower=license.toLowerCase();
       const licenseBlocked=!license||/(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(license)||licenseLower.includes('unknown')||licenseLower.includes('출처 불명')||licenseLower.includes('재배포 제한');
       const hardBlocked=asset?.corruptSource===true||asset?.securityBlocked===true||asset?.quarantined===true||asset?.platformIncompatible===true||asset?.explicitInternalUseForbidden===true||/(?:BLOCKED|QUARANTINED|CORRUPT|REJECTED)/.test(status);
-      return Boolean(id&&assetPath&&!licenseBlocked&&!hardBlocked);
+      return Boolean(id&&!licenseBlocked&&!hardBlocked);
     })
     .map(asset=>{
       const companyVerified=asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase());
