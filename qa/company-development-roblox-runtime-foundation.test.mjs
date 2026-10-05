@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
-import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,probeRobloxOpenCloudImageEvidence,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -23,6 +23,15 @@ test('Roblox runtime foundation push wake includes its deterministic QA contract
  assert.match(pushBlock,/company-learning\/platform-release-roadmap\.json/);
  assert.match(pushBlock,/roblox-games\/\.company-runtime-trigger/);
 });
+test('Roblox post-work verification defaults to Open Cloud runtime plus image sanity without requiring Studio',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/SERVER_DIAGNOSTIC_ENABLED:\s*true/);
+ assert.match(workflow,/probeRobloxOpenCloudImageEvidence/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_IMAGE_CHECK=/);
+ assert.match(workflow,/openCloudImageEvidence:engineProbe\?\.imageEvidence\|\|null/);
+ assert.match(workflow,/run_studio:[\s\S]*?default:\s*false/);
+});
+
 test('event-driven Roblox runtime foundation QA has no delayed cron and does not require full git history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
@@ -150,6 +159,30 @@ test('foundation sentinel rejects checkpoints carried over from an older publish
  assert.ok(r.blockers.includes('checkpoint:SERVER_BOOT'));
 });
 
+
+test('Open Cloud image check records thumbnail metadata as visual sanity without claiming runtime screenshot proof',async()=>{
+ const ok=await probeRobloxOpenCloudImageEvidence({
+  universeId:'1',apiKey:'k',networkRetryAttempts:1,networkRetryDelayMs:0,
+  fetchImpl:async()=>({ok:true,status:200,text:async()=>JSON.stringify({
+   thumbnails:[{homepageThumbnailId:'thumb-1',imageUrl:'https://tr.rbxcdn.com/example-thumbnail.png'}]
+  })}),
+ });
+ assert.equal(ok.available,true);
+ assert.equal(ok.imageMetadataAvailable,true);
+ assert.equal(ok.thumbnailCount,1);
+ assert.equal(ok.runtimeScreenshot,false);
+ assert.equal(ok.exactRuntimeVersionImage,false);
+ assert.equal(ok.state,'PASS_METADATA_AVAILABLE');
+ assert.equal(ok.authority,'roblox-open-cloud-thumbnail-image-sanity');
+
+ const denied=await probeRobloxOpenCloudImageEvidence({
+  universeId:'1',apiKey:'k',networkRetryAttempts:1,networkRetryDelayMs:0,
+  fetchImpl:async()=>({ok:false,status:403,text:async()=>JSON.stringify({message:'required scope <universe.thumbnail:read>'})}),
+ });
+ assert.equal(denied.available,false);
+ assert.equal(denied.permissionDenied,true);
+ assert.equal(denied.requiredScope,'universe.thumbnail:read');
+});
 
 test('Open Cloud runtime reads retry transient DNS failures without weakening API errors',async()=>{
  const dnsError=()=>Object.assign(new TypeError('fetch failed'),{cause:{code:'EAI_AGAIN'}});

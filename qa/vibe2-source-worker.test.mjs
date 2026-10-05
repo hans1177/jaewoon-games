@@ -12,6 +12,7 @@ import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
+import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
 // 테스트 실행 환경: 호출한 작업 흐름의 작업군이 개별 검증 조건을 바꾸지 않게 격리한다.
@@ -2071,7 +2072,7 @@ test('system architecture still gets one bounded retry when pair-focused complet
 
 
 
-test('Roblox Studio backfill rejects config-only candidate and retries until visual owner is actually bound', async()=>{
+test('Roblox internal asset handoff rejects config-only candidate without requiring a Studio backfill flag', async()=>{
   const cwd=tempRoot();
   const bad=path.join(cwd,'roblox-studio-config-only.json');
   const good=path.join(cwd,'roblox-studio-visual-owner.json');
@@ -2085,10 +2086,18 @@ test('Roblox Studio backfill rejects config-only candidate and retries until vis
     id:workOrder.taskId,
     gameId:'demo',
     target:'roblox',
-    studioAssetBackfill:true,
     responsibleFiles:workOrder.source.responsibleFiles
   };
-  workOrder.goal='[ROBLOX_STUDIO_ASSET_BACKFILL] apply selected materials to the real visual owner';
+  workOrder.assetProduction={
+    baseMaterialLoadout:{
+      robloxSelectionHandoff:{
+        handoffRequired:true,
+        downstreamApplicationRequired:true,
+        bindingVersion:2
+      }
+    }
+  };
+  workOrder.goal='일반 Roblox BUILD_UP 소스 코딩에서 선택된 내부 자산을 실제 시각 책임 소스에 적용';
   write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
   const clientSource=[
     'local Players = game:GetService("Players")',
@@ -2126,6 +2135,29 @@ test('Roblox Studio backfill rejects config-only candidate and retries until vis
   assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
   assert.match(candidate,/StudioAssetAtoms/);
+});
+
+test('Roblox internal asset handoff automatically expands general BUILD_UP responsibility to an existing visual owner',()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  write(path.join(cwd,root,'server/Game.server.luau'),'return true\n');
+  write(path.join(cwd,root,'client/Game.client.luau'),'local gui = Instance.new("ScreenGui")\n');
+  const files=expandPresentationResponsibleFiles({
+    task:{sourceRoot:root,responsibleFiles:[root+'/server/Game.server.luau']},
+    target:'roblox',
+    repoRoot:cwd,
+    fallbackRoot:root,
+    assetProduction:{
+      baseMaterialLoadout:{
+        robloxSelectionHandoff:{
+          handoffRequired:true,
+          downstreamApplicationRequired:true
+        }
+      }
+    }
+  });
+  assert.ok(files.includes(root+'/client/Game.client.luau'));
+  assert.ok(files.includes(root+'/server/Game.server.luau'));
 });
 
 test('unappliable edit is retried inside generation before candidate write', async () => {
