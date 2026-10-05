@@ -501,7 +501,7 @@ test('director treats accepted asynchronous cancel settlement as success before 
   assert.match(director,/settle_state=.*actions\/runs\/\$\{run_id\}/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_CANCEL_SETTLED_AFTER_ACCEPTED_CANCEL=/);
   assert.match(director,/if \[ "\$settled" = true \]; then[\s\S]*?cancelled=\$\(\(cancelled\+1\)\)[\s\S]*?else[\s\S]*?failed=\$\(\(failed\+1\)\)/);
-  assert.doesNotMatch(director,/force-cancel[\s\S]{0,700}settle_state.*in_progress/s);
+  assert.match(director,/if \[ "\$safe_force_cancel" = true \] && \[\[ "\$current_state" == 'queued' \|\| "\$current_state" == 'pending' \|\| "\$current_state" == 'requested' \|\| "\$current_state" == 'waiting' \]\]; then/);
 });
 
 test('director coalesces pending pre-supervision wakes while preserving active completion',()=>{
