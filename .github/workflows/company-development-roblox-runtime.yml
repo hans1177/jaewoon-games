@@ -67,6 +67,10 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
+    # Stage-scoped ingress coalescing only; the rest of the Roblox chain remains unchanged.
+    concurrency:
+      group: roblox-runtime-source-plan-${{ github.sha }}-${{ inputs.game_id || 'batch' }}
+      cancel-in-progress: false
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.
     runs-on: ubuntu-24.04
