@@ -1164,7 +1164,12 @@ jobs:
           };
           const priorBinding=item.robloxStudioAssetBinding||null;
           const comparable=value=>JSON.stringify(value,(key,row)=>['persistedAt','requestedAt'].includes(key)?undefined:row);
-          let changed=comparable(priorBinding)!==comparable(persistedBinding);
+          let changed=comparable(priorBinding)!==comparable(persistedBinding)
+            ||String(item.robloxBuildUpAssetSourceUsageFingerprint||'')!==String(binding.buildUpAssetSourceUsageFingerprint||'')
+            ||Number(item.robloxBuildUpAssetSourceUsageLibraryVersion||0)!==Number(binding.buildUpAssetSourceUsageLibraryVersion||binding.libraryVersion||0)
+            ||String(item.robloxBuildAssetSelectionFingerprint||'')!==String(binding.selectionFingerprint||'')
+            ||Number(item.robloxBuildAssetLibraryVersion||0)!==Number(binding.libraryVersion||0)
+            ||item.robloxStudioAssetBindingApplied!==true;
           item.robloxStudioAssetBinding=persistedBinding;
           item.robloxStudioAssetBindingApplied=true;
           item.robloxBuildUpAssetSourceUsageFingerprint=String(binding.buildUpAssetSourceUsageFingerprint);
