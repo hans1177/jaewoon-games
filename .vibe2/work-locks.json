@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-i825bc",
+      "worker": "vibe2",
+      "taskId": "line-defense-studio-evolution-roblox-stability-v1",
+      "gameId": "line-defense",
+      "files": [
+        "roblox-games/line-defense/client/Game.client.luau",
+        "roblox-games/line-defense/server/Game.server.luau",
+        "assets/generated/roblox/line-defense/background/asset.glb",
+        "assets/generated/roblox/line-defense/background/preview.png",
+        "assets/generated/roblox/line-defense/background/evidence.json",
+        "assets/generated/roblox/line-defense/item/asset.glb",
+        "assets/generated/roblox/line-defense/item/preview.png",
+        "assets/generated/roblox/line-defense/item/evidence.json",
+        "assets/generated/roblox/line-defense/prop/asset.glb",
+        "assets/generated/roblox/line-defense/prop/preview.png",
+        "assets/generated/roblox/line-defense/prop/evidence.json"
+      ],
+      "baseSha": "e5820c6d325e1417029e9575aefaa7b7722b4e7b",
+      "runId": "37317077942",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T13:48:30.981Z",
+      "expiresAt": "2026-10-05T14:33:30.981Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
