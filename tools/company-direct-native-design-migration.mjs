@@ -85,6 +85,7 @@ export function migrateDirectNativeRuntime(root='.'){
     const file=path.join(root,source);
     let design=read(file);
     let gate=evaluateMinimumDesignContract(design);
+    const designAlreadyReady=gate.pass===true;
     if(!gate.pass){
       design=migrateOne(design,gameId);
       gate=evaluateMinimumDesignContract(design);
@@ -94,6 +95,20 @@ export function migrateDirectNativeRuntime(root='.'){
     }else alreadyReady.push(gameId);
 
     const paths={ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`};
+    // Repeated design migration must not rewind a source-bound native lane.
+    // A new/migrated design or an unverified source still starts at source binding.
+    const nativeStep=clean(item.currentStep).toUpperCase();
+    const preserveNativeProgress=designAlreadyReady
+      &&item.minimumDesignContract?.pass===true
+      &&clean(item.minimumDesignContract.source)===source
+      &&/^(?:TARGET_PLATFORM_|ROBLOX_|UNITY_|PRIVATE_RUNTIME_|INTERNAL_PLATFORM_|POST_F9_|BUILD_UP(?:$|_))/.test(nativeStep)
+      &&['roblox','unity'].some(platform=>{
+        const passedAt=Date.parse(item[platform+'SourceBootstrapPassedAt']||'');
+        const failedAt=Date.parse(item[platform+'SourceBootstrapFailedAt']||'');
+        return /^[0-9a-f]{40}$/i.test(clean(item[platform+'SourceCommit']))
+          &&Number.isFinite(passedAt)
+          &&(!Number.isFinite(failedAt)||failedAt<passedAt);
+      });
     const legacyWeb={
       webSourcePath:item.webSourcePath||null,
       currentStep:item.currentStep||null,
@@ -117,8 +132,8 @@ export function migrateDirectNativeRuntime(root='.'){
         ROBLOX:{source,jsonPointer:'/content/platformProfiles/ROBLOX'},
         UNITY:{source,jsonPointer:'/content/platformProfiles/UNITY'}
       },
-      currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-      canonicalState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
+      currentStep:preserveNativeProgress?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+      canonicalState:preserveNativeProgress?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND',
       webValidationRequired:false,
       musicValidationRequired:false,
       webSourcePath:null,
@@ -166,3 +181,4 @@ if(process.argv[1]&&process.argv[1].endsWith('company-direct-native-design-migra
   console.log('ALREADY_READY='+result.alreadyReady.join(','));
   console.log('BLOCKED='+JSON.stringify(result.blocked));
 }
+

@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from './company-development-roblox-source-reconcile.mjs';
+import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree,robloxPackageAssetRepairContext} from './company-development-roblox-source-reconcile.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline} from './company-development-roblox-bootstrap.mjs';
 
 const SHA=/^[0-9a-f]{40}$/i;
@@ -477,6 +477,7 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
         ...createRobloxBuildEvidence({gameId:id,sourcePath:relativeSource,sourceRevision:revision,assetThreshold}),
         failureStage:'TARGET_PLATFORM_ASSET_BINDING',failureSignature:'ROBLOX_PACKAGE_ASSET_THRESHOLD_FAILED',
         assetBindingFailed:true,blockers:[...assetThreshold.blockers],
+        sourceTreeSha:actualSourceTreeSha,assetRepairContext:robloxPackageAssetRepairContext({assetLibrary,baseline}),
       };
       throw error;
     }

@@ -6,6 +6,7 @@ import path from 'node:path';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
+import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
@@ -20,7 +21,7 @@ test('asset failure survives worker recording and exact-source persistence while
   };
   const gameId='horror-escape-room',revision='a'.repeat(40);
   const threshold={pass:false,blockers:['ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:AUDIO'],libraryVersion:112,familyResults:[{family:'AUDIO',status:null,systemPresent:true,actualBinding:false}]};
-  const failure={gameId,sourceRevision:revision,assetBindingFailed:true,assetThreshold:threshold,buildOrPackagePassed:false,artifactIdentity:null};
+  const failure={gameId,sourceRevision:revision,assetBindingFailed:true,assetThreshold:threshold,buildOrPackagePassed:false,artifactIdentity:null,sourceTreeSha:'e'.repeat(40),assetRepairContext:robloxPackageAssetRepairContext({assetLibrary:{version:112},baseline:{}})};
   const record=(evidence,extra={})=>{
     const files=new Map([[`/tmp/roblox-technical/results/${gameId}.build.json`,JSON.stringify(evidence)]]);
     const mockFs={mkdirSync(){},existsSync:p=>files.has(p),readFileSync:p=>files.get(p),writeFileSync:(p,v)=>files.set(p,v)};
@@ -36,6 +37,8 @@ test('asset failure survives worker recording and exact-source persistence while
   assert.equal(result.f0Pass,false);
   assert.equal(result.failure,'roblox-package-asset-binding-failed');
   assert.deepEqual(result.assetThreshold,threshold);
+  assert.deepEqual(result.assetRepairContext,failure.assetRepairContext);
+  assert.equal(result.sourceTreeSha,failure.sourceTreeSha);
   assert.equal(record({...failure,sourceRevision:'b'.repeat(40)}).assetBindingFailed,false);
   assert.equal(record(failure,{SUPERSEDED:'true'}).assetBindingFailed,false);
 
@@ -57,6 +60,8 @@ test('asset failure survives worker recording and exact-source persistence while
   assert.equal(item.robloxQualityBuildUpEvidence.authority,'roblox-package-asset-binding-failure');
   assert.deepEqual(item.robloxQualityBuildUpEvidence.qualityFailureKinds,threshold.blockers);
   assert.deepEqual(item.robloxQualityBuildUpEvidence.assetThreshold,threshold);
+  assert.deepEqual(item.robloxQualityBuildUpEvidence.assetRepairContext,failure.assetRepairContext);
+  assert.equal(item.robloxQualityBuildUpEvidence.sourceTreeSha,failure.sourceTreeSha);
   assert.deepEqual(item.robloxQualityBuildUpEvidence.qualityFailureDetails[0].observed.familyResult,threshold.familyResults[0]);
   assert.equal(item.robloxQualityBuildUpEvidence.assetRepairPolicy.mode,'GAME_SOURCE_BINDINGS_ONLY');
   assert.equal(item.robloxQualityBuildUpEvidence.assetRepairPolicy.allowAssetLibraryWrites,false);
@@ -98,6 +103,8 @@ test('failed asset packaging preserves exact repair evidence without publishing 
     assert.equal(evidence.gameId,gameId);
     assert.equal(evidence.sourceRevision,revision);
     assert.equal(evidence.assetBindingFailed,true);
+    assert.equal(evidence.sourceTreeSha,tree);
+    assert.match(evidence.assetRepairContext.validatorFingerprint,/^[a-f0-9]{64}$/);
     assert.equal(evidence.assetThreshold.pass,false);
     assert.ok(evidence.blockers.includes('ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER'));
     assert.equal(evidence.artifactIdentity,null);
@@ -409,4 +416,41 @@ test('Roblox bootstrap keeps local Studio DataStore initialization fail-safe wit
   assert.doesNotMatch(bootstrap,/local store = DataStoreService:GetDataStore/);
   assert.match(bootstrap,/store:GetAsync/);
   assert.match(bootstrap,/store:UpdateAsync/);
+});
+
+
+test('actual technical selectors stop unchanged proven asset-failure replay and resume when inputs change',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const library={version:112,assets:['unchanged']},baseline={content:{identity:'original'}};
+  const source='a'.repeat(40),gameId='horror-escape-room';
+  const evidence={gameId,sourceRevision:source,artifactIdentity:null,sourceTreeSha:'b'.repeat(40),
+    authority:'roblox-package-asset-binding-failure',assetThreshold:{pass:false,blockers:['ACTUAL_BINDING_REQUIRED']},
+    assetRepairContext:robloxPackageAssetRepairContext({assetLibrary:library,baseline})};
+  const held={gameId,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    robloxSourceCommit:source,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source,robloxQualityBuildUpEvidence:evidence,designBaselineSource:'design/current.json'};
+  const other={...held,gameId:'independent-ready-game',robloxQualityBuildUpRequired:false,robloxQualityBuildUpEvidence:null};
+  const execute=(step,item,assetLibrary=library,design=baseline)=>{
+    const start=workflow.indexOf('      - name: '+step+'\n');assert.ok(start>=0);
+    const next=workflow.indexOf('\n      - name:',start+1),block=workflow.slice(start,next<0?undefined:next);
+    const match=block.match(/node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/);assert.ok(match,step);
+    const code=match[1].replace(/^\s*import .*;\n/gm,'');let output='',stdout='';
+    const files=new Map([['company-asset-library.json',JSON.stringify(assetLibrary)],['company-learning/platform-release-roadmap.json','{}'],
+      ['/tmp/development-queue.json',JSON.stringify({items:[item,other]})],['/tmp/roblox-next-technical-queue.json',JSON.stringify({items:[item,other]})]]);
+    runInNewContext(code,{fs:{readFileSync:p=>{assert.ok(files.has(p),p);return files.get(p);},appendFileSync:(_,v)=>{output+=v;}},
+      execFileSync:()=>JSON.stringify(design),hasCurrentRobloxPackageAssetRepair,DEVELOPMENT_GAME_WIP_MAX:20,
+      selectTargetPlatformDevelopmentWindow:items=>items,ownerFocusedSecondaryPlatformEligible:()=>false,platformDevelopmentEligible:()=>true,
+      console:{log(){},error(){}},process:{env:{GITHUB_OUTPUT:'out',COMPANY_RUNTIME_BRANCH:'company-runtime',CURRENT_TARGETS_JSON:'[]'},stdout:{write:v=>{stdout+=v;}}}});
+    return output?Number(output.match(/count=(\d+)/)[1]):Number(stdout);
+  };
+  for(const step of ['Resolve next exact-source Roblox technical execution slice from unbounded native queue','Dispatch next Roblox technical execution slice when other exact-source work remains']){
+    assert.equal(execute(step,held),1,'independent ready game must continue while unchanged failure goes to source repair');
+    assert.equal(execute(step,{...held,robloxSourceCommit:'c'.repeat(40)}),2,'new source must be validated');
+    assert.equal(execute(step,held,{...library,assets:['changed-with-same-version']}),2,'library content changes must be validated');
+    assert.equal(execute(step,held,library,{content:{identity:'revised design'}}),2,'new design must be validated');
+    assert.equal(execute(step,{...held,robloxQualityBuildUpEvidence:{...evidence,assetRepairContext:{...evidence.assetRepairContext,validatorFingerprint:'d'.repeat(64)}}}),2,'new validator must run');
+    for(const patch of [{gameId:'another-game'},{sourceRevision:'e'.repeat(40)},{artifactIdentity:'sha256:'+'f'.repeat(64)},{assetRepairContext:null},{assetThreshold:{pass:true,blockers:[]}}]){
+      assert.equal(execute(step,{...held,robloxQualityBuildUpEvidence:{...evidence,...patch}}),2,'unverified evidence must not suppress validation');
+    }
+  }
+  assert.equal(hasCurrentRobloxPackageAssetRepair({item:held,assetLibrary:library,baseline,sourceTreeSha:'c'.repeat(40)}),false);
 });

@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import { runInNewContext } from 'node:vm';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
@@ -6845,4 +6846,67 @@ test('graphics replacement accepts more than sixty grounded applications and sti
   assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,true);
   candidate.graphicsReplacementReport.replacementEvidence[74]=rows[0];
   assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,false);
+});
+
+
+test('package asset repair evidence survives focused and oversized worker prompts without changing its identity',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const guidanceStart=workerSource.indexOf('const SOURCE_REPAIR_DIRECTIVE_PREFIXES=');
+  const guidanceEnd=workerSource.indexOf('export function buildRobloxNativeSourceInspection(',guidanceStart);
+  const boundedStart=workerSource.indexOf('function boundedPromptText(');
+  const boundedEnd=workerSource.indexOf('export function buildPrompt(',boundedStart);
+  const {guidance,compact}=runInNewContext(
+    'const COMPACT_DIRECTIVE_LINE_BYTES=1800;\n'+workerSource.slice(boundedStart,boundedEnd)+'\n'
+      +workerSource.slice(guidanceStart,guidanceEnd)
+      +'\n({guidance:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',
+    {Buffer,console,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
+      unique:values=>[...new Set((values||[]).map(value=>String(value??'').trim()).filter(Boolean))]}
+  );
+  const source='a'.repeat(40),relative='client/Game.client.luau';
+  const blockers=['ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED',
+    ...ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>'ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:'+family),
+    'ROBLOX_PACKAGE_PRIMITIVE_ONLY_OR_COLOR_ONLY_FORBIDDEN'];
+  const policy={mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true};
+  const hint='Preserve internal assets. Repair the existing game-side native consumer; never add marker-only PASS.';
+  const failure={authority:'roblox-package-asset-binding-failure',sourceRevision:source,artifactIdentity:null,
+    assetThreshold:{pass:false,blockers},assetRepairPolicy:policy,
+    qualityFailureDetails:blockers.map(id=>({id,hint}))};
+  const directive={directiveId:'package-binding-current-source',thisLoopPrimaryGoal:'Repair existing asset consumers',
+    primaryFocus:'PRESENTATION',nextActionDecision:{action:'CAUSAL_REPAIR'},
+    playtestRuntimeFindings:{studioQualityFailure:failure,runtimeObserved:false,runtimePassed:false},
+    responsibleSystemsAndFiles:{sourceAnchors:Array.from({length:8},(_,index)=>({file:relative,line:index+2,symbol:'render',intendedBehavior:'connect the existing native consumer '.repeat(100),observableAcceptance:'fresh package validation'}))},
+    visualBuildUpDirective:{domains:{UI:'connected visible detail '.repeat(3000)}},
+    preserveConstraints:['Keep gameplay and internal asset files unchanged'],acceptanceEvidence:['CURRENT_SOURCE_PACKAGE_VALIDATION_REQUIRED']};
+  const block=guidance({target:'roblox',selectedTask:{buildUpDirective:directive}},[relative]);
+  const verify=prompt=>{
+    const line=prefix=>prompt.split('\n').find(value=>value.startsWith(prefix))?.slice(prefix.length);
+    assert.deepEqual(JSON.parse(line('sourceRepairIdentity=')),{authority:failure.authority,sourceRevision:source,artifactIdentity:null});
+    assert.deepEqual(JSON.parse(line('sourceRepairBlockers=')),blockers);
+    assert.deepEqual(JSON.parse(line('sourceRepairPolicy=')),policy);
+    assert.equal(line('sourceRepairHints='),hint);
+    assert.match(prompt,/nextVibeAction=CAUSAL_REPAIR/);
+    assert.doesNotMatch(prompt,/runtimeObserved[=:]\s*true|runtimePassed[=:]\s*true/);
+  };
+  verify(block);
+  for(const options of [{compact:true},{compact:true,focusedRobloxVisual:true},{compact:true,focusedPresentation:true}])verify(compact(block,options));
+  const cwd=tempRoot();
+  try{
+    const content='local panel = script.Parent\npanel.BackgroundColor3=Color3.fromRGB(20,30,40)\n';
+    write(path.join(cwd,relative),content);
+    const prefix=['Engine: roblox','Goal: repair the current package asset binding',block,'Allowed edit paths: '+relative].join('\n');
+    const focused=buildFocusedReplaceOnlyPrompt(prefix+'\n=== FILE '+relative+' [EDITABLE] ===\n'+content,{sourceRoot:cwd,responsibleFiles:[relative]});
+    verify(focused.prompt);
+    const oversized=prefix+'\nOVERSIZED_PLANNING_CONTEXT='+('unrelated planning detail '.repeat(16000));
+    const retry=buildGenerationRetryPrompt(oversized,{sourceRoot:cwd,responsibleFiles:[relative],attempt:1,oversizedInitial:true});
+    verify(retry);
+    assert.ok(Buffer.byteLength(retry)<36000);
+    assert.match(retry,/INITIAL BOUNDED SOURCE REQUEST/);
+    for(const patch of [{sourceRevision:'invalid'},{artifactIdentity:'sha256:'+'b'.repeat(64)},
+      {authority:'unknown'},{assetThreshold:{pass:true,blockers}},{assetThreshold:{pass:false,blockers:[]}}]){
+      const rejected=guidance({target:'roblox',selectedTask:{buildUpDirective:{...directive,playtestRuntimeFindings:{studioQualityFailure:{...failure,...patch}}}}},[relative]);
+      assert.doesNotMatch(rejected,/sourceRepairIdentity=/);
+    }
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
+  assert.equal(directive.playtestRuntimeFindings.runtimeObserved,false);
+  assert.equal(directive.playtestRuntimeFindings.runtimePassed,false);
 });

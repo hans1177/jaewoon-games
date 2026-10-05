@@ -358,6 +358,10 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')continue;
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
+            if(reconciliationRow?.sourceRepairPending===true){
+              console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
+              continue;
+            }
             const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
             const existingSourceLearningRebind=reconciliationRow?.failure==='existing-source-verified-external-learning-required';
             if(existingSourceLearningRebind){
@@ -737,6 +741,10 @@ jobs:
           for(const result of sourcePlanContractStale?[]:reconciliation){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
+            if(result.sourceRepairPending===true){
+              console.log('ROBLOX_SOURCE_REPAIR_PRESERVED_WITHOUT_REBIND='+item.gameId);
+              continue;
+            }
             const reconciliationRevision=String(result.sourceRevision||'').trim();
             const reconciliationTreeSha=String(result.sourceTreeSha||'').trim();
             let liveSourceTreeSha='';
@@ -1055,11 +1063,20 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {hasCurrentRobloxPackageAssetRepair} from './tools/company-development-roblox-source-reconcile.mjs';
           import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+          const sourceRepairOwns=item=>{
+            try{
+              const baseline=JSON.parse(execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${item.designBaselineSource}`],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));
+              return hasCurrentRobloxPackageAssetRepair({item,assetLibrary,baseline});
+            }catch{return false;}
+          };
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
@@ -1073,6 +1090,10 @@ jobs:
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(!secondaryOwnerFocus&&sourceRepairOwns(item)){
+              console.error('ROBLOX_PACKAGE_RETRY_REMOVED_SOURCE_REPAIR_REQUIRED='+item.gameId);
+              continue;
+            }
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const productF0Current=!secondaryOwnerFocus
               &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
@@ -1386,6 +1407,8 @@ jobs:
             f0Evidence,
             assetBindingFailed,
             assetThreshold:assetBindingFailed?evidence.assetThreshold:null,
+            sourceTreeSha:assetBindingFailed?evidence.sourceTreeSha:null,
+            assetRepairContext:assetBindingFailed?evidence.assetRepairContext:null,
             secondaryOwnerFocus:secondary,
             sourcePath:process.env.SOURCE_PATH,
             sourceRevision:process.env.SOURCE_REVISION,
@@ -1805,6 +1828,7 @@ jobs:
                     authority:'roblox-package-asset-binding-failure',workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,testedAt:stamp,
                     qualityFailureKinds:[...result.assetThreshold.blockers],
                     assetThreshold:result.assetThreshold,
+                    sourceTreeSha:result.sourceTreeSha,assetRepairContext:result.assetRepairContext,
                     repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
                     assetRepairPolicy:{mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true},
                     qualityFailureDetails:result.assetThreshold.blockers.map(id=>({
@@ -1942,9 +1966,18 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {hasCurrentRobloxPackageAssetRepair} from './tools/company-development-roblox-source-reconcile.mjs';
           import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+          const sourceRepairOwns=item=>{
+            try{
+              const baseline=JSON.parse(execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${item.designBaselineSource}`],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));
+              return hasCurrentRobloxPackageAssetRepair({item,assetLibrary,baseline});
+            }catch{return false;}
+          };
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
           let count=0;
           for(const item of q.items||[]){
@@ -1953,6 +1986,10 @@ jobs:
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(!secondaryOwnerFocus&&sourceRepairOwns(item)){
+              console.error('ROBLOX_PACKAGE_RETRY_REMOVED_SOURCE_REPAIR_REQUIRED='+item.gameId);
+              continue;
+            }
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const productF0Current=!secondaryOwnerFocus
               &&Number(item.robloxFoundationF0Evidence?.version||0)>=4

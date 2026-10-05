@@ -1962,6 +1962,8 @@ function studioQualityWorkerGuidance(order = {}) {
   ].filter(Boolean).join('\n');
 }
 
+const SOURCE_REPAIR_DIRECTIVE_PREFIXES=Object.freeze(['sourceRepairIdentity=','sourceRepairBlockers=','sourceRepairPolicy=','sourceRepairHints=']);
+
 function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = []) {
   const d=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||null;
   if(!d||typeof d!=='object'||!clean(d.directiveId))return'';
@@ -1984,6 +1986,21 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
+  // The planner already binds this failure to the current source. Preserve that identity and
+  // its game-source-only repair boundary through focused/oversized prompt reconstruction.
+  const failure=d?.playtestRuntimeFindings?.studioQualityFailure;
+  const packageRepair=failure?.authority==='roblox-package-asset-binding-failure'
+    &&/^[0-9a-f]{40}$/i.test(clean(failure.sourceRevision))
+    &&!clean(failure.artifactIdentity)
+    &&failure?.assetThreshold?.pass===false
+    &&Array.isArray(failure?.assetThreshold?.blockers)
+    &&failure.assetThreshold.blockers.some(value=>clean(value));
+  const sourceRepair=packageRepair?[
+    'sourceRepairIdentity='+JSON.stringify({authority:failure.authority,sourceRevision:failure.sourceRevision,artifactIdentity:null}),
+    'sourceRepairBlockers='+JSON.stringify(unique(failure.assetThreshold.blockers)),
+    'sourceRepairPolicy='+JSON.stringify(failure.assetRepairPolicy||{}),
+    'sourceRepairHints='+boundedPromptText(unique((failure.qualityFailureDetails||[]).map(row=>row?.hint)).join(' | '),COMPACT_DIRECTIVE_LINE_BYTES)
+  ]:[];
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
@@ -1996,6 +2013,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
     `previousEffectiveness=${clean(d?.effectivenessMeasurement?.previousGeneration?.classification)||'NO_PREVIOUS_GENERATION'}`,
     `nextVibeAction=${clean(d?.nextActionDecision?.action)||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'}`,
+    ...sourceRepair,
     `contentExpansionVersion=${Number(expansion?.version||0)} executionBoundary=${clean(expansion?.executionBoundary)||'EXISTING_BUILD_UP_ONLY'} decisionOwner=${clean(expansion?.autonomousDecisionOwner)||'VIBE'}`,
     `contentTheme=${clean(expansion?.selectedTheme)||'AUTO'} themeDepth=${Number(expansion?.themeDepth||1)} mode=${clean(expansion?.executionMode)||'AUTONOMOUS_CONTENT_BUILD_UP'}`,
     `contentBreadth=covered:${Number(breadth?.distinctCovered||0)}/${Number(breadth?.totalThemes||0)} missing:${(breadth?.missingThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'} leastCovered:${(breadth?.leastCoveredThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'}`,
@@ -2033,13 +2051,13 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'visual=','platform=','preserve=','acceptance='
+    'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
-    'platform=','preserve=','acceptance='
+    'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
   const lines=block.split('\n');
   // A fixed-anchor retry owns one file. Keep its complete instructions, not all sibling files.
@@ -2059,6 +2077,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     }
     if(!compact||line===begin||line===end)return[line];
     if(!keepPrefixes.some(prefix=>line.startsWith(prefix)))return[];
+    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix)))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
@@ -2072,7 +2091,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
-    'platform=','preserve=','acceptance='
+    'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
   const essential=[];
   const seen=new Set();
@@ -2093,7 +2112,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end)return line;
+    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix)))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);
@@ -4173,10 +4192,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   if(oversizedInitial&&Buffer.byteLength(result,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES){
     const learning=compactVerifiedExternalLearningBlockFromPrompt(rawPrompt);
     const compactDirective=buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible});
-    const directivePrefixes=['[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]','directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=','preserve=','acceptance=','[GAME SPECIFIC BUILD UP DIRECTIVE END]'];
+    const directivePrefixes=['[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]','directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES,'[GAME SPECIFIC BUILD UP DIRECTIVE END]'];
     const directive=compactDirective.split('\n')
       .filter(line=>directivePrefixes.some(prefix=>line===prefix||line.startsWith(prefix)))
-      .map(line=>boundedPromptText(line,900))
+      .map(line=>SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))?line:boundedPromptText(line,900))
       .join('\n');
     const sourceSections=[];
     const rawLines=rawPrompt.split('\n');
