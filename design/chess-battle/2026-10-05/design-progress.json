@@ -10,9 +10,9 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": null,
+  "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": null,
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded local=OLLAMA_DESIGN_TIMEOUT 90000ms",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 3,
@@ -125,17 +125,17 @@
       "updatedAt": "2026-10-05T04:20:02.647Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
+      "failures": 2,
+      "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 120002,
-      "lastMs": 120002,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T04:20:02.188Z"
+      "totalMs": 210002,
+      "lastMs": 90000,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
+      "updatedAt": "2026-10-05T04:21:32.648Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T04:20:02.647Z"
+  "updatedAt": "2026-10-05T04:21:32.649Z"
 }
