@@ -2876,7 +2876,7 @@ ${expectationInstruction}
     webSimpleCodeGameSubstituteForbidden:webDesignRequired,
     designContextAvailable:Boolean(designContext),
     strictDesignScore:designContext?.strictScore??null,
-    approvedDesignElements:gameplayDesignRequired?designSummary:null,
+    approvedDesignElements:designRequired?designSummary:null,
     designIsImplementationCeiling:false,
     expectationPolicySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
     qualityExpectation:iterationExpectation,
