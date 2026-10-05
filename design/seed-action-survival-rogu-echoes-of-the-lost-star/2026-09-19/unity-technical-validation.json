@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-05T15:22:18.565Z",
+  "checkedAt": "2026-10-05T18:28:14.870Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37327909888,
+    "upstreamBuildRunId": 37351831879,
     "sourceCommit": "4db5ae265495ff82f6d21b2d265c1f06f8abcf01",
     "sourceTreeSha": "22a5fd7ec9eed95f3730974ca153abd2a7cb609a",
-    "apkSha256": "7c9822900e4a4447c37eebc3eb04c8abf18e761264484b7f5a0b5e19d91ce1f2",
+    "apkSha256": "0c9724097f1355cb6326e8e7fd461a8ee296b977debb90d0dd6a7b3744a2c294",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -119,13 +119,13 @@
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
       "minFps": 10.9,
-      "avgFps": 13.466666666666667,
+      "avgFps": 13.633333333333333,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 62794820,
+      "maxAllocatedMemoryBytes": 63068530,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/seed-action-survival-rogu-echoes-of-the-lost-star-android-cloud-37327909888-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37327909888/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37327909888/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/seed-action-survival-rogu-echoes-of-the-lost-star-android-cloud-37351831879-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37351831879/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37351831879/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
   }
 }
