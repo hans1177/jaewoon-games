@@ -452,6 +452,16 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       &&queueRobloxQualityBuildUpSourceRevision
       &&queueRobloxQualityBuildUpSourceRevision===queueRobloxSourceCommit
     );
+    // 패키징 전 자산 검수 실패에는 새 artifact가 없다. 현재 게임·소스의 실제 실패만 전달한다.
+    const packageAssetFailure=item?.robloxQualityBuildUpEvidence;
+    const currentPackageAssetFailure=queueRobloxQualityBuildUpRequired
+      &&clean(packageAssetFailure?.gameId)===id
+      &&clean(packageAssetFailure?.sourceRevision)===queueRobloxSourceCommit
+      &&clean(packageAssetFailure?.authority)==='roblox-package-asset-binding-failure'
+      &&!clean(packageAssetFailure?.artifactIdentity)
+      &&packageAssetFailure?.assetThreshold?.pass===false
+      &&Array.isArray(packageAssetFailure?.assetThreshold?.blockers)
+      &&packageAssetFailure.assetThreshold.blockers.some(value=>clean(value));
     const queuePatch={
       ...queueRuntimePatch,
       queueCurrentStep:clean(item?.currentStep),
@@ -465,11 +475,18 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxQualityFailureKinds:(Array.isArray(item?.robloxQualityBuildUpEvidence?.qualityFailureKinds)?item.robloxQualityBuildUpEvidence.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24),
       queueRobloxQualityBuildUpEvidence:queueRobloxQualityBuildUpRequired
         &&clean(item?.robloxQualityBuildUpEvidence?.sourceRevision)===queueRobloxSourceCommit
-        &&clean(item?.robloxQualityBuildUpEvidence?.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
-        &&['roblox-official-studio-mcp-product-quality-failure','roblox-f9-gameplay-product-readiness-failure','roblox-f0-gameplay-product-readiness-failure'].includes(clean(item?.robloxQualityBuildUpEvidence?.authority))
+        &&(currentPackageAssetFailure||(
+          clean(item?.robloxQualityBuildUpEvidence?.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+          &&['roblox-official-studio-mcp-product-quality-failure','roblox-f9-gameplay-product-readiness-failure','roblox-f0-gameplay-product-readiness-failure'].includes(clean(item?.robloxQualityBuildUpEvidence?.authority))
+        ))
         ?{
           sourceRevision:queueRobloxSourceCommit,
-          artifactIdentity:clean(item.robloxBuildArtifactIdentity),
+          artifactIdentity:currentPackageAssetFailure?null:clean(item.robloxBuildArtifactIdentity),
+          ...(currentPackageAssetFailure?{
+            assetThreshold:packageAssetFailure.assetThreshold,
+            assetRepairPolicy:packageAssetFailure.assetRepairPolicy,
+            runtimeVerified:false,productionVerified:false
+          }:{}),
           authority:item.robloxQualityBuildUpEvidence.authority,
           workflowRunId:Number(item.robloxQualityBuildUpEvidence.workflowRunId)||null,
           testedAt:clean(item.robloxQualityBuildUpEvidence.testedAt),
@@ -2324,6 +2341,22 @@ export function attachRobloxDistilledLearning(taskInput={},project={}, {playbook
 }
 
 
+function applyRobloxQualityRepairDirective(directive,project,platformLane){
+  if(platformLane!=='roblox'||project.queueRobloxQualityBuildUpRequired!==true)return directive;
+  const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
+  const packageFailure=studioQualityFailure?.authority==='roblox-package-asset-binding-failure';
+  const runtimeObserved=!packageFailure;
+  const reason=packageFailure
+    ?'current source package asset binding failure requires game-side source repair; internal assets must remain unchanged'
+    :'current source Studio product-quality failure requires source repair before another observation';
+  return{
+    ...directive,
+    playtestRuntimeFindings:{...directive.playtestRuntimeFindings,studioQualityFailure,runtimeObserved,runtimePassed:false},
+    nextActionDecision:{action:'CAUSAL_REPAIR',reason},
+    effectivenessMeasurement:{...directive.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason,runtimeObserved}}
+  };
+}
+
 function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,designContextOverride=null){
   if(!taskInput||!project?.gameId)return taskInput;
   const verified=designContextOverride||latestVerifiedDesign(repoRoot,project.gameId);
@@ -2384,15 +2417,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     &&activeDirectiveSemanticCompatible
   );
   if(activeDirectiveMatchesCurrentSource){
-    const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
-    const directive={
-      ...activeDirectiveTask.buildUpDirective,
-      playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,
-        studioQualityFailure:platformLane==='roblox'?project.queueRobloxQualityBuildUpEvidence||null:null,
-        ...(repairRequired?{runtimeObserved:true,runtimePassed:false}:{} )},
-      ...(repairRequired?{nextActionDecision:{action:'CAUSAL_REPAIR',reason:'current source Studio product-quality failure requires source repair before another observation'},
-        effectivenessMeasurement:{...activeDirectiveTask.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason:'current source Studio product-quality failure',runtimeObserved:true}}}:{} )
-    };
+    const directive=applyRobloxQualityRepairDirective(activeDirectiveTask.buildUpDirective,project,platformLane);
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -2466,6 +2491,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ||(platform==='WEB'&&evidencePlatform==='UNITY_WEB');
   const roblox=platform==='ROBLOX';
   const qualityFailure=roblox&&project?.queueRobloxQualityBuildUpRequired===true;
+  const packageAssetFailure=qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-package-asset-binding-failure';
   const runtimeEvidence={
     platform,
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
@@ -2475,8 +2501,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(samePlatform?project?.queueRoutingBlockers||[]:[]),
       ...(qualityFailure?project?.queueRobloxQualityFailureKinds||[]:[])
     ].map(clean).filter(Boolean),
-    runtimeObserved:(samePlatform&&project?.queueRuntimeObserved===true)
-      ||(roblox&&project?.queueRobloxRuntimeObserved===true)||qualityFailure,
+    runtimeObserved:!packageAssetFailure&&((samePlatform&&project?.queueRuntimeObserved===true)
+      ||(roblox&&project?.queueRobloxRuntimeObserved===true)||qualityFailure),
     runtimePassed:!qualityFailure&&(samePlatform&&project?.queueRuntimeObserved===true
       ?project?.queueRuntimePassed===true:(roblox&&project?.queueRobloxRuntimePassed===true)),
     independentQaPassed:(samePlatform&&project?.queueRuntimeIndependentQaPassed===true)
@@ -2499,7 +2525,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(mode?{playMode:mode,multiplayerRequired:mode!=='SINGLE',networkingRequired:mode!=='SINGLE',multiplayerQaRequired:mode!=='SINGLE'}:{})
     };
   }
-  const directive=buildGameSpecificBuildUpDirective({
+  const directive=applyRobloxQualityRepairDirective(buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
     platform:buildUpPlatformToken(project,platformLane),
@@ -2514,7 +2540,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
     requestedFocus:sourceSafeNoDesign?requestedFocus:'',
     safeDesignlessMode:sourceSafeNoDesign
-  });
+  }),project,platformLane);
   return{
     ...taskInput,
     goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -3181,13 +3207,10 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       const staleDecision=repairRequired&&(candidate.buildUpDirective.nextActionDecision?.action!=='CAUSAL_REPAIR'
         ||candidate.buildUpDirective.effectivenessMeasurement?.previousGeneration?.classification!=='REGRESSION');
       if(staleDecision||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
-        candidate=bindSharedBuildUpDirective(candidate,{
+        candidate=bindSharedBuildUpDirective(candidate,applyRobloxQualityRepairDirective({
           ...candidate.buildUpDirective,
-          playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure,
-            ...(repairRequired?{runtimeObserved:true,runtimePassed:false}:{} )},
-          ...(repairRequired?{nextActionDecision:{action:'CAUSAL_REPAIR',reason:'current source Studio product-quality failure requires source repair before another observation'},
-            effectivenessMeasurement:{...candidate.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason:'current source Studio product-quality failure',runtimeObserved:true}}}:{} )
-        });
+          playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}
+        },project,lane));
         changed+=1;
       }
     }
@@ -3857,3 +3880,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE3_ROBLOX_DISTILLATION_RECORDS_AVAILABLE=${result.robloxDistillationContext?.records||0}`);
   console.log(`VIBE3_ROBLOX_DISTILLATION_TASKS_APPLIED=${result.robloxDistillationContext?.applied||0}`);
 }
+

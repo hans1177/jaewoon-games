@@ -58,7 +58,10 @@ test('asset failure survives worker recording and exact-source persistence while
   assert.deepEqual(item.robloxQualityBuildUpEvidence.qualityFailureKinds,threshold.blockers);
   assert.deepEqual(item.robloxQualityBuildUpEvidence.assetThreshold,threshold);
   assert.deepEqual(item.robloxQualityBuildUpEvidence.qualityFailureDetails[0].observed.familyResult,threshold.familyResults[0]);
-  assert.equal(item.robloxQualityBuildUpEvidence.assetFallbackPolicy.mode,'SIMILAR_GENRE_COMPATIBLE_INTERNAL_ASSET');
+  assert.equal(item.robloxQualityBuildUpEvidence.assetRepairPolicy.mode,'GAME_SOURCE_BINDINGS_ONLY');
+  assert.equal(item.robloxQualityBuildUpEvidence.assetRepairPolicy.allowAssetLibraryWrites,false);
+  assert.equal(item.robloxQualityBuildUpEvidence.assetRepairPolicy.preserveAssetFiles,true);
+  assert.match(item.robloxQualityBuildUpEvidence.qualityFailureDetails[0].hint,/do not replace, modify or delete internal assets/);
   for(const key of ['robloxBuildOrPackagePassed','robloxFoundationF0Passed','robloxRuntimePassed','robloxFinalReviewPassed'])assert.equal(item[key],false,key);
   assert.deepEqual(persisted.items[1],sibling);
   assert.deepEqual(persist('d'.repeat(40)).items,[{gameId,robloxSourceCommit:'d'.repeat(40)},sibling]);

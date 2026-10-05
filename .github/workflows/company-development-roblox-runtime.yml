@@ -1806,10 +1806,10 @@ jobs:
                     qualityFailureKinds:[...result.assetThreshold.blockers],
                     assetThreshold:result.assetThreshold,
                     repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
-                    assetFallbackPolicy:{mode:'SIMILAR_GENRE_COMPATIBLE_INTERNAL_ASSET',preferExistingApprovedAssets:true,replaceUnavailableOrIncompatibleBindings:true,requireActualNativeConsumption:true},
+                    assetRepairPolicy:{mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true},
                     qualityFailureDetails:result.assetThreshold.blockers.map(id=>({
                       id:String(id),repairSurface:'INTERNAL_ASSET_SOURCE_BINDING',priority:'P0',
-                      hint:'Connect selected internal assets to the existing design-bound native systems and preserve source traces. If an asset is unavailable or incompatible, substitute a compatible internal asset from a similar genre and bind it to the actual native consumer. Prefer existing approved authored models, audio and images. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.',
+                      hint:'Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.',
                       observed:{libraryVersion:result.assetThreshold.libraryVersion,selectionFingerprint:result.assetThreshold.selectionFingerprint,familyResult:(result.assetThreshold.familyResults||[]).find(row=>String(id).endsWith(':'+row.family))||null}
                     }))
                   }

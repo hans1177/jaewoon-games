@@ -4523,3 +4523,60 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.equal(task.studioQualityEvolution.flowSystemExistingLibraryFirst,true);
   assert.equal(task.studioQualityEvolution.flowSystemShadowAuthorityForbidden,true);
 });
+
+
+test('package asset failure reaches the existing Roblox buildup with asset-preservation instructions and rejects stale or unverified evidence',()=>{
+  const root=tempRepo(),gameId='package-asset-repair',source='a'.repeat(40);
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  for(const dir of ['server','client','shared'])fs.mkdirSync(path.join(gameRoot,dir),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local state = {}\nfunction resolvePrimaryAction(player) state.last=player end\n');
+  fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'function dispatchPrimaryAction() return true end\n');
+  fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {RoundSeconds=90}\n');
+  writeStudioDesign(root,gameId);
+  const catalog={games:[{id:gameId,name:'Package Asset Repair',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:'roblox-games/'+gameId}]};
+  const hint='Repair game-side bindings only; preserve the internal asset library and all asset files.';
+  const fallback={mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true};
+  const evidence={
+    gameId,sourceRevision:source,artifactIdentity:null,authority:'roblox-package-asset-binding-failure',
+    assetThreshold:{pass:false,blockers:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],runtimeVerified:false,productionVerified:false},
+    assetRepairPolicy:fallback,repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
+    qualityFailureKinds:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],
+    qualityFailureDetails:[{id:'ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED',repairSurface:'INTERNAL_ASSET_SOURCE_BINDING',priority:'P0',hint}]
+  };
+  const item={
+    gameId,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:'roblox-games/'+gameId,
+    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    robloxSourceCommit:source,robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),robloxBuildOrPackagePassed:false,
+    robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source,robloxQualityFailureClass:'INTERNAL_ASSET_SOURCE_BINDING',
+    robloxQualityBuildUpEvidence:evidence
+  };
+  for(const patch of [{sourceRevision:'c'.repeat(40)},{gameId:'another-game'},{authority:'unknown'},
+    {artifactIdentity:'sha256:'+'b'.repeat(64)},{assetThreshold:{pass:true,blockers:['missing']}},
+    {assetThreshold:{pass:false,blockers:[]}},{assetThreshold:{pass:false,blockers:[' ']}}]){
+    const project=collectProjects({projects:[]},catalog,root,{items:[{...item,robloxQualityBuildUpEvidence:{...evidence,...patch}}]}).find(row=>row.gameId===gameId&&row.engine==='roblox');
+    assert.equal(project.queueRobloxQualityBuildUpEvidence,null);
+  }
+  const stale=collectProjects({projects:[]},catalog,root,{items:[{...item,robloxSourceCommit:'d'.repeat(40)}]}).find(row=>row.gameId===gameId&&row.engine==='roblox');
+  assert.equal(stale.queueRobloxQualityBuildUpRequired,false);
+  assert.equal(stale.queueRobloxQualityBuildUpEvidence,null);
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[item]},queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId&&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===evidence.authority);
+  assert.ok(task,'package failure must reach an actual existing BUILD_UP task');
+  const failure=task.buildUpDirective.playtestRuntimeFindings.studioQualityFailure;
+  assert.equal(failure.sourceRevision,source);
+  assert.equal(failure.artifactIdentity,null,'a prior package artifact must not be attributed to a pre-package failure');
+  assert.deepEqual(failure.assetRepairPolicy,fallback);
+  assert.equal(failure.assetThreshold.pass,false);
+  assert.equal(failure.runtimeVerified,false);
+  assert.equal(failure.productionVerified,false);
+  assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
+  assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
+  assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
+  assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.ok(task.goal.includes(hint));
+  assert.ok(task.goal.includes(fallback.mode));
+});
+
