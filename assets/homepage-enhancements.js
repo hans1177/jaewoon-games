@@ -435,7 +435,7 @@ function bindDirectGameLaunch(){
     const video=details.querySelector('video');
     if(!video)return;
     if(details.open&&!video.src){video.src=video.dataset.src;video.load();}
-    if(!details.open)video.pause();
+    if(!details.open){video.pause();refresh();}
   },true);
   document.addEventListener('click',event=>{
     const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary,video');
@@ -471,6 +471,8 @@ async function refresh(){
     const renderCatalog=currentCatalog=>{
       const sig=JSON.stringify([currentCatalog,status,testManifest,portfolioStatus,platformExposure]);
       if(sig===lastSignature)return;
+      // Keep the user's open player intact while background status snapshots change.
+      if(document.querySelector('.homeGameplayVideo[open]'))return;
       updateLiveSummary(currentCatalog,status);
       buildFocus(currentCatalog,status);
       buildGameCenter(currentCatalog,status);
