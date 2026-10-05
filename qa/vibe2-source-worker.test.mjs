@@ -2202,7 +2202,8 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     }
   };
   workOrder.goal='일반 Roblox BUILD_UP 소스 코딩에서 선택된 내부 자산을 실제 시각 책임 소스에 적용';
-  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
+  const configSource='return { GameId = "demo", StudioAssets = { Families = { UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" } } } }';
+  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),configSource+'\n');
   const clientSource=[
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
@@ -2212,7 +2213,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   write(path.join(cwd,'roblox-games/demo/client/Game.client.luau'),clientSource);
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   write(bad,JSON.stringify({
-    edits:[{path:'shared/GameConfig.luau',find:'return { GameId = "demo" }',replace:'return { GameId = "demo", StudioAssets = true }'}]
+    edits:[{path:'shared/GameConfig.luau',find:configSource,replace:configSource.replace('GameId = "demo"','GameId = "demo", Marker = true')}]
   }));
   const bound=[
     'local STUDIO_ASSET_BINDING_VERSION = 2',
