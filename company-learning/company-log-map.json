@@ -2053,8 +2053,8 @@
     "preservedCompletionJob": "supervise",
     "expectedSupersededConclusion": "cancelled",
     "independentGameCancellationForbidden": true,
-    "runnerDrainPreviousConcurrencyGroup": "director-runner-drain-v1",
-    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "runnerDrainPreviousConcurrencyGroup": "director-runner-drain-v2",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "nativeControlRunnerIsolationEvidence": {
@@ -2365,8 +2365,8 @@
       "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
     ],
     "cancellationSemanticsChanged": false,
-    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "concurrentPlatformSharedProgressMonotonicityEvidence": {
