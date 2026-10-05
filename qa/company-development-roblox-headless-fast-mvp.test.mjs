@@ -274,5 +274,5 @@ test('F0 blocks generic scope handlers when an exact survival design baseline is
  assert.ok(r.blockers.includes('gameplayProductReadiness'));
  assert.ok(r.gameplayProductReadiness.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
  assert.ok(r.gameplayProductReadiness.blockers.some(x=>x.includes('CRAFTING')));
- assert.equal(r.version,4);
+ assert.equal(r.version,5);
 });
