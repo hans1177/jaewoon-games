@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g15-eede2681fc05",
-  "directiveFingerprint": "eede2681fc05edf2a3bbba39d331d00c1b1a7e5f5616748e3142862879efd3a3",
-  "previousDirectiveFingerprint": "29b27fa88d6a332f5b6d3458ec6f589c46df03546a5dcbeb82ef07d041bf2bab",
-  "forbiddenRepeatFingerprint": "29b27fa88d6a332f5b6d3458ec6f589c46df03546a5dcbeb82ef07d041bf2bab",
+  "directiveId": "fantasy-survival-build-up-g16-1912fb10a960",
+  "directiveFingerprint": "1912fb10a9601e0b920a31069ce570f89f083ec97302c13591bde81ed44cf9b4",
+  "previousDirectiveFingerprint": "eede2681fc05edf2a3bbba39d331d00c1b1a7e5f5616748e3142862879efd3a3",
+  "forbiddenRepeatFingerprint": "eede2681fc05edf2a3bbba39d331d00c1b1a7e5f5616748e3142862879efd3a3",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 15,
+  "generation": 16,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "f3ca51fc059e26f5d1346312c69154c921e7ec307b61834a1a1296e6e13cc3a4",
+  "sourceTreeFingerprint": "c009cc19172d5e049700efb8c7a508c1eca8791cb162bf0972c8891a38229f3a",
   "designFingerprint": "c73a53e121ef51a605007aa1df16ee39732f54300166fd6e453eb97497f1f07e",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -258,9 +258,9 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 14,
-    "previousSourceTreeFingerprint": "0f73a2b11b6f086886f8c710091b4f8acf99dcac841961344f9f9e149c1df3af",
-    "currentSourceTreeFingerprint": "f3ca51fc059e26f5d1346312c69154c921e7ec307b61834a1a1296e6e13cc3a4",
+    "previousGeneration": 15,
+    "previousSourceTreeFingerprint": "f3ca51fc059e26f5d1346312c69154c921e7ec307b61834a1a1296e6e13cc3a4",
+    "currentSourceTreeFingerprint": "c009cc19172d5e049700efb8c7a508c1eca8791cb162bf0972c8891a38229f3a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -270,7 +270,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1468,8 +1468,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=5.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1479,7 +1479,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 7
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1489,7 +1489,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1528,7 +1528,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 146,
+        "score": 128,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2271,12 +2271,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f3ca51fc059e26f5d1346312c69154c921e7ec307b61834a1a1296e6e13cc3a4",
+      "sourceTreeFingerprint": "c009cc19172d5e049700efb8c7a508c1eca8791cb162bf0972c8891a38229f3a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2291,8 +2291,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2323,7 +2323,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 16,
+    "nextGeneration": 17,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2393,5 +2393,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T22:37:08.542Z"
+  "generatedAt": "2026-10-05T01:30:25.839Z"
 }

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g13-2c38d97fa555",
-  "directiveFingerprint": "2c38d97fa555061681d3f09365077a65b35d53441fb6f449c030d6ebd0418bea",
-  "previousDirectiveFingerprint": "204b631d8f3a43e848b7c96895731200e694f11e174a7f2d12847f7073c82f30",
-  "forbiddenRepeatFingerprint": "204b631d8f3a43e848b7c96895731200e694f11e174a7f2d12847f7073c82f30",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g14-39d0294f3a18",
+  "directiveFingerprint": "39d0294f3a184983e3e21fc300cde677cc884089bd64fc9111af5bc938f48c94",
+  "previousDirectiveFingerprint": "2c38d97fa555061681d3f09365077a65b35d53441fb6f449c030d6ebd0418bea",
+  "forbiddenRepeatFingerprint": "2c38d97fa555061681d3f09365077a65b35d53441fb6f449c030d6ebd0418bea",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 13,
+  "generation": 14,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "da074e84f07e72b509e81d61914c5d97b729978d6c6004c602d88ce70955c6f4",
+  "sourceTreeFingerprint": "7378bae228175d4fbac9e59e49bbbf94893cde1352b096879bec2104d7387aa5",
   "designFingerprint": "4f25e622432ac76ed9c051cab2997576c674b80354f8f44a579d880e70b1d43c",
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
@@ -258,19 +258,19 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 12,
-    "previousSourceTreeFingerprint": "7ac0aedb1312a4f7bff0345a79a65e72504271ebd4b929dc6f88d9af9f4f807b",
-    "currentSourceTreeFingerprint": "da074e84f07e72b509e81d61914c5d97b729978d6c6004c602d88ce70955c6f4",
+    "previousGeneration": 13,
+    "previousSourceTreeFingerprint": "da074e84f07e72b509e81d61914c5d97b729978d6c6004c602d88ce70955c6f4",
+    "currentSourceTreeFingerprint": "7378bae228175d4fbac9e59e49bbbf94893cde1352b096879bec2104d7387aa5",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
+    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -1463,8 +1463,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1474,7 +1474,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 8
+        "PRESENTATION_WORLD_COHESION": 9
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1482,7 +1482,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1523,7 +1523,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 102,
+        "score": 84,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2265,16 +2265,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "da074e84f07e72b509e81d61914c5d97b729978d6c6004c602d88ce70955c6f4",
+      "sourceTreeFingerprint": "7378bae228175d4fbac9e59e49bbbf94893cde1352b096879bec2104d7387aa5",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2285,8 +2285,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2317,7 +2317,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 14,
+    "nextGeneration": 15,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2390,5 +2390,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-04T22:37:08.428Z"
+  "generatedAt": "2026-10-05T01:30:25.721Z"
 }
