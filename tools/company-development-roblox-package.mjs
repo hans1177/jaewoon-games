@@ -341,14 +341,19 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
     resolvedFamilyCount,
     allFamiliesResolved:resolvedFamilyCount===ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.length,
     familyResults:Object.freeze(familyResults),
+    selectedFamilies:Object.freeze(Object.fromEntries(ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>[
+      family,Object.freeze([...(expectedFamilies[family]||[])])
+    ]))),
     runtimeVerified:false,
     productionVerified:false,
     authority:'roblox-package-universal-asset-threshold',
   });
 }
 
-export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false,assetThreshold=null}={}){
+export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false,assetThreshold=null,buildUpAssetSourceUsageFingerprint='',buildUpAssetSourceUsageLibraryVersion=0}={}){
   const identity=clean(artifactSha256)?`sha256:${clean(artifactSha256)}`:null;
+  const buildUpFingerprint=clean(buildUpAssetSourceUsageFingerprint);
+  const buildUpLibraryVersion=Math.max(0,Math.floor(Number(buildUpAssetSourceUsageLibraryVersion)||0));
   return Object.freeze({
     version:1,
     platform:'ROBLOX',
@@ -363,6 +368,10 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
     rojoVersion:ROBLOX_PACKAGE_TOOL.rojoVersion,
     rojoAssetSha256:ROBLOX_PACKAGE_TOOL.linuxX64AssetSha256,
     assetThreshold:assetThreshold&&typeof assetThreshold==='object'?assetThreshold:null,
+    buildUpAssetSourceUsageFingerprint:/^[0-9a-f]{64}$/i.test(buildUpFingerprint)?buildUpFingerprint:null,
+    buildUpAssetSourceUsageLibraryVersion:buildUpLibraryVersion||null,
+    assetSelectionFingerprint:clean(assetThreshold?.selectionFingerprint)||null,
+    assetLibraryVersion:Number(assetThreshold?.libraryVersion||0)||null,
     buildPreflightPassed:false,
     runtimePassed:false,
     independentQaPassed:false,
@@ -428,7 +437,7 @@ export function verifiedVibe2SourceTreeShaFromRuntime({repoRoot='.',runtimeRef='
   }
 }
 
-export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir='',verifiedSourceTreeSha=''}={}){
+export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir='',verifiedSourceTreeSha='',buildUpAssetSourceUsageFingerprint='',buildUpAssetSourceUsageLibraryVersion=0}={}){
   const id=clean(gameId);
   const relativeSource=clean(sourcePath).replaceAll('\\','/');
   const revision=clean(sourceRevision);
@@ -437,6 +446,10 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
   if(!id)throw new Error('gameId required');
   if(relativeSource!==`roblox-games/${id}`)throw new Error(`source path mismatch: ${relativeSource}`);
   if(!SHA.test(revision))throw new Error(`exact 40-char source revision required: ${revision}`);
+  const buildUpFingerprint=clean(buildUpAssetSourceUsageFingerprint);
+  const buildUpLibraryVersion=Math.max(0,Math.floor(Number(buildUpAssetSourceUsageLibraryVersion)||0));
+  if(buildUpFingerprint&&!/^[0-9a-f]{64}$/i.test(buildUpFingerprint))throw new Error('ROBLOX_BUILD_UP_ASSET_FINGERPRINT_INVALID');
+  if(buildUpFingerprint&&buildUpLibraryVersion<=0)throw new Error('ROBLOX_BUILD_UP_ASSET_LIBRARY_VERSION_REQUIRED');
   if(!fs.existsSync(rojo))throw new Error(`Rojo executable missing: ${rojo}`);
   fs.mkdirSync(outDir,{recursive:true});
 
@@ -475,6 +488,8 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
       sourceValidationPassed:true,
       saveRequired:validation.saveRequired,
       assetThreshold,
+      buildUpAssetSourceUsageFingerprint:buildUpFingerprint,
+      buildUpAssetSourceUsageLibraryVersion:buildUpLibraryVersion,
     });
   }finally{
     try{execFileSync('git',['-C',path.resolve(repoRoot),'worktree','remove','--force',worktree],{stdio:'ignore'});}catch{}
@@ -500,12 +515,16 @@ function runCli(){
     rojoPath:arg('rojo'),
     outputDir:arg('output-dir'),
     verifiedSourceTreeSha,
+    buildUpAssetSourceUsageFingerprint:arg('build-up-asset-fingerprint'),
+    buildUpAssetSourceUsageLibraryVersion:Number(arg('build-up-asset-library-version','0')),
   });
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
   fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`);
   console.log(`ROBLOX_BUILD_PACKAGE=PASS:${evidence.gameId}`);
   console.log(`ROBLOX_BUILD_ARTIFACT_IDENTITY=${evidence.artifactIdentity}`);
   console.log(`ROBLOX_BUILD_SOURCE_REVISION=${evidence.sourceRevision}`);
+  console.log(`ROBLOX_BUILD_UP_ASSET_FINGERPRINT=${evidence.buildUpAssetSourceUsageFingerprint||'NONE'}`);
+  console.log(`ROBLOX_BUILD_ASSET_SELECTION_FINGERPRINT=${evidence.assetSelectionFingerprint||'NONE'}`);
   console.log(`ROBLOX_BUILD_SOURCE_VALIDATION=${verifiedSourceTreeSha?'VERIFIED_VIBE2_HANDOFF':'EXACT_SOURCE_STATIC'}`);
   console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
   console.log('ROBLOX_RUNTIME_PASS=NO');
