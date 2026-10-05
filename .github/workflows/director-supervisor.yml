@@ -153,6 +153,14 @@ jobs:
             &&queued.has(String(r.status||'').toLowerCase())
           ))add(stale,'DIRECTOR_SUPERSEDED');
 
+          // Recovery Fast re-reads the latest control queues on every run, so multiple queued wakes
+          // are redundant control-plane pressure. Preserve every active run and only the newest queued wake.
+          const recoveryFastQueued=runs
+            .filter(r=>r.path==='.github/workflows/vibe2-recovery-fast.yml'
+              &&queued.has(String(r.status||'').toLowerCase()))
+            .sort((a,b)=>Number(b.id)-Number(a.id));
+          for(const stale of recoveryFastQueued.slice(1))add(stale,'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED');
+
           const centralPush=runs
             .filter(r=>r.path==='.github/workflows/company-development-confirmed-runtime.yml'
               &&String(r.event||'')==='push'
@@ -317,7 +325,7 @@ jobs:
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
             safe_force_cancel=false
-            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' ]]; then
+            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' ]]; then
               safe_force_cancel=true
             fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
