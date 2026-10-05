@@ -202,7 +202,8 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(before.workState.queuedCount, 31);
 
   const reserved = runQueueCommand({ command:'reserve-batch', queue:queueFile, control:controlFile, max:'32', output:batchFile });
-  assert.equal(reserved.tasks.length, 30);
+  assert.equal(reserved.selection?.webGameFlow?.target, 2);
+  assert.equal(reserved.tasks.length, 2);
   assert.equal(reserved.tasks.some(task=>task.id==='e2e-01'),false);
   assert.equal(reserved.selection?.lane,'game-primary');
   assert.ok(reserved.selection?.laneDeferred?.some(task=>task.id==='e2e-01'));
@@ -227,8 +228,8 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
   assert.equal(after.parallelism.currentPersistentMax, 30);
-  assert.equal(after.workState.queuedCount, 1);
-  assert.equal(after.workState.blockedCount, 30);
+  assert.equal(after.workState.queuedCount, 29);
+  assert.equal(after.workState.blockedCount, 2);
   assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));
 });
 
