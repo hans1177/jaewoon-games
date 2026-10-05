@@ -488,7 +488,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       qualityInputs.set(evidenceRef,axes&&typeof axes==='object'&&!Array.isArray(axes)?axes:null);
     }
     const axes=qualityInputs.get(evidenceRef);
-    return axes?{...asset,internalAuditEvidence:{...axes,...(asset.internalAuditEvidence||{})}}:asset;
+    return axes?{...asset,internalAuditEvidence:{...(asset.internalAuditEvidence||{}),...axes}}:asset;
   });
   const synchronizedCount=(packId,fallback=0)=>{
     const row=syncRows.find(item=>item.packId===packId);

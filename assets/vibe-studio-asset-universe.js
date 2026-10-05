@@ -1818,7 +1818,10 @@ function internalAssetMaintenanceRoleTokens(asset={}){
 }
 function internalAssetMaintenanceQuality(asset={}){
   const audit=scoreInternalAssetAudit1000({asset});
-  if(audit.measuredAxisCount>0)return Number(audit.score);
+  if(audit.applicableAxes.some(axis=>{
+    const value=internalAssetAuditEvidenceValue(asset.internalAuditEvidence||{},axis);
+    return typeof value==='number'&&Number.isFinite(value);
+  }))return Number(audit.score);
   const declared=asset?.internalAuditScore;
   return typeof declared==='number'&&Number.isFinite(declared)
     ?Math.round(clamp(declared,0,INTERNAL_ASSET_AUDIT_MAX)*10)/10:null;

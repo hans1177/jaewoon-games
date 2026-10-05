@@ -4409,6 +4409,23 @@ test('catalog-driven company asset registry synchronization is persistent only w
 });
 
 
+test('maintenance refresh uses current evidence file axes before cached registry scores',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-evidence-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets/evidence.json'),JSON.stringify({sourceAudit:{axes:{DETAIL_FINISH:0}}}));
+    const registry={version:1,assets:[{id:'box',family:'PROP',platform:'ROBLOX',path:'assets/box.luau',internalAuditAxes:['DETAIL_FINISH'],internalAuditScore:1000,internalAuditEvidence:{DETAIL_FINISH:100},internalAuditEvidenceRef:'assets/evidence.json'}]};
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
+    const action=first.registry.internalAssetLibraryAutomation.nextQualityActions.find(row=>row.assetId==='box');
+    assert.equal(action.weakestAxis,'DETAIL_FINISH');
+    assert.equal(action.currentAxisScore,0);
+    assert.equal(action.kind,'IMPROVE_ASSET_DETAIL');
+    assert.equal(first.registry.internalAssetLibraryAutomation.maintenance.qualityDonorCandidates.find(row=>row.id==='box').quality,0);
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
+    assert.equal(second.changed,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('canonical company asset registry is dry-run synchronization idempotent',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
