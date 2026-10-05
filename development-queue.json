@@ -63,7 +63,7 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
@@ -94,17 +94,17 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "43621b7e5d0a7d205b5d6a0711bf2e2110299662",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "43621b7e5d0a7d205b5d6a0711bf2e2110299662",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-05T17:51:35.977Z",
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -146,10 +146,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -564,16 +564,16 @@
       "unityGeneratedAssetRuntimeBindingPassed": false,
       "unityAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "43621b7e5d0a7d205b5d6a0711bf2e2110299662",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "daechung-rpg",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "43621b7e5d0a7d205b5d6a0711bf2e2110299662",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37349585223,
-        "testedAt": "2026-10-05T17:51:35.977Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -625,8 +625,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+          "libraryVersion": 113,
+          "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -704,8 +704,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -1112,9 +1114,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "bbdd84694d06ff581f475419d9cd3e03f1db32bc",
+        "sourceTreeSha": "7a8dcafec065023ff00e14c5b817c006eb8c1daf",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "d9ee813f8ff9bfeeb587bfb8758c32cbc698f0d265bc266cf48b09c233afe7d8",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -1135,8 +1137,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": null
             }
           },
@@ -1146,8 +1148,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -1163,8 +1165,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -1180,8 +1182,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -1197,8 +1199,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -1214,8 +1216,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -1231,8 +1233,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -1248,8 +1250,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -1265,8 +1267,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -1282,8 +1284,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -1299,14 +1301,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -1316,8 +1320,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -1333,8 +1337,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -1350,8 +1354,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "df877573532372ca38198b51893537a88b96ac896f31bb1f643b83ab1f553495",
+              "libraryVersion": 113,
+              "selectionFingerprint": "86051e385f1ba632f3ec06ef2d04fde775489d3df74ddf238d54bfb16f746959",
               "familyResult": null
             }
           }
@@ -6675,24 +6679,24 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "8fed601b16baee686c090a87316ca2d4800adffa",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "8fed601b16baee686c090a87316ca2d4800adffa",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -6735,9 +6739,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -6781,16 +6785,16 @@
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "8fed601b16baee686c090a87316ca2d4800adffa",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "village-dungeons",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "8fed601b16baee686c090a87316ca2d4800adffa",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37348395858,
-        "testedAt": "2026-10-05T17:51:23.187Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -6842,8 +6846,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+          "libraryVersion": 113,
+          "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -6921,8 +6925,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -7329,9 +7335,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "5e9529f04c348d8314b84b54095075958ae3289f",
+        "sourceTreeSha": "bfbf9df46cbde50e4adf8b74bbb9c4d84e1a09bb",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "838045e95bffd406106710dc8088fcc5ad4cce93d16acd1aa78bbef9bd6c2bf6",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -7352,8 +7358,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": null
             }
           },
@@ -7363,8 +7369,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -7380,8 +7386,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -7397,8 +7403,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -7414,8 +7420,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -7431,8 +7437,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -7448,8 +7454,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -7465,8 +7471,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -7482,8 +7488,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -7499,8 +7505,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -7516,14 +7522,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -7533,8 +7541,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -7550,8 +7558,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -7567,8 +7575,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "111d32f2c96001844b93f4ca13279dd4a50268f19155951f1e09221be01d1e61",
+              "libraryVersion": 113,
+              "selectionFingerprint": "87a4b33101d9da048a7f122792f8e4e1d4ac8f91f785a4918d730fe1e16adcd3",
               "familyResult": null
             }
           }
@@ -10201,24 +10209,24 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "1e12c8c58ce02338dd9a193b800bf050842b5409",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxBuildSourceRevision": "1e12c8c58ce02338dd9a193b800bf050842b5409",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-05T17:51:23.187Z",
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -10263,7 +10271,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -10389,16 +10397,16 @@
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-10-05T06:08:58.128Z",
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "1e12c8c58ce02338dd9a193b800bf050842b5409",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "fantasy-survival",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "1e12c8c58ce02338dd9a193b800bf050842b5409",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37348395858,
-        "testedAt": "2026-10-05T17:51:23.187Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -10450,8 +10458,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+          "libraryVersion": 113,
+          "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -10529,8 +10537,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -10937,9 +10947,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "8e38e92399bf5df63a02d493657d1993ea3173f7",
+        "sourceTreeSha": "fa690cb6cfa3fb75285c3413c4ba08a6289e0405",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "aee074852817a4d95ed1f9f375a71e56888f5ec18eae7152f92a38008eb86c21",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -10960,8 +10970,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": null
             }
           },
@@ -10971,8 +10981,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -10988,8 +10998,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -11005,8 +11015,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -11022,8 +11032,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -11039,8 +11049,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -11056,8 +11066,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -11073,8 +11083,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -11090,8 +11100,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -11107,8 +11117,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -11124,14 +11134,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -11141,8 +11153,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -11158,8 +11170,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -11175,8 +11187,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "90ec900573c4bde66b38faa386f8b80840401b1e3f3b20cd1425c94a2797bebb",
+              "libraryVersion": 113,
+              "selectionFingerprint": "1013ee1714665c38f9f3ae957a849ada9be9e35054d158aed91f789ef106b88a",
               "familyResult": null
             }
           }
@@ -11906,24 +11918,24 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "4e162f884fc1232e2a9056babb83c809437f2e84",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxBuildSourceRevision": "4e162f884fc1232e2a9056babb83c809437f2e84",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-05T17:51:23.187Z",
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -11968,7 +11980,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -12167,16 +12179,16 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "4e162f884fc1232e2a9056babb83c809437f2e84",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "monster-adventure",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "4e162f884fc1232e2a9056babb83c809437f2e84",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37348395858,
-        "testedAt": "2026-10-05T17:51:23.187Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -12228,8 +12240,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+          "libraryVersion": 113,
+          "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -12307,8 +12319,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -12715,9 +12729,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "dcf83cc2c7cfa962e4a4f088c3c3ccba57d01e56",
+        "sourceTreeSha": "241d9e65b77ee5ef78b2cc4b7951f67ddc58869a",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "3a16f998c7902a74d93ea442f4e86f3f3c02da506538c9af5f4c7836108710f4",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -12738,8 +12752,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": null
             }
           },
@@ -12749,8 +12763,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -12766,8 +12780,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -12783,8 +12797,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -12800,8 +12814,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -12817,8 +12831,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -12834,8 +12848,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -12851,8 +12865,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -12868,8 +12882,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -12885,8 +12899,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -12902,14 +12916,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -12919,8 +12935,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -12936,8 +12952,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -12953,8 +12969,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "1afb4b054942d546f6cdf872174dd270bcaad5c138adc6f6eeda9ec11cdfa67f",
+              "libraryVersion": 113,
+              "selectionFingerprint": "46920742fcc2f54713a443e553e6d67201cd36c3d8733b66dee1739e6876d573",
               "familyResult": null
             }
           }
@@ -13528,24 +13544,24 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxBuildSourceRevision": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-05T17:51:23.187Z",
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -13590,7 +13606,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:worker-result-missing"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -13789,16 +13805,16 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37348395858,
-        "testedAt": "2026-10-05T17:51:23.187Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -13850,8 +13866,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+          "libraryVersion": 113,
+          "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -13929,8 +13945,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -14337,9 +14355,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "85943e1de43e7002a01589a3ce055bfb5d276d83",
+        "sourceTreeSha": "ee37dccb7502bd1f6f514a10a1d3c995be6373a1",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "fe2808022fcef7bf6fec35f1bf96173cd9161776ef1e1a93cb72751280cc8457",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -14360,8 +14378,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": null
             }
           },
@@ -14371,8 +14389,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -14388,8 +14406,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -14405,8 +14423,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -14422,8 +14440,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -14439,8 +14457,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -14456,8 +14474,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -14473,8 +14491,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -14490,8 +14508,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -14507,8 +14525,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -14524,14 +14542,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -14541,8 +14561,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -14558,8 +14578,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -14575,8 +14595,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6f29e4c5205d425c7a3ffbc0aab0b00f3a1784a09a564e309e775def7248c95e",
+              "libraryVersion": 113,
+              "selectionFingerprint": "b1798b079c8c23a44d799612b586acf5547245a95a45bf6cd899ca78cb21792e",
               "familyResult": null
             }
           }
@@ -15142,24 +15162,24 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
       "robloxSourceBootstrapPassedAt": "2026-10-05T17:59:11.606Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -15202,9 +15222,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -15458,16 +15478,16 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-casual-realm-weaver",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "77bdf491845b5d1b823bb68c18dbb70efdc713f8",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37348395858,
-        "testedAt": "2026-10-05T17:51:23.187Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -15519,8 +15539,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+          "libraryVersion": 113,
+          "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -15598,8 +15618,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -16006,9 +16028,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "b517cfcc6910021f4ef6b9492ddfd6cc9513da13",
+        "sourceTreeSha": "74f18f0910e3c90b871d2079a6beac50160e61f9",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "12a90b83b0749339f02d1c3a6ca0f5ae0b4a53d7adeaa47944a2d50e7336f906",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -16029,8 +16051,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": null
             }
           },
@@ -16040,8 +16062,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -16057,8 +16079,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -16074,8 +16096,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -16091,8 +16113,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -16108,8 +16130,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -16125,8 +16147,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -16142,8 +16164,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -16159,8 +16181,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -16176,8 +16198,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -16193,14 +16215,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -16210,8 +16234,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -16227,8 +16251,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -16244,8 +16268,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "fb6aace89dff8b164ab247ef9861e92374a0704bfa9e17e58f2d195329450b40",
+              "libraryVersion": 113,
+              "selectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
               "familyResult": null
             }
           }
@@ -25312,24 +25336,24 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T18:05:38.897Z",
+      "updatedAt": "2026-10-05T18:05:58.295Z",
       "robloxSourceCommit": "7a2601e8f7ad60d6ae14ea270839b77194cee873",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:05:38.897Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "7a2601e8f7ad60d6ae14ea270839b77194cee873",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-05T17:51:23.187Z",
+      "robloxBuildFailedAt": "2026-10-05T18:05:58.295Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -25371,10 +25395,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -25573,16 +25597,16 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+      "robloxQualityBuildUpSourceRevision": "7a2601e8f7ad60d6ae14ea270839b77194cee873",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "survival",
-        "sourceRevision": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
+        "sourceRevision": "7a2601e8f7ad60d6ae14ea270839b77194cee873",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37348395858,
-        "testedAt": "2026-10-05T17:51:23.187Z",
+        "workflowRunId": 37350998283,
+        "testedAt": "2026-10-05T18:05:58.295Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED",
           "ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER",
@@ -25634,8 +25658,8 @@
           "familyCoverageCount": 12,
           "requiredFamilyCount": 12,
           "selectedAtomCount": 360,
-          "libraryVersion": 112,
-          "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+          "libraryVersion": 113,
+          "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
           "allFamiliesAutoSelected": true,
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": false,
@@ -25713,8 +25737,10 @@
               "family": "UI",
               "status": null,
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "MOTION",
@@ -26121,9 +26147,9 @@
           "productionVerified": false,
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "e22dbfecc25b3d8e2299980a2ba05d5a2d5fc865",
+        "sourceTreeSha": "7557d933616364d760f217d8f4b90ee2b6140387",
         "assetRepairContext": {
-          "libraryFingerprint": "16202110aaf42ac51029c90333f93ab534e9a397c9018e9a2e426f29e18a9d8f",
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "976cac47f78ba32263c5534ea7e78e27f67d2edd551626e4a00bf98df3382705",
           "validatorFingerprint": "259d2ebf07e0d6de2efd1123a9ec2aed5ea2f2d272cb6e326181c1565350ab6f"
         },
@@ -26144,8 +26170,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": null
             }
           },
@@ -26155,8 +26181,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "CHARACTER",
                 "status": null,
@@ -26172,8 +26198,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "CREATURE",
                 "status": null,
@@ -26189,8 +26215,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "BUILDING",
                 "status": null,
@@ -26206,8 +26232,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "ENVIRONMENT",
                 "status": null,
@@ -26223,8 +26249,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "WEAPON",
                 "status": null,
@@ -26240,8 +26266,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "SKILL",
                 "status": null,
@@ -26257,8 +26283,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "MATERIAL",
                 "status": null,
@@ -26274,8 +26300,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "AUDIO",
                 "status": null,
@@ -26291,8 +26317,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "VFX",
                 "status": null,
@@ -26308,14 +26334,16 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "UI",
                 "status": null,
                 "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
+                "actualBinding": true,
+                "boundFiles": [
+                  "client/Game.client.luau"
+                ]
               }
             }
           },
@@ -26325,8 +26353,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "MOTION",
                 "status": null,
@@ -26342,8 +26370,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": {
                 "family": "PROP",
                 "status": null,
@@ -26359,8 +26387,8 @@
             "priority": "P0",
             "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "libraryVersion": 112,
-              "selectionFingerprint": "6a54876c42aacdab2d9eecbf028423237b884268a7f20f4eddadd8237f6be546",
+              "libraryVersion": 113,
+              "selectionFingerprint": "15aa68b54c7f7e7e070270b3f128293967d30cd5f6172702d6f441265dc49ca5",
               "familyResult": null
             }
           }
@@ -26873,7 +26901,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T18:05:51.316Z",
+  "updatedAt": "2026-10-05T18:05:58.295Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -26940,5 +26968,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
