@@ -43,10 +43,32 @@
       "lastMs": 12728,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
       "updatedAt": "2026-10-05T07:50:42.901Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 52279,
+      "lastMs": 28939,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-05T07:50:59.112Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 31395,
+      "lastMs": 31395,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-05T07:51:01.568Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T07:50:30.015Z",
-  "updatedAt": "2026-10-05T07:50:42.901Z"
+  "updatedAt": "2026-10-05T07:51:01.568Z"
 }
