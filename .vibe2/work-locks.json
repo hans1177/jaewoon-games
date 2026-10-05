@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-bv0139",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-existing-web-assessment-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      ],
+      "baseSha": "f6627f156cf6c166b71026ac2ada6bef89d03d38",
+      "runId": "37281157024",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T08:11:32.738Z",
+      "expiresAt": "2026-10-05T08:56:32.738Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
