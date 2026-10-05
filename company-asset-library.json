@@ -1,5 +1,5 @@
 {
-  "version": 106,
+  "version": 107,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -207,7 +207,7 @@
       "path": "/assets/insect-main-v3.webp",
       "license": "project-original",
       "note": "실제 repo 자산 · 게임별 변형 기준 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDIT_COMPLETE",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -220,8 +220,48 @@
         "GAMEPLAY_CAMERA_SCALE",
         "STYLE_COHERENCE"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "KEEP_AS_REFERENCE_AND_REAUDIT_ON_SOURCE_OR_QUALITY_CRITERIA_CHANGE",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "scope": "STATIC_REFERENCE_IMAGE_ONLY",
+        "reviewedAt": "2026-10-05",
+        "reviewedMainSha": "29466180136b8c76f27b54b0a98d340a7fcbf5c1",
+        "sourcePath": "assets/insect-main-v3.webp",
+        "sourceBlobSha": "4275443c3c177e3bff091039cde8e13508c1a04c",
+        "score": 928.6,
+        "maxScore": 1000,
+        "grade": "HERO",
+        "scoreType": "REFERENCE_VISUAL_QUALITY_1000_NOT_BINDING_SCORE",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 94,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 94,
+          "COLOR_LIGHTING": 97,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 95,
+          "READABILITY_SCALE": 94,
+          "VARIATION_BREADTH": 84,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 86
+        },
+        "strengths": [
+          "곤충 종별 실루엣 구분",
+          "재질과 표면 디테일",
+          "밝은 환경에서의 주 피사체 가독성",
+          "생존 세계의 전경·중경·후경 참고"
+        ],
+        "limitations": [
+          "정적 참고 이미지라 리그·애니메이션 증거 없음",
+          "네이티브 캐릭터 자산 아님",
+          "실제 게임 카메라·모바일 런타임 증거 없음"
+        ],
+        "selectionScoreAffecting": false,
+        "internalAuditScoreWritten": false,
+        "productionPassClaimed": false,
+        "runtimePassClaimed": false,
+        "referenceUseOnly": true
+      }
     },
     {
       "id": "insect-war-v2",
@@ -232,7 +272,7 @@
       "path": "/assets/insect-war-v2.webp",
       "license": "project-original",
       "note": "전투 캐릭터/적 실루엣 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDIT_COMPLETE",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -245,8 +285,48 @@
         "GAMEPLAY_CAMERA_SCALE",
         "STYLE_COHERENCE"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "KEEP_AS_REFERENCE_AND_REAUDIT_ON_SOURCE_OR_QUALITY_CRITERIA_CHANGE",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "scope": "STATIC_REFERENCE_IMAGE_ONLY",
+        "reviewedAt": "2026-10-05",
+        "reviewedMainSha": "29466180136b8c76f27b54b0a98d340a7fcbf5c1",
+        "sourcePath": "assets/insect-war-v2.webp",
+        "sourceBlobSha": "e2d626e412421161b44cc8e2c40f0f5967ab3860",
+        "score": 935.4,
+        "maxScore": 1000,
+        "grade": "HERO",
+        "scoreType": "REFERENCE_VISUAL_QUALITY_1000_NOT_BINDING_SCORE",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 95,
+          "FORM_STRUCTURE": 93,
+          "MATERIAL_SURFACE": 94,
+          "COLOR_LIGHTING": 97,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 94,
+          "READABILITY_SCALE": 92,
+          "VARIATION_BREADTH": 92,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 86
+        },
+        "strengths": [
+          "다수 곤충 전투 역할 구분",
+          "전투 밀도와 진영 실루엣 참고",
+          "건축물·유닛·투사체 층위 표현",
+          "색상과 조명 일관성"
+        ],
+        "limitations": [
+          "화면 밀도가 높아 작은 모바일 화면에서는 일부 실루엣 중첩",
+          "정적 참고 이미지라 모션·피격 타이밍 증거 없음",
+          "네이티브 유닛 자산 아님"
+        ],
+        "selectionScoreAffecting": false,
+        "internalAuditScoreWritten": false,
+        "productionPassClaimed": false,
+        "runtimePassClaimed": false,
+        "referenceUseOnly": true
+      }
     },
     {
       "id": "fantasy-rpg-v2",
@@ -257,7 +337,7 @@
       "path": "/assets/fantasy-rpg-v2.webp",
       "license": "project-original",
       "note": "판타지 캐릭터·환경 방향 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDIT_COMPLETE",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -270,8 +350,48 @@
         "GAMEPLAY_CAMERA_SCALE",
         "STYLE_COHERENCE"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "KEEP_AS_REFERENCE_AND_REAUDIT_ON_SOURCE_OR_QUALITY_CRITERIA_CHANGE",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "scope": "STATIC_REFERENCE_IMAGE_ONLY",
+        "reviewedAt": "2026-10-05",
+        "reviewedMainSha": "29466180136b8c76f27b54b0a98d340a7fcbf5c1",
+        "sourcePath": "assets/fantasy-rpg-v2.webp",
+        "sourceBlobSha": "c6094c1e523c23f3d87fdf3fc76fb2482d597d88",
+        "score": 924.6,
+        "maxScore": 1000,
+        "grade": "HERO",
+        "scoreType": "REFERENCE_VISUAL_QUALITY_1000_NOT_BINDING_SCORE",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 93,
+          "FORM_STRUCTURE": 91,
+          "MATERIAL_SURFACE": 94,
+          "COLOR_LIGHTING": 96,
+          "STYLE_COHERENCE": 95,
+          "DETAIL_FINISH": 94,
+          "READABILITY_SCALE": 95,
+          "VARIATION_BREADTH": 82,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 88
+        },
+        "strengths": [
+          "주인공 실루엣과 장비 층위",
+          "포털·랜드마크 시선 유도",
+          "캐릭터와 환경 스타일 일치",
+          "판타지 재질·광원 참고"
+        ],
+        "limitations": [
+          "단일 대표 장면이라 캐릭터 변형 폭 증거 제한",
+          "정적 이미지라 리그·모션 증거 없음",
+          "실제 UI·게임플레이 런타임 증거 없음"
+        ],
+        "selectionScoreAffecting": false,
+        "internalAuditScoreWritten": false,
+        "productionPassClaimed": false,
+        "runtimePassClaimed": false,
+        "referenceUseOnly": true
+      }
     },
     {
       "id": "card-rpg-v2",
@@ -282,7 +402,7 @@
       "path": "/assets/card-rpg-v2.webp",
       "license": "project-original",
       "note": "UI/카드 표현 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDIT_COMPLETE",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -295,8 +415,48 @@
         "STYLE_COHERENCE",
         "MOBILE_LEGIBILITY"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "KEEP_AS_REFERENCE_AND_REAUDIT_ON_SOURCE_OR_QUALITY_CRITERIA_CHANGE",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "scope": "STATIC_REFERENCE_IMAGE_ONLY",
+        "reviewedAt": "2026-10-05",
+        "reviewedMainSha": "29466180136b8c76f27b54b0a98d340a7fcbf5c1",
+        "sourcePath": "assets/card-rpg-v2.webp",
+        "sourceBlobSha": "5c02a6ac215cebf718d7292e790476c8ad9ae7e6",
+        "score": 924,
+        "maxScore": 1000,
+        "grade": "HERO",
+        "scoreType": "REFERENCE_VISUAL_QUALITY_1000_NOT_BINDING_SCORE",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 92,
+          "FORM_STRUCTURE": 91,
+          "MATERIAL_SURFACE": 93,
+          "COLOR_LIGHTING": 96,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 94,
+          "READABILITY_SCALE": 94,
+          "VARIATION_BREADTH": 86,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 88
+        },
+        "strengths": [
+          "카드 프레임과 캐릭터 시각 계층",
+          "전경 캐릭터와 카드 정보 분리",
+          "밝은 배경에서도 핵심 카드 강조",
+          "RPG 카드 연출 방향 참고"
+        ],
+        "limitations": [
+          "실제 UI 컴포넌트 라이브러리 아님",
+          "터치·키보드·게임패드 상태 증거 없음",
+          "선택·잠금·오류 등 상호작용 상태 증거 없음"
+        ],
+        "selectionScoreAffecting": false,
+        "internalAuditScoreWritten": false,
+        "productionPassClaimed": false,
+        "runtimePassClaimed": false,
+        "referenceUseOnly": true
+      }
     },
     {
       "id": "crystal-v2",
@@ -307,7 +467,7 @@
       "path": "/assets/crystal-v2.webp",
       "license": "project-original",
       "note": "재질·발광·보상 연출 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDIT_COMPLETE",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -320,8 +480,48 @@
         "STYLE_COHERENCE",
         "MOBILE_DENSITY"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "KEEP_AS_REFERENCE_AND_REAUDIT_ON_SOURCE_OR_QUALITY_CRITERIA_CHANGE",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "scope": "STATIC_REFERENCE_IMAGE_ONLY",
+        "reviewedAt": "2026-10-05",
+        "reviewedMainSha": "29466180136b8c76f27b54b0a98d340a7fcbf5c1",
+        "sourcePath": "assets/crystal-v2.webp",
+        "sourceBlobSha": "dd6e26c5f2a8a03738e1ac997cc2042b0a7cfff3",
+        "score": 920.2,
+        "maxScore": 1000,
+        "grade": "HERO",
+        "scoreType": "REFERENCE_VISUAL_QUALITY_1000_NOT_BINDING_SCORE",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 90,
+          "FORM_STRUCTURE": 91,
+          "MATERIAL_SURFACE": 93,
+          "COLOR_LIGHTING": 97,
+          "STYLE_COHERENCE": 95,
+          "DETAIL_FINISH": 93,
+          "READABILITY_SCALE": 92,
+          "VARIATION_BREADTH": 88,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 86
+        },
+        "strengths": [
+          "중앙 크리스탈 시선 집중",
+          "발광·마법 에너지 색상 언어",
+          "전투 유닛과 방어 구조의 거리 계층",
+          "보상·핵심 오브젝트 VFX 방향 참고"
+        ],
+        "limitations": [
+          "런타임 VFX 원자 자산 아님",
+          "예고·충돌·회복 타이밍 증거 없음",
+          "파티클 수·모바일 프레임 비용 증거 없음"
+        ],
+        "selectionScoreAffecting": false,
+        "internalAuditScoreWritten": false,
+        "productionPassClaimed": false,
+        "runtimePassClaimed": false,
+        "referenceUseOnly": true
+      }
     },
     {
       "id": "page-bg-v4",
@@ -332,7 +532,7 @@
       "path": "/assets/page-bg-v4.webp",
       "license": "project-original",
       "note": "전경/중경/후경 배경 구성 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDIT_COMPLETE",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -345,8 +545,48 @@
         "STYLE_COHERENCE",
         "MOBILE_CLUTTER"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "KEEP_AS_REFERENCE_AND_REAUDIT_ON_SOURCE_OR_QUALITY_CRITERIA_CHANGE",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "scope": "STATIC_REFERENCE_IMAGE_ONLY",
+        "reviewedAt": "2026-10-05",
+        "reviewedMainSha": "29466180136b8c76f27b54b0a98d340a7fcbf5c1",
+        "sourcePath": "assets/page-bg-v4.webp",
+        "sourceBlobSha": "49ef791b0860af1a39eebba87264b4a7286fcd33",
+        "score": 931.1,
+        "maxScore": 1000,
+        "grade": "HERO",
+        "scoreType": "REFERENCE_VISUAL_QUALITY_1000_NOT_BINDING_SCORE",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 89,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 93,
+          "COLOR_LIGHTING": 98,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 95,
+          "READABILITY_SCALE": 95,
+          "VARIATION_BREADTH": 88,
+          "PROVENANCE_MAINTAINABILITY": 98,
+          "INTEGRATION_READINESS": 90
+        },
+        "strengths": [
+          "전경·중경·후경 깊이",
+          "성·마을·수로 랜드마크 가독성",
+          "세로 화면 배경 구성",
+          "밝은 판타지 색상·대기 원근 참고"
+        ],
+        "limitations": [
+          "정적 배경 참고 이미지",
+          "스트리밍·LOD·충돌·이동 경로 증거 없음",
+          "시간대·날씨 변형 런타임 증거 없음"
+        ],
+        "selectionScoreAffecting": false,
+        "internalAuditScoreWritten": false,
+        "productionPassClaimed": false,
+        "runtimePassClaimed": false,
+        "referenceUseOnly": true
+      }
     },
     {
       "id": "bug-defense-hero",
@@ -68944,7 +69184,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 106,
+    "lastCatalogSynchronizedVersion": 107,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -79298,7 +79538,7 @@
       "lastChangeFingerprint": "1e5874b8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 106
+      "synchronizedRegistryVersion": 107
     },
     "studioVariationAxes": {
       "BUILDING": [
