@@ -108,10 +108,13 @@ end
 // Geometry and poses come from official Luau; this is not a Studio/runtime pass.
 const environmentPath=path.join(root,'../common-environment-v1/RobloxCommonEnvironment.luau');
 const environmentCatalog=JSON.parse(fs.readFileSync(path.join(root,'../common-environment-v1/catalog.json'),'utf8'));
+const commonMotionCatalog=JSON.parse(fs.readFileSync(path.join(root,'../common-motion-v1/catalog.json'),'utf8'));
 const environmentSource=fs.readFileSync(environmentPath,'utf8');
 const gallerySources=[{file:'assets/roblox/world-ghosts/build-native.mjs',sha256:digest(fs.readFileSync(fileURLToPath(import.meta.url)))},...sources.map(row=>({file:'assets/roblox/world-ghosts/'+row.file,sha256:row.sha256})),
  {file:'assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',sha256:digest(environmentSource)},
- {file:'assets/roblox/common-environment-v1/catalog.json',sha256:digest(fs.readFileSync(path.join(root,'../common-environment-v1/catalog.json')))}];
+ {file:'assets/roblox/common-environment-v1/catalog.json',sha256:digest(fs.readFileSync(path.join(root,'../common-environment-v1/catalog.json')))},
+ {file:'assets/roblox/common-motion-v1/RobloxCommonMotion.luau',sha256:digest(fs.readFileSync(path.join(root,'../common-motion-v1/RobloxCommonMotion.luau')))},
+ {file:'assets/roblox/common-motion-v1/catalog.json',sha256:digest(fs.readFileSync(path.join(root,'../common-motion-v1/catalog.json')))}];
 const galleryFingerprint=digest(JSON.stringify(gallerySources));
 function executeSamples(source){
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'asset-gallery-'));
@@ -185,7 +188,8 @@ function publishRow(row,kind){
   path:'/assets/roblox/world-ghosts/native/gallery/'+file,sha256:digest(bytes),bytes:Buffer.byteLength(bytes)};
 }
 const gallery={...metadata,sources:gallerySources,monsters:monsters.map(row=>publishRow(row,'monster')),
- environments:environments.map(row=>publishRow(row,'environment'))};
+ environments:environments.map(row=>publishRow(row,'environment')),
+ commonMotions:commonMotionCatalog.atoms.map(atom=>({id:atom.atomId.toLowerCase(),atomId:atom.atomId,priority:atom.priority,duration:atom.duration,looped:atom.looped,motionRole:atom.motionRole||atom.combatRole||null,source:'assets/roblox/common-motion-v1/RobloxCommonMotion.luau'}))};
 // Remove only obsolete generated shards owned by this build.
 for(const file of fs.readdirSync(galleryDir))if(/^(monster|environment)-[a-z0-9-]+\.json$/.test(file)&&!keep.has(file))fs.unlinkSync(path.join(galleryDir,file));
 fs.writeFileSync(path.join(output,'asset-gallery.json'),JSON.stringify(gallery)+'\n');
