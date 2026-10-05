@@ -25,6 +25,7 @@ test('Roblox package evidence proves build only and never invents later validati
       familyCount:12,
       selectedAtomCount:36,
       primitiveOnlyVisualsForbidden:true,
+      allLibrariesAutoLoaded:true,
     },
     internalLibraryInventory:{
       pass:true,
@@ -40,6 +41,7 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.internalAssetContractVersion,ROBLOX_PACKAGE_TOOL.internalAssetContractVersion);
   assert.equal(evidence.internalAssetFamilyCount,12);
   assert.equal(evidence.primitiveOnlyVisualsForbidden,true);
+  assert.equal(evidence.internalLibraryAutoLoadPassed,true);
   assert.equal(evidence.internalLibraryModulesPackaged,true);
   assert.equal(evidence.internalLibraryRequiredModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
   assert.equal(evidence.internalLibraryPackagedModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
@@ -77,6 +79,7 @@ test('Roblox build preflight requires all internal asset source families and pac
     },
     robloxBuildInternalAssetContractVersion:ROBLOX_PACKAGE_TOOL.internalAssetContractVersion,
     robloxBuildInternalAssetBindingPassed:true,
+    robloxBuildInternalLibraryAutoLoadPassed:true,
     robloxBuildInternalLibraryModulesPackaged:true,
     robloxBuildInternalLibraryRequiredModuleCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
     robloxBuildInternalLibraryPackagedModuleCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
@@ -86,12 +89,13 @@ test('Roblox build preflight requires all internal asset source families and pac
   assert.equal(pass.pass,true);
   assert.equal(pass.build.internalAssetSourceBindingComplete,true);
   assert.equal(pass.build.internalAssetPackageBindingPassed,true);
+  assert.equal(pass.build.internalLibraryAutoLoadPassed,true);
   assert.equal(pass.build.internalLibraryModulesPackaged,true);
   assert.equal(pass.build.internalLibraryPackagedModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
   assert.equal(pass.build.internalAssetMissingFamilies.length,0);
 
   const stale=inspectRobloxBuildPreflight({
-    item:{...item,robloxBuildInternalAssetContractVersion:0,robloxBuildInternalAssetBindingPassed:false},
+    item:{...item,robloxBuildInternalAssetContractVersion:0,robloxBuildInternalAssetBindingPassed:false,robloxBuildInternalLibraryAutoLoadPassed:false},
     directive
   });
   assert.equal(stale.pass,false);
@@ -172,8 +176,15 @@ test('Roblox package artifact requires all internal asset families atoms fingerp
       ']]></ProtectedString></Properties></Item>',
       '<Item class="LocalScript"><Properties><ProtectedString name="Source"><![CDATA[',
       'local STUDIO_ASSET_BINDING_VERSION = 2',
+      'local companyAssetFolder = game:GetService("ReplicatedStorage"):WaitForChild("CompanyAssets")',
+      'local COMPANY_ASSET_LIBRARY_NAMES = {"RobloxCommonUI"}',
+      'local moduleScript = companyAssetFolder:WaitForChild(COMPANY_ASSET_LIBRARY_NAMES[1])',
+      'local ok, library = pcall(require, moduleScript)',
+      'if not ok then error("ROBLOX_INTERNAL_LIBRARY_LOAD_FAILED:" .. tostring(library)) end',
       'local function studioAssetFamily() return {} end',
       'root:SetAttribute("StudioAssetAtoms", "UI_ATOM")',
+      'root:SetAttribute("CompanyAssetLibrariesLoaded", #COMPANY_ASSET_LIBRARY_NAMES)',
+      'root:SetAttribute("CompanyAssetLibraryNames", table.concat(COMPANY_ASSET_LIBRARY_NAMES, ","))',
       'local panel = Instance.new("Frame")',
       ']]></ProtectedString></Properties></Item>',
       '</roblox>'
@@ -194,7 +205,9 @@ test('Roblox package artifact requires all internal asset families atoms fingerp
     const primitive=path.join(root,'primitive.rbxlx');
     fs.writeFileSync(primitive,fs.readFileSync(artifact,'utf8')
       .replace('local function studioAssetFamily() return {} end\n','')
-      .replace('root:SetAttribute("StudioAssetAtoms", "UI_ATOM")\n',''));
+      .replace('root:SetAttribute("StudioAssetAtoms", "UI_ATOM")\n','')
+      .replace('root:SetAttribute("CompanyAssetLibrariesLoaded", #COMPANY_ASSET_LIBRARY_NAMES)\n','')
+      .replace('root:SetAttribute("CompanyAssetLibraryNames", table.concat(COMPANY_ASSET_LIBRARY_NAMES, ","))\n',''));
     assert.throws(
       ()=>validateRobloxArtifactInternalAssetBinding({artifactPath:primitive,expectedPlan}),
       /ROBLOX_INTERNAL_ASSET_PACKAGE_RUNTIME_BINDING_REQUIRED|ROBLOX_PLAIN_PRIMITIVE_PACKAGE_FORBIDDEN/
