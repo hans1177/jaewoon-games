@@ -1,5 +1,5 @@
 {
-  "version": 529,
+  "version": 530,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -16115,8 +16115,26 @@
         "productionWorkPreemptsIdleGapFill": true
       },
       "studioMotionProgram": {
-        "version": 3,
+        "version": 4,
         "target": "STUDIO_GRADE_GAME_MOTION",
+        "baseQualityWorkSession": {
+          "defaultMinutes": 60,
+          "executionLane": "ASSET_DEVELOPMENT",
+          "priority": "EXISTING_BASIC_MOTION_AND_ACTION_QUALITY_FIRST",
+          "priorityAtoms": ["IDLE_RELAXED", "WALK", "JOG", "RUN", "SPRINT", "START", "STOP", "TURN_90", "JUMP_START", "LAND", "HIT_FRONT", "LIGHT_ATTACK_1", "HEAVY_ATTACK_1"],
+          "stageMinutes": {"SOURCE_AND_RIG_REVIEW": 10, "RESPONSIBLE_MOTION_REFINEMENT": 30, "CONTACT_LOOP_TRANSITION_QA": 15, "EVIDENCE_AND_HANDOFF": 5},
+          "existingModelsAndRigRequired": true,
+          "newModelOrMotionCountNotQualityProof": true,
+          "noIdlePaddingToFillBudget": true,
+          "elapsedTimeIsNotQualityEvidence": true,
+          "preserveClipDurationAndExistingEventTimes": true,
+          "ownerOrChatgptPresenceRequired": false,
+          "nativeRuntimeAndBeforeAfterRequiredForQualityPass": true,
+          "missingEvidenceAction": "KEEP_UNVERIFIED_AND_RESUME_EXACT_REVIEW_STAGE",
+          "gamePrimaryTimeoutMinutesUnchanged": 22,
+          "singleModelCallTimeoutUnchanged": true,
+          "newQueueOrWorkflow": false
+        },
         "objective": "FAST_BOOTSTRAP_HUMAN_AND_CREATURE_MOTION_FROM_VERIFIED_EXISTING_OR_EXTERNAL_MOTION_THEN_RETARGET_CLEANUP_AND_RUNTIME_VERIFY_FOR_UNITY_AND_ROBLOX",
         "priorityBootstrap": [
           "HUMANOID_STUDIO_LOCOMOTION",

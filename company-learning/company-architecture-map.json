@@ -1,5 +1,5 @@
 {
-  "version": 312,
+  "version": 313,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3089,6 +3089,11 @@
     },
     "dedicatedExecution": {
       "lane": "ASSET_DEVELOPMENT",
+      "baseMotionQualityWorkSession": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram.baseQualityWorkSession",
+      "assetWorkerTimeoutMinutes": 60,
+      "gamePrimaryWorkerTimeoutMinutes": 22,
+      "basicExistingMotionAndActionFirst": true,
+      "elapsedTimeCannotVerifyMotionQuality": true,
       "scheduler": ".github/workflows/vibe2-24h-runner.yml",
       "executor": ".github/workflows/vibe2-continuous-core.yml",
       "queue": "EXISTING_CANONICAL_VIBE_QUEUE",

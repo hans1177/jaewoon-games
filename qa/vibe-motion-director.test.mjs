@@ -78,6 +78,22 @@ const studioReviewFixture=()=>({
   sameCamera:true,samePlaybackSpeed:true,playerCount:2,runtimeRunId:'fixture-run',gameplayTimingPreserved:true,
   stages:Object.fromEntries(createMotionDirectorPlan().studioProduction.stages.map(stage=>[stage,{pass:true,evidence:'fixture/'+stage}]))
 });
+
+test('basic motion work gets one hour without changing runtime verification or gameplay timing',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const central=policy.assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram.baseQualityWorkSession;
+  for(const platform of ['ROBLOX','UNITY','WEB']){
+    const session=createMotionDirectorPlan({platform}).studioProduction.baseWorkSession;
+    assert.equal(session.defaultMinutes,60);
+    assert.deepEqual(session.stageMinutes,central.stageMinutes);
+    assert.equal(Object.values(session.stageMinutes).reduce((a,b)=>a+b,0),60);
+    assert.equal(session.existingModelsAndRigRequired,true);
+    assert.equal(session.preserveClipDurationAndExistingEventTimes,true);
+    assert.equal(session.elapsedTimeIsNotQualityEvidence,true);
+    assert.equal(session.nativeRuntimeAndBeforeAfterRequiredForQualityPass,true);
+    assert.equal(session.ownerOrChatgptPresenceRequired,false);
+  }
+});
 const observedMotionFixture=()=>({hasHumanoid:true,hasAnimator:true,hasMotor6D:true,visibleLocomotion:true,rootTransformChanges:true,jointTransformChanges:true,playbackSpeedSynced:true,footSlideNormalized:.01,officialStudioRuntimeObserved:true,sourceRevision:'a'.repeat(40),clipVersion:'clip-v1',studioReview:studioReviewFixture()});
 
 function continuityFixture(){return{
@@ -694,7 +710,7 @@ test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
 
 test('asset planner exposes survival wildlife graphics skins and motion previews',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
-  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const {buildVibeAssetProductionPlan,assetProductionGuidance}=await import('../tools/vibe2-asset-production-plan.mjs');
   const plan=buildVibeAssetProductionPlan({
     task:{gameId:'motion-auto-test',goal:'그레이브우드 느낌 생존게임 곰 멧돼지 동물 그래픽 스킨 모션 추가'},
     target:'roblox',
@@ -711,6 +727,10 @@ test('asset planner exposes survival wildlife graphics skins and motion previews
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.playerMotionPreview.nativePath.primary,'ANIMATOR_ANIMATIONTRACK');
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.game,'100 Days in Gravewood');
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.gameplayVideoReferenceVerified,false);
+  assert.equal(plan.companyGraphicsLibrary.baseMotionQualityWorkSession.defaultMinutes,60);
+  assert.equal(plan.companyGraphicsLibrary.baseMotionQualityWorkSession.priority,'EXISTING_BASIC_MOTION_AND_ACTION_QUALITY_FIRST');
+  assert.match(assetProductionGuidance(plan),/\[BASE MOTION QUALITY WORK\]/);
+  assert.match(assetProductionGuidance(plan),/기존 판정 이벤트 시점은 보존/);
 });
 
 test('asset planner auto-detects requested duel weapon and martial style',async()=>{

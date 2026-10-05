@@ -2312,6 +2312,17 @@ export function createStudioMotionActionProfile({
 
 const STUDIO_MOTION_PRODUCTION=Object.freeze({
       status:'PLANNED_NOT_VERIFIED',
+      baseWorkSession:Object.freeze({
+        defaultMinutes:60,
+        priority:'EXISTING_BASIC_MOTION_AND_ACTION_QUALITY_FIRST',
+        stageMinutes:Object.freeze({SOURCE_AND_RIG_REVIEW:10,RESPONSIBLE_MOTION_REFINEMENT:30,CONTACT_LOOP_TRANSITION_QA:15,EVIDENCE_AND_HANDOFF:5}),
+        existingModelsAndRigRequired:true,
+        preserveClipDurationAndExistingEventTimes:true,
+        elapsedTimeIsNotQualityEvidence:true,
+        noIdlePaddingToFillBudget:true,
+        ownerOrChatgptPresenceRequired:false,
+        nativeRuntimeAndBeforeAfterRequiredForQualityPass:true
+      }),
       stages:Object.freeze(['ACTING_BRIEF','RIG_DEFORMATION','KEY_POSES','LOCOMOTION','COMBAT_CONTACT','TRANSITIONS','SECONDARY_ACTING','GAME_CAMERA_REVIEW','MOBILE_MULTIPLAYER_REVIEW']),
       actingBriefFields:Object.freeze(['PERSONALITY','INTENT','WEIGHT','BODY_PLAN','WEAPON','SILHOUETTE','STYLE_REFERENCE']),
       performanceBeatOrder:Object.freeze(['EYE_TARGET','HEAD_ORIENT','BODY_WEIGHT_SHIFT','PRIMARY_ACTION','FOLLOW_THROUGH','SETTLE']),
