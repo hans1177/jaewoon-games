@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1bc3y0u",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/generated/unity/seed-casual-realm-weaver/background/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/background/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/background/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/item/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/item/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/item/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/evidence.json"
+      ],
+      "baseSha": "36cfcac17ec040193519787cafdf79e6c01fed14",
+      "runId": "37298755218",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T10:54:00.894Z",
+      "expiresAt": "2026-10-05T11:39:00.894Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
