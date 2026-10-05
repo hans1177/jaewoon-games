@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g2-eb66772ce86c",
-  "directiveFingerprint": "eb66772ce86c26ab4e4b7aa03421ebbad22330a9ab7d1953db917ee69ebed3ea",
-  "previousDirectiveFingerprint": "43232cca30c215827cf0a07a3c560fd02b1e9b6307f8a5fd0610ac1def6ab538",
-  "forbiddenRepeatFingerprint": "43232cca30c215827cf0a07a3c560fd02b1e9b6307f8a5fd0610ac1def6ab538",
+  "directiveId": "seed-casual-realm-weaver-build-up-g2-96219253041f",
+  "directiveFingerprint": "96219253041f4a53b0f0f6c2811a459e0570c04f921fe1948759d7aa2718c846",
+  "previousDirectiveFingerprint": "eb66772ce86c26ab4e4b7aa03421ebbad22330a9ab7d1953db917ee69ebed3ea",
+  "forbiddenRepeatFingerprint": "eb66772ce86c26ab4e4b7aa03421ebbad22330a9ab7d1953db917ee69ebed3ea",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
   "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "unity-games/seed-casual-realm-weaver",
   "sourceTreeFingerprint": "4a6981413f3e72ee48da6ad11e440984fc71aeb8ed5808387cf8d65fc8a101e2",
-  "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
+  "designFingerprint": "c17ec9a4aa0159f73356c973ff2609725b87c5462c280ab3b7313163e0f93ee0",
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
     "coreFun": "조각을 배치하고 연결할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이'를 경험하는 것입니다.",
@@ -246,9 +246,9 @@
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
     "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "4fbba76ec6324eaac1be0a3f4bf8859cc1d8ae9ca091923dafd42877d74f7c2d",
+    "previousSourceTreeFingerprint": "4a6981413f3e72ee48da6ad11e440984fc71aeb8ed5808387cf8d65fc8a101e2",
     "currentSourceTreeFingerprint": "4a6981413f3e72ee48da6ad11e440984fc71aeb8ed5808387cf8d65fc8a101e2",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1486,8 +1486,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1497,9 +1497,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1537,7 +1538,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 229,
+        "score": 211,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1657,6 +1658,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 2,
+    "previousGeneration": 1,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "4a6981413f3e72ee48da6ad11e440984fc71aeb8ed5808387cf8d65fc8a101e2",
+    "priorSourceFingerprint": "4a6981413f3e72ee48da6ad11e440984fc71aeb8ed5808387cf8d65fc8a101e2",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -1980,6 +2002,87 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "UNITY",
+    "executionSurface": "UNITY_WEB",
+    "mode": "EXISTING_PLAY_PRESENTATION",
+    "gameId": "seed-casual-realm-weaver",
+    "genreProfile": "PUZZLE",
+    "conceptIdentity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
+    "coreAction": "규칙을 읽고 수를 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "approvedCoreLoop": [
+      "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+      "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
+      "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
+      "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다."
+    ],
+    "signatureSystems": [
+      "직조 연결 시스템",
+      "생태계 복원 게이지"
+    ],
+    "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+    "ideas": [
+      {
+        "id": "PUZZLE:PLAY_READABILITY",
+        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "PUZZLE:PLAY_READABILITY",
+      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+    },
+    "ideaHistory": [
+      "PUZZLE:PLAY_READABILITY"
+    ],
+    "implementationPackages": [
+      {
+        "role": "GAMEPLAY_STATE",
+        "files": [
+          "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
+          "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs",
+          "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
+          "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      }
+    ],
+    "sourceTreeFingerprint": "4a6981413f3e72ee48da6ad11e440984fc71aeb8ed5808387cf8d65fc8a101e2",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "UNITY_WEBGL_ACTUAL_BROWSER_PLAY",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": null,
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2099,6 +2202,96 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "WEB",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": []
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "seed-casual-realm-weaver",
+    "platform": "WEB",
+    "plannedFiles": [
+      "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
+      "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs",
+      "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
+      "unity-games/seed-casual-realm-weaver/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/seed-casual-realm-weaver/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/seed-casual-realm-weaver/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/seed-casual-realm-weaver/Assets/Prefabs/unity-web-floor-domain.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "WEB",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": []
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
@@ -2159,7 +2352,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2229,5 +2422,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:25:27.891Z"
+  "generatedAt": "2026-10-05T17:37:10.694Z"
 }

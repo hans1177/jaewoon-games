@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g2-a80dfb6362c0",
-  "directiveFingerprint": "a80dfb6362c0761a275ff6dd435fcd3428a0a4b664889a6c01427934ba77fa75",
-  "previousDirectiveFingerprint": "f1794794d15383ded7c42625443c28ee4ab128b238217b77e4fe43cb3853386e",
-  "forbiddenRepeatFingerprint": "f1794794d15383ded7c42625443c28ee4ab128b238217b77e4fe43cb3853386e",
+  "directiveId": "village-dungeons-build-up-g2-24bf21dfeffa",
+  "directiveFingerprint": "24bf21dfeffa631c02239bd03f88258e88288e5e44f6a3ed7b6a290f800afb75",
+  "previousDirectiveFingerprint": "a80dfb6362c0761a275ff6dd435fcd3428a0a4b664889a6c01427934ba77fa75",
+  "forbiddenRepeatFingerprint": "a80dfb6362c0761a275ff6dd435fcd3428a0a4b664889a6c01427934ba77fa75",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
   "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "unity-games/village-dungeons",
   "sourceTreeFingerprint": "f0dd30ea8788352caead16641b63f8b10f858b30abfd4c78e65a0cb46db232e2",
-  "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
+  "designFingerprint": "c915b5e2afa7f2c4b9b5767a6f020edb0f215c2908fb8e77c16a09789c0d7131",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
     "coreFun": "적의 공격 궤적을 직관적으로 회피하고 연타 공격을 적중시키는 순간의 즉각적인 손맛과 제한된 던전 인벤토리에 어떤 전리품을 챙길지 결정하여 마을 시설의 기술 트리로 환원할 때 일어나는 명확한 전투 스펙 향상의 쾌감이다.",
@@ -247,9 +247,9 @@
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
     "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "6f861ad00fbe042c7c8fa0168b013cc03153271e6b3cee219ea18b19a6ba83e9",
+    "previousSourceTreeFingerprint": "f0dd30ea8788352caead16641b63f8b10f858b30abfd4c78e65a0cb46db232e2",
     "currentSourceTreeFingerprint": "f0dd30ea8788352caead16641b63f8b10f858b30abfd4c78e65a0cb46db232e2",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1488,8 +1488,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1499,9 +1499,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1539,7 +1540,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 229,
+        "score": 211,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1659,6 +1660,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 2,
+    "previousGeneration": 1,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "f0dd30ea8788352caead16641b63f8b10f858b30abfd4c78e65a0cb46db232e2",
+    "priorSourceFingerprint": "f0dd30ea8788352caead16641b63f8b10f858b30abfd4c78e65a0cb46db232e2",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -1982,6 +2004,88 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "UNITY",
+    "executionSurface": "UNITY_WEB",
+    "mode": "EXISTING_PLAY_PRESENTATION",
+    "gameId": "village-dungeons",
+    "genreProfile": "RPG",
+    "conceptIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+    "coreAction": "전투·성장·역할 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "approvedCoreLoop": [
+      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
+    ],
+    "signatureSystems": [
+      "마을 재건 시설 연동 시스템",
+      "리스크 배낭 정밀 적재 시스템"
+    ],
+    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
+    "ideas": [
+      {
+        "id": "RPG:PLAY_READABILITY",
+        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "RPG:PLAY_READABILITY",
+      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+    },
+    "ideaHistory": [
+      "RPG:PLAY_READABILITY"
+    ],
+    "implementationPackages": [
+      {
+        "role": "GAMEPLAY_STATE",
+        "files": [
+          "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
+          "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs",
+          "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs",
+          "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      }
+    ],
+    "sourceTreeFingerprint": "f0dd30ea8788352caead16641b63f8b10f858b30abfd4c78e65a0cb46db232e2",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "UNITY_WEBGL_ACTUAL_BROWSER_PLAY",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": null,
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2101,6 +2205,96 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "WEB",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": []
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "village-dungeons",
+    "platform": "WEB",
+    "plannedFiles": [
+      "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
+      "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs",
+      "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs",
+      "unity-games/village-dungeons/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/village-dungeons/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/village-dungeons/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/village-dungeons/Assets/Prefabs/unity-web-floor-domain.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "WEB",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": []
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
@@ -2161,7 +2355,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2229,5 +2423,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:25:27.998Z"
+  "generatedAt": "2026-10-05T17:37:10.908Z"
 }

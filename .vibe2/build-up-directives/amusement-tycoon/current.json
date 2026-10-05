@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g23-ce4647be6bde",
-  "directiveFingerprint": "ce4647be6bdeebd3c0ea823793979a28e80ab84bd3e3e9ba2dbd3da99c6985e5",
-  "previousDirectiveFingerprint": "2fd9bb31d0ea66e3523e81789dd3c3f08f0e6bc98b98a4789e19ac7a6a9f4a68",
-  "forbiddenRepeatFingerprint": "2fd9bb31d0ea66e3523e81789dd3c3f08f0e6bc98b98a4789e19ac7a6a9f4a68",
+  "directiveId": "amusement-tycoon-build-up-g24-18d504765aef",
+  "directiveFingerprint": "18d504765aefe56361b3413187818d79d9771d81bb6e0bc938c33d6d2e07d7bd",
+  "previousDirectiveFingerprint": "8e951ebf11830f31581b9ed65316c19e6f979124e3eb811eac205a31862d77a0",
+  "forbiddenRepeatFingerprint": "8e951ebf11830f31581b9ed65316c19e6f979124e3eb811eac205a31862d77a0",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 23,
+  "generation": 24,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
-  "designFingerprint": "611d4a16ac6d84d419fddbbdc17eb5b874d863cdb394d7568cec6e83a4b4601b",
+  "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+  "designFingerprint": "8d0223a3e8fc1f104f65ba9b1be2c72e2eab36c4f2573227e8940b9af8d6a5a8",
   "gameIdentityAndNonNegotiables": {
     "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
     "coreFun": "놀이공원 타이쿤의 핵심 재미는 '최적의 동선 설계'와 '손님 만족도 관리'입니다. 플레이어는 놀이기구의 위치를 조정하여 손님의 대기 시간을 줄이고, 상점 배치를 통해 수익을 극대화하는 선택을 반복합니다. 이러한 선택은 손님의 이동 경로와 행복도 수치에 즉각적인 변화를 주며, 결과적으로 공원의 일일 수익과 평판이라는 가시적인 성과로 이어집니다.",
@@ -313,9 +313,9 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 22,
-    "previousSourceTreeFingerprint": "f95f24979e14fb4efbe9c680aae08331d6638ca439dac400c1d9e9c0060f3f64",
-    "currentSourceTreeFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
+    "previousGeneration": 23,
+    "previousSourceTreeFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
+    "currentSourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1465,7 +1465,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99611,
+        "sourceBytes": 99626,
         "largestFileBytes": 48091,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1498,15 +1498,15 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 8,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=4.",
+    "themeDepth": 10,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
@@ -1516,8 +1516,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1556,7 +1556,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 66,
+        "score": 30,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1672,11 +1672,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 23,
-    "previousGeneration": 22,
+    "generation": 24,
+    "previousGeneration": 23,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
-    "priorSourceFingerprint": "f95f24979e14fb4efbe9c680aae08331d6638ca439dac400c1d9e9c0060f3f64",
+    "sourceFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "priorSourceFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2077,6 +2077,186 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "amusement-tycoon",
+    "genreProfile": "TYCOON",
+    "conceptIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
+    "coreAction": "건설·운영 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+      "손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다.",
+      "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다."
+    ],
+    "signatureSystems": [
+      "동선 최적화 시스템",
+      "감정 기반 만족도 엔진"
+    ],
+    "progressionDirection": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
+    "ideas": [
+      {
+        "id": "TYCOON:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "TYCOON:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "TYCOON:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/amusement-tycoon/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "amusement-tycoon",
+    "genreProfile": "TYCOON",
+    "conceptIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
+    "coreAction": "건설·운영 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+      "손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다.",
+      "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다."
+    ],
+    "signatureSystems": [
+      "동선 최적화 시스템",
+      "감정 기반 만족도 엔진"
+    ],
+    "progressionDirection": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
+    "ideas": [
+      {
+        "id": "TYCOON:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "TYCOON:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "TYCOON:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/amusement-tycoon/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2311,7 +2491,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "273a346340a78a1cd6a920eba38706d68529a120675911d85ee32d6a04646fef",
+      "sourceTreeFingerprint": "2c37f6a2a9f2242278ed2425ac7f89c5b78e45d69f34646840ffe6b3d6840e0c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2358,7 +2538,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 24,
+    "nextGeneration": 25,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2426,5 +2606,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:28:24.564Z"
+  "generatedAt": "2026-10-05T17:59:49.314Z"
 }

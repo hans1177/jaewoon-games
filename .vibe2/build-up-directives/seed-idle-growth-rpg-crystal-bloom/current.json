@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g18-ff56649488c9",
-  "directiveFingerprint": "ff56649488c98e10715f483e87fc8fc9dba211bd7205d75362342066b8f846fe",
-  "previousDirectiveFingerprint": "5dbdfa2051fd3878b082b046822fbae430a0ee7dd416960917ad41011e570839",
-  "forbiddenRepeatFingerprint": "5dbdfa2051fd3878b082b046822fbae430a0ee7dd416960917ad41011e570839",
+  "directiveId": "seed-idle-growth-rpg-crystal-bloom-build-up-g19-ef37398974e4",
+  "directiveFingerprint": "ef37398974e4992c83df14aad2631e0e8e811e65c27cb0efb51685196c743052",
+  "previousDirectiveFingerprint": "a09329eac1a9b88d9a85ad492791a4d1eec6331e6db9ccecc31c2686fc947952",
+  "forbiddenRepeatFingerprint": "a09329eac1a9b88d9a85ad492791a4d1eec6331e6db9ccecc31c2686fc947952",
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "gameName": "수정의 개화",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-  "sourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
-  "designFingerprint": "ef35a29bbdc82e258294cf850dba5b5e5b90ae0c4b91c74ed85f48a7f1a8a708",
+  "sourceTreeFingerprint": "2b06e540178106c130b91bfcd986d74379939e7522158e6172173b54633d1d57",
+  "designFingerprint": "d62fe6119921ca7af2f65757a9a0493f4fbb278c3276cb78fb0a1db22d539327",
   "gameIdentityAndNonNegotiables": {
     "identity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
     "coreFun": "수정의 개화에서 느끼는 핵심 재미는 실시간으로 변화하는 수정의 원소 속성을 선택하고, 이에 맞춰 영웅들의 스킬 체인을 구성하여 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백에 있습니다.",
@@ -257,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
-    "currentSourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
+    "currentSourceTreeFingerprint": "2b06e540178106c130b91bfcd986d74379939e7522158e6172173b54633d1d57",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1409,7 +1409,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 92837,
+        "sourceBytes": 92852,
         "largestFileBytes": 47835,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1442,8 +1442,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
+    "themeDepth": 12,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1453,13 +1453,13 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1502,7 +1502,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 66,
+        "score": 30,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1618,11 +1618,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
-    "priorSourceFingerprint": "7a39eacd8d81c24413094d2001f607e43b9e32119ea0fa741b9488f38aacc29d",
+    "sourceFingerprint": "2b06e540178106c130b91bfcd986d74379939e7522158e6172173b54633d1d57",
+    "priorSourceFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2023,6 +2023,186 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "seed-idle-growth-rpg-crystal-bloom",
+    "genreProfile": "STRATEGY",
+    "conceptIdentity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
+    "coreAction": "자원·배치·순서 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
+      "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
+      "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다."
+    ],
+    "signatureSystems": [
+      "수정 개화 시스템 (Crystal Bloom System)",
+      "원소 공명 진형 (Elemental Resonance Formation)"
+    ],
+    "progressionDirection": "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다.",
+    "ideas": [
+      {
+        "id": "STRATEGY:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "STRATEGY:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "STRATEGY:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "2b06e540178106c130b91bfcd986d74379939e7522158e6172173b54633d1d57",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "seed-idle-growth-rpg-crystal-bloom",
+    "genreProfile": "STRATEGY",
+    "conceptIdentity": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
+    "coreAction": "자원·배치·순서 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "자동 전투를 통해 오염된 마력 파편과 영웅 성장 재화를 지속적으로 획득합니다.",
+      "획득한 재화로 수정의 원소 노드를 개화하고 영웅의 장비와 스킬을 업그레이드합니다.",
+      "강화된 영웅 진형과 수정 버프를 활용해 더 높은 단계의 보스 스테이지에 도전하여 새로운 원소를 해금합니다."
+    ],
+    "signatureSystems": [
+      "수정 개화 시스템 (Crystal Bloom System)",
+      "원소 공명 진형 (Elemental Resonance Formation)"
+    ],
+    "progressionDirection": "플레이어는 스테이지 진행에 따라 점진적으로 더 강력한 적을 조우하며, 수정의 다채로운 원소 가지를 해금하여 영웅들의 한계 레벨을 돌파합니다. 단순 수치 증가를 넘어 새로운 스킬 메커니즘과 원소 조합이 열리는 방향으로 진행됩니다.",
+    "ideas": [
+      {
+        "id": "STRATEGY:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "STRATEGY:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "STRATEGY:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "2b06e540178106c130b91bfcd986d74379939e7522158e6172173b54633d1d57",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2257,7 +2437,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ca0bc0ed9201fac9d2632758f389d1fded1386ed6243bf2a2fe151bb47bb4ef7",
+      "sourceTreeFingerprint": "2b06e540178106c130b91bfcd986d74379939e7522158e6172173b54633d1d57",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2304,7 +2484,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2372,5 +2552,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:46:05.602Z"
+  "generatedAt": "2026-10-05T17:59:49.486Z"
 }

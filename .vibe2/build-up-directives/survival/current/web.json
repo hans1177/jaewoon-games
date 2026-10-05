@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g3-8e624154bb75",
-  "directiveFingerprint": "8e624154bb752430195c875020c3e9a87477e43b17cf3b75455a92155047e148",
-  "previousDirectiveFingerprint": "1a0705fb7b136d68947d6040152034f2bd330cbeab9d51c9d643f8f240770fa5",
-  "forbiddenRepeatFingerprint": "1a0705fb7b136d68947d6040152034f2bd330cbeab9d51c9d643f8f240770fa5",
+  "directiveId": "survival-build-up-g3-9b49eb31c336",
+  "directiveFingerprint": "9b49eb31c3366e9366ad4eb367d84109c3fdf4eb19671a0e63428b45cfbda0f4",
+  "previousDirectiveFingerprint": "8e624154bb752430195c875020c3e9a87477e43b17cf3b75455a92155047e148",
+  "forbiddenRepeatFingerprint": "8e624154bb752430195c875020c3e9a87477e43b17cf3b75455a92155047e148",
   "gameId": "survival",
   "gameName": "나의 생존기",
   "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "unity-games/survival",
   "sourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
-  "designFingerprint": "efe91120fd918ad40a64d2470a22f7dfb7986423ca1af5ded6711ca024b29a44",
+  "designFingerprint": "44ffc6a9e74fd73a9559a6145347b9e8c6868798288b43f49e9d92657cdbae83",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
     "coreFun": "실시간 액션의 긴박함과 자원 관리의 전략적 선택이 결합된 재미입니다. 적의 파상공세를 버텨내는 피지컬과, 어떤 장비를 제작하고 어떤 스킬을 선택할지 결정하는 빌드 구성의 쾌감이 핵심입니다.",
@@ -349,9 +349,9 @@
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
     "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "7fc9e9db3d8d1676b631aa9425291f2da9e588282793b962782e7ce7cbb3f694",
+    "previousSourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
     "currentSourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1579,8 +1579,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 4,
-    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 5,
+    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1590,9 +1590,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 4
+        "PRESENTATION_WORLD_COHESION": 5
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1631,7 +1632,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 211,
+        "score": 193,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1751,6 +1752,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 3,
+    "previousGeneration": 2,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
+    "priorSourceFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -2074,6 +2096,87 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "UNITY",
+    "executionSurface": "UNITY_WEB",
+    "mode": "EXISTING_PLAY_PRESENTATION",
+    "gameId": "survival",
+    "genreProfile": "SURVIVAL",
+    "conceptIdentity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
+    "coreAction": "탐색·수급·위험 대응",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "approvedCoreLoop": [
+      "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
+      "밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.",
+      "전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.",
+      "생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다."
+    ],
+    "signatureSystems": [
+      "일일 생존 기록 시스템",
+      "즉석 제작 및 개조 시스템"
+    ],
+    "progressionDirection": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
+    "ideas": [
+      {
+        "id": "SURVIVAL:PLAY_READABILITY",
+        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "SURVIVAL:PLAY_READABILITY",
+      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+    },
+    "ideaHistory": [
+      "SURVIVAL:PLAY_READABILITY"
+    ],
+    "implementationPackages": [
+      {
+        "role": "GAMEPLAY_STATE",
+        "files": [
+          "unity-games/survival/Assets/Scripts/GameCore.cs",
+          "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs",
+          "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+          "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      }
+    ],
+    "sourceTreeFingerprint": "8c2eab6c33eea06a57fa673fd629cac8768ce1e0302de31d43bb4c64d06e5066",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "UNITY_WEBGL_ACTUAL_BROWSER_PLAY",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": null,
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2343,7 +2446,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2411,5 +2514,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-03T15:14:00.661Z"
+  "generatedAt": "2026-10-05T17:37:10.873Z"
 }

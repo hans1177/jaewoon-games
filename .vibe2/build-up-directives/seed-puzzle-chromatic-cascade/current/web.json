@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g2-82451d7dbaad",
-  "directiveFingerprint": "82451d7dbaade8e1d1a8cbbca2bbc4b7ca2130f8ad3659e9ae03f9f6a841f52b",
-  "previousDirectiveFingerprint": "9d084d78c3c2078bdccb6b88b0d380a15dd9d90630eb62ff637b0bc0735e50b5",
-  "forbiddenRepeatFingerprint": "9d084d78c3c2078bdccb6b88b0d380a15dd9d90630eb62ff637b0bc0735e50b5",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g2-d98a76958e1d",
+  "directiveFingerprint": "d98a76958e1d6a13cfd9fe7f92e74b4486e017520d9806dd6e4b5267ea0ba882",
+  "previousDirectiveFingerprint": "82451d7dbaade8e1d1a8cbbca2bbc4b7ca2130f8ad3659e9ae03f9f6a841f52b",
+  "forbiddenRepeatFingerprint": "82451d7dbaade8e1d1a8cbbca2bbc4b7ca2130f8ad3659e9ae03f9f6a841f52b",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
   "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "unity-games/seed-puzzle-chromatic-cascade",
   "sourceTreeFingerprint": "5033ba2085aec35d5a1ee40ffb4c6d235a0f4995f3ee13ec10b00695ab1a6a2c",
-  "designFingerprint": "491530ac1f5db9c62af2793e2ee12a69b743f3c5da0750f0b2628d384ed75efb",
+  "designFingerprint": "947d9a218215c27001f8126f8861c9cfd7bc2f3acf274770f45b3e91df4f0606",
   "gameIdentityAndNonNegotiables": {
     "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
     "coreFun": "플레이어는 매 턴마다 어떤 색채 노드를 튜닝하여 주파수를 일치시킬지 선택하고, 동기화된 노드들이 연쇄적으로 폭발하며 보드 전체의 장애물을 제거하는 즉각적인 시각적 피드백과 전술적 성취감을 느낍니다.",
@@ -245,9 +245,9 @@
     "previousGoal": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
     "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "d9e78f7ae581203ba2da2e72420969fb5098968f481d1a9bdc0a65db611435ae",
+    "previousSourceTreeFingerprint": "5033ba2085aec35d5a1ee40ffb4c6d235a0f4995f3ee13ec10b00695ab1a6a2c",
     "currentSourceTreeFingerprint": "5033ba2085aec35d5a1ee40ffb4c6d235a0f4995f3ee13ec10b00695ab1a6a2c",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1484,8 +1484,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1495,9 +1495,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -1535,7 +1536,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 229,
+        "score": 211,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1655,6 +1656,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 2,
+    "previousGeneration": 1,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "5033ba2085aec35d5a1ee40ffb4c6d235a0f4995f3ee13ec10b00695ab1a6a2c",
+    "priorSourceFingerprint": "5033ba2085aec35d5a1ee40ffb4c6d235a0f4995f3ee13ec10b00695ab1a6a2c",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -1978,6 +2000,86 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "UNITY",
+    "executionSurface": "UNITY_WEB",
+    "mode": "EXISTING_PLAY_PRESENTATION",
+    "gameId": "seed-puzzle-chromatic-cascade",
+    "genreProfile": "PUZZLE",
+    "conceptIdentity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
+    "coreAction": "규칙을 읽고 수를 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "approvedCoreLoop": [
+      "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+      "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+      "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다."
+    ],
+    "signatureSystems": [
+      "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+      "연쇄 기폭 장치 (Cascade Detonator)"
+    ],
+    "progressionDirection": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.",
+    "ideas": [
+      {
+        "id": "PUZZLE:PLAY_READABILITY",
+        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "PUZZLE:PLAY_READABILITY",
+      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+    },
+    "ideaHistory": [
+      "PUZZLE:PLAY_READABILITY"
+    ],
+    "implementationPackages": [
+      {
+        "role": "GAMEPLAY_STATE",
+        "files": [
+          "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
+          "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs",
+          "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs",
+          "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      }
+    ],
+    "sourceTreeFingerprint": "5033ba2085aec35d5a1ee40ffb4c6d235a0f4995f3ee13ec10b00695ab1a6a2c",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "UNITY_WEBGL_ACTUAL_BROWSER_PLAY",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": null,
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2097,6 +2199,96 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "WEB",
+    "categories": [
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": true,
+    "openCloudWorldChecks": []
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "seed-puzzle-chromatic-cascade",
+    "platform": "WEB",
+    "plannedFiles": [
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/seed-puzzle-chromatic-cascade/Assets/Prefabs/unity-web-floor-domain.json"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "WEB",
+      "categories": [
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": true,
+      "openCloudWorldChecks": []
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
@@ -2157,7 +2349,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2226,5 +2418,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T13:25:27.928Z"
+  "generatedAt": "2026-10-05T17:37:10.765Z"
 }

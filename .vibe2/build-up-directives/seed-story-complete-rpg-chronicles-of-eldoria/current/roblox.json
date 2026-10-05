@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g17-17d69aa9da63",
-  "directiveFingerprint": "17d69aa9da638bf1042e266374f06c588b0ed028ce03ee1a7eee59fb52b2685c",
-  "previousDirectiveFingerprint": "03dc23658525ffd36a0ed0254e1d7ab31513028185c91af8505549eb93ea38f9",
-  "forbiddenRepeatFingerprint": "03dc23658525ffd36a0ed0254e1d7ab31513028185c91af8505549eb93ea38f9",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g18-53cb13a4d37b",
+  "directiveFingerprint": "53cb13a4d37b96c522abd9987e8766e22a8d3848c8df4ecde760d0bf23951fd3",
+  "previousDirectiveFingerprint": "fdc70fde98345a304acd9861a3ddd14602ef23cf6c7325f365a6d1a13135408f",
+  "forbiddenRepeatFingerprint": "fdc70fde98345a304acd9861a3ddd14602ef23cf6c7325f365a6d1a13135408f",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
-  "designFingerprint": "4f25e622432ac76ed9c051cab2997576c674b80354f8f44a579d880e70b1d43c",
+  "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+  "designFingerprint": "5413bb90f0a9a601e226e9a8d58f64eb777bc4367cd03ac100c39fb9b4f073f6",
   "gameIdentityAndNonNegotiables": {
     "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
     "coreFun": "전투 중 스킬의 속성 조합을 선택하여 적의 약점을 공략하고, 탐험 중 발견한 고대 문자를 해석하여 지름길을 개척하는 반복적인 의사결정이 핵심입니다. 이러한 선택은 즉각적으로 전투의 승패와 캐릭터의 성장 방향을 결정짓는 가시적인 상태 변화로 이어집니다.",
@@ -257,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "b3564a055fadec6c1f01a5abc9f186e8f4f3f80361cd3c015147ba82ecfd1031",
-    "currentSourceTreeFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
+    "currentSourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1409,7 +1409,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 93704,
+        "sourceBytes": 93719,
         "largestFileBytes": 48300,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1442,22 +1442,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1469,6 +1467,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -1500,19 +1500,9 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 32,
+        "score": 156,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
-        ]
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 30,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
         ]
       },
       {
@@ -1541,6 +1531,16 @@
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": -94,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": -130,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -1616,11 +1616,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
-    "priorSourceFingerprint": "b3564a055fadec6c1f01a5abc9f186e8f4f3f80361cd3c015147ba82ecfd1031",
+    "sourceFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "priorSourceFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2021,6 +2021,186 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+    "genreProfile": "STRATEGY",
+    "conceptIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+    "coreAction": "자원·배치·순서 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+      "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+      "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다."
+    ],
+    "signatureSystems": [
+      "속성 공명 시스템",
+      "운명 개척 탐험 시스템"
+    ],
+    "progressionDirection": "플레이어는 초반에 기본적인 전투와 탐험을 익히며, 중반부에는 고대 유물을 활용한 전략적 선택의 비중이 커집니다. 후반부에는 축적된 스킬과 유물 조합을 통해 최종 보스에 도달하며, 모든 선택이 결합된 하나의 완결된 서사를 경험하게 됩니다.",
+    "ideas": [
+      {
+        "id": "STRATEGY:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "STRATEGY:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "STRATEGY:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+    "genreProfile": "STRATEGY",
+    "conceptIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+    "coreAction": "자원·배치·순서 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
+      "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
+      "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다."
+    ],
+    "signatureSystems": [
+      "속성 공명 시스템",
+      "운명 개척 탐험 시스템"
+    ],
+    "progressionDirection": "플레이어는 초반에 기본적인 전투와 탐험을 익히며, 중반부에는 고대 유물을 활용한 전략적 선택의 비중이 커집니다. 후반부에는 축적된 스킬과 유물 조합을 통해 최종 보스에 도달하며, 모든 선택이 결합된 하나의 완결된 서사를 경험하게 됩니다.",
+    "ideas": [
+      {
+        "id": "STRATEGY:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "STRATEGY:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "STRATEGY:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2255,7 +2435,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f3e06987ffb202c97af0d7cfab0619681af5b7adfefc0a87bf83d38812977a28",
+      "sourceTreeFingerprint": "ce3ca2a1c6e14919bbed0a07d4d7fa59f2acccf5357156819b95e5424246773b",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2302,7 +2482,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2370,5 +2550,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:28:24.639Z"
+  "generatedAt": "2026-10-05T17:59:49.568Z"
 }

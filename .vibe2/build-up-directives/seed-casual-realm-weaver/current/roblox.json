@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g18-65ed6416de03",
-  "directiveFingerprint": "65ed6416de0324449b6c546042286fd1956f13d78d64c04a870b1880b3984a91",
-  "previousDirectiveFingerprint": "8084a46b6c758c661eed6f913a0aa467baad75d22e34190ac068bce592a01253",
-  "forbiddenRepeatFingerprint": "8084a46b6c758c661eed6f913a0aa467baad75d22e34190ac068bce592a01253",
+  "directiveId": "seed-casual-realm-weaver-build-up-g19-d5abd8e0c0d4",
+  "directiveFingerprint": "d5abd8e0c0d4a098cf91e81d68d7753dbad2cf86ddebba03eb7ae7cb4652a9b3",
+  "previousDirectiveFingerprint": "49cd57cd56528700629707687ec0840fa472a1f392fd16549a6fe3d41fc7374c",
+  "forbiddenRepeatFingerprint": "49cd57cd56528700629707687ec0840fa472a1f392fd16549a6fe3d41fc7374c",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "72449c65fc91512da40963346f8a728ad18a330642a39c8281a2739610ca52ae",
-  "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
+  "sourceTreeFingerprint": "0c57cf4857bb85adfd10045342c58bbb5e16c0fddd8007eab3569370fa39e473",
+  "designFingerprint": "c17ec9a4aa0159f73356c973ff2609725b87c5462c280ab3b7313163e0f93ee0",
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
     "coreFun": "조각을 배치하고 연결할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이'를 경험하는 것입니다.",
@@ -266,9 +266,9 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "6b7a1fc1e138029af566cc2a87fa4eecbe3f12c00c0eca0eedafad0d31679ac8",
-    "currentSourceTreeFingerprint": "72449c65fc91512da40963346f8a728ad18a330642a39c8281a2739610ca52ae",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "72449c65fc91512da40963346f8a728ad18a330642a39c8281a2739610ca52ae",
+    "currentSourceTreeFingerprint": "0c57cf4857bb85adfd10045342c58bbb5e16c0fddd8007eab3569370fa39e473",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1419,7 +1419,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 93118,
+        "sourceBytes": 93133,
         "largestFileBytes": 48227,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1452,22 +1452,20 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 1,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1479,6 +1477,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
       "requiredThemes": [
@@ -1510,19 +1510,9 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 32,
+        "score": 156,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
-        ]
-      },
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 30,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
         ]
       },
       {
@@ -1551,6 +1541,16 @@
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": -106,
         "gapDomains": []
+      },
+      {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": -130,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
       }
     ],
     "coherentContentBundle": [
@@ -1626,11 +1626,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "72449c65fc91512da40963346f8a728ad18a330642a39c8281a2739610ca52ae",
-    "priorSourceFingerprint": "6b7a1fc1e138029af566cc2a87fa4eecbe3f12c00c0eca0eedafad0d31679ac8",
+    "sourceFingerprint": "0c57cf4857bb85adfd10045342c58bbb5e16c0fddd8007eab3569370fa39e473",
+    "priorSourceFingerprint": "72449c65fc91512da40963346f8a728ad18a330642a39c8281a2739610ca52ae",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2031,6 +2031,188 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "seed-casual-realm-weaver",
+    "genreProfile": "PUZZLE",
+    "conceptIdentity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
+    "coreAction": "규칙을 읽고 수를 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+      "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
+      "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
+      "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다."
+    ],
+    "signatureSystems": [
+      "직조 연결 시스템",
+      "생태계 복원 게이지"
+    ],
+    "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+    "ideas": [
+      {
+        "id": "PUZZLE:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "PUZZLE:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "PUZZLE:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/seed-casual-realm-weaver/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "0c57cf4857bb85adfd10045342c58bbb5e16c0fddd8007eab3569370fa39e473",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "seed-casual-realm-weaver",
+    "genreProfile": "PUZZLE",
+    "conceptIdentity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
+    "coreAction": "규칙을 읽고 수를 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+      "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
+      "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
+      "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다."
+    ],
+    "signatureSystems": [
+      "직조 연결 시스템",
+      "생태계 복원 게이지"
+    ],
+    "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+    "ideas": [
+      {
+        "id": "PUZZLE:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "PUZZLE:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "PUZZLE:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/seed-casual-realm-weaver/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "0c57cf4857bb85adfd10045342c58bbb5e16c0fddd8007eab3569370fa39e473",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2265,7 +2447,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "72449c65fc91512da40963346f8a728ad18a330642a39c8281a2739610ca52ae",
+      "sourceTreeFingerprint": "0c57cf4857bb85adfd10045342c58bbb5e16c0fddd8007eab3569370fa39e473",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2312,7 +2494,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2381,5 +2563,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:35:03.048Z"
+  "generatedAt": "2026-10-05T17:59:49.445Z"
 }

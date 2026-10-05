@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g20-27ed4a678c4b",
-  "directiveFingerprint": "27ed4a678c4be39d45174f9c850ce5f9d296487bfab5cabcc6df0d180595d10e",
-  "previousDirectiveFingerprint": "a7adae2e20aa7a1f1605fff4867d0f53938b65287fa7eeab487dd507227726c7",
-  "forbiddenRepeatFingerprint": "a7adae2e20aa7a1f1605fff4867d0f53938b65287fa7eeab487dd507227726c7",
+  "directiveId": "village-dungeons-build-up-g21-a233cd7cfd1f",
+  "directiveFingerprint": "a233cd7cfd1ff8d2dd3810f1e17ae514b41fbfe236a89c0df0698511545ac851",
+  "previousDirectiveFingerprint": "aeacd9fbd87a26fc539779ba97ff1a12d79dcf89a46188d1873f33c3818d4bf1",
+  "forbiddenRepeatFingerprint": "aeacd9fbd87a26fc539779ba97ff1a12d79dcf89a46188d1873f33c3818d4bf1",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 20,
+  "generation": 21,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
-  "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
+  "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+  "designFingerprint": "c915b5e2afa7f2c4b9b5767a6f020edb0f215c2908fb8e77c16a09789c0d7131",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
     "coreFun": "적의 공격 궤적을 직관적으로 회피하고 연타 공격을 적중시키는 순간의 즉각적인 손맛과 제한된 던전 인벤토리에 어떤 전리품을 챙길지 결정하여 마을 시설의 기술 트리로 환원할 때 일어나는 명확한 전투 스펙 향상의 쾌감이다.",
@@ -363,9 +363,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 19,
-    "previousSourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
-    "currentSourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
+    "previousGeneration": 20,
+    "previousSourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
+    "currentSourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1512,7 +1512,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 117179,
+        "sourceBytes": 117194,
         "largestFileBytes": 48671,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1545,13 +1545,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1559,7 +1559,6 @@
         "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1571,7 +1570,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -1603,7 +1603,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
+        "score": 150,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1629,19 +1629,19 @@
         "gapDomains": []
       },
       {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": -122,
+        "gapDomains": []
+      },
+      {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 12,
+        "score": -148,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -122,
-        "gapDomains": []
       }
     ],
     "coherentContentBundle": [
@@ -1717,11 +1717,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 20,
-    "previousGeneration": 19,
+    "generation": 21,
+    "previousGeneration": 20,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
-    "priorSourceFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
+    "sourceFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "priorSourceFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2122,6 +2122,190 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "village-dungeons",
+    "genreProfile": "RPG",
+    "conceptIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+    "coreAction": "전투·성장·역할 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
+    ],
+    "signatureSystems": [
+      "마을 재건 시설 연동 시스템",
+      "리스크 배낭 정밀 적재 시스템"
+    ],
+    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
+    "ideas": [
+      {
+        "id": "RPG:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "RPG:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "RPG:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/village-dungeons/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/village-dungeons/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/village-dungeons/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "village-dungeons",
+    "genreProfile": "RPG",
+    "conceptIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+    "coreAction": "전투·성장·역할 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+      "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+      "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+      "포털을 통해 안전하게 마을로 귀환하여 의뢰를 완료하고 수집 자원으로 대장간과 주점을 업그레이드한다.",
+      "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전한다."
+    ],
+    "signatureSystems": [
+      "마을 재건 시설 연동 시스템",
+      "리스크 배낭 정밀 적재 시스템"
+    ],
+    "progressionDirection": "초반 세션에서는 단순 타격과 짧은 3분 던전 탐색으로 기초 장비를 맞추게 하며, 중반에는 5대 던전의 상성 속성(화염, 냉기, 독, 암흑, 번개)에 맞춘 장비 세트 파밍과 마을 상위 시설 건설로 전략적 깊이를 확장하고, 종반에는 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통해 지속적인 육성 만족도를 제공한다.",
+    "ideas": [
+      {
+        "id": "RPG:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "RPG:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "RPG:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/village-dungeons/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/village-dungeons/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/village-dungeons/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2351,7 +2535,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
+      "sourceTreeFingerprint": "3f29a9746b7f2bbe516763fe8a1132ef65e2d39a7733fe1a4ae289c85bc071d3",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2398,7 +2582,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 21,
+    "nextGeneration": 22,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2464,5 +2648,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:35:03.119Z"
+  "generatedAt": "2026-10-05T17:59:49.654Z"
 }

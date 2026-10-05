@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "monster-adventure-build-up-g7-676f5564ac2a",
-  "directiveFingerprint": "676f5564ac2a97b4f587c086cec78a0a0b2b22a4a85919286e86ea60116f32fa",
-  "previousDirectiveFingerprint": "a756f99f8d755ff991e8ba518b04d21c7a505eeff2dff69194ca96d3789afe29",
-  "forbiddenRepeatFingerprint": "a756f99f8d755ff991e8ba518b04d21c7a505eeff2dff69194ca96d3789afe29",
+  "directiveId": "monster-adventure-build-up-g8-7e85b578a3d5",
+  "directiveFingerprint": "7e85b578a3d5a471e930508122a0fbdad8906719f38e803bd4c9d7f105083b97",
+  "previousDirectiveFingerprint": "162602e4b7f528e3bf002feac4ba4b5c7daf7c04ca18002e9f33e6a38a4f0ea5",
+  "forbiddenRepeatFingerprint": "162602e4b7f528e3bf002feac4ba4b5c7daf7c04ca18002e9f33e6a38a4f0ea5",
   "gameId": "monster-adventure",
   "gameName": "몬스터 어드벤처",
-  "generation": 7,
+  "generation": 8,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/monster-adventure",
-  "sourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
-  "designFingerprint": "12241ec9f7bee45cc9530fe4d93406ee26ca58ced2e9892d3454be8ff3741f84",
+  "sourceTreeFingerprint": "cf885c260d516d602f5a31d4ede91b8a9b7dff0317322c94999d75a878daa1b2",
+  "designFingerprint": "70b5a409bd8cc6698cb726a33cf3dcef68a8cdfadd0903a539c794f33ad7a30d",
   "gameIdentityAndNonNegotiables": {
     "identity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.",
     "coreFun": "몬스터의 속성을 고려한 턴제 전투에서의 전략적 스킬 선택, 탐험 중 마주치는 환경 변화에 따른 몬스터 육성 방향 결정, 그리고 전투 승리 후 획득한 자원으로 몬스터를 강화하여 더 강력한 적에게 도전하는 즉각적인 성취감입니다.",
@@ -297,9 +297,9 @@
   "previousVersionDelta": {
     "previousGoal": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 6,
-    "previousSourceTreeFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
-    "currentSourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
+    "previousGeneration": 7,
+    "previousSourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
+    "currentSourceTreeFingerprint": "cf885c260d516d602f5a31d4ede91b8a9b7dff0317322c94999d75a878daa1b2",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1454,7 +1454,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 103798,
+        "sourceBytes": 103813,
         "largestFileBytes": 47990,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1487,8 +1487,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1498,7 +1498,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1507,6 +1507,8 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1541,7 +1543,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 210,
+        "score": 174,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1660,11 +1662,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 7,
-    "previousGeneration": 6,
+    "generation": 8,
+    "previousGeneration": 7,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
-    "priorSourceFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
+    "sourceFingerprint": "cf885c260d516d602f5a31d4ede91b8a9b7dff0317322c94999d75a878daa1b2",
+    "priorSourceFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2065,6 +2067,186 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "monster-adventure",
+    "genreProfile": "STRATEGY",
+    "conceptIdentity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.",
+    "coreAction": "자원·배치·순서 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+      "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+      "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다."
+    ],
+    "signatureSystems": [
+      "속성 상성 전투 시스템",
+      "몬스터 진화 트리 시스템"
+    ],
+    "progressionDirection": "플레이어는 초반에 기본적인 몬스터로 시작하여 점진적으로 더 희귀하고 강력한 몬스터를 포획하고 육성합니다. 난이도는 지역별로 점진적으로 상승하며, 새로운 지역에 진입할 때마다 더 높은 전략적 판단을 요구하는 몬스터 조합을 마주하게 됩니다.",
+    "ideas": [
+      {
+        "id": "STRATEGY:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "STRATEGY:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "STRATEGY:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/monster-adventure/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/monster-adventure/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/monster-adventure/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "cf885c260d516d602f5a31d4ede91b8a9b7dff0317322c94999d75a878daa1b2",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_SOURCE_REPAIR",
+    "gameId": "monster-adventure",
+    "genreProfile": "STRATEGY",
+    "conceptIdentity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.",
+    "coreAction": "자원·배치·순서 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
+    "approvedCoreLoop": [
+      "탐험 단계: 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+      "전투 단계: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+      "성장 단계: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다."
+    ],
+    "signatureSystems": [
+      "속성 상성 전투 시스템",
+      "몬스터 진화 트리 시스템"
+    ],
+    "progressionDirection": "플레이어는 초반에 기본적인 몬스터로 시작하여 점진적으로 더 희귀하고 강력한 몬스터를 포획하고 육성합니다. 난이도는 지역별로 점진적으로 상승하며, 새로운 지역에 진입할 때마다 더 높은 전략적 판단을 요구하는 몬스터 조합을 마주하게 됩니다.",
+    "ideas": [
+      {
+        "id": "STRATEGY:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "STRATEGY:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
+    },
+    "ideaHistory": [
+      "STRATEGY:SOURCE_REPAIR"
+    ],
+    "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/monster-adventure/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/monster-adventure/client/Game.client.luau"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/monster-adventure/shared/GameConfig.luau"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "cf885c260d516d602f5a31d4ede91b8a9b7dff0317322c94999d75a878daa1b2",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2299,7 +2481,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
+      "sourceTreeFingerprint": "cf885c260d516d602f5a31d4ede91b8a9b7dff0317322c94999d75a878daa1b2",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2346,7 +2528,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 8,
+    "nextGeneration": 9,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2416,5 +2598,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:28:24.594Z"
+  "generatedAt": "2026-10-05T17:59:49.361Z"
 }

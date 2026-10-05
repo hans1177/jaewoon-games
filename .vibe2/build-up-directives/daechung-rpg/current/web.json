@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g1-e7c8f53f47a0",
-  "directiveFingerprint": "e7c8f53f47a04efb1c4d87631d058ff57a3666c8d804b0e745468abe8256145b",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "daechung-rpg-build-up-g1-e9147e2aebab",
+  "directiveFingerprint": "e9147e2aebab5454925fae37e29c6a9b5ee9ef1eb161f6afc6a5814ec025020e",
+  "previousDirectiveFingerprint": "e7c8f53f47a04efb1c4d87631d058ff57a3666c8d804b0e745468abe8256145b",
+  "forbiddenRepeatFingerprint": "e7c8f53f47a04efb1c4d87631d058ff57a3666c8d804b0e745468abe8256145b",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
   "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
   "sourceRoot": "web-games/daechung-rpg",
   "sourceTreeFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
-  "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
+  "designFingerprint": "726a3717a2962a12fb3a5af7da4b0e4fcd65836b96f98751c6f7e22031c6763b",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
     "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
@@ -560,7 +560,13 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정를 입력→판단→상태 변화→피드백→다음 선택까지 실제 플레이에서 더 깊고 명확하게 만든다.",
+    "previousFocus": "CORE_FUN",
+    "previousGeneration": null,
+    "previousSourceTreeFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
+    "currentSourceTreeFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
+    "sourceChanged": false,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "WEB",
@@ -1733,13 +1739,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 1,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=CORE_FUN; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 2,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1747,6 +1753,7 @@
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
@@ -1782,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 34,
+        "score": 176,
         "gapDomains": [
           "GAME_FEEL"
         ]
@@ -1888,6 +1895,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 1,
+    "previousGeneration": 0,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
+    "priorSourceFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -2211,6 +2239,121 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "WEB",
+    "executionSurface": "WEB",
+    "mode": "CONNECTED_CONTENT_IMPLEMENTATION",
+    "gameId": "daechung-rpg",
+    "genreProfile": "RPG",
+    "conceptIdentity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
+    "coreAction": "전투·성장·역할 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "상대/지역 역할 → 장비/능력 선택 → 성장/해금",
+    "approvedCoreLoop": [
+      "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+      "보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.",
+      "필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.",
+      "동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다."
+    ],
+    "signatureSystems": [
+      "4인 파티 고정",
+      "무한 확장 AI 동료",
+      "숙명 관계",
+      "파티 기억",
+      "보스·히든 동료",
+      "장비가 AI를 바꿈",
+      "라이벌 AI 파티",
+      "조합 엔딩"
+    ],
+    "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
+    "ideas": [
+      {
+        "id": "RPG:BUILD_SYNERGY",
+        "implementation": "승인된 능력과 장비의 다른 조합 목적을 만든다.",
+        "distinction": "전투 역할과 성장 선택을 함께 연결"
+      },
+      {
+        "id": "RPG:ENCOUNTER_ROLE",
+        "implementation": "지역 맥락에 맞는 적 행동과 대응 조합을 만든다.",
+        "distinction": "적 역할과 지역 이유를 함께 연결"
+      },
+      {
+        "id": "RPG:PROGRESSION_ROUTE",
+        "implementation": "성장 결과가 다음 지역이나 플레이 선택을 열게 한다.",
+        "distinction": "보상 목적과 후속 목표를 함께 연결"
+      }
+    ],
+    "selectedIdea": {
+      "id": "RPG:ENCOUNTER_ROLE",
+      "implementation": "지역 맥락에 맞는 적 행동과 대응 조합을 만든다.",
+      "distinction": "적 역할과 지역 이유를 함께 연결"
+    },
+    "ideaHistory": [
+      "RPG:ENCOUNTER_ROLE"
+    ],
+    "implementationPackages": [
+      {
+        "role": "GAMEPLAY_AND_PRESENTATION",
+        "files": [
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-v15.js",
+          "web-games/daechung-rpg/patch-v16.js",
+          "web-games/daechung-rpg/patch-core18.js",
+          "web-games/daechung-rpg/patch-v17.js",
+          "web-games/daechung-rpg/TemplateData/profiler.js",
+          "web-games/daechung-rpg/patch-v18.js"
+        ],
+        "implementation": "지역 맥락에 맞는 적 행동과 대응 조합을 만든다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "web-games/daechung-rpg/TemplateData/style.css"
+        ],
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "web-games/daechung-rpg/unity-web-gameplay-validation.json",
+          "web-games/daechung-rpg/unity-web-build.json"
+        ],
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
+      }
+    ],
+    "sourceTreeFingerprint": "e3dd79f7bbc16ad2cfa3acb27354ebd2f1ee223f396463a4be6c69ebf4f0a1c7",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ACTUAL_BROWSER_PLAY",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "CONNECT_ONE_PLAYABLE_CONTENT_PACKAGE_TO_EXISTING_CORE_LOOP",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": null,
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2334,11 +2477,92 @@
     "exactSourceAnchorRequired": true,
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
+  "developmentImpact": {
+    "version": 1,
+    "platform": "WEB",
+    "categories": [
+      "GRAPHICS",
+      "UI",
+      "GAMEPLAY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "securityRelevant": false,
+    "openCloudWorldChecks": []
+  },
+  "preMutationDryRun": {
+    "version": 1,
+    "mode": "DRY_RUN_NO_SOURCE_MUTATION",
+    "gameId": "daechung-rpg",
+    "platform": "WEB",
+    "plannedFiles": [
+      "web-games/daechung-rpg/index.html",
+      "web-games/daechung-rpg/patch-v15.js",
+      "web-games/daechung-rpg/unity-web-gameplay-validation.json",
+      "web-games/daechung-rpg/patch-v16.js",
+      "web-games/daechung-rpg/patch-core18.js",
+      "web-games/daechung-rpg/TemplateData/style.css",
+      "web-games/daechung-rpg/patch-v17.js",
+      "web-games/daechung-rpg/TemplateData/profiler.js",
+      "web-games/daechung-rpg/patch-v18.js",
+      "web-games/daechung-rpg/unity-web-build.json",
+      "web-games/daechung-rpg/TemplateData/fullscreen-button.png",
+      "web-games/daechung-rpg/TemplateData/MemoryProfiler.png"
+    ],
+    "impact": {
+      "version": 1,
+      "platform": "WEB",
+      "categories": [
+        "GRAPHICS",
+        "UI",
+        "GAMEPLAY"
+      ],
+      "requiredQa": [
+        "CHANGED_RESPONSIBILITY_STATIC_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "VISUAL_BINDING_QA"
+      ],
+      "conditionalQa": [
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+      ],
+      "securityRelevant": false,
+      "openCloudWorldChecks": []
+    },
+    "protectedSemantics": [
+      "CORE_RULES",
+      "BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "ECONOMY",
+      "NETWORK_AUTHORITY"
+    ],
+    "requiredQa": [
+      "CHANGED_RESPONSIBILITY_STATIC_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "VISUAL_BINDING_QA"
+    ],
+    "conditionalQa": [
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
+    ],
+    "openCloudWorldChecks": [],
+    "sourceMutationPerformed": false,
+    "newWorkflowOrQueueRequired": false,
+    "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
+  },
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 선택 결과가 더 분명해지고 같은 입력 반복보다 상황 판단이 유리해진다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
@@ -2357,8 +2581,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial CORE_FUN build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -2393,7 +2617,7 @@
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
     "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
@@ -2455,5 +2679,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-02T18:06:43.191Z"
+  "generatedAt": "2026-10-05T17:37:11.262Z"
 }

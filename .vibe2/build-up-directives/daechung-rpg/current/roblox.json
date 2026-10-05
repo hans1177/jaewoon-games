@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g20-ea907f98c79c",
-  "directiveFingerprint": "ea907f98c79c6ff5224c284594a2f5d0e43e0835e6a653d3b9a6ac596348b0e4",
-  "previousDirectiveFingerprint": "e8810344ee862042e0b6bb76499d6634999b12d34dfc50da530091966aecf120",
-  "forbiddenRepeatFingerprint": "e8810344ee862042e0b6bb76499d6634999b12d34dfc50da530091966aecf120",
+  "directiveId": "daechung-rpg-build-up-g21-4d14a9c5ef32",
+  "directiveFingerprint": "4d14a9c5ef323fe88859e2ee8334c77657f3283c63fb7f43446549427b637ce1",
+  "previousDirectiveFingerprint": "82340004b6192f5af1a408c1340977e4ba44f59c6e15a5f1b35e89aeae225c91",
+  "forbiddenRepeatFingerprint": "82340004b6192f5af1a408c1340977e4ba44f59c6e15a5f1b35e89aeae225c91",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 20,
+  "generation": 21,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
-  "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
+  "sourceTreeFingerprint": "2d28ab23dd7c87ea1a306d84beca6e3c52bbfbfac3f8d022be78d906c1c28ca8",
+  "designFingerprint": "726a3717a2962a12fb3a5af7da4b0e4fcd65836b96f98751c6f7e22031c6763b",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
     "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 19,
-    "previousSourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
-    "currentSourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
+    "previousGeneration": 20,
+    "previousSourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
+    "currentSourceTreeFingerprint": "2d28ab23dd7c87ea1a306d84beca6e3c52bbfbfac3f8d022be78d906c1c28ca8",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1696,7 +1696,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 249056,
+        "sourceBytes": 249071,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1728,14 +1728,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 9,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
+    "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
+    "themeDepth": 1,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
-        "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
+        "WORLD_ECOLOGY_STORY_CHAIN": 1,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1746,8 +1746,6 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1756,7 +1754,9 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY"
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "WORLD_ECOLOGY_STORY_CHAIN"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1767,18 +1767,16 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1788,13 +1786,6 @@
     },
     "scoredThemes": [
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 50,
-        "gapDomains": [
-          "ENEMY_VISUALS"
-        ]
-      },
-      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 22,
         "gapDomains": []
@@ -1803,6 +1794,13 @@
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 14,
+        "gapDomains": [
+          "ENEMY_VISUALS"
+        ]
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
@@ -1831,13 +1829,14 @@
       }
     ],
     "coherentContentBundle": [
-      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
-      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
-      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
-      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
-      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
-      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
-      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
+      "BACKGROUND_ENVIRONMENT_IDENTITY: 배경·지형·조명·소품이 지역 역할과 세계 분위기를 설명해야 한다.",
+      "REGION_TOPOLOGY_AND_LANDMARK: 기존 지역과 이어지는 진입 경로·랜드마크·우회/잠금 경로를 만든다.",
+      "REGION_NATIVE_ENCOUNTER: 그 장소에 존재할 이유가 있는 몬스터/적/상호작용 역할과 서로 다른 행동 패턴을 만든다.",
+      "REGION_RESOURCE_OR_ITEM: 지역 고유 자원·아이템·장비·보상이 탐험이나 전투 선택에 실제 의미를 갖게 한다.",
+      "QUEST_EVENT_REASON_TO_ENTER: 플레이어가 왜 지금 이 지역에 가는지 목표·퀘스트·사건과 연결한다.",
+      "STORY_AND_WORLD_CAUSALITY: 환경 단서·NPC·적·보상·지역 변화가 같은 세계 원인과 결과를 공유하게 한다.",
+      "REGION_RULE_OR_HAZARD: 지형·날씨·시간·위험·상태·접근 조건 중 게임에 맞는 규칙을 플레이 선택과 연결한다.",
+      "RETURN_OR_FORWARD_CONNECTION: 기존 지역으로 돌아올 이유 또는 다음 지역·보스·해금으로 이어지는 결과를 남긴다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1903,11 +1902,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 20,
-    "previousGeneration": 19,
+    "generation": 21,
+    "previousGeneration": 20,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
-    "priorSourceFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+    "sourceFingerprint": "2d28ab23dd7c87ea1a306d84beca6e3c52bbfbfac3f8d022be78d906c1c28ca8",
+    "priorSourceFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2311,6 +2310,194 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
+  "productionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_PLAY_PRESENTATION",
+    "gameId": "daechung-rpg",
+    "genreProfile": "RPG",
+    "conceptIdentity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
+    "coreAction": "전투·성장·역할 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "approvedCoreLoop": [
+      "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+      "보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.",
+      "필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.",
+      "동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다."
+    ],
+    "signatureSystems": [
+      "4인 파티 고정",
+      "무한 확장 AI 동료",
+      "숙명 관계",
+      "파티 기억",
+      "보스·히든 동료",
+      "장비가 AI를 바꿈",
+      "라이벌 AI 파티",
+      "조합 엔딩"
+    ],
+    "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
+    "ideas": [
+      {
+        "id": "RPG:PLAY_READABILITY",
+        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "RPG:PLAY_READABILITY",
+      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+    },
+    "ideaHistory": [
+      "RPG:PLAY_READABILITY"
+    ],
+    "implementationPackages": [
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/daechung-rpg/client/Game.client.luau"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      }
+    ],
+    "sourceTreeFingerprint": "2d28ab23dd7c87ea1a306d84beca6e3c52bbfbfac3f8d022be78d906c1c28ca8",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
+  "robloxProductionPlan": {
+    "version": 2,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "platform": "ROBLOX",
+    "executionSurface": "ROBLOX",
+    "mode": "EXISTING_PLAY_PRESENTATION",
+    "gameId": "daechung-rpg",
+    "genreProfile": "RPG",
+    "conceptIdentity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
+    "coreAction": "전투·성장·역할 선택",
+    "ownerFeatureChanges": [],
+    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "approvedCoreLoop": [
+      "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+      "보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.",
+      "필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.",
+      "동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다."
+    ],
+    "signatureSystems": [
+      "4인 파티 고정",
+      "무한 확장 AI 동료",
+      "숙명 관계",
+      "파티 기억",
+      "보스·히든 동료",
+      "장비가 AI를 바꿈",
+      "라이벌 AI 파티",
+      "조합 엔딩"
+    ],
+    "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
+    "ideas": [
+      {
+        "id": "RPG:PLAY_READABILITY",
+        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      }
+    ],
+    "selectedIdea": {
+      "id": "RPG:PLAY_READABILITY",
+      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
+      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+    },
+    "ideaHistory": [
+      "RPG:PLAY_READABILITY"
+    ],
+    "implementationPackages": [
+      {
+        "role": "CLIENT_PRESENTATION",
+        "files": [
+          "roblox-games/daechung-rpg/client/Game.client.luau"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      },
+      {
+        "role": "SHARED_DEFINITION",
+        "files": [
+          "roblox-games/daechung-rpg/shared/GameConfig.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenu.luau",
+          "roblox-games/daechung-rpg/shared/QACamera.luau",
+          "roblox-games/daechung-rpg/shared/RPGMenuModel.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+        ],
+        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+      }
+    ],
+    "sourceTreeFingerprint": "2d28ab23dd7c87ea1a306d84beca6e3c52bbfbfac3f8d022be78d906c1c28ca8",
+    "qualityContract": {
+      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
+      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
+      "required": [
+        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
+        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
+        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
+        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
+        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+      ],
+      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
+      "markerOnlyCompletionAllowed": false,
+      "runtimeVerified": false
+    },
+    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
+    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "preservation": [
+      "APPROVED_CONCEPT",
+      "APPROVED_GENRE",
+      "STYLE_LOCK",
+      "SAVE_IDENTITY",
+      "BALANCE_AND_ECONOMY_MEANING",
+      "SERVER_AUTHORITY"
+    ],
+    "newWorkflow": false,
+    "newQaStage": false,
+    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+  },
   "preserveConstraints": [
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
@@ -2550,7 +2737,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
+      "sourceTreeFingerprint": "2d28ab23dd7c87ea1a306d84beca6e3c52bbfbfac3f8d022be78d906c1c28ca8",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2597,7 +2784,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 21,
+    "nextGeneration": 22,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2662,5 +2849,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:28:24.524Z"
+  "generatedAt": "2026-10-05T17:59:49.242Z"
 }
