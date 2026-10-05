@@ -315,10 +315,25 @@ jobs:
           failed=0
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
+            safe_force_cancel=false
+            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' ]]; then
+              safe_force_cancel=true
+            fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
-              cancelled=$((cancelled+1))
-              echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}"
-            elif [[ "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' ]] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+              current_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
+              if [ "$safe_force_cancel" = true ] && [[ "$current_state" == 'queued' || "$current_state" == 'pending' || "$current_state" == 'requested' || "$current_state" == 'waiting' ]]; then
+                if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+                  cancelled=$((cancelled+1))
+                  echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${current_state}"
+                else
+                  failed=$((failed+1))
+                  echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCEL_FAILED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${current_state}"
+                fi
+              else
+                cancelled=$((cancelled+1))
+                echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}:${current_state:-unknown}"
+              fi
+            elif [ "$safe_force_cancel" = true ] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
               echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED=${run_id}:${reason}"
             else
