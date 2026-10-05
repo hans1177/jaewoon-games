@@ -1288,7 +1288,8 @@
           "VIBE2_COHORT_FAN_IN_REFILL",
           "VIBE2_24H_FIVE_MINUTE_SAFETY_NET",
           "RECOVERY_FAST_CAUSAL_RETURN"
-        ]
+        ],
+        "laneMax": 64
       },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
@@ -1349,10 +1350,10 @@
       "workLockMayNotCoverReadOnlyExploration": true,
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": "ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT",
-      "refillExample": "ACTIVE_29_FREE_227_AT_EXTERNAL_BOUND_256",
-      "adaptiveControl": "NO_FIXED_INTERNAL_CAP; BASELINE_256; PRESSURE_FLOOR_30; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_30; HEALTHY_CAPACITY_RECOVERS_TOWARD_256",
-      "gamePrimaryFixedInternalCap": null,
+      "gamePrimaryActiveExecutionCap": "FIXED_REPEAT_DEVELOPMENT_64",
+      "refillExample": "ACTIVE_48_FREE_16_AT_FIXED_REPEAT_DEVELOPMENT_64",
+      "adaptiveControl": "GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_64; TELEMETRY_MAY_OBSERVE_PRESSURE_BUT_MAY_NOT_CHANGE_RESERVATION_TARGET",
+      "gamePrimaryFixedInternalCap": 64,
       "reserveIngressRuntimeSync": {
         "required": true,
         "source": "company-runtime:development-queue.json",
@@ -1511,7 +1512,10 @@
         "assetDevelopmentWorkerRunner": "ubuntu-24.04-arm",
         "gamePrimaryPrewarmRunner": "ubuntu-latest"
       },
-      "externalSpareBeyond30": "AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP"
+      "externalSpareBeyond30": "SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_64",
+      "repeatDevelopmentFixedSlots": 64,
+      "repeatDevelopmentAutomaticRefill": true,
+      "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY"
     },
     "liveShadowRepairLoop": {
       "path": [
@@ -7059,5 +7063,18 @@
     "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
     "sourceOnlyPassIsNotQualityPass": true,
     "newWorkflowQueueOrScheduler": false
+  },
+  "fixedRepeatDevelopment64": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency",
+    "executionLane": "GAME_PRIMARY",
+    "logicalFixedSlots": 64,
+    "externalProviderBoundary": 256,
+    "externalProviderBoundaryIsPhysicalOnly": true,
+    "assetDevelopmentSlots": 63,
+    "auxiliaryLanesExcluded": true,
+    "refill": "TASK_MICRO_FANIN_AND_FIVE_MINUTE_SAFETY_NET",
+    "sequenceLockUnchanged": true,
+    "newTopologyCreated": false
   }
 }
