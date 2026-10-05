@@ -12,6 +12,43 @@ const unique = values => [...new Set((values || []).map(text).filter(Boolean))];
 const clamp = (value,min,max) => Math.max(min,Math.min(max,Number(value)||0));
 
 export const MOTION_DIRECTOR_TARGET='HIGH_END_COMPOSABLE_MOTION_DIRECTOR';
+// 작성자가 제공한 연습용 교재다. 런타임에서 검증된 학습 기록이나 모델 가중치가 아니다.
+export function createRobloxWalkTeachingRecipe(unit={}){
+  if(!unit||typeof unit!=='object')return null;
+  const objectId=text(unit.objectId),slug=objectId.replace(/^roblox-world-ghost-/,'');
+  if(unit.scope!=='INTERNAL_ASSET_LIBRARY'||!objectId.startsWith('roblox-world-ghost-')||
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)||unit.clipId!=='walk'||unit.sourcePath!=='init.luau')return null;
+  return Object.freeze({
+    id:'ROBLOX_WALK_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',
+    runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    objectId,clipId:'walk',
+    use:'Adapt only applicable lessons inside the bound Motion.walk sourceWindow. Keep lockedSource, preservedAxes, existing rate/duration, rig names and non-target form branches. Diagnose from source first; visual improvement still needs native observation.',
+    lessons:freezeList([
+      Object.freeze({axis:'POSE_AND_STAGING',cause:'Equal motion on every joint hides the support leg and silhouette.',repair:'Keep the existing form and pose helper. Stage torso lean over the support side; use a smaller opposing shoulder rotation. Keep the head readable. Preserve floating, wheel, bound, serpent and multi-leg behavior; never paste a biped gait over them.'}),
+      Object.freeze({axis:'WEIGHT_AND_BALANCE',cause:'Independent bob frequencies drift away from the stepping rhythm.',repair:'Derive gait-related sway and bob from the existing phase. A two-step bob uses cos(2*phase); torso sway uses sin(phase). These are visual cues, not a center-of-mass or ground-contact solution. Keep separate breathing only if the existing blend/loop contract allows it.'}),
+      Object.freeze({axis:'JOINT_ARCS_AND_SPACING',cause:'A clipped sine lift has a velocity corner at contact.',repair:'For a compatible swing envelope use max(0,sin(phase)) squared: height and first derivative meet zero at either contact boundary. Opposite legs use phase+pi. Fit amplitude and local axis to the existing rig; do not add unknown knee bones.'}),
+      Object.freeze({axis:'CONTACT_AND_CONSTRAINTS',cause:'A local foot offset cannot lock a foot in world space.',repair:'Use the zero-lift half-cycle as an intended stance interval only. Measure world-space foot drift and floor penetration on the actual moving rig. Let the existing root/IK owner resolve contact; never change root movement or claim planting from this envelope alone.'}),
+      Object.freeze({axis:'OVERLAP_AND_SETTLE',cause:'All joints reversing together looks rigid.',repair:'Use a small bounded phase delay for an existing tail, sleeve or head channel; reduce distal amplitude as needed. Delay means phase-lag in radians, not an accumulating offset. Keep sampling a pure function of time so frame order cannot change the result.'}),
+      Object.freeze({axis:'LOOP_AND_TRANSITION',cause:'Position matching alone can still leave a velocity snap.',repair:'For periodic gait channels compare poses and finite-difference velocities at 0 and T=2*pi/rate, including nearby samples. Do not modulo Euler angles into a discontinuity. Inspect the existing idle/walk transition and blends in-engine; source continuity alone is not native QA.'})
+    ]),
+    example:Object.freeze({
+      contract:'Luau scalar example; phase is the EXISTING time*rate in radians. Insert selected expressions in the existing function, then feed only compatible existing pose channels. Coefficients are starting points, not verified rig values. No shared helper, new file, root edit or replacement of the entire motion is required.',
+      source:[
+        'local leftSwing = math.max(0, math.sin(phase))',
+        'local rightSwing = math.max(0, math.sin(phase + math.pi))',
+        'local leftLift = 0.06 * leftSwing * leftSwing',
+        'local rightLift = 0.06 * rightSwing * rightSwing',
+        'local torsoSway = 0.025 * math.sin(phase)',
+        'local torsoBob = 0.015 * (1 - math.cos(2 * phase))',
+        'local shoulderCounter = -0.6 * torsoSway',
+        'local followThrough = 0.035 * math.sin(phase - 0.25)'
+      ].join('\n')
+    }),
+    exercise:'Choose the weakest applicable axis; make a real executable before/after edit in its responsible pose channel. Use the existing six-axis motionRepairReport; preserve only predeclared sound axes. Renaming constants, adding unused helpers, or returning this lesson text is not a source refinement.',
+    checks:freezeList(['Sample the full existing cycle and contact boundaries; all original bones retain finite bounded x/y/z/rx/ry/rz and Root stays unchanged.','Sample times in reverse order too: identical inputs must yield identical poses.','On native same-camera/speed before-after captures inspect silhouette, support, foot drift, penetration, overlap and the loop/transition. Record uncertainty; do not self-promote to VERIFIED.'])
+  });
+}
+
 export const ROBLOX_CHARACTER_MOTION_FAILURE='CHARACTER_MOTION_MANNEQUIN';
 export const ROBLOX_ACTOR_CLASSES=Object.freeze(['PLAYER','HUMANOID_NPC','CREATURE']);
 export const ROBLOX_MOTION_SOURCE_PRIORITY=Object.freeze([

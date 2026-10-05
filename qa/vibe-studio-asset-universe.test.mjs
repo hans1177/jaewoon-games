@@ -9,7 +9,9 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
+  createAssetProductionTeachingRecipe,
   STUDIO_ASSET_FAMILIES,
+  ASSET_STYLE_FAMILIES,
   STUDIO_ASSET_QUALITY_MAX,
   STUDIO_ASSET_QUALITY_WEIGHTS,
   INTERNAL_ASSET_AUDIT_MAX,
@@ -119,6 +121,39 @@ const fullQualityEvidence=Object.freeze({
   VFX_AUDIO_COHESION:100,
   ORIGINALITY_IDENTITY:100,
   MOBILE_PERFORMANCE:100
+});
+
+test('asset teacher covers every registered object family, base material family and canonical style',()=>{
+  const registry=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+  const before=JSON.stringify(registry);
+  const families=[...new Set([...registry.assets.map(row=>row.family||row.category),...Object.keys(registry.baseMaterialLibrary.families)])];
+  assert.deepEqual([...families].sort(),[...STUDIO_ASSET_FAMILIES].sort());
+  for(const styleFamily of ASSET_STYLE_FAMILIES){
+    const recipe=createAssetProductionTeachingRecipe({families,styleBible:{styleFamily}});
+    assert.deepEqual(recipe.unmappedFamilies,[],styleFamily);
+    assert.equal(recipe.familyLessons.length,families.length,styleFamily);
+    assert.equal(recipe.style.needsSpecificBrief,false,styleFamily);
+    assert.ok(recipe.style.lesson.length>40,styleFamily);
+    assert.equal(recipe.runtimeVerified,false);
+    assert.equal(recipe.productionVerified,false);
+  }
+  assert.equal(JSON.stringify(registry),before);
+  const unknown=createAssetProductionTeachingRecipe({families:['UNKNOWN_FAMILY'],styleBible:{styleFamily:'UNKNOWN_STYLE'}});
+  assert.deepEqual(unknown.unmappedFamilies,['UNKNOWN_FAMILY']);
+  assert.equal(unknown.style.needsSpecificBrief,true);
+});
+
+test('asset teacher maps production aliases and respects a selected art lock without conflating cozy and cartoon',()=>{
+  const recipe=createAssetProductionTeachingRecipe({families:['npc','monster','animal','plant','background','item','effect','animation'],styleBible:{styleFamily:'DARK_CARTOON'}});
+  assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CHARACTER','CREATURE','ENVIRONMENT','PROP','VFX','MOTION']);
+  assert.equal(recipe.style.profileKey,'TOON_NOIR');
+  const cozy=createStyleBible({styleFamily:'COZY'}),cartoon=createStyleBible({styleFamily:'CARTOON'});
+  assert.notEqual(cozy.shapeLanguage,cartoon.shapeLanguage);
+  assert.equal(cozy.styleExpression.axes.MOTION_ENERGY,'SUBTLE');
+  assert.equal(cartoon.styleExpression.axes.MOTION_ENERGY,'EXAGGERATED');
+  const locked=createAssetProductionTeachingRecipe({styleBible:{...cozy,shapeLanguage:'OWNER_SHAPE',styleExpression:{axes:{MOTION_ENERGY:'EXPRESSIVE'}}}});
+  assert.equal(locked.style.shape,'OWNER_SHAPE');
+  assert.equal(locked.style.expression.axes.MOTION_ENERGY,'EXPRESSIVE');
 });
 
 function sharedCustomizationFixture(){

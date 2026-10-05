@@ -30,6 +30,42 @@ test.afterEach(() => {
 });
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
+test('asset teacher consumes canonical production decisions and styles in the real source prompt',()=>{
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'demo',goal:'character enemy boss background item prop effect ui animation',styleFamily:'COZY'},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const order={target:'roblox',goal:'asset production',selectedTask:{assetProductionLane:true},assetProduction:plan};
+  const context={files:[]},marker='[INTERNAL ASSET TEACHER PRACTICE BEGIN]';
+  const prompt=buildPrompt(order,context,[]);
+  assert.equal(prompt.split(marker).length-1,1);
+  const recipe=JSON.parse(prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(recipe.unmappedFamilies,[]);
+  for(const family of ['CHARACTER','CREATURE','ENVIRONMENT','PROP','VFX','UI','MOTION'])assert.ok(recipe.familyLessons.some(row=>row.family===family),family);
+  assert.equal(recipe.style.profileKey,'COZY');
+  assert.equal(recipe.style.expression.axes.MOTION_ENERGY,'SUBTLE');
+  assert.equal(recipe.status,'PRACTICE_ONLY');
+  assert.equal(recipe.runtimeVerified,false);
+  assert.ok(!buildPrompt({...order,selectedTask:{}},context,[]).includes(marker));
+  assert.ok(!prompt.includes('[MOTION TEACHER PRACTICE BEGIN]'));
+});
+
+test('walk teacher reaches the existing source prompt once without promoting learning or changing task scope',()=>{
+  const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-bai-wuchang',clipId:'walk',sourcePath:'init.luau',sourceWindow:'function Motion.walk(form, bones, time) return {} end',sourceHash:'a'.repeat(64)};
+  const order={target:'roblox',assetProductionLane:true,goal:'Improve the existing walk',assetProduction:{motionRepairWorkUnit:unit}};
+  const before=JSON.stringify(order);
+  const context={files:[{path:'init.luau',editable:true,content:unit.sourceWindow}]};
+  const prompt=buildPrompt(order,context,['init.luau']);
+  const marker='[MOTION TEACHER PRACTICE BEGIN]';
+  assert.equal(prompt.split(marker).length-1,1);
+  const recipe=JSON.parse(prompt.split(marker+'\n')[1].split('\n[MOTION TEACHER PRACTICE END]')[0]);
+  assert.equal(recipe.id,'ROBLOX_WALK_TEACHER_V1');
+  assert.deepEqual(recipe.lessons.map(row=>row.axis),SINGLE_MOTION_DEPTH_AXES);
+  assert.equal(recipe.runtimeVerified,false);
+  assert.equal(recipe.status,'PRACTICE_ONLY');
+  assert.match(recipe.example.source,/leftSwing \* leftSwing/);
+  assert.match(prompt,/motionRepairReport/);
+  assert.equal(JSON.stringify(order),before);
+  for(const other of [{...order,target:'web'},{...order,assetProductionLane:false},{...order,assetProduction:{}},{...order,assetProduction:{motionRepairWorkUnit:{...unit,clipId:'attack'}}}])assert.ok(!buildPrompt(other,context,['init.luau']).includes(marker));
+});
+
 function singleMotionFixture(t){
   const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const before=['pose = t','weight = t','arc = t','contact = t','overlap = t','settle = t'];

@@ -3311,7 +3311,99 @@ export function buildStudioAssetQuality120Program({assets=[],qualityEvidenceByAs
 }
 
 // 스타일: 조형·표면·연기를 함께 정의하며 실제 메시/클립 적용 전에는 제작 지침이다.
+// 기존 라이브러리의 종류별 기대조건을 실행 가능한 제작 순서로 압축한 작성자 교재.
+// 검증된 자산/가중치/런타임 기록을 만들거나 기존 점수를 올리지 않는다.
+const ASSET_TEACHER_FAMILY_NOTES=Object.freeze({
+  CHARACTER:'Player/NPC: preserve identity and role; build readable head/torso/limb masses, face/hands/feet and clothing layers. Inspect existing rig, deformation, grip sockets, gaze and gait before reuse. NPC occupation changes posture/props, not quest or AI authority.',
+  CREATURE:'Monster/animal: identify the actual body plan first (biped, quadruped, multi-leg, winged, swimming, slithering, floating). Keep species joints, limb count and silhouette; one signature feature before small detail. Match support/contact and appendage lag to that anatomy; never force a humanoid rig.',
+  BUILDING:'Block load-bearing foundation, walls, roof and openings at gameplay scale; align modular seams and door pivots. Add interiors only where visible/required, then joints and cause-based wear. Keep navigation, collision and interaction authority unchanged.',
+  ENVIRONMENT:'Plant/tree/terrain: establish biome and trunk-branch-leaf hierarchy, clustered leaf masses and species silhouette. For wind, local bend=a*h*h*sin(w*t+phase), h clamped to 0..1, keeps the root at h=0 fixed; branch lag stays bounded. Preserve terrain/collision; inspect canopy alpha overdraw and distant LOD.',
+  WEAPON:'Separate functional blade/head, guard and handle masses; preserve grip/socket axes and hand clearance. Match equipped/drop/icon silhouettes. Add material seams and wear at actual contact edges; presentation never changes damage, reach or hit windows.',
+  SKILL:'Build readable anticipation, travel/area, impact and recovery on the existing event timeline. Shape, color and sound must agree on the role. Preserve target/radius/cooldown and server authority; test overlapping effects at the real camera.',
+  MATERIAL:'Separate base color, roughness, metallic and normal roles in the existing native material system. Check scale and response under neutral lighting; place dirt in cavities and wear at exposed/contact edges. Do not bake arbitrary light/shadow into albedo or replace form with noise.',
+  AUDIO:'Create role-specific attack/body/tail and restrained variations using authorized sources or synthesis. Check loop seams, clipping, concurrent voices, distance and mix hierarchy; bind to the existing event once. Hearing a preview is not in-game mix verification.',
+  VFX:'Use a clear primary shape and short supporting layers; synchronize emission to existing events. Budget particles, transparency and lights for the target mobile scene; reuse existing pooling. Effect size/brightness must not hide combat or imply changed hit logic.',
+  UI:'Preserve layout/input/state semantics; produce a coherent icon, border and typography language with readable contrast. Inspect touch targets, safe areas and empty/loading/disabled/error states in the real screen. Decorative polish must not obscure actions or fabricate rewards.',
+  MOTION:'Inspect the existing rig/body plan and clip window first. Shape pose, support/weight, arcs, contact, overlap and loop continuity; adapt only compatible joints. Preserve root ownership, clip duration and event times. Local pose bounds do not prove world-space planting.',
+  PROP:'Identify rigid, hinged, articulated or soft construction. Set the correct pivot, attachment and functional proportions; refine seams/contact wear after silhouette. Keep collision/interaction semantics; animate only the existing movable parts, with bounded secondary motion.'
+});
+
+const ASSET_TEACHER_STYLE_NOTES=Object.freeze({
+  CARTOON:'Bold rounded masses, few value groups, clear key poses; elastic accents only on compatible rigs.',
+  SEMI_CARTOON:'Believable construction with selective proportion exaggeration and clean surfaces.',
+  ANIME_OR_CEL_SHADED:'Clean tapered silhouettes, controlled cel bands and authored highlight shapes; crisp posing.',
+  STYLIZED_FANTASY:'Readable fantasy silhouettes, selected ornate accents and coherent material families.',
+  STYLIZED_REALISM:'Plausible anatomy/construction with selective simplification and observed weight.',
+  DARK_FANTASY:'Weighted angular masses, cause-based weathering and readable silhouettes in controlled darkness.',
+  HIGH_FANTASY:'Heroic mass hierarchy, purposeful ornament and magic motifs that preserve functional joints.',
+  LOW_FANTASY:'Grounded craft, restrained fantasy accents and practical material wear.',
+  WUXIA:'Flowing lines, layered cloth and controlled follow-through; preserve grip and landing contact.',
+  XIANXIA:'Airy layered silhouettes and elevated motifs; bounded cloth/VFX must preserve readable action.',
+  EAST_ASIAN_FANTASY:'Consistent regional craft and architectural grammar; avoid mixing unrelated motifs without a brief.',
+  MYTHIC:'A strong symbolic silhouette and a small coherent motif set before ornamental detail.',
+  FAIRYTALE:'Welcoming exaggerated proportions, organic curves and legible story props.',
+  DREAMLIKE:'Intentional scale/shape contrasts with clear navigation and interaction cues.',
+  GOTHIC:'Vertical rhythm, supported pointed forms and localized weathering; keep dark shapes separable.',
+  HORROR:'One unsettling identity cue, controlled negative space and restrained motion; keep gameplay readable.',
+  COSMIC_HORROR:'Unfamiliar body relationships with deliberate articulation and consistent silhouette logic.',
+  CUTE_CASUAL:'Round primary masses, friendly proportions and minimal surface noise; retain role contrast.',
+  LOW_POLY:'Purposeful facets aligned to form; species-specific masses, broad values and clear contacts.',
+  REALISTIC:'Anatomical joints, physical material scale and causal wear; subtle inertia, no cartoon squash.',
+  SCI_FI:'Functional panels, joints and access seams; deliberate material and emissive hierarchy.',
+  MILITARY_SCI_FI:'Load-bearing gear, readable hard-surface construction and restrained tactical accents.',
+  CYBERPUNK:'Layered urban tech with limited emissive focal points; preserve silhouettes against neon.',
+  STEAMPUNK:'Coherent mechanical linkages, pressure vessels and aged metal; no purposeless gears.',
+  DIESELPUNK:'Heavy industrial masses, visible fastening and restrained oily wear.',
+  POST_APOCALYPSE:'Repairs, salvage and weathering follow construction/history; avoid uniform grime.',
+  PRIMITIVE:'Readable stone/wood/fiber construction with believable bindings and tool marks.',
+  ANCIENT_CIVILIZATION:'A consistent structural/material vocabulary and motif scale; decay follows exposure.',
+  MODERN_URBAN:'Human scale, contemporary construction seams and coherent signage/prop density.',
+  INDUSTRIAL:'Functional support, access, fasteners and material zones before pipes and grime.',
+  OCEANIC:'Marine silhouettes, wet/dry material separation and coherent aquatic/shore anatomy.',
+  SKY_WORLD:'Light silhouettes and anchored floating structures; retain routes and depth cues.',
+  DESERT_CIVILIZATION:'Heat-adapted massing, shaded openings and wind/exposure-based wear.',
+  SNOW_KINGDOM:'Snow rests on supported surfaces; cold palette retains material and role contrast.',
+  JUNGLE_RUINS:'Structure remains readable beneath clustered vegetation; roots/growth follow support.',
+  UNDERGROUND:'Layered rock strata, supported openings and clear routes in low light.',
+  UNDEAD:'Preserve readable original anatomy with localized decay and a controlled gait signature.',
+  MECHANICAL_CIVILIZATION:'Joint-driven motion and consistent machine construction; respect articulation clearance.',
+  CHIBI:'Large head and compact body with clear hands/feet; check balance, equipment clearance and contacts.',
+  INK_WASH:'Large value masses, intentional brush-like edges and sparse accent color; protect silhouette.',
+  WATERCOLOR:'Soft color transitions and selective edge definition; keep focal and interaction shapes crisp.',
+  NOIR:'Graphic light/shadow groups and restrained palette; faces, silhouettes and contacts remain visible.',
+  TOON_NOIR:'Bold cartoon masses plus unsettling asymmetry; graphic shadow, held stares and weighted follow-through.',
+  SOLARPUNK:'Repairable organic technology, welcoming greenery and clean functional material joins.',
+  BIOPUNK:'Organic/technical interfaces follow a readable anatomy and material boundary.',
+  RETRO_FUTURISM:'A consistent era of curves, controls and materials combined with purposeful future elements.',
+  COZY:'Soft round forms, warm restrained values, tactile matte materials and gentle bounded motion; avoid busy microdetail.',
+  PAPER_CRAFT:'Layer thickness, folds and cut edges drive form; preserve visible construction and joint limits.',
+  VOXEL:'Consistent grid scale and purposeful stepped silhouettes; avoid noisy single-cell surface detail.',
+  DREAMCORE:'Familiar simple forms with deliberate surreal contrast; keep spatial and interaction cues clear.',
+  HISTORICAL_EAST_ASIAN:'Use a coherent period/region for garment layering, joinery and roof/prop construction.',
+  SPACE_OPERA:'Heroic technological silhouettes, large panel hierarchy and readable restrained emissive accents.',
+  UNDERWATER_FANTASY:'Aquatic articulation, buoyant secondary motion and depth-separated color/lighting.',
+  DESERT_FANTASY:'Desert construction and cloth protection first, then a coherent fantasy motif hierarchy.',
+  MYTHIC_NORDIC:'Strong timber/stone/metal masses, restrained interlace motifs and exposure-based weathering.'
+});
+
+export function createAssetProductionTeachingRecipe({families=[],styleBible={}}={}){
+  const aliases={PLAYER:'CHARACTER',NPC:'CHARACTER',ENEMY:'CREATURE',BOSS:'CREATURE',MONSTER:'CREATURE',ANIMAL:'CREATURE',BACKGROUND:'ENVIRONMENT',PLANT:'ENVIRONMENT',TREE:'ENVIRONMENT',FOLIAGE:'ENVIRONMENT',TERRAIN:'ENVIRONMENT',ITEM:'PROP',WORLD_PROP:'PROP',CHARACTER_GEAR:'CHARACTER',EFFECT:'VFX',ANIMATION:'MOTION'};
+  const requested=uniq(uniq(families).map(value=>aliases[upper(value)]||upper(value)));
+  const selected=requested.length?requested:STUDIO_ASSET_FAMILIES;
+  const bible=createStyleBible({...styleBible,expressionAxes:styleBible?.expressionAxes||styleBible?.styleExpression?.axes}),style=bible.profileKey;
+  const familyLessons=selected.filter(family=>ASSET_TEACHER_FAMILY_NOTES[family]).map(family=>Object.freeze({family,lesson:ASSET_TEACHER_FAMILY_NOTES[family]}));
+  return Object.freeze({
+    id:'INTERNAL_ASSET_TEACHER_V1',provenance:'TEACHER_AUTHORED',status:'PRACTICE_ONLY',runtimeVerified:false,productionVerified:false,gameplayAuthority:false,
+    familyLessons:freezeList(familyLessons),unmappedFamilies:freezeList(selected.filter(family=>!ASSET_TEACHER_FAMILY_NOTES[family])),
+    style:Object.freeze({family:bible.styleFamily,profileKey:style,lesson:ASSET_TEACHER_STYLE_NOTES[style]||null,needsSpecificBrief:!ASSET_TEACHER_STYLE_NOTES[style],shape:bible.shapeLanguage,material:bible.materialLanguage,motion:bible.animationExaggeration,expression:bible.styleExpression}),
+    inspect:'Open the selected internal source and verify its path/hash, native format, rig/pivots, material channels, variants and existing consumer. A registry entry, image, score or missing path is not a usable native asset or runtime proof. Reuse compatible strong parts; author only missing/weak parts in the existing responsibility. The explicit concept/style lock overrides generic teacher suggestions.',
+    exercise:'Within the current object/source scope: fix the largest silhouette/construction defect, then material separation, articulation/contact and visible detail. Connect the actual native result to the existing consumer. Use before/after executable edits and the existing QA/evidence path; a renamed constant, recipe declaration or unused helper is not production.',
+    verify:'Compare the same camera/light/scale/state before and after: silhouette, structure, material, style, motion/contact when applicable, mobile readability/performance and actual game binding. Keep source identity, gameplay timing, collision, saves and network authority. Record unsupported axes as unverified; this teacher cannot grant learning mastery or commercial/runtime PASS.'
+  });
+}
+
 export const ASSET_STYLE_PROFILES=Object.freeze({
+  COZY:Object.freeze({shapeLanguage:'SOFT_ROUNDED_READABLE_FORMS_WITH_TACTILE_CONSTRUCTION',materialLanguage:'WARM_RESTRAINED_VALUES_MATTE_SURFACES_AND_SPARSE_MICRODETAIL',lightingLanguage:'SOFT_WARM_KEY_READABLE_CONTACT_AND_GENTLE_FILL',characterProportion:'FRIENDLY_READABLE_PROPORTIONS_WITH_STABLE_CONTACT',animationExaggeration:'GENTLE_BOUNDED_SWAY_CLEAR_GESTURES_AND_SOFT_SETTLE',motion:Object.freeze({poseExaggeration:1.05,anticipationScale:1.05,overshootScale:.7,squashStretch:.02,secondaryMotion:.7,recoveryPresentation:1.1})}),
   CARTOON:Object.freeze({shapeLanguage:'BOLD_ROUNDED_PRIMARY_FORMS_WITH_CONTROLLED_ASYMMETRY',characterProportion:'EXPRESSIVE_HEAD_HANDS_AND_CLEAR_BODY_MASSES',materialLanguage:'CLEAN_VALUE_GROUPS_BROAD_HIGHLIGHTS_SPARSE_MICRODETAIL',lightingLanguage:'SOFT_KEY_CLEAR_CONTACT_SHADOW_AND_READABLE_FILL',animationExaggeration:'STRONG_KEY_POSES_ELASTIC_FOLLOW_THROUGH',buildingLanguage:'CHUNKY_BEVELS_CLEAR_MODULE_JOINTS_AND_PLAYFUL_ROOFLINES',motion:Object.freeze({poseExaggeration:1.35,anticipationScale:1.2,overshootScale:1.25,squashStretch:.15,secondaryMotion:1.2,recoveryPresentation:1.1})}),
   DARK_FANTASY:Object.freeze({shapeLanguage:'WEIGHTED_ANGULAR_MASSES_WITH_PURPOSEFUL_ASYMMETRY',characterProportion:'GROUNDED_ANATOMY_WITH_ONE_DISTURBING_SIGNATURE',materialLanguage:'LAYERED_ROUGHNESS_EDGE_WEAR_CAVITY_GRIME_AND_MATERIAL_SEPARATION',lightingLanguage:'DIRECTIONAL_KEY_CONTROLLED_FILL_PRESERVE_DARK_SILHOUETTE',animationExaggeration:'RESTRAINED_INTENT_HEAVY_CONTACT_AND_DELAYED_SETTLE',buildingLanguage:'LOAD_BEARING_FORMS_WEATHERED_JOINTS_AND_LOCALIZED_DECAY',motion:Object.freeze({poseExaggeration:.95,anticipationScale:1.15,overshootScale:.8,squashStretch:0,secondaryMotion:.8,recoveryPresentation:1.2})}),
   TOON_NOIR:Object.freeze({shapeLanguage:'BOLD_CARTOON_MASSES_WITH_UNSETTLING_ASYMMETRIC_DETAIL',characterProportion:'READABLE_EXAGGERATION_WITH_LOCKED_UNIQUE_FACE_AND_POSTURE',materialLanguage:'SIMPLIFIED_VALUE_GROUPS_WITH_FOCUSED_WEAR_AND_RICH_HERO_SURFACES',lightingLanguage:'GRAPHIC_LIGHT_SHADOW_GROUPS_WITH_VISIBLE_FACES_AND_CONTACT',animationExaggeration:'HELD_STARES_SHARP_POSE_CHANGES_WEIGHTED_FOLLOW_THROUGH',buildingLanguage:'CROOKED_BUT_SUPPORTED_MODULES_WITH_LOCAL_STORY_TRACES',motion:Object.freeze({poseExaggeration:1.25,anticipationScale:1.3,overshootScale:1.05,squashStretch:.06,secondaryMotion:1.1,recoveryPresentation:1.2})}),
@@ -3356,6 +3448,7 @@ export const INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS=Object.freeze({
 });
 
 const INTERNAL_ASSET_STYLE_EXPRESSION_PRESETS=Object.freeze({
+  COZY_CALM:Object.freeze({SURFACE_FEEL:'SOFT',SHAPE_TEMPER:'ROUND',EXPRESSION_INTENSITY:'BALANCED',MATERIAL_FINISH:'MATTE',LINE_ENERGY:'CALM',COLOR_ENERGY:'NATURAL',DETAIL_DENSITY:'MINIMAL',DAMAGE_WEAR:'CLEAN',MOTION_ENERGY:'SUBTLE',VFX_ENERGY:'SUBTLE',UI_EXPRESSION:'BALANCED',AUDIO_ENERGY:'SUBTLE',ATMOSPHERE_WEIGHT:'AIRY'}),
   SOFT_PLAYFUL:Object.freeze({SURFACE_FEEL:'SOFT',SHAPE_TEMPER:'ROUND',EXPRESSION_INTENSITY:'EXPRESSIVE',MATERIAL_FINISH:'CLEAN',LINE_ENERGY:'DYNAMIC',COLOR_ENERGY:'VIBRANT',DETAIL_DENSITY:'MEDIUM',DAMAGE_WEAR:'CLEAN',MOTION_ENERGY:'EXAGGERATED',VFX_ENERGY:'PUNCHY',UI_EXPRESSION:'BOLD',AUDIO_ENERGY:'PUNCHY',ATMOSPHERE_WEIGHT:'AIRY'}),
   DARK_ROUGH:Object.freeze({SURFACE_FEEL:'ROUGH',SHAPE_TEMPER:'SHARP',EXPRESSION_INTENSITY:'EXPRESSIVE',MATERIAL_FINISH:'WEATHERED',LINE_ENERGY:'AGGRESSIVE',COLOR_ENERGY:'MUTED',DETAIL_DENSITY:'DENSE',DAMAGE_WEAR:'HEAVY_WORN',MOTION_ENERGY:'GROUNDED',VFX_ENERGY:'PUNCHY',UI_EXPRESSION:'ORNATE',AUDIO_ENERGY:'CINEMATIC',ATMOSPHERE_WEIGHT:'OPPRESSIVE'}),
   FLOWING_RESTRAINED:Object.freeze({SURFACE_FEEL:'BALANCED',SHAPE_TEMPER:'FLOWING',EXPRESSION_INTENSITY:'RESTRAINED',MATERIAL_FINISH:'MATTE',LINE_ENERGY:'FLOWING',COLOR_ENERGY:'MUTED',DETAIL_DENSITY:'SELECTIVE_DENSE',DAMAGE_WEAR:'LIGHT_WORN',MOTION_ENERGY:'EXPRESSIVE',VFX_ENERGY:'READABLE',UI_EXPRESSION:'MINIMAL',AUDIO_ENERGY:'NATURAL',ATMOSPHERE_WEIGHT:'AIRY'}),
@@ -3369,7 +3462,8 @@ export function resolveInternalAssetStyleExpressionProfile({styleFamily='',style
   const family=upper(styleFamily||(typeof firstStyle==='string'?firstStyle:firstStyle?.family)||'STYLIZED_FANTASY');
   const toneSet=new Set(uniq(artTone).map(upper));
   let preset='GENERAL';
-  if(['CARTOON','CUTE_CASUAL','CHIBI','COZY','FAIRYTALE','PAPER_CRAFT'].some(token=>family.includes(token)))preset='SOFT_PLAYFUL';
+  if(family==='COZY')preset='COZY_CALM';
+  else if(['CARTOON','CUTE_CASUAL','CHIBI','FAIRYTALE','PAPER_CRAFT'].some(token=>family.includes(token)))preset='SOFT_PLAYFUL';
   else if(['DARK_FANTASY','HORROR','GOTHIC','NOIR','TOON_NOIR','POST_APOCALYPSE','UNDEAD'].some(token=>family.includes(token)))preset='DARK_ROUGH';
   else if(['WUXIA','INK_WASH','HISTORICAL_EAST_ASIAN','EAST_ASIAN_FANTASY','WATERCOLOR'].some(token=>family.includes(token)))preset='FLOWING_RESTRAINED';
   else if(['REALISTIC','STYLIZED_REALISM','LOW_FANTASY','PRIMITIVE'].some(token=>family.includes(token)))preset='GROUNDED_REAL';

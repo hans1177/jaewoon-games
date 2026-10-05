@@ -17,6 +17,8 @@ import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.m
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {createRobloxWalkTeachingRecipe} from '../assets/vibe-motion-director.js';
+import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -3286,8 +3288,15 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
+  const motionTeaching=order.target==='roblox'&&assetDevelopmentTask(order)?createRobloxWalkTeachingRecipe(motionUnit):null;
+  const assetTeaching=assetDevelopmentTask(order)?createAssetProductionTeachingRecipe({
+    families:motionUnit?['MOTION']:(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),
+    styleBible:order.assetProduction?.styleBible||{styleFamily:order.selectedTask?.styleFamily||order.styleFamily}
+  }):null;
+  const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify(assetTeaching)+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
   const singleMotionBlock=motionUnit?[
     '[SINGLE MOTION WORK UNIT BEGIN]',JSON.stringify(motionUnit),
+    motionTeaching?'[MOTION TEACHER PRACTICE BEGIN]\n'+JSON.stringify(motionTeaching)+'\n[MOTION TEACHER PRACTICE END]':'',
     'One existing object, one existing motion only. Estimate sixty minutes of active modification depth; preparation, QA, waiting and reporting do not fill that estimate. Refine pose/staging, weight/balance, joint arcs/spacing, contact/constraints, overlap/settle, and loop/transition within this one exact sourceWindow. Preserve the original object/clip binding, lockedSource, clip duration and gameplay event times. Do not edit shared functions affecting other objects or clips. Do not switch targets, add motions, or stop at a renamed constant or one cosmetic edit. A complete function-level change may be one edits[] item. Return motionRepairReport: {objectId,clipId,depthEvidence:[{axis,before,after}]} with exactly these axes: '+SINGLE_MOTION_DEPTH_AXES.join(',')+'. Use status CHANGED with distinct exact changed executable source excerpts from the patch. For a sound axis predeclared in preservedAxes, use status PRESERVED with before and after equal to its exact locked excerpt; do not change a sound axis to pad the workload. At least one real refinement remains required. This report proves source scope only, never native animation quality or hours actually worked. Native same-condition before/after inspection remains required.',
     '[SINGLE MOTION WORK UNIT END]'
   ].join('\n'):'';
@@ -3367,6 +3376,7 @@ assetDetailBlock,
 runtimeVisualBlock,
 runtimeVisualRepairBlock,
 singleMotionBlock,
+assetTeachingBlock,
 applyFirstBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
