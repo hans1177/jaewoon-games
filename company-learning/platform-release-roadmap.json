@@ -1,5 +1,5 @@
 {
-  "version": 532,
+  "version": 533,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -15152,7 +15152,24 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "internalAssetFocus": {
+        "enabled": true,
+        "gameId": "horror-escape-room",
+        "sourceRoot": "assets/roblox/world-ghosts/motions",
+        "concurrentSlots": 64,
+        "targetObjectCount": 100,
+        "firstMotion": "walk",
+        "oneObjectPerTask": true,
+        "oneMotionPerTask": true,
+        "estimatedModificationMinutes": 60,
+        "sameFileParallelForbidden": true,
+        "existingQueueAndWorkersOnly": true,
+        "repeatOnVerifiedReviewFeedback": true,
+        "unconditionalSelfRequeue": false,
+        "nativeBeforeAfterQaRequired": true,
+        "preparationIsNotMotionQualityPass": true
+      }
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",

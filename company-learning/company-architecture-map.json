@@ -1,5 +1,5 @@
 {
-  "version": 315,
+  "version": 316,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6979,5 +6979,17 @@
     "newPipeline": false,
     "simplePrototypeWebAccessWithdrawn": true,
     "gameCodeAndSaveDataPreserved": true
+  },
+  "internalAssetMotionRepair": {
+    "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.internalAssetFocus",
+    "sourceRoot": "assets/roblox/world-ghosts/motions",
+    "worker": "EXISTING_ASSET_DEVELOPMENT",
+    "scope": "REGISTERED_PARENT_ONE_DERIVED_OBJECT_ONE_CLIP",
+    "sourceHashAndExactWindowRequired": true,
+    "gameBindingGatesUnchanged": true,
+    "originalSourcePreserved": true,
+    "sharedBindingsSerialized": true,
+    "nativeQualityPassRequiresActualPlayback": true,
+    "status": "IMPLEMENTATION_PENDING_MAIN_QA"
   }
 }

@@ -7,6 +7,39 @@ import os from 'node:os';
 import path from 'node:path';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
+import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
+
+test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    const sourceRoot='assets/roblox/world-ghosts/motions';
+    fs.mkdirSync(path.join(root,sourceRoot),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({assetProductionParallelContract:{parallelism:{internalAssetFocus:{enabled:true,gameId:'horror-escape-room'}}}}));
+    const assets=[];
+    for(let i=0;i<100;i++){
+      const id='ghost-'+i;
+      assets.push({id:'roblox-world-ghost-'+id,intendedConsumerGameIds:['horror-escape-room']});
+      fs.mkdirSync(path.join(root,sourceRoot,id));
+      fs.writeFileSync(path.join(root,sourceRoot,id,'init.luau'),'local Motion={}\nMotion.AssetId = "'+id+'"\nfunction Motion.walk(form,bones,time)\n local state="walk"\n return {}\nend\nreturn Motion\n');
+    }
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets}));
+    const project={gameId:'horror-escape-room',engine:'roblox',releaseState:'development-confirmed'};
+    const tasks=findSafeTasks(project,root,{tasks:[]});
+    assert.equal(tasks.length,100);
+    assert.equal(new Set(tasks.flatMap(task=>task.responsibleFiles)).size,100);
+    for(const task of tasks){
+      const unit=task.motionRepairWorkUnit;
+      assert.equal(unit.objectCount,1);assert.equal(unit.motionCount,1);assert.equal(unit.estimatedModificationMinutes,60);
+      assert.match(unit.sourceHash,/^[a-f0-9]{64}$/);
+      assert.ok(unit.sourceWindow.startsWith(unit.clipBindingEvidence));
+      assert.equal(task.responsibleFiles[0],task.sourceRoot+'/'+unit.sourcePath);
+    }
+    assert.equal(findSafeTasks(project,root,{tasks:tasks.slice(0,64)}).length,36);
+    fs.writeFileSync(path.join(root,sourceRoot,'unregistered.luau'),'function Motion.walk()end');
+    assert.equal(findSafeTasks(project,root,{tasks:[]}).length,100);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
@@ -4580,4 +4613,3 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
 });
-

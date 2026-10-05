@@ -124,6 +124,7 @@ export function planVibeCoreTask({
   experienceMemory = null,
   departments = [],
   motion = null,
+  motionRepairWorkUnit = null,
   queue = null,
   ownerDirective = false
 } = {}) {
@@ -139,7 +140,8 @@ export function planVibeCoreTask({
     artbookStatus,
     artbookCutCount,
     artbookPostprocessComplete,
-    artbookRef
+    artbookRef,
+    motionRepairWorkUnit
   });
   const resolvedDepartments = freezeList(inferDepartments(workbench, departments));
   const memory = createVibeExperienceMemory(experienceMemory || {});

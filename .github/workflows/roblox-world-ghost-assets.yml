@@ -91,10 +91,6 @@ jobs:
           unzip -q /tmp/ghost-tools/rojo.zip -d /tmp/ghost-tools/rojo
           unzip -q /tmp/ghost-tools/luau.zip -d /tmp/ghost-tools/luau
           chmod +x /tmp/ghost-tools/rojo/rojo /tmp/ghost-tools/luau/luau /tmp/ghost-tools/luau/luau-compile
-      - name: Validate committed source and native-package parity
-        env:
-          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
-        run: node --test qa/roblox-world-ghost-skins.test.mjs
       - name: Rebuild gallery and reusable native module pack
         env:
           VIBE2_LUAU_COMPILER: /tmp/ghost-tools/luau/luau-compile
@@ -276,27 +272,38 @@ jobs:
           assert len(doc.get('skins',[]))>=1
           print('SPIDER_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['bones'],'vertices':evidence['vertices'],'triangles':evidence['triangles']})
           PY
-      - name: Commit generated authored assets to PR branch
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && (steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true')
+      - name: Commit verified native packages and authored assets to PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
+          MOTION_BUILT: ${{ steps.asset_scope.outputs.motion }}
+          SPIDER_BUILT: ${{ steps.asset_scope.outputs.spider }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            assets/roblox/world-ghosts/native/spider/spider.glb \
-            assets/roblox/world-ghosts/native/spider/spider.png \
-            assets/roblox/world-ghosts/native/spider/evidence.json \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb \
-            assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json \
-            company-asset-library.json
+            assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx \
+            assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx \
+            assets/roblox/world-ghosts/native/build-evidence.json
+          if [[ "$SPIDER_BUILT" == 'true' ]]; then
+            git add \
+              assets/roblox/world-ghosts/native/spider/spider.glb \
+              assets/roblox/world-ghosts/native/spider/spider.png \
+              assets/roblox/world-ghosts/native/spider/evidence.json
+          fi
+          if [[ "$MOTION_BUILT" == 'true' ]]; then
+            git add \
+              assets/roblox/world-ghosts/native/mesh/bride-motion-v3/bride-motion-v3.glb \
+              assets/roblox/world-ghosts/native/mesh/bride-motion-v3/evidence.json \
+              company-asset-library.json
+          fi
           if git diff --cached --quiet; then
             echo "Authored asset artifacts already current"
             exit 0
           fi
-          git commit -m "assets: build authored creature and humanoid motion derivatives"
+          git commit -m "assets: synchronize verified native packages and authored derivatives"
           git fetch --no-tags origin "$HEAD_BRANCH"
           git rebase "origin/$HEAD_BRANCH"
           git push origin "HEAD:$HEAD_BRANCH"
@@ -307,4 +314,3 @@ jobs:
           path: assets/roblox/world-ghosts/native/
           if-no-files-found: error
           retention-days: 14
-

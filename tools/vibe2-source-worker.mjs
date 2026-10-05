@@ -139,7 +139,7 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){const args={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)args[body]=true;else args[body.slice(0,at)]=body.slice(at+1);}return args;}
 function targetExtensions(target){const x=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!x)throw new Error(`지원하지 않는 Vibe2 source target: ${target}`);return x;}
 function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
-function assertSourceRoot(root,target){const normalized=posix(root);if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
+function assertSourceRoot(root,target,order={}){const normalized=posix(root);if(normalized.startsWith('assets/roblox/world-ghosts/motions/')){const unit=order?.assetProduction?.motionRepairWorkUnit;if(target!=='roblox'||order?.source?.internalAssetMotion!==true||unit?.scope!=='INTERNAL_ASSET_LIBRARY'||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(unit.objectId)||unit.sourcePath!=='init.luau'||normalized!=='assets/roblox/world-ghosts/motions/'+unit.objectId.slice('roblox-world-ghost-'.length))throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');return normalized;}if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
 function assertRelativeSourcePath(relative,target){const normalized=posix(relative);if(!normalized||normalized.startsWith('/')||normalized.split('/').includes('..'))throw new Error(`잘못된 상대 경로: ${relative}`);if(target==='system'&&!isAllowedSystemArchitecturePath(normalized))throw new Error(`system architecture 허용 경로 아님: ${relative}`);const ext=path.extname(normalized).toLowerCase();if(BINARY_EXTENSIONS.has(ext))throw new Error(`엔진 에디터 필요 바이너리 파일: ${relative}`);if(!targetExtensions(target).has(ext))throw new Error(`텍스트 worker 허용 확장자 아님: ${relative}`);return normalized;}
 function normalizeResponsibleFiles(order,root,target){return(order?.source?.responsibleFiles||[]).map(value=>{const normalized=posix(value);const relative=normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;return assertRelativeSourcePath(relative,target);}).filter(Boolean);}
 function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
@@ -1803,6 +1803,15 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
     if(typeof unit[key]!=='string'||!unit[key].trim())return fail('SINGLE_MOTION_BINDING_REQUIRED:'+key);
   }
   const relative=posix(unit.sourcePath);
+  if(unit.scope==='INTERNAL_ASSET_LIBRARY'){
+    const id=clean(unit.objectId).replace(/^roblox-world-ghost-/,'');
+    if(order?.source?.root!=='assets/roblox/world-ghosts/motions/'+id||order?.source?.internalAssetMotion!==true
+      ||relative!=='init.luau'||responsibleFiles.length!==1||unit.clipId!=='walk')return fail('INTERNAL_MOTION_EXACT_RESPONSIBILITY_REQUIRED');
+    const registry=readJson(path.resolve(sourceRoot,'../../../../../company-asset-library.json'),{});
+    const asset=(registry.assets||[]).find(row=>row.id===unit.objectId);
+    if(!asset||(asset.intendedConsumerGameIds||[]).includes(order.gameId)!==true)return fail('INTERNAL_MOTION_REGISTERED_PARENT_REQUIRED');
+    if(unit.objectBindingEvidence!=='Motion.AssetId = "'+id+'"'||unit.clipBindingEvidence!=='function Motion.walk(form,bones,time)')return fail('INTERNAL_MOTION_BINDING_INVALID');
+  }
   if(relative.startsWith('/')||relative.split('/').includes('..')||!responsibleFiles.includes(relative))return fail('SINGLE_MOTION_RESPONSIBLE_PATH_REQUIRED');
   let source;
   try{
@@ -2278,6 +2287,10 @@ function gatedRetryStrategyGuidance(order = {}) {
 export function assertAllGameDynamicAssetBindingContract({order={},target='',usageContract={}}={}){
   const resolved=clean(target||order?.target).toLowerCase();
   if(resolved==='system')return Object.freeze({required:false,pass:true,target:resolved});
+  if(order?.source?.internalAssetMotion===true){
+    if(!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(order.source.root)||order?.assetProduction?.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');
+    return Object.freeze({required:false,pass:true,target:resolved,scope:'INTERNAL_ASSET_AUTHORING',runtimeVerified:false});
+  }
   const canonical=Boolean(order?.compiledWorkContract&&typeof order.compiledWorkContract==='object'&&Object.keys(order.compiledWorkContract).length);
   if(!canonical)return Object.freeze({required:false,pass:true,target:resolved,fixtureOrNonCanonical:true});
   const plan=order?.assetProduction?.allGameDynamicLibraryBinding||{};
@@ -2761,6 +2774,7 @@ function internalAssetApiIndexGuidance(context={}){
 }
 
 function internalAssetSourceUsageGuidance(order={}){
+  if(order?.source?.internalAssetMotion===true)return '[INTERNAL ASSET AUTHORING] Edit only the registered parent object and exact derived walk function in the source-bound work unit. Preserve the parent source, all other clips and gameplay roots. Library-wide game binding belongs to the unchanged consumer; do not add game UI, asset-family markers or other objects to this derived motion file. Native before/after playback remains required.';
   const contract=order?.internalAssetSourceUsage||buildInternalAssetSourceUsageContract(order);
   if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
   const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
@@ -2797,6 +2811,7 @@ function internalAssetSourceUsageGuidance(order={}){
 }
 
 function universalAssetWorkerGuidance(order={}) {
+  if(order?.source?.internalAssetMotion===true)return '';
   const target=clean(order?.target).toLowerCase();
   if(!['roblox','unity','web'].includes(target))return'';
   const loadout=order?.assetProduction?.baseMaterialLoadout||{};
@@ -3113,7 +3128,7 @@ export function buildVerifiedExternalLearningPromptContract(order={}){
   for(const id of ids)if(!byId.has(id))throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_ROW_MISSING:'+id);
   const gameId=clean(order?.selectedTask?.gameId||order?.gameId);
   const target=clean(order?.target||order?.selectedTask?.target);
-  const semantic=classifyVerifiedExternalBlackBoxPrinciples(ids.map(id=>byId.get(id)),{gameId,target});
+  const semantic=classifyVerifiedExternalBlackBoxPrinciples(ids.map(id=>byId.get(id)),{gameId,target,sourceScope:order?.source?.internalAssetMotion?'INTERNAL_ASSET_LIBRARY':''});
   if(!semantic.allDisposed)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_MAPPING_REQUIRED:'+semantic.failClosed.map(row=>row.id).join(','));
   if(contract.allRetrievedPrinciplesHaveExplicitDisposition!==true)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_DISPOSITIONS_MISSING');
   const declared=contract.verifiedExternalLearningDispositions||[];
@@ -4997,7 +5012,7 @@ function createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFil
   }
   return[...new Set(changed)];
 }
-export function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompiler=''}={}){
+export function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompiler='',internalMotionUnit=null}={}){
   const roblox=target==='roblox';
   const failurePrefix=roblox?'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:LUAU_SYNTAX':'SYSTEM_CANDIDATE_SYNTAX_INVALID';
   const touched=unique([
@@ -5034,6 +5049,19 @@ export function validateCandidateSyntax({candidate,sourceRoot,target='system',lu
         const detail=clean(error?.stderr||error?.stdout||error?.message||error).replaceAll(tempRoot,'[candidate]').replace(/\s+/g,' ').slice(0,360);
         throw new Error(failurePrefix+':'+relative+':'+detail);
       }
+    }
+    if(internalMotionUnit?.scope==='INTERNAL_ASSET_LIBRARY'){
+      const id=internalMotionUnit.objectId.slice('roblox-world-ghost-'.length);
+      if(!roblox||touched.length!==1||touched[0]!=='init.luau'||path.basename(sourceRoot)!==id)throw new Error('INTERNAL_MOTION_EXACT_RESPONSIBILITY_REQUIRED');
+      const assetRoot=path.resolve(sourceRoot,'../..');
+      const catalog=fs.readFileSync(path.join(assetRoot,'GhostSkinCatalog.luau'),'utf8');
+      const factory=fs.readFileSync(path.join(assetRoot,'GhostSkinFactory.luau'),'utf8');
+      const motion=fs.readFileSync(path.join(tempRoot,'init.luau'),'utf8');
+      const check=path.join(tempRoot,'motion-check.luau');
+      fs.writeFileSync(check,`local Catalog=(function()${catalog}\nend)()\nlocal script={Parent={WaitForChild=function()return 'catalog'end}}\nlocal require=function()return Catalog end\nlocal Factory=(function()${factory}\nend)()\nlocal Motion=(function()${motion}\nend)()\nlocal data=Factory.Describe(${JSON.stringify(id)})\nassert(Motion.AssetId==data.id,'MOTION_IDENTITY_CHANGED')\nfor frame=0,128 do\n local poses=Motion.walk(data.form,data.bones,frame/32)\n for name in pairs(poses)do assert(data.bones[name],'UNKNOWN_MOTION_JOINT')end\n for name in pairs(data.bones)do\n  local pose=assert(poses[name],'MISSING_MOTION_JOINT')\n  for _,axis in ipairs({'x','y','z','rx','ry','rz'})do\n   local value=pose[axis]\n   assert(type(value)=='number' and value==value and math.abs(value)<16,'MOTION_POSE_UNBOUNDED')\n   if name=='Root'then assert(value==0,'GAMEPLAY_ROOT_CHANGED')end\n  end\n end\nend\n`,'utf8');
+      const interpreter=path.join(path.dirname(luauCompiler),process.platform==='win32'?'luau.exe':'luau');
+      try{execFileSync(interpreter,[check],{encoding:'utf8',timeout:15000,maxBuffer:262144,stdio:['ignore','pipe','pipe']});}
+      catch(error){throw new Error('INTERNAL_MOTION_LUAU_BOUNDS_REQUIRED:'+clean(error?.stderr||error?.message).replaceAll(tempRoot,'[candidate]').slice(0,360));}
     }
     const structuralChangedFiles=[];
     if(roblox){
@@ -5122,7 +5150,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
   const target=clean(order.target).toLowerCase();
-  const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
+  const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
   const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
@@ -5215,7 +5243,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     &&systemRegressionFiles.length>0
     &&systemSourceFiles.length>0
     &&(order?.selectedTask?.completionCriteria||[]).some(value=>/BEFORE_AFTER|CAUSAL_PROOF|STRUCTURAL_CAUSE/i.test(clean(value)));
-  const robloxInternalAssetApplicationRequired=target==='roblox'
+  const robloxInternalAssetApplicationRequired=target==='roblox'&&order?.source?.internalAssetMotion!==true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
   const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>
@@ -5227,6 +5255,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       ...(candidate.newFiles||[]).map(row=>row.path),
       ...(candidate.replaceFiles||[]).map(row=>row.path)
     ]);
+    const singleMotionCheck=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles,candidate});
+    if(!singleMotionCheck.pass)throw new Error(singleMotionCheck.reason);
     if(target==='roblox'&&sourceRootExists){
       const modelControlToken=/(?:\/no_think\b|<\/?think\b|\`\`\`)/i;
       const robloxRows=[
@@ -5330,8 +5360,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const testTouched=systemRegressionFiles.some(file=>touched.has(file));
       if(!sourceTouched||!testTouched)throw new Error('SYSTEM_CAUSAL_TEST_REQUIRED:SOURCE_AND_REGRESSION_TEST_MUST_CHANGE_TOGETHER');
     }
-    if(target==='roblox'&&!luauCompiler&&process.env.VIBE2_LUAU_COMPILE_REQUIRED==='true')throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:NOT_CONFIGURED');
-    const sourceSyntax=target==='system'||(target==='roblox'&&luauCompiler)?validateCandidateSyntax({candidate,sourceRoot,target,luauCompiler}):{pass:null,scope:'NOT_EXECUTED',runtimeVerified:false};
+    if(target==='roblox'&&!luauCompiler&&(process.env.VIBE2_LUAU_COMPILE_REQUIRED==='true'||order?.source?.internalAssetMotion===true))throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:NOT_CONFIGURED');
+    const sourceSyntax=target==='system'||(target==='roblox'&&luauCompiler)?validateCandidateSyntax({candidate,sourceRoot,target,luauCompiler,internalMotionUnit:order?.source?.internalAssetMotion?order.assetProduction.motionRepairWorkUnit:null}):{pass:null,scope:'NOT_EXECUTED',runtimeVerified:false};
     const candidateSelfReview=evaluateCandidateSelfReview({candidate,order,exploration,responsibleFiles,sourceRoot});
     if(candidateSelfReview.required&&!candidateSelfReview.pass)throw new Error('CANDIDATE_SELF_REVIEW_REQUIRED:'+candidateSelfReview.issues.join('|'));
     const result=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
@@ -5378,8 +5408,6 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         if(studioAxisCount<3)throw new Error('STUDIO_QUALITY_DELTA_REQUIRED:ASSET_AXES:'+studioAxisCount+'/3');
       }
     }
-    const singleMotionCheck=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles,candidate});
-    if(!singleMotionCheck.pass)throw new Error(singleMotionCheck.reason);
     const nativeAuthoringCheck=evaluateNativeAssetAuthoringCandidate({order,candidate});
     if(nativeAuthoringCheck.generatedAssetBindingRequired===true&&nativeAuthoringCheck.generatedAssetBindingApplied!==true){
       throw new Error('GENERATED_ASSET_BINDING_REQUIRED:'+(nativeAuthoringCheck.generatedNativeArtifacts||[]).join(','));
