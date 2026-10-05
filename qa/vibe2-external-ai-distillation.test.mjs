@@ -1,6 +1,7 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { distillExternalAiKnowledge, validateExternalAiCandidate } from '../tools/vibe2-external-ai-distillation.mjs';
+import { distillExternalAiKnowledge, validateExternalAiCandidate, isTrustedDistilledExternalAiEntry } from '../tools/vibe2-external-ai-distillation.mjs';
 import { collectMultiSourceLearningMaterials } from '../tools/vibe2-multisource-learning-collector.mjs';
 
 const verifiedCandidate={
@@ -124,4 +125,29 @@ test('distilled external AI never outranks internal verified material when capac
   assert.equal(result.materials.length,1);
   assert.notEqual(result.materials[0].sourceType,'external-ai-distilled-verified');
   assert.equal(result.materials[0].externalAdvisoryLast,false);
+});
+
+
+test('seeded advanced coding graphics rig material and vfx knowledge stays verified advisory-only',()=>{
+  const store=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const required=[
+    'external-ai-distilled:openai-advanced-coding-v1',
+    'external-ai-distilled:openai-visual-aesthetic-v1',
+    'external-ai-distilled:openai-rig-joint-motion-v1',
+    'external-ai-distilled:openai-material-lighting-v1',
+    'external-ai-distilled:openai-vfx-camera-readability-v1'
+  ];
+  for(const id of required){
+    const row=store.entries.find(item=>item.id===id);
+    assert.ok(row,id);
+    assert.equal(isTrustedDistilledExternalAiEntry(row),true,id);
+    assert.equal(row.rawOutputStored,false,id);
+    assert.equal(row.directSourceWrite,false,id);
+    assert.equal(row.directProductionPass,false,id);
+    assert.equal(row.directMasteryCredit,false,id);
+    assert.equal(row.directTrainingSample,false,id);
+    assert.equal(row.verification.method,'source-backed-review',id);
+    assert.ok(row.verification.evidence.length>=2,id);
+    assert.ok(row.patterns.length>=6,id);
+  }
 });

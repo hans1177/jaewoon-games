@@ -1132,11 +1132,24 @@ function failureFingerprintForExperience(record={}){
   return [lower(record.engine)||'any',...classes,...domains].filter(Boolean).join('|');
 }
 
+function assetMotionIdentity(value={}){
+  const unit=value?.motionRepairWorkUnit&&typeof value.motionRepairWorkUnit==='object'?value.motionRepairWorkUnit:null;
+  const directObject=lower(unit?.objectId),directClip=lower(unit?.clipId);
+  if(directObject&&directClip)return directObject+'|'+directClip;
+  const text=[value?.id,value?.goal,value?.problem,value?.change,...(value?.evidence||[])].map(clean).filter(Boolean).join(' ');
+  const taskId=text.match(/internal-motion-([a-z0-9-]+?)-(idle|walk|chase|attack|hit|death)(?:-v\d+)?\b/i);
+  if(taskId)return 'roblox-world-ghost-'+lower(taskId[1])+'|'+lower(taskId[2]);
+  const object=text.match(/roblox-world-ghost-([a-z0-9-]+)/i);
+  const clip=text.match(/\b(idle|walk|chase|attack|hit|death)\b/i);
+  return object&&clip?'roblox-world-ghost-'+lower(object[1])+'|'+lower(clip[1]):null;
+}
+
 export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},practiceDistilledInput={},externalAiDistilledInput={},masteryInput={}}={}){
   const qWords=words([task.goal,task.gameId,task.target,task.genre,task.blocker,task.lastOutcome,...(task.evidence||[])].filter(Boolean).join(' '));
   const gameId=clean(task.gameId);
   const engine=lower(task.target);
   const failureFingerprint=failureFingerprintForTask(task);
+  const taskAssetMotionIdentity=assetMotionIdentity(task);
   const taskFailureCodes=explicitFailureCodes([task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
   const mastery=createMasteryState(masteryInput);
   const domainClassification=classifyLearningDomains(task);
@@ -1152,6 +1165,9 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
       ...(record.evidence||[]),...(record.avoidPatterns||[]),...(record.reusablePatterns||[])
     ].map(clean).filter(Boolean));
     const sameGame=Boolean(gameId&&clean(record.gameId)===gameId);
+    const recordAssetMotionIdentity=assetMotionIdentity(record);
+    const sameAssetMotion=Boolean(taskAssetMotionIdentity&&recordAssetMotionIdentity===taskAssetMotionIdentity);
+    if(sameAssetMotion){score+=220;reasons.push('same-asset-same-motion');}
     const exactFailureFingerprint=Boolean(failureFingerprint&&recordFailureFingerprint===failureFingerprint);
     const sharedFailureCode=taskFailureCodes.find(code=>recordFailureCodes.includes(code))||null;
     const sameFailure=Boolean(exactFailureFingerprint||sharedFailureCode);
@@ -1267,7 +1283,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:[...(taskAssetMotionIdentity?['EXACT_ASSET_AND_MOTION_VERIFIED']:[]),'SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
     failureFingerprint,
     domainClassification,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
@@ -1294,7 +1310,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
 export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
-  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  const exactAssetMotionPriority=(context.priority||[]).includes('EXACT_ASSET_AND_MOTION_VERIFIED');
+  const lines=['[VIBE VERIFIED LEARNING MOTOR]',exactAssetMotionPriority?'우선순위=exact-asset+motion > same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.':'우선순위=same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
   if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
   if(context.domainClassification)lines.push(`- learning-domains=PRIMARY[${(context.domainClassification.primary||[]).join(',')||'none'}] SECONDARY[${(context.domainClassification.secondary||[]).join(',')||'none'}]`);
   for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);

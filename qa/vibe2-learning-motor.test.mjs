@@ -139,6 +139,42 @@ test('same-game verified experience outranks same-engine cross-game experience',
   assert.ok(ctx.experience[0].reasons.includes('same-game'));
 });
 
+test('same asset and same motion verified experience has highest retrieval priority',()=>{
+  const experience={records:[
+    {id:'exact-motion',gameId:'horror-escape-room',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+      goal:'[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-akaname walk motion contact settle',
+      evidence:['roblox runtime qa pass','ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS'],reusablePatterns:['preserve contact and settle']},
+    {id:'same-game-other-motion',gameId:'horror-escape-room',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+      goal:'[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-banshee walk motion contact settle',
+      evidence:['roblox runtime qa pass','ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS'],reusablePatterns:['preserve contact and settle']}
+  ]};
+  const ctx=retrieveUnifiedLearning({
+    task:{id:'internal-motion-akaname-walk-v1',gameId:'horror-escape-room',target:'roblox',taskType:'motion',
+      goal:'repair authored walk motion',motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-akaname',clipId:'walk'}},
+    experienceInput:experience
+  });
+  assert.equal(ctx.priority[0],'EXACT_ASSET_AND_MOTION_VERIFIED');
+  assert.equal(ctx.experience[0].id,'exact-motion');
+  assert.ok(ctx.experience[0].reasons.includes('same-asset-same-motion'));
+  assert.match(learningGuidance(ctx),/exact-asset\+motion/);
+});
+
+test('seeded advanced graphics knowledge is retrieved for aesthetics rig materials vfx and camera work',()=>{
+  const distilled=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'graphics-demo',target:'roblox',taskType:'graphics',
+      goal:'improve silhouette visual identity materials lighting rig joints walk animation secondary motion vfx camera performance'},
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},
+    practiceDistilledInput:{entries:[]},externalAiDistilledInput:distilled,masteryInput:{}
+  });
+  const ids=ctx.externalAiDistilled.map(row=>row.id);
+  assert.ok(ids.includes('external-ai-distilled:openai-visual-aesthetic-v1'));
+  assert.ok(ids.includes('external-ai-distilled:openai-rig-joint-motion-v1'));
+  assert.ok(ids.includes('external-ai-distilled:openai-material-lighting-v1'));
+  assert.ok(ids.includes('external-ai-distilled:openai-vfx-camera-readability-v1'));
+  assert.equal(ctx.externalAiDistilled.every(row=>row.state!=='RETIRED'),true);
+});
+
 test('verified commercial playbook reuse is fully injected and traceable for game development',()=>{
   const reuse=[
     {
