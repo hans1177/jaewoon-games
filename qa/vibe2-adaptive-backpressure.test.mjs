@@ -175,7 +175,8 @@ test('game-primary keeps adaptive telemetry while reserving to fixed repeat-deve
     });
     assert.equal(result.adaptiveMaxConcurrentTasks,20);
     assert.equal(result.reservationMaxConcurrentTasks,64);
-    assert.equal(result.tasks.length,40);
+    assert.equal(result.selection?.webGameFlow?.target,2);
+    assert.equal(result.tasks.length,2);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });
 
