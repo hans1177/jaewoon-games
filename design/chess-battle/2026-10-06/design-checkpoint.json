@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
+      "calls": 7,
       "successes": 0,
-      "failures": 6,
-      "timeouts": 5,
+      "failures": 7,
+      "timeouts": 6,
       "jsonFailures": 1,
-      "totalMs": 618168,
-      "lastMs": 77729,
-      "lastError": "Expected ',' or '}' after property value in JSON at position 2698 (line 1 column 2699)",
-      "updatedAt": "2026-10-05T21:59:00.270Z"
+      "totalMs": 738252,
+      "lastMs": 120084,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-05T22:01:01.418Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T21:32:51.934Z",
-  "updatedAt": "2026-10-05T21:59:01.333Z",
+  "updatedAt": "2026-10-05T22:01:01.418Z",
   "failedPhase": "designer_draft",
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=Expected ',' or '}' after property value in JSON at position 2698 (line 1 column 2699)"
 }
