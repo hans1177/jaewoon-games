@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-qp2uis",
+      "worker": "vibe2",
+      "taskId": "internal-motion-krasue-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/krasue/init.luau"
+      ],
+      "baseSha": "918b290a3f4efa4dbf6469342fabd12baea9c227",
+      "runId": "37343162579",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T16:52:52.687Z",
+      "expiresAt": "2026-10-05T17:37:52.687Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-krasue-walk-v1"
+      ]
+    }
+  ]
 }
