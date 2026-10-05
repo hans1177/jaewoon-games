@@ -1099,11 +1099,11 @@ jobs:
             const artifactIdentity=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
-                &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=1&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+                &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
                 &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
-                &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1&&item.robloxBuildInternalAssetBindingPassed===true
+                &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
                 &&item.robloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.robloxBuildInternalLibraryModulesPackaged===true;
             if(!/^[0-9a-f]{40}$/i.test(sourceRevision))continue;
@@ -1276,7 +1276,7 @@ jobs:
           const buildEvidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
           if(
             buildEvidence.internalAssetPackageBindingPassed!==true
-            ||Number(buildEvidence.internalAssetContractVersion||0)<1
+            ||Number(buildEvidence.internalAssetContractVersion||0)<2
             ||buildEvidence.internalLibraryAutoLoadPassed!==true
             ||buildEvidence.internalLibraryModulesPackaged!==true
             ||Number(buildEvidence.internalLibraryRequiredModuleCount||0)<=0
@@ -1476,7 +1476,7 @@ jobs:
             &&item.robloxBuildPreflightPassed===true
             &&item.robloxBuildSourceRevision===revision
             &&item.robloxBuildArtifactIdentity===artifact
-            &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1
+            &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2
             &&item.robloxBuildInternalAssetBindingPassed===true
             &&item.robloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.robloxBuildInternalLibraryModulesPackaged===true
@@ -2017,11 +2017,11 @@ jobs:
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
-              &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=1&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+              &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
                 &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
-              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1&&item.robloxBuildInternalAssetBindingPassed===true
+              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
                 &&item.robloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.robloxBuildInternalLibraryModulesPackaged===true;
             if(exactBuild&&productF0Current)continue;
@@ -2089,7 +2089,7 @@ jobs:
               &&x.robloxFoundationF0Passed===true
               &&x.robloxBuildPreflightPassed===true
               &&x.robloxBuildOrPackagePassed===true
-              &&Number(x.robloxBuildInternalAssetContractVersion||0)>=1
+              &&Number(x.robloxBuildInternalAssetContractVersion||0)>=2
               &&x.robloxBuildInternalAssetBindingPassed===true
               &&x.robloxBuildInternalLibraryAutoLoadPassed===true
               &&x.robloxBuildInternalLibraryModulesPackaged===true
@@ -2184,11 +2184,11 @@ jobs:
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
             const exactBuild=secondaryOwnerFocus
               ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
-              &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=1&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
+              &&Number(item.ownerFocusRobloxBuildInternalAssetContractVersion||0)>=2&&item.ownerFocusRobloxBuildInternalAssetBindingPassed===true
                 &&item.ownerFocusRobloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.ownerFocusRobloxBuildInternalLibraryModulesPackaged===true
               :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
-              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=1&&item.robloxBuildInternalAssetBindingPassed===true
+              &&Number(item.robloxBuildInternalAssetContractVersion||0)>=2&&item.robloxBuildInternalAssetBindingPassed===true
                 &&item.robloxBuildInternalLibraryAutoLoadPassed===true
                 &&item.robloxBuildInternalLibraryModulesPackaged===true;
             if(exactBuild){
