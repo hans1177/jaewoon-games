@@ -140,6 +140,7 @@ function canonicalWebHref(row){
 }
 function playableWebHref(row){
   const web=sourcesOf(row).web||{};
+  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID'].includes(web.state||row?.ownerWebSourceState))return'';
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const archive=web.archive===true||row?.hasWebArchive===true;
   return activeLifecycle(row)&&playable&&archive?canonicalWebHref(row):'';
@@ -250,7 +251,7 @@ function platformLinks(game){
   const platform=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
   const rp=platform('ROBLOX'),up=platform('UNITY');
   const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||'').trim();
-  const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
+  const unity=String((game?.unityBuildVerified===true?game?.unityBuildUrl:'')||(up.publicRelease===true?up.publicUrl:up.internalUrl)||'').trim();
   const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebAvailable===true?String(game?.unityWebTestUrl||'').trim():'';
   const web=playableWebHref(game);
   return {roblox,unity,unityWeb,web};
@@ -262,7 +263,7 @@ function internalReleaseLinks(game){
   const roblox=state('ROBLOX'),unity=state('UNITY');
   return {
     roblox:(roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true)||roblox.historicalInternalRelease===true?links.roblox:'',
-    unity:unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true?links.unity:'',
+    unity:(unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true)||game?.unityBuildVerified===true?links.unity:'',
     unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:'',
     web:links.web
   };
