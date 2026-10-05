@@ -131,7 +131,7 @@ ${familyRows}
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config.replace('      PROP = { "PROP_ATOM" },\n',''));
     const missing=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
     assert.equal(missing.pass,false);
-    assert.ok(missing.blockers.includes('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_MISSING:PROP'));
+    assert.ok(missing.blockers.includes('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_SELECTION_MISMATCH:PROP'));
 
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
     fs.writeFileSync(path.join(root,'client','Game.client.luau'),client+'\nlocal enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"\n');
