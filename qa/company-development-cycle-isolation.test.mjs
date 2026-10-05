@@ -32,5 +32,13 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/if: \$\{\{ always\(\) && needs\.native-plan\.result == 'success'/);
   assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
   assert.match(workflow,/CONTINUOUS_PER_GAME_ISOLATED_CYCLE/);
+  assert.match(workflow,/DEVELOPMENT_CONTINUOUS_CYCLE_ACTIVE_BATCH_SCAN=PASS/);
+  assert.match(workflow,/DEVELOPMENT_CONTINUOUS_CYCLE_ACTIVE_BATCH_SCAN=FAIL_OPEN_DISPATCH/);
+  assert.match(workflow,/select\(\.id != \$current\)/);
+  assert.match(workflow,/select\(\.head_sha == \$sha\)/);
+  assert.match(workflow,/REUSED_ACTIVE_CURRENT_MAIN_BATCH/);
+  assert.match(workflow,/DEVELOPMENT_CONTINUOUS_CYCLE_DISPATCH=SKIPPED_ACTIVE_CURRENT_MAIN_BATCH/);
+  assert.match(workflow,/DEVELOPMENT_CONTINUOUS_CYCLE_REOPEN_MODE=DISPATCHED_NEW_BATCH/);
+  assert.match(workflow,/DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES/);
   assert.match(workflow,/SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO/);
 });
