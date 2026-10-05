@@ -85,8 +85,17 @@ function bottleneckTask(task={}){
     ||/(bottleneck|queue|runner|concurr|serial|fan[- ]?in|reservation|backpressure|workflow wait|lock contention|stale qa|control[- ]?plane)/i.test(text);
 }
 
+const BOTTLENECK_DIAGNOSTIC_PROTOCOL=Object.freeze([
+  {phase:'OBSERVE',requirements:['WAIT_FOR_GRAPH','WIP_THROUGHPUT_CYCLE_TIME','P50_P95_P99_TAIL','SERVICE_DEMAND_BY_STAGE','RESOURCE_UTILIZATION']},
+  {phase:'CLASSIFY',requirements:['CAPACITY_VS_CONTENTION_VS_DEPENDENCY_VS_RETRY_VS_STALE_SIGNAL','RUNNABLE_VS_BLOCKED','LOGICAL_VS_PHYSICAL_CAPACITY']},
+  {phase:'HYPOTHESIZE',requirements:['AT_LEAST_TWO_CAUSAL_HYPOTHESES','KNOWN_GOOD_COMPARISON_WHEN_AVAILABLE','PRIOR_FAILED_STRATEGY_REJECTION']},
+  {phase:'REPAIR',requirements:['MINIMUM_BLAST_RADIUS','PRESERVE_CANONICAL_STATE_PATH','PRESERVE_VALID_IN_FLIGHT_WORK','NO_GLOBAL_DOWNSHIFT_WITHOUT_CAUSE']},
+  {phase:'VERIFY',requirements:['SAME_INPUT_LOAD_CHECKPOINT_BEFORE_AFTER','THROUGHPUT_AND_TAIL_LATENCY','NO_QA_SECURITY_AUTHORITY_REGRESSION','BOTTLENECK_MIGRATION_RECHECK']},
+  {phase:'LEARN',requirements:['PROMOTE_VERIFIED_OUTCOME_ONLY','ATTRIBUTE_EXACT_KNOWLEDGE_IDS','RECORD_FAILED_STRATEGY_FINGERPRINT','INFRA_FAILURE_NO_KNOWLEDGE_PENALTY']}
+]);
+
 function advancedBottleneckPlaybook(task={},policy={}){
-  if(!bottleneckTask(task))return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],guidance:''};
+  if(!bottleneckTask(task))return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],diagnosticProtocol:[],guidance:''};
   const evolution=policy?.aiExecutionEfficiency?.systemAiEvolution||{};
   const principles=evolution?.principles||{};
   const sensing=evolution?.bottleneckSensing||{};
@@ -104,16 +113,20 @@ function advancedBottleneckPlaybook(task={},policy={}){
     &&principles?.duplicateExecutionForbidden===true
     &&principles?.deterministicQaRemainsFinalPassFailAuthority===true
     &&plan?.noShadowPipeline===true;
-  if(!policyReady)return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],guidance:''};
+  if(!policyReady)return{applied:false,authority:BOTTLENECK_PLAYBOOK_AUTHORITY,methods:[],diagnosticProtocol:[],guidance:''};
   const methods=BOTTLENECK_METHODS.map(([id,method])=>({id,method}));
+  const diagnosticProtocol=BOTTLENECK_DIAGNOSTIC_PROTOCOL.map(row=>({phase:row.phase,requirements:[...row.requirements]}));
   return{
     applied:true,
     authority:BOTTLENECK_PLAYBOOK_AUTHORITY,
     verifiedPolicyBound:true,
     methods,
+    diagnosticProtocol,
     guidance:[
       'POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK (advisory only; fresh verification remains mandatory):',
-      ...methods.map(row=>'- '+row.id+': '+row.method)
+      ...methods.map(row=>'- '+row.id+': '+row.method),
+      'DIAGNOSTIC PROTOCOL:',
+      ...diagnosticProtocol.map(row=>'- '+row.phase+': '+row.requirements.join(' -> '))
     ].join('\n')
   };
 }
