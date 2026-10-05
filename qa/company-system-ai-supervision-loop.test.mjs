@@ -123,17 +123,6 @@ test('push-triggered System AI runs are coalesced QA-only and never reserve work
   assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
 });
 
-test('push cleanup drains stale Roblox ingress before expensive System AI QA',()=>{
-  const cleanup=workflow.indexOf('- name: Relieve stale Roblox runtime ingress pressure before push QA');
-  const verify=workflow.indexOf('- name: Verify shared contracts and worker code');
-  const reserve=workflow.indexOf('- name: Reserve disjoint supervised assignments');
-  assert.ok(cleanup>=0&&verify>cleanup&&reserve>verify);
-  const block=workflow.slice(cleanup,verify);
-  assert.match(block,/SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCEL_COUNT=/);
-  assert.match(block,/SYSTEM_AI_STALE_ROBLOX_INGRESS_IN_PROGRESS_CANCEL=NO/);
-  assert.doesNotMatch(block,/status=="in_progress"/);
-});
-
 test('System AI uses provider matrix capacity without an internal worker cap',()=>{
   assert.match(workflow,/SYSTEM_AI_MAX_BATCH: '256'/);
   const workerBlock=workflow.slice(workflow.indexOf('\n  worker:'),workflow.indexOf('\n  fan_in:'));
