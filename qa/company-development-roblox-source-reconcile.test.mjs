@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
@@ -110,6 +110,36 @@ function initGitRepo(tmp){
   execFileSync('git',['add','.'],{cwd:tmp});
   execFileSync('git',['commit','-m','fixture'],{cwd:tmp,stdio:'ignore'});
 }
+
+test('Roblox internal asset threshold fills every selected family quota and ignores quality score as a usage gate',()=>{
+  const plan=buildRobloxStudioAssetBootstrapPlan({gameId,profile:robloxBuildProfileFromBaseline(baseline),assetLibrary:companyAssetLibrary});
+  assert.equal(plan.applied,true);
+  assert.equal(plan.universalAssetFirst.missingFamilies.length,0);
+  assert.equal(plan.universalAssetFirst.underfilledFamilies.length,0);
+  assert.equal(plan.universalAssetFirst.selectionCoverageRequiredPct,100);
+  assert.equal(plan.selectedAtomCount,plan.requiredSelectedAtomCount);
+  assert.equal(plan.requiredSelectedAtomCount,46);
+  assert.equal(Object.keys(plan.families).length,12);
+});
+
+test('Roblox exact source validation blocks packaging when any selected internal asset atom is missing from config',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-asset-threshold-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const plan=buildRobloxStudioAssetBootstrapPlan({gameId,profile:robloxBuildProfileFromBaseline(baseline),assetLibrary:companyAssetLibrary});
+    const family='CHARACTER';
+    const atom=plan.families[family][0];
+    const config=fs.readFileSync(configFile,'utf8').replace(new RegExp('(["\\\'])'+atom+'\\1\\s*,?\\s*'), '');
+    fs.writeFileSync(configFile,config);
+    const verdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary:companyAssetLibrary});
+    assert.equal(verdict.pass,false);
+    assert.ok(verdict.blockers.includes('CONFIG_STUDIO_ASSET_ATOM_REQUIRED:'+family+':'+atom),verdict.blockers.join(','));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
 
 test('minimum-design Roblox SOURCE_BIND items are eligible for source reconciliation',()=>{
   assert.equal(eligibleForRobloxSourceReconciliation(staleItem()),true);
