@@ -37,6 +37,33 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('enqueue and reservation retain the exact single-object motion source binding',()=>{
+  const unit={objectId:'ghost-one',clipId:'walk',sourcePath:'Motion.luau',sourceHash:'current-source',sourceWindow:'function Motion.walk() end',objectBindingEvidence:'ghost-one',clipBindingEvidence:'Motion.walk',objectCount:1,motionCount:1,estimatedModificationMinutes:60,lockedSource:['Motion.walk'],preservedAxes:{}};
+  const queue=add(createVibeContinuousQueue(),'ghost-one-walk','horror-escape-room','roblox',{
+    assetProductionLane:true,responsibleFiles:['roblox-games/horror-escape-room/Motion.luau'],
+    evidence:['asset-production-parallel:v1','single-object-motion-repair:v1'],motionRepairWorkUnit:unit
+  });
+  assert.deepEqual(queue.tasks[0].motionRepairWorkUnit,unit);
+  unit.lockedSource.push('later caller mutation');
+  assert.deepEqual(queue.tasks[0].motionRepairWorkUnit.lockedSource,['Motion.walk']);
+  const reserved=reserveNextVibeTask(queue,{lane:'asset-development',policy:{}});
+  assert.equal(reserved.reserved,true);
+  assert.deepEqual(reserved.task.motionRepairWorkUnit,queue.tasks[0].motionRepairWorkUnit);
+});
+
+test('internal asset focus reserves 64 independent objects without consuming game presentation tasks',()=>{
+  const tasks=Array.from({length:100},(_,i)=>({id:'motion-'+i,gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',goal:'motion',assetProductionLane:true,ownerDirective:true,priority:'critical',status:'queued',sourceRoot:'assets/roblox/world-ghosts/motions',responsibleFiles:['assets/roblox/world-ghosts/motions/ghost-'+i+'.luau'],motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'ghost-'+i,clipId:'walk'}}));
+  tasks.push({id:'game-presentation',gameId:'other',target:'roblox',goal:'game',assetProductionLane:true,status:'queued',priority:'critical',ownerDirective:true,responsibleFiles:['roblox-games/other/client/Game.client.luau']});
+  const policy={assetProductionParallelContract:{parallelism:{internalAssetFocus:{enabled:true}}}};
+  const batch=reserveVibeTaskBatch({tasks,maxConcurrentTasks:256},{lane:'asset-development',maxConcurrentTasks:64,policy});
+  assert.equal(batch.tasks.length,64);
+  assert.equal(new Set(batch.tasks.flatMap(task=>task.responsibleFiles)).size,64);
+  assert.ok(batch.tasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'));
+  assert.equal(batch.queue.tasks.find(task=>task.id==='game-presentation').status,'queued');
+  const next=reserveVibeTaskBatch(batch.queue,{lane:'asset-development',maxConcurrentTasks:64,policy});
+  assert.equal(next.tasks.length,0);
+});
+
 test('shared queue retains first and latest shadow observations without growing on every retry',()=>{
   const evidence=[
     'source-revision:abc','neural-work-graph-shadow:first','neural-event-shadow:first','neural-shadow-feedback:first',
@@ -2086,7 +2113,7 @@ test('asset production tasks use the dedicated asset-development lane and never 
   assert.equal(asset.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(game.executionLane,'GAME_PRIMARY');
 
-  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
+  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',policy:{},reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
   assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
   assert.ok(assetBatch.tasks.every(task=>task.executionLane==='ASSET_DEVELOPMENT'));
   assert.ok(assetBatch.tasks.every(task=>task.neuronExpectedVariants===1));
@@ -2118,7 +2145,7 @@ test('queued asset work claims overlapping files before non-release game-primary
       sourceRoot:'roblox-games/same-game',responsibleFiles:['server/Game.server.luau']
     }
   ]});
-  const gameBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,lane:'game-primary',reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-10-01T09:00:00Z'}});
+  const gameBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,lane:'game-primary',policy:{},reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-10-01T09:00:00Z'}});
   assert.deepEqual(gameBatch.tasks.map(task=>task.id),['game-disjoint']);
   const deferred=gameBatch.selection.deferredConflicts.find(row=>row.task.id==='game-conflict');
   assert.ok(deferred);
@@ -2126,7 +2153,7 @@ test('queued asset work claims overlapping files before non-release game-primary
   assert.equal(deferred.conflictTaskId,'asset-visual');
   assert.equal(deferred.conflictExecutionLane,'ASSET_DEVELOPMENT');
 
-  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-10-01T09:00:00Z'}});
+  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',policy:{},reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-10-01T09:00:00Z'}});
   assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
 });
 
@@ -2169,7 +2196,7 @@ test('asset-development preserves Unity floor alongside Roblox work',()=>{
       evidence:['asset-production-parallel:v1']
     }
   ]});
-  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset-priority:1',runId:'asset-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',policy:{},reservation:{id:'asset-priority:1',runId:'asset-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
   assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['roblox-asset','unity-asset']);
   assert.equal(batch.selection.robloxFirstMode,true);
   assert.deepEqual(batch.selection.robloxFirstDeferred,[]);

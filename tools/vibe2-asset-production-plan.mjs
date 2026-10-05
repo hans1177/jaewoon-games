@@ -979,6 +979,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
 
 function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
+  const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
+  if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
   const engineNativeTarget=['roblox','unity'].includes(targetName);
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
@@ -995,12 +997,12 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
-  const automaticDccTypes=engineNativeTarget
+  const automaticDccTypes=engineNativeTarget&&!internalMotion
     ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
     :[];
   const declaredDccTypes=engineNativeTarget?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
-  const nativeTextTypes=decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
+  const nativeTextTypes=internalMotion?['motion']:decisions.filter(row=>needsAuthoring(row)&&(row.directAuthoring||[]).some(kind=>nativeTextKinds.includes(kind))).map(row=>row.type);
   const uniqueDccTypes=unique([...automaticDccTypes,...declaredDccTypes]);
   const uniqueNativeTextTypes=unique(nativeTextTypes);
   const selectedCandidateIds=new Set(decisions.flatMap(row=>[
@@ -1019,7 +1021,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ].flatMap(value=>clean(value).toLowerCase().split(/[^a-z0-9가-힣]+/)).filter(value=>value.length>=2&&!genericRecipeTokens.has(value)));
     return rawTokens.some(token=>requestText.includes(token));
   };
-  const registryRecipeRows=manifestAssets
+  const registryRecipeRows=(internalMotion?[]:manifestAssets)
     .filter(asset=>recipeAssetRelevant(asset))
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{
@@ -1054,7 +1056,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     version:3,
     enabled:supportedAuthoringTarget&&(uniqueDccTypes.length>0||uniqueNativeTextTypes.length>0),
     target:targetName,
-    authoringSurface:webNativeTarget?'WEB_NATIVE_SOURCE':'ENGINE_NATIVE_SOURCE',
+    authoringSurface:internalMotion?'INTERNAL_LUAU_MOTION_SOURCE':webNativeTarget?'WEB_NATIVE_SOURCE':'ENGINE_NATIVE_SOURCE',
     platformReauthoringRequired:true,
     webAssetDirectReuseIntoRobloxOrUnityForbidden:true,
     stages:freezeList(['INSPECT','REUSE_OR_DERIVE','AUTHOR_EDITABLE_SOURCE','EXPORT_NATIVE_DERIVATIVE','APPLY_TO_EXISTING_RESPONSIBILITY','CAPTURE','VERIFY_NATIVE_RUNTIME','PROMOTE_IF_VERIFIED']),

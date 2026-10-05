@@ -3,10 +3,19 @@ local Motion={}
 Motion.States={"idle","walk","chase","attack","hit","death"}
 local states={};for _,state in ipairs(Motion.States)do states[state]=true end
 local function clamp(v,min,max)return math.max(min,math.min(max,v))end
-function Motion.Sample(form,bones,time,state)
+function Motion.Sample(form,bones,time,state,assetId)
  assert(states[state or "idle"],"INVALID_MOTION_STATE")
  assert(type(time)=="number" and time==time and math.abs(time)<1e12,"INVALID_MOTION_TIME")
  state=state or "idle"
+ if state=="walk" and assetId then
+  local folder=script:FindFirstChild("Motions")
+  local source=folder and folder:FindFirstChild(assetId)
+  if source then
+   local motion=require(source)
+   assert(motion.AssetId==assetId,"MOTION_ASSET_BINDING_MISMATCH")
+   return motion.walk(form,bones,time)
+  end
+ end
  local result={}
  for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end
  local function pose(name,x,y,z,rx,ry,rz)
@@ -79,7 +88,7 @@ function Motion.Bind(model)
  return {
   step=function(time,state)
    if destroyed or not model.Parent then return end
-   local sample=Motion.Sample(model:GetAttribute("BodyForm"),bones,time,state)
+   local sample=Motion.Sample(model:GetAttribute("BodyForm"),bones,time,state,model:GetAttribute("AssetId"))
    for name,p in pairs(sample)do local row=joints[name]
     if row and row.joint.Parent then row.joint.C0=row.rest*CFrame.new(p.x,p.y,p.z)*CFrame.Angles(p.rx,p.ry,p.rz)end
    end

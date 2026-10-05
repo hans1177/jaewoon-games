@@ -76,8 +76,11 @@ test('native place and model contain the tested sources; package build never cla
   for(const name of ['GhostSkinCatalog','GhostSkinFactory','GhostSkinMotion','GhostSkinAudit'])assert.equal(modules.get(name),fs.readFileSync(root+name+'.luau','utf8'),artifact.file+':'+name);
   if(artifact.file.endsWith('.rbxlx')){
    assert.equal(modules.get('GhostGallery'),fs.readFileSync(root+'Gallery.client.luau','utf8'));
-   assert.equal(modules.size,5);
-  }else assert.equal(modules.size,4);
+   assert.equal(modules.size,105);
+  }else assert.equal(modules.size,104);
+  for(const id of fs.readdirSync(root+'motions')){
+   assert.equal(modules.get(id),fs.readFileSync(root+'motions/'+id+'/init.luau','utf8'),artifact.file+':'+id);
+  }
  }
 });
 
@@ -91,6 +94,35 @@ function run(body){
     return result.stdout;
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 }
+
+test('object motion modules bind all 100 identities and preserve other states and gameplay roots',native,()=>{
+ const files=fs.readdirSync(root+'motions').sort();
+ assert.equal(files.length,100);
+ const modules=files.map(file=>'Profiles["'+file+'"]=(function()'+fs.readFileSync(root+'motions/'+file+'/init.luau','utf8')+'\nend)()').join('\n');
+ runMotion(`
+ local Profiles={}\n${modules}
+ local folder={FindFirstChild=function(_,id) if Profiles[id]then return id end end}
+ script.FindFirstChild=function(_,name) if name=="Motions"then return folder end end
+ require=function(id) return Profiles[id] end
+ for _,skin in ipairs(Catalog)do
+  local model=Factory.Describe(skin.id,'mid')
+  assert(Profiles[skin.id].AssetId==skin.id,"wrong object identity")
+  for _,state in ipairs(Motion.States)do for frame=0,32 do
+   local time=frame/16
+   local sample=Motion.Sample(skin.form,model.bones,time,state,skin.id)
+   local original=Motion.Sample(skin.form,model.bones,time,state)
+   for name,pose in pairs(sample)do
+    assert(model.bones[name],"unknown joint")
+    for axis,value in pairs(pose)do
+     assert(type(value)=="number" and value==value and math.abs(value)<16,"unbounded pose")
+     if name=="Root"then assert(value==0,"gameplay root changed")end
+     if state~="walk"then assert(value==original[name][axis],"unselected clip changed")end
+    end
+   end
+  end end
+ end
+ `);
+});
 
 test('100 internal skins have reproducible source and honest verification metadata',()=>{
   const result=spawnSync(process.execPath,[root+'generate-catalog.mjs','--check'],{encoding:'utf8'});

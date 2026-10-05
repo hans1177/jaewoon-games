@@ -604,7 +604,7 @@ function taskMatchesExecutionLane(task={},lane='all'){
   if(requested==='all')return true;
   return clean(task.executionLane).toLowerCase().replaceAll('_','-')===requested;
 }
-export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
+export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const laneMode=normalizedExecutionLane(lane);
   const running = queue.tasks.filter((task) => task.status === 'running');
@@ -619,7 +619,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const candidates = [];
   queue.tasks.forEach((task, index) => {
     if (task.status !== 'queued') return;
-    if(!taskMatchesExecutionLane(task,laneMode)){laneDeferred.push(task);return;}
+    if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
     const reasons = taskBlockedReasons(task, completed);
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
@@ -679,6 +679,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     ?queue.tasks.filter((task)=>
       task.status==='queued'
       &&taskMatchesExecutionLane(task,'asset-development')
+      &&(!internalAssetOnly||task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')
       &&taskBlockedReasons(task,completed).length===0
     )
     :[];
@@ -878,12 +879,12 @@ const CLEARED_RESERVATION = Object.freeze({
   reservedAt: null
 });
 
-export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null, reservation = {}, lane = 'all' } = {}) {
+export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
   const existing = queue.tasks.find((task) => task.id === id);
   if (existing?.status === 'running') return freeze({ started: true, task: existing, queue, resumed: true });
-  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
+  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
   if (!batch.selected.some((task) => task.id === id)) return freeze({ started: false, reason: 'task-not-currently-eligible-or-conflicts', queue, selection: batch });
   const reservationMeta = reservationFields(reservation);
   const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
@@ -891,9 +892,9 @@ export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = nu
   return freeze({ started: true, task: nextQueue.tasks.find((task) => task.id === id), queue: nextQueue, resumed: false });
 }
 
-export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all' } = {}) {
+export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
   const selectedOrder = selection.selected.map((task) => task.id);
   const ids = new Set(selectedOrder);
@@ -943,10 +944,10 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
   });
 }
 
-export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
+export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
-  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
+  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly });
   return freeze({
     version: 5,
     counts: freeze(counts),

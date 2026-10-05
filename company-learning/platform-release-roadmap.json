@@ -1,5 +1,5 @@
 {
-  "version": 531,
+  "version": 532,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -15094,7 +15094,24 @@
       "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
       "assetDevelopmentModelCachePersistOnMiss": true,
       "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
-      "assetDevelopmentCacheGeneration": 5
+      "assetDevelopmentCacheGeneration": 5,
+      "internalAssetFocus": {
+        "enabled": true,
+        "gameId": "horror-escape-room",
+        "sourceRoot": "assets/roblox/world-ghosts/motions",
+        "concurrentSlots": 64,
+        "targetObjectCount": 100,
+        "firstMotion": "walk",
+        "oneObjectPerTask": true,
+        "oneMotionPerTask": true,
+        "estimatedModificationMinutes": 60,
+        "sameFileParallelForbidden": true,
+        "existingQueueAndWorkersOnly": true,
+        "repeatOnVerifiedReviewFeedback": true,
+        "unconditionalSelfRequeue": false,
+        "nativeBeforeAfterQaRequired": true,
+        "preparationIsNotMotionQualityPass": true
+      }
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
@@ -16126,14 +16143,48 @@
           "preparationAndQaIncludedInModificationBudget": false,
           "sameTargetUntilReviewResolved": true,
           "separateWorkerRequired": false,
-          "targetBindingRequired": ["objectId", "clipId", "sourcePath", "sourceHash", "sourceWindow", "objectBindingEvidence", "clipBindingEvidence"],
-          "depthAxes": ["POSE_AND_STAGING", "WEIGHT_AND_BALANCE", "JOINT_ARCS_AND_SPACING", "CONTACT_AND_CONSTRAINTS", "OVERLAP_AND_SETTLE", "LOOP_AND_TRANSITION"],
+          "targetBindingRequired": [
+            "objectId",
+            "clipId",
+            "sourcePath",
+            "sourceHash",
+            "sourceWindow",
+            "objectBindingEvidence",
+            "clipBindingEvidence"
+          ],
+          "depthAxes": [
+            "POSE_AND_STAGING",
+            "WEIGHT_AND_BALANCE",
+            "JOINT_ARCS_AND_SPACING",
+            "CONTACT_AND_CONSTRAINTS",
+            "OVERLAP_AND_SETTLE",
+            "LOOP_AND_TRANSITION"
+          ],
           "sourceScopePassIsNotMotionQualityPass": true,
           "singleSmallPatchFallbackAllowed": false,
           "executionLane": "ASSET_DEVELOPMENT",
           "priority": "EXISTING_BASIC_MOTION_AND_ACTION_QUALITY_FIRST",
-          "priorityAtoms": ["IDLE_RELAXED", "WALK", "JOG", "RUN", "SPRINT", "START", "STOP", "TURN_90", "JUMP_START", "LAND", "HIT_FRONT", "LIGHT_ATTACK_1", "HEAVY_ATTACK_1"],
-          "stageMinutes": {"POSE_AND_WEIGHT_REFINEMENT": 15, "JOINT_ARCS_CONTACT_REFINEMENT": 20, "OVERLAP_SETTLE_LOOP_REFINEMENT": 15, "SAME_MOTION_DETAIL_REPAIR": 10},
+          "priorityAtoms": [
+            "IDLE_RELAXED",
+            "WALK",
+            "JOG",
+            "RUN",
+            "SPRINT",
+            "START",
+            "STOP",
+            "TURN_90",
+            "JUMP_START",
+            "LAND",
+            "HIT_FRONT",
+            "LIGHT_ATTACK_1",
+            "HEAVY_ATTACK_1"
+          ],
+          "stageMinutes": {
+            "POSE_AND_WEIGHT_REFINEMENT": 15,
+            "JOINT_ARCS_CONTACT_REFINEMENT": 20,
+            "OVERLAP_SETTLE_LOOP_REFINEMENT": 15,
+            "SAME_MOTION_DETAIL_REPAIR": 10
+          },
           "existingModelsAndRigRequired": true,
           "newModelOrMotionCountNotQualityProof": true,
           "noIdlePaddingToFillBudget": true,

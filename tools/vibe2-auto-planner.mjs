@@ -3,6 +3,7 @@
 // DEVELOPMENT_CONFIRMED Web은 기존 소스를 먼저 평가한 뒤 보존/부분수정/대규모개편/전체재구축 전략을 선택한다.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { discoverExistingRobloxGames } from './company-development-queue-reconcile.mjs';
 import { ownerDevelopmentHeld, synchronizeOwnerDevelopmentHolds } from './vibe2-queue-control.mjs';
 import path from 'node:path';
@@ -3341,7 +3342,41 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
   return applyBuildUpNextActionController(ordered);
 }
 
-function findSafeTasks(project,repoRoot,queue){
+export function findSafeTasks(project,repoRoot,queue){
+  const focus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
+  if(focus?.enabled===true&&project.engine==='roblox'&&project.gameId===focus.gameId){
+    const motionRoot='assets/roblox/world-ghosts/motions';
+    const registry=readJson(path.join(repoRoot,'company-asset-library.json'),{});
+    const tasks=[];
+    for(const asset of registry.assets||[]){
+      if(!/^roblox-world-ghost-[a-z0-9-]+$/.test(asset.id)||(asset.intendedConsumerGameIds||[]).includes(project.gameId)!==true)continue;
+      const object=asset.id.slice('roblox-world-ghost-'.length),sourcePath='init.luau',sourceRoot=motionRoot+'/'+object;
+      const taskId='internal-motion-'+object+'-walk-v1';
+      if((queue.tasks||[]).some(row=>row.id===taskId))continue;
+      const file=path.join(repoRoot,sourceRoot,sourcePath);
+      if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+      const source=fs.readFileSync(file,'utf8');
+      const clipBindingEvidence='function Motion.walk(form,bones,time)';
+      const objectBindingEvidence='Motion.AssetId = "'+object+'"';
+      const start=source.indexOf(clipBindingEvidence),end=source.lastIndexOf('\nreturn Motion');
+      if(start<0||end<=start||source.indexOf(clipBindingEvidence,start+1)>=0||!source.includes(objectBindingEvidence))continue;
+      const sourceWindow=source.slice(start,end);
+      if(Buffer.byteLength(sourceWindow)>24000)continue;
+      tasks.push({id:taskId,gameId:project.gameId,target:'roblox',department:'graphics',type:'implementation',
+        sourceRoot,responsibleFiles:[sourceRoot+'/'+sourcePath],ownerDirective:true,priority:'critical',
+        releaseState:project.releaseState,assetProductionLane:true,speculativeEligible:false,
+        status:'queued',retries:0,retryPolicy:'UNLIMITED',estimatedRisk:'medium',taskWorkUnits:6,
+        atomicNeuronMode:'PER_TASK_MICRO_FANIN',atomicCompletionRequired:true,
+        goal:'[INTERNAL ASSET MOTION REPAIR] '+asset.id+'의 기존 walk 동작 하나를 약 60분의 실제 수정 작업량으로 깊게 개선한다. 원본을 읽고 자세·중심 이동·관절 곡선·접촉·후행 움직임·복귀와 루프를 검토한다. 같은 오브젝트와 같은 동작만 수정하며 다른 모션, 루트 이동, 판정, 게임 소스는 변경하지 않는다. 변경하지 않는 축은 소스 근거로 보존한다. 전후 실제 native 재생과 검수 전에는 품질 통과를 주장하지 않는다. 실패는 같은 대상의 기존 수리 흐름에서 반복 수정한다.',
+        completionCriteria:['ONE_OBJECT_ONE_MOTION','SIX_DIMENSION_SOURCE_EVIDENCE','NATIVE_BEFORE_AFTER_QA_REQUIRED'],
+        motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:asset.id,clipId:'walk',sourcePath,
+          sourceHash:crypto.createHash('sha256').update(source).digest('hex'),sourceWindow,
+          objectBindingEvidence,clipBindingEvidence,objectCount:1,motionCount:1,estimatedModificationMinutes:60,
+          lockedSource:[objectBindingEvidence,clipBindingEvidence,'local state="walk"'],preservedAxes:{}},
+        evidence:['asset-production-parallel:v1','single-object-motion-repair:v1','internal-asset-only:v1','owner-motion-depth-request:2026-10-05','native-before-after-qa:required']});
+    }
+    if(tasks.length)return tasks;
+  }
   const pilot=isAssetProductionPilot(project,repoRoot);
   const weatherPilot=isWeatherPresentationPilot(project,repoRoot);
   const studioTasks=findStudioContinuousImprovementTasks(project,repoRoot,queue);
@@ -3644,7 +3679,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const normalCapacity=Math.max(0,backlogTarget-developmentPool.length);
   const persistentCapacity=Math.max(0,persistentQueueMax-developmentPool.length);
   const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
-  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity);
+  const internalAssetFocus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
+  const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
+  const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,64-internalMotionActive):0;
+  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -3664,7 +3702,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   };
   if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
-  const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
+  const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort((a,b)=>Number(b.gameId===internalAssetFocus?.gameId)-Number(a.gameId===internalAssetFocus?.gameId)||projectSort(a,b));
   if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;
@@ -3675,6 +3713,15 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     const remaining=ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
     let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue).map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
+    if(packageTasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')){
+      for(const candidate of packageTasks){
+        const pkg=buildWorkPackage({tasks:[candidate],project:{...project,projectPath:candidate.sourceRoot},sequence:++sequence,policy});
+        if(!pkg.accepted)throw new Error('INTERNAL_MOTION_WORK_PACKAGE_REJECTED:'+candidate.id);
+        queue=createVibeContinuousQueue({tasks:[...queue.tasks,...pkg.tasks],maxConcurrentTasks:queue.maxConcurrentTasks});
+        planned.push(...pkg.tasks);packages.push(pkg);
+      }
+      continue;
+    }
     packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory));
     packageTasks=packageTasks.map(candidate=>attachRobloxDistilledLearning(candidate,project,{playbooks:robloxPlaybooks,distillation:robloxDistillationLedger}));
     sequence+=1;
@@ -3884,4 +3931,3 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE3_ROBLOX_DISTILLATION_RECORDS_AVAILABLE=${result.robloxDistillationContext?.records||0}`);
   console.log(`VIBE3_ROBLOX_DISTILLATION_TASKS_APPLIED=${result.robloxDistillationContext?.applied||0}`);
 }
-

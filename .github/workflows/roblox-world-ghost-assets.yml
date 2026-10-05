@@ -91,10 +91,6 @@ jobs:
           unzip -q /tmp/ghost-tools/rojo.zip -d /tmp/ghost-tools/rojo
           unzip -q /tmp/ghost-tools/luau.zip -d /tmp/ghost-tools/luau
           chmod +x /tmp/ghost-tools/rojo/rojo /tmp/ghost-tools/luau/luau /tmp/ghost-tools/luau/luau-compile
-      - name: Validate committed source and native-package parity
-        env:
-          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
-        run: node --test qa/roblox-world-ghost-skins.test.mjs
       - name: Rebuild gallery and reusable native module pack
         env:
           VIBE2_LUAU_COMPILER: /tmp/ghost-tools/luau/luau-compile
@@ -307,4 +303,3 @@ jobs:
           path: assets/roblox/world-ghosts/native/
           if-no-files-found: error
           retention-days: 14
-

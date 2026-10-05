@@ -55,7 +55,7 @@ function externalGameMood(gameId=''){
   if(/defense|war/.test(game))return'TACTICAL_WAVE_AND_PLACEMENT_READABILITY';
   return'READABLE_GAME_SPECIFIC_ACTION_FEEDBACK';
 }
-export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',target=''}={}){
+export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',target='',sourceScope=''}={}){
   const dispositionRows=[];
   const game=lower(gameId),platform=upper(target);
   for(const row of rows){
@@ -70,6 +70,10 @@ export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',ta
         disposition='APPLIED_GAME_SOURCE';
         domains=EXTERNAL_GAME_PRINCIPLE_DOMAINS[id];
         reason=game?'GAME_SPECIFIC_SEMANTIC_ADAPTATION':'GAME_SOURCE_SEMANTIC_ADAPTATION';
+        if(sourceScope==='INTERNAL_ASSET_LIBRARY'){
+          domains=domains.filter(domain=>domain==='MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION');
+          if(!domains.length){disposition='NOT_APPLICABLE';reason='OUTSIDE_SINGLE_OBJECT_MOTION_SOURCE';}
+        }
       }
       dispositionRows.push(freeze({id,sourceLearningId:clean(row?.id),raw:value,disposition,domains:freezeList(domains),reason,gameId:clean(gameId),target:platform,genreMood:externalGameMood(gameId)}));
     }

@@ -9,7 +9,7 @@ const rojo=process.env.VIBE2_ROJO_BINARY||'rojo';
 const compiler=process.env.VIBE2_LUAU_COMPILER;
 if(!compiler)throw Error('VIBE2_LUAU_COMPILER must name the official Luau compiler');
 const digest=data=>crypto.createHash('sha256').update(data).digest('hex');
-const sourceNames=fs.readdirSync(root).filter(name=>/\.luau$|\.project\.json$/.test(name)).sort();
+const sourceNames=[...fs.readdirSync(root).filter(name=>/\.luau$|\.project\.json$/.test(name)),...fs.readdirSync(path.join(root,'motions'),{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>'motions/'+entry.name+'/init.luau')].sort();
 for(const name of sourceNames.filter(name=>name.endsWith('.luau'))){
  const result=spawnSync(compiler,[path.join(root,name)],{stdio:['ignore','ignore','pipe'],encoding:'utf8'});
  if(result.status!==0)throw Error(result.stderr||String(result.error));

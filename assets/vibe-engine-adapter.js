@@ -36,7 +36,18 @@ export function detectVibeEngineTarget(request = '', target = 'auto') {
   return 'web';
 }
 
-function sourceContract(target, slug) {
+function sourceContract(target, slug, motionRepairWorkUnit=null) {
+  if(motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'){
+    const unit=motionRepairWorkUnit;
+    const id=clean(unit.objectId).replace(/^roblox-world-ghost-/, '');
+    if(target!=='roblox'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(clean(unit.objectId))
+      ||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'
+      ||unit.sourcePath!=='init.luau')throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');
+    const root='assets/roblox/world-ghosts/motions/'+id;
+    const file=root+'/'+unit.sourcePath;
+    return freeze({root,writable:true,internalAssetMotion:true,candidateFiles:freezeList([file]),
+      textWritablePatterns:freezeList([file]),editorRequiredPatterns:freezeList([]),ignoredPaths:freezeList([])});
+  }
   const gameSlug = clean(slug) || '<slug>';
   if (target === 'roblox') {
     return freeze({
@@ -141,9 +152,9 @@ function executionContract(target, source) {
   return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:false, editorRuntime:'browser-runtime', editorRequiredCapabilities:freezeList(['browser runtime','mobile layout','touch input']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:false, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns, maintenanceOnly:false, newGameAutomatic:true});
 }
 
-export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlug = '' } = {}) {
+export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlug = '', motionRepairWorkUnit = null } = {}) {
   const resolvedTarget = detectVibeEngineTarget(request, target);
-  const source = sourceContract(resolvedTarget, gameSlug);
+  const source = sourceContract(resolvedTarget, gameSlug, motionRepairWorkUnit);
   return freeze({
     version:3,
     target:resolvedTarget,
@@ -171,7 +182,7 @@ export function validateVibeEngineAdapter(adapter) {
   if (adapter?.target === 'web' && adapter?.mayWriteSource !== true) issues.push('existing-web-maintenance-must-be-writable');
   if (adapter?.target === 'web' && adapter?.source?.maintenanceOnly === true) issues.push('web-first-implementation-must-not-be-maintenance-only');
   if (adapter?.target === 'web' && adapter?.source?.newGameAutomatic !== true) issues.push('web-first-implementation-must-be-automatic-after-company-gate');
-  if (adapter?.target === 'roblox' && adapter?.source?.root?.startsWith('roblox-games/') !== true) issues.push('roblox-source-root-required');
+  if (adapter?.target === 'roblox' && adapter?.source?.root?.startsWith('roblox-games/') !== true && !(adapter.source.internalAssetMotion===true&& /^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(adapter.source.root)&&adapter.source.candidateFiles.length===1&&adapter.source.candidateFiles[0]===adapter.source.root+'/init.luau')) issues.push('roblox-source-root-required');
   if (adapter?.target === 'roblox' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('roblox-place-assets-must-not-be-text-edited');
   if (adapter?.target === 'unreal' && !adapter.source.candidateFiles.some((value) => value.endsWith('*.uproject'))) issues.push('unreal-uproject-required');
   if (adapter?.target === 'unreal' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('unreal-binary-assets-must-not-be-text-edited');

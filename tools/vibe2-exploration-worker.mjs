@@ -34,7 +34,7 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function extensions(target){const set=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!set)throw new Error(`지원하지 않는 exploration target: ${target}`);return set;}
 function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
-function assertRoot(root,target){const normalized=posix(root);if(target==='system'){if(normalized!=='.')throw new Error(`system exploration root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 exploration source root: ${root}`);return normalized;}
+function assertRoot(root,target,order={}){const normalized=posix(root);if(normalized.startsWith('assets/roblox/world-ghosts/motions/')){const unit=order?.assetProduction?.motionRepairWorkUnit;if(target!=='roblox'||order?.source?.internalAssetMotion!==true||unit?.scope!=='INTERNAL_ASSET_LIBRARY'||unit.objectCount!==1||unit.motionCount!==1||unit.clipId!=='walk'||!/^roblox-world-ghost-[a-z0-9-]+$/.test(unit.objectId)||unit.sourcePath!=='init.luau'||normalized!=='assets/roblox/world-ghosts/motions/'+unit.objectId.slice('roblox-world-ghost-'.length))throw new Error('INTERNAL_MOTION_SOURCE_SCOPE_INVALID');return normalized;}if(target==='system'){if(normalized!=='.')throw new Error(`system exploration root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 exploration source root: ${root}`);return normalized;}
 function normalizeRelative(value,root){const normalized=posix(value);return normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;}
 function sourceRootBootstrapAllowed(order,target,root){
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
@@ -473,7 +473,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const cached=reusableArtifact(cwd,order);
   if(cached){if(outputFile)writeJson(path.resolve(cwd,outputFile),cached);return cached;}
   const target=clean(order.target).toLowerCase();
-  const rootRelative=assertRoot(order?.source?.root,target);
+  const rootRelative=assertRoot(order?.source?.root,target,order);
   const root=path.resolve(cwd,rootRelative);
   const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,rootRelative));
   const bootstrap=sourceRootBootstrapAllowed(order,target,rootRelative);
