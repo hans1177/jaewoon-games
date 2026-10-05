@@ -437,7 +437,7 @@ export function verifiedVibe2SourceTreeShaFromRuntime({repoRoot='.',runtimeRef='
   }
 }
 
-export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir='',verifiedSourceTreeSha='',buildUpAssetSourceUsageFingerprint='',buildUpAssetSourceUsageLibraryVersion=0}={}){
+export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir='',verifiedSourceTreeSha='',buildUpAssetSourceUsageFingerprint='',buildUpAssetSourceUsageLibraryVersion=0,expectedAssetSelectionFingerprint='',expectedAssetLibraryVersion=0}={}){
   const id=clean(gameId);
   const relativeSource=clean(sourcePath).replaceAll('\\','/');
   const revision=clean(sourceRevision);
@@ -448,8 +448,12 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
   if(!SHA.test(revision))throw new Error(`exact 40-char source revision required: ${revision}`);
   const buildUpFingerprint=clean(buildUpAssetSourceUsageFingerprint);
   const buildUpLibraryVersion=Math.max(0,Math.floor(Number(buildUpAssetSourceUsageLibraryVersion)||0));
+  const expectedSelectionFingerprint=clean(expectedAssetSelectionFingerprint);
+  const expectedLibraryVersion=Math.max(0,Math.floor(Number(expectedAssetLibraryVersion)||0));
   if(buildUpFingerprint&&!/^[0-9a-f]{64}$/i.test(buildUpFingerprint))throw new Error('ROBLOX_BUILD_UP_ASSET_FINGERPRINT_INVALID');
   if(buildUpFingerprint&&buildUpLibraryVersion<=0)throw new Error('ROBLOX_BUILD_UP_ASSET_LIBRARY_VERSION_REQUIRED');
+  if(expectedSelectionFingerprint&&!/^[0-9a-f]{64}$/i.test(expectedSelectionFingerprint))throw new Error('ROBLOX_BUILD_UP_SELECTION_FINGERPRINT_INVALID');
+  if(expectedSelectionFingerprint&&expectedLibraryVersion<=0)throw new Error('ROBLOX_BUILD_UP_SELECTION_LIBRARY_VERSION_REQUIRED');
   if(!fs.existsSync(rojo))throw new Error(`Rojo executable missing: ${rojo}`);
   fs.mkdirSync(outDir,{recursive:true});
 
@@ -465,6 +469,12 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     const assetLibrary=readJson(path.join(worktree,'company-asset-library.json'));
     const assetThreshold=validateRobloxPackageAssetThreshold({root,gameId:id,baseline,assetLibrary});
     if(!assetThreshold.pass)throw new Error('ROBLOX_PACKAGE_ASSET_THRESHOLD_FAILED:'+assetThreshold.blockers.join(','));
+    if(expectedSelectionFingerprint&&clean(assetThreshold.selectionFingerprint)!==expectedSelectionFingerprint){
+      throw new Error('ROBLOX_PACKAGE_BUILD_UP_SELECTION_FINGERPRINT_MISMATCH');
+    }
+    if(expectedLibraryVersion>0&&Number(assetThreshold.libraryVersion||0)!==expectedLibraryVersion){
+      throw new Error('ROBLOX_PACKAGE_BUILD_UP_SELECTION_LIBRARY_VERSION_MISMATCH');
+    }
     const expectedScripts=collectRobloxSourceScriptInventory(root);
     if(expectedScripts.total<=0)throw new Error('Roblox source contains no executable Luau scripts');
     const artifact=path.join(outDir,`${safeName(id)}.rbxlx`);
@@ -517,6 +527,8 @@ function runCli(){
     verifiedSourceTreeSha,
     buildUpAssetSourceUsageFingerprint:arg('build-up-asset-fingerprint'),
     buildUpAssetSourceUsageLibraryVersion:Number(arg('build-up-asset-library-version','0')),
+    expectedAssetSelectionFingerprint:arg('expected-asset-selection-fingerprint'),
+    expectedAssetLibraryVersion:Number(arg('expected-asset-library-version','0')),
   });
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
   fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`);
