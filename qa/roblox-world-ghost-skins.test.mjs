@@ -288,11 +288,21 @@ local joint={Name='FrontLeftLegJoint',Part1={Name='SkinFrontLeftLeg'},C0=frame(4
 function joint:IsA(name)return name=='Motor6D'end
 local model={Parent={}}
 function model:GetDescendants()return{joint}end
-function model:GetAttribute()return'BEAST'end
+function model:GetAttribute(name)
+ if name=='BodyForm' then return 'BEAST' end
+ if name=='AssetId' then return 'kelpie' end
+end
+local profile=(function()${fs.readFileSync(root+'motions/kelpie/init.luau','utf8')}\nend)()
+local calls=0;local walk=profile.walk
+profile.walk=function(...)calls=calls+1;return walk(...)end
+script.FindFirstChild=function(_,name)
+ assert(name=='Motions');return{FindFirstChild=function(_,id)assert(id=='kelpie');return id end}
+end
+require=function(id)assert(id=='kelpie');return profile end
 local bound=Motion.Bind(model);local rest=joint.C0
-bound.step(.2,'walk');assert(joint.C0.n~=rest.n)
+bound.step(.2,'walk');assert(joint.C0.n~=rest.n);assert(calls==1)
 bound.reset();assert(joint.C0==rest)
-bound.step(.2,'chase');assert(joint.C0~=rest)
+bound.step(.2,'chase');assert(joint.C0~=rest);assert(calls==1)
 bound.destroy();assert(joint.C0==rest)
-bound.step(2,'walk');assert(joint.C0==rest)
+bound.step(2,'walk');assert(joint.C0==rest);assert(calls==1)
 `));

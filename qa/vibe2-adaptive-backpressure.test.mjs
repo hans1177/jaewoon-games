@@ -183,9 +183,10 @@ test('auxiliary reserve-batch is not capped by game-primary adaptive control',()
   const files=tempFiles();
   try{
     const tasks=Array.from({length:24},(_,i)=>({
-      id:`asset-task-${i}`,gameId:`asset-${i}`,target:'unity',department:'development',type:'implementation',
-      assetProductionLane:true,goal:'asset production',status:'queued',sourceRoot:`unity-games/asset-${i}`,
-      responsibleFiles:['Assets/asset.txt'],evidence:['asset-production-parallel:v1']
+      id:`asset-task-${i}`,gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',
+      assetProductionLane:true,goal:'internal motion repair',status:'queued',sourceRoot:`assets/roblox/world-ghosts/motions/fixture-${i}`,
+      responsibleFiles:['init.luau'],evidence:['asset-production-parallel:v1'],
+      motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:`roblox-world-ghost-fixture-${i}`,clipId:'walk',sourcePath:'init.luau',objectCount:1,motionCount:1}
     }));
     fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
     fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');
