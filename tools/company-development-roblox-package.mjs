@@ -195,13 +195,14 @@ export function validateRobloxArtifactInternalAssetBinding({artifactPath='',expe
 
 export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false,internalAssetBinding=null}={}){
   const identity=clean(artifactSha256)?`sha256:${clean(artifactSha256)}`:null;
+  const packagePassed=Boolean(identity)&&sourceValidationPassed===true&&internalAssetBinding?.pass===true;
   return Object.freeze({
-    version:1,
+    version:2,
     platform:'ROBLOX',
     gameId:clean(gameId),
     sourcePath:clean(sourcePath),
     sourceRevision:clean(sourceRevision),
-    buildOrPackagePassed:Boolean(identity)&&sourceValidationPassed===true&&internalAssetBinding?.pass===true,
+    buildOrPackagePassed:packagePassed,
     artifactIdentity:identity,
     internalAssetContractVersion:Number(internalAssetBinding?.contractVersion||0),
     internalAssetPackageBindingPassed:internalAssetBinding?.pass===true,
@@ -221,7 +222,7 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
     independentQaPassed:false,
     regressionPassed:false,
     finalReviewPassed:false,
-    lastSuccessfulStage:Boolean(identity)&&sourceValidationPassed===true?'TARGET_PLATFORM_BUILD_OR_PACKAGE':'TARGET_PLATFORM_SOURCE_BIND',
+    lastSuccessfulStage:packagePassed?'TARGET_PLATFORM_BUILD_OR_PACKAGE':'TARGET_PLATFORM_SOURCE_BIND',
     failureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
     failureSignature:'ROBLOX_BUILD_PREFLIGHT_PENDING',
     releaseClaim:false,
