@@ -75,7 +75,7 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
       distilledLearningUseAllowed:Object.freeze([...(item.distilledLearningUseAllowed||[])]),
       distilledLearningUseForbidden:Object.freeze([...(item.distilledLearningUseForbidden||[])])
     })));
-  const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,portableWebContextForRoblox:true,platformEvidenceTransferAllowed:false,verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true}};
+  const playbooks={version:2,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_PLUS_BASE_ENGINEERING_GUIDANCE',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,baseEngineeringGuidanceCountsAsTrainingSample:false,baseEngineeringGuidanceMayNotSatisfyRuntimeQa:true,portableWebContextForRoblox:true,platformEvidenceTransferAllowed:false,verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true}};
   for(const taskType of TASK_TYPES){
     const query=`${taskType} verified implementation repair QA patterns${taskType==='roblox'?` ${PORTABLE_WEB_QUERY}`:''}`;
     const retrieval=retrieveVibeVerifiedPatterns({index,request:query,taskType,topKSuccess:8,topKFailure:6});

@@ -22,7 +22,7 @@ permissions:
 
 concurrency:
   # 같은 게임의 학습 갱신만 합치고 실행 중인 작업은 보존한다.
-  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}
+  group: roblox-verified-learning-sweep-${{ inputs.game_id || 'batch' }}-${{ github.sha }}
   cancel-in-progress: false
 
 env:

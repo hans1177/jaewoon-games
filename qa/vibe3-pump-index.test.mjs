@@ -48,6 +48,19 @@ assert.equal(retrieval.successes[0].entry.taskType,'bugfix');
 const playbook=createVibeTaskPlaybook({taskType:'bugfix',retrieval});
 assert(playbook.checklist.includes('reproduce-or-bind-failure-evidence'));
 assert(playbook.reuse.length>0);
+const codingPlaybook=createVibeTaskPlaybook({taskType:'coding',retrieval});
+for(const principle of [
+  'map-data-ownership-invariants-and-authority-before-edit',
+  'make-retries-idempotent-deduplicated-and-causally-bounded',
+  'make-shared-state-writes-atomic-conflict-aware-and-replay-safe',
+  'version-persistent-data-and-migrate-backward-compatibly',
+  'measure-before-optimization-then-fix-algorithmic-io-and-allocation-hotspots',
+  'test-invariants-properties-failure-paths-recovery-and-happy-paths',
+  'prefer-direct-owner-function-or-complete-block-edit-over-wrapper-shadow-patches'
+]) assert(codingPlaybook.checklist.includes(principle),principle);
+assert.equal(codingPlaybook.checklistAuthority,'owner-requested-base-engineering-guidance');
+assert.equal(codingPlaybook.checklistCountsAsTrainingSample,false);
+assert.equal(codingPlaybook.checklistClaimsVerifiedOutcome,false);
 const robloxRetrieval=retrieveVibeVerifiedPatterns({index,request:'Roblox save rejoin release webgame touch mobile responsive regression core loop',taskType:'roblox',project:'game-r'});
 assert(robloxRetrieval.successes.some(item=>item.entry.id==='s-web-portable'));
 const robloxPlaybook=createVibeTaskPlaybook({taskType:'roblox',retrieval:robloxRetrieval});
@@ -77,6 +90,11 @@ assert.equal(artifacts.playbooks.taskTypes.roblox.taskType,'roblox');
 assert(artifacts.playbooks.taskTypes.roblox.reuse.some(item=>item.id==='s-web-portable'));
 assert.equal(artifacts.playbooks.policy.portableWebContextForRoblox,true);
 assert.equal(artifacts.playbooks.policy.platformEvidenceTransferAllowed,false);
+assert.equal(artifacts.playbooks.version,2);
+assert.equal(artifacts.playbooks.generatedFrom,'VERIFIED_MEMORY_PLUS_BASE_ENGINEERING_GUIDANCE');
+assert.equal(artifacts.playbooks.policy.baseEngineeringGuidanceCountsAsTrainingSample,false);
+assert.equal(artifacts.playbooks.policy.baseEngineeringGuidanceMayNotSatisfyRuntimeQa,true);
+assert(artifacts.playbooks.taskTypes.coding.checklist.includes('keep-independent-work-parallel-and-serialize-only-exact-conflicts'));
 assert(artifacts.benchmark.cases.length>0);
 assert(artifacts.benchmark.cases.every(x=>x.countsAsTrainingSample===false));
 assert(artifacts.benchmark.cases.every(x=>x.candidateCount===5&&x.maxRepairAttempts===3));
