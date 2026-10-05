@@ -1,5 +1,5 @@
 {
-  "version": 106,
+  "version": 107,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -207,7 +207,7 @@
       "path": "/assets/insect-main-v3.webp",
       "license": "project-original",
       "note": "실제 repo 자산 · 게임별 변형 기준 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDITED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -220,8 +220,58 @@
         "GAMEPLAY_CAMERA_SCALE",
         "STYLE_COHERENCE"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "USE_REFERENCE_VISUAL_AUDIT_FOR_DIRECTION_ONLY_AND_AUTHOR_OR_ADAPT_NATIVE_ASSET_FOR_BINDING",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "reviewedAt": "2026-10-05",
+        "sourceKind": "IMAGE_CONTENT_REVIEW",
+        "sourcePath": "/assets/insect-main-v3.webp",
+        "sourceSha": "4275443c3c177e3bff091039cde8e13508c1a04c",
+        "scoreScale": 1000,
+        "visualQualityScore": 909.4,
+        "visualQualityGrade": "COMMERCIAL_READY",
+        "selectionScore": false,
+        "productionPassAuthority": false,
+        "nativeBindingAuthority": false,
+        "runtimeVerificationClaimed": false,
+        "productionVerifiedClaimed": false,
+        "applicableScope": "REFERENCE_VISUAL_DIRECTION_ONLY",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 96,
+          "FORM_STRUCTURE": 95,
+          "MATERIAL_SURFACE": 96,
+          "COLOR_LIGHTING": 97,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 96,
+          "READABILITY_SCALE": 95,
+          "MODULAR_REUSE": 72,
+          "VARIATION_BREADTH": 88,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 76
+        },
+        "strengths": [
+          "MACRO_INSECT_IDENTITY",
+          "MATERIAL_AND_SURFACE_READABILITY",
+          "BRIGHT_BIOME_COHERENCE",
+          "FOREGROUND_MIDGROUND_DEPTH",
+          "SMALL_SCALE_SILHOUETTE_READABILITY"
+        ],
+        "qualityDebt": [
+          "COMPOSITE_SCENE_NOT_ISOLATED_ACTOR_SHEET",
+          "NO_SIDE_BACK_OR_TURNAROUND_REFERENCE",
+          "NO_NATIVE_RIG_OR_MOTION_DATA",
+          "DIRECT_NATIVE_BINDING_NOT_SUPPORTED"
+        ],
+        "recommendedUses": [
+          "INSECT_SILHOUETTE_DIRECTION",
+          "MATERIAL_AND_COLOR_LANGUAGE",
+          "BIOME_SCALE_REFERENCE",
+          "SET_DRESSING_DENSITY_REFERENCE"
+        ],
+        "nextQualityTarget": 920,
+        "scoreDoesNotReplaceInternalAuditScore": true
+      }
     },
     {
       "id": "insect-war-v2",
@@ -232,7 +282,7 @@
       "path": "/assets/insect-war-v2.webp",
       "license": "project-original",
       "note": "전투 캐릭터/적 실루엣 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDITED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -245,8 +295,57 @@
         "GAMEPLAY_CAMERA_SCALE",
         "STYLE_COHERENCE"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "USE_REFERENCE_VISUAL_AUDIT_FOR_DIRECTION_ONLY_AND_AUTHOR_OR_ADAPT_NATIVE_ASSET_FOR_BINDING",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "reviewedAt": "2026-10-05",
+        "sourceKind": "IMAGE_CONTENT_REVIEW",
+        "sourcePath": "/assets/insect-war-v2.webp",
+        "sourceSha": "e2d626e412421161b44cc8e2c40f0f5967ab3860",
+        "scoreScale": 1000,
+        "visualQualityScore": 902.5,
+        "visualQualityGrade": "COMMERCIAL_READY",
+        "selectionScore": false,
+        "productionPassAuthority": false,
+        "nativeBindingAuthority": false,
+        "runtimeVerificationClaimed": false,
+        "productionVerifiedClaimed": false,
+        "applicableScope": "REFERENCE_VISUAL_DIRECTION_ONLY",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 96,
+          "FORM_STRUCTURE": 94,
+          "MATERIAL_SURFACE": 95,
+          "COLOR_LIGHTING": 97,
+          "STYLE_COHERENCE": 95,
+          "DETAIL_FINISH": 95,
+          "READABILITY_SCALE": 94,
+          "MODULAR_REUSE": 70,
+          "VARIATION_BREADTH": 90,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 74
+        },
+        "strengths": [
+          "MULTI_SPECIES_COMBAT_READABILITY",
+          "FACTION_AND_FORTIFICATION_LANGUAGE",
+          "HIGH_ACTION_COLOR_SEPARATION",
+          "STRONG_CREATURE_SCALE_CONTRAST"
+        ],
+        "qualityDebt": [
+          "CROWDED_COMBAT_COMPOSITION_LIMITS_SINGLE_ACTOR_EXTRACTION",
+          "NO_ORTHOGRAPHIC_ACTOR_REFERENCE",
+          "NO_NATIVE_RIG_OR_MOTION_DATA",
+          "DIRECT_NATIVE_BINDING_NOT_SUPPORTED"
+        ],
+        "recommendedUses": [
+          "COMBAT_SCENE_DENSITY_REFERENCE",
+          "FACTION_COLOR_DIRECTION",
+          "INSECT_ROLE_SILHOUETTE_REFERENCE",
+          "DEFENSE_STRUCTURE_PRESENTATION_REFERENCE"
+        ],
+        "nextQualityTarget": 920,
+        "scoreDoesNotReplaceInternalAuditScore": true
+      }
     },
     {
       "id": "fantasy-rpg-v2",
@@ -257,7 +356,7 @@
       "path": "/assets/fantasy-rpg-v2.webp",
       "license": "project-original",
       "note": "판타지 캐릭터·환경 방향 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDITED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -270,8 +369,57 @@
         "GAMEPLAY_CAMERA_SCALE",
         "STYLE_COHERENCE"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "USE_REFERENCE_VISUAL_AUDIT_FOR_DIRECTION_ONLY_AND_AUTHOR_OR_ADAPT_NATIVE_ASSET_FOR_BINDING",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "reviewedAt": "2026-10-05",
+        "sourceKind": "IMAGE_CONTENT_REVIEW",
+        "sourcePath": "/assets/fantasy-rpg-v2.webp",
+        "sourceSha": "c6094c1e523c23f3d87fdf3fc76fb2482d597d88",
+        "scoreScale": 1000,
+        "visualQualityScore": 895.4,
+        "visualQualityGrade": "COMMERCIAL_READY",
+        "selectionScore": false,
+        "productionPassAuthority": false,
+        "nativeBindingAuthority": false,
+        "runtimeVerificationClaimed": false,
+        "productionVerifiedClaimed": false,
+        "applicableScope": "REFERENCE_VISUAL_DIRECTION_ONLY",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 95,
+          "FORM_STRUCTURE": 95,
+          "MATERIAL_SURFACE": 95,
+          "COLOR_LIGHTING": 96,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 95,
+          "READABILITY_SCALE": 95,
+          "MODULAR_REUSE": 68,
+          "VARIATION_BREADTH": 85,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 72
+        },
+        "strengths": [
+          "HERO_SILHOUETTE_AND_COSTUME_LAYERING",
+          "PORTAL_LANDMARK_READABILITY",
+          "WARM_COOL_LIGHTING_BALANCE",
+          "CHARACTER_WORLD_STYLE_COHERENCE"
+        ],
+        "qualityDebt": [
+          "SINGLE_FRONT_ANGLE_REFERENCE",
+          "NO_CHARACTER_TURNAROUND_OR_BACK_DETAIL",
+          "NO_NATIVE_RIG_OR_EQUIPMENT_SOCKET_DATA",
+          "DIRECT_NATIVE_BINDING_NOT_SUPPORTED"
+        ],
+        "recommendedUses": [
+          "FANTASY_HERO_STYLE_REFERENCE",
+          "PORTAL_AND_LANDMARK_LANGUAGE",
+          "COSTUME_MATERIAL_LAYER_REFERENCE",
+          "LIGHTING_AND_PALETTE_REFERENCE"
+        ],
+        "nextQualityTarget": 920,
+        "scoreDoesNotReplaceInternalAuditScore": true
+      }
     },
     {
       "id": "card-rpg-v2",
@@ -282,7 +430,7 @@
       "path": "/assets/card-rpg-v2.webp",
       "license": "project-original",
       "note": "UI/카드 표현 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDITED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -295,8 +443,58 @@
         "STYLE_COHERENCE",
         "MOBILE_LEGIBILITY"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "USE_REFERENCE_VISUAL_AUDIT_FOR_DIRECTION_ONLY_AND_AUTHOR_OR_ADAPT_NATIVE_ASSET_FOR_BINDING",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "reviewedAt": "2026-10-05",
+        "sourceKind": "IMAGE_CONTENT_REVIEW",
+        "sourcePath": "/assets/card-rpg-v2.webp",
+        "sourceSha": "5c02a6ac215cebf718d7292e790476c8ad9ae7e6",
+        "scoreScale": 1000,
+        "visualQualityScore": 866.3,
+        "visualQualityGrade": "HIGH_QUALITY",
+        "selectionScore": false,
+        "productionPassAuthority": false,
+        "nativeBindingAuthority": false,
+        "runtimeVerificationClaimed": false,
+        "productionVerifiedClaimed": false,
+        "applicableScope": "REFERENCE_VISUAL_DIRECTION_ONLY",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 94,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 95,
+          "COLOR_LIGHTING": 96,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 95,
+          "READABILITY_SCALE": 94,
+          "UI_UX_SYSTEM": 76,
+          "MODULAR_REUSE": 60,
+          "VARIATION_BREADTH": 84,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 65
+        },
+        "strengths": [
+          "CARD_FRAME_VISUAL_HIERARCHY",
+          "RARITY_COLOR_SEPARATION",
+          "HERO_AND_CARD_STYLE_COHERENCE",
+          "STRONG_PROMOTIONAL_READABILITY"
+        ],
+        "qualityDebt": [
+          "ILLUSTRATION_NOT_FUNCTIONAL_UI_COMPONENT_SET",
+          "NO_TOUCH_KEYBOARD_GAMEPAD_STATES",
+          "NO_DISABLED_SELECTED_ERROR_VARIANTS",
+          "NO_TYPOGRAPHY_OR_ACCESSIBILITY_SYSTEM"
+        ],
+        "recommendedUses": [
+          "CARD_ART_DIRECTION",
+          "RARITY_GLOW_LANGUAGE",
+          "PROMOTIONAL_UI_COMPOSITION",
+          "CARD_FRAME_SHAPE_REFERENCE"
+        ],
+        "nextQualityTarget": 920,
+        "scoreDoesNotReplaceInternalAuditScore": true
+      }
     },
     {
       "id": "crystal-v2",
@@ -307,7 +505,7 @@
       "path": "/assets/crystal-v2.webp",
       "license": "project-original",
       "note": "재질·발광·보상 연출 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDITED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -320,8 +518,56 @@
         "STYLE_COHERENCE",
         "MOBILE_DENSITY"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "USE_REFERENCE_VISUAL_AUDIT_FOR_DIRECTION_ONLY_AND_AUTHOR_OR_ADAPT_NATIVE_ASSET_FOR_BINDING",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "reviewedAt": "2026-10-05",
+        "sourceKind": "IMAGE_CONTENT_REVIEW",
+        "sourcePath": "/assets/crystal-v2.webp",
+        "sourceSha": "dd6e26c5f2a8a03738e1ac997cc2042b0a7cfff3",
+        "scoreScale": 1000,
+        "visualQualityScore": 899.1,
+        "visualQualityGrade": "COMMERCIAL_READY",
+        "selectionScore": false,
+        "productionPassAuthority": false,
+        "nativeBindingAuthority": false,
+        "runtimeVerificationClaimed": false,
+        "productionVerifiedClaimed": false,
+        "applicableScope": "REFERENCE_VISUAL_DIRECTION_ONLY",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 96,
+          "MATERIAL_SURFACE": 96,
+          "COLOR_LIGHTING": 98,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 96,
+          "READABILITY_SCALE": 95,
+          "MODULAR_REUSE": 70,
+          "VARIATION_BREADTH": 90,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 70
+        },
+        "strengths": [
+          "CRYSTAL_FOCAL_READABILITY",
+          "MAGIC_COLOR_AND_GLOW_LANGUAGE",
+          "MULTI_RANGE_COMBAT_READABILITY",
+          "STRONG_REWARD_OBJECT_IDENTITY"
+        ],
+        "qualityDebt": [
+          "STATIC_IMAGE_HAS_NO_PARTICLE_OR_TIMING_DATA",
+          "NO_DENSITY_LOD_VARIANTS",
+          "NO_OCCLUSION_OR_MOBILE_COST_EVIDENCE",
+          "DIRECT_RUNTIME_VFX_BINDING_NOT_SUPPORTED"
+        ],
+        "recommendedUses": [
+          "CRYSTAL_MATERIAL_REFERENCE",
+          "MAGIC_GLOW_PALETTE",
+          "TOWER_AND_REWARD_VFX_DIRECTION",
+          "COMBAT_EFFECT_DENSITY_REFERENCE"
+        ],
+        "nextQualityTarget": 920,
+        "scoreDoesNotReplaceInternalAuditScore": true
+      }
     },
     {
       "id": "page-bg-v4",
@@ -332,7 +578,7 @@
       "path": "/assets/page-bg-v4.webp",
       "license": "project-original",
       "note": "전경/중경/후경 배경 구성 참고",
-      "internalAuditState": "SOURCE_VISUAL_REVIEW_REQUIRED",
+      "internalAuditState": "REFERENCE_VISUAL_AUDITED",
       "internalAuditReason": "REFERENCE_ONLY_NOT_NATIVE_REUSABLE_PRODUCTION_ASSET",
       "productionVerificationSeparate": true,
       "internalAuditStudioRequired": false,
@@ -345,8 +591,57 @@
         "STYLE_COHERENCE",
         "MOBILE_CLUTTER"
       ],
-      "internalAuditNextAction": "REVIEW_SOURCE_ASSET_THEN_SCORE_WITH_EXISTING_1000_POINT_INTERNAL_AUDIT",
-      "internalUseBlockedByMissingAudit": false
+      "internalAuditNextAction": "USE_REFERENCE_VISUAL_AUDIT_FOR_DIRECTION_ONLY_AND_AUTHOR_OR_ADAPT_NATIVE_ASSET_FOR_BINDING",
+      "internalUseBlockedByMissingAudit": false,
+      "referenceVisualAudit": {
+        "version": 1,
+        "reviewedAt": "2026-10-05",
+        "sourceKind": "IMAGE_CONTENT_REVIEW",
+        "sourcePath": "/assets/page-bg-v4.webp",
+        "sourceSha": "49ef791b0860af1a39eebba87264b4a7286fcd33",
+        "scoreScale": 1000,
+        "visualQualityScore": 895.1,
+        "visualQualityGrade": "COMMERCIAL_READY",
+        "selectionScore": false,
+        "productionPassAuthority": false,
+        "nativeBindingAuthority": false,
+        "runtimeVerificationClaimed": false,
+        "productionVerifiedClaimed": false,
+        "applicableScope": "REFERENCE_VISUAL_DIRECTION_ONLY",
+        "axes": {
+          "IDENTITY_SILHOUETTE": 95,
+          "FORM_STRUCTURE": 94,
+          "MATERIAL_SURFACE": 95,
+          "COLOR_LIGHTING": 98,
+          "STYLE_COHERENCE": 96,
+          "DETAIL_FINISH": 96,
+          "READABILITY_SCALE": 96,
+          "MODULAR_REUSE": 68,
+          "VARIATION_BREADTH": 82,
+          "PROVENANCE_MAINTAINABILITY": 96,
+          "INTEGRATION_READINESS": 72
+        },
+        "strengths": [
+          "CLEAR_FOREGROUND_MIDGROUND_BACKGROUND_DEPTH",
+          "DISTANT_CASTLE_LANDMARK_READABILITY",
+          "HIGH_COLOR_LIGHTING_COHERENCE",
+          "VERTICAL_MOBILE_BACKGROUND_COMPOSITION"
+        ],
+        "qualityDebt": [
+          "SINGLE_FLATTENED_BACKGROUND_NOT_LAYER_EXPORT",
+          "DECORATIVE_ICON_OVERLAY_IS_STYLE_SPECIFIC",
+          "NO_STREAMING_LOD_OR_PARALLAX_ASSET_SPLIT",
+          "DIRECT_NATIVE_WORLD_BINDING_NOT_SUPPORTED"
+        ],
+        "recommendedUses": [
+          "BACKGROUND_DEPTH_REFERENCE",
+          "LANDMARK_PLACEMENT_REFERENCE",
+          "BRIGHT_FANTASY_PALETTE",
+          "MOBILE_VERTICAL_COMPOSITION_REFERENCE"
+        ],
+        "nextQualityTarget": 920,
+        "scoreDoesNotReplaceInternalAuditScore": true
+      }
     },
     {
       "id": "bug-defense-hero",
@@ -68944,7 +69239,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 106,
+    "lastCatalogSynchronizedVersion": 107,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -79298,7 +79593,7 @@
       "lastChangeFingerprint": "1e5874b8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 106
+      "synchronizedRegistryVersion": 107
     },
     "studioVariationAxes": {
       "BUILDING": [
