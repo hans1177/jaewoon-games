@@ -1114,19 +1114,23 @@ jobs:
               continue;
             }
 
-            if(engineProbe?.worldEvidence?.spawnGroundingObserved===true
-              &&(Number(engineProbe.worldEvidence.floatingSpawns||0)>0||Number(engineProbe.worldEvidence.unsupportedSpawns||0)>0)){
+            if(engineProbe?.engineExecuted===true&&engineProbe?.exactPlace===true&&engineProbe?.exactVersion===true
+              &&(engineProbe?.worldEvidence?.spawnGroundingObserved!==true
+                ||Number(engineProbe.worldEvidence.floatingSpawns||0)>0
+                ||Number(engineProbe.worldEvidence.unsupportedSpawns||0)>0)){
+              const groundingObserved=engineProbe.worldEvidence?.spawnGroundingObserved===true;
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
               item.robloxIndependentQaPassed=false;
               item.robloxRegressionPassed=false;
               item.robloxFirstFrameGroundingEvidence=engineProbe.worldEvidence;
-              item.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+              item.currentStep=groundingObserved?'TARGET_PLATFORM_TECHNICAL_VALIDATION':'TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-              item.robloxFailureSignature='ROBLOX_FIRST_FRAME_GROUNDING_FAILED';
-              item.routingBlockers=['roblox-first-frame-grounding-failed'];
-              item.updatedAt=stamp;changed=true;failed++;
+              item.robloxFailureSignature=groundingObserved?'ROBLOX_FIRST_FRAME_GROUNDING_FAILED':'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED';
+              item.routingBlockers=[groundingObserved?'roblox-first-frame-grounding-failed':'roblox-first-frame-grounding-unobserved'];
+              item.updatedAt=stamp;changed=true;
+              if(groundingObserved)failed++;else pending++;
               continue;
             }
             if(engineProbe?.imageEvidence?.imageContentPassed!==true){
@@ -3550,3 +3554,4 @@ jobs:
           echo "ROBLOX_STUDIO_REBOOT_REQUEUE_DEDUPED_COUNT=$deduped_count"
           echo 'ROBLOX_STUDIO_PC_INTERRUPTION_COUNTS_AS_GAME_FAILURE=NO'
           echo 'ROBLOX_STUDIO_PC_REBOOT_RESTARTS_FROM_BLANK=NO'
+

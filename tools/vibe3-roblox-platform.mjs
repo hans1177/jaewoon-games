@@ -485,8 +485,36 @@ export function createRobloxRuntimeCandidatePublishPlan({placeFile='',universeId
   });
 }
 
-// Re-evaluate immediately before every upload attempt, never from an old dispatch snapshot.
-export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifactIdentity,sourceTree,latestSourceTree,publishStage='final'}={}){
+// 게시 직전 최신 큐에서 검증용 현재 후보 또는 정확한 F9 회차를 재검증한다.
+export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifactIdentity,sourceTree,latestSourceTree,publishStage='final',publishCycleId=''}={}){
+  const stage=clean(publishStage).toLowerCase()||'final';
+  if(!['validation','final'].includes(stage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID');
+  if(stage==='final'){
+    const entry=(item?.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===publishCycleId);
+    if(!entry||publishCycleId!==sourceRevision+':'+artifactIdentity||entry.gameId!==item.gameId||
+      entry.authority!=='roblox-f9-immutable-canonical-publish-queue'||
+      !['PENDING','RETRY_REQUIRED','PUBLISHING'].includes(entry.status)||
+      entry.finalReviewPassed!==true||entry.f9ReleaseRegressionPassed!==true||
+      entry.sourceRevision!==sourceRevision||entry.artifactIdentity!==artifactIdentity||
+      entry.f9Evidence?.sourceRevision!==sourceRevision||entry.f9Evidence?.artifactIdentity!==artifactIdentity)
+      throw new Error('ROBLOX_PUBLISH_CURRENT_F9_REQUIRED');
+    const f0=entry.f0Evidence||{},candidate=entry.releaseSnapshot?.robloxRuntimeCandidateEvidence||{};
+    if(!COMMIT40.test(sourceRevision)||!ARTIFACT_SHA256.test(artifactIdentity)||!sourceTree||
+      f0.sourcePreflightPassed!==true||f0.f0SourceIntegrityPassed!==true||
+      f0.sourceRevision!==sourceRevision||f0.artifactIdentity!==artifactIdentity||
+      Number(f0.artifactRunId)<=0||Number(f0.artifactRunId)!==Number(entry.artifactRunId)||
+      candidate.sourceRevision!==sourceRevision||candidate.artifactIdentity!==artifactIdentity||
+      candidate.published!==true||Number(candidate.versionNumber)!==Number(entry.validationVersionNumber)||
+      String(candidate.universeId)!==String(entry.validationUniverseId)||String(candidate.placeId)!==String(entry.validationPlaceId))
+      throw new Error('ROBLOX_PUBLISH_EXACT_CYCLE_EVIDENCE_REQUIRED');
+    const currentCycle=item.robloxSourceCommit===sourceRevision&&item.robloxBuildArtifactIdentity===artifactIdentity;
+    if(currentCycle&&(item.robloxQualityBuildUpRequired===true||item.robloxStudioLocalPlayRepairRequired===true))
+      throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
+    const newerPublished=(item.robloxCanonicalPublishQueue||[]).some(row=>row?.cycleId!==publishCycleId&&row?.status==='PUBLISHED'&&
+      Date.parse(row.enqueuedAt)>Date.parse(entry.enqueuedAt));
+    if(newerPublished)throw new Error('ROBLOX_PUBLISH_NEWER_CYCLE_ALREADY_PUBLISHED');
+    return true;
+  }
   if(!sourceTree || !latestSourceTree || sourceTree!==latestSourceTree)
     throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_TREE');
   if(!item || !sourceRevision || item.robloxSourceCommit!==sourceRevision)
@@ -495,20 +523,11 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
     throw new Error('ROBLOX_PUBLISH_STALE_BUILD_ARTIFACT');
   if(item.robloxQualityBuildUpRequired===true || item.robloxStudioLocalPlayRepairRequired===true)
     throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
-  const stage=clean(publishStage).toLowerCase()||'final';
-  if(!['validation','final'].includes(stage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID');
-  if(stage==='validation'){
-    const f0=item.robloxFoundationF0Evidence||{};
-    if(item.robloxFoundationF0Passed!==true || item.robloxBuildPreflightPassed!==true || item.robloxBuildOrPackagePassed!==true ||
-      f0.sourcePreflightPassed!==true || f0.f0SourceIntegrityPassed!==true ||
-      f0.sourceRevision!==sourceRevision || f0.artifactIdentity!==artifactIdentity)
-      throw new Error('ROBLOX_PUBLISH_CURRENT_F0_REQUIRED');
-    return true;
-  }
-  const f9=item.robloxF9ReleaseRegressionEvidence||{};
-  if(item.robloxF9ReleaseRegressionPassed!==true || item.robloxFinalReviewPassed!==true ||
-    f9.sourceRevision!==sourceRevision || f9.artifactIdentity!==artifactIdentity)
-    throw new Error('ROBLOX_PUBLISH_CURRENT_F9_REQUIRED');
+  const f0=item.robloxFoundationF0Evidence||{};
+  if(item.robloxFoundationF0Passed!==true || item.robloxBuildPreflightPassed!==true || item.robloxBuildOrPackagePassed!==true ||
+    f0.sourcePreflightPassed!==true || f0.f0SourceIntegrityPassed!==true ||
+    f0.sourceRevision!==sourceRevision || f0.artifactIdentity!==artifactIdentity)
+    throw new Error('ROBLOX_PUBLISH_CURRENT_F0_REQUIRED');
   return true;
 }
 
@@ -603,3 +622,4 @@ async function main(){
 
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
 if(isMain){main().catch(error=>{console.error(error.message);process.exitCode=1;});}
+

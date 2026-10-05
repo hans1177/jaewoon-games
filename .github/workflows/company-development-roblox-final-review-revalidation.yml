@@ -509,7 +509,7 @@ jobs:
             const f0Snapshot=JSON.parse(JSON.stringify(item.robloxFoundationF0Evidence||{}));
             if(serverPublishEligible&&!publishQueue.some(row=>row?.cycleId===publishCycleId)){
               publishQueue.push({
-                version:1,
+                version:2,
                 cycleId:publishCycleId,
                 gameId:item.gameId,
                 sourceRevision,
@@ -519,6 +519,12 @@ jobs:
                 validationPlaceId:String(candidate.placeId||''),
                 validationVersionNumber:Number(candidate.versionNumber||0),
                 f0Evidence:f0Snapshot,
+                f9Evidence:JSON.parse(JSON.stringify(item.robloxF9ReleaseRegressionEvidence)),
+                releaseSnapshot:JSON.parse(JSON.stringify(Object.fromEntries([
+                  'gameId','designBaselineSource','minimumDesignContract','robloxRuntimePassed',
+                  'robloxIndependentQaPassed','robloxRegressionPassed','robloxInternalVibePlayEvidence',
+                  'robloxRuntimeCandidateEvidence','robloxPublicationTarget','robloxSharedTargetCurrent'
+                ].map(key=>[key,item[key]])))),
                 finalReviewPassed:true,
                 f9ReleaseRegressionPassed:true,
                 f9RuntimeReplay:false,
@@ -757,12 +763,15 @@ jobs:
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(item.robloxFinalReviewPassed!==true||item.robloxF9ReleaseRegressionPassed!==true)continue;
             for(const row of item.robloxCanonicalPublishQueue||[]){
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;
-              if(row.sourceRevision!==item.robloxSourceCommit||row.artifactIdentity!==item.robloxBuildArtifactIdentity)continue;
-              if(item.robloxQualityBuildUpRequired===true||item.robloxStudioLocalPlayRepairRequired===true)continue;
+              if(row.cycleId!==row.sourceRevision+':'+row.artifactIdentity)continue;
+              if(row.f0Evidence?.sourceRevision!==row.sourceRevision||row.f0Evidence?.artifactIdentity!==row.artifactIdentity)continue;
+              if(row.f9Evidence?.sourceRevision!==row.sourceRevision||row.f9Evidence?.artifactIdentity!==row.artifactIdentity)continue;
+              if(!row.releaseSnapshot)continue;
+              const currentCycle=row.sourceRevision===item.robloxSourceCommit&&row.artifactIdentity===item.robloxBuildArtifactIdentity;
+              if(currentCycle&&(item.robloxQualityBuildUpRequired===true||item.robloxStudioLocalPlayRepairRequired===true))continue;
               process.stdout.write([item.gameId,row.cycleId].join('\t')+'\n');
             }
           }
@@ -999,3 +1008,4 @@ jobs:
           echo 'ROBLOX_F9_VIBE_REFILL_REQUIRES_SETTLED_WAITER=NO'
           echo 'ROBLOX_F9_VIBE_FANIN=PASS'
           echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
+

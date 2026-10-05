@@ -1,7 +1,7 @@
 # FAST_MVP_INTERNAL_GATE_V2: exact package -> shared preflight -> core headless QA -> private/restricted publish
 # MANUAL_RELEASE_TRIGGER: final primary-three design-art-title sync
 name: Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
-run-name: Roblox publish · ${{ inputs.game_id || 'push' }} · ${{ github.event_name == 'workflow_dispatch' && (inputs.publish_stage || 'validation') || 'sync-only' }}
+run-name: Roblox publish · ${{ inputs.game_id || 'push' }} · ${{ github.event_name == 'workflow_dispatch' && (inputs.publish_stage || 'validation') || 'sync-only' }}${{ inputs.publish_stage == 'final' && format(' · {0}', inputs.publish_cycle_id) || '' }}
 
 on:
   push:
@@ -36,10 +36,10 @@ permissions:
   contents: write
   actions: write
 
-# Coalesce only the exact same game + publish stage + control revision.
+# Coalesce only the exact same game + publish stage + control revision + final cycle.
 # Validation and final publication stay independent, and unrelated games never serialize here.
 concurrency:
-  group: roblox-publish-exact-${{ inputs.game_id || 'sync' }}-${{ inputs.publish_stage || 'validation' }}-${{ github.sha }}
+  group: roblox-publish-exact-${{ inputs.game_id || 'sync' }}-${{ inputs.publish_stage || 'validation' }}-${{ github.sha }}-${{ inputs.publish_cycle_id || 'current-validation' }}
   cancel-in-progress: false
 
 env:
@@ -60,6 +60,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
+          PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           CURRENT_CONTROL_SHA: ${{ github.sha }}
         shell: bash
         run: |
@@ -69,7 +70,10 @@ jobs:
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
               const j=JSON.parse(s);
               const states=new Set(['queued','pending','in_progress','requested']);
-              const title='Roblox publish · '+String(process.env.GAME_ID||'')+' · '+String(process.env.PUBLISH_STAGE||'validation');
+              const stage=String(process.env.PUBLISH_STAGE||'validation');
+              const cycle=String(process.env.PUBLISH_CYCLE_ID||'');
+              if(stage==='final'&&!cycle)throw new Error('ROBLOX_FINAL_PUBLISH_CYCLE_ID_REQUIRED');
+              const title='Roblox publish · '+String(process.env.GAME_ID||'')+' · '+stage+(stage==='final'?' · '+cycle:'');
               const controlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
               const ids=(j.workflow_runs||[])
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===controlSha)
@@ -131,6 +135,7 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
+          PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
@@ -165,7 +170,9 @@ jobs:
             console.log('ROBLOX_DEDICATED_TARGET=NO_PENDING_GAME');
             process.exit(0);
           }
-          const releaseReadiness=publishStage==='final'?evaluateInternalRelease(item,'ROBLOX',roadmap):null;
+          const finalEntry=publishStage==='final'?(item.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===String(process.env.PUBLISH_CYCLE_ID||'')):null;
+          if(publishStage==='final'&&(!finalEntry?.releaseSnapshot||finalEntry.finalReviewPassed!==true||finalEntry.f9ReleaseRegressionPassed!==true))throw new Error('ROBLOX_FINAL_PUBLISH_EXACT_F9_SNAPSHOT_REQUIRED:'+gameId);
+          const releaseReadiness=publishStage==='final'?evaluateInternalRelease(finalEntry.releaseSnapshot,'ROBLOX',roadmap):null;
           if(publishStage==='final'&&releaseReadiness?.ready!==true){
             console.log('ROBLOX_DEDICATED_TARGET=SKIPPED_DEVELOPMENT_RELEASE_GATE:'+gameId+':'+String(releaseReadiness?.basis||'PENDING_EVIDENCE'));
             process.exit(0);
@@ -333,10 +340,12 @@ jobs:
           if(publishStage==='final'&&!(
             finalEntry?.finalReviewPassed===true
             &&finalEntry?.f9ReleaseRegressionPassed===true
-            &&finalEntry?.sourceRevision===item.robloxSourceCommit
-            &&finalEntry?.artifactIdentity===item.robloxBuildArtifactIdentity
+            &&finalEntry?.cycleId===revision+':'+artifact
+            &&finalEntry?.f9Evidence?.sourceRevision===revision
+            &&finalEntry?.f9Evidence?.artifactIdentity===artifact
+            &&finalEntry?.releaseSnapshot?.gameId===gameId
           ))throw new Error('ROBLOX_FINAL_PUBLISH_EXACT_F9_IDENTITY_REQUIRED:'+gameId);
-          const releaseReadiness=publishStage==='final'?evaluateInternalRelease(item,'ROBLOX',roadmap):null;
+          const releaseReadiness=publishStage==='final'?evaluateInternalRelease(finalEntry.releaseSnapshot,'ROBLOX',roadmap):null;
           if(publishStage==='final'&&releaseReadiness?.ready!==true){
             put('skip','true');
             put('skip_reason','canonical-server-publication-development-skipped');
@@ -521,6 +530,8 @@ jobs:
         working-directory: main
         env:
           GAME_ID: ${{ steps.target.outputs.game_id }}
+          PUBLISH_STAGE: ${{ steps.target.outputs.publish_stage }}
+          PUBLISH_CYCLE_ID: ${{ steps.target.outputs.publish_cycle_id }}
           GH_TOKEN: ${{ github.token }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
@@ -532,14 +543,18 @@ jobs:
           git cat-file -e "${SOURCE_REVISION}^{commit}"
           compare_status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$SOURCE_REVISION...$(git rev-parse HEAD)" --jq '.status')"
           [[ "$compare_status" == ahead || "$compare_status" == identical ]]
-          git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
+          if [ "$PUBLISH_STAGE" != 'final' ]; then
+            git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
+          fi
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           if(!item)throw new Error('runtime candidate queue item missing');
-          const e=item.robloxFoundationF0Evidence||{};
-          if(item.robloxFoundationF0Passed!==true||e.sourcePreflightPassed!==true||e.f0SourceIntegrityPassed!==true)throw new Error('ROBLOX_F0_CANDIDATE_EVIDENCE_BLOCKED');
+          const final=process.env.PUBLISH_STAGE==='final';
+          const entry=final?(item.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===process.env.PUBLISH_CYCLE_ID):null;
+          const e=final?(entry?.f0Evidence||{}):(item.robloxFoundationF0Evidence||{});
+          if((final?entry?.finalReviewPassed!==true:item.robloxFoundationF0Passed!==true)||e.sourcePreflightPassed!==true||e.f0SourceIntegrityPassed!==true)throw new Error('ROBLOX_F0_CANDIDATE_EVIDENCE_BLOCKED');
           if(e.actualRuntimeEvidence!==false||e.runtimeFoundationPassed!==false)throw new Error('ROBLOX_F0_FALSE_RUNTIME_CLAIM');
           if(e.sourceRevision!==process.env.SOURCE_REVISION||e.artifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('ROBLOX_F0_EXACT_BINDING_MISMATCH');
           fs.writeFileSync('/tmp/roblox-runtime-candidate-evidence.json',JSON.stringify(e,null,2)+'\n');
@@ -697,6 +712,7 @@ jobs:
           ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
+          PUBLISH_CYCLE_ID: ${{ steps.target.outputs.publish_cycle_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -716,16 +732,24 @@ jobs:
             set +e
             node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
           import fs from 'node:fs';
+          import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace,assertRobloxLatestPublishCandidate} from './tools/vibe3-roblox-platform.mjs';
           const latestQueue=JSON.parse(fs.readFileSync('/tmp/roblox-latest-publish-queue.json','utf8'));
+          const item=(latestQueue.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           assertRobloxLatestPublishCandidate({
-            item:(latestQueue.items||[]).find(row=>row.gameId===process.env.GAME_ID),
+            item,
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:process.env.ARTIFACT_IDENTITY,
             sourceTree:process.env.PUBLISH_SOURCE_TREE,
             latestSourceTree:process.env.PUBLISH_LATEST_SOURCE_TREE,
             publishStage:process.env.PUBLISH_STAGE,
+            publishCycleId:process.env.PUBLISH_CYCLE_ID,
           });
+          if(process.env.PUBLISH_STAGE==='final'){
+            const entry=(item.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===process.env.PUBLISH_CYCLE_ID);
+            const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+            if(evaluateInternalRelease(entry.releaseSnapshot,'ROBLOX',roadmap).ready!==true)throw new Error('ROBLOX_PUBLISH_EXACT_CYCLE_RELEASE_GATE_REQUIRED');
+          }
           console.log('ROBLOX_PUBLISH_LATEST_SOURCE_GATE=PASS:'+String(process.env.PUBLISH_STAGE||'validation'));
           const f0=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-candidate-evidence.json','utf8'));
           const plan=createRobloxRuntimeCandidatePublishPlan({
@@ -1132,13 +1156,15 @@ jobs:
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
+          SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
 
-          const launch=JSON.parse(fs.readFileSync(`${process.env.SOURCE_ROOT}/launch-mvp.json`,'utf8'));
+          const launch=JSON.parse(execFileSync('git',['show',`${process.env.SOURCE_REVISION}:${process.env.SOURCE_ROOT}/launch-mvp.json`],{encoding:'utf8'}));
           const displayName=String(launch.robloxTitleKorean||launch.gameName||'').trim();
           const description=String(launch.robloxDescriptionKorean||'').trim();
           const serverSize=Number(launch.robloxServerSize||0);
@@ -1375,3 +1401,4 @@ jobs:
           done
           echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=FAILED'
           exit 1
+

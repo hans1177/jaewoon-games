@@ -894,38 +894,41 @@ local function save(p)
   GhostProgress=ghostProgressSave(ghostProgressFrom(p:GetAttribute("GhostProgress"))),GhostFragments=p:GetAttribute("GhostFragments")or 0,GhostContracts=p:GetAttribute("GhostContracts")or 0,GhostCatalogBonusClaimed=p:GetAttribute("GhostCatalogBonusClaimed")==true
  })end)
 end
+-- 캐릭터 생명주기와 AI는 선언된 동일 책임 테이블을 공유한다.
+local BotAI={}
 local function groundedRootTarget(p,pos)
  local c=p.Character;local r=root(p);local h=hum(p)
- if not c or not r or not h then return Vector3.new(pos.X,pos.Y,pos.Z)end
+ if not c or not r or not h then return nil end
  local lobbyDestination=pos.Z>=180
- -- 경기장은 현재 MidnightArena의 WalkableGround만 사용한다.
- -- 천장/지붕/소품을 fallback 바닥으로 잡으면 캐릭터가 공중 스폰하므로 일반 Workspace Raycast는 금지한다.
+ -- 로비와 경기장 모두 현재 목적 월드의 실제 충돌 보행면만 사용한다.
+ -- 스폰 표식/캐릭터/장식 메시/지붕을 바닥으로 인정하거나 임의 높이로 대체하지 않는다.
  local currentArena=arena
  if not currentArena or not currentArena.Parent then currentArena=workspace:FindFirstChild("MidnightArena")end
- local rootFolders=lobbyDestination and{workspace:FindFirstChild("MidnightLobby")}or{currentArena}
+ local lobby=workspace:FindFirstChild("MidnightLobby")
+ local ownerId=math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)
+ if ownerId<=0 then ownerId=p.UserId end
+ local room=lobby and lobby:FindFirstChild("PersonalManor_"..ownerId)
+ local rootFolders=lobbyDestination and{room}or{currentArena}
  local grounds={}
  local maxGroundY=lobbyDestination and(pos.Y+1.5)or(pos.Y+3)
  for _,rootFolder in ipairs(rootFolders)do
   if rootFolder and rootFolder.Parent then
    for _,d in ipairs(rootFolder:GetDescendants())do
-    if d:IsA("BasePart")and d:GetAttribute("WalkableGround")==true then
+    if d:IsA("BasePart")and d.CanCollide and d.Anchored and d:GetAttribute("WalkableGround")==true and d:GetAttribute("SpawnMarkerOnly")~=true and not d:IsA("SpawnLocation")then
      local topY=d.Position.Y+d.Size.Y*.5
      if topY<=maxGroundY then table.insert(grounds,d)end
     end
    end
   end
  end
- local params=RaycastParams.new();params.IgnoreWater=true
- local hit=nil
- if #grounds>0 then
-  params.FilterType=Enum.RaycastFilterType.Include
-  params.FilterDescendantsInstances=grounds
-  local rayTop=lobbyDestination and(pos.Y+4)or(pos.Y+6)
-  local rayLength=lobbyDestination and math.max(16,pos.Y+12)or 18
-  hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
- end
- -- 바닥 태그가 잠깐 비어 있어도 지붕으로 올리지 않고 맵 기준 바닥으로 고정한다.
- local groundY=hit and hit.Position.Y or(lobbyDestination and .65 or .5)
+ if #grounds==0 then return nil end
+ local params=RaycastParams.new();params.IgnoreWater=true;params.RespectCanCollide=true;params.CollisionGroup=r.CollisionGroup
+ params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances=grounds
+ local rayTop=lobbyDestination and(pos.Y+4)or(pos.Y+6)
+ local rayLength=lobbyDestination and math.max(16,pos.Y+12)or 18
+ local hit=workspace:Raycast(Vector3.new(pos.X,rayTop,pos.Z),Vector3.new(0,-rayLength,0),params)
+ if not hit or hit.Normal.Y<.75 then return nil end
+ local groundY=hit.Position.Y
  local standingOffset=(tonumber(h.HipHeight)or 0)+(r.Size.Y*.5)
  if h.RigType==Enum.HumanoidRigType.R6 then
   local leg=c:FindFirstChild("Left Leg")or c:FindFirstChild("Right Leg")
@@ -934,53 +937,44 @@ local function groundedRootTarget(p,pos)
   standingOffset=math.max(r.Size.Y*.5,standingOffset)
  end
  local targetY=groundY+standingOffset+.03
- if lobbyDestination then targetY=math.clamp(targetY,2.8,5.2)else targetY=math.clamp(targetY,2.8,6.5)end
- return Vector3.new(pos.X,targetY,pos.Z)
+ return Vector3.new(pos.X,targetY,pos.Z),hit
 end
 local function teleport(p,pos,lookAtPos)
- local c=p.Character
- local r=root(p);if r then
-  -- 개인 저택/로비는 호출자가 지정한 앞마당 좌표를 그대로 사용한다.
-  -- 다층 WalkableGround 탐색이나 재보정으로 2층에 올라가지 않는다.
-  local lobbyDestination=pos.Z>=180
-  local target=lobbyDestination and Vector3.new(pos.X,pos.Y,pos.Z)or groundedRootTarget(p,pos)
-  movementGraceUntil[p]=os.clock()+1
-  lastValidPosition[p]=target
-  local targetCFrame=CFrame.new(target)
-  if typeof(lookAtPos)=="Vector3"then
-   local flatLook=Vector3.new(lookAtPos.X,target.Y,lookAtPos.Z)
-   if(flatLook-target).Magnitude>.1 then targetCFrame=CFrame.lookAt(target,flatLook)end
-  end
-  r.Anchored=false
-  r.CFrame=targetCFrame
-  r.AssemblyLinearVelocity=Vector3.zero
-  r.AssemblyAngularVelocity=Vector3.zero
-  local h=hum(p)
-  if h then
-   h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
-   pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
-  end
-  task.defer(function()
-   task.wait(.08)
-   local rr=root(p);local hh=hum(p)
-   if p.Character~=c or rr~=r or not rr or not hh or not rr.Parent then return end
-   local corrected=lobbyDestination and Vector3.new(pos.X,pos.Y,pos.Z)or groundedRootTarget(p,pos)
-   if math.abs(rr.Position.Y-corrected.Y)>.08 then
-    movementGraceUntil[p]=os.clock()+.5
-    lastValidPosition[p]=corrected
-    local correctedCFrame=CFrame.new(corrected)
-    if typeof(lookAtPos)=="Vector3"then
-     local flatLook=Vector3.new(lookAtPos.X,corrected.Y,lookAtPos.Z)
-     if(flatLook-corrected).Magnitude>.1 then correctedCFrame=CFrame.lookAt(corrected,flatLook)end
-    end
-    rr.Anchored=false
-    rr.CFrame=correctedCFrame
-    rr.AssemblyLinearVelocity=Vector3.zero
-    rr.AssemblyAngularVelocity=Vector3.zero
-    hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
-   end
-  end)
+ local c=p.Character;local r=root(p);local h=hum(p)
+ if not c or not r or not h then return false end
+ local lobbyDestination=pos.Z>=180
+ local sequence=(tonumber(c:GetAttribute("SpawnGroundingSequence"))or 0)+1
+ c:SetAttribute("SpawnGroundingSequence",sequence)
+ c:SetAttribute("SpawnGroundingScope",lobbyDestination and"LOBBY"or"ARENA")
+ c:SetAttribute("SpawnGroundedSequence",nil);c:SetAttribute("SpawnGroundedAt",nil)
+ p:SetAttribute("LobbySpawnGroundedAt",nil);p:SetAttribute("RoundRespawnGroundedAt",nil)
+ local target,hit=groundedRootTarget(p,pos)
+ if not target then p:SetAttribute("FoundationFailure","SPAWN_SUPPORT_MISSING");return false end
+ -- 발밑만 맞아도 벽/천장 안이면 안전 스폰이 아니다. 기존 충돌체로 리그 공간을 확인한다.
+ local clearanceHeight=target.Y-hit.Position.Y+r.Size.Y*1.5
+ local overlap=OverlapParams.new();overlap.FilterType=Enum.RaycastFilterType.Exclude
+ overlap.FilterDescendantsInstances={c,hit.Instance};overlap.RespectCanCollide=true;overlap.CollisionGroup=r.CollisionGroup
+ local clearance=Vector3.new(math.max(1,r.Size.X*.9),clearanceHeight,math.max(1,r.Size.Z*.9))
+ local clearanceCenter=CFrame.new(target.X,hit.Position.Y+.05+clearanceHeight*.5,target.Z)
+ for _,obstacle in ipairs(workspace:GetPartBoundsInBox(clearanceCenter,clearance,overlap))do
+  if obstacle.Anchored and obstacle.CanCollide then p:SetAttribute("FoundationFailure","SPAWN_CLEARANCE_BLOCKED");return false end
  end
+ movementGraceUntil[p]=os.clock()+1
+ lastValidPosition[p]=target
+ local targetCFrame=CFrame.new(target)
+ if typeof(lookAtPos)=="Vector3"then
+  local flatLook=Vector3.new(lookAtPos.X,target.Y,lookAtPos.Z)
+  if(flatLook-target).Magnitude>.1 then targetCFrame=CFrame.lookAt(target,flatLook)end
+ end
+ r.Anchored=false;r.CFrame=targetCFrame
+ r.AssemblyLinearVelocity=Vector3.zero;r.AssemblyAngularVelocity=Vector3.zero
+ h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
+ pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
+ -- 다음 teleport/리스폰이 시작되면 이전 관찰은 폐기한다. 고정 y 재보정으로 접지를 깨지 않는다.
+ task.defer(function()
+  if p.Character==c and c:GetAttribute("SpawnGroundingSequence")==sequence then BotAI.validateCharacterFoundation(p,c,sequence)end
+ end)
+ return true
 end
 -- 월드 생성 전용 지역 범위: 세 진입점만 외부 라운드 흐름에서 사용한다.
 local makePhysicalLobby,makeFallbackArena,ensureArena
@@ -3214,37 +3208,33 @@ end)
 
 -- 하단 lifecycle 함수는 기존 BotAI 책임 테이블 메서드로 유지한다.
 -- 대형 서버 청크의 top-level local register를 추가로 소비하지 않아 Luau 200-register 한도를 넘지 않는다.
-function BotAI.validateCharacterFoundation(p,c)
- local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
- if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
- if not foundationSpawn or not foundationSpawn.Parent then p:SetAttribute("FoundationFailure","SPAWN_FOUNDATION_MISSING");return end
- h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false;p.RespawnLocation=lobbyBootstrapSpawn
+function BotAI.validateCharacterFoundation(p,c,sequence)
+ local h=c:FindFirstChildOfClass("Humanoid");local r=c:FindFirstChild("HumanoidRootPart")
+ if p.Character~=c or not h or not r then return end
+ if c:GetAttribute("SpawnGroundingSequence")~=sequence then return end
  local pos=r.Position
  if pos.X~=pos.X or pos.Y~=pos.Y or pos.Z~=pos.Z or math.abs(pos.X)==math.huge or math.abs(pos.Y)==math.huge or math.abs(pos.Z)==math.huge then p:SetAttribute("FoundationFailure","INVALID_ROOT_POSITION");return end
- foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=pos.X,rootY=pos.Y,rootZ=pos.Z})
- task.spawn(function()
-  local deadline=os.clock()+3
-  local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={c}
-  repeat
-   if not c.Parent or not r.Parent then return end
-   local hit=workspace:Raycast(r.Position,Vector3.new(0,-14,0),params)
-   if hit and h.FloorMaterial~=Enum.Material.Air then foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y});return end
-   task.wait(.1)
-  until os.clock()>=deadline
-  local current=root(p)
-  if current then
-   teleport(p,current.Position,current.Position+current.CFrame.LookVector*8)
-   task.wait(.2)
-   local repaired=root(p)
-   local repairedHum=hum(p)
-   if repaired and repairedHum and repairedHum.FloorMaterial~=Enum.Material.Air then
-    foundationCheckpoint("GROUND_CONTACT",p,{groundY=repaired.Position.Y,rootY=repaired.Position.Y,repaired=true})
-    p:SetAttribute("FoundationFailure","")
-    return
-   end
+ local deadline=os.clock()+3
+ local groundedSamples=0
+ repeat
+  if p.Character~=c or not c.Parent or not r.Parent or c:GetAttribute("SpawnGroundingSequence")~=sequence then return end
+  local target,hit=groundedRootTarget(p,r.Position)
+  local supported=target and hit and math.abs(r.Position.Y-target.Y)<=.35
+  local grounded=supported and h.Health>0 and not r.Anchored and not h.PlatformStand and h.FloorMaterial~=Enum.Material.Air and math.abs(r.AssemblyLinearVelocity.Y)<2
+  groundedSamples=grounded and(groundedSamples+1)or 0
+  if groundedSamples>=3 then
+   local stamp=workspace:GetServerTimeNow()
+   local scope=tostring(c:GetAttribute("SpawnGroundingScope")or"")
+   c:SetAttribute("SpawnGroundedSequence",sequence);c:SetAttribute("SpawnGroundedAt",stamp)
+   p:SetAttribute(scope=="LOBBY"and"LobbySpawnGroundedAt"or"RoundRespawnGroundedAt",stamp)
+   p:SetAttribute("FoundationFailure","")
+   foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand,rootX=r.Position.X,rootY=r.Position.Y,rootZ=r.Position.Z})
+   foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y,groundName=hit.Instance:GetFullName(),scope=scope,groundedSamples=groundedSamples})
+   return
   end
-  p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
- end)
+  task.wait(.1)
+ until os.clock()>=deadline
+ if p.Character==c and c:GetAttribute("SpawnGroundingSequence")==sequence then p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")end
 end
 
 function BotAI.onCharacter(p)
@@ -3266,11 +3256,10 @@ function BotAI.onCharacter(p)
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   local destination,look=personalSpawn(p)
   p.RespawnLocation=lobbyBootstrapSpawn
-  teleport(p,destination,look)
   applyRoleVisual(p,"WAITING")
   for _,d in ipairs(c:GetDescendants())do if d:IsA("BasePart")then d.CollisionGroup="ManorAvatar"end end
+  teleport(p,destination,look)
   if manorLobby then manorLobby:Dress(p)end
-  p:SetAttribute("LobbySpawnGroundedAt",workspace:GetServerTimeNow())
   return
  end
 
@@ -3287,10 +3276,6 @@ function BotAI.onCharacter(p)
   local spawnPos=pool[index]
   local faceTarget=role=="MONSTER"and Vector3.new(0,3,0)or Vector3.new(0,3,0)
   teleport(p,spawnPos,faceTarget)
-  p:SetAttribute("RoundRespawnGroundedAt",workspace:GetServerTimeNow())
-  task.delay(.15,function()
-   if p.Parent==Players and p.Character==c and state=="RUNNING"then BotAI.validateCharacterFoundation(p,c)end
-  end)
  elseif role=="SPECTATING"then
   local destination,look=personalSpawn(p)
   p.RespawnLocation=lobbyBootstrapSpawn
@@ -3550,7 +3535,6 @@ task.spawn(function()
  end
 end)
 
-local BotAI={}
 function BotAI.botHumanForm(b)
  local id=b and b.humanFormId or"BROADCAST"
  for _,row in ipairs(C.HumanForms or{})do if row.Id==id then return row end end
@@ -4178,3 +4162,4 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 end)
+

@@ -1394,8 +1394,54 @@ jobs:
           console.log('ROBLOX_REGRESSION_PASS=NO');
           console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
           NODE
+      - name: Enforce fused package preflight and F0 result before checkpoint publication
+        if: always()
+        env:
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
+          F0_OUTCOME: ${{ steps.fused_f0.outcome }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
+        run: |
+          if [ "$SUPERSEDED" = 'true' ]; then
+            echo "ROBLOX_TECHNICAL_WORK=SUPERSEDED:${SUPERSEDE_REASON:-UNKNOWN}"
+            exit 0
+          fi
+          if [ "$PACKAGE_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_BUILD_PACKAGE=FAIL'
+            exit 1
+          fi
+          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$PREFLIGHT_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
+            exit 1
+          fi
+          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$F0_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=FAIL'
+            exit 1
+          fi
+          echo 'ROBLOX_BUILD_PACKAGE=PASS'
+          if [ "$SECONDARY_OWNER_FOCUS" = 'true' ]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=DEFER_EXISTING_CONTINUATION'
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=DEFER_SECONDARY_OWNER_FOCUS'
+          else
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=PASS'
+          fi
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Upload immutable Roblox package checkpoint
+        id: checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-package-${{ matrix.gameId }}
+          path: /tmp/roblox-technical
+          if-no-files-found: error
+          retention-days: 3
       - name: Persist successful F0 checkpoint immediately per game
-        if: steps.freshness.outputs.superseded != 'true' && steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && steps.fused_f0.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        if: steps.checkpoint.outcome == 'success' && steps.freshness.outputs.superseded != 'true' && steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && steps.fused_f0.outcome == 'success' && matrix.secondaryOwnerFocus != true
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.gameId }}
@@ -1557,50 +1603,6 @@ jobs:
             echo "ROBLOX_F0_PER_GAME_PRIVATE_VALIDATION_DISPATCH=YES:$GAME_ID:$current_main"
           fi
 
-      - name: Upload immutable Roblox package checkpoint
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: development-roblox-package-${{ matrix.gameId }}
-          path: /tmp/roblox-technical
-          if-no-files-found: error
-          retention-days: 3
-      - name: Enforce fused package preflight and F0 result after checkpoint capture
-        if: always()
-        env:
-          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
-          PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
-          F0_OUTCOME: ${{ steps.fused_f0.outcome }}
-          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
-          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
-          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
-        run: |
-          if [ "$SUPERSEDED" = 'true' ]; then
-            echo "ROBLOX_TECHNICAL_WORK=SUPERSEDED:${SUPERSEDE_REASON:-UNKNOWN}"
-            exit 0
-          fi
-          if [ "$PACKAGE_OUTCOME" != 'success' ]; then
-            echo 'ROBLOX_BUILD_PACKAGE=FAIL'
-            exit 1
-          fi
-          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$PREFLIGHT_OUTCOME" != 'success' ]; then
-            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
-            exit 1
-          fi
-          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$F0_OUTCOME" != 'success' ]; then
-            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=FAIL'
-            exit 1
-          fi
-          echo 'ROBLOX_BUILD_PACKAGE=PASS'
-          if [ "$SECONDARY_OWNER_FOCUS" = 'true' ]; then
-            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=DEFER_EXISTING_CONTINUATION'
-            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=DEFER_SECONDARY_OWNER_FOCUS'
-          else
-            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
-            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=PASS'
-          fi
-          echo 'ROBLOX_RUNTIME_PASS=NO'
-          echo 'ROBLOX_RELEASE_CLAIM=NO'
 
   technical-persist:
     name: persist Roblox package checkpoints
@@ -2190,3 +2192,4 @@ jobs:
           fi
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"
+

@@ -212,47 +212,86 @@ game:GetService("TeleportService").TeleportInitFailed:Connect(function(player)
  if player==p and retry.Parent then retry.Active=true;retry.Text="다시 연결"end
 end)
 local loadingVisible=true
+p:SetAttribute("LobbyClientReady",false)
 local function setLoadingProgress(progress,status)
  loadingFill:TweenSize(UDim2.fromScale(math.clamp(progress,0,1),1),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.18,true)
  if status then loadingStatus.Text=status end
 end
-local function finishLoading(status)
- if not loadingVisible then return end
- loadingVisible=false
+local function finishLoading(status,character,sequence)
+ if not loadingVisible then return false end
  setLoadingProgress(1,status or"집사가 문을 열었어")
+ local tween=TweenService:Create(loadingLayer,TweenInfo.new(.2),{BackgroundTransparency=1});tween:Play();tween.Completed:Wait()
+ -- 페이드 도중 새 캐릭터나 다음 이동이 시작되면 이전 접지 증거를 재사용하지 않는다.
+ local root=character:FindFirstChild("HumanoidRootPart");local humanoid=character:FindFirstChildOfClass("Humanoid")
+ if p.Character~=character or character:GetAttribute("SpawnGroundingSequence")~=sequence or character:GetAttribute("SpawnGroundedSequence")~=sequence or not root or not humanoid or humanoid.Health<=0 or root.Anchored or humanoid.PlatformStand or humanoid.FloorMaterial==Enum.Material.Air or math.abs(root.AssemblyLinearVelocity.Y)>=2 then
+  loadingLayer.BackgroundTransparency=0
+  return false
+ end
+ loadingVisible=false
+ loadingLayer:Destroy()
  p:SetAttribute("LobbyClientReady",true)
- local tween=TweenService:Create(loadingLayer,TweenInfo.new(.2),{BackgroundTransparency=1});tween:Play()
- task.delay(.2,function()loadingLayer:Destroy()end)
+ return true
 end
 
 task.spawn(function()
  -- 음악은 입장을 막지 않는다. 전체 경기장/장식 사전 다운로드도 하지 않는다.
  task.spawn(function()pcall(function()ContentProvider:PreloadAsync({lobbyBgm})end)end)
  local started=os.clock()
+ local lastCharacter=nil;local lastSequence=nil;local groundedSamples=0
  while p.Parent and loadingVisible do
   local character=p.Character;local root=character and character:FindFirstChild("HumanoidRootPart")
   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local sequence=character and character:GetAttribute("SpawnGroundingSequence")
+  local scope=character and character:GetAttribute("SpawnGroundingScope")
+  if character~=lastCharacter or sequence~=lastSequence then
+   lastCharacter=character;lastSequence=sequence;groundedSamples=0
+  end
   local round=tostring(p:GetAttribute("RoundState")or"")
   local inMatch=round=="RUNNING"or round=="SPECTATING"or round:match("^RESULT_")~=nil
   local lobby=workspace:FindFirstChild("MidnightLobby")
-  local room=lobby and lobby:FindFirstChild("PersonalManor_"..p.UserId)
+  local ownerId=math.floor(tonumber(p:GetAttribute("VisitedManorOwnerUserId"))or 0)
+  if ownerId<=0 then ownerId=p.UserId end
+  local room=lobby and lobby:FindFirstChild("PersonalManor_"..ownerId)
   local ground=room and room:FindFirstChild("PersonalGround")
-  local ready=workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId
-  -- 느린 접속 중 경기가 먼저 시작되면 실제 경기장 준비 상태로 로딩을 마친다.
-  if inMatch and root and humanoid and workspace:GetAttribute("MapReady")==true and workspace:FindFirstChild("MidnightArena")then
-   finishLoading("경기장 준비 완료");break
+  local scene=room and room:FindFirstChild("ManorScene")
+  local expectedParts=room and tonumber(room:GetAttribute("ManorScenePartCount"))or 0
+  local sceneParts=0
+  if scene then for _,d in ipairs(scene:GetDescendants())do if d:IsA("BasePart")then sceneParts+=1 end end end
+  local sceneReady=expectedParts>0 and sceneParts>=expectedParts
+  local ready=workspace:GetAttribute("PhysicalLobbyReady")==true and p:GetAttribute("PersonalLobbyOwner")==p.UserId and sceneReady
+  local arena=workspace:FindFirstChild("MidnightArena")
+  local destination=scope=="LOBBY"and room or scope=="ARENA"and arena or nil
+  local serverGrounded=sequence~=nil and character:GetAttribute("SpawnGroundedSequence")==sequence and character:GetAttribute("SpawnGroundedAt")~=nil
+  local grounded=false
+  if serverGrounded and destination and root and humanoid and humanoid.Health>0 and not root.Anchored and not humanoid.PlatformStand and humanoid.FloorMaterial~=Enum.Material.Air then
+   local grounds={}
+   for _,d in ipairs(destination:GetDescendants())do
+    if d:IsA("BasePart")and d.CanCollide and d.Anchored and d:GetAttribute("WalkableGround")==true and d:GetAttribute("SpawnMarkerOnly")~=true and not d:IsA("SpawnLocation")then table.insert(grounds,d)end
+   end
+   local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Include;params.FilterDescendantsInstances=grounds
+   params.RespectCanCollide=true;params.CollisionGroup=root.CollisionGroup;params.IgnoreWater=true
+   local offset=humanoid.HipHeight+root.Size.Y*.5
+   if humanoid.RigType==Enum.HumanoidRigType.R6 then
+    local leg=character:FindFirstChild("Left Leg")or character:FindFirstChild("Right Leg")
+    offset=root.Size.Y*.5+(leg and leg.Size.Y or 2)
+   end
+   local hit=workspace:Raycast(root.Position,Vector3.new(0,-offset-.75,0),params)
+   grounded=hit~=nil and hit.Normal.Y>=.75 and math.abs(root.Position.Y-hit.Position.Y-offset)<=.4 and math.abs(root.AssemblyLinearVelocity.Y)<2
   end
-  if not inMatch and ready and ground and root and humanoid and humanoid.FloorMaterial~=Enum.Material.Air and p:GetAttribute("LobbySpawnGroundedAt")then
-   local position=root.Position-ground.Position
-   if math.abs(position.X)<ground.Size.X*.5 and math.abs(position.Z)<ground.Size.Z*.5 and position.Y>0 and position.Y<14 then
-    finishLoading();break
+  groundedSamples=grounded and(groundedSamples+1)or 0
+  -- 경기 시작/관전도 캐릭터가 실제로 놓인 목적지의 현재 접지 증거가 있어야 한다.
+  if groundedSamples>=3 then
+   if inMatch and scope=="ARENA"and workspace:GetAttribute("MapReady")==true and arena then
+    if finishLoading("경기장 준비 완료",character,sequence)then break end
+   elseif scope=="LOBBY"and ready and ground then
+    if finishLoading(nil,character,sequence)then break end
    end
   end
   local errorMessage=workspace:GetAttribute("LobbyLoadError")
-  if inMatch then setLoadingProgress(.8,"경기장을 불러오는 중")
+  if inMatch and scope~="LOBBY"then setLoadingProgress(.8,"경기장을 불러오는 중")
   elseif errorMessage then setLoadingProgress(.3,"저택 연결이 끊겼어 · 다시 연결해줘")
-  elseif not ready then setLoadingProgress(.3,"집사가 현관문을 여는 중")
-  elseif not ground then setLoadingProgress(.6,"저택을 불러오는 중")
+  elseif workspace:GetAttribute("PhysicalLobbyReady")~=true then setLoadingProgress(.3,"집사가 현관문을 여는 중")
+  elseif not ground or not sceneReady then setLoadingProgress(.6,"저택을 불러오는 중")
   else setLoadingProgress(.8,"가족 명부와 입장 위치 확인 중")end
   retry.Visible=errorMessage~=nil or os.clock()-started>25
   task.wait(.1)
@@ -3587,3 +3626,4 @@ end)
 
 updateCosmeticUI()
 render()
+

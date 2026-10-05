@@ -1,3 +1,6 @@
+// 파일명: qa/company-development-roblox-runtime-foundation.test.mjs
+// 역할: 클라우드 런타임 증거와 검수 경계 회귀 검사.
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -564,7 +567,10 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
  assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
  assert.match(workflow,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
  const dispatch=workflow.slice(dispatchAt,workflow.indexOf('Immediately continue each successfully persisted Roblox F9 game',dispatchAt));
- assert.match(dispatch,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxF9ReleaseRegressionPassed!==true/);
+ assert.match(dispatch,/row\.finalReviewPassed!==true\|\|row\.f9ReleaseRegressionPassed!==true/);
+ assert.match(dispatch,/row\.f9Evidence\?\.sourceRevision!==row\.sourceRevision/);
+ assert.match(dispatch,/row\.f0Evidence\?\.artifactIdentity!==row\.artifactIdentity/);
+ assert.match(dispatch,/currentCycle&&\(item\.robloxQualityBuildUpRequired===true/);
  assert.doesNotMatch(dispatch,/evaluateInternalRelease/);
  assert.match(workflow,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
@@ -1069,6 +1075,7 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
       {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_BASEPARTS=42'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=2'},
+      {message:'JAEWOON_OPEN_CLOUD_WORLD_MARKER_SPAWNS=1'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=1'},
       {message:'JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=1'},
@@ -1090,6 +1097,7 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.equal(result.worldEvidence.sameLuauExecutionSession,true);
   assert.equal(result.worldEvidence.basePartCount,42);
   assert.equal(result.worldEvidence.spawnCount,2);
+  assert.equal(result.worldEvidence.markerSpawnCount,1);
   assert.equal(result.worldEvidence.spawnGroundingObserved,true);
   assert.equal(result.worldEvidence.unsupportedSpawns,1);
   assert.equal(result.worldEvidence.floatingSpawns,1);
@@ -1104,8 +1112,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   const body=JSON.parse(calls[0].init.body);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_BOUNDS_SIZE/);
   assert.match(body.script,/workspace:GetDescendants\(\)/);
-  assert.match(body.script,/not item:IsA\("SpawnLocation"\) and item.CanCollide/);
-  assert.match(body.script,/spawnParams.ExcludeInstances=spawnParts/);
+  assert.match(body.script,/item:IsA\("SpawnLocation"\) or item:GetAttribute\("SpawnMarkerOnly"\)==true/);
+  assert.match(body.script,/not isSpawn and item.CanCollide/);
+  assert.match(body.script,/table.insert\(supportExclusions,player.Character\)/);
+  assert.match(body.script,/spawnParams.ExcludeInstances=supportExclusions/);
   assert.match(body.script,/spawnParams.RespectCanCollide=true/);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/openCloudWorldEvidence:engineProbe\?\.worldEvidence\|\|null/);
@@ -1139,4 +1149,25 @@ test('cloud place and version checks reject numeric prefix collisions',async()=>
  assert.equal(result.exactPlace,false);
  assert.equal(result.exactVersion,false);
  assert.equal(result.worldEvidence.observed,false);
+});
+
+
+// 일반 Part 표식 누락이나 로그 일부 누락은 접지 관찰 성공이 아니다.
+test('Open Cloud grounding rejects zero spawn and incomplete grounding observations',async()=>{
+  for(const [count,counts] of [[0,true],[2,false]]){
+    const messages=[
+      'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2','JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20',
+      'JAEWOON_OPEN_CLOUD_WORLD_SPAWN_GROUNDING_OBSERVED=true',
+      `JAEWOON_OPEN_CLOUD_WORLD_SPAWNS=${count}`,
+      ...(counts?['JAEWOON_OPEN_CLOUD_WORLD_UNSUPPORTED_SPAWNS=0','JAEWOON_OPEN_CLOUD_WORLD_FLOATING_SPAWNS=0']:[])
+    ];
+    const responses=[
+      {path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'COMPLETE'},
+      {luauExecutionSessionTaskLogs:[{messages}]}
+    ];
+    const result=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl:async()=>({ok:true,status:200,text:async()=>JSON.stringify(responses.shift())})});
+    assert.equal(result.worldEvidence.spawnGroundingObserved,false);
+  }
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(workflow,/worldEvidence\?\.spawnGroundingObserved!==true/);
 });
