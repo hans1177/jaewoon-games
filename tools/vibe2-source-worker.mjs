@@ -2155,30 +2155,25 @@ export function buildInternalAssetSourceUsageContract(order={}){
 
 function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
-  const selectedFamilies=new Set([
-    ...Object.keys(contract.exactFamilies||{}),
-    ...(contract.flowSelections||[]).map(row=>row?.family),
-    ...(contract.sourceCandidates||[]).map(row=>row?.family)
-  ].map(value=>clean(value).toUpperCase()).filter(Boolean));
-  const selectedCommonSourcePaths=[];
-  if(clean(contract.target).toLowerCase()==='roblox'){
-    const commonSourceByFamily={
-      CHARACTER:['assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'],
-      CREATURE:['assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau'],
-      BUILDING:['assets/roblox/common-building-v1/RobloxCommonBuilding.luau'],
-      ENVIRONMENT:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau','assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau'],
-      WEAPON:['assets/roblox/common-tools-v1/RobloxCommonTools.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau'],
-      SKILL:['assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau'],
-      MATERIAL:['assets/roblox/common-materials-v1/RobloxCommonMaterials.luau'],
-      VFX:['assets/roblox/common-vfx-v1/RobloxCommonVFX.luau'],
-      UI:['assets/roblox/common-ui-v1/RobloxCommonUI.luau','assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau'],
-      MOTION:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','assets/vibe-motion-director.js'],
-      PROP:['assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau']
-    };
-    for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
+  const target=clean(contract.target).toLowerCase();
+  let commonPackSourcePaths=unique(contract?.commonPackAutoUse?.sourceFiles||[]).map(posix).filter(Boolean);
+  if(target==='roblox'&&!commonPackSourcePaths.length){
+    const commonRoot=path.resolve(cwd,'assets','roblox');
+    try{
+      commonPackSourcePaths=fs.readdirSync(commonRoot,{withFileTypes:true})
+        .filter(entry=>entry.isDirectory()&&entry.name.startsWith('common-'))
+        .flatMap(entry=>{
+          const relativeDir=path.posix.join('assets','roblox',entry.name);
+          const absoluteDir=path.resolve(cwd,relativeDir);
+          return fs.readdirSync(absoluteDir,{withFileTypes:true})
+            .filter(file=>file.isFile()&&/\.luau?$/i.test(file.name))
+            .map(file=>path.posix.join(relativeDir,file.name));
+        })
+        .sort();
+    }catch{}
   }
   const allSelectedPaths=unique([
-    ...selectedCommonSourcePaths,
+    ...commonPackSourcePaths,
     ...(contract.flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).flatMap(row=>row?.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).map(row=>row?.path)
@@ -2192,21 +2187,51 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
   if(!allSelectedPaths.length)return context;
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
-  const start=((generation-1)*batchSize)%allSelectedPaths.length;
-  const selectedPaths=[];
-  for(let i=0;i<Math.min(batchSize,allSelectedPaths.length);i++)selectedPaths.push(allSelectedPaths[(start+i)%allSelectedPaths.length]);
+  const startIndex=((generation-1)*batchSize)%allSelectedPaths.length;
+  const detailedPaths=[];
+  for(let i=0;i<Math.min(batchSize,allSelectedPaths.length);i++)detailedPaths.push(allSelectedPaths[(startIndex+i)%allSelectedPaths.length]);
+  const detailedSet=new Set(detailedPaths);
   const existing=new Set(context.files.map(row=>posix(row?.path)));
   const apiFiles=[];
-  let remaining=Math.max(4500,Number(contract?.synchronization?.apiContextMaxBytes||18000));
-  for(const relative of selectedPaths){
+  const maxBytes=Math.max(9000,Number(contract?.synchronization?.apiContextMaxBytes||18000));
+  const perFileMax=Math.max(1800,Number(contract?.synchronization?.apiContextPerFileMaxBytes||4500));
+  let remaining=maxBytes;
+  const rawByPath=new Map();
+  for(const relative of allSelectedPaths){
     if(existing.has(relative)||remaining<=0)continue;
     const absolute=path.resolve(cwd,relative);
     if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
     const raw=fs.readFileSync(absolute,'utf8');
-    const excerpt=boundedPromptText(raw,Math.min(Number(contract?.synchronization?.apiContextPerFileMaxBytes||4500),remaining));
-    const bytes=Buffer.byteLength(excerpt,'utf8');
+    rawByPath.set(relative,raw);
+    const exported=[
+      ...raw.matchAll(/^\s*function\s+([A-Za-z_][\w.]*)\s*\([^\n]*\)/gm),
+      ...raw.matchAll(/^\s*([A-Za-z_][\w.]*)\s*=\s*function\s*\([^\n]*\)/gm)
+    ].map(match=>clean(match[0])).filter(Boolean);
+    const moduleNames=[...raw.matchAll(/^\s*local\s+([A-Za-z_][\w]*)\s*=\s*\{\s*\}/gm)].map(match=>match[1]);
+    const indexText=[
+      '-- INTERNAL_ASSET_API_INDEX path='+relative,
+      moduleNames.length?'modules='+unique(moduleNames).join(','):'',
+      exported.length?'api='+unique(exported).slice(0,80).join(' | '):'api=DECLARATIONS_IN_DETAIL_OR_CATALOG'
+    ].filter(Boolean).join('\n');
+    const summary=boundedPromptText(indexText,Math.min(700,remaining));
+    const bytes=Buffer.byteLength(summary,'utf8');
+    if(!bytes)continue;
     remaining-=bytes;
-    apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
+    apiFiles.push({path:relative,content:summary,truncated:true,editable:false,internalAssetApiContext:true,internalAssetApiIndex:true,detailed:false});
+  }
+  for(const relative of detailedPaths){
+    if(remaining<=0)break;
+    const row=apiFiles.find(item=>item.path===relative);
+    if(!row)continue;
+    const raw=rawByPath.get(relative);
+    if(!raw)continue;
+    const excerpt=boundedPromptText(raw,Math.min(perFileMax,remaining));
+    const bytes=Buffer.byteLength(excerpt,'utf8');
+    if(!bytes)continue;
+    remaining-=bytes;
+    row.content=row.content+'\n-- INTERNAL_ASSET_API_DETAIL\n'+excerpt;
+    row.truncated=bytes<Buffer.byteLength(raw,'utf8');
+    row.detailed=true;
   }
   if(!apiFiles.length)return context;
   return{
@@ -2214,14 +2239,16 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     files:[...context.files,...apiFiles],
     bytes:Number(context.bytes||0)+apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
     internalAssetApiContextFiles:apiFiles.map(row=>row.path),
+    internalAssetApiContextDetailedFiles:apiFiles.filter(row=>row.detailed).map(row=>row.path),
     internalAssetApiContextBytes:apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
     internalAssetApiContextBounded:true,
+    internalAssetApiContextAllCommonPacksEligible:target==='roblox'&&commonPackSourcePaths.length>0,
+    internalAssetApiContextCommonPackSourceCount:commonPackSourcePaths.length,
     internalAssetApiContextGeneration:generation,
     internalAssetApiContextEligibleSourceCount:allSelectedPaths.length,
-    internalAssetApiContextRotationStart:start
+    internalAssetApiContextRotationStart:startIndex
   };
 }
-
 function internalAssetSourceUsageGuidance(order={}){
   const contract=buildInternalAssetSourceUsageContract(order);
   if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
