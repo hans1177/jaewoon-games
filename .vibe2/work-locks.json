@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1k57uwj",
+      "worker": "vibe2",
+      "taskId": "survival-studio-evolution-unity-web-usability-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "assets/generated/unity/survival/background/asset.glb",
+        "assets/generated/unity/survival/background/preview.png",
+        "assets/generated/unity/survival/background/evidence.json",
+        "assets/generated/unity/survival/item/asset.glb",
+        "assets/generated/unity/survival/item/preview.png",
+        "assets/generated/unity/survival/item/evidence.json",
+        "assets/generated/unity/survival/prop/asset.glb",
+        "assets/generated/unity/survival/prop/preview.png",
+        "assets/generated/unity/survival/prop/evidence.json"
+      ],
+      "baseSha": "36cfcac17ec040193519787cafdf79e6c01fed14",
+      "runId": "37298755218",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T11:28:32.529Z",
+      "expiresAt": "2026-10-05T12:13:32.529Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-studio-evolution-unity-web-usability-v1"
+      ]
+    }
+  ]
 }
