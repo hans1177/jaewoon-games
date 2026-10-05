@@ -19,6 +19,48 @@ const runtimeSmokeSource=fs.readFileSync(path.resolve('tools/unity-apk-runtime-s
 const evidenceTool=path.resolve('tools/company-development-unity-evidence.mjs');
 const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';
+
+test('cloud build metadata binds the checkout tree before runtime and F9 download it',()=>{
+  assert.doesNotMatch(cloudBuildSource,/git\s+push\s+origin\s+HEAD:main/,'cloud producer must not bypass the canonical homepage publisher');
+  assert.match(cloudBuildSource,/UNITY_HOMEPAGE_PUBLICATION_AUTHORITY=COMPANY_RUNTIME_THEN_HOMEPAGE_MANAGER/);
+  const block=cloudBuildSource.split('      - name: Create pre-gate build metadata\n')[1]?.split('\n      - name: ')[0];
+  assert.ok(block,'cloud metadata producer must exist');
+  const script=block.split('        run: |\n')[1].split('\n').map(line=>line.replace(/^          /,'')).join('\n');
+  const values={
+    'steps.request.outputs.game_id':'amusement-tycoon',
+    'steps.request.outputs.request_id':'binding-regression',
+    'steps.apk_verify.outputs.application_id':'com.example.binding',
+    'steps.artifact.outputs.release_tag':'test-amusement-tycoon-17-1',
+    'steps.artifact.outputs.sha256':'a'.repeat(64),
+    'steps.artifact.outputs.bytes':'1024',
+    'steps.request.outputs.publish_homepage':'true'
+  };
+  const runnable=script.replace(/\$\{\{\s*([^}]+?)\s*\}\}/g,(_,key)=>{
+    assert.ok(key in values,`unexpected workflow input: ${key}`);return values[key];
+  });
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-build-binding-'));
+  try{
+    const git=(...args)=>{
+      const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});
+      assert.equal(result.status,0,result.stderr);return result.stdout.trim();
+    };
+    git('init','-q');fs.writeFileSync(path.join(root,'source.txt'),'exact candidate source');git('add','source.txt');
+    git('-c','user.name=QA','-c','user.email=qa@example.invalid','commit','-qm','candidate');
+    const commit=git('rev-parse','HEAD'),tree=git('rev-parse','HEAD^{tree}');
+    fs.mkdirSync(path.join(root,'dist'));
+    const env={...process.env,GITHUB_SHA:commit,GITHUB_RUN_ID:'17',GITHUB_RUN_ATTEMPT:'1',JAEWOON_ANDROID_VERIFY_API:'36'};
+    const run=spawnSync('bash',['-c',runnable],{cwd:root,env,encoding:'utf8'});
+    assert.equal(run.status,0,run.stderr);
+    const metadata=JSON.parse(fs.readFileSync(path.join(root,'dist/build-info.json'),'utf8'));
+    assert.equal(metadata.sourceCommit,commit);assert.equal(metadata.sourceTreeSha,tree);
+    assert.equal(metadata.sha256,values['steps.artifact.outputs.sha256']);
+    assert.equal(metadata.installAndLaunchVerified,false,'metadata is not runtime acceptance');
+    assert.equal(metadata.homepagePublicationApproved,true);
+    assert.equal(metadata.homepagePublished,false,'publication approval is not deployed evidence');
+    const drift=spawnSync('bash',['-c',runnable],{cwd:root,env:{...env,GITHUB_SHA:'b'.repeat(40)},encoding:'utf8'});
+    assert.notEqual(drift.status,0,'wrong checkout cannot claim the requested source');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 const cases=[
   ['seed-action-survival-rogu-echoes-of-the-lost-star','Echoes of the Lost Star','SURVIVAL'],
   ['seed-single-defense-strat-celestial-bastion','Celestial Bastion','DEFENSE'],
