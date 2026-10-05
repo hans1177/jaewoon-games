@@ -24,6 +24,8 @@ import {
   SURVIVAL_PLAYER_MOTION_PACK,
   MOUNT_RIDER_MOTION_PACKS,
   SURVIVAL_WILDLIFE_MOTION_PACKS,
+  MONSTER_BODY_PLAN_MOTION_DETAILS,
+  resolveMonsterBodyPlanMotionDetail,
   createDuelCombatMotionLoadout,
   createDuelCombatAuthoringRecipe,
   createRobloxWalkTeachingRecipe,
@@ -394,6 +396,75 @@ test('survival wildlife motion profile gives species specific articulated motion
   assert.equal(bear.runtimeQuality.noRigidBodyGlide,true);
   assert.equal(bear.nativePath.rootOnlyForbidden,true);
   assert.ok(SURVIVAL_WILDLIFE_MOTION_PACKS.CANINE.locomotion.includes('CANINE_TROT'));
+});
+
+
+test('monster common motion detail library covers humanoid insect aquatic amorphous ghost centaur tentacle swarm and boss plans',()=>{
+  const required=[
+    'HUMANOID_UNDEAD','HEAVY_BIPED','BOSS_BIPED','HEAVY_GOLEM_OR_BOSS','QUADRUPED_CANINE','QUADRUPED_HEAVY',
+    'ARACHNID','ARACHNID_SCORPION','HEXAPOD_INSECT','REPTILE_OR_SERPENT','FLYING','AQUATIC','AMORPHOUS',
+    'FLOATING_GHOST','CENTAUR','TENTACLED','SWARM'
+  ];
+  for(const bodyPlan of required){
+    const detail=MONSTER_BODY_PLAN_MOTION_DETAILS[bodyPlan];
+    assert.ok(detail,bodyPlan);
+    assert.ok(detail.roles.locomotion.length>0,bodyPlan+' locomotion');
+    assert.ok(detail.roles.attacks.length>0,bodyPlan+' attacks');
+    assert.ok(detail.roles.reactions.length>0,bodyPlan+' reactions');
+    assert.ok(detail.roles.deaths.length>0,bodyPlan+' deaths');
+    assert.equal(detail.presentationVariation.weightScale>0,true,bodyPlan+' weight');
+    assert.equal(detail.presentationVariation.anticipationPoseScale>0,true,bodyPlan+' anticipation');
+    assert.equal(detail.presentationVariation.recoveryPoseScale>0,true,bodyPlan+' recovery');
+  }
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.ARACHNID_SCORPION.roles.attacks.includes('TAIL_STING'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.HEXAPOD_INSECT.roles.acting.includes('ANTENNA_SCAN'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.AQUATIC.roles.locomotion.includes('DIVE'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.AMORPHOUS.roles.reactions.includes('RECOMBINE'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.FLOATING_GHOST.roles.skill.includes('TELEPORT_TELEGRAPH'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.CENTAUR.roles.attacks.includes('RUN_ATTACK'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.TENTACLED.roles.attacks.includes('MULTI_STRIKE'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.SWARM.roles.attacks.includes('SWARM_SURROUND'));
+  assert.ok(MONSTER_BODY_PLAN_MOTION_DETAILS.BOSS_BIPED.roles.acting.includes('PHASE_CHANGE'));
+});
+
+test('monster body plan aliases resolve into the same common semantic detail',()=>{
+  assert.equal(resolveMonsterBodyPlanMotionDetail('humanoid'),MONSTER_BODY_PLAN_MOTION_DETAILS.HUMANOID_UNDEAD);
+  assert.equal(resolveMonsterBodyPlanMotionDetail('scorpion'),MONSTER_BODY_PLAN_MOTION_DETAILS.ARACHNID_SCORPION);
+  assert.equal(resolveMonsterBodyPlanMotionDetail('slime'),MONSTER_BODY_PLAN_MOTION_DETAILS.AMORPHOUS);
+  assert.equal(resolveMonsterBodyPlanMotionDetail('ghost'),MONSTER_BODY_PLAN_MOTION_DETAILS.FLOATING_GHOST);
+  assert.equal(resolveMonsterBodyPlanMotionDetail('object_swarm'),MONSTER_BODY_PLAN_MOTION_DETAILS.SWARM);
+});
+
+test('creature profile exposes body-plan presentation detail without taking gameplay authority',()=>{
+  const scorpion=createCreatureMotionSetProfile({id:'scorpion',archetype:'SCORPION',bodyPlan:'SCORPION'});
+  assert.equal(scorpion.motionDetailProfile,MONSTER_BODY_PLAN_MOTION_DETAILS.ARACHNID_SCORPION);
+  assert.equal(scorpion.presentationVariation.visualLimbCount,8);
+  assert.equal(scorpion.presentationVariation.tailFollow,1.4);
+  assert.ok(scorpion.commonSemanticRoles.attacks.includes('TAIL_STING'));
+  assert.equal(scorpion.gameplayAuthority,false);
+  const swarm=createCreatureMotionSetProfile({id:'swarm',archetype:'SWARM',bodyPlan:'SWARM'});
+  assert.equal(swarm.presentationVariation.limbPhase,'SWARM_PHASE_OFFSET');
+  assert.ok(MOTION_COMPOSITION_CHANNELS.includes('SWARM_FORMATION'));
+  assert.ok(MOTION_COMPOSITION_CHANNELS.includes('TENTACLES'));
+  assert.ok(MOTION_COMPOSITION_CHANNELS.includes('BODY_WAVE'));
+});
+
+test('automatic gap fill uses detailed monster body-plan semantic roles',()=>{
+  const insect=createCreatureMotionSetProfile({id:'beetle',archetype:'BEETLE',bodyPlan:'HEXAPOD_INSECT'});
+  const insectPlan=buildAutomaticMotionGapFillPlan({profile:insect});
+  const insectSeeds=insectPlan.actions.flatMap(row=>row.semanticSeeds||[]);
+  assert.ok(insectSeeds.some(id=>id.includes('SIX_LEG_WALK')));
+  assert.ok(insectSeeds.some(id=>id.includes('MANDIBLE_BITE')||id.includes('HORN_RAM')));
+  assert.ok(insectPlan.audit.requiredRoleGaps.includes('ANTENNA_SCAN'));
+  const ghost=createCreatureMotionSetProfile({id:'ghost',archetype:'GHOST',bodyPlan:'FLOATING_GHOST'});
+  const ghostPlan=buildAutomaticMotionGapFillPlan({profile:ghost});
+  const ghostSeeds=ghostPlan.actions.flatMap(row=>row.semanticSeeds||[]);
+  assert.ok(ghostSeeds.some(id=>id.includes('FLOAT_IDLE')));
+  assert.ok(ghostPlan.audit.requiredRoleGaps.includes('TELEPORT_TELEGRAPH'));
+  const boss=createCreatureMotionSetProfile({id:'boss',archetype:'BOSS',bodyPlan:'BOSS_BIPED'});
+  const bossPlan=buildAutomaticMotionGapFillPlan({profile:boss});
+  assert.ok(bossPlan.audit.requiredRoleGaps.includes('PHASE_CHANGE'));
+  assert.ok(bossPlan.audit.requiredRoleGaps.includes('FAILED_ATTACK_RECOVERY'));
 });
 
 test('motion DNA captures high-end compatibility metadata',()=>{
