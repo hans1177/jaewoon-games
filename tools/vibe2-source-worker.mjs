@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
+import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2-motion-coaching.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -3282,7 +3283,7 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
   }
   return best;
 }
-export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
+export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
@@ -3291,6 +3292,27 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'One existing object, one existing motion only. Estimate sixty minutes of active modification depth; preparation, QA, waiting and reporting do not fill that estimate. Refine pose/staging, weight/balance, joint arcs/spacing, contact/constraints, overlap/settle, and loop/transition within this one exact sourceWindow. Preserve the original object/clip binding, lockedSource, clip duration and gameplay event times. Do not edit shared functions affecting other objects or clips. Do not switch targets, add motions, or stop at a renamed constant or one cosmetic edit. A complete function-level change may be one edits[] item. Return motionRepairReport: {objectId,clipId,depthEvidence:[{axis,before,after}]} with exactly these axes: '+SINGLE_MOTION_DEPTH_AXES.join(',')+'. Use status CHANGED with distinct exact changed executable source excerpts from the patch. For a sound axis predeclared in preservedAxes, use status PRESERVED with before and after equal to its exact locked excerpt; do not change a sound axis to pad the workload. At least one real refinement remains required. This report proves source scope only, never native animation quality or hours actually worked. Native same-condition before/after inspection remains required.',
     '[SINGLE MOTION WORK UNIT END]'
   ].join('\n'):'';
+  // One exact motion does not need the whole-game rebuilding, marketing and asset universe prompt.
+  // Keep its complete scope/depth contract and verified learning, not the lossy generic compactor.
+  if(motionUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&order.source?.internalAssetMotion===true&&!allowFullRewrite){
+    const {sourceWindow,...binding}=motionUnit;
+    const compactUnit=singleMotionBlock.replace(JSON.stringify(motionUnit),()=>JSON.stringify(binding));
+    const targetFile=context.files.find(file=>file.path===motionUnit.sourcePath)?.content||'';
+    const outsideWindow=targetFile.includes(sourceWindow)?targetFile.replace(sourceWindow,'[EDITABLE WINDOW SHOWN BELOW]'):'';
+    return [
+      'You are the Vibe2 source worker. Implement the assigned existing motion. Return JSON only; instructions or plans without edits are invalid.',
+      'Engine: '+order.target+'; allowed edit path: '+allowed,
+      compactUnit,
+      learningContract.block,
+      motionCoaching?.block||'',
+      outsideWindow?'READ-ONLY TARGET MODULE CONTEXT (do not edit):\n'+outsideWindow:'',
+      'TARGET SOURCE: edits[].find must be a unique character-for-character excerpt wholly inside this exact sourceWindow. Prefer non-overlapping focused edits with short exact anchors; return a complete patch and all six depth axes together.',
+      '=== FILE '+motionUnit.sourcePath+' [EDITABLE EXACT SOURCE WINDOW] ===\n'+sourceWindow,
+      'Preserve the current API and all behavior outside this window. Root authority, gameplay, saves, damage, hitboxes, hit timing and clip duration cannot change. Use only real bound joints. No newFiles or replaceFiles.',
+      'Required response schema: '+JSON.stringify(singleMotionResponseSchema()),
+      'motionRepairReport.objectId='+JSON.stringify(motionUnit.objectId)+'; clipId='+JSON.stringify(motionUnit.clipId)+'. Report exact executable before/after excerpts for each axis, not prose. Each CHANGED pair must differ and be distinct; PRESERVED is allowed only for that axis in preservedAxes. Never report tests or runtime inspection as passed unless executed.'
+    ].filter(Boolean).join('\n');
+  }
   const detailReview=order.assetProduction?.detailReview,motionAudit=order.assetProduction?.motionContinuityAudit;
   const repairSubjects=new Set((detailReview?.repairs||[]).map(repair=>repair.recipeId));
   const assetDetailBlock=repairSubjects.size||motionAudit?[
@@ -4366,6 +4388,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
   const oversizedStandardInitial=!allowFullRewrite
+    &&!singleMotionWorkUnit
     &&specializedInitialPrompt===prompt
     &&!dedicatedRobloxOversizePath
     &&Buffer.byteLength(prompt,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES;
@@ -4517,10 +4540,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
-    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT']){
+    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=label==='SINGLE MOTION WORK UNIT'?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=['SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING'].includes(label)?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
@@ -4541,7 +4564,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const temperature=controlTokenRecovery?Math.min(0.32,0.08*(1+controlTokenRecoveryCount)):(target==='roblox'&&focusedReplaceOnly&&syntaxRecoveryCount>=2&&/LUAU_SYNTAX/.test(clean(lastError?.message)))?Math.min(0.24,0.08*syntaxRecoveryCount):systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     if(controlTokenRecovery)console.log(`VIBE2_CONTROL_TOKEN_RECOVERY=pass:${controlTokenRecoveryCount}:temperature:${temperature}`);
     const focusedFirstEditEarlyStop=!singleMotionWorkUnit&&focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
-    const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((!singleMotionWorkUnit&&(timeoutFastEscalation||focusedFirstEditEarlyStop))&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    const completionMode=singleMotionWorkUnit?'JSON_SINGLE_MOTION':(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((!singleMotionWorkUnit&&(timeoutFastEscalation||focusedFirstEditEarlyStop))&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const promptCoverage=assertVerifiedExternalLearningPromptCoverage(attemptPrompt,verifiedExternalLearningContract||{});
       if(promptCoverage.required===true){
@@ -4841,7 +4864,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){const fake=images.length?'':clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const format=completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(/^JSON_/.test(completionMode)?'json':null);const body=JSON.stringify({model,prompt,...(images.length?{images}:{}),stream:true,think:false,...(format?{format}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='',doneReason='',firstOutputSeen=false;const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(firstOutputTimer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);const firstOutputTimer=setTimeout(()=>{if(firstOutputSeen||settled)return;const error=new Error(`Ollama 첫 출력 시간 초과: ${firstOutputTimeoutMs}ms`);error.vibe2PartialOutput='';error.vibe2ZeroOutputTimeout=true;finish(error);},Math.min(timeoutMs,firstOutputTimeoutMs));request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(payload?.done===true)doneReason=clean(payload.done_reason);if(typeof payload?.response==='string'){if(payload.response.length&&!firstOutputSeen){firstOutputSeen=true;clearTimeout(firstOutputTimer);}output+=payload.response;
+async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){const fake=images.length?'':clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const format=completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null));const body=JSON.stringify({model,prompt,...(images.length?{images}:{}),stream:true,think:false,...(format?{format}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='',doneReason='',firstOutputSeen=false;const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(firstOutputTimer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);const firstOutputTimer=setTimeout(()=>{if(firstOutputSeen||settled)return;const error=new Error(`Ollama 첫 출력 시간 초과: ${firstOutputTimeoutMs}ms`);error.vibe2PartialOutput='';error.vibe2ZeroOutputTimeout=true;finish(error);},Math.min(timeoutMs,firstOutputTimeoutMs));request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(payload?.done===true)doneReason=clean(payload.done_reason);if(typeof payload?.response==='string'){if(payload.response.length&&!firstOutputSeen){firstOutputSeen=true;clearTimeout(firstOutputTimer);}output+=payload.response;
 // 교체 문자열 전용 응답은 제어 문자 혼입이 확정되면 남은 생성을 기다리지 않는다.
 if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\/no_think\b|<\/?think\b|```)/i.test(output)){
   const error=new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
@@ -5235,7 +5258,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   order.imageAssetObservation=imageAssetObservation;
   const runtimeVisualObservation=await observeAssetRuntimeCaptures({order,cwd});
   order.runtimeVisualObservation=runtimeVisualObservation;
-  const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract});
+  const motionCoaching=buildInternalMotionCoaching({cwd,order});
+  if(singleMotionPreflight.required)console.log('VIBE2_MOTION_COACHING='+JSON.stringify(motionCoaching.evidence));
+  const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract,motionCoaching});
   const editContract=exploration?.editContract||{};
   const systemRegressionFiles=target==='system'?responsibleFiles.filter(file=>/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
   const systemSourceFiles=target==='system'?responsibleFiles.filter(file=>!/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
@@ -5671,6 +5696,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     candidateManifestPath,
     model:effectiveModel,
     modelRouting:{...modelRouting,actualModel:effectiveModel,heroModelApplied:modelRouting.heroRequested===true&&effectiveModel===modelRouting.heroModel},
+    motionCoaching:motionCoaching.evidence,
     nativeAssetAuthoring,
     runtimePromotionCandidates,
     generatedAssetFiles:Object.freeze([...(order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence?.generatedFiles||[])]),

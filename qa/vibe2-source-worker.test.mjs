@@ -11,6 +11,7 @@ import { runInNewContext } from 'node:vm';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
+import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
@@ -147,11 +148,85 @@ test('single motion work unit retry keeps full JSON and rejects partial depth be
   const prompt=buildPrompt({...f.order,target:'web',goal:'one motion'},{files:[{path:'motion.js',content:f.unit.sourceWindow,editable:true}]},f.responsibleFiles,{focusedWebRepair:true});
   const result=await generateCandidateWithRecovery({prompt,target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,focusedWebRepair:true,singleMotionWorkUnit:true,responseFiles:[first,second],candidateValidator(candidate){const r=evaluateSingleMotionWorkUnit({...f,candidate});if(!r.pass)throw new Error(r.reason);return r;}});
   assert.equal(result.generation.attempts,2);
-  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidate.motionRepairReport.clipId,'walk');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
 function write(file, content) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, 'utf8'); }
+test('single motion generation sends a required nonempty patch schema through the real Ollama HTTP transport',async t=>{
+  const f=singleMotionFixture(t),requests=[];
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>{body+=chunk;});req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify({response:JSON.stringify(f.candidate),done:true})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const prompt=buildPrompt({...f.order,target:'web'},{files:[{path:'motion.js',content:f.unit.sourceWindow}]},f.responsibleFiles);
+  const result=await generateCandidateWithRecovery({prompt,model:'test-local-model',target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,singleMotionWorkUnit:true,candidateValidator(candidate){const check=evaluateSingleMotionWorkUnit({...f,candidate});if(!check.pass)throw new Error(check.reason);return check;}});
+  assert.equal(requests.length,1);
+  assert.deepEqual(requests[0].format,singleMotionResponseSchema());
+  assert.equal(requests[0].think,false);
+  assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
+  assert.equal(result.candidateValidation.runtimeVerified,false);
+});
+test('internal motion coaching selects source-hash-bound matching anatomy and never claims learned weights or runtime quality',()=>{
+  const make=(id,clipId='walk')=>buildInternalMotionCoaching({order:{source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-'+id,clipId}}}});
+  const beast=make('bulgasari'),shroud=make('gwisin-bride'),serpent=make('gangcheori');
+  assert.equal(beast.evidence.reference.objectId,'kelpie');
+  assert.equal(shroud.evidence.reference.objectId,'banshee');
+  assert.equal(serpent.evidence.reference.objectId,'boitata');
+  for(const result of [beast,shroud,serpent]){
+    assert.equal(result.evidence.advisoryOnly,true);
+    assert.equal(result.evidence.applicationVerified,false);
+    assert.equal(result.evidence.nativeQualityVerified,false);
+    assert.equal(result.evidence.weightTraining,false);
+    assert.match(result.block,/DISTILLED DESIGN PRINCIPLES/);
+    assert.match(result.block,/VARIATION TASK/);
+    assert.match(result.block,/FAILURE CHECKS/);
+    assert.equal(crypto.createHash('sha256').update(fs.readFileSync(result.evidence.reference.path)).digest('hex'),result.evidence.reference.sha256);
+  }
+  assert.match(serpent.block,/siblings under Tail/);
+  assert.match(make('jorogumo').block,/SpiderLeft\/Right1\.\.4/);
+  assert.equal(make('jorogumo').evidence.reference,null);
+  const attack=make('aswang','attack');
+  assert.equal(attack.evidence.reference.clipId,'attack');
+  assert.match(attack.block,/existing hit timing/);
+  assert.equal(make('kelpie').evidence.reference,null,'never use the same module as its own transfer example');
+});
+test('internal motion coaching drops a stale reference and fails closed on changed rig facts',t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root='assets/roblox/world-ghosts';
+  for(const relative of ['GhostSkinCatalog.luau','GhostSkinFactory.luau','native/build-evidence.json','motions/kelpie/init.luau'])write(path.join(cwd,root,relative),fs.readFileSync(path.join(root,relative),'utf8'));
+  const order={source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'bulgasari',clipId:'walk'}}};
+  assert.equal(buildInternalMotionCoaching({cwd,order}).evidence.reference.objectId,'kelpie');
+  fs.appendFileSync(path.join(cwd,root,'motions/kelpie/init.luau'),'\n-- uncompiled change');
+  assert.equal(buildInternalMotionCoaching({cwd,order}).evidence.reference,null);
+  fs.appendFileSync(path.join(cwd,root,'GhostSkinFactory.luau'),'\n-- changed rig');
+  assert.equal(buildInternalMotionCoaching({cwd,order}).evidence.retrieved,false);
+});
+test('internal motion prompt keeps exact scope, short source anchors and complete response contract without the oversized game goal',t=>{
+  const f=singleMotionFixture(t);
+  f.unit.scope='INTERNAL_ASSET_LIBRARY';
+  f.order.source={internalAssetMotion:true};
+  f.order.goal='UNRELATED_WHOLE_GAME_REBUILD '.repeat(15000);
+  const coaching={block:'[INTERNAL MOTION COACHING BEGIN]\nsource-bound-example\n[INTERNAL MOTION COACHING END]'};
+  const prompt=buildPrompt(f.order,{files:[{path:'motion.js',content:'const duration = 1.05;\n'+f.unit.sourceWindow}]},f.responsibleFiles,{motionCoaching:coaching});
+  assert.ok(Buffer.byteLength(prompt)<12000);
+  assert.ok(prompt.includes(f.unit.sourceWindow));
+  assert.ok(prompt.includes(coaching.block));
+  assert.match(prompt,/const duration = 1\.05/);
+  assert.match(prompt,/sixty minutes of active modification depth/);
+  assert.doesNotMatch(prompt,/UNRELATED_WHOLE_GAME_REBUILD/);
+  const schema=singleMotionResponseSchema();
+  assert.ok(schema.required.includes('edits'));
+  assert.equal(schema.properties.edits.minItems,1);
+  assert.equal(schema.properties.motionRepairReport.properties.depthEvidence.minItems,6);
+  assert.equal(schema.properties.motionRepairReport.properties.depthEvidence.maxItems,6);
+  assert.equal(schema.additionalProperties,false);
+});
 function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles = [], taskId = 'task-1' } = {}) {
   return {
     run: true,
@@ -5082,7 +5157,8 @@ test('focused replace Ollama requests keep canonical budget and enforce one-key 
   assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
   assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
   assert.ok(source.includes("focusedReplaceOnly?0.08"));
-  assert.ok(source.includes("completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(/^JSON_/.test(completionMode)?'json':null)"));
+  assert.ok(source.includes("completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}"));
+  assert.ok(source.includes("completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null)"));
   assert.ok(source.includes("...(format?{format}:{}),options"));
   assert.ok(source.includes("VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE"));
 });
