@@ -112,9 +112,7 @@ const commonMotionCatalog=JSON.parse(fs.readFileSync(path.join(root,'../common-m
 const environmentSource=fs.readFileSync(environmentPath,'utf8');
 const gallerySources=[{file:'assets/roblox/world-ghosts/build-native.mjs',sha256:digest(fs.readFileSync(fileURLToPath(import.meta.url)))},...sources.map(row=>({file:'assets/roblox/world-ghosts/'+row.file,sha256:row.sha256})),
  {file:'assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',sha256:digest(environmentSource)},
- {file:'assets/roblox/common-environment-v1/catalog.json',sha256:digest(fs.readFileSync(path.join(root,'../common-environment-v1/catalog.json')))},
- {file:'assets/roblox/common-motion-v1/RobloxCommonMotion.luau',sha256:digest(fs.readFileSync(path.join(root,'../common-motion-v1/RobloxCommonMotion.luau')))},
- {file:'assets/roblox/common-motion-v1/catalog.json',sha256:digest(fs.readFileSync(path.join(root,'../common-motion-v1/catalog.json')))}];
+ {file:'assets/roblox/common-environment-v1/catalog.json',sha256:digest(fs.readFileSync(path.join(root,'../common-environment-v1/catalog.json')))}];
 const galleryFingerprint=digest(JSON.stringify(gallerySources));
 function executeSamples(source){
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'asset-gallery-'));
