@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g17-ba8c82a49ba8",
-  "directiveFingerprint": "ba8c82a49ba8a2dbb587e2d5c67fb77783a93d86c5adbd49a391f544fa26fcdd",
-  "previousDirectiveFingerprint": "1912fb10a9601e0b920a31069ce570f89f083ec97302c13591bde81ed44cf9b4",
-  "forbiddenRepeatFingerprint": "1912fb10a9601e0b920a31069ce570f89f083ec97302c13591bde81ed44cf9b4",
+  "directiveId": "fantasy-survival-build-up-g18-e55aa24d8016",
+  "directiveFingerprint": "e55aa24d8016fd1aa73027655b8629fcbf7686dea41706e2d6bfe93a4b1462fe",
+  "previousDirectiveFingerprint": "ba8c82a49ba8a2dbb587e2d5c67fb77783a93d86c5adbd49a391f544fa26fcdd",
+  "forbiddenRepeatFingerprint": "ba8c82a49ba8a2dbb587e2d5c67fb77783a93d86c5adbd49a391f544fa26fcdd",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
+  "sourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
   "designFingerprint": "c73a53e121ef51a605007aa1df16ee39732f54300166fd6e453eb97497f1f07e",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -52,52 +52,51 @@
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 74,
-      "progression": 130,
+      "combat": 86,
+      "progression": 136,
       "ai": 19,
       "save": 51,
       "multiplayer": 32,
-      "animation": 28,
-      "motionStates": 126,
-      "gameFeel": 22,
-      "vfx": 19,
-      "camera": 31,
+      "animation": 29,
+      "motionStates": 146,
+      "gameFeel": 29,
+      "vfx": 21,
+      "camera": 33,
       "audio": 1,
       "audioDynamics": 14,
-      "ui": 58,
-      "uiFlow": 32,
+      "ui": 63,
+      "uiFlow": 34,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 55,
-      "map": 94,
-      "landmark": 2,
+      "input": 58,
+      "map": 107,
+      "landmark": 8,
       "interaction": 31,
-      "inventory": 2,
-      "equipment": 0,
-      "settings": 1,
-      "feedback": 67,
+      "inventory": 6,
+      "equipment": 3,
+      "settings": 2,
+      "feedback": 68,
       "session": 17,
-      "content": 90,
-      "choice": 21,
-      "connection": 0,
-      "performance": 17,
-      "lighting": 37,
+      "content": 103,
+      "choice": 24,
+      "connection": 2,
+      "performance": 18,
+      "lighting": 39,
       "primitive": 13,
       "todo": 0,
-      "errorRecovery": 12
+      "errorRecovery": 13
     },
     "topFiles": [
       {
-        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
-        "score": 259
+        "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "score": 288
       },
       {
-        "file": "roblox-games/fantasy-survival/shared/GameConfig.luau",
-        "score": 258
+        "file": "roblox-games/fantasy-survival/server/Game.server.luau",
+        "score": 259
       },
       {
         "file": "roblox-games/fantasy-survival/client/Game.client.luau",
@@ -258,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "c009cc19172d5e049700efb8c7a508c1eca8791cb162bf0972c8891a38229f3a",
-    "currentSourceTreeFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
+    "currentSourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -403,13 +402,13 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
@@ -423,8 +422,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -448,8 +447,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -478,8 +477,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -875,8 +874,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -884,8 +883,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -911,8 +910,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -956,8 +955,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1010,8 +1009,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1317,32 +1316,7 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1435,8 +1409,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 86642,
-        "largestFileBytes": 43051,
+        "sourceBytes": 98900,
+        "largestFileBytes": 47539,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1468,8 +1442,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1479,7 +1453,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 8
+        "PRESENTATION_WORLD_COHESION": 9
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1487,7 +1461,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1528,7 +1502,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 110,
+        "score": 92,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1541,13 +1515,6 @@
         "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 26,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
         ]
       },
       {
@@ -1566,13 +1533,15 @@
         "gapDomains": []
       },
       {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 14,
+        "gapDomains": []
+      },
+      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -102,
+        "score": -138,
         "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
+          "EQUIPMENT_LOADOUT"
         ]
       }
     ],
@@ -1649,11 +1618,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
-    "priorSourceFingerprint": "c009cc19172d5e049700efb8c7a508c1eca8791cb162bf0972c8891a38229f3a",
+    "sourceFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
+    "priorSourceFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1737,7 +1706,7 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
@@ -1772,8 +1741,7 @@
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
     "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
+      "AUDIO_MUSIC_AND_FEEDBACK"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -2177,8 +2145,7 @@
       "GRAPHICS",
       "MAP",
       "UI",
-      "GAMEPLAY",
-      "SAVE"
+      "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2186,15 +2153,13 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
+    "securityRelevant": false,
     "openCloudWorldChecks": [
       "SERVER_BOOT",
       "FINITE_WORLD_BOUNDS",
@@ -2224,8 +2189,7 @@
         "GRAPHICS",
         "MAP",
         "UI",
-        "GAMEPLAY",
-        "SAVE"
+        "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2233,15 +2197,13 @@
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
+      "securityRelevant": false,
       "openCloudWorldChecks": [
         "SERVER_BOOT",
         "FINITE_WORLD_BOUNDS",
@@ -2267,8 +2229,6 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2297,7 +2257,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
+      "sourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2344,7 +2304,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2401,12 +2361,7 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
       "EQUIPMENT_LOADOUT",
-      "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
-      "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
     "notApplicable": [
@@ -2414,5 +2369,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T06:46:20.893Z"
+  "generatedAt": "2026-10-05T07:00:29.831Z"
 }

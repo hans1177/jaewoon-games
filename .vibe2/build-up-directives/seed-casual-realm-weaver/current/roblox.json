@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g16-dbd71c72e7a3",
-  "directiveFingerprint": "dbd71c72e7a36d056f32a241b10c0c608c32f49105c8ed486e2169019b89b920",
-  "previousDirectiveFingerprint": "2d06cae46cbf483853b3c40d816c68f3b419ff7d3ac5c9ac2704697384aa5a15",
-  "forbiddenRepeatFingerprint": "2d06cae46cbf483853b3c40d816c68f3b419ff7d3ac5c9ac2704697384aa5a15",
+  "directiveId": "seed-casual-realm-weaver-build-up-g17-8084a46b6c75",
+  "directiveFingerprint": "8084a46b6c758c661eed6f913a0aa467baad75d22e34190ac068bce592a01253",
+  "previousDirectiveFingerprint": "dbd71c72e7a36d056f32a241b10c0c608c32f49105c8ed486e2169019b89b920",
+  "forbiddenRepeatFingerprint": "dbd71c72e7a36d056f32a241b10c0c608c32f49105c8ed486e2169019b89b920",
   "gameId": "seed-casual-realm-weaver",
   "gameName": "세계의 직조자",
-  "generation": 16,
+  "generation": 17,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "8cceda0844d4ab3692bd7564cdcbfd4577865808e74384b2f2152d365dc772c5",
+  "sourceTreeFingerprint": "6b7a1fc1e138029af566cc2a87fa4eecbe3f12c00c0eca0eedafad0d31679ac8",
   "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
   "gameIdentityAndNonNegotiables": {
     "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
@@ -53,48 +53,47 @@
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 36,
-      "progression": 113,
+      "combat": 48,
+      "progression": 119,
       "ai": 19,
       "save": 49,
       "multiplayer": 13,
-      "animation": 28,
-      "motionStates": 113,
-      "gameFeel": 22,
-      "vfx": 19,
-      "camera": 31,
+      "animation": 29,
+      "motionStates": 133,
+      "gameFeel": 29,
+      "vfx": 21,
+      "camera": 33,
       "audio": 1,
       "audioDynamics": 14,
-      "ui": 57,
-      "uiFlow": 31,
+      "ui": 62,
+      "uiFlow": 33,
       "entryFlow": 4,
       "loadingFlow": 0,
-      "input": 59,
-      "map": 95,
-      "landmark": 2,
+      "input": 62,
+      "map": 108,
+      "landmark": 8,
       "interaction": 29,
-      "inventory": 2,
-      "equipment": 0,
-      "settings": 1,
-      "feedback": 68,
+      "inventory": 6,
+      "equipment": 3,
+      "settings": 2,
+      "feedback": 69,
       "session": 13,
-      "content": 65,
-      "choice": 15,
-      "connection": 0,
-      "performance": 16,
-      "lighting": 37,
+      "content": 78,
+      "choice": 18,
+      "connection": 2,
+      "performance": 17,
+      "lighting": 39,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 11
+      "errorRecovery": 12
     },
     "topFiles": [
       {
         "file": "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
-        "score": 250
+        "score": 280
       },
       {
         "file": "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
@@ -267,9 +266,9 @@
   "previousVersionDelta": {
     "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 15,
-    "previousSourceTreeFingerprint": "f0766a99328cd9a9947f059222b549e122f4301c6799742493ade05bc9ad688d",
-    "currentSourceTreeFingerprint": "8cceda0844d4ab3692bd7564cdcbfd4577865808e74384b2f2152d365dc772c5",
+    "previousGeneration": 16,
+    "previousSourceTreeFingerprint": "8cceda0844d4ab3692bd7564cdcbfd4577865808e74384b2f2152d365dc772c5",
+    "currentSourceTreeFingerprint": "6b7a1fc1e138029af566cc2a87fa4eecbe3f12c00c0eca0eedafad0d31679ac8",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -412,18 +411,18 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "NOT_APPLICABLE",
-      "reason": "game has no current equipment/loadout system"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CRAFTING",
@@ -432,8 +431,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -457,8 +456,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -487,8 +486,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -884,8 +883,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -893,8 +892,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -902,12 +901,12 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 game has no current equipment/loadout system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CRAFTING",
@@ -920,8 +919,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -965,8 +964,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1019,8 +1018,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1326,27 +1325,7 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
+      "domain": "EQUIPMENT_LOADOUT",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1440,8 +1419,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 80860,
-        "largestFileBytes": 43739,
+        "sourceBytes": 93118,
+        "largestFileBytes": 48227,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1473,8 +1452,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
+    "themeDepth": 11,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1484,13 +1463,13 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1533,7 +1512,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 66,
+        "score": 48,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1543,11 +1522,9 @@
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 54,
+        "score": 32,
         "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "SYSTEM_CONNECTION"
+          "EQUIPMENT_LOADOUT"
         ]
       },
       {
@@ -1574,10 +1551,8 @@
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": -94,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
+        "score": -106,
+        "gapDomains": []
       }
     ],
     "coherentContentBundle": [
@@ -1653,11 +1628,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 16,
-    "previousGeneration": 15,
+    "generation": 17,
+    "previousGeneration": 16,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "8cceda0844d4ab3692bd7564cdcbfd4577865808e74384b2f2152d365dc772c5",
-    "priorSourceFingerprint": "f0766a99328cd9a9947f059222b549e122f4301c6799742493ade05bc9ad688d",
+    "sourceFingerprint": "6b7a1fc1e138029af566cc2a87fa4eecbe3f12c00c0eca0eedafad0d31679ac8",
+    "priorSourceFingerprint": "8cceda0844d4ab3692bd7564cdcbfd4577865808e74384b2f2152d365dc772c5",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -1741,7 +1716,7 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
@@ -1776,8 +1751,7 @@
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
     "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
+      "AUDIO_MUSIC_AND_FEEDBACK"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -2181,8 +2155,7 @@
       "GRAPHICS",
       "MAP",
       "UI",
-      "GAMEPLAY",
-      "SAVE"
+      "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2190,15 +2163,13 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
+    "securityRelevant": false,
     "openCloudWorldChecks": [
       "SERVER_BOOT",
       "FINITE_WORLD_BOUNDS",
@@ -2228,8 +2199,7 @@
         "GRAPHICS",
         "MAP",
         "UI",
-        "GAMEPLAY",
-        "SAVE"
+        "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2237,15 +2207,13 @@
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
+      "securityRelevant": false,
       "openCloudWorldChecks": [
         "SERVER_BOOT",
         "FINITE_WORLD_BOUNDS",
@@ -2271,8 +2239,6 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2301,7 +2267,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "8cceda0844d4ab3692bd7564cdcbfd4577865808e74384b2f2152d365dc772c5",
+      "sourceTreeFingerprint": "6b7a1fc1e138029af566cc2a87fa4eecbe3f12c00c0eca0eedafad0d31679ac8",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2348,7 +2314,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 17,
+    "nextGeneration": 18,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2405,16 +2371,11 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
-      "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
-      "SETTINGS_ACCESSIBILITY",
+      "EQUIPMENT_LOADOUT",
       "MENU_FLOW"
     ],
     "notApplicable": [
       "QUESTS",
-      "EQUIPMENT_LOADOUT",
       "CRAFTING",
       "NPC_SOCIAL_BEHAVIOR",
       "NARRATIVE_STORY",
@@ -2422,5 +2383,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T06:46:20.721Z"
+  "generatedAt": "2026-10-05T07:00:29.642Z"
 }

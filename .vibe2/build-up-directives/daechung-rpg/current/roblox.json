@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g18-c9bb6a91339b",
-  "directiveFingerprint": "c9bb6a91339b161dd58690aa39c159be92a2d246adff65e65d5cad1581bd9efd",
-  "previousDirectiveFingerprint": "61f9d39d281fd89420e6d6987a484886a9cdb1e85e8c6bb02a2ddbcb747171cd",
-  "forbiddenRepeatFingerprint": "61f9d39d281fd89420e6d6987a484886a9cdb1e85e8c6bb02a2ddbcb747171cd",
+  "directiveId": "daechung-rpg-build-up-g19-e8810344ee86",
+  "directiveFingerprint": "e8810344ee862042e0b6bb76499d6634999b12d34dfc50da530091966aecf120",
+  "previousDirectiveFingerprint": "c9bb6a91339b161dd58690aa39c159be92a2d246adff65e65d5cad1581bd9efd",
+  "forbiddenRepeatFingerprint": "c9bb6a91339b161dd58690aa39c159be92a2d246adff65e65d5cad1581bd9efd",
   "gameId": "daechung-rpg",
-  "gameName": "대충 RPG",
-  "generation": 18,
+  "gameName": "5포탈 RPG: 던전 파티",
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
-  "designFingerprint": "180b392ae260071d960a586fd46e312d83468098133916a5cd5f62c7bdd7feaa",
+  "sourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+  "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
     "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
@@ -68,7 +68,7 @@
       }
     ],
     "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
-    "multiplayerMode": "COOP",
+    "multiplayerMode": "SINGLE_OR_COOP",
     "preserve": [
       "CORE_IDENTITY",
       "APPROVED_RULE_SEMANTICS",
@@ -85,39 +85,39 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 558,
-      "progression": 504,
+      "combat": 570,
+      "progression": 510,
       "ai": 58,
       "save": 185,
       "multiplayer": 18,
-      "animation": 48,
-      "motionStates": 659,
-      "gameFeel": 28,
-      "vfx": 39,
-      "camera": 91,
+      "animation": 49,
+      "motionStates": 679,
+      "gameFeel": 35,
+      "vfx": 41,
+      "camera": 93,
       "audio": 38,
       "audioDynamics": 20,
-      "ui": 208,
-      "uiFlow": 179,
+      "ui": 213,
+      "uiFlow": 181,
       "entryFlow": 8,
       "loadingFlow": 0,
-      "input": 103,
-      "map": 452,
-      "landmark": 26,
+      "input": 106,
+      "map": 465,
+      "landmark": 32,
       "interaction": 104,
-      "inventory": 54,
-      "equipment": 82,
-      "settings": 10,
-      "feedback": 133,
+      "inventory": 58,
+      "equipment": 85,
+      "settings": 11,
+      "feedback": 134,
       "session": 75,
-      "content": 567,
-      "choice": 117,
-      "connection": 2,
-      "performance": 33,
-      "lighting": 80,
+      "content": 580,
+      "choice": 120,
+      "connection": 4,
+      "performance": 34,
+      "lighting": 82,
       "primitive": 21,
       "todo": 0,
-      "errorRecovery": 21
+      "errorRecovery": 22
     },
     "topFiles": [
       {
@@ -126,7 +126,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
-        "score": 337
+        "score": 367
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
@@ -547,17 +547,17 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "5f6888cbb2494a8a1ff911586156a40896eaa4ba366d26a67d908602f9a8ee93",
-    "currentSourceTreeFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
+    "currentSourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-    "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1696,7 +1696,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 236798,
+        "sourceBytes": 249056,
         "largestFileBytes": 105650,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1729,13 +1729,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 7,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=5.",
+    "themeDepth": 8,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 7,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 8,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1749,7 +1749,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1789,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 86,
+        "score": 68,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1800,17 +1800,17 @@
         "gapDomains": []
       },
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 20,
-        "gapDomains": []
-      },
-      {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 14,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 14,
         "gapDomains": []
       },
@@ -1900,6 +1900,27 @@
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
+  },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 19,
+    "previousGeneration": 18,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+    "priorSourceFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -2529,11 +2550,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
+      "sourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "failureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2576,7 +2597,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2641,5 +2662,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T06:30:37.239Z"
+  "generatedAt": "2026-10-05T07:00:29.556Z"
 }

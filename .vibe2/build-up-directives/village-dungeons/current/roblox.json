@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g18-8cf7fa5999da",
-  "directiveFingerprint": "8cf7fa5999da3a696d8a5c6b7c7f3a90b09893330116de93b1a18ad67888edef",
-  "previousDirectiveFingerprint": "57b4a95a98714dbd2a1b8328f2c960d29087e82a5800c1df2ceb7378c754bc8f",
-  "forbiddenRepeatFingerprint": "57b4a95a98714dbd2a1b8328f2c960d29087e82a5800c1df2ceb7378c754bc8f",
+  "directiveId": "village-dungeons-build-up-g19-a7adae2e20aa",
+  "directiveFingerprint": "a7adae2e20aa7a1f1605fff4867d0f53938b65287fa7eeab487dd507227726c7",
+  "previousDirectiveFingerprint": "8cf7fa5999da3a696d8a5c6b7c7f3a90b09893330116de93b1a18ad67888edef",
+  "forbiddenRepeatFingerprint": "8cf7fa5999da3a696d8a5c6b7c7f3a90b09893330116de93b1a18ad67888edef",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
+  "sourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -57,39 +57,39 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 169,
-      "progression": 234,
+      "combat": 181,
+      "progression": 240,
       "ai": 27,
       "save": 76,
       "multiplayer": 31,
-      "animation": 28,
-      "motionStates": 198,
-      "gameFeel": 25,
-      "vfx": 19,
-      "camera": 31,
+      "animation": 29,
+      "motionStates": 218,
+      "gameFeel": 32,
+      "vfx": 21,
+      "camera": 33,
       "audio": 1,
       "audioDynamics": 16,
-      "ui": 57,
-      "uiFlow": 44,
+      "ui": 62,
+      "uiFlow": 46,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 57,
-      "map": 310,
-      "landmark": 3,
+      "input": 60,
+      "map": 323,
+      "landmark": 9,
       "interaction": 41,
-      "inventory": 61,
-      "equipment": 14,
-      "settings": 1,
-      "feedback": 73,
+      "inventory": 65,
+      "equipment": 17,
+      "settings": 2,
+      "feedback": 74,
       "session": 147,
-      "content": 263,
-      "choice": 20,
-      "connection": 0,
-      "performance": 22,
-      "lighting": 37,
+      "content": 276,
+      "choice": 23,
+      "connection": 2,
+      "performance": 23,
+      "lighting": 39,
       "primitive": 18,
       "todo": 0,
-      "errorRecovery": 21
+      "errorRecovery": 22
     },
     "topFiles": [
       {
@@ -98,7 +98,7 @@
       },
       {
         "file": "roblox-games/village-dungeons/shared/GameConfig.luau",
-        "score": 270
+        "score": 300
       },
       {
         "file": "roblox-games/village-dungeons/client/Game.client.luau",
@@ -363,9 +363,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
-    "currentSourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
+    "currentSourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -528,8 +528,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -583,8 +583,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -1016,8 +1016,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1115,8 +1115,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1422,16 +1422,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -1522,8 +1512,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 104921,
-        "largestFileBytes": 44183,
+        "sourceBytes": 117179,
+        "largestFileBytes": 48671,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1555,8 +1545,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 11,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
+    "themeDepth": 12,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1566,12 +1556,12 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 11
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1615,7 +1605,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 48,
+        "score": 30,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1624,18 +1614,16 @@
         ]
       },
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 32,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 20,
+        "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
@@ -1654,10 +1642,8 @@
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -110,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
+        "score": -122,
+        "gapDomains": []
       }
     ],
     "coherentContentBundle": [
@@ -1733,11 +1719,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
-    "priorSourceFingerprint": "fd663da05f182858e761d4267ab93042260665cf1c898179ba3f059016f865c0",
+    "sourceFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
+    "priorSourceFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2367,7 +2353,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
+      "sourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2414,7 +2400,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2471,8 +2457,6 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "SYSTEM_CONNECTION",
-      "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
     "notApplicable": [
@@ -2482,5 +2466,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T06:46:20.827Z"
+  "generatedAt": "2026-10-05T07:00:29.758Z"
 }
