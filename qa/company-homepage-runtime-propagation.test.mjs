@@ -1,8 +1,46 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
+
+test('runnable native tests remain accessible before release and survive web-only withdrawal',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
+    gameId:'access-test',productionClass:'DEVELOPMENT_CONFIRMED',
+    robloxPublicationTarget:{placeId:'123456789',verified:true,published:true,dedicated:true},
+    unityInternalBuildUrl:'https://example.com/access-test.apk',
+    unityExecutionEvidence:{rawStageResults:{runtime:true},regressionPassed:false}
+  }]}});
+  assert.equal(snap.games[0].platforms.every(p=>p.executionAvailable===true),true);
+  assert.equal(snap.games[0].platforms.every(p=>p.internalReleaseReady===false),true);
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},internalReleaseLinks,hasRunnableHomepageTarget,hasInternalRelease})',{
+    document:{readyState:'loading',addEventListener(){}}
+  });
+  api.setExposure(snap);
+  const game={id:'access-test',canonical:{identity:{gameId:'access-test'},lifecycle:{state:'ACTIVE'},sources:{web:{state:'WITHDRAWN_SIMPLE_PROTOTYPE',playable:false,archive:true,path:'web-games/access-test'}}}};
+  const links=api.internalReleaseLinks(game);
+  assert.equal(links.roblox,'https://www.roblox.com/games/123456789');
+  assert.equal(links.unity,'https://example.com/access-test.apk');
+  assert.equal(links.web,'');
+  assert.equal(api.hasRunnableHomepageTarget(game),true);
+  assert.equal(api.hasInternalRelease(game),false);
+});
+
+test('source-only or failed builds and stale shared targets cannot become executable links',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
+    gameId:'blocked-access',robloxSharedTargetCurrent:false,
+    robloxPublicationTarget:{placeId:'123456789',verified:true,shared:true},
+    unityInternalBuildUrl:'https://example.com/failed.apk',unityRuntimeSmokeRunId:123,
+    unityExecutionEvidence:{runtimePassed:false,rawStageResults:{runtime:false}}
+  },{gameId:'source-only',unityProjectPath:'unity-games/source-only',robloxProjectPath:'roblox-games/source-only'}]}});
+  assert.equal(snap.games.flatMap(g=>g.platforms).some(p=>p.executionAvailable===true),false);
+  assert.equal(policy.serverHomepageIntegration.runnablePlatformAccess.releaseClassificationRequiredForLaunch,false);
+  assert.deepEqual(policy.catalogNormalization.ownerWebAutoIngest.webExposureQuality.homepageWithdrawalPlatforms,['WEB']);
+});
 
 test('runtime catalog fills only missing active development games',()=>{
   const catalog={games:[

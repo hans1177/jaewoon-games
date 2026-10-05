@@ -1,5 +1,5 @@
 {
-  "version": 534,
+  "version": 535,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -6417,7 +6417,11 @@
           "seed-roblox-story-rpg-adventur-blox-fruits": "63a3825b63c480b42437f0a1fe443f80acbacde2f3620db7f6ac96f86d06b24a"
         },
         "simplePlacementAndButtonCounterOnlyIsInsufficient": true,
-        "entryDigestNormalization": "TRIM_OUTER_WHITESPACE"
+        "entryDigestNormalization": "TRIM_OUTER_WHITESPACE",
+        "homepageWithdrawalPlatforms": [
+          "WEB"
+        ],
+        "nativeExecutionAccessUnaffected": true
       }
     }
   },
@@ -6656,7 +6660,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 9,
+    "version": 10,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6853,7 +6857,8 @@
         "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
         "cardVisibilityRequiresRunnableTarget": true,
         "titleOnlyCardExposureForbidden": true,
-        "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true
+        "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true,
+        "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess"
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6979,7 +6984,27 @@
       "deployedWebExposurePolicyOverridesStaleRuntimeWebFlags": true
     },
     "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate",
-    "homepageGameMediaRef": "homepageGameMediaContract"
+    "homepageGameMediaRef": "homepageGameMediaContract",
+    "runnablePlatformAccess": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "mode": "ALL_RUNNABLE_PLATFORMS_REGARDLESS_OF_RELEASE_CLASSIFICATION",
+      "platforms": [
+        "WEB",
+        "UNITY_WEB",
+        "UNITY",
+        "ROBLOX"
+      ],
+      "releaseClassificationRequiredForLaunch": false,
+      "realExecutionTargetRequired": true,
+      "unreleasedTargetLabel": "DEVELOPMENT_TEST",
+      "webPrototypeWithdrawalOnly": true,
+      "withdrawnWebMustNotHideRunnableNativeTarget": true,
+      "nativePrimitiveQualityMayNotHideRunnableTarget": true,
+      "sourceOnlyOrMissingBuildCannotClaimRunnable": true,
+      "staleSharedRobloxTargetStillSuppressed": true,
+      "releaseTruthAndLockedF0F9SequenceUnchanged": true
+    }
   },
   "longHorizonVision": {
     "version": 2,
@@ -27097,7 +27122,8 @@
       "newWrapperForbidden": true,
       "maximumCapturesPerRun": 6,
       "unchangedFailedCaptureRetryHours": 24,
-      "mediaInfrastructureFailureCannotBlockHomepagePublication": true
+      "mediaInfrastructureFailureCannotBlockHomepagePublication": true,
+      "captureImplementationRepairInvalidatesFailedAttemptCooldown": true
     },
     "preservation": {
       "robloxGameSourceUnchanged": true,

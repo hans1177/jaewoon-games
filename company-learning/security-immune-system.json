@@ -1,5 +1,5 @@
 {
-  "version": 72,
+  "version": 73,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1195,5 +1195,14 @@
     "noCredentialLogging": true,
     "noRobloxGuiAutomation": true,
     "noRuntimeOrReleaseGateBypass": true
+  },
+  "runnablePlatformAccessSecurity": {
+    "sourcePolicy": "serverHomepageIntegration.runnablePlatformAccess",
+    "noNewCredentialOrPermission": true,
+    "noNativeVisibilityPermissionChange": true,
+    "staleSharedRobloxTargetsSuppressed": true,
+    "missingOrFailedRuntimeCannotClaimRunnable": true,
+    "webWithdrawalCannotSuppressNativeTarget": true,
+    "releaseAndF0F9GatesUnchanged": true
   }
 }
