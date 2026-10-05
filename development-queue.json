@@ -6587,8 +6587,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "ACTIVE",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -6672,7 +6672,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-05T11:40:11.105Z",
+      "updatedAt": "2026-10-05T11:42:39.780Z",
       "robloxSourceCommit": "1340853bdd24dcbfedc203c3d0cedd27a6b448ce",
       "robloxSourceBootstrapPassedAt": "2026-10-05T09:10:14.852Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -6754,9 +6754,9 @@
       "unityCandidateBranch": "development/unity-tech-cozy-island-37296779408",
       "unitySourceCommit": "803990492ae8ee84d699d29d1ec9184e66770b51",
       "unityBuildRunId": 37297150120,
-      "unityRuntimeSmokeRunId": 37298496422,
-      "unityIndependentQaRunId": null,
-      "unityRegressionRunId": null,
+      "unityRuntimeSmokeRunId": 37302645331,
+      "unityIndependentQaRunId": 37303075167,
+      "unityRegressionRunId": 37303360658,
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
@@ -6776,23 +6776,23 @@
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
           },
           "F2": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
           },
           "F3": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
           },
           "F4": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION"
           },
           "F5": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F6": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F7": {
@@ -6802,7 +6802,7 @@
             "authoritativeSync": false
           },
           "F8": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA"
           },
           "F9": {
@@ -6811,7 +6811,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-05T10:46:48.061Z"
+        "verifiedAt": "2026-10-05T11:42:39.780Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -6833,16 +6833,16 @@
         "multiplayerPassed": false,
         "regressionPassed": false,
         "rawStageResults": {
-          "runtime": false,
-          "independentQa": false,
+          "runtime": true,
+          "independentQa": true,
           "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F1_SERVER_BOOT",
-        "failureStage": "F2_WORLD_FOUNDATION",
-        "failureSignature": "fb4dd1546b9264f88171c15aea9a77e6195254a5bf3bed7c842252d8067ddb74"
+        "lastSuccessfulStage": "F6_CORE_SERVICES",
+        "failureStage": "F7_MULTIPLAYER_FOUNDATION",
+        "failureSignature": "9ae9dfe0aa4a29d9729bed4ddc4e09aa8c5b3b2ee5ff05777c11f7436ff85705"
       },
       "executionEvidence": {
         "version": 4,
@@ -6857,18 +6857,18 @@
         "multiplayerPassed": false,
         "regressionPassed": false,
         "rawStageResults": {
-          "runtime": false,
-          "independentQa": false,
+          "runtime": true,
+          "independentQa": true,
           "regression": false
         },
         "canonicalEvidenceBound": false,
         "f0ToF9Passed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "F1_SERVER_BOOT",
-        "failureStage": "F2_WORLD_FOUNDATION",
-        "failureSignature": "fb4dd1546b9264f88171c15aea9a77e6195254a5bf3bed7c842252d8067ddb74"
+        "lastSuccessfulStage": "F6_CORE_SERVICES",
+        "failureStage": "F7_MULTIPLAYER_FOUNDATION",
+        "failureSignature": "9ae9dfe0aa4a29d9729bed4ddc4e09aa8c5b3b2ee5ff05777c11f7436ff85705"
       },
-      "resumeStage": "F2_WORLD_FOUNDATION",
+      "resumeStage": "F7_MULTIPLAYER_FOUNDATION",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxValidationTarget": {
@@ -21382,7 +21382,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T11:42:42.483Z",
+  "updatedAt": "2026-10-05T11:42:48.288Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
