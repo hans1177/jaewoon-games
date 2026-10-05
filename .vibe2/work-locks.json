@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-19on7jw",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
+        "assets/generated/unity/seed-casual-realm-weaver/background/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/background/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/background/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/item/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/item/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/item/evidence.json",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/asset.glb",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/preview.png",
+        "assets/generated/unity/seed-casual-realm-weaver/prop/evidence.json"
+      ],
+      "baseSha": "36cfcac17ec040193519787cafdf79e6c01fed14",
+      "runId": "37298755218",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T11:11:05.874Z",
+      "expiresAt": "2026-10-05T11:56:05.874Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
+      ]
+    }
+  ]
 }
