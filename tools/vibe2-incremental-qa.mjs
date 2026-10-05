@@ -767,8 +767,7 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   const plainVisualParts=[];
   for(const match of assignedParts){
     const variable=match[1];
-    const escaped=variable.replace(/[.*+?^\${}()|[\]\\]/g,'\\  const familySignals=robloxAssetFamilySignals(fullText);
-  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));');
+    const escaped=variable.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
     const utilityName=new RegExp('(?:^|_)(?:hitbox|collider|trigger|root|spawn|boundary|anchor|probe|marker|detector|zone)(?:_|$)','i').test(variable);
     const invisibleUtility=new RegExp('\\b'+escaped+'\\.Transparency\\s*=\\s*1\\b[\\s\\S]{0,500}\\b'+escaped+'\\.CanCollide\\s*=\\s*false\\b','i').test(fullText)
       ||new RegExp('\\b'+escaped+'\\.CanCollide\\s*=\\s*false\\b[\\s\\S]{0,500}\\b'+escaped+'\\.Transparency\\s*=\\s*1\\b','i').test(fullText);
