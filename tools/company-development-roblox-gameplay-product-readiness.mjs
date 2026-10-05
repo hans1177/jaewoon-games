@@ -327,8 +327,10 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
   const content=baselineContent(baseline);
   const text=gameplayContractText(baseline);
   const ctx=sourceContext({config,server,client,project});
+  const expectedPlayMode=inferDesignPlayMode(baseline);
   const required=[];
   for(const rule of CAPABILITY_RULES){
+    if(rule.id==='MULTIPLAYER'&&expectedPlayMode==='SINGLE')continue;
     if(rule.always||rule.design.test(text))required.push(rule.id);
   }
   if(multiplayerRequiredByDesign(baseline)&&!required.includes('MULTIPLAYER'))required.push('MULTIPLAYER');
@@ -357,7 +359,6 @@ export function evaluateRobloxGameplayProductReadiness({gameId='',baseline={},co
   const blockers=[];
   const expectedGenre=inferDesignGenre(baseline);
   const actualGenre=field(config,'Genre');
-  const expectedPlayMode=inferDesignPlayMode(baseline);
   const actualPlayMode=upper(field(config,'PlayMode'));
   if(expectedGenre&&!actualGenre)blockers.push('DESIGN_GENRE_MISSING:'+expectedGenre);
   else if(expectedGenre&&upper(expectedGenre)!==upper(actualGenre))blockers.push('DESIGN_GENRE_MISMATCH:'+expectedGenre+':'+actualGenre);
