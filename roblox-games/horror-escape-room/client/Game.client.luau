@@ -67,9 +67,15 @@ local verifiedExternalLearningDispositions = verifiedExternalLearningContext.Lea
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = C.StudioAssets or {}
 local studioAssetFamilies = studioAssetConfig.Families or {}
-local studioUi = studioAssetFamilies.UI or {}
-local function hasStudioAssetAtom(atom)
-  return table.find(studioUi, atom) ~= nil
+local studioAssetSelectionFingerprint = studioAssetConfig.SelectionFingerprint or ""
+local function studioAssetFamily(family)
+  local atoms = studioAssetFamilies[family]
+  return type(atoms) == "table" and atoms or {}
+end
+local function hasStudioAssetAtom(familyOrAtom, atom)
+  local family = atom == nil and "UI" or familyOrAtom
+  local assetAtom = atom == nil and familyOrAtom or atom
+  return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
