@@ -3767,7 +3767,7 @@ test('collectProjects still reads a legacy unreal-games UEFN source without maki
 
 
 
-test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX motion menus and UI without fixed quota',()=>{
+test('presentation BUILD_UP uses unlimited grounded replacement across models VFX motion menus and UI without fixed quota',()=>{
   const root=tempRepo();
   const gameId='adaptive-graphics-web';
   const dir=path.join(root,'web-games',gameId);
@@ -3779,7 +3779,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   const contract=task.graphicsReplacementContract;
   assert.ok(contract);
   assert.equal(contract.adaptiveCount.minimumActual,1);
-  assert.equal(contract.adaptiveCount.maximumActual,60);
+  assert.equal(contract.adaptiveCount.maximumActual,null);
   assert.equal(contract.adaptiveCount.fixedQuotaForbidden,true);
   assert.deepEqual(contract.adaptiveCount.bands.micro,[1,10]);
   assert.deepEqual(contract.adaptiveCount.bands.normal,[10,30]);
@@ -3825,7 +3825,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.ok(task.completionCriteria.includes('GRAPHICS_ZERO_REPLACEMENT_PASS_FORBIDDEN'));
   assert.ok(task.completionCriteria.includes('GRAPHICS_REPLACEMENT_PER_ITEM_SOURCE_GROUNDING_REQUIRED'));
   assert.ok(task.completionCriteria.includes('GRAPHICS_REPLACEMENT_ACTUAL_COUNT_EQUALS_GROUNDED_EVIDENCE_COUNT'));
-  assert.ok(task.evidence.includes('adaptive-graphics-replacement-range:1-60'));
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement-range:1-unlimited'));
   assert.ok(task.evidence.includes('adaptive-graphics-replacement-grounded-evidence:REQUIRED'));
   assert.ok(task.evidence.includes('adaptive-graphics-replacement-count-equals-grounded-evidence:REQUIRED'));
   assert.ok(task.evidence.includes('menu-experience-diversity:v1'));
@@ -4231,7 +4231,7 @@ test('actual fantasy-survival Web source emits code and graphics BUILD_UP work',
   assert.ok((presentation.responsibleFiles||[]).includes('web-games/fantasy-survival/index.html'));
   assert.equal(presentation.graphicsReplacementContract?.platform,'WEB');
   assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.minimumActual,1);
-  assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.maximumActual,60);
+  assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.maximumActual,null);
   assert.equal(presentation.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
   assert.equal(presentation.graphicsReplacementContract?.implementation?.beforeAfterEvidenceRequired,true);
   assert.ok((presentation.evidence||[]).includes('graphics-pass-real-asset-binding-runtime-required'));

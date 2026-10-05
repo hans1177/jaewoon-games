@@ -2058,7 +2058,9 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
         role:clean(row?.role||row?.systemRole)||null,
         sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).sort()),
         path:posix(row?.path)||null,
-        sourceTier:clean(row?.sourceTier)||null
+        sourceTier:clean(row?.sourceTier)||null,
+        sourceHash:clean(row?.sourceHash)||null,
+        artifactHash:clean(row?.artifactHash)||null
       }));
     }
   }
@@ -2096,7 +2098,6 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     &&!path.isAbsolute(file)
     &&!file.split('/').includes('..')
     &&/^assets\//.test(file)
-    &&/\.(?:lua|luau|js|mjs|cs)$/i.test(file)
   )).sort();
   const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
     const absolute=path.resolve(cwd,relative),root=fs.realpathSync(cwd)+path.sep;
@@ -2111,7 +2112,7 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     version:5,target,gameId,libraryVersion,selectionFingerprint,selectedSourceHashes,
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
-    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
+    sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier,sourceHash:row.sourceHash,artifactHash:row.artifactHash}))
   };
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
   const usageMatrix=Object.freeze([
@@ -2387,10 +2388,10 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
 
 export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
-  const allSelectedPaths=contract.selectedSourcePaths||unique([
+  const allSelectedPaths=(contract.selectedSourcePaths||unique([
     ...(contract.flowSelections||[]).flatMap(row=>row.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).flatMap(row=>[...(row.sourceFiles||[]),row.path])
-  ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort();
+  ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort()).filter(file=>/\.(?:lua|luau|js|mjs|cs)$/i.test(file));
   if(!allSelectedPaths.length)return context;
   const apiIndex=buildInternalAssetApiIndex({cwd,paths:allSelectedPaths});
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));

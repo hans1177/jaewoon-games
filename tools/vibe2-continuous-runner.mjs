@@ -203,7 +203,8 @@ function buildPresentationQualityContract(task = {}, target = '') {
     platform:clean(replacementInput.platform)||null,
     adaptiveCount:freeze({
       minimumActual:Math.max(1,Number(replacementInput?.adaptiveCount?.minimumActual||1)),
-      maximumActual:Math.min(60,Math.max(1,Number(replacementInput?.adaptiveCount?.maximumActual||60))),
+      maximumActual:null,
+      noArtificialApplicationCountCap:true,
       fixedQuotaForbidden:replacementInput?.adaptiveCount?.fixedQuotaForbidden!==false,
       chooseOnlyWhatActuallyNeedsImprovement:replacementInput?.adaptiveCount?.chooseOnlyWhatActuallyNeedsImprovement!==false,
       bands:replacementInput?.adaptiveCount?.bands||{micro:[1,10],normal:[10,30],major:[30,60]}
@@ -305,7 +306,7 @@ function presentationQualityGuidance(contract = {}) {
     `static-checks=${(contract.staticChecks||[]).join(',')}`,
     `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
     ...(contract.graphicsReplacement?.required?[
-      `adaptive-graphics-replacement=required; actual-range=${contract.graphicsReplacement.adaptiveCount?.minimumActual||1}-${contract.graphicsReplacement.adaptiveCount?.maximumActual||60}; fixed-quota=forbidden`,
+      `adaptive-graphics-replacement=required; minimum-actual=${contract.graphicsReplacement.adaptiveCount?.minimumActual||1}; maximum-actual=UNLIMITED; fixed-quota=forbidden`,
       `replacement-surfaces=${(contract.graphicsReplacement.surfaces||[]).join(',')}`,
       `candidate-use-modes=${(contract.graphicsReplacement.reuseModes||[]).join(',')}`,
       '교체 개수는 Vibe가 실제 결함에 맞춰 정한다. 1~10개만 고쳐야 하면 그만큼만 고치고, 일반 개선은 대체로 10~30개, 큰 일관된 리프레시는 필요할 때 30~60개까지 가능하다. 개수 채우기를 위해 멀쩡한 표현을 바꾸면 안 된다.',
