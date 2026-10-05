@@ -215,3 +215,50 @@ test('primary domain outranks secondary domain even when secondary has similar k
   assert.ok(save>=0);
   assert.ok(ui<0||save<ui);
 });
+
+test('bottleneck System AI receives policy-grounded advanced causal optimization playbook',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'sys-bottleneck-runner-queue-v1',
+      taskType:'bottleneck-repair',
+      goal:'remove runner queue serialization and fan-in wait without weakening exact duplicate protection',
+      blocker:'runner-capacity-or-startup-serialization',
+      failureStage:'WORKFLOW_RESERVATION',
+      failureSignature:'RUNNER_QUEUE_SERIALIZATION',
+      responsibleFiles:['tools/vibe2-queue-control.mjs']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[]},
+    masteryInput:{},
+    policyInput:policy
+  });
+  assert.equal(context.bottleneckPlaybook.applied,true);
+  assert.equal(context.bottleneckPlaybook.verifiedPolicyBound,true);
+  assert.equal(context.bottleneckPlaybook.authority,'company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution');
+  const ids=context.bottleneckPlaybook.methods.map(row=>row.id);
+  for(const required of [
+    'CAUSAL_WAIT_GRAPH','LOGICAL_PHYSICAL_CAPACITY_SPLIT','MINIMUM_LOCK_SCOPE','STAGE_SCOPED_EXACT_DEDUPE',
+    'CONTROL_PLANE_ISOLATION','EVENT_DRIVEN_REFILL','CHECKPOINT_PRESERVING_HANDOFF','REPRESENTATIVE_CANARY_COHORT',
+    'STALE_QA_TRIANGULATION','MULTI_HYPOTHESIS_CAUSAL_REPAIR','WORK_CONSERVING_DISJOINT_PARALLELISM',
+    'SPARE_CAPACITY_HEDGING','CAUSE_SCOPED_BACKPRESSURE','OBSERVABILITY_TO_VERIFIED_LEARNING'
+  ])assert.ok(ids.includes(required),required);
+  assert.match(context.guidance,/POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK/);
+  assert.match(context.guidance,/STALE_QA_TRIANGULATION/);
+  assert.match(context.guidance,/MULTI_HYPOTHESIS_CAUSAL_REPAIR/);
+  assert.equal(context.rawModelOutputIncluded,false);
+  assert.equal(context.advisoryOnly,true);
+  assert.equal(context.authorityExpanded,false);
+});
+
+test('ordinary non-bottleneck System AI task does not receive bottleneck playbook',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const context=buildSystemAiLearningContext({
+    task:{id:'ordinary-copy',goal:'update one ordinary content string',responsibleFiles:['web-games/demo/index.html']},
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:policy
+  });
+  assert.equal(context.bottleneckPlaybook.applied,false);
+  assert.deepEqual(context.bottleneckPlaybook.methods,[]);
+  assert.ok(!context.guidance.includes('POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK'));
+});
+
