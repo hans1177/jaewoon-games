@@ -47,6 +47,8 @@ on:
       - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
+      - 'tools/vibe3-roblox-studio-lessons.mjs'
+      - 'qa/vibe3-roblox-studio-lessons.test.mjs'
       - 'qa/vibe3-roblox-distillation.test.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
       - 'tools/vibe2-merged-pr-provenance.mjs'
@@ -153,6 +155,8 @@ on:
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
+      - 'tools/vibe3-roblox-studio-lessons.mjs'
+      - 'qa/vibe3-roblox-studio-lessons.test.mjs'
       - 'qa/vibe3-roblox-distillation.test.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
       - 'tools/vibe2-merged-pr-provenance.mjs'
@@ -409,11 +413,13 @@ jobs:
           mkdir -p "$luau_dir"
           curl -fsSL --retry 3 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
           unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
-          chmod +x "$luau_dir/luau"
+          chmod +x "$luau_dir/luau" "$luau_dir/luau-compile"
           echo "VIBE2_LUAU_BINARY=$luau_dir/luau" >> "$GITHUB_ENV"
+          echo "VIBE2_LUAU_COMPILER=$luau_dir/luau-compile" >> "$GITHUB_ENV"
       - name: Execute baseline repair and hidden variants
         run: |
           test -x "$VIBE2_LUAU_BINARY"
           node --test qa/roblox-common-motion-source.test.mjs
+          node --test qa/vibe3-roblox-studio-lessons.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
 

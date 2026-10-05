@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { selectRobloxStudioLessons, studioLessonMetadata } from './vibe3-roblox-studio-lessons.mjs';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -83,16 +84,20 @@ export function buildRobloxSourceCoaching({cwd=process.cwd(),order={},responsibl
     const root=fs.realpathSync(path.resolve(cwd,relative)),sourceFiles={};
     for(const file of responsibleFiles){
       if(!/\.luau$/.test(file)||file.includes('..')||path.isAbsolute(file))continue;
-      const absolute=fs.realpathSync(path.join(root,file));
-      if(!absolute.startsWith(root+path.sep)||fs.statSync(absolute).size>800000)continue;
-      sourceFiles[relative+'/'+file]=fs.readFileSync(absolute,'utf8');
+      try{
+        const absolute=fs.realpathSync(path.join(root,file));
+        if(!absolute.startsWith(root+path.sep)||!fs.statSync(absolute).isFile()||fs.statSync(absolute).size>800000)continue;
+        sourceFiles[relative+'/'+file]=fs.readFileSync(absolute,'utf8');
+      }catch{continue;}
     }
+    if(!Object.keys(sourceFiles).length)return empty;
     const curriculum=buildRobloxSourceCurriculum({gameId:order.gameId,sourceFiles});
     const goal=(clean(order.selectedTask?.goal)||clean(order.originalGoal)||clean(order.goal)).slice(0,2000).toLowerCase();
     const ranked=curriculum.lessons.map((row,index)=>({row,index,score:row.terms.split(' ').filter(term=>/^[a-z]+$/.test(term)?new RegExp('\\b'+term+'\\b').test(goal):goal.includes(term)).length})).sort((a,b)=>b.score-a.score||a.index-b.index);
-    const selected=ranked.slice(0,3).map(x=>x.row);
-    if(!selected.length)return empty;
-    const evidence={retrieved:true,kind:'ROBLOX_SOURCE_CURRICULUM',sourceReviewedOnly:true,applicationVerified:false,runtimeVerified:false,weightTraining:false,lessonIds:selected.map(row=>row.id),references:selected.map(row=>row.sourceReference),missingTopics:curriculum.missingTopics};
+    const studio=selectRobloxStudioLessons(goal);
+    const selected=ranked.filter(x=>!studio.length||x.score>0).slice(0,studio.length?1:3).map(x=>x.row);
+    if(!selected.length&&!studio.length)return empty;
+    const evidence={retrieved:true,kind:'ROBLOX_SOURCE_CURRICULUM',sourceReviewedOnly:true,applicationVerified:false,runtimeVerified:false,weightTraining:false,lessonIds:selected.map(row=>row.id),references:selected.map(row=>row.sourceReference),missingTopics:curriculum.missingTopics,studioLessons:studio.map(studioLessonMetadata),studioAdvisoryOnly:true};
     const block=['[ROBLOX SOURCE COACHING BEGIN]',JSON.stringify(evidence),'Distilled source-reading lessons, applied code excerpts and transfer exercises. These are current implementation observations, not approved runtime outcomes. Preserve the current responsible paths and gameplay authority.'];
     for(const row of selected){
       const ref=row.sourceReference,lines=sourceFiles[ref.path].split(/\r?\n/);
@@ -103,6 +108,9 @@ export function buildRobloxSourceCoaching({cwd=process.cwd(),order={},responsibl
       }
       const excerpt=excerptLines.join('\n');
       block.push(JSON.stringify(row),'READ-ONLY SOURCE EXCERPT (partial function; do not paste as a complete replacement): '+ref.path+':'+ref.startLine+'\n'+excerpt);
+    }
+    for(const row of studio){
+      block.push('ORIGINAL TEACHING EXAMPLE '+row.id+' (adaptation function, not a complete subsystem; not native-verified):\n'+row.exampleCode);
     }
     block.push('Adapt only the assigned responsibility. Use exact current editable anchors and independently verify the result; a retrieved lesson is not successful application.','[ROBLOX SOURCE COACHING END]');
     return {block:block.join('\n'),evidence};
