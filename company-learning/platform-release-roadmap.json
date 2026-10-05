@@ -1,5 +1,5 @@
 {
-  "version": 539,
+  "version": 540,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -1348,7 +1348,9 @@
       "waitingQaAndExternalRuntimeReleaseWorkerCapacity": true,
       "existingRunningWorkNotCancelled": true,
       "sameGameIndependentFilesMayRemainParallel": true,
-      "noNewWorkflowOrQueue": true
+      "noNewWorkflowOrQueue": true,
+      "plannerSeedsDistinctGamesBeforeNormalBacklogGate": true,
+      "planningUsesExistingPersistentQueueCapacity": true
     }
   },
   "phases": [

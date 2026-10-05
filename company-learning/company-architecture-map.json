@@ -1,5 +1,5 @@
 {
-  "version": 322,
+  "version": 323,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7030,7 +7030,8 @@
       "ROBLOX",
       "UNITY",
       "WEB"
-    ]
+    ],
+    "webCandidatePlanner": "tools/vibe2-auto-planner.mjs"
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
