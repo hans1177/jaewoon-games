@@ -144,6 +144,60 @@ export async function fetchRobloxRuntimeFoundationEvidence({
   return body&&typeof body.value==='object'&&body.value!==null?body.value:body;
 }
 
+export async function probeRobloxOpenCloudImageEvidence({
+  universeId='',apiKey='',fetchImpl=globalThis.fetch,networkRetryAttempts=4,networkRetryDelayMs=500,
+}={}){
+  const universe=clean(universeId),key=clean(apiKey);
+  if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
+  const url='https://apis.roblox.com/thumbnail-personalization-api/v1/universes/'+encodeURIComponent(universe)+'/thumbnails?maxPageSize=50';
+  const response=await fetchWithNetworkRetry(fetchImpl,url,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_IMAGE_CHECK'
+  });
+  const text=await response.text();
+  let body={};
+  try{body=text?JSON.parse(text):{};}catch{throw new Error('ROBLOX_OPEN_CLOUD_IMAGE_CHECK_INVALID_JSON');}
+  const message=clean(body?.message);
+  const requiredScope=message.match(/required scope <([^>]+)>/i)?.[1]||'universe.thumbnail:read';
+  if(response.status===401||response.status===403)return Object.freeze({
+    available:false,permissionDenied:true,status:response.status,requiredScope,
+    imageMetadataAvailable:false,thumbnailCount:0,imageUrls:Object.freeze([]),
+    runtimeScreenshot:false,state:'UNAVAILABLE_PERMISSION',authority:'roblox-open-cloud-thumbnail-image-sanity',
+  });
+  if(!response.ok)throw new Error('ROBLOX_OPEN_CLOUD_IMAGE_CHECK_HTTP_'+response.status+':'+text.slice(0,300));
+  const arrays=[];
+  const imageUrls=[];
+  const visit=(value,keyName='',depth=0)=>{
+    if(depth>8||value==null)return;
+    if(Array.isArray(value)){
+      if(/thumbnail|image|data|item/i.test(keyName))arrays.push(value);
+      for(const row of value)visit(row,keyName,depth+1);
+      return;
+    }
+    if(typeof value==='object'){
+      for(const [keyName2,row] of Object.entries(value))visit(row,keyName2,depth+1);
+      return;
+    }
+    if(typeof value==='string'&&/^https?:\/\//i.test(value)&&/(image|thumbnail|cdn|rbxcdn)/i.test(keyName+' '+value))imageUrls.push(value);
+  };
+  visit(body);
+  const largestArray=arrays.reduce((best,row)=>row.length>best.length?row:best,[]);
+  const thumbnailCount=largestArray.length;
+  const metadataAvailable=thumbnailCount>0||imageUrls.length>0;
+  return Object.freeze({
+    available:true,permissionDenied:false,status:response.status,
+    imageMetadataAvailable:metadataAvailable,
+    thumbnailCount,
+    imageUrls:Object.freeze([...new Set(imageUrls)].slice(0,12)),
+    runtimeScreenshot:false,
+    exactRuntimeVersionImage:false,
+    state:metadataAvailable?'PASS_METADATA_AVAILABLE':'NO_IMAGE_METADATA',
+    authority:'roblox-open-cloud-thumbnail-image-sanity',
+    limitation:'THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF',
+  });
+}
+
 export async function probeRobloxOpenCloudEngine({
   universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
   networkRetryAttempts=4,networkRetryDelayMs=500,
