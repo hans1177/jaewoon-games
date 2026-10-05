@@ -281,9 +281,14 @@ test('exact existing Roblox source tree passes static reconciliation with persis
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeCompiledTree(root);
-    const verdict=validateExistingRobloxSourceTree({root,baseline});
+    const verdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary:companyAssetLibrary,gameId});
     assert.equal(verdict.pass,true,verdict.blockers.join(','));
     assert.equal(verdict.saveRequired,true);
+    assert.equal(verdict.internalAssetBinding.required,true);
+    assert.equal(verdict.internalAssetBinding.allFamiliesBound,true);
+    assert.equal(verdict.internalAssetBinding.primitiveOnly,false);
+    assert.equal(verdict.internalAssetBinding.libraryVersion,companyAssetLibrary.version);
+    assert.match(verdict.internalAssetBinding.expectedSelectionFingerprint,/^[0-9a-f]{64}$/);
     const results=evaluateExistingRobloxSources({
       queue:{items:[staleItem()]},
       repoRoot:tmp,
@@ -294,6 +299,25 @@ test('exact existing Roblox source tree passes static reconciliation with persis
     assert.equal(results[0].pass,true,results[0].blockers.join(','));
     assert.equal(results[0].sourceRevision,'exact-main-sha');
     assert.equal(results[0].sourcePath,`roblox-games/${gameId}`);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox source validation rejects stale all-library selection fingerprint before package',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-fingerprint-stale-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const config=fs.readFileSync(configFile,'utf8');
+    assert.match(config,/SelectionFingerprint\s*=\s*["'][0-9a-f]{64}["']/);
+    fs.writeFileSync(configFile,config.replace(/SelectionFingerprint\s*=\s*["'][0-9a-f]{64}["']/,'SelectionFingerprint = "'+'0'.repeat(64)+'"'));
+    const verdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary:companyAssetLibrary,gameId});
+    assert.equal(verdict.pass,false);
+    assert.equal(verdict.internalAssetBinding.refreshRequired,true);
+    assert.equal(verdict.internalAssetBinding.reason,'STALE_INTERNAL_ASSET_SELECTION_FINGERPRINT');
+    assert.ok(verdict.blockers.includes('CONFIG_INTERNAL_ASSET_SELECTION_FINGERPRINT_CURRENT_REQUIRED'));
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }

@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactInternalLibraryInventory,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {ROBLOX_COMMON_LIBRARY_PROJECT_MODULES} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -13,11 +14,36 @@ test('Roblox package evidence proves build only and never invents later validati
     artifactPath:'/tmp/seed-roblox-test.rbxlx',
     artifactSha256:'b'.repeat(64),
     sourceValidationPassed:true,
+    internalAssetBinding:{
+      required:true,
+      allFamiliesBound:true,
+      primitiveOnly:false,
+      libraryVersion:109,
+      expectedSelectionFingerprint:'c'.repeat(64),
+      nativeFamilyCount:5,
+    },
+    internalLibraryInventory:{
+      pass:true,
+      requiredCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
+      packagedCount:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length,
+      packagedModules:Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES),
+    },
     saveRequired:true,
   });
   assert.equal(evidence.buildOrPackagePassed,true);
   assert.equal(evidence.artifactIdentity,`sha256:${'b'.repeat(64)}`);
   assert.equal(evidence.luauOrSourceValidationPassed,true);
+  assert.equal(evidence.internalAssetLibraryRequired,true);
+  assert.equal(evidence.internalAssetAllFamiliesBound,true);
+  assert.equal(evidence.internalAssetPrimitiveOnlyForbidden,true);
+  assert.equal(evidence.internalAssetPrimitiveOnlyDetected,false);
+  assert.equal(evidence.internalAssetLibraryVersion,109);
+  assert.equal(evidence.internalAssetSelectionFingerprint,'c'.repeat(64));
+  assert.equal(evidence.internalAssetNativeFamilySignalCount,5);
+  assert.equal(evidence.internalLibraryModulesPackaged,true);
+  assert.equal(evidence.internalLibraryRequiredModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
+  assert.equal(evidence.internalLibraryPackagedModuleCount,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).length);
+  assert.deepEqual(evidence.internalLibraryPackagedModules,Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES));
   assert.equal(evidence.buildPreflightPassed,false);
   assert.equal(evidence.runtimePassed,false);
   assert.equal(evidence.independentQaPassed,false);
@@ -27,6 +53,16 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.failureStage,'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
   assert.equal(evidence.failureSignature,'ROBLOX_BUILD_PREFLIGHT_PENDING');
   assert.equal(evidence.releaseClaim,false);
+});
+
+test('Roblox package hard-gates current company asset library, all families, and primitive-only output even for verified handoff',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-package.mjs',import.meta.url),'utf8');
+  assert.match(source,/company-asset-library\.json/);
+  assert.match(source,/ROBLOX_INTERNAL_ASSET_PACKAGE_GATE_REQUIRED/);
+  assert.match(source,/ROBLOX_INTERNAL_ASSET_PACKAGE_ALL_FAMILIES_REQUIRED/);
+  assert.match(source,/ROBLOX_PRIMITIVE_ONLY_PACKAGE_FORBIDDEN/);
+  assert.match(source,/internalAssetBinding\.refreshRequired===true/);
+  assert.match(source,/validateExistingRobloxSourceTree\(\{root,baseline,assetLibrary,gameId:id\}\)/);
 });
 
 test('Roblox package source validation keeps ordinary static blockers authoritative',()=>{
@@ -59,6 +95,26 @@ test('Roblox package source validation rejects a verified Vibe2 handoff when the
   assert.equal(validation.pass,false);
   assert.deepEqual(validation.blockers,['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']);
   assert.equal(validation.authority,'verified-vibe2-source-handoff');
+});
+
+test('Roblox package artifact must contain every canonical company Luau library module',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-common-library-artifact-'));
+  try{
+    const names=Object.keys(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES);
+    const complete=path.join(root,'complete.rbxlx');
+    fs.writeFileSync(complete,'<roblox>'+names.map((name,index)=>'<Item class="ModuleScript" referent="'+(index+1)+'"><Properties><string name="Name">'+name+'</string></Properties></Item>').join('')+'</roblox>');
+    const pass=validateRobloxArtifactInternalLibraryInventory({artifactPath:complete});
+    assert.equal(pass.pass,true);
+    assert.equal(pass.requiredCount,names.length);
+    assert.equal(pass.packagedCount,names.length);
+    assert.deepEqual(pass.packagedModules,names);
+
+    const incomplete=path.join(root,'incomplete.rbxlx');
+    fs.writeFileSync(incomplete,'<roblox>'+names.slice(1).map((name,index)=>'<Item class="ModuleScript" referent="'+(index+1)+'"><Properties><string name="Name">'+name+'</string></Properties></Item>').join('')+'</roblox>');
+    assert.throws(()=>validateRobloxArtifactInternalLibraryInventory({artifactPath:incomplete}),new RegExp('ROBLOX_INTERNAL_LIBRARY_ARTIFACT_MODULES_MISSING:'+names[0]));
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
