@@ -1251,6 +1251,8 @@ jobs:
         run: |
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          # 자산과 게임 소스는 고정된 main에서 읽고 큐 상태는 아래 절대 경로를 유지한다.
+          cd "$contract_root"
           node "$contract_root/tools/vibe2-continuous-runner.mjs" \
             --runtime="$contract_root/vibe2-runtime.json" \
             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \

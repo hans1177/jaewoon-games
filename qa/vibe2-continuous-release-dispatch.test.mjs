@@ -99,6 +99,55 @@ function count(needle){
   return workflow.split(needle).length-1;
 }
 
+test('work order resolves the asset library and game source from pinned main while retaining current control state',()=>{
+  const start=workflow.indexOf('      - name: Build reserved task work order');
+  const run=workflow.indexOf('        run: |\n',start)+'        run: |\n'.length;
+  const end=workflow.indexOf('          node --input-type=module',run);
+  assert.ok(start>0&&end>run);
+  const script=workflow.slice(run,end).replace(/^ {10}/gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'work-order-roots-'));
+  const contract=path.join(root,'vibe2-contract');
+  try{
+    fs.mkdirSync(path.join(root,'.vibe2'),{recursive:true});
+    fs.mkdirSync(path.join(contract,'tools'),{recursive:true});
+    fs.mkdirSync(path.join(contract,'.vibe2'),{recursive:true});
+    fs.mkdirSync(path.join(contract,'web-games/demo'),{recursive:true});
+    fs.mkdirSync(path.join(root,'vibe2-learning-memory/company-learning'),{recursive:true});
+    const queueFile=path.join(root,'.vibe2/queue.json');
+    const libraryFile=path.join(contract,'company-asset-library.json');
+    const library=JSON.stringify({version:112,assets:[{id:'existing-asset'}]});
+    fs.writeFileSync(libraryFile,library);
+    fs.writeFileSync(queueFile,JSON.stringify({identity:'current-control'}));
+    fs.writeFileSync(path.join(contract,'.vibe2/queue.json'),JSON.stringify({identity:'stale-main-mirror'}));
+    fs.writeFileSync(path.join(contract,'vibe2-runtime.json'),'{}');
+    fs.writeFileSync(path.join(contract,'web-games/demo/index.html'),'current main source');
+    fs.writeFileSync(path.join(root,'vibe2-learning-memory/company-learning/vibe3-task-playbooks.json'),JSON.stringify({identity:'cohort-learning'}));
+    fs.writeFileSync(path.join(contract,'tools/vibe2-continuous-runner.mjs'),`
+import fs from 'node:fs';
+import path from 'node:path';
+const args=Object.fromEntries(process.argv.slice(2).map(arg=>{const i=arg.indexOf('=');return[arg.slice(2,i),arg.slice(i+1)];}));
+const read=file=>fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{};
+const library=read(path.join(process.cwd(),'company-asset-library.json'));
+const source=path.join(process.cwd(),'web-games/demo/index.html');
+const result={root:process.cwd(),registryAssetCount:(library.assets||[]).length,source:fs.existsSync(source)?fs.readFileSync(source,'utf8'):null,queue:read(args.queue).identity,learning:read(args.playbooks).identity};
+fs.writeFileSync(args.output,JSON.stringify(result));
+`);
+    const output=path.join(root,'order.json'),log=path.join(root,'order.log');
+    const isolated=script.replaceAll('/tmp/vibe2-work-order.json',output).replaceAll('/tmp/vibe2-order.log',log);
+    const execute=body=>{
+      execFileSync('bash',['-euo','pipefail','-c',body],{cwd:root,stdio:'pipe',env:{...process.env,GITHUB_WORKSPACE:root,TASK_ID:'web-demo',VARIANT:'primary'}});
+      return JSON.parse(fs.readFileSync(output,'utf8'));
+    };
+    const before=execute(isolated.replace('cd "$contract_root"',''));
+    assert.equal(before.registryAssetCount,0,'state-only checkout reproduces empty-library failure');
+    assert.equal(before.source,null);
+    const after=execute(isolated);
+    assert.deepEqual(after,{root:contract,registryAssetCount:1,source:'current main source',queue:'current-control',learning:'cohort-learning'});
+    assert.equal(fs.readFileSync(libraryFile,'utf8'),library,'library input must remain read-only');
+    assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).identity,'current-control');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('failed source generation preserves terminal attempt count in fallback receipt',()=>{
   const parser=workflow.match(/          generation_attempts="\$\(sed[^\n]+\n[\s\S]*?echo "generation_attempts=\$generation_attempts" >> "\$GITHUB_OUTPUT"/);
   assert.ok(parser,'candidate must export attempts before exiting on failure');
