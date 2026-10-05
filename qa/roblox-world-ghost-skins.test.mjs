@@ -116,7 +116,7 @@ test('object motion modules bind all 100 identities and preserve other states an
     for axis,value in pairs(pose)do
      assert(type(value)=="number" and value==value and math.abs(value)<16,"unbounded pose")
      if name=="Root"then assert(value==0,"gameplay root changed")end
-     if state~="walk"then assert(value==original[name][axis],"unselected clip changed")end
+     if state~="walk" and not (state=="attack" and Profiles[skin.id].AuthoredClip=="attack")then assert(value==original[name][axis],"unselected clip changed")end
     end
    end
   end end
@@ -306,3 +306,74 @@ bound.step(.2,'chase');assert(joint.C0~=rest);assert(calls==1)
 bound.destroy();assert(joint.C0==rest)
 bound.step(2,'walk');assert(joint.C0==rest);assert(calls==1)
 `));
+
+test('ten authored experiments change visible joints, close loops, settle attacks and bound adjacent frames',native,()=>{
+ const ids=['ghoul','banshee','dullahan','kelpie','leshy','boitata','ifrit','redcap','mare','poltergeist'];
+ const modules=ids.map(id=>'Profiles["'+id+'"]=(function()'+fs.readFileSync(root+'motions/'+id+'/init.luau','utf8')+'\nend)()').join('\n');
+ const output=runMotion(`
+ local Profiles={}
+ ${modules}
+ local folder={FindFirstChild=function(_,id)if Profiles[id]then return id end end}
+ script.FindFirstChild=function()return folder end
+ require=function(id)return Profiles[id]end
+ for id,profile in pairs(Profiles)do
+  local data=Factory.Describe(id,'mid')
+  local state=profile.AuthoredClip
+  assert(state=='walk' or state=='attack')
+  local first=Motion.Sample(data.form,data.bones,0,state,id)
+  local last=Motion.Sample(data.form,data.bones,profile.Duration,state,id)
+  local driven={};for _,part in ipairs(data.parts)do driven[part.bone]=true end
+  local previous=nil;local changed=0;local peak=0
+  for frame=0,240 do
+   local t=profile.Duration*frame/240
+   local sample=Motion.Sample(data.form,data.bones,t,state,id)
+   local original=Motion.Sample(data.form,data.bones,t,state)
+   for name,values in pairs(sample)do
+    for axis,value in pairs(values)do
+     assert(value==value and math.abs(value)<3,id..': finite bounded pose')
+     assert(name~='Root' or value==0,id..': root authority')
+     if driven[name]then changed=math.max(changed,math.abs(value-original[name][axis]))end
+     if previous then peak=math.max(peak,math.abs(value-previous[name][axis]))end
+     if frame==240 then assert(math.abs(value-first[name][axis])<1e-6,id..': endpoint pop')end
+    end
+   end
+   previous=sample
+  end
+  assert(changed>.08,id..': no visible source improvement')
+  assert(peak<.15,id..': adjacent-frame jump')
+  if state=='attack'then
+   for _,t in ipairs({-1,2,20})do
+    for _,values in pairs(Motion.Sample(data.form,data.bones,t,state,id))do
+     for _,value in pairs(values)do assert(math.abs(value)<1e-6,id..': one-shot did not settle')end
+    end
+   end
+  end
+  print('EXPERIMENT',id,state,changed,peak)
+ end
+ local k=Factory.Describe('kelpie')
+ local p=Motion.Sample(k.form,k.bones,.2,'walk','kelpie')
+ assert(math.abs(p.FrontLeftLeg.rx-p.BackRightLeg.rx)>.03,'quadruped still uses diagonal pair sine')
+ `);
+ assert.equal(output.split('\n').filter(line=>line.startsWith('EXPERIMENT')).length,10);
+ console.log(output.trim());
+});
+
+test('published comparison frames are bound to the native build and actual internal geometry',()=>{
+ const preview=JSON.parse(fs.readFileSync(root+'native/motion-experiments.json','utf8'));
+ const evidence=JSON.parse(fs.readFileSync(root+'native/build-evidence.json','utf8'));
+ assert.equal(preview.sourceFingerprint,evidence.sourceFingerprint);
+ assert.equal(preview.nativeStudioVerified,false);
+ assert.equal(preview.experiments.length,10);
+ assert.equal(preview.experiments.filter(x=>x.clip==='walk').length,6);
+ assert.equal(preview.experiments.filter(x=>x.clip==='attack').length,4);
+ for(const row of preview.experiments){
+  assert.equal(row.frames.length,121);assert.equal(row.before.length,121);
+  assert.ok(row.model.parts.length>10);
+  const rootIndex=row.boneNames.indexOf('Root');assert.ok(rootIndex>=0);
+  for(const frame of row.frames){
+   assert.equal(frame.length,row.boneNames.length);
+   for(const pose of frame)assert.ok(pose.length===6&&pose.every(Number.isFinite));
+   assert.deepEqual(frame[rootIndex],[0,0,0,0,0,0]);
+  }
+ }
+});
