@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="12">
+<html lang="ko" data-asset-library-version="13">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -13,6 +13,11 @@
 <section class="hero">
  <div><p class="eyebrow">ASSET LIBRARY</p><h1>움직임부터, 세계까지.</h1><p>몬스터의 기본 모션과 액션, 게임을 채우는 배경을 둘러봐.<br>새로 배포된 자산은 여기에 자동으로 반영돼.</p></div>
  <div class="count"><b id="assetCount">—</b><span>총 등록 자산</span></div>
+</section>
+<section class="featuredMotions" aria-label="이번 작업 대표 모션과 액션">
+ <div class="featureIntro"><p class="eyebrow">NEW MOTION · ACTION</p><strong>이미지가 아니라 실제 동작으로 확인</strong><span>현재 소스에서 뽑은 3D 샘플을 아래 뷰어에서 바로 재생해.</span></div>
+ <button id="featuredWalk" type="button" disabled><span>대표 모션</span><strong>굴 · 걷기</strong><small>새 걷기 동작 재생</small></button>
+ <button id="featuredAttack" type="button" disabled><span>대표 액션</span><strong>이프리트 · 공격</strong><small>새 공격 동작 재생</small></button>
 </section>
 <div class="sectionHead"><nav class="tabs" aria-label="자산 분류"><button type="button" id="monsterTab" aria-pressed="true">몬스터 <span id="monsterCount">—</span></button><button type="button" id="commonTab" aria-pressed="false">공용 캐릭터 <span id="commonCount">—</span></button><button type="button" id="environmentTab" aria-pressed="false">배경 <span id="environmentCount">—</span></button></nav><button type="button" id="refreshAssets">새로고침</button></div>
 <section class="gallery" id="new-motions" aria-label="종류별 자산 미리보기">
