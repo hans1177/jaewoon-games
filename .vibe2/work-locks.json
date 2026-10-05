@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1mej1md",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "assets/generated/roblox/fantasy-survival/background/asset.glb",
+        "assets/generated/roblox/fantasy-survival/background/preview.png",
+        "assets/generated/roblox/fantasy-survival/background/evidence.json",
+        "assets/generated/roblox/fantasy-survival/item/asset.glb",
+        "assets/generated/roblox/fantasy-survival/item/preview.png",
+        "assets/generated/roblox/fantasy-survival/item/evidence.json",
+        "assets/generated/roblox/fantasy-survival/prop/asset.glb",
+        "assets/generated/roblox/fantasy-survival/prop/preview.png",
+        "assets/generated/roblox/fantasy-survival/prop/evidence.json"
+      ],
+      "baseSha": "f6393accc90b409771ee32f36ed6f426fe9d3344",
+      "runId": "37327193909",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T15:29:42.861Z",
+      "expiresAt": "2026-10-05T16:14:42.861Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
