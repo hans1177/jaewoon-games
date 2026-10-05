@@ -382,7 +382,7 @@ jobs:
             }
             const runtime=item.robloxRuntimeFoundationEvidence||{};
             const post=item.robloxPostRuntimeQaEvidence||{};
-            const studioRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioRequired=(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true);
             const studio=item.robloxStudioAssetRuntimeBindingEvidence||{};
             const exactReusable=
               c.published===true
@@ -405,6 +405,11 @@ jobs:
                 &&studio.sourceRevision===sourceRevision
                 &&studio.artifactIdentity===artifactIdentity
                 &&Number(studio.candidateVersionNumber)===Number(c.versionNumber)
+                &&String(studio.expectedSelectionFingerprint||'')===String(item.robloxStudioAssetBinding?.selectionFingerprint||'')
+                &&String(studio.observedSelectionFingerprint||'')===String(item.robloxStudioAssetBinding?.selectionFingerprint||'')
+                &&Number(studio.expectedLibraryVersion||0)===Number(item.robloxStudioAssetBinding?.libraryVersion||0)
+                &&Number(studio.observedLibraryVersion||0)===Number(item.robloxStudioAssetBinding?.libraryVersion||0)
+                &&String(studio.buildUpAssetSourceUsageFingerprint||'')===String(item.robloxStudioAssetBinding?.buildUpAssetSourceUsageFingerprint||'')
               ));
             if(exactReusable){
               console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
@@ -433,7 +438,7 @@ jobs:
                   universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
                   apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
                   networkRetryAttempts:6,networkRetryDelayMs:1000,
-                  expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
+                  expectedStudioAssetBinding:(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true)?item.robloxStudioAssetBinding:null,
                 });
                 let imageEvidence;
                 try{
@@ -777,7 +782,7 @@ jobs:
               console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PREBOUND='+item.gameId+':source='+sourceRevision);
             }
             let studioPlay=item.robloxInternalVibePlayEvidence||{};
-            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioAssetBindingRequired=(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true);
             const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
             const reusableLocalStudioArtifactEvidence=Boolean(
               localPreF9Candidate
@@ -929,7 +934,7 @@ jobs:
                 item.robloxMultiplayerQaPassed=true;
                 console.log('ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
               }
-              const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+              const studioAssetBindingRequired=(item.robloxStudioAssetBindingApplied===true||item.robloxStudioAssetBinding?.required===true);
               const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
               item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
               item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
@@ -1411,6 +1416,14 @@ jobs:
               targetEngineStudioAssetApplied:engineProbe?.studioAssetApplied===true,
               targetEngineStudioAssetBindingVersion:Number(engineProbe?.studioAssetBindingVersion||0),
               targetEngineSelectionMatched:engineProbe?.studioAssetSelectionMatched===true,
+              targetEngineAtomMatch:engineProbe?.studioAssetAtomMatch===true,
+              targetEngineFingerprintMatch:engineProbe?.studioAssetFingerprintMatch===true,
+              targetEngineLibraryVersionMatch:engineProbe?.studioAssetLibraryVersionMatch===true,
+              expectedSelectionFingerprint:String(engineProbe?.expectedStudioAssetSelectionFingerprint||''),
+              observedSelectionFingerprint:String(engineProbe?.observedStudioAssetSelectionFingerprint||''),
+              expectedLibraryVersion:Number(engineProbe?.expectedStudioAssetLibraryVersion||0),
+              observedLibraryVersion:Number(engineProbe?.observedStudioAssetLibraryVersion||0),
+              buildUpAssetSourceUsageFingerprint:String(engineProbe?.expectedBuildUpAssetSourceUsageFingerprint||''),
               expectedStudioAssetAtoms:engineProbe?.expectedStudioAssetAtoms||[],
               observedStudioAssetAtoms:engineProbe?.observedStudioAssetAtoms||[],
               actualPlatformRuntime:true,
