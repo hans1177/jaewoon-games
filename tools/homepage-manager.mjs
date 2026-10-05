@@ -242,8 +242,8 @@ async function captureReleaseMedia(planOnly=false){
         const known={ 'horror-escape-room':'#startHuman', 'daechung-rpg':'#startBtn', 'ant-simulator':'#startOffline' };
         let start=known[id]?page.locator(known[id]):page.getByRole('button',{name:/^(게임 시작|혼자 시작|시작하기|모험 시작|새 게임|Start|Play)$/i}).first();
         if(id==='cozy-island'){
-          // This game starts directly; Space is its real interaction binding.
-          await page.keyboard.press('Space');
+          // This game already runs on load; interacting at spawn opens a modal.
+          await page.locator('#game').waitFor({state:'visible'});
         }else{
           if(!await start.isVisible())throw Error('VISIBLE_GAME_START_REQUIRED');
           await start.click();
@@ -252,11 +252,13 @@ async function captureReleaseMedia(planOnly=false){
         await page.locator('canvas').first().waitFor({state:'visible'});
         await page.waitForTimeout(700);
         const clipStart=await page.evaluate(()=>performance.now()/1000);
-        let inputEvents=1;
+        let inputEvents=id==='cozy-island'?0:1;
         for(const key of ['ArrowRight','ArrowUp','ArrowLeft','ArrowDown']){
           await page.keyboard.down(key);inputEvents++;
+          await page.waitForTimeout(400);
           await page.keyboard.press('Space');inputEvents++;
-          await page.waitForTimeout(2900);
+          if(id==='cozy-island'){await page.keyboard.press('Escape');inputEvents++;}
+          await page.waitForTimeout(2500);
           await page.keyboard.up(key);inputEvents++;
         }
         const digest=b=>createHash('sha256').update(b).digest('hex');
