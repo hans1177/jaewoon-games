@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -85,6 +85,60 @@ test('hero asset routing selects stronger local model without changing generatio
   assert.equal(route.cacheKey,'qwen3-4b-instruct');
   assert.equal(route.generationBudgetUnchanged,true);
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+});
+
+test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{
+  const cwd=tempRoot();
+  const sourcePaths=[];
+  for(let i=0;i<6;i++){
+    const relative=`assets/internal-api-${i}/Common${i}.luau`;
+    sourcePaths.push(relative);
+    write(path.join(cwd,relative),[
+      `local Common${i} = {}`,
+      `function Common${i}.Create${i}(options)`,
+      '  return options',
+      'end',
+      `return Common${i}`
+    ].join('\n')+'\n');
+  }
+  const contract={
+    target:'roblox',
+    exactFamilies:{},
+    flowSelections:[],
+    sourceCandidates:sourcePaths.map((relative,index)=>({
+      assetId:`asset-${index}`,
+      family:'CUSTOM',
+      sourceFiles:[relative],
+      path:null
+    })),
+    synchronization:{
+      apiContextBatchSize:4,
+      apiContextMaxBytes:18000,
+      apiContextPerFileMaxBytes:4500,
+      apiContextRotationByBuildUpGeneration:true
+    }
+  };
+  const first=attachSelectedInternalAssetApiContext(
+    {files:[],bytes:0},
+    {cwd,contract,order:{selectedTask:{buildUpGeneration:1}}}
+  );
+  const second=attachSelectedInternalAssetApiContext(
+    {files:[],bytes:0},
+    {cwd,contract,order:{selectedTask:{buildUpGeneration:2}}}
+  );
+  assert.equal(first.internalAssetApiContextFiles.length,4);
+  assert.equal(second.internalAssetApiContextFiles.length,4);
+  assert.equal(first.internalAssetApiContextRotationStart,0);
+  assert.equal(second.internalAssetApiContextRotationStart,4);
+  assert.notDeepEqual(first.internalAssetApiContextFiles,second.internalAssetApiContextFiles);
+  assert.equal(first.internalAssetApiContextEligibleSourceCount,6);
+  assert.equal(first.internalAssetApiIndexRepresentedSourceCount,6);
+  assert.equal(first.internalAssetApiIndexAvailableSourceCount,6);
+  assert.equal(first.internalAssetApiIndexUnavailableSourceCount,0);
+  assert.equal(first.internalAssetApiIndexSignatureCount,6);
+  assert.equal(first.internalAssetApiIndexAllSelectedSourcesEveryBuildUp,true);
+  assert.equal(second.internalAssetApiIndex,first.internalAssetApiIndex);
+  for(let i=0;i<6;i++)assert.match(first.internalAssetApiIndex,new RegExp(`Common${i}\\.Create${i}\\(options\\)`));
 });
 
 test('native asset authoring evidence requires real engine-native source delta and never claims runtime promotion',()=>{
