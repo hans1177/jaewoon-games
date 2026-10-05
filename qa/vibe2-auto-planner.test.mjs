@@ -4047,6 +4047,36 @@ test('Unity development floor preserves existing Roblox repair observations with
   }
 });
 
+test('web two-game planning floor fills a native backlog without duplicating games or exceeding persistent capacity',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    policy.developmentSpeedExecution={webGameFlow:{enabled:true,targetConcurrentGames:2}};
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    for(const id of ['dev-web','third-web'])writeStudioDesign(root,id);
+    const native={id:'native-occupied',gameId:'demo',target:'unity',department:'development',type:'implementation',goal:'existing native work',status:'running',sourceRoot:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs']};
+    const args={repoRoot:root,status,catalog,queue:{tasks:[native]},maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0};
+    const first=planVibe2AutonomousTasks(args);
+    assert.equal(new Set(first.tasks.filter(t=>t.target==='web').map(t=>t.gameId)).size,2,JSON.stringify({reason:first.reason,backlog:first.planningBacklog,tasks:first.tasks.map(t=>({id:t.id,target:t.target,lane:t.executionLane}))}));
+    assert.equal(first.queue.tasks.find(t=>t.id===native.id).status,'running');
+    assert.equal(first.planningBacklog.webGameFlow.shortfall,0);
+    const again=planVibe2AutonomousTasks({...args,queue:first.queue});
+    assert.equal(again.count,0,'already queued web games satisfy the planning floor');
+    const web=first.queue.tasks.find(t=>t.gameId==='dev-web');
+    const sameGame=planVibe2AutonomousTasks({...args,queue:{tasks:[native,web,{...web,id:web.id+'-sibling'}]}});
+    assert.deepEqual([...new Set(sameGame.tasks.filter(t=>t.target==='web').map(t=>t.gameId))],['third-web']);
+    const bounded=planVibe2AutonomousTasks({...args,queueMaxConcurrentTasks:2});
+    assert.equal(bounded.tasks.length,1);
+    assert.equal(bounded.planningBacklog.webGameFlow.shortfall,1);
+    policy.ownerCanonicalRules={ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['third-web']}};
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    const held=planVibe2AutonomousTasks(args);
+    assert.equal(held.tasks.some(t=>t.gameId==='third-web'),false);
+    assert.equal(held.planningBacklog.webGameFlow.shortfall,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('unfinished source joins planning without design PASS and owner hold does not fill the backlog',()=>{
   const root=tempRepo();
   try{
