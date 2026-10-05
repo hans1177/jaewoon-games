@@ -760,6 +760,25 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
   const familySignals=robloxAssetFamilySignals(fullText);
+  const applicableFamilies=UNIVERSAL_ASSET_FAMILIES.filter(family=>familySignals[family]===true);
+  const allApplicableFamiliesApplied=applicableFamilies.every(family=>familyStatus[family]==='APPLIED');
+  const assignedParts=[...fullText.matchAll(/\blocal\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\s*\(\s*["']Part["']\s*\)/g)];
+  const totalPartCreations=(fullText.match(/Instance\.new\s*\(\s*["']Part["']\s*\)/g)||[]).length;
+  const plainVisualParts=[];
+  for(const match of assignedParts){
+    const variable=match[1];
+    const escaped=variable.replace(/[.*+?^\${}()|[\]\\]/g,'\\  const familySignals=robloxAssetFamilySignals(fullText);
+  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));');
+    const utilityName=new RegExp('(?:^|_)(?:hitbox|collider|trigger|root|spawn|boundary|anchor|probe|marker|detector|zone)(?:_|$)','i').test(variable);
+    const invisibleUtility=new RegExp('\\b'+escaped+'\\.Transparency\\s*=\\s*1\\b[\\s\\S]{0,500}\\b'+escaped+'\\.CanCollide\\s*=\\s*false\\b','i').test(fullText)
+      ||new RegExp('\\b'+escaped+'\\.CanCollide\\s*=\\s*false\\b[\\s\\S]{0,500}\\b'+escaped+'\\.Transparency\\s*=\\s*1\\b','i').test(fullText);
+    if(utilityName||invisibleUtility)continue;
+    const materialized=new RegExp('\\b'+escaped+'\\.(?:Material|BrickColor)\\s*=','i').test(fullText)
+      ||new RegExp('(?:SpecialMesh|SurfaceAppearance)[\\s\\S]{0,800}\\.Parent\\s*=\\s*'+escaped+'\\b','i').test(fullText)
+      ||new RegExp('\\b'+escaped+'[\\s\\S]{0,800}(?:SpecialMesh|SurfaceAppearance)','i').test(fullText);
+    if(!materialized)plainVisualParts.push(variable);
+  }
+  const unboundPlainParts=Math.max(0,totalPartCreations-assignedParts.length);
   require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));
   require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
@@ -767,6 +786,7 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   require('ROBLOX_RUNTIME_OBSERVABLE_SELECTION',runtimeObservable);
   require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=3);
   if(universalRequired){
+    require('ROBLOX_ALL_APPLICABLE_INTERNAL_LIBRARIES_APPLIED',allApplicableFamiliesApplied);
     for(const family of UNIVERSAL_ASSET_FAMILIES){
       const status=familyStatus[family];
       if(status==='APPLIED')require('ROBLOX_ASSET_FAMILY_APPLIED_'+family,familySignals[family]===true);
@@ -776,6 +796,7 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     require('ROBLOX_MAP_PROP_ASSET_APPLIED',familyStatus.PROP==='APPLIED'&&familySignals.PROP===true);
     if(familySignals.BUILDING===true)require('ROBLOX_MAP_BUILDING_ASSET_APPLIED',familyStatus.BUILDING==='APPLIED');
   }
+  require('ROBLOX_PLAIN_PRIMITIVE_FORBIDDEN',plainVisualParts.length===0&&unboundPlainParts===0);
   require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable&&(!universalRequired||allFamiliesAccounted));
   if(issues.length)throw new Error(`ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:${issues.join('|')}`);
   return{
@@ -784,7 +805,9 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
     selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
     universalAssetFirst:universalRequired,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
-    mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
+    applicableFamilies:Object.freeze(applicableFamilies),allApplicableFamiliesApplied:universalRequired?allApplicableFamiliesApplied:null,
+    plainVisualPrimitiveCount:plainVisualParts.length+unboundPlainParts,plainVisualPrimitiveVariables:Object.freeze(plainVisualParts),
+    mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,plainPrimitiveForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
 }
 function runWeatherPresentationStaticQa({root,data={},changed=[]}={}){
