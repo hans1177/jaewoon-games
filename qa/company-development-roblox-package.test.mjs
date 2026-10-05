@@ -245,6 +245,19 @@ test('Roblox package rejects artifacts that can reopen as deprecated Compatibili
   }
 });
 
+test('Vibe2 candidate release binds BUILD_UP source and selection fingerprints through package and F0',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+  assert.match(workflow,/asset_source_usage_fingerprint:/);
+  assert.match(workflow,/asset_selection_fingerprint:/);
+  assert.match(workflow,/BUILD_UP_ASSET_FINGERPRINT:/);
+  assert.match(workflow,/BUILD_UP_SELECTION_FINGERPRINT:/);
+  assert.match(workflow,/--build-up-asset-fingerprint="\$BUILD_UP_ASSET_FINGERPRINT"/);
+  assert.match(workflow,/--expected-asset-selection-fingerprint="\$BUILD_UP_SELECTION_FINGERPRINT"/);
+  assert.match(workflow,/candidate package BUILD_UP selection fingerprint mismatch/);
+  assert.match(workflow,/--asset-selection-fingerprint="\$asset_selection_fingerprint"/);
+  assert.match(workflow,/candidate F0 asset selection fingerprint mismatch/);
+});
+
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{
   assert.equal(ROBLOX_PACKAGE_TOOL.rojoVersion,'7.7.0');
   assert.equal(ROBLOX_PACKAGE_TOOL.linuxX64Asset,'rojo-7.7.0-linux-x86_64.zip');
