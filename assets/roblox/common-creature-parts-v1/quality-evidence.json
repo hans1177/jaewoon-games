@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 4,
   "packId": "roblox-common-creature-parts-v1",
   "recordedAt": "2026-10-05",
   "productionVerified": false,
@@ -223,82 +223,92 @@
   },
   "qualityImprovementPlan": {
     "version": 1,
-    "scope": "PACK_LEVEL_SOURCE_QUALITY_REPAIR",
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
     "currentScore": 837.8,
     "currentGrade": "DEVELOPMENT_READY",
-    "currentAuditPass": false,
     "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
     "stages": [
       {
         "id": "COMMERCIAL_READY_880",
         "targetScore": 880,
+        "projectedSourceAuditScore": 885.2,
         "requiredAxisFloor": {
-          "IDENTITY_SILHOUETTE": 91,
-          "FORM_STRUCTURE": 88,
-          "MATERIAL_SURFACE": 86,
-          "COLOR_LIGHTING": 86,
-          "STYLE_COHERENCE": 88,
-          "DETAIL_FINISH": 84,
-          "READABILITY_SCALE": 88,
+          "IDENTITY_SILHOUETTE": 92,
+          "DETAIL_FINISH": 86,
           "MOTION_RIG": 86,
-          "FEEDBACK_STATES": 82,
-          "MODULAR_REUSE": 96,
-          "VARIATION_BREADTH": 90,
-          "PERFORMANCE_LOD": 86,
-          "PROVENANCE_MAINTAINABILITY": 98,
+          "FEEDBACK_STATES": 84,
+          "MATERIAL_SURFACE": 88,
+          "PERFORMANCE_LOD": 88,
           "INTEGRATION_READINESS": 90
         },
         "requiredEvidence": [
-          "RIG_PROFILE_FOR_SUPPORTED_BODY_PLANS",
-          "LOCOMOTION_ATTACK_HIT_DEATH_SOURCE_SETS",
-          "BOSS_SIGNATURE_AND_SURFACE_VARIANT_STRUCTURE",
-          "APPENDAGE_CONTACT_AND_DEFORMATION_PLAN",
-          "LOD_AND_MOBILE_SILHOUETTE_REVIEW"
+          "RIG_PROFILE",
+          "LOCOMOTION_SET",
+          "ATTACK_SET",
+          "HIT_DEATH_SET",
+          "SURFACE_VARIANT",
+          "BOSS_SIGNATURE",
+          "LOD"
         ]
       },
       {
         "id": "HERO_920",
         "targetScore": 920,
+        "projectedSourceAuditScore": 925.4,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 94,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 92,
+          "COLOR_LIGHTING": 90,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 92,
+          "MOTION_RIG": 92,
+          "FEEDBACK_STATES": 88,
+          "VARIATION_BREADTH": 94,
+          "PERFORMANCE_LOD": 92,
+          "INTEGRATION_READINESS": 94
+        },
         "requiredEvidence": [
           "BODY_PLAN_SPECIFIC_MOTION_IDENTITY",
-          "ELITE_BOSS_SIGNATURE_PARTS",
-          "CAUSE_BASED_SURFACE_DAMAGE_AND_WEAR",
-          "REACTION_STATE_AND_CONTACT_DETAIL",
-          "CROSS_GAME_RECOMBINATION_WITH_IDENTITY_PRESERVATION"
+          "BOSS_AND_ELITE_SILHOUETTE_DIVERGENCE",
+          "SURFACE_AND_MATERIAL_VARIATION",
+          "ATTACK_CONTACT_AND_REACTION_READABILITY",
+          "MOBILE_LOD_AND_CAMERA_READABILITY"
         ]
       }
     ],
     "repairOrder": [
       "MOTION_RIG",
-      "DETAIL_FINISH",
       "IDENTITY_SILHOUETTE",
-      "FEEDBACK_STATES",
-      "INTEGRATION_READINESS",
-      "MATERIAL_SURFACE"
+      "DETAIL_FINISH",
+      "SURFACE_VARIATION",
+      "FEEDBACK",
+      "LOD"
+    ],
+    "parallelVolumeRoles": [
+      "AMORPHOUS",
+      "BOSS_SIGNATURE",
+      "SURFACE_VARIANT",
+      "TORSO_VARIANT"
     ],
     "newVolumeAuthoring": {
       "allowed": true,
       "globallyBlocked": false,
       "mayRunInParallelWithQualityRepair": true,
       "allowWhen": [
-        "AMORPHOUS_OR_UNCOVERED_BODY_PLAN_GAP_REMAINS",
-        "BOSS_SIGNATURE_OR_SURFACE_VARIANT_GAP_REMAINS",
-        "RIG_OR_MOTION_ROLE_REQUIRES_NEW_REUSABLE_BASE",
-        "REUSE_DERIVATION_OR_RECOMBINATION_CANNOT_PRESERVE_SPECIES_IDENTITY"
+        "BODY_PLAN_GAP_REMAINS",
+        "ROLE_GAP_REMAINS",
+        "BOSS_OR_ELITE_SIGNATURE_GAP_REMAINS",
+        "RECOMBINATION_CANNOT_PRESERVE_READABILITY_OR_QUALITY"
       ],
-      "resolutionOrder": [
-        "REUSE_EXISTING",
-        "DERIVE_VARIANT",
-        "RECOMBINE_EXISTING",
-        "NEW_AUTHORING"
-      ],
-      "exactDuplicateSpamForbidden": true,
-      "recolorOnlyVolumeDoesNotCount": true
+      "exactDuplicatePartSpamForbidden": true,
+      "colorOnlyPartVolumeDoesNotCount": true
     },
     "safeguards": {
-      "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
       "productionVerifiedMayNotBeInferredFromPlan": true,
-      "gameplayAiDamageHitboxDropsSaveNetworkAuthorityUnchanged": true
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "aiHealthDamageMovementHitboxDropSaveNetworkAuthorityUnchanged": true
     }
   }
 }
