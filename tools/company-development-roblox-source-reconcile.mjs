@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_COMMON_LIBRARY_PROJECT_MODULES,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
@@ -198,6 +198,10 @@ export function validateExistingRobloxSourceTree({root='',baseline={},assetLibra
   let project={};
   try{project=readJson(required.project);}catch{blockers.push('SOURCE_PROJECT_JSON_INVALID');}
   if(project?.tree?.ReplicatedStorage?.Shared?.$path!=='shared')blockers.push('SOURCE_PROJECT_SHARED_MAPPING_REQUIRED');
+  const companyAssets=project?.tree?.ReplicatedStorage?.CompanyAssets||{};
+  for(const [moduleName,modulePath] of Object.entries(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES)){
+    if(companyAssets?.[moduleName]?.$path!==modulePath)blockers.push('SOURCE_PROJECT_INTERNAL_LIBRARY_MAPPING_REQUIRED:'+moduleName);
+  }
   if(project?.tree?.ServerScriptService?.GameServer?.$path!=='server')blockers.push('SOURCE_PROJECT_SERVER_MAPPING_REQUIRED');
   if(project?.tree?.StarterPlayer?.StarterPlayerScripts?.GameClient?.$path!=='client')blockers.push('SOURCE_PROJECT_CLIENT_MAPPING_REQUIRED');
 
