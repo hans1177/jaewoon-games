@@ -1802,7 +1802,6 @@ jobs:
                 robloxBuildInternalAssetAtomCount:Number(result.internalAssetAtomCount||0),
                 robloxBuildInternalAssetSelectionFingerprint:String(result.internalAssetSelectionFingerprint||''),
                 robloxBuildInternalLibraryAutoLoadPassed:result.internalLibraryAutoLoadPassed===true,
-            robloxBuildInternalLibraryAutoLoadPassed:result.internalLibraryAutoLoadPassed===true,
                 robloxBuildInternalLibraryModulesPackaged:result.internalLibraryModulesPackaged===true,
                 robloxBuildInternalLibraryRequiredModuleCount:Number(result.internalLibraryRequiredModuleCount||0),
                 robloxBuildInternalLibraryPackagedModuleCount:Number(result.internalLibraryPackagedModuleCount||0),
