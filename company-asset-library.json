@@ -1,5 +1,5 @@
 {
-  "version": 103,
+  "version": 104,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -389,7 +389,97 @@
         "NO_RIG_OR_FRAME_MOTION",
         "GOOD_SMALL_SCALE_READABILITY",
         "SOURCE_PROVENANCE_CLEAR"
-      ]
+      ],
+      "qualityImprovementPlan": {
+        "version": 1,
+        "source": "CURRENT_INTERNAL_AUDIT_EVIDENCE_ONLY",
+        "currentScore": 580.6,
+        "currentGrade": "REPAIR_REQUIRED",
+        "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+        "stages": [
+          {
+            "id": "DEVELOPMENT_READY_800",
+            "targetScore": 800,
+            "projectedSourceAuditScore": 831.9,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 88,
+              "FORM_STRUCTURE": 85,
+              "MATERIAL_SURFACE": 78,
+              "COLOR_LIGHTING": 80,
+              "STYLE_COHERENCE": 84,
+              "DETAIL_FINISH": 82,
+              "MOTION_RIG": 82,
+              "FEEDBACK_STATES": 75,
+              "MODULAR_REUSE": 78,
+              "VARIATION_BREADTH": 75,
+              "ACCESSIBILITY_INPUT": 80,
+              "INTEGRATION_READINESS": 86
+            },
+            "requiredEvidence": [
+              "DISTINCT_ANATOMY_OR_BODY_PLAN_DETAIL",
+              "MATERIAL_REGION_SEPARATION",
+              "RIG_OR_FRAME_MOTION_COVERAGE",
+              "HIT_SKILL_DEATH_FEEDBACK_STATES",
+              "NON_COLOR_ONLY_VARIATION",
+              "GAME_CAMERA_READABILITY"
+            ]
+          },
+          {
+            "id": "COMMERCIAL_READY_880",
+            "targetScore": 880,
+            "projectedSourceAuditScore": 904.3,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 92,
+              "FORM_STRUCTURE": 90,
+              "MATERIAL_SURFACE": 88,
+              "COLOR_LIGHTING": 88,
+              "STYLE_COHERENCE": 92,
+              "DETAIL_FINISH": 90,
+              "READABILITY_SCALE": 90,
+              "MOTION_RIG": 90,
+              "FEEDBACK_STATES": 88,
+              "MODULAR_REUSE": 88,
+              "VARIATION_BREADTH": 88,
+              "ACCESSIBILITY_INPUT": 88,
+              "INTEGRATION_READINESS": 92
+            },
+            "requiredEvidence": [
+              "ROLE_SPECIFIC_SILHOUETTE_AND_FORM_LANGUAGE",
+              "MATERIAL_AND_DETAIL_FINISH",
+              "MOTION_AND_CONTACT_READABILITY",
+              "REACTION_AND_STATE_PRESENTATION",
+              "REUSABLE_VARIANT_STRUCTURE",
+              "MOBILE_SCALE_READABILITY"
+            ]
+          }
+        ],
+        "repairOrder": [
+          "MOTION_RIG",
+          "FORM_STRUCTURE",
+          "MATERIAL_SURFACE",
+          "DETAIL_FINISH",
+          "FEEDBACK_STATES",
+          "VARIATION_BREADTH"
+        ],
+        "newVolumeAuthoring": {
+          "allowed": true,
+          "globallyBlocked": false,
+          "mayRunInParallelWithQualityRepair": true,
+          "allowWhen": [
+            "DISTINCT_ACTOR_ROLE_GAP_REMAINS",
+            "BODY_PLAN_OR_SILHOUETTE_GAP_REMAINS",
+            "EXISTING_REFERENCE_CANNOT_BE_ADAPTED_WITHOUT_QUALITY_LOSS"
+          ],
+          "exactDuplicateSpamForbidden": true,
+          "recolorOnlyVolumeDoesNotCount": true
+        },
+        "safeguards": {
+          "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+          "referenceRoleMayRemainWhileLowScore": true,
+          "productionVerifiedMayNotBeInferredFromPlan": true,
+          "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
+        }
+      }
     },
     {
       "id": "bug-defense-boss",
@@ -432,7 +522,97 @@
         "NO_RIG_OR_FRAME_MOTION",
         "GOOD_SMALL_SCALE_READABILITY",
         "SOURCE_PROVENANCE_CLEAR"
-      ]
+      ],
+      "qualityImprovementPlan": {
+        "version": 1,
+        "source": "CURRENT_INTERNAL_AUDIT_EVIDENCE_ONLY",
+        "currentScore": 580.6,
+        "currentGrade": "REPAIR_REQUIRED",
+        "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+        "stages": [
+          {
+            "id": "DEVELOPMENT_READY_800",
+            "targetScore": 800,
+            "projectedSourceAuditScore": 831.9,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 88,
+              "FORM_STRUCTURE": 85,
+              "MATERIAL_SURFACE": 78,
+              "COLOR_LIGHTING": 80,
+              "STYLE_COHERENCE": 84,
+              "DETAIL_FINISH": 82,
+              "MOTION_RIG": 82,
+              "FEEDBACK_STATES": 75,
+              "MODULAR_REUSE": 78,
+              "VARIATION_BREADTH": 75,
+              "ACCESSIBILITY_INPUT": 80,
+              "INTEGRATION_READINESS": 86
+            },
+            "requiredEvidence": [
+              "DISTINCT_ANATOMY_OR_BODY_PLAN_DETAIL",
+              "MATERIAL_REGION_SEPARATION",
+              "RIG_OR_FRAME_MOTION_COVERAGE",
+              "HIT_SKILL_DEATH_FEEDBACK_STATES",
+              "NON_COLOR_ONLY_VARIATION",
+              "GAME_CAMERA_READABILITY"
+            ]
+          },
+          {
+            "id": "COMMERCIAL_READY_880",
+            "targetScore": 880,
+            "projectedSourceAuditScore": 904.3,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 92,
+              "FORM_STRUCTURE": 90,
+              "MATERIAL_SURFACE": 88,
+              "COLOR_LIGHTING": 88,
+              "STYLE_COHERENCE": 92,
+              "DETAIL_FINISH": 90,
+              "READABILITY_SCALE": 90,
+              "MOTION_RIG": 90,
+              "FEEDBACK_STATES": 88,
+              "MODULAR_REUSE": 88,
+              "VARIATION_BREADTH": 88,
+              "ACCESSIBILITY_INPUT": 88,
+              "INTEGRATION_READINESS": 92
+            },
+            "requiredEvidence": [
+              "ROLE_SPECIFIC_SILHOUETTE_AND_FORM_LANGUAGE",
+              "MATERIAL_AND_DETAIL_FINISH",
+              "MOTION_AND_CONTACT_READABILITY",
+              "REACTION_AND_STATE_PRESENTATION",
+              "REUSABLE_VARIANT_STRUCTURE",
+              "MOBILE_SCALE_READABILITY"
+            ]
+          }
+        ],
+        "repairOrder": [
+          "MOTION_RIG",
+          "FORM_STRUCTURE",
+          "MATERIAL_SURFACE",
+          "DETAIL_FINISH",
+          "FEEDBACK_STATES",
+          "VARIATION_BREADTH"
+        ],
+        "newVolumeAuthoring": {
+          "allowed": true,
+          "globallyBlocked": false,
+          "mayRunInParallelWithQualityRepair": true,
+          "allowWhen": [
+            "DISTINCT_ACTOR_ROLE_GAP_REMAINS",
+            "BODY_PLAN_OR_SILHOUETTE_GAP_REMAINS",
+            "EXISTING_REFERENCE_CANNOT_BE_ADAPTED_WITHOUT_QUALITY_LOSS"
+          ],
+          "exactDuplicateSpamForbidden": true,
+          "recolorOnlyVolumeDoesNotCount": true
+        },
+        "safeguards": {
+          "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+          "referenceRoleMayRemainWhileLowScore": true,
+          "productionVerifiedMayNotBeInferredFromPlan": true,
+          "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
+        }
+      }
     },
     {
       "id": "bug-defense-spider",
@@ -475,7 +655,97 @@
         "NO_RIG_OR_FRAME_MOTION",
         "GOOD_SMALL_SCALE_READABILITY",
         "SOURCE_PROVENANCE_CLEAR"
-      ]
+      ],
+      "qualityImprovementPlan": {
+        "version": 1,
+        "source": "CURRENT_INTERNAL_AUDIT_EVIDENCE_ONLY",
+        "currentScore": 580.6,
+        "currentGrade": "REPAIR_REQUIRED",
+        "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+        "stages": [
+          {
+            "id": "DEVELOPMENT_READY_800",
+            "targetScore": 800,
+            "projectedSourceAuditScore": 831.9,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 88,
+              "FORM_STRUCTURE": 85,
+              "MATERIAL_SURFACE": 78,
+              "COLOR_LIGHTING": 80,
+              "STYLE_COHERENCE": 84,
+              "DETAIL_FINISH": 82,
+              "MOTION_RIG": 82,
+              "FEEDBACK_STATES": 75,
+              "MODULAR_REUSE": 78,
+              "VARIATION_BREADTH": 75,
+              "ACCESSIBILITY_INPUT": 80,
+              "INTEGRATION_READINESS": 86
+            },
+            "requiredEvidence": [
+              "DISTINCT_ANATOMY_OR_BODY_PLAN_DETAIL",
+              "MATERIAL_REGION_SEPARATION",
+              "RIG_OR_FRAME_MOTION_COVERAGE",
+              "HIT_SKILL_DEATH_FEEDBACK_STATES",
+              "NON_COLOR_ONLY_VARIATION",
+              "GAME_CAMERA_READABILITY"
+            ]
+          },
+          {
+            "id": "COMMERCIAL_READY_880",
+            "targetScore": 880,
+            "projectedSourceAuditScore": 904.3,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 92,
+              "FORM_STRUCTURE": 90,
+              "MATERIAL_SURFACE": 88,
+              "COLOR_LIGHTING": 88,
+              "STYLE_COHERENCE": 92,
+              "DETAIL_FINISH": 90,
+              "READABILITY_SCALE": 90,
+              "MOTION_RIG": 90,
+              "FEEDBACK_STATES": 88,
+              "MODULAR_REUSE": 88,
+              "VARIATION_BREADTH": 88,
+              "ACCESSIBILITY_INPUT": 88,
+              "INTEGRATION_READINESS": 92
+            },
+            "requiredEvidence": [
+              "ROLE_SPECIFIC_SILHOUETTE_AND_FORM_LANGUAGE",
+              "MATERIAL_AND_DETAIL_FINISH",
+              "MOTION_AND_CONTACT_READABILITY",
+              "REACTION_AND_STATE_PRESENTATION",
+              "REUSABLE_VARIANT_STRUCTURE",
+              "MOBILE_SCALE_READABILITY"
+            ]
+          }
+        ],
+        "repairOrder": [
+          "MOTION_RIG",
+          "FORM_STRUCTURE",
+          "MATERIAL_SURFACE",
+          "DETAIL_FINISH",
+          "FEEDBACK_STATES",
+          "VARIATION_BREADTH"
+        ],
+        "newVolumeAuthoring": {
+          "allowed": true,
+          "globallyBlocked": false,
+          "mayRunInParallelWithQualityRepair": true,
+          "allowWhen": [
+            "DISTINCT_ACTOR_ROLE_GAP_REMAINS",
+            "BODY_PLAN_OR_SILHOUETTE_GAP_REMAINS",
+            "EXISTING_REFERENCE_CANNOT_BE_ADAPTED_WITHOUT_QUALITY_LOSS"
+          ],
+          "exactDuplicateSpamForbidden": true,
+          "recolorOnlyVolumeDoesNotCount": true
+        },
+        "safeguards": {
+          "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+          "referenceRoleMayRemainWhileLowScore": true,
+          "productionVerifiedMayNotBeInferredFromPlan": true,
+          "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
+        }
+      }
     },
     {
       "id": "roblox-insect-spider-hd-v1",
@@ -591,7 +861,93 @@
         "SOURCE_LEVEL_MOTION_VARIATION_PRESENT",
         "SIMPLE_SHAPE_AND_MATERIAL_DETAIL",
         "SOURCE_PROVENANCE_CLEAR"
-      ]
+      ],
+      "qualityImprovementPlan": {
+        "version": 1,
+        "source": "CURRENT_INTERNAL_AUDIT_EVIDENCE_ONLY",
+        "currentScore": 705.1,
+        "currentGrade": "PROTOTYPE",
+        "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+        "stages": [
+          {
+            "id": "DEVELOPMENT_READY_800",
+            "targetScore": 800,
+            "projectedSourceAuditScore": 827.7,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 88,
+              "FORM_STRUCTURE": 84,
+              "MATERIAL_SURFACE": 78,
+              "STYLE_COHERENCE": 84,
+              "DETAIL_FINISH": 82,
+              "MOTION_RIG": 82,
+              "FEEDBACK_STATES": 76,
+              "MODULAR_REUSE": 78,
+              "VARIATION_BREADTH": 80,
+              "INTEGRATION_READINESS": 86
+            },
+            "requiredEvidence": [
+              "STRONGER_FORM_AND_PART_STRUCTURE",
+              "MATERIAL_OR_SURFACE_DETAIL",
+              "ACTOR_MOTION_OR_FRAME_VARIATION_WHEN_USED_AS_ACTOR",
+              "REACTION_OR_STATE_FEEDBACK",
+              "NON_COLOR_ONLY_VARIANTS"
+            ]
+          },
+          {
+            "id": "COMMERCIAL_READY_880",
+            "targetScore": 880,
+            "projectedSourceAuditScore": 904.5,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 92,
+              "FORM_STRUCTURE": 90,
+              "MATERIAL_SURFACE": 88,
+              "COLOR_LIGHTING": 88,
+              "STYLE_COHERENCE": 92,
+              "DETAIL_FINISH": 90,
+              "READABILITY_SCALE": 90,
+              "MOTION_RIG": 90,
+              "FEEDBACK_STATES": 88,
+              "MODULAR_REUSE": 88,
+              "VARIATION_BREADTH": 90,
+              "ACCESSIBILITY_INPUT": 86,
+              "INTEGRATION_READINESS": 92
+            },
+            "requiredEvidence": [
+              "SPECIES_OR_ROLE_SPECIFIC_SILHOUETTE",
+              "CLEAN_PART_AND_SURFACE_SEPARATION",
+              "MOTION_STATE_BREADTH",
+              "GAME_CAMERA_AND_ICON_SCALE_READABILITY",
+              "REUSABLE_VARIATION_WITHOUT_DUPLICATE_SPAM"
+            ]
+          }
+        ],
+        "repairOrder": [
+          "FORM_STRUCTURE",
+          "MATERIAL_SURFACE",
+          "DETAIL_FINISH",
+          "MOTION_RIG",
+          "FEEDBACK_STATES",
+          "IDENTITY_SILHOUETTE"
+        ],
+        "newVolumeAuthoring": {
+          "allowed": true,
+          "globallyBlocked": false,
+          "mayRunInParallelWithQualityRepair": true,
+          "allowWhen": [
+            "NEW_INSECT_ROLE_OR_SILHOUETTE_GAP_REMAINS",
+            "EXISTING_SPRITE_CANNOT_COVER_REQUIRED_BODY_PLAN",
+            "ADAPTATION_WOULD_LOSE_READABILITY_OR_STYLE"
+          ],
+          "exactDuplicateSpamForbidden": true,
+          "recolorOnlyVolumeDoesNotCount": true
+        },
+        "safeguards": {
+          "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+          "referenceRoleMayRemainWhileLowScore": true,
+          "productionVerifiedMayNotBeInferredFromPlan": true,
+          "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
+        }
+      }
     },
     {
       "id": "mantis-sprite",
@@ -634,7 +990,93 @@
         "SOURCE_LEVEL_MOTION_VARIATION_PRESENT",
         "SIMPLE_SHAPE_AND_MATERIAL_DETAIL",
         "SOURCE_PROVENANCE_CLEAR"
-      ]
+      ],
+      "qualityImprovementPlan": {
+        "version": 1,
+        "source": "CURRENT_INTERNAL_AUDIT_EVIDENCE_ONLY",
+        "currentScore": 705.1,
+        "currentGrade": "PROTOTYPE",
+        "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+        "stages": [
+          {
+            "id": "DEVELOPMENT_READY_800",
+            "targetScore": 800,
+            "projectedSourceAuditScore": 827.7,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 88,
+              "FORM_STRUCTURE": 84,
+              "MATERIAL_SURFACE": 78,
+              "STYLE_COHERENCE": 84,
+              "DETAIL_FINISH": 82,
+              "MOTION_RIG": 82,
+              "FEEDBACK_STATES": 76,
+              "MODULAR_REUSE": 78,
+              "VARIATION_BREADTH": 80,
+              "INTEGRATION_READINESS": 86
+            },
+            "requiredEvidence": [
+              "STRONGER_FORM_AND_PART_STRUCTURE",
+              "MATERIAL_OR_SURFACE_DETAIL",
+              "ACTOR_MOTION_OR_FRAME_VARIATION_WHEN_USED_AS_ACTOR",
+              "REACTION_OR_STATE_FEEDBACK",
+              "NON_COLOR_ONLY_VARIANTS"
+            ]
+          },
+          {
+            "id": "COMMERCIAL_READY_880",
+            "targetScore": 880,
+            "projectedSourceAuditScore": 904.5,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 92,
+              "FORM_STRUCTURE": 90,
+              "MATERIAL_SURFACE": 88,
+              "COLOR_LIGHTING": 88,
+              "STYLE_COHERENCE": 92,
+              "DETAIL_FINISH": 90,
+              "READABILITY_SCALE": 90,
+              "MOTION_RIG": 90,
+              "FEEDBACK_STATES": 88,
+              "MODULAR_REUSE": 88,
+              "VARIATION_BREADTH": 90,
+              "ACCESSIBILITY_INPUT": 86,
+              "INTEGRATION_READINESS": 92
+            },
+            "requiredEvidence": [
+              "SPECIES_OR_ROLE_SPECIFIC_SILHOUETTE",
+              "CLEAN_PART_AND_SURFACE_SEPARATION",
+              "MOTION_STATE_BREADTH",
+              "GAME_CAMERA_AND_ICON_SCALE_READABILITY",
+              "REUSABLE_VARIATION_WITHOUT_DUPLICATE_SPAM"
+            ]
+          }
+        ],
+        "repairOrder": [
+          "FORM_STRUCTURE",
+          "MATERIAL_SURFACE",
+          "DETAIL_FINISH",
+          "MOTION_RIG",
+          "FEEDBACK_STATES",
+          "IDENTITY_SILHOUETTE"
+        ],
+        "newVolumeAuthoring": {
+          "allowed": true,
+          "globallyBlocked": false,
+          "mayRunInParallelWithQualityRepair": true,
+          "allowWhen": [
+            "NEW_INSECT_ROLE_OR_SILHOUETTE_GAP_REMAINS",
+            "EXISTING_SPRITE_CANNOT_COVER_REQUIRED_BODY_PLAN",
+            "ADAPTATION_WOULD_LOSE_READABILITY_OR_STYLE"
+          ],
+          "exactDuplicateSpamForbidden": true,
+          "recolorOnlyVolumeDoesNotCount": true
+        },
+        "safeguards": {
+          "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+          "referenceRoleMayRemainWhileLowScore": true,
+          "productionVerifiedMayNotBeInferredFromPlan": true,
+          "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
+        }
+      }
     },
     {
       "id": "dragonfly-sprite",
@@ -677,7 +1119,93 @@
         "SOURCE_LEVEL_MOTION_VARIATION_PRESENT",
         "SIMPLE_SHAPE_AND_MATERIAL_DETAIL",
         "SOURCE_PROVENANCE_CLEAR"
-      ]
+      ],
+      "qualityImprovementPlan": {
+        "version": 1,
+        "source": "CURRENT_INTERNAL_AUDIT_EVIDENCE_ONLY",
+        "currentScore": 705.1,
+        "currentGrade": "PROTOTYPE",
+        "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+        "stages": [
+          {
+            "id": "DEVELOPMENT_READY_800",
+            "targetScore": 800,
+            "projectedSourceAuditScore": 827.7,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 88,
+              "FORM_STRUCTURE": 84,
+              "MATERIAL_SURFACE": 78,
+              "STYLE_COHERENCE": 84,
+              "DETAIL_FINISH": 82,
+              "MOTION_RIG": 82,
+              "FEEDBACK_STATES": 76,
+              "MODULAR_REUSE": 78,
+              "VARIATION_BREADTH": 80,
+              "INTEGRATION_READINESS": 86
+            },
+            "requiredEvidence": [
+              "STRONGER_FORM_AND_PART_STRUCTURE",
+              "MATERIAL_OR_SURFACE_DETAIL",
+              "ACTOR_MOTION_OR_FRAME_VARIATION_WHEN_USED_AS_ACTOR",
+              "REACTION_OR_STATE_FEEDBACK",
+              "NON_COLOR_ONLY_VARIANTS"
+            ]
+          },
+          {
+            "id": "COMMERCIAL_READY_880",
+            "targetScore": 880,
+            "projectedSourceAuditScore": 904.5,
+            "requiredAxisFloor": {
+              "IDENTITY_SILHOUETTE": 92,
+              "FORM_STRUCTURE": 90,
+              "MATERIAL_SURFACE": 88,
+              "COLOR_LIGHTING": 88,
+              "STYLE_COHERENCE": 92,
+              "DETAIL_FINISH": 90,
+              "READABILITY_SCALE": 90,
+              "MOTION_RIG": 90,
+              "FEEDBACK_STATES": 88,
+              "MODULAR_REUSE": 88,
+              "VARIATION_BREADTH": 90,
+              "ACCESSIBILITY_INPUT": 86,
+              "INTEGRATION_READINESS": 92
+            },
+            "requiredEvidence": [
+              "SPECIES_OR_ROLE_SPECIFIC_SILHOUETTE",
+              "CLEAN_PART_AND_SURFACE_SEPARATION",
+              "MOTION_STATE_BREADTH",
+              "GAME_CAMERA_AND_ICON_SCALE_READABILITY",
+              "REUSABLE_VARIATION_WITHOUT_DUPLICATE_SPAM"
+            ]
+          }
+        ],
+        "repairOrder": [
+          "FORM_STRUCTURE",
+          "MATERIAL_SURFACE",
+          "DETAIL_FINISH",
+          "MOTION_RIG",
+          "FEEDBACK_STATES",
+          "IDENTITY_SILHOUETTE"
+        ],
+        "newVolumeAuthoring": {
+          "allowed": true,
+          "globallyBlocked": false,
+          "mayRunInParallelWithQualityRepair": true,
+          "allowWhen": [
+            "NEW_INSECT_ROLE_OR_SILHOUETTE_GAP_REMAINS",
+            "EXISTING_SPRITE_CANNOT_COVER_REQUIRED_BODY_PLAN",
+            "ADAPTATION_WOULD_LOSE_READABILITY_OR_STYLE"
+          ],
+          "exactDuplicateSpamForbidden": true,
+          "recolorOnlyVolumeDoesNotCount": true
+        },
+        "safeguards": {
+          "currentAuditScoreMustRemainUntilNewEvidenceExists": true,
+          "referenceRoleMayRemainWhileLowScore": true,
+          "productionVerifiedMayNotBeInferredFromPlan": true,
+          "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
+        }
+      }
     },
     {
       "id": "survival2-tree",
@@ -68298,7 +68826,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 103,
+    "lastCatalogSynchronizedVersion": 104,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -78652,7 +79180,7 @@
       "lastChangeFingerprint": "1e5874b8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 103
+      "synchronizedRegistryVersion": 104
     },
     "studioVariationAxes": {
       "BUILDING": [
