@@ -103,9 +103,13 @@ export function analyzeSystemAiBottlenecks({
   const fanInWaitMs=Math.max(0,Number(workflowMetrics.fanInWaitMs)||0);
   const supervisorReviewWaitMs=Math.max(0,Number(workflowMetrics.supervisorReviewWaitMs)||0);
   const pendingRuns=Math.max(0,Number(workflowMetrics.pendingRuns)||0);
-  const runnerQueuedRuns=Math.max(0,Number(workflowMetrics.runnerQueuedRuns)||0);
+  const observedRunnerQueuedRuns=Math.max(0,Number(workflowMetrics.runnerQueuedRuns)||0);
   const runnerInProgressRuns=Math.max(0,Number(workflowMetrics.runnerInProgressRuns)||0);
-  const primaryGameQueuedRuns=Math.max(0,Number(workflowMetrics.primaryGameQueuedRuns)||0);
+  const observedPrimaryGameQueuedRuns=Math.max(0,Number(workflowMetrics.primaryGameQueuedRuns)||0);
+  const joblessOrphanQueuedRuns=Math.min(observedRunnerQueuedRuns,Math.max(0,Number(workflowMetrics.joblessOrphanQueuedRuns)||0));
+  const joblessOrphanPrimaryRuns=Math.min(observedPrimaryGameQueuedRuns,Math.max(0,Number(workflowMetrics.joblessOrphanPrimaryRuns)||0));
+  const runnerQueuedRuns=Math.max(0,observedRunnerQueuedRuns-joblessOrphanQueuedRuns);
+  const primaryGameQueuedRuns=Math.max(0,observedPrimaryGameQueuedRuns-joblessOrphanPrimaryRuns);
   const duplicateWorkflowRuns=Math.max(0,Number(workflowMetrics.duplicateWorkflowRuns)||0);
   const stalePrimaryRuns=Math.max(0,Number(workflowMetrics.stalePrimaryRuns)||0);
   const runnerPressure=primaryGameQueuedRuns>0&&runnerQueuedRuns>=Math.max(4,runnerInProgressRuns*2);
@@ -144,6 +148,7 @@ export function analyzeSystemAiBottlenecks({
   if(pendingRuns>0)actions.push('REDUCE_SCHEDULER_PENDING_RUN_WAIT');
   if(duplicateWorkflowRuns>0)actions.push('COLLAPSE_EXACT_DUPLICATE_INGRESS');
   if(stalePrimaryRuns>0)actions.push('CANCEL_STALE_PRIMARY_REVISION_INGRESS');
+  if(joblessOrphanQueuedRuns>0)actions.push('EXCLUDE_JOBLESS_ORPHAN_FROM_RUNNER_PRESSURE');
   if(runnerPressure)actions.push('PRESERVE_PRIMARY_GAME_RUNNER_CAPACITY');
   if(reservationWaitMs>=60000)actions.push('PRIORITIZE_LONG_WAIT_RUNNABLE_WORK');
   if(fanInWaitMs>=60000)actions.push('REDUCE_FAN_IN_WAIT');
@@ -160,7 +165,7 @@ export function analyzeSystemAiBottlenecks({
     representativeCanaryTaskIds:uniq(commonFailureCohorts.map(x=>x.representativeTaskId)),
     disjointQueuedTaskIds:disjointQueued.map(t=>clean(t.id)).filter(Boolean),
     caretakerHotspots,
-    workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,runnerQueuedRuns,runnerInProgressRuns,primaryGameQueuedRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
+    workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,observedRunnerQueuedRuns,runnerQueuedRuns,runnerInProgressRuns,observedPrimaryGameQueuedRuns,primaryGameQueuedRuns,joblessOrphanQueuedRuns,joblessOrphanPrimaryRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
     configuredBatch:configured,
     reserveCeiling,
     freeCapacity,
@@ -175,9 +180,13 @@ export function analyzeSystemAiBottlenecks({
       reservationWaitMs,
       fanInWaitMs,
       supervisorReviewWaitMs,
+      observedRunnerQueuedRuns,
       runnerQueuedRuns,
       runnerInProgressRuns,
+      observedPrimaryGameQueuedRuns,
       primaryGameQueuedRuns,
+      joblessOrphanQueuedRuns,
+      joblessOrphanPrimaryRuns,
       duplicateWorkflowRuns,
       stalePrimaryRuns,
       runnerPressure
@@ -206,6 +215,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       runnerQueuedRuns:Number(a['runner-queued-runs']||0),
       runnerInProgressRuns:Number(a['runner-in-progress-runs']||0),
       primaryGameQueuedRuns:Number(a['primary-game-queued-runs']||0),
+      joblessOrphanQueuedRuns:Number(a['jobless-orphan-queued-runs']||0),
+      joblessOrphanPrimaryRuns:Number(a['jobless-orphan-primary-runs']||0),
       duplicateWorkflowRuns:Number(a['duplicate-workflow-runs']||0),
       stalePrimaryRuns:Number(a['stale-primary-runs']||0)
     }
@@ -217,7 +228,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_BATCH='+result.recommendedBatch);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS='+(result.recommendedReserveTaskIds||[]).join(','));
   console.log('SYSTEM_AI_RUNNER_PRESSURE='+(result.workflow.runnerPressure?'YES':'NO'));
+  console.log('SYSTEM_AI_RUNNER_QUEUED_RUNS_OBSERVED='+result.workflow.observedRunnerQueuedRuns);
+  console.log('SYSTEM_AI_RUNNER_QUEUED_RUNS_EFFECTIVE='+result.workflow.runnerQueuedRuns);
+  console.log('SYSTEM_AI_PRIMARY_GAME_QUEUED_RUNS_OBSERVED='+result.workflow.observedPrimaryGameQueuedRuns);
   console.log('SYSTEM_AI_PRIMARY_GAME_QUEUED_RUNS='+result.workflow.primaryGameQueuedRuns);
+  console.log('SYSTEM_AI_JOBLESS_ORPHAN_QUEUED_RUNS='+result.workflow.joblessOrphanQueuedRuns);
+  console.log('SYSTEM_AI_JOBLESS_ORPHAN_PRIMARY_RUNS='+result.workflow.joblessOrphanPrimaryRuns);
   console.log('SYSTEM_AI_DUPLICATE_WORKFLOW_RUNS='+result.workflow.duplicateWorkflowRuns);
   console.log('SYSTEM_AI_STALE_PRIMARY_RUNS='+result.workflow.stalePrimaryRuns);
   console.log('SYSTEM_AI_BOTTLENECK_ACTIONS='+result.actions.join(','));
