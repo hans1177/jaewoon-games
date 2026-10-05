@@ -452,7 +452,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
-test('game-primary keeps adaptive telemetry but reserves primary work to provider boundary',()=>{
+test('game-primary keeps adaptive telemetry but canonical reservation is fixed at 64',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
@@ -462,7 +462,7 @@ test('game-primary keeps adaptive telemetry but reserves primary work to provide
     goal:'running',status:'running',sourceRoot:`unity-games/running-${i}`,responsibleFiles:['index.html'],
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
-  const queued=Array.from({length:20},(_,i)=>({
+  const queued=Array.from({length:90},(_,i)=>({
     id:`queued-${i}`,gameId:`queued-${i}`,target:'unity',department:'development',type:'implementation',
     goal:'queued',status:'queued',sourceRoot:`unity-games/queued-${i}`,responsibleFiles:['index.html']
   }));
@@ -472,10 +472,10 @@ test('game-primary keeps adaptive telemetry but reserves primary work to provide
   const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
   assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
   assert.equal(summary.adaptiveMaxConcurrentTasks,20);
-  assert.equal(summary.reservationMaxConcurrentTasks,256);
-  assert.equal(summary.summary.requestedMaxConcurrentTasks,256);
-  assert.equal(summary.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(summary.summary.freeSlots,249);
+  assert.equal(summary.reservationMaxConcurrentTasks,64);
+  assert.equal(summary.summary.requestedMaxConcurrentTasks,64);
+  assert.equal(summary.summary.effectiveMaxConcurrentTasks,64);
+  assert.equal(summary.summary.freeSlots,57);
 
   const reserved=runQueueCommand({
     command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
@@ -483,14 +483,14 @@ test('game-primary keeps adaptive telemetry but reserves primary work to provide
   });
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
   assert.equal(reserved.adaptiveMaxConcurrentTasks,20);
-  assert.equal(reserved.reservationMaxConcurrentTasks,256);
+  assert.equal(reserved.reservationMaxConcurrentTasks,64);
   assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
   assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
-  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,256);
-  assert.equal(batch.scheduler.freeSlotsBeforeReservation,249);
-  assert.equal(reserved.tasks.length,20);
-  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,256);
-  assert.equal(reserved.summary.freeSlots,229);
+  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,64);
+  assert.equal(batch.scheduler.freeSlotsBeforeReservation,57);
+  assert.equal(reserved.tasks.length,57);
+  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,64);
+  assert.equal(reserved.summary.freeSlots,0);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
