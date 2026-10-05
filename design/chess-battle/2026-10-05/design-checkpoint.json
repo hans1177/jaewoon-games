@@ -111,15 +111,15 @@
       "updatedAt": "2026-10-05T00:14:39.309Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 24,
+      "calls": 26,
       "successes": 5,
-      "failures": 19,
+      "failures": 21,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 160095,
-      "lastMs": 28873,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=4008",
-      "updatedAt": "2026-10-05T01:17:05.331Z"
+      "totalMs": 185309,
+      "lastMs": 18259,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-10-05T01:17:23.592Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 9,
@@ -136,7 +136,7 @@
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T00:14:34.401Z",
-  "updatedAt": "2026-10-05T01:17:05.332Z",
+  "updatedAt": "2026-10-05T01:17:23.592Z",
   "lastSuccessfulModelCallAt": "2026-10-05T01:17:05.331Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
