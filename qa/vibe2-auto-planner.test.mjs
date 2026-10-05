@@ -3228,6 +3228,36 @@ test('queued game work without verified design stays DESIGN_PENDING and cannot c
 });
 
 
+test('Web BUILD_UP cannot start from simple source without a verified design and resumes after design PASS',()=>{
+  const root=tempRepo();
+  const gameId='web-design-required';
+  const source=path.join(root,'web-games',gameId);
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><html><body><button>점수 +1</button><script>let score=0;document.querySelector("button").onclick=()=>score++;</script></body></html>','utf8');
+  const project={gameId,name:'Web Design Required',engine:'web',target:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`,existing:true};
+
+  const blocked=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.equal(blocked,null);
+
+  writeStudioDesign(root,gameId,{
+    identity:'설계 기반 실제 Web 전투 게임',
+    coreFun:'위협을 읽고 공격과 회피를 선택해 전투 상태를 바꾸는 재미',
+    coreLoop:['적 패턴과 목표를 읽는다','공격 또는 회피 입력으로 실제 상태를 바꾼다','보상·위험·다음 목표를 갱신한다'],
+    signatureSystems:[
+      {name:'combat-state',purpose:'공격·회피 결과를 실제 체력과 적 상태에 반영',playerChoice:'공격 또는 회피'},
+      {name:'progression-choice',purpose:'승리 보상으로 다음 전투 선택을 확장',playerChoice:'보상 선택'}
+    ],
+    progressionDirection:'승리와 보상으로 다음 전투 선택과 목표를 확장한다.'
+  });
+  const allowed=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(allowed);
+  assert.equal(allowed.studioQualityEvolution.designVerified,true);
+  assert.equal(allowed.studioQualityEvolution.webDesignRequired,true);
+  assert.equal(allowed.studioQualityEvolution.webSimpleCodeGameSubstituteForbidden,true);
+  assert.match(allowed.goal,/Web은 단순 코드 샘플이 아니라 승인 설계의 실제 게임 구현/);
+  assert.match(allowed.goal,/APPROVED_DESIGN=/);
+});
+
 test('queued legacy BUILD_UP directive is migrated in place to autonomous content expansion before reserve',()=>{
   const root=tempRepo();
   const gameId='legacy-autonomous-expansion-backfill';
