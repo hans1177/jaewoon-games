@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,approvedScopeRequirement,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
-import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,summarizeCommercialReadinessEvidence,summarizePresentationRegression,buildWebPresentationHandoff,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
+import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,summarizeCommercialReadinessEvidence,summarizePresentationRegression,buildWebPresentationHandoff,buildRuntimeValidationEvidence,designRuntimeContract,evaluateDesignRuntimeAlignment} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -35,6 +35,62 @@ test('company Web bootstrap cannot generate or repair game source with Gemini',(
   assert.match(source,/failureSignature/);
   assert.match(source,/vibeWebRequestedStage/);
   assert.match(source,/vibeWebImplementationReason/);
+});
+
+test('Web browser validation requires latest verified design and rejects simple-code substitutes',()=>{
+  const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(validator,/latestVerifiedDesign\(process\.cwd\(\),id\)/);
+  assert.match(validator,/WEB_VERIFIED_DESIGN_REQUIRED/);
+  assert.match(validator,/WEB_DESIGN_BASELINE_STALE_OR_NONCANONICAL/);
+  assert.match(planner,/const webDesignRequired=clean\(project\.engine\)\.toLowerCase\(\)==='web'/);
+  assert.doesNotMatch(planner,/sourceSafeNoDesign/);
+  assert.match(worker,/WEB_VERIFIED_DESIGN_REQUIRED_BEFORE_SOURCE/);
+
+  const contract=designRuntimeContract({
+    path:'design/demo/2026-10-05/design-revised.json',
+    strictScore:90,
+    verifiedAt:'2026-10-05T00:00:00Z',
+    postResetFresh:true,
+    content:{
+      identity:'실제 전투 게임',
+      coreFun:'적 위협을 읽고 공격과 회피로 전투 상태를 바꾸는 재미',
+      coreLoop:['위협을 읽는다','실제 입력으로 상태를 바꾼다','보상과 다음 목표를 갱신한다'],
+      signatureSystems:[{name:'combat',purpose:'전투 결과 반영',playerChoice:'공격 또는 회피'}],
+      progressionDirection:'승리 보상으로 다음 선택을 확장한다.'
+    }
+  });
+  const shallow=evaluateDesignRuntimeAlignment({
+    contract,
+    scopeCoverage:{pass:false},
+    initialPlayableCycle:{pass:false},
+    runtimeFeatureEvidence:{genreEvidence:{runtimeObserved:false}},
+    interactionCount:1,
+    stateTransitionCount:1,
+    terminalReached:false,
+    retryObserved:false,
+    footprint:{growthRewardChoice:false,riskPressure:false}
+  });
+  assert.equal(shallow.pass,false);
+  assert.ok(shallow.blockers.includes('DESIGN_APPROVED_SCOPE_RUNTIME_COVERAGE_REQUIRED'));
+  assert.ok(shallow.blockers.includes('DESIGN_CORE_LOOP_RUNTIME_CYCLE_REQUIRED'));
+  assert.ok(shallow.blockers.includes('DESIGN_RESULT_PATH_REQUIRED'));
+  assert.ok(shallow.blockers.includes('DESIGN_RETRY_PATH_REQUIRED'));
+  assert.equal(shallow.simpleCodeSubstituteForbidden,true);
+
+  const real=evaluateDesignRuntimeAlignment({
+    contract,
+    scopeCoverage:{pass:true},
+    initialPlayableCycle:{pass:true},
+    runtimeFeatureEvidence:{genreEvidence:{runtimeObserved:true}},
+    interactionCount:7,
+    stateTransitionCount:6,
+    terminalReached:true,
+    retryObserved:true,
+    footprint:{growthRewardChoice:true,riskPressure:true}
+  });
+  assert.equal(real.pass,true,real.blockers.join(','));
 });
 
 test('Web runtime spatial detector does not treat absent coordinates as 3D and recognizes Korean exploration input',()=>{
