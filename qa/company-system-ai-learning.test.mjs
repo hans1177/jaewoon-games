@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { promoteVerifiedSystemAiLearning } from '../tools/company-system-ai-learning.mjs';
 import { buildSystemAiLearningContext } from '../tools/company-system-ai-learning-context.mjs';
+import { buildExternalAiLearningFeed } from '../tools/company-system-ai-external-learning-feed.mjs';
 
 const systemAiLearningSource=fs.readFileSync('tools/company-system-ai-learning.mjs','utf8');
 
@@ -262,3 +263,26 @@ test('ordinary non-bottleneck System AI task does not receive bottleneck playboo
   assert.ok(!context.guidance.includes('POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK'));
 });
 
+
+
+test('verified external AI graphics findings distill into visual rig motion material vfx and camera domains',()=>{
+  const result=buildExternalAiLearningFeed({tasks:[{
+    id:'graphics-multimodal-review',status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',
+    department:'graphics',taskType:'graphics-review',target:'roblox',gameId:'graphics-demo',
+    goal:'review silhouette aesthetics rig joints skin weights walk gait foot contact secondary motion material roughness lighting vfx particles camera shake mobile readability',
+    responsibleFiles:['roblox-games/graphics-demo/shared/VisualStyle.luau'],
+    evidence:[
+      'verification:success','primary-ai-review:PASS',
+      'changed-file:roblox-games/graphics-demo/shared/VisualStyle.luau',
+      'external-ai-raw-output-sha256:'+'a'.repeat(64),
+      'external-ai-model:multimodal-critic',
+      'actions-run:graphics-review-1'
+    ]
+  }]});
+  assert.equal(result.records.length,1);
+  const row=result.records[0];
+  for(const domain of ['ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','VISUAL_IDENTITY'])assert.ok(row.domains.includes(domain),domain);
+  assert.ok(row.distilledPatterns.some(pattern=>pattern.includes('target-runtime before/after evidence')));
+  assert.equal(result.rawOutputStored,false);
+  assert.equal(result.verifiedOnly,true);
+});
