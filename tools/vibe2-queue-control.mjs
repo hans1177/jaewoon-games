@@ -42,6 +42,18 @@ function readJson(file, fallback = {}) {
   return JSON.parse(raw);
 }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
+
+function fixedGamePrimaryRepeatSlots() {
+  const policy=readJson(CANONICAL_RESERVATION_POLICY,{});
+  const raw=Number(policy?.fixedAutonomousDevelopmentOperatingContract?.repeatDevelopmentConcurrency?.fixedSlots);
+  return Number.isFinite(raw)&&raw>0?Math.floor(raw):null;
+}
+function configuredLaneReservationMax(executionLane='',requested=null,queueMax=null){
+  const lane=clean(executionLane||'game-primary').toLowerCase();
+  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||64;
+  if(lane==='learning-idle')return 1;
+  return optionalMaxConcurrent(requested) ?? queueMax;
+}
 function parseArgs(argv = process.argv.slice(2)) {
   const [command = 'summary', ...rest] = argv;
   const args = { command };
@@ -1043,7 +1055,7 @@ export function runQueueCommand(args = {}) {
     };
   } else if (command === 'reserve') {
     const executionLane=clean(args.lane)||'game-primary';
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const configuredMaxConcurrentTasks=configuredLaneReservationMax(executionLane,args.max,queue.maxConcurrentTasks);
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
@@ -1053,7 +1065,7 @@ export function runQueueCommand(args = {}) {
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const configuredMaxConcurrentTasks=configuredLaneReservationMax(executionLane,args.max,queue.maxConcurrentTasks);
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
@@ -1118,7 +1130,7 @@ export function runQueueCommand(args = {}) {
     const payload = readJson(input, {});
     const row = Array.isArray(payload) ? payload[0] : (payload?.result && typeof payload.result === 'object' ? payload.result : payload);
     const executionLane = clean(args.lane) || 'game-primary';
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const configuredMaxConcurrentTasks=configuredLaneReservationMax(executionLane,args.max,queue.maxConcurrentTasks);
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
@@ -1175,7 +1187,7 @@ export function runQueueCommand(args = {}) {
     queue = merged.queue;
     writeJson(file, queue);
     if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
-    const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+    const configuredMaxConcurrentTasks=configuredLaneReservationMax(executionLane,args.max,queue.maxConcurrentTasks);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(nextControl,configuredMaxConcurrentTasks,{minimumMax:adaptiveMinimumConcurrentTasks});
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     result = {
@@ -1194,7 +1206,7 @@ export function runQueueCommand(args = {}) {
   } else if (command === 'summary') {
     const executionLane=clean(args.lane);
     if(executionLane){
-      const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
+      const configuredMaxConcurrentTasks=configuredLaneReservationMax(executionLane,args.max,queue.maxConcurrentTasks);
       const adaptiveControl=readParallelismControl(args);
       const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
       const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl,configuredMaxConcurrentTasks,{minimumMax:adaptiveMinimumConcurrentTasks});
