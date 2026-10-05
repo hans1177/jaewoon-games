@@ -136,6 +136,30 @@ function genreCoreKind(profile){
   return 'OBJECTIVE';
 }
 
+export const ROBLOX_COMMON_LIBRARY_PROJECT_MODULES=Object.freeze({
+  RobloxCommonCharacterGear:'../../assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau',
+  RobloxCommonCreatureParts:'../../assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau',
+  RobloxCommonBuilding:'../../assets/roblox/common-building-v1/RobloxCommonBuilding.luau',
+  RobloxCommonEnvironment:'../../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',
+  RobloxCommonFoliage:'../../assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau',
+  RobloxCommonTools:'../../assets/roblox/common-tools-v1/RobloxCommonTools.luau',
+  RobloxCommonItems:'../../assets/roblox/common-items-v1/RobloxCommonItems.luau',
+  RobloxCommonSkillPresentation:'../../assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau',
+  RobloxCommonMaterials:'../../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',
+  RobloxCommonVFX:'../../assets/roblox/common-vfx-v1/RobloxCommonVFX.luau',
+  RobloxCommonUI:'../../assets/roblox/common-ui-v1/RobloxCommonUI.luau',
+  RobloxCommonIcons:'../../assets/roblox/common-ui-v1/RobloxCommonIcons.luau',
+  RobloxCommonPresentation:'../../assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau',
+  RobloxCommonMotion:'../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau',
+  RobloxCommonWorldProps:'../../assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau',
+});
+
+export function robloxCommonLibraryProjectTree(){
+  return Object.fromEntries(Object.entries(ROBLOX_COMMON_LIBRARY_PROJECT_MODULES).map(([name,modulePath])=>[
+    name,{$path:modulePath}
+  ]));
+}
+
 export function projectJsonForGame(gameId=''){
   return {
     name:clean(gameId)||'jaewoon-roblox-game',
@@ -152,7 +176,10 @@ export function projectJsonForGame(gameId=''){
           $properties:{TonemapperPreset:'Retro'},
         },
       },
-      ReplicatedStorage:{Shared:{$path:'shared'}},
+      ReplicatedStorage:{
+        Shared:{$path:'shared'},
+        CompanyAssets:robloxCommonLibraryProjectTree(),
+      },
       ServerScriptService:{GameServer:{$path:'server'}},
       StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}},
     },
@@ -729,6 +756,9 @@ function studioAssetConfigBlock(studioAssets={}){
     RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},
     ProductionVerified = false,
     RuntimeVerificationRequired = true,
+    AutoApplyAllLibraries = true,
+    AllFamiliesRequired = true,
+    PlainFallbackForbidden = true,
     Families = {
 ${familyRows}
     },
@@ -777,6 +807,11 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
+local requiredStudioAssetFamilies = {"CHARACTER","CREATURE","BUILDING","ENVIRONMENT","WEAPON","SKILL","MATERIAL","AUDIO","VFX","UI","MOTION","PROP"}
+for _, family in ipairs(requiredStudioAssetFamilies) do
+  if #studioAssetFamily(family) == 0 then error("ROBLOX_INTERNAL_ASSET_FAMILY_MISSING:" .. family) end
+end
+local studioUi = studioAssetFamily("UI")
 -- STUDIO_ASSET_BINDING_CLIENT_END
 `;
   if(managed.test(output)){
@@ -829,6 +864,9 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const beforeProject=fs.readFileSync(projectFile,'utf8');
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
+  project.tree.ReplicatedStorage=project.tree.ReplicatedStorage&&typeof project.tree.ReplicatedStorage==='object'?project.tree.ReplicatedStorage:{};
+  project.tree.ReplicatedStorage.Shared=project.tree.ReplicatedStorage.Shared||{$path:'shared'};
+  project.tree.ReplicatedStorage.CompanyAssets=robloxCommonLibraryProjectTree();
   const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
   const existingLightingProperties=existingLighting.$properties&&typeof existingLighting.$properties==='object'?existingLighting.$properties:{};
   const currentTechnology=clean(existingLightingProperties.Technology);
