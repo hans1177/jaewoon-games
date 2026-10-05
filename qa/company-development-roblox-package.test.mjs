@@ -256,6 +256,10 @@ test('Vibe2 candidate release binds BUILD_UP source and selection fingerprints t
   assert.match(workflow,/candidate package BUILD_UP selection fingerprint mismatch/);
   assert.match(workflow,/--asset-selection-fingerprint="\$asset_selection_fingerprint"/);
   assert.match(workflow,/candidate F0 asset selection fingerprint mismatch/);
+  assert.match(workflow,/Persist exact runtime asset binding and promotion plan/);
+  assert.match(workflow,/robloxStudioAssetBinding=persistedBinding/);
+  assert.match(workflow,/ROBLOX_ASSET_RUNTIME_BINDING=/);
+  assert.match(workflow,/studioRuntimeRequired:false/);
 });
 
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{
