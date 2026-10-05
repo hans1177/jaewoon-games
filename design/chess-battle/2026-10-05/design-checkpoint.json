@@ -12,15 +12,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 10,
+      "calls": 12,
       "successes": 2,
-      "failures": 8,
+      "failures": 10,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 29267,
-      "lastMs": 2633,
+      "totalMs": 34052,
+      "lastMs": 3413,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T08:07:23.584Z"
+      "updatedAt": "2026-10-05T08:08:54.566Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 8,
@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-05T08:07:49.330Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 360010,
-      "lastMs": 120004,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T08:07:16.748Z"
+      "jsonFailures": 1,
+      "totalMs": 420770,
+      "lastMs": 60760,
+      "lastError": "schema required missing: root.systemInterconnections",
+      "updatedAt": "2026-10-05T08:08:50.090Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T07:50:30.015Z",
-  "updatedAt": "2026-10-05T08:07:49.330Z",
+  "updatedAt": "2026-10-05T08:08:54.566Z",
   "lastSuccessfulModelCallAt": "2026-10-05T08:07:20.950Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
@@ -144,5 +144,5 @@
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": "designer_draft",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms"
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } } local=schema required missing: root.systemInterconnections"
 }
