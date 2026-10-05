@@ -1541,10 +1541,10 @@ export function evaluateGraphicsReplacementReport({candidate={},contract={}}={})
   const report=normalizeGraphicsReplacementReport(candidate?.graphicsReplacementReport);
   if(!report)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_REPORT_MISSING',report:null};
   const min=Math.max(1,Math.floor(Number(contract?.adaptiveCount?.minimumActual||1)));
-  const max=Math.min(60,Math.max(min,Math.floor(Number(contract?.adaptiveCount?.maximumActual||60))));
+  const max=null; // 자산 적용 개수에는 상한을 두지 않는다.
   const allowedSurfaces=new Set((contract?.surfaces||[]).map(v=>clean(v).toUpperCase()).filter(Boolean));
   const allowedModes=new Set((contract?.reuseModes||GRAPHICS_REPLACEMENT_REUSE_MODES).map(v=>clean(v).toUpperCase()).filter(Boolean));
-  if(report.actualCount<min||report.actualCount>max)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE',report,min,max};
+  if(!Number.isSafeInteger(report.actualCount)||report.actualCount<min)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE',report,min,max};
   if(!report.changedSurfaces.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_SURFACES_MISSING',report,min,max};
   const invalidSurfaces=report.changedSurfaces.filter(v=>allowedSurfaces.size&&!allowedSurfaces.has(v));
   if(invalidSurfaces.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_SURFACE_INVALID:'+invalidSurfaces.join(','),report,min,max};
@@ -2027,7 +2027,7 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
-export function buildInternalAssetSourceUsageContract(order={}){
+export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd()}={}){
   const target=clean(order?.target).toLowerCase();
   const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
   const assetProduction=order?.assetProduction||{};
@@ -2044,7 +2044,7 @@ export function buildInternalAssetSourceUsageContract(order={}){
     family:clean(row?.family||row?.category).toUpperCase()||null,
     role:clean(row?.role||row?.systemRole||row?.requirementRole)||null,
     applicationMode:clean(row?.applicationMode||row?.mode)||null,
-    sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).slice(0,8))
+    sourceFiles:Object.freeze(unique(row?.sourceFiles||row?.files||[]).map(posix).filter(Boolean).sort())
   })).filter(row=>row.assetId||row.requirementId);
   const sourceCandidates=[];
   for(const decision of assetProduction?.decisions||[]){
@@ -2056,7 +2056,7 @@ export function buildInternalAssetSourceUsageContract(order={}){
         type:clean(decision?.type)||null,
         family:clean(row?.family||row?.category).toUpperCase()||null,
         role:clean(row?.role||row?.systemRole)||null,
-        sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).slice(0,8)),
+        sourceFiles:Object.freeze(unique(row?.sourceFiles||[]).map(posix).filter(Boolean).sort()),
         path:posix(row?.path)||null,
         sourceTier:clean(row?.sourceTier)||null
       }));
@@ -2064,10 +2064,51 @@ export function buildInternalAssetSourceUsageContract(order={}){
   }
   const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
+  const selectedFamilies=new Set([
+    ...Object.keys(exactFamilies||{}),
+    ...(flowSelections||[]).map(row=>row?.family),
+    ...(dedupedSources||[]).map(row=>row?.family)
+  ].map(value=>clean(value).toUpperCase()).filter(Boolean));
+  const selectedCommonSourcePaths=[];
+  if(target==='roblox'){
+    const commonSourceByFamily={
+      CHARACTER:['assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'],
+      CREATURE:['assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau'],
+      BUILDING:['assets/roblox/common-building-v1/RobloxCommonBuilding.luau'],
+      ENVIRONMENT:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau','assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau'],
+      WEAPON:['assets/roblox/common-tools-v1/RobloxCommonTools.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau'],
+      SKILL:['assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau'],
+      MATERIAL:['assets/roblox/common-materials-v1/RobloxCommonMaterials.luau'],
+      VFX:['assets/roblox/common-vfx-v1/RobloxCommonVFX.luau'],
+      UI:['assets/roblox/common-ui-v1/RobloxCommonUI.luau','assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau'],
+      MOTION:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','assets/vibe-motion-director.js'],
+      PROP:['assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau']
+    };
+    for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
+  }
+  const allSelectedPaths=unique([
+    ...selectedCommonSourcePaths,
+    ...(flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
+    ...(dedupedSources||[]).flatMap(row=>row?.sourceFiles||[]),
+    ...(dedupedSources||[]).map(row=>row?.path)
+  ].map(posix).filter(file=>
+    file
+    &&!path.isAbsolute(file)
+    &&!file.split('/').includes('..')
+    &&/^assets\//.test(file)
+    &&/\.(?:lua|luau|js|mjs|cs)$/i.test(file)
+  )).sort();
+  const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
+    const absolute=path.resolve(cwd,relative),root=fs.realpathSync(cwd)+path.sep;
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
+    const real=fs.realpathSync(absolute);
+    if(!real.startsWith(root))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
+    return Object.freeze({path:relative,sha256:crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex'),status:'SOURCE_HASHED'});
+  }));
   const libraryVersion=Number(loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
-  const selectionFingerprint=clean(loadout?.robloxSelectionFingerprint);
+  const selectionFingerprint=clean(loadout?.selectionFingerprint||loadout?.robloxSelectionFingerprint);
   const payload={
-    version:4,target,gameId,libraryVersion,selectionFingerprint,
+    version:5,target,gameId,libraryVersion,selectionFingerprint,selectedSourceHashes,
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
@@ -2186,17 +2227,22 @@ export function buildInternalAssetSourceUsageContract(order={}){
     })
   });
   return Object.freeze({
-    version:4,
+    version:5,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
     selectionFingerprint:selectionFingerprint||null,
     fingerprint,
+    selectedSourcePaths:Object.freeze(allSelectedPaths),
+    selectedSourceHashes,
     exactFamilies,
     flowSelections:Object.freeze(flowSelections),
     sourceCandidates:Object.freeze(dedupedSources),
     synchronization:Object.freeze({
       mode:'INCREMENTAL_SELECTION_FINGERPRINT',
+      selectedSourceContentHashesRequired:true,
+      sourceChangeInvalidatesBinding:true,
+      everyCycleReevaluatesAssetReplacement:true,
       fullLibraryReplicationForbidden:true,
       fullCatalogPromptInjectionForbidden:true,
       selectedSubsetOnly:true,
@@ -2291,7 +2337,7 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
     &&!path.isAbsolute(file)
     &&!file.split('/').includes('..')
     &&/^assets\//.test(file)
-    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
+    &&/\.(?:lua|luau|js|mjs|cs)$/i.test(file)
   )).sort();
   const rows=[];
   let availableSourceCount=0;
@@ -2316,6 +2362,8 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
       for(const match of raw.matchAll(/^\s*([A-Za-z_][\w]*\.[A-Za-z_][\w.]*)\s*=\s*function\s*\(([^)]*)\)/gm)){
         add(match[1]+'=function('+match[2]+')');
       }
+    }else if(/\.cs$/i.test(relative)){
+      for(const match of raw.matchAll(/^\s*public\s+(?:static\s+)?(?:[\w.<>,?\[\]]+\s+)+([A-Za-z_]\w*)\s*\(([^)]*)\)/gm))add(match[0]);
     }else{
       for(const match of raw.matchAll(/^\s*export\s+(?:async\s+)?function\s+([A-Za-z_][\w]*)\s*\(([^)]*)\)/gm)){
         add('export function '+match[1]+'('+match[2]+')');
@@ -2339,40 +2387,10 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
 
 export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contract=null,order={}}={}){
   if(!context||!Array.isArray(context.files)||!contract)return context;
-  const selectedFamilies=new Set([
-    ...Object.keys(contract.exactFamilies||{}),
-    ...(contract.flowSelections||[]).map(row=>row?.family),
-    ...(contract.sourceCandidates||[]).map(row=>row?.family)
-  ].map(value=>clean(value).toUpperCase()).filter(Boolean));
-  const selectedCommonSourcePaths=[];
-  if(clean(contract.target).toLowerCase()==='roblox'){
-    const commonSourceByFamily={
-      CHARACTER:['assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'],
-      CREATURE:['assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau'],
-      BUILDING:['assets/roblox/common-building-v1/RobloxCommonBuilding.luau'],
-      ENVIRONMENT:['assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau','assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau'],
-      WEAPON:['assets/roblox/common-tools-v1/RobloxCommonTools.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau'],
-      SKILL:['assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau'],
-      MATERIAL:['assets/roblox/common-materials-v1/RobloxCommonMaterials.luau'],
-      VFX:['assets/roblox/common-vfx-v1/RobloxCommonVFX.luau'],
-      UI:['assets/roblox/common-ui-v1/RobloxCommonUI.luau','assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau'],
-      MOTION:['assets/roblox/common-motion-v1/RobloxCommonMotion.luau','assets/vibe-motion-director.js'],
-      PROP:['assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau','assets/roblox/common-items-v1/RobloxCommonItems.luau']
-    };
-    for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
-  }
-  const allSelectedPaths=unique([
-    ...selectedCommonSourcePaths,
-    ...(contract.flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(contract.sourceCandidates||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(contract.sourceCandidates||[]).map(row=>row?.path)
-  ].map(posix).filter(file=>
-    file
-    &&!path.isAbsolute(file)
-    &&!file.split('/').includes('..')
-    &&/^assets\//.test(file)
-    &&/\.(?:lua|luau|js|mjs)$/i.test(file)
-  )).sort();
+  const allSelectedPaths=contract.selectedSourcePaths||unique([
+    ...(contract.flowSelections||[]).flatMap(row=>row.sourceFiles||[]),
+    ...(contract.sourceCandidates||[]).flatMap(row=>[...(row.sourceFiles||[]),row.path])
+  ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort();
   if(!allSelectedPaths.length)return context;
   const apiIndex=buildInternalAssetApiIndex({cwd,paths:allSelectedPaths});
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
@@ -2426,7 +2444,7 @@ function internalAssetApiIndexGuidance(context={}){
 }
 
 function internalAssetSourceUsageGuidance(order={}){
-  const contract=buildInternalAssetSourceUsageContract(order);
+  const contract=order?.internalAssetSourceUsage||buildInternalAssetSourceUsageContract(order);
   if(!Object.keys(contract.exactFamilies||{}).length&&!contract.flowSelections.length&&!contract.sourceCandidates.length)return'';
   const exactRows=Object.entries(contract.exactFamilies).map(([family,atoms])=>family+'='+atoms.join('|')).join('; ');
   const flowRows=contract.flowSelections.map(row=>[row.requirementId,row.assetId,row.family,row.role].filter(Boolean).join(':')).join('; ');
@@ -2447,6 +2465,7 @@ function internalAssetSourceUsageGuidance(order={}){
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
     'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Apply internal assets to every applicable existing responsibility in the current BUILD_UP. Detailed API source batching is only synchronization optimization and MUST NOT become a usage cap.',
     'Detailed common-script source excerpts rotate by BUILD_UP generation, but the complete public API index for every selected source is present on every BUILD_UP. Rotation is detail-context scheduling only; it never defers an applicable family/source/asset to a later generation.',
+    'Every floor cycle reevaluates asset replacement or recomposition using existing role, style, quality debt and verified prior outcome. Use a compatible improvement in the responsible source when a gap exists; record the prior selection, replacement reason and source diff. Random swapping, marker-only changes and asset counts are not growth. Keep strong locked identities and continue code quality plus approved content expansion through the existing BUILD_UP/F0-F9/publication loop.',
     'If libraryVersion and syncFingerprint are unchanged, reuse the existing source binding instead of rebuilding it. If they changed, inspect and rebind only affected selected families/responsibilities; never perform full-library resync.',
     'For each existing gameplay signal, combine selected internal families instead of writing duplicate presentation logic:',
     ...contract.usageMatrix.map(row=>'- '+row.signal+': '+(row.families.length?row.families.join('+'):'EVENT_ONLY')+(row.optional.length?' optional '+row.optional.join('+'):'')+'; '+row.rule),
@@ -4817,7 +4836,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
     :null;
   if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
-  const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order);
+  const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order,{cwd});
+  order={...order,internalAssetSourceUsage:assetSourceUsageContract};
   let context=unityBootstrapContext
     ||(!sourceRootExists&&bootstrap
       ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}

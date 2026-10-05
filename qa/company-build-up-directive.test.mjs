@@ -655,3 +655,20 @@ test('generated BUILD_UP directive carries dry-run and impact classification bef
   assert.ok(directive.developmentImpact.categories.includes('MAP'));
   assert.equal(directive.preMutationDryRun.sourceMutationPerformed,false);
 });
+
+// 무한 반복은 실제 소스와 플레이 효과의 검증을 생략하지 않는다.
+test('every platform cycle carries asset replacement and source-content growth without false advancement',()=>{
+  for(const platform of ['ROBLOX','UNITY','WEB']){
+    const args={gameId:'cycle-demo',platform,designRecord:design(),sourceObservation:{sourceTreeFingerprint:'unchanged-tree',signals:{},observations:[],topFiles:[],sourceAnchors:[]}};
+    const first=buildGameSpecificBuildUpDirective(args);
+    const next=buildGameSpecificBuildUpDirective({...args,previousDirective:first,previousDirectiveOutcome:'PASS',runtimeEvidence:{runtimeObserved:false,runtimePassed:false}});
+    assert.equal(next.generation,first.generation+1);
+    assert.equal(next.internalAssetEvolution.generation,next.generation);
+    assert.equal(next.internalAssetEvolution.generationLimit,null);
+    assert.equal(next.internalAssetEvolution.randomSwapOrMarkerOnlyGrowthForbidden,true);
+    assert.equal(next.internalAssetEvolution.codeQualityAndApprovedContentExpansionMustContinue,true);
+    assert.equal(next.loopEscalation.verifiedEvolution,false);
+    assert.match(directivePrompt(next),/INTERNAL_ASSET_EVOLUTION/);
+    assert.match(directivePrompt(next),/generationLimit=NONE/);
+  }
+});

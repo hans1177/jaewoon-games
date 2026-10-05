@@ -1885,3 +1885,39 @@ test('flow asset requirements resolve through the latest company library and are
   assert.match(guidance,/최신 company-asset-library\.json/);
   assert.match(guidance,/gameplay\/balance\/progression\/save\/network 권한을 갖지 않는다/);
 });
+
+
+// 전체 자산 선택과 같은 버전 내 실제 소스 변경 회귀 검증.
+test('Unity and Web retain every active family atom and share exact selection identity',()=>{
+  const make=target=>buildVibeAssetProductionPlan({repoRoot:process.cwd(),target,task:{gameId:'library-cycle-demo',target,goal:'기존 게임 내부 라이브러리 연결과 반복 개선'}}).baseMaterialLoadout;
+  const unity=make('unity'),web=make('web');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.deepEqual(unity.families,web.families);
+  assert.equal(unity.selectionFingerprint,web.selectionFingerprint);
+  assert.equal(unity.libraryVersion,registry.version);
+  assert.match(unity.selectionFingerprint,/^[a-f0-9]{64}$/);
+  for(const [family,atoms] of Object.entries(unity.families)){
+    assert.ok(atoms.length>3,'인위적인 3개 제한이 남음: '+family);
+    assert.ok(atoms.every(atom=>registry.baseMaterialLibrary.families[family].includes(atom)));
+  }
+});
+
+test('selected source content changes invalidate binding without a library version change',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'asset-source-identity-'));
+  try{
+    fs.mkdirSync(path.join(cwd,'assets/test'),{recursive:true});
+    const files=Array.from({length:10},(_,i)=>'assets/test/source-'+i+'.cs');
+    for(const relative of files)fs.writeFileSync(path.join(cwd,relative),'public static GameObject Create() { return prefab; }\n');
+    const order={target:'unity',gameId:'demo',assetProduction:{baseMaterialLoadout:{libraryVersion:7,selectionFingerprint:'a'.repeat(64),families:{UI:['FRAME_PANEL']}},decisions:[{type:'ui',applyFirst:{candidates:[{id:'panel',family:'UI',sourceFiles:files}]}}]}};
+    const before=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.equal(before.sourceCandidates[0].sourceFiles.length,10);
+    assert.equal(before.selectedSourceHashes.length,10);
+    assert.equal(before.selectionFingerprint,'a'.repeat(64));
+    assert.equal(before.fingerprint,buildInternalAssetSourceUsageContract(order,{cwd}).fingerprint);
+    fs.writeFileSync(path.join(cwd,files[9]),'public static GameObject Create() { return improvedPrefab; }\n');
+    const after=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.equal(after.libraryVersion,before.libraryVersion);
+    assert.notEqual(after.fingerprint,before.fingerprint);
+    assert.equal(after.selectedSourceHashes.filter((row,i)=>row.sha256!==before.selectedSourceHashes[i].sha256).length,1);
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
+});

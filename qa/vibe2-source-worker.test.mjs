@@ -4838,7 +4838,7 @@ test('graphics replacement report grounds every actual replacement in changed so
   assert.equal(valid.groundedCount,3);
 
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:0,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
-  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_EVIDENCE_MISSING');
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:[],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_SURFACES_MISSING');
   assert.match(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['RAW_COPY'],before:'a',after:'b'}},contract}).reason,/GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID/);
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING');
@@ -6539,3 +6539,15 @@ test('Luau focused anchors fall back to directive line hints when the symbolic l
   assert.ok(focused.spec.context.includes('local function renderQuestHud()'));
 });
 
+
+
+// 자산 적용은 실제 소스 근거가 있으면 개수 상한 없이 허용한다.
+test('graphics replacement accepts more than sixty grounded applications and still rejects duplicates',()=>{
+  const reuseMode='ADAPT_RESTYLE_AND_RETARGET';
+  const rows=Array.from({length:75},(_,i)=>({surface:'VFX',path:'effects.js',bindingKey:'effect'+i,reuseMode,sourceEvidence:'const effect'+i+' = createImpactVfx('+i+');'}));
+  const candidate={edits:[{path:'effects.js',find:'old',replace:rows.map(row=>row.sourceEvidence).join('\n')}],graphicsReplacementReport:{actualCount:rows.length,changedSurfaces:['VFX'],reuseModesUsed:[reuseMode],replacementEvidence:rows,before:'기존 효과',after:'호환 자산으로 연결한 효과'}};
+  const contract={required:true,adaptiveCount:{minimumActual:1,maximumActual:60},surfaces:['VFX'],reuseModes:[reuseMode]};
+  assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,true);
+  candidate.graphicsReplacementReport.replacementEvidence[74]=rows[0];
+  assert.equal(evaluateGraphicsReplacementReport({candidate,contract}).pass,false);
+});
