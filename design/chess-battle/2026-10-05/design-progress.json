@@ -26,26 +26,26 @@
       "updatedAt": "2026-10-05T08:11:32.168Z"
     },
     "gemini:gemini-3.8-flash": {
-      "calls": 10,
+      "calls": 12,
       "successes": 0,
-      "failures": 10,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 68142,
-      "lastMs": 10576,
-      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-10-05T08:09:01.729Z"
+      "totalMs": 88611,
+      "lastMs": 11134,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-10-05T08:11:40.317Z"
     },
     "gemini:gemini-3.7-flash": {
-      "calls": 10,
+      "calls": 12,
       "successes": 0,
-      "failures": 10,
+      "failures": 12,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 130169,
-      "lastMs": 24213,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-05T08:09:15.366Z"
+      "totalMs": 165380,
+      "lastMs": 22042,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-05T08:11:51.225Z"
     },
     "gemini:gemini-3.6-flash": {
       "calls": 10,
@@ -137,5 +137,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T08:11:32.168Z"
+  "updatedAt": "2026-10-05T08:11:51.225Z"
 }
