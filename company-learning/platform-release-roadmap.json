@@ -1,5 +1,5 @@
 {
-  "version": 536,
+  "version": 537,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -22444,7 +22444,11 @@
       "responsibleFileScopeRequired": true,
       "disjointResponsibleFilesParallel": true,
       "deterministicQaRequired": true,
-      "securityScanRequired": true
+      "securityScanRequired": true,
+      "externalAiRequiredForProduction": false,
+      "externalAiDefaultEnabled": false,
+      "externalAiOptInVariable": "COMPANY_EXTERNAL_AI_ENABLED",
+      "localAuthoringContinuesWithoutExternalAi": true
     },
     "vibe": {
       "remainsPrimaryLearningAndIntegrationAgent": true,
@@ -22737,7 +22741,10 @@
       "sameFailedGateRetestFirst": true,
       "unrelatedQaMayRunInParallel": true,
       "portfolioWideBarrierForbidden": true,
-      "reviewMayNotBecomeRoutineSerializationPoint": true
+      "reviewMayNotBecomeRoutineSerializationPoint": true,
+      "designAiReviewerRosterRequired": false,
+      "externalAiQuotaMayHoldDesignContinuation": false,
+      "deterministicDesignEvidenceReplacesModelReview": true
     },
     "execution": {
       "workerSlotPriority": "IMPLEMENTATION_AND_CAUSAL_REPAIR_BEFORE_NONBLOCKING_PROCEDURE",

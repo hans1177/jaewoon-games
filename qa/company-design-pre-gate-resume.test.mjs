@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
@@ -63,30 +67,100 @@ test('Gemini daily quota quarantine precedes minute-rate retry handling',()=>{
 });
 
 
-test('checkpoint quota governor reallocates unique fallback lanes to blocked lead roles',()=>{
-  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  assert.match(workflow,/const availableExtraFallbacks=fallback\.filter\(model=>!primarySet\.has\(model\)&&!exhausted\.has\(model\)\)/);
-  assert.match(workflow,/const blockedPrimaryRoles=leadPhaseActive/);
-  assert.match(workflow,/const usedFallbacks=new Set\(\)/);
-  assert.match(workflow,/for\(const role of blockedPrimaryRoles\)/);
-  assert.match(workflow,/GEMINI_ADAPTIVE_FALLBACK_LANES=/);
-  assert.match(workflow,/fallback_lanes=\$\{adaptiveLaneSpec\}/);
-  assert.match(workflow,/COMPANY_GEMINI_LEAD_FALLBACK_LANES: \$\{\{ steps\.gemini_quota\.outputs\.fallback_lanes \}\}/);
+test('local design starts without external credentials or a five-model reviewer roster',async()=>{
+  const selection=design.slice(design.indexOf('const geminiApiKey='),design.indexOf('const geminiUnavailableModels='));
+  const routing=design.slice(design.indexOf('async function callDesignerModel('),design.indexOf('async function generateDesignerDraft('));
+  const cases=[
+    {env:{},external:false},
+    {env:{GEMINI_API_KEY:'test-only'},external:false},
+    {env:{COMPANY_EXTERNAL_AI_ENABLED:'true'},external:false},
+    {env:{COMPANY_EXTERNAL_AI_ENABLED:'true',GEMINI_API_KEY:'test-only'},external:true},
+    {env:{COMPANY_EXTERNAL_AI_ENABLED:'true',GEMINI_API_KEY:'test-only',COMPANY_GEMINI_DESIGNER_MODEL:'unapproved'},external:false}
+  ];
+  for(const scenario of cases){
+    const calls=[],checkpoint={};
+    const call=runInNewContext(selection+'\n'+routing+'\ncallDesignerModel',{
+      process:{env:scenario.env},ai:{gameDesigner:{geminiModel:'gemini-3.8-flash',geminiFallbackModels:[]}},
+      clean:value=>String(value??'').trim(),uniq:values=>[...new Set(values.filter(Boolean))],
+      clip:value=>String(value),console:{log(){}},designCheckpoint:checkpoint,
+      designerRoute:{id:'gemini:test',provider:'GEMINI'},activeDesignerRoute:null,persistDesignCheckpoint(){},
+      callExternalDesignerModel:async()=>{calls.push('external');return {draft:'external'};},
+      callLocalDesignerModel:async()=>{calls.push('local');return {draft:'local'};}
+    });
+    const value=await call('system','user',{});
+    assert.deepEqual(calls,[scenario.external?'external':'local']);
+    assert.equal(value.draft,scenario.external?'external':'local');
+    assert.equal(checkpoint.effectiveDesignerProvider,scenario.external?'GEMINI':'VIBE_LOCAL_OLLAMA');
+  }
+  assert.doesNotMatch(design,/GEMINI_(?:POLICY_LEAD|LEAD_MODEL_GATE|DISTINCT_LEAD_GATE|LEAD_FAILOVER_COLLISION)/);
 });
 
-
-test('current Gemini quota failure remains WAITING even when provider retry window already elapsed',()=>{
-  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  assert.match(workflow,/const currentFailureQuota=retryableQuota\.test\(clean\(cp\.lastError\)\)/);
-  assert.match(workflow,/DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY/);
-  assert.match(workflow,/currentFailureQuota\|\|currentFailureAggregateCapacity\|\|roleBlocked\|\|\(!leadPhaseActive&&designerBlocked\)/);
-  assert.match(workflow,/DESIGN_MODEL_CYCLE_RESULT=WAITING_FOR_GEMINI_QUOTA/);
-  assert.match(workflow,/DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO/);
-  assert.match(workflow,/DESIGN_CHECKPOINT_RESUME_REQUIRED=YES/);
-  assert.match(workflow,/DAILY_QUOTA_PROBE_MS=60\*60\*1000/);
-  assert.match(workflow,/DESIGN_DAILY_QUOTA_IMMEDIATE_REDISPATCH=NO/);
+test('optional external failure falls back locally while a real local authoring failure remains a failure',async()=>{
+  const routing=design.slice(design.indexOf('async function callDesignerModel('),design.indexOf('async function generateDesignerDraft('));
+  for(const localFails of [false,true]){
+    const calls=[],checkpoint={};
+    const call=runInNewContext(routing+'\ncallDesignerModel',{
+      externalAiEnabled:true,geminiApiKey:'test-only',externalDesignerConfigured:true,
+      localDesignerModel:'local',designerRoute:{id:'gemini:test'},activeDesignerRoute:null,
+      designCheckpoint:checkpoint,persistDesignCheckpoint(){},clean:String,clip:String,console:{log(){}},
+      callExternalDesignerModel:async()=>{calls.push('external');throw new Error('HTTP_429');},
+      callLocalDesignerModel:async()=>{calls.push('local');if(localFails)throw new Error('local unavailable');return {draft:'local'};}
+    });
+    if(localFails)await assert.rejects(call('system','user',{}),/DESIGN_AUTHORING_PROVIDERS_FAILED.*local unavailable/);
+    else assert.equal((await call('system','user',{})).draft,'local');
+    assert.deepEqual(calls,['external','local']);
+    assert.equal(checkpoint.effectiveDesignerProvider,localFails?undefined:'VIBE_LOCAL_OLLAMA');
+  }
 });
 
+test('workflow authoring route ignores exhausted external reviewers and prepares the local provider',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Resolve local design authoring from the current checkpoint');
+  const end=workflow.indexOf('      - name: Restore Vibe local design fallback cache',start);
+  const step=workflow.slice(start,end);
+  const script=step.split("<<'NODE' | tee /tmp/gemini-quota-governor.txt\n")[1]?.split('          NODE')[0].replace(/^          /gm,'');
+  assert.ok(script);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'optional-design-ai-'));
+  try{
+    const folder=path.join(root,'design','demo','2026-10-06');fs.mkdirSync(folder,{recursive:true});
+    fs.writeFileSync(path.join(folder,'design-checkpoint.json'),JSON.stringify({currentPhase:'DEPARTMENT_REVIEWS',tasks:{},modelHealth:{'gemini:old':{lastError:'RESOURCE_EXHAUSTED'}},phases:{designer_draft:{identity:'preserved'}}}));
+    const output=path.join(root,'output');
+    const run=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',env:{...process.env,ARTBOOK_GAME_ID:'demo',ARTBOOK_DATE:'2026-10-06',GITHUB_OUTPUT:output,COMPANY_GEMINI_LEAD_MODELS:''}});
+    assert.equal(run.status,0,run.stderr);
+    assert.match(fs.readFileSync(output,'utf8'),/run_model_cycle=true\nquota_state=EXTERNAL_AI_OPTIONAL\nlocal_fallback_needed=true/);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(folder,'design-checkpoint.json'),'utf8')).phases.designer_draft.identity,'preserved');
+    assert.match(run.stdout,/DESIGN_AI_REVIEW_LANES=NONE/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+  assert.doesNotMatch(workflow,/WAITING_FOR_GEMINI_QUOTA|GEMINI_LEAD_MODELS|GEMINI_LEAD_FALLBACK_LANES|all_quota_blocked/);
+  assert.match(workflow,/COMPANY_EXTERNAL_AI_ENABLED:.*'false'/);
+});
+
+test('design continuation dispatches canonical work without external quota or AI review approval',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const start=workflow.lastIndexOf("          echo 'DESIGN_EXTERNAL_AI_WAIT=DISABLED'");
+  const end=workflow.indexOf("          echo 'DESIGN_GATE_REPAIR_LIMIT=UNLIMITED'",start);
+  const script=workflow.slice(start,end).replace(/^          /gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-continuation-'));
+  try{
+    fs.writeFileSync(path.join(root,'gh'),'#!/bin/sh\nprintf "%s\\n" "$*" >> "$CALL_LOG"\n',{mode:0o755});
+    const log=path.join(root,'calls');
+    const run=spawnSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:root+path.delimiter+process.env.PATH,pending:'1',active_other:'0',GITHUB_REPOSITORY:'fixture/demo',CALL_LOG:log}});
+    assert.equal(run.status,0,run.stderr);
+    const calls=fs.readFileSync(log,'utf8').trim().split('\n');
+    assert.deepEqual(calls,['workflow run company-game-seed-bootstrap.yml --repo fixture/demo --ref main','workflow run company-seed-design-runtime.yml --repo fixture/demo --ref main']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('design persistence shell parses its target-seed merge heredoc',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Persist validated design evidence to company runtime branch');
+  const end=workflow.indexOf('      - name:',start+1);
+  const step=workflow.slice(start,end<0?undefined:end);
+  const script=step.split('        run: |\n')[1]?.replace(/^          /gm,'').replace(/\$\{\{[\s\S]*?\}\}/g,'fixture');
+  assert.ok(script);
+  const result=spawnSync('bash',['-n'],{input:script,encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);
+});
 
 test('seed scheduler prioritizes valid resumable checkpoints within the existing platform order',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
