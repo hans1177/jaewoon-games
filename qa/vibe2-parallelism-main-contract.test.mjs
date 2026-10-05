@@ -6,11 +6,21 @@ import {execFileSync} from 'node:child_process';
 const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
+const recoveryFast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+
+test('Recovery Fast coalesces redundant control wakes without serializing game-primary development',()=>{
+  assert.match(recoveryFast,/concurrency:\n  group: vibe2-recovery-fast-control\n  cancel-in-progress: false/);
+  assert.match(recoveryFast,/\n  recover:\n    runs-on: ubuntu-slim/);
+  assert.match(recoveryFast,/company-recovery-dispatch\.mjs --route=all/);
+  assert.match(recoveryFast,/ref=vibe2-unreal-core/);
+  assert.doesNotMatch(recoveryFast,/game-primary.*concurrency|F0.*concurrency|F9.*concurrency/i);
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,64);
+});
 
 test('early fan-in review never suppresses new runnable worker reservations',()=>{
   const start=core.indexOf('early_review_run="$(cat /tmp/vibe2-early-review-run');
