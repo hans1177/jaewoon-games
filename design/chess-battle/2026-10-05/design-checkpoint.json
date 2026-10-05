@@ -122,21 +122,21 @@
       "updatedAt": "2026-10-05T01:32:07.172Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 11,
+      "calls": 12,
       "successes": 0,
-      "failures": 11,
-      "timeouts": 11,
+      "failures": 12,
+      "timeouts": 12,
       "jsonFailures": 0,
-      "totalMs": 1320064,
-      "lastMs": 120005,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T01:31:56.693Z"
+      "totalMs": 1410065,
+      "lastMs": 90001,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
+      "updatedAt": "2026-10-05T01:33:37.173Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-05T00:14:34.401Z",
-  "updatedAt": "2026-10-05T01:32:07.172Z",
+  "updatedAt": "2026-10-05T01:33:37.174Z",
   "lastSuccessfulModelCallAt": "2026-10-05T01:17:05.331Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
@@ -144,5 +144,5 @@
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": "designer_draft",
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } } local=OLLAMA_DESIGN_TIMEOUT 120000ms"
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } } local=OLLAMA_DESIGN_TIMEOUT 90000ms"
 }
