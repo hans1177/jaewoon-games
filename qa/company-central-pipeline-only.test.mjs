@@ -443,6 +443,12 @@ test('director runner drain advances latest scheduler without cancelling running
   assert.doesNotMatch(director,/VIBE2_STALE_UNSTARTED_SCHEDULER[\s\S]{0,400}in_progress/);
 });
 
+test('director drain QA changes wake the existing runner drain',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const pushBlock=director.slice(director.indexOf('  push:'),director.indexOf('\npermissions:',director.indexOf('  push:')));
+  assert.match(pushBlock,/qa\/company-central-pipeline-only\.test\.mjs/);
+});
+
 test('runner drain force-settles only still-queued safe duplicates after accepted cancel',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/safe_force_cancel=false/);
