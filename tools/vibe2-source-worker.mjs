@@ -2027,6 +2027,44 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
+export function assertAllGameDynamicAssetBindingContract({order={},target='',usageContract={}}={}){
+  const resolved=clean(target||order?.target).toLowerCase();
+  if(resolved==='system')return Object.freeze({required:false,pass:true,target:resolved});
+  const canonical=Boolean(order?.compiledWorkContract&&typeof order.compiledWorkContract==='object'&&Object.keys(order.compiledWorkContract).length);
+  if(!canonical)return Object.freeze({required:false,pass:true,target:resolved,fixtureOrNonCanonical:true});
+  const plan=order?.assetProduction?.allGameDynamicLibraryBinding||{};
+  const loadout=order?.assetProduction?.baseMaterialLoadout||{};
+  const blockers=[];
+  if(plan?.required!==true)blockers.push('ALL_GAME_DYNAMIC_LIBRARY_BINDING_REQUIRED');
+  if(plan?.allRegistryAssetsScanned!==true)blockers.push('ALL_GAME_INTERNAL_LIBRARY_FULL_SCAN_REQUIRED');
+  if(Number(plan?.registryAssetCount||0)<=0)blockers.push('ALL_GAME_INTERNAL_LIBRARY_EMPTY');
+  if(Number(plan?.evaluatedAssetCount||0)!==Number(plan?.registryAssetCount||0))blockers.push('ALL_GAME_INTERNAL_LIBRARY_SCAN_INCOMPLETE');
+  if(plan?.allTwelveFamiliesEvaluated!==true)blockers.push('ALL_GAME_TWELVE_ASSET_FAMILIES_REQUIRED');
+  if(plan?.noArtificialAssetCountCap!==true||plan?.noArtificialFamilyCountCap!==true)blockers.push('ALL_GAME_ASSET_COUNT_CAP_FORBIDDEN');
+  if(plan?.auditScoreIsUsageGate!==false||plan?.lowScoreCompatibleAssetUseAllowed!==true)blockers.push('ALL_GAME_LOW_SCORE_USAGE_GATE_FORBIDDEN');
+  if(plan?.baseMaterialAllCompatibleAtomsSelected!==true)blockers.push('ALL_GAME_BASE_MATERIAL_FULL_SELECTION_REQUIRED');
+  if(loadout?.universalAssetFirst?.allFamiliesEvaluated!==true)blockers.push('ALL_GAME_LOADOUT_FAMILY_EVALUATION_REQUIRED');
+  if((loadout?.universalAssetFirst?.missingFamilies||[]).length)blockers.push('ALL_GAME_LOADOUT_FAMILY_MISSING');
+  if(usageContract&&Object.keys(usageContract).length){
+    if(usageContract?.allRegistryAssetsScanned!==true)blockers.push('ALL_GAME_SOURCE_USAGE_REGISTRY_SCAN_MISSING');
+    if(Number(usageContract?.registryAssetCount||0)!==Number(plan?.registryAssetCount||0))blockers.push('ALL_GAME_SOURCE_USAGE_REGISTRY_COUNT_MISMATCH');
+    if(Number(usageContract?.compatibleCandidateCount||0)!==Number(plan?.compatibleCandidateCount||0))blockers.push('ALL_GAME_SOURCE_USAGE_COMPATIBLE_COUNT_MISMATCH');
+    if(usageContract?.applicationCoverage?.currentBuildUpAllCompatibleCandidatesEligible!==true)blockers.push('ALL_GAME_CURRENT_BUILDUP_FULL_ELIGIBILITY_REQUIRED');
+  }
+  if(blockers.length)throw new Error('ALL_GAME_DYNAMIC_ASSET_BINDING_CONTRACT:'+blockers.join(','));
+  return Object.freeze({
+    required:true,pass:true,target:resolved,
+    libraryVersion:Number(plan.libraryVersion||0),
+    registryAssetCount:Number(plan.registryAssetCount||0),
+    compatibleCandidateCount:Number(plan.compatibleCandidateCount||0),
+    baseMaterialAtomCount:Number(plan.baseMaterialAtomCount||0),
+    fingerprint:clean(plan.fingerprint)||null,
+    sourceUsageFingerprint:clean(usageContract?.fingerprint)||null,
+    platformOrder:Object.freeze(['ROBLOX','UNITY','WEB']),
+    authority:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract'
+  });
+}
+
 export function buildInternalAssetSourceUsageContract(order={}){
   const target=clean(order?.target).toLowerCase();
   const gameId=clean(order?.gameId||order?.selectedTask?.gameId);
@@ -4848,6 +4886,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     :null;
   if(unityBootstrapContext)unityBootstrapContext.bytes=unityBootstrapContext.files.reduce((n,file)=>n+Buffer.byteLength(file.content||'','utf8'),0);
   const assetSourceUsageContract=buildInternalAssetSourceUsageContract(order);
+  const allGameDynamicAssetBinding=assertAllGameDynamicAssetBindingContract({order,target,usageContract:assetSourceUsageContract});
   let context=unityBootstrapContext
     ||(!sourceRootExists&&bootstrap
       ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
@@ -5191,6 +5230,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
     internalAssetSourceUsageFingerprint:assetSourceUsageContract.fingerprint,
     internalAssetSourceUsageLibraryVersion:assetSourceUsageContract.libraryVersion,
+    allGameDynamicAssetBindingRequired:allGameDynamicAssetBinding.required===true,
+    allGameDynamicAssetBindingPass:allGameDynamicAssetBinding.pass===true,
+    allGameDynamicAssetBindingFingerprint:allGameDynamicAssetBinding.fingerprint||null,
+    allGameDynamicAssetBindingRegistryAssetCount:Number(allGameDynamicAssetBinding.registryAssetCount||0),
+    allGameDynamicAssetBindingCompatibleCandidateCount:Number(allGameDynamicAssetBinding.compatibleCandidateCount||0),
+    allGameDynamicAssetBindingBaseMaterialAtomCount:Number(allGameDynamicAssetBinding.baseMaterialAtomCount||0),
     internalAssetSourceUsageSelectedFamilies:Object.keys(assetSourceUsageContract.exactFamilies||{}),
     internalAssetSourceUsageSyncMode:assetSourceUsageContract.synchronization.mode,
     internalAssetGenreRestrictionApplied:false,
