@@ -2512,8 +2512,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     runtimeEvidence,
     qualitySignals,
     responsibleFiles:(taskInput?.responsibleFiles||[]).map(posix).filter(Boolean),
-    requestedFocus:sourceSafeNoDesign?requestedFocus:'',
-    safeDesignlessMode:sourceSafeNoDesign
+    requestedFocus:'',
+    safeDesignlessMode:false
   });
   return{
     ...taskInput,
@@ -2558,8 +2558,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
       'experience-build-up-owner-disabled-audio-preserved:YES',
-      sourceSafeNoDesign?'build-up-design-context:SOURCE_SAFE_NO_DESIGN':'build-up-design-context:APPROVED_OR_MINIMUM_DESIGN',
-      ...(sourceSafeNoDesign?['build-up-designless-gameplay-expansion:FORBIDDEN']:[]),
+      'build-up-design-context:APPROVED_OR_MINIMUM_DESIGN',
+      ...(webTarget?['web-build-up:VERIFIED_DESIGN_REQUIRED','web-build-up:SIMPLE_CODE_SUBSTITUTE_FORBIDDEN']:[]),
       'autonomous-content-expansion-build-up:v1',
       'autonomous-content-expansion-existing-build-up-only:YES',
       'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY',
@@ -3135,22 +3135,21 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       }
     }else if(!currentId){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
-      const safeWebFocus=clean(item?.studioQualityEvolution?.focusPillar).toUpperCase();
-      const sourceSafeNoDesign=Boolean(
-        !verifiedDesign
-        &&clean(project.engine).toLowerCase()==='web'
-        &&['PRESENTATION','USABILITY','STABILITY'].includes(safeWebFocus)
-      );
-      if(!verifiedDesign&&!sourceSafeNoDesign){
+      if(!verifiedDesign){
         designPending+=1;
         freshness='DESIGN_PENDING';
-        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([...(item.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]};
+        candidate={...item,buildUpStatus:'DESIGN_PENDING',evidence:[...new Set([
+          ...(item.evidence||[]),
+          'build-up-directive:DESIGN_PENDING',
+          'build-up-directive:auto-design-enrollment-required',
+          ...(clean(project.engine).toLowerCase()==='web'?['web-build-up:VERIFIED_DESIGN_REQUIRED','web-build-up:SIMPLE_CODE_SUBSTITUTE_FORBIDDEN']:[])
+        ])]};
       }else{
         candidate=attachGameSpecificBuildUpDirective(item,project,repoRoot,{...queue,tasks},verifiedDesign);
         if(clean(candidate?.buildUpDirective?.directiveId)){
           attached+=1;changed+=1;
           canonicalByScope.set(scope,candidate.buildUpDirective);
-          freshness=sourceSafeNoDesign?'CURRENT_SOURCE_SAFE_NO_DESIGN':'CURRENT_OR_RECONCILED';
+          freshness='CURRENT_OR_RECONCILED';
           candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
         }else{
           designPending+=1;
