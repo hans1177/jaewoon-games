@@ -7,10 +7,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
+import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -26,6 +28,100 @@ test.afterEach(() => {
 });
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
+function singleMotionFixture(t){
+  const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const before=['pose = t','weight = t','arc = t','contact = t','overlap = t','settle = t'];
+  const after=['pose = smoothstep(t)','weight = supportWeight(t)','arc = jointArc(t)','contact = footContact(t)','overlap = delayedRotation(t)','settle = dampedRecovery(t)'];
+  const window='function brideWalk(t) {\n'+before.map(line=>'  '+line+';').join('\n')+'\n}';
+  const source='const objectId = "bride";\nconst duration = 1.05;\n'+window+'\nfunction brideIdle(t) { return t; }\n';
+  write(path.join(root,'motion.js'),source);
+  const unit={required:true,objectCount:1,motionCount:1,estimatedModificationMinutes:60,objectId:'bride',clipId:'walk',sourcePath:'motion.js',sourceHash:crypto.createHash('sha256').update(source).digest('hex'),sourceWindow:window,objectBindingEvidence:'const objectId = "bride";',clipBindingEvidence:'function brideWalk(t)',lockedSource:['const duration = 1.05;']};
+  const order={assetProductionLane:true,assetProduction:{motionRepairWorkUnit:unit}};
+  const replacement='function brideWalk(t) {\n'+after.map(line=>'  '+line+';').join('\n')+'\n}';
+  const candidate={edits:[{path:'motion.js',find:window,replace:replacement}],newFiles:[],replaceFiles:[],motionRepairReport:{objectId:'bride',clipId:'walk',depthEvidence:SINGLE_MOTION_DEPTH_AXES.map((axis,i)=>({axis,before:before[i],after:after[i]}))}};
+  return{order,candidate,sourceRoot:root,responsibleFiles:['motion.js'],unit};
+}
+
+test('single motion work unit accepts one complete function and keeps native quality unverified',t=>{
+  const f=singleMotionFixture(t),result=evaluateSingleMotionWorkUnit(f);
+  assert.equal(result.pass,true);assert.equal(result.runtimeVerified,false);
+  assert.equal(result.qualityStatus,'NATIVE_BEFORE_AFTER_QA_REQUIRED');
+  assert.equal(result.objectId,'bride');assert.equal(result.clipId,'walk');
+  assert.equal(result.estimatedModificationMinutes,60);
+  assert.notEqual(result.changedSourceHash,result.sourceHash);
+  assert.equal(f.candidate.edits.length,1);
+});
+test('single motion work unit planner carries the exact binding without silently shrinking an invalid batch',t=>{
+  const f=singleMotionFixture(t);
+  const plan=buildVibeAssetProductionPlan({repoRoot:f.sourceRoot,target:'web',task:{motionRepairWorkUnit:f.unit},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(plan.motionRepairWorkUnit.sourceWindow,f.unit.sourceWindow);
+  assert.equal(plan.motionRepairWorkUnit.sourceHash,f.unit.sourceHash);
+  assert.equal(plan.motionRepairWorkUnit.objectCount,1);
+  assert.equal(plan.motionRepairWorkUnit.motionCount,1);
+  assert.equal(plan.motionRepairWorkUnit.runtimeVerified,false);
+  const batch=buildVibeAssetProductionPlan({repoRoot:f.sourceRoot,target:'web',task:{motionRepairWorkUnit:{...f.unit,objectCount:2}},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(batch.motionRepairWorkUnit.objectCount,2);
+  assert.equal(evaluateSingleMotionWorkUnit({...f,order:{...f.order,assetProduction:batch}}).pass,false);
+});
+test('single motion work unit central budget means sixty minutes of modification excluding preparation and QA',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const unit=policy.assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram.baseQualityWorkSession;
+  assert.equal(unit.objectCount,1);assert.equal(unit.motionCount,1);
+  assert.equal(Object.values(unit.stageMinutes).reduce((a,b)=>a+b,0),60);
+  assert.equal(unit.preparationAndQaIncludedInModificationBudget,false);
+  assert.equal(unit.noIdlePaddingToFillBudget,true);
+  assert.equal(unit.separateWorkerRequired,false);
+  const guide=assetProductionGuidance({kind:'vibe2-asset-production-plan',companyGraphicsLibrary:{baseMotionQualityWorkSession:unit}});
+  assert.match(guide,/오브젝트 1개와 기존 동작 1개/);
+  assert.match(guide,/실제 수정 작업량의 추정치/);
+  assert.doesNotMatch(guide,/실제 관절 곡선 수정 30분/);
+});
+test('single motion work unit rejects another clip even in the same responsible file',t=>{
+  const f=singleMotionFixture(t);
+  f.candidate.edits.push({path:'motion.js',find:'return t;',replace:'return t * 2;'});
+  assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_EDIT_OUTSIDE_WINDOW');
+});
+test('single motion work unit rejects stale source, multiple objects and unbound requests',t=>{
+  const f=singleMotionFixture(t);f.unit.sourceHash='old';
+  assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_STALE_SOURCE');
+  f.unit.objectCount=2;assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_UNIT_SCOPE_INVALID');
+  assert.equal(evaluateSingleMotionWorkUnit({order:{selectedTask:{evidence:['single-object-motion-repair:v1']}}}).pass,false);
+  assert.equal(evaluateSingleMotionWorkUnit({order:{}}).required,false);
+});
+test('single motion work unit rejects fake detail reports and unchanged evidence',t=>{
+  const f=singleMotionFixture(t),row=f.candidate.motionRepairReport.depthEvidence[0];
+  row.after='polished to Disney quality';
+  assert.match(evaluateSingleMotionWorkUnit(f).reason,/UNGROUNDED_DEPTH/);
+  row.after=row.before;assert.match(evaluateSingleMotionWorkUnit(f).reason,/UNGROUNDED_DEPTH/);
+  f.candidate.motionRepairReport.depthEvidence=[];
+  assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_DEPTH_EVIDENCE_REQUIRED');
+});
+test('single motion work unit preserves binding, timing and existing source authority',t=>{
+  const f=singleMotionFixture(t);
+  f.candidate.edits[0].replace=f.candidate.edits[0].replace.replace('brideWalk','otherWalk');
+  assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_LOCK_CHANGED');
+  f.unit.sourcePath='../motion.js';assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_RESPONSIBLE_PATH_REQUIRED');
+});
+test('single motion work unit prompt asks for active modification depth and full evidence',t=>{
+  const f=singleMotionFixture(t);
+  const prompt=buildPrompt({...f.order,target:'web',goal:'one motion'},{files:[{path:'motion.js',content:f.unit.sourceWindow,editable:true}]},f.responsibleFiles,{focusedWebRepair:true});
+  assert.match(prompt,/sixty minutes of active modification depth/);
+  assert.match(prompt,/SINGLE MOTION WORK UNIT BEGIN/);
+  assert.match(prompt,/motionRepairReport/);
+  assert.doesNotMatch(prompt,/FOCUSED WEB REPAIR STREAM CONTRACT/);
+});
+test('single motion work unit retry keeps full JSON and rejects partial depth before accepting the same target',async t=>{
+  const f=singleMotionFixture(t);
+  const shallow=structuredClone(f.candidate);shallow.motionRepairReport.depthEvidence=[];
+  const first=path.join(f.sourceRoot,'first.json'),second=path.join(f.sourceRoot,'second.json');
+  write(first,JSON.stringify(shallow));write(second,JSON.stringify(f.candidate));
+  const prompt=buildPrompt({...f.order,target:'web',goal:'one motion'},{files:[{path:'motion.js',content:f.unit.sourceWindow,editable:true}]},f.responsibleFiles,{focusedWebRepair:true});
+  const result=await generateCandidateWithRecovery({prompt,target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,focusedWebRepair:true,singleMotionWorkUnit:true,responseFiles:[first,second],candidateValidator(candidate){const r=evaluateSingleMotionWorkUnit({...f,candidate});if(!r.pass)throw new Error(r.reason);return r;}});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.candidate.motionRepairReport.clipId,'walk');
+  assert.equal(result.candidateValidation.runtimeVerified,false);
+});
 function write(file, content) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, 'utf8'); }
 function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles = [], taskId = 'task-1' } = {}) {
   return {
