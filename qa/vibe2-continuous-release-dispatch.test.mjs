@@ -344,7 +344,7 @@ test('Web BUILD_UP closes on exact deployed Web source and never substitutes Rob
   const end=releaseWorkflow.indexOf('\n  unity-build:',start);
   assert.ok(start>=0&&end>start);
   const section=releaseWorkflow.slice(start,end);
-  assert.match(section,/source_tree_sha="\$\(git rev-parse "origin\/main:\$SOURCE_ROOT"\)"/);
+  assert.match(section,/source_tree_sha="\$\(git rev-parse "\$promotion_sha:\$SOURCE_ROOT"\)"/);
   assert.match(section,/VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA/);
   assert.match(section,/PROMOTED_SOURCE_TREE_SHA:/);
   assert.match(section,/WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID/);
@@ -371,6 +371,86 @@ test('Unity release baseline uses minimum design and Unity native evidence witho
   assert.match(section,/UNITY_WEB_RELEASE_GATE_AUTHORITY=NONE/);
   assert.doesNotMatch(section,/COMPANY_FLOW\.md/);
   assert.doesNotMatch(section,/e\.webGameplay\?\.pass===true/);
+});
+
+test('Web F9 release admission rejects a branch whose current source differs from reviewed source',()=>{
+  const start=releaseWorkflow.indexOf("          const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));");
+  const end=releaseWorkflow.indexOf('\n          NODE',start);
+  assert.ok(start>0&&end>start);
+  const script=releaseWorkflow.slice(start,end);
+  const candidateSha='a'.repeat(40),branch='vibe2/candidate/web-exact';
+  for(const status of ['running','verified']){
+    for(const reviewedSha of [candidateSha,'b'.repeat(40),'']){
+      const task={id:'web-task',status,blocker:'candidate-awaiting-qa-and-deployment',evidence:[branch,
+        'package-review:all-required-roles-pass','web-f0-f9-verified','web-f9-verified',
+        'web-publish-after-f9-required',...(reviewedSha?['candidate-sha:'+reviewedSha]:[])]};
+      let output='';
+      new Function('fs','process',script)(
+        {readFileSync:()=>JSON.stringify({tasks:[task]})},
+        {env:{TASK_ID:task.id,CANDIDATE_BRANCH:branch,CANDIDATE_SHA:candidateSha,TARGET:'web',EVIDENCE_ONLY:'false'},stdout:{write:value=>{output=value;}}}
+      );
+      assert.equal(output,reviewedSha===candidateSha?'CURRENT':'STALE',status+':'+reviewedSha);
+    }
+  }
+});
+
+test('Web main deployment must succeed after merge or retry before release evidence is emitted',()=>{
+  const section=releaseWorkflow.slice(releaseWorkflow.indexOf('  web-release:'),releaseWorkflow.indexOf('\n  unity-web-build:'));
+  const promote=section.slice(section.indexOf('      - name: Promote approved web'),section.indexOf('      - name: Settle web result'));
+  assert.match(section,/ref: \$\{\{ needs\.inspect\.outputs\.candidate_sha \}\}/);
+  assert.match(promote,/promotion_sha="\$\(gh pr view[^\n]*--json mergeCommit/);
+  const start=promote.indexOf('          # 신규 병합과 재시도');
+  assert.ok(start>promote.indexOf('gh pr merge'));
+  assert.doesNotMatch(promote.slice(0,start),/exit 0|deployment_pass=true/);
+  const script=promote.slice(start).replace(/^ {10}/gm,'');
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-main-deploy-'));
+  const bin=path.join(temp,'bin');fs.mkdirSync(bin);
+  const output=path.join(temp,'output'),calls=path.join(temp,'calls'),states=path.join(temp,'states');
+  fs.writeFileSync(path.join(bin,'sleep'),'#!/bin/sh\nexit 0\n',{mode:0o755});
+  fs.writeFileSync(path.join(bin,'gh'),`#!/bin/sh
+printf '%s\\n' "$*" >> "$WEB_CHECK_CALLS"
+head -n 1 "$WEB_CHECK_STATES"
+if [ "$(wc -l < "$WEB_CHECK_STATES")" -gt 1 ]; then
+  tail -n +2 "$WEB_CHECK_STATES" > "$WEB_CHECK_STATES.next"
+  mv "$WEB_CHECK_STATES.next" "$WEB_CHECK_STATES"
+fi
+`,{mode:0o755});
+  try{
+    for(const [sequence,pass] of [
+      [['queued:','in_progress:','completed:success'],true],
+      [['completed:failure'],false],
+      [['completed:cancelled'],false],
+      [['completed:skipped'],false],
+      [['missing:'],false]
+    ]){
+      fs.writeFileSync(output,'');fs.writeFileSync(calls,'');fs.writeFileSync(states,sequence.join('\n')+'\n');
+      const run=()=>execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',stdio:'pipe',env:{...process.env,
+        PATH:bin+path.delimiter+process.env.PATH,GITHUB_REPOSITORY:'owner/repo',GITHUB_OUTPUT:output,
+        WEB_CHECK_CALLS:calls,WEB_CHECK_STATES:states,promotion_sha:'c'.repeat(40),source_tree_sha:'d'.repeat(40)}});
+      if(pass)run();else assert.throws(run);
+      const evidence=fs.readFileSync(output,'utf8');
+      assert.equal(evidence.includes('deployment_pass=true'),pass);
+      assert.equal(evidence.includes('promotion_sha='+'c'.repeat(40)),pass);
+      const requests=fs.readFileSync(calls,'utf8').trim().split('\n');
+      assert.ok(requests.every(line=>line.includes('/commits/'+'c'.repeat(40)+'/check-runs')));
+      assert.equal(requests.length,sequence[0]==='missing:'?60:sequence.length);
+    }
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
+test('Web successful syntax and promotion cannot settle PASS without production deployment proof',()=>{
+  const start=releaseWorkflow.indexOf('          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]');
+  const end=releaseWorkflow.indexOf('\n          if [ "$CANDIDATE_ORIGIN"',start);
+  assert.ok(start>0&&end>start);
+  const script=releaseWorkflow.slice(start,end).replace(/^ {10}/gm,'')+'\nprintf "%s" "$result"';
+  for(const [deployment,tree,expected] of [
+    ['true','d'.repeat(40),'PASS'],['false','d'.repeat(40),'DEPLOY_RETRY_REQUIRED'],
+    ['', 'd'.repeat(40),'DEPLOY_RETRY_REQUIRED'],['true','','DEPLOY_RETRY_REQUIRED']
+  ]){
+    const result=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',stdio:'pipe',env:{...process.env,
+      QA_OUTCOME:'success',PROMOTE_OUTCOME:'success',DEPLOYMENT_PASS:deployment,PROMOTED_SOURCE_TREE_SHA:tree}});
+    assert.equal(result,expected);
+  }
 });
 
 
