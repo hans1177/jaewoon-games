@@ -187,8 +187,15 @@ test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family co
   assert.equal(pass.pass,true,pass.blockers.join(','));
   assert.equal(pass.appliedCount,1);
 
-  const markerOnly=applied.replace('const menu=document.querySelector("#menu");','const menu={};')
-    .replace('menu.classList.add("asset-bound")','console.log(atoms.length)');
+  const markerOnly=[
+    '<!doctype html><html><body><script>',
+    'const internalAssetFamilies={UI:["FRAME_PANEL","BUTTON_PRIMARY"]};',
+    'const internalAssetFamily=family=>internalAssetFamilies[family]||[];',
+    'const menuState=true;',
+    'const atoms=internalAssetFamily("UI");',
+    'console.log(menuState,atoms.length);',
+    '</script></body></html>'
+  ].join('\n');
   const rejected=evaluateAllGameDynamicAssetBindingCandidate({
     sourceRoot:root,target:'web',bindingPlan,
     candidate:{edits:[],newFiles:[],replaceFiles:[{path:'index.html',content:markerOnly}]}
