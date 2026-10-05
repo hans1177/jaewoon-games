@@ -1283,7 +1283,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['EXACT_ASSET_AND_MOTION_VERIFIED','SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:[...(taskAssetMotionIdentity?['EXACT_ASSET_AND_MOTION_VERIFIED']:[]),'SAME_GAME_SAME_FAILURE_VERIFIED','ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
     failureFingerprint,
     domainClassification,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
@@ -1310,7 +1310,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
 export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
-  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=exact-asset+motion > same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  const exactAssetMotionPriority=(context.priority||[]).includes('EXACT_ASSET_AND_MOTION_VERIFIED');
+  const lines=['[VIBE VERIFIED LEARNING MOTOR]',exactAssetMotionPriority?'우선순위=exact-asset+motion > same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.':'우선순위=same-game+same-failure > Roblox target이면 verified Roblox-native > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
   if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
   if(context.domainClassification)lines.push(`- learning-domains=PRIMARY[${(context.domainClassification.primary||[]).join(',')||'none'}] SECONDARY[${(context.domainClassification.secondary||[]).join(',')||'none'}]`);
   for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);
