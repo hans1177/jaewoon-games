@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, evaluateWebInternalAssetSourceBinding } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -6397,5 +6397,123 @@ test('Luau focused anchors fall back to directive line hints when the symbolic l
   const focused=buildFocusedReplaceOnlyPrompt(prompt,{sourceRoot:root,responsibleFiles:[relative],preferredTargets:[]});
   assert.equal(focused.spec.find,'  panel.BackgroundColor3=Color3.fromRGB(20,20,20)');
   assert.ok(focused.spec.context.includes('local function renderQuestHud()'));
+});
+
+test('Web BUILD_UP expansion and retry keep the selected internal asset source contract',()=>{
+  const assetBlock=[
+    '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'syncFingerprint=web-asset-fingerprint; libraryVersion=109; syncMode=INCREMENTAL_SELECTION_FINGERPRINT',
+    'Exact flow selections: UI:HUD:web-hud-panel:UI:HUD@assets/web/common/hud-panel.svg',
+    'Selected source/API references: web-hud-panel@assets/web/common/hud-panel.svg',
+    '[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'
+  ].join('\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
+    'Engine: web',
+    'Goal: [STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=PRESENTATION',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=demo-web-g1 generation=1 primaryFocus=PRESENTATION',
+    'primaryGoal=bind selected internal presentation asset into the real Web source',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]',
+    assetBlock,
+    'Allowed edit paths: index.html',
+    'Full Web generation target: 12000-24000 UTF-8 bytes.',
+    '=== FILE index.html [EDITABLE] ===',
+    '<!doctype html><html><body><main id="game"></main></body></html>'
+  ].join('\n');
+
+  const expansion=buildFullWebExpansionPrompt(
+    prompt,
+    {content:'<!doctype html><html><body><main id="game"></main></body></html>'},
+    {stage:1,minBytes:12000,maxBytes:24000}
+  );
+  assert.ok(expansion.includes(assetBlock));
+  assert.match(expansion,/assets\/web\/common\/hud-panel\.svg/);
+
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:true,
+    error:new Error('WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:SELECTED_WEB_INTERNAL_ASSET_NOT_APPLIED:MISSING=web-hud-panel'),
+    responsibleFiles:['index.html'],
+    attempt:2
+  });
+  assert.ok(retry.includes(assetBlock));
+  assert.equal(
+    generationFailureClass(new Error('WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:SELECTED_WEB_INTERNAL_ASSET_NOT_APPLIED')),
+    'WEB_INTERNAL_ASSET_APPLICATION'
+  );
+  assert.equal(
+    shouldRetryGenerationError(new Error('WEB_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED:SELECTED_WEB_INTERNAL_ASSET_NOT_APPLIED')),
+    true
+  );
+});
+
+test('Web BUILD_UP selected internal asset must be used by executable browser source',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games','demo');
+  write(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main id="game"></main></body></html>\n');
+  const workOrder=order({
+    target:'web',
+    root:'web-games/demo',
+    responsibleFiles:['web-games/demo/index.html'],
+    taskId:'web-internal-asset-binding'
+  });
+  workOrder.selectedTask={
+    id:workOrder.taskId,
+    gameId:'demo',
+    target:'web',
+    buildUpDirectiveId:'demo-web-g1',
+    buildUpDirective:{directiveId:'demo-web-g1',generation:1},
+    studioQualityEvolution:{focusPillar:'PRESENTATION'}
+  };
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  workOrder.assetProduction={
+    flowAssetLoadout:{
+      selections:[{
+        requirementId:'UI:HUD',
+        assetId:'web-hud-panel',
+        family:'UI',
+        role:'HUD',
+        applicationMode:'USE_AS_IS',
+        sourceFiles:['assets/web/common/hud-panel.svg']
+      }]
+    }
+  };
+
+  const markerOnly=evaluateWebInternalAssetSourceBinding({
+    order:workOrder,
+    sourceRoot,
+    candidate:{edits:[{
+      path:'index.html',
+      find:'<main id="game"></main>',
+      replace:'<!-- assets/web/common/hud-panel.svg --><main id="game"></main>'
+    }]}
+  });
+  assert.equal(markerOnly.required,true);
+  assert.equal(markerOnly.pass,false);
+  assert.equal(markerOnly.reason,'SELECTED_WEB_INTERNAL_ASSET_NOT_APPLIED');
+  assert.deepEqual([...markerOnly.missingAssetIds],['web-hud-panel']);
+
+  const applied=evaluateWebInternalAssetSourceBinding({
+    order:workOrder,
+    sourceRoot,
+    candidate:{edits:[{
+      path:'index.html',
+      find:'<main id="game"></main>',
+      replace:'<main id="game"><img class="hud-panel" src="/assets/web/common/hud-panel.svg" alt=""></main>'
+    }]}
+  });
+  assert.equal(applied.pass,true);
+  assert.equal(applied.reason,'NEW_SELECTED_WEB_INTERNAL_ASSET_BOUND');
+  assert.equal(applied.newlyBound,1);
+  assert.deepEqual([...applied.newlyBoundAssetIds],['web-hud-panel']);
+
+  write(
+    path.join(sourceRoot,'index.html'),
+    '<!doctype html><html><body><main id="game"><img src="/assets/web/common/hud-panel.svg" alt=""></main></body></html>\n'
+  );
+  const existing=evaluateWebInternalAssetSourceBinding({order:workOrder,sourceRoot,candidate:{}});
+  assert.equal(existing.pass,true);
+  assert.equal(existing.reason,'ALL_SELECTED_WEB_ASSETS_ALREADY_BOUND');
+  assert.equal(existing.existingBound,1);
 });
 
