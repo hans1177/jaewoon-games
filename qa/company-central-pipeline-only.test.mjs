@@ -460,6 +460,17 @@ test('director drain QA changes wake the existing runner drain',()=>{
   assert.match(pushBlock,/qa\/company-central-pipeline-only\.test\.mjs/);
 });
 
+test('director retires only pre-cloud-only Studio MCP tails with no active jobs',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/cloud_only_cutoff='2026-10-05T06:44:59Z'/);
+  assert.match(director,/\.github\/workflows\/vibe2-candidate-release\.yml/);
+  assert.match(director,/\.includes\('Official Studio MCP actual play '\)/);
+  assert.match(director,/active\.length===0&&unfinished\.length>0&&legacyStudio\.length===unfinished\.length\?'RETIRE':'PRESERVE'/);
+  assert.match(director,/ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY/);
+  assert.match(director,/DIRECTOR_LEGACY_STUDIO_BACKLOG_CANCEL_ENQUEUED_COUNT=/);
+  assert.match(director,/VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED'.*ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY/s);
+});
+
 test('runner drain force-settles only still-queued safe duplicates after accepted cancel',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/safe_force_cancel=false/);
