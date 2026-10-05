@@ -4773,6 +4773,24 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     }}};
   }
   const target=clean(order.target).toLowerCase();
+  const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
+  const webBuildUpDesignRequired=target==='web'&&Boolean(
+    studioQualityContract
+    ||order?.selectedTask?.buildUpDirective
+    ||order?.buildUpDirective
+    ||clean(order?.selectedTask?.buildUpStatus).toUpperCase()==='DESIGN_PENDING'
+  );
+  if(webBuildUpDesignRequired){
+    const designVerified=studioQualityContract?.designVerified===true;
+    const designSource=clean(studioQualityContract?.designSource);
+    const pendingEvidence=[
+      ...(order?.selectedTask?.evidence||[]),
+      ...(order?.evidence||[])
+    ].map(clean);
+    if(!designVerified||!designSource||pendingEvidence.includes('build-up-directive:DESIGN_PENDING')){
+      throw new Error('WEB_VERIFIED_DESIGN_REQUIRED_BEFORE_SOURCE:'+clean(order?.gameId||order?.selectedTask?.gameId||'UNKNOWN'));
+    }
+  }
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
