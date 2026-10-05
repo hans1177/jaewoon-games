@@ -99,9 +99,21 @@ export function analyzeSystemAiBottlenecks({
     .sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))
     .map(([gameId,count])=>({gameId,count}));
 
+  const reservationWaitMs=Math.max(0,Number(workflowMetrics.reservationWaitMs)||0);
+  const fanInWaitMs=Math.max(0,Number(workflowMetrics.fanInWaitMs)||0);
+  const supervisorReviewWaitMs=Math.max(0,Number(workflowMetrics.supervisorReviewWaitMs)||0);
+  const pendingRuns=Math.max(0,Number(workflowMetrics.pendingRuns)||0);
+  const runnerQueuedRuns=Math.max(0,Number(workflowMetrics.runnerQueuedRuns)||0);
+  const runnerInProgressRuns=Math.max(0,Number(workflowMetrics.runnerInProgressRuns)||0);
+  const primaryGameQueuedRuns=Math.max(0,Number(workflowMetrics.primaryGameQueuedRuns)||0);
+  const duplicateWorkflowRuns=Math.max(0,Number(workflowMetrics.duplicateWorkflowRuns)||0);
+  const stalePrimaryRuns=Math.max(0,Number(workflowMetrics.stalePrimaryRuns)||0);
+  const runnerPressure=primaryGameQueuedRuns>0&&runnerQueuedRuns>=Math.max(4,runnerInProgressRuns*2);
+
   const configured=Math.max(1,Math.floor(Number(maxBatch)||32));
   const freeCapacity=Math.max(0,configured-running.length);
-  const recommendedBatch=Math.max(0,Math.min(configured,freeCapacity,disjointQueued.length));
+  const reserveCeiling=runnerPressure?1:configured;
+  const recommendedBatch=Math.max(0,Math.min(reserveCeiling,freeCapacity,disjointQueued.length));
   const disjointIds=new Set(disjointQueued.map(t=>clean(t.id)));
   const canaryFirst=commonFailureCohorts
     .map(row=>clean(row.representativeTaskId))
@@ -124,17 +136,15 @@ export function analyzeSystemAiBottlenecks({
       responsibleFiles:uniq(task.responsibleFiles)
     };
   });
-  const reservationWaitMs=Math.max(0,Number(workflowMetrics.reservationWaitMs)||0);
-  const fanInWaitMs=Math.max(0,Number(workflowMetrics.fanInWaitMs)||0);
-  const supervisorReviewWaitMs=Math.max(0,Number(workflowMetrics.supervisorReviewWaitMs)||0);
-  const pendingRuns=Math.max(0,Number(workflowMetrics.pendingRuns)||0);
-
   const actions=[];
   if(stale.length)actions.push('RECLAIM_STALE_RESERVATIONS');
   if(commonFailureCohorts.length)actions.push('REPRESENTATIVE_CANARY_FOR_COMMON_FAILURE');
   if(recommendedBatch>0)actions.push('REFILL_FREE_SYSTEM_AI_CAPACITY');
   if(caretakerHotspots.length)actions.push('PRIORITIZE_PER_GAME_CARETAKER_BACKLOG');
   if(pendingRuns>0)actions.push('REDUCE_SCHEDULER_PENDING_RUN_WAIT');
+  if(duplicateWorkflowRuns>0)actions.push('COLLAPSE_EXACT_DUPLICATE_INGRESS');
+  if(stalePrimaryRuns>0)actions.push('CANCEL_STALE_PRIMARY_REVISION_INGRESS');
+  if(runnerPressure)actions.push('PRESERVE_PRIMARY_GAME_RUNNER_CAPACITY');
   if(reservationWaitMs>=60000)actions.push('PRIORITIZE_LONG_WAIT_RUNNABLE_WORK');
   if(fanInWaitMs>=60000)actions.push('REDUCE_FAN_IN_WAIT');
   if(supervisorReviewWaitMs>=60000)actions.push('PRIORITIZE_PRIMARY_AI_SUPERVISOR_REVIEW');
@@ -150,8 +160,9 @@ export function analyzeSystemAiBottlenecks({
     representativeCanaryTaskIds:uniq(commonFailureCohorts.map(x=>x.representativeTaskId)),
     disjointQueuedTaskIds:disjointQueued.map(t=>clean(t.id)).filter(Boolean),
     caretakerHotspots,
-    workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs},
+    workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,runnerQueuedRuns,runnerInProgressRuns,primaryGameQueuedRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
     configuredBatch:configured,
+    reserveCeiling,
     freeCapacity,
     recommendedBatch,
     recommendedReserveTaskIds,
@@ -163,7 +174,13 @@ export function analyzeSystemAiBottlenecks({
       pendingRuns,
       reservationWaitMs,
       fanInWaitMs,
-      supervisorReviewWaitMs
+      supervisorReviewWaitMs,
+      runnerQueuedRuns,
+      runnerInProgressRuns,
+      primaryGameQueuedRuns,
+      duplicateWorkflowRuns,
+      stalePrimaryRuns,
+      runnerPressure
     },
     actions,
     reserveSharedQueueMutationSerialized:true,
@@ -181,7 +198,17 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     gameQueue:readJson(clean(a['game-queue']),{tasks:[]}),
     maxBatch:Number(a.max||32),
     leaseMinutes:Number(a['lease-minutes']||30),
-    workflowMetrics:{pendingRuns:Number(a['pending-runs']||0),reservationWaitMs:Number(a['reservation-wait-ms']||0),fanInWaitMs:Number(a['fan-in-wait-ms']||0),supervisorReviewWaitMs:Number(a['supervisor-review-wait-ms']||0)}
+    workflowMetrics:{
+      pendingRuns:Number(a['pending-runs']||0),
+      reservationWaitMs:Number(a['reservation-wait-ms']||0),
+      fanInWaitMs:Number(a['fan-in-wait-ms']||0),
+      supervisorReviewWaitMs:Number(a['supervisor-review-wait-ms']||0),
+      runnerQueuedRuns:Number(a['runner-queued-runs']||0),
+      runnerInProgressRuns:Number(a['runner-in-progress-runs']||0),
+      primaryGameQueuedRuns:Number(a['primary-game-queued-runs']||0),
+      duplicateWorkflowRuns:Number(a['duplicate-workflow-runs']||0),
+      stalePrimaryRuns:Number(a['stale-primary-runs']||0)
+    }
   });
   if(clean(a.output)){fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');}
   console.log('SYSTEM_AI_BOTTLENECK_QUEUE_DEPTH='+result.queueDepth.queued);
@@ -189,5 +216,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_BOTTLENECK_COMMON_FAILURE_COHORTS='+result.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_BATCH='+result.recommendedBatch);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS='+(result.recommendedReserveTaskIds||[]).join(','));
+  console.log('SYSTEM_AI_RUNNER_PRESSURE='+(result.workflow.runnerPressure?'YES':'NO'));
+  console.log('SYSTEM_AI_PRIMARY_GAME_QUEUED_RUNS='+result.workflow.primaryGameQueuedRuns);
+  console.log('SYSTEM_AI_DUPLICATE_WORKFLOW_RUNS='+result.workflow.duplicateWorkflowRuns);
+  console.log('SYSTEM_AI_STALE_PRIMARY_RUNS='+result.workflow.stalePrimaryRuns);
   console.log('SYSTEM_AI_BOTTLENECK_ACTIONS='+result.actions.join(','));
 }
