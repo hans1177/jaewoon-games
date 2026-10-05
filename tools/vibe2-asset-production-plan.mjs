@@ -1979,6 +1979,11 @@ export function buildVibeAssetProductionPlan({
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionCatalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const allExecutionCatalogs=assetCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog&&typeof row.catalog==='object');
+  const libraryEvaluationFingerprint=crypto.createHash('sha256').update(JSON.stringify({
+    registry:companyRegistry,
+    manifest:manifestBase,
+    catalogs:allExecutionCatalogs.map(row=>({path:row.path,catalog:row.catalog}))
+  })).digest('hex');
   const executionUiCatalog=executionCatalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const executionSeedPlan=createCompanySeedAssetIdeationPlan({seeds:companySeedRows(repoRoot),assets:companyRegistry?.assets||[]});
   const executionLibraryPlan=buildInternalAssetLibraryAutomationPlan({
@@ -2691,7 +2696,17 @@ export function buildVibeAssetProductionPlan({
         allCatalogsEvaluated:true,
         allLibrarySourcesEvaluated:true,
         qualityScoreIsUsageGate:false,
-        lowScoreCompatibleAssetUseRequired:true
+        lowScoreCompatibleAssetUseRequired:true,
+        evaluationFingerprint:libraryEvaluationFingerprint,
+        refreshMode:'RELOAD_ALL_LIBRARY_SOURCES_EVERY_BUILD_UP',
+        allLibrarySourcesReevaluatedEveryBuildUp:true,
+        automaticMatchingRequired:true,
+        automaticConnectionRequired:true,
+        automaticRebindOnLibraryChange:true,
+        staleSelectionReuseForbidden:true,
+        manualRefreshRequired:false,
+        manualAssetPinRequired:false,
+        changedLibraryOnlyRebind:true
       }),
       resolutionMode:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
       genreRestrictionApplied:false,
