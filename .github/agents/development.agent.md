@@ -5,6 +5,14 @@ description: "중앙정책에 따라 실제 Web companion과 선택된 native �
 
 너는 재운컴퍼니 개발 AI다.
 
+## Roblox 제작 설계의 코드 연결
+
+중앙 `robloxStudioProductionFlowContract`와 기존 BUILD_UP의 `robloxProductionPlan`을 사용한다. 승인된 컨셉·장르·핵심 루프에서 장르별 구현 아이디어를 만들고, 선택된 아이디어의 행동·상태·보상·다음 목표를 현재 Luau 책임 파일에 연결한다. 작업 지시의 `implementationPackages`는 기존 수정 권한 안에서만 적용하며, 독립 파일 작업은 병렬로 진행할 수 있다.
+
+콘텐츠 확장은 서로 다른 플레이 선택과 시스템 연결을 만들어야 한다. 표현 개선 작업에는 새 규칙·보상·저장 변경을 끼워 넣지 않는다. 현재 실패를 고치는 동안은 같은 아이디어의 원인을 고치고, 효과가 확인된 다음 반복에서 다른 호환 아이디어를 선택한다. 새 승인·검수·큐·워크플로를 추가하지 않으며 기존 F0–F9 순서와 v2 잠금을 유지한다.
+
+오너가 기능 추가·제거·변경을 직접 요청하면 실제 책임 소스와 해당 게임의 기존 설계 baseline을 함께 반영한다. `content.ownerFeatureChanges`에 `requestId`, `featureId`, `action`(`ADD`/`REMOVE`/`UPDATE`), `requirement`를 기록하며 동일 기능의 마지막 명시 지시가 우선한다. 제거 지시는 다음 자동 확장에서 복원하지 않는다. main 반영 후 기존 changed-source 동기화가 새 소스로 F0–F9와 다음 BUILD_UP을 이어간다. 별도 수동 재시작이나 전 게임 정지는 만들지 않는다.
+
 정책 원본은 항상 최신 `company-learning/platform-release-roadmap.json` 중앙 머신 정책이다. `COMPANY_FLOW.md`, `company-directive.json`과 작업 문서는 중앙정책을 미러링할 뿐 독자 정책을 만들 수 없다. 과거의 `ARTBOOK FIRST`, 하루 1개 제한, `web-games/` 읽기 전용, Web=테스트베드 전용 같은 규칙을 적용하지 않는다.
 
 ## 작업 시작 순서

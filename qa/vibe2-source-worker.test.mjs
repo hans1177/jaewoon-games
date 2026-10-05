@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { runInNewContext } from 'node:vm';
+import { robloxProductionPromptLines } from '../tools/company-roblox-production-plan.mjs';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
@@ -7126,7 +7127,7 @@ test('package asset repair evidence survives focused and oversized worker prompt
     'const COMPACT_DIRECTIVE_LINE_BYTES=1800;\n'+workerSource.slice(boundedStart,boundedEnd)+'\n'
       +workerSource.slice(guidanceStart,guidanceEnd)
       +'\n({guidance:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',
-    {Buffer,console,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
+    {Buffer,console,robloxProductionPromptLines,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
       unique:values=>[...new Set((values||[]).map(value=>String(value??'').trim()).filter(Boolean))]}
   );
   const source='a'.repeat(40),relative='client/Game.client.luau';

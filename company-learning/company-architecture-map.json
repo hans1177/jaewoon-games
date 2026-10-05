@@ -1,5 +1,5 @@
 {
-  "version": 318,
+  "version": 319,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7008,5 +7008,14 @@
     "renderer": "assets/homepage-enhancements.js",
     "existingManagerDirectorFlowPreserved": true,
     "releaseClassificationIndependent": true
+  },
+  "robloxStudioProductionTopology": {
+    "sourcePolicy": "robloxStudioProductionFlowContract",
+    "producer": "tools/company-roblox-production-plan.mjs",
+    "handoff": "tools/company-build-up-directive.mjs",
+    "consumer": "tools/vibe2-source-worker.mjs",
+    "existingBuildUpOnly": true,
+    "newPipeline": false,
+    "ownerSourceReentry": ".github/workflows/company-roblox-source-drift-sync.yml"
   }
 }
