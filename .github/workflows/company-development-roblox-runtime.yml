@@ -70,7 +70,7 @@ jobs:
     # Exact ingress coalescing only: the newest planner supersedes older planner work for the same game/batch.
     # Downstream source, runtime, QA, and release jobs are not part of this concurrency group.
     concurrency:
-      group: roblox-runtime-source-plan-${{ inputs.game_id || 'batch' }}
+      group: roblox-runtime-source-plan-v2-${{ inputs.game_id || 'batch' }}
       cancel-in-progress: true
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.
