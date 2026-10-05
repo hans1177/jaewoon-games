@@ -118,7 +118,7 @@ test('fan-in controller contract directly verifies design intelligence stages an
   assert.equal(design.authorityExpanded,false);
 });
 
-test('runtime enables DAG sharding work stealing with policy-unbounded external-capacity waves',()=>{
+test('runtime enables DAG sharding and work stealing with fixed 64 repeat-development slots',()=>{
   assert(runtime.version>=14);
   assert.equal(runtime.continuous.strategy,'atomic-neuron-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,64);
@@ -288,7 +288,7 @@ test('asset and recovery reserve retries stay lane-local instead of rerunning gl
   assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
 });
 
-test('controller reserves a batch and fans workers out to the external matrix boundary',()=>{
+test('controller reserves repeat-development batches at the fixed 64-slot target',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
   assert.equal(workflow.includes('max-parallel: 30'),false);
