@@ -3,8 +3,105 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync,spawnSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const nodeStep=name=>{
+    const start=workflow.indexOf(`      - name: ${name}\n`);
+    assert.ok(start>=0,name);
+    const block=workflow.slice(start,workflow.indexOf('\n      - name:',start+1));
+    const code=block.match(/node <<'NODE'\n([\s\S]*?)\n          NODE/);
+    assert.ok(code,name);
+    return code[1];
+  };
+  const gameId='horror-escape-room',revision='a'.repeat(40);
+  const threshold={pass:false,blockers:['ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:AUDIO'],libraryVersion:112,familyResults:[{family:'AUDIO',status:null,systemPresent:true,actualBinding:false}]};
+  const failure={gameId,sourceRevision:revision,assetBindingFailed:true,assetThreshold:threshold,buildOrPackagePassed:false,artifactIdentity:null};
+  const record=(evidence,extra={})=>{
+    const files=new Map([[`/tmp/roblox-technical/results/${gameId}.build.json`,JSON.stringify(evidence)]]);
+    const mockFs={mkdirSync(){},existsSync:p=>files.has(p),readFileSync:p=>files.get(p),writeFileSync:(p,v)=>files.set(p,v)};
+    runInNewContext(nodeStep('Record Roblox technical package result'),{
+      require:name=>name==='fs'?mockFs:path,console:{log(){}},
+      process:{env:{GAME_ID:gameId,SOURCE_REVISION:revision,PACKAGE_OUTCOME:'failure',PREFLIGHT_OUTCOME:'skipped',F0_OUTCOME:'skipped',...extra}}
+    });
+    return JSON.parse(files.get(`/tmp/roblox-technical/results/${gameId}.result.json`));
+  };
+  const result=record(failure);
+  assert.equal(result.assetBindingFailed,true);
+  assert.equal(result.pass,false);
+  assert.equal(result.f0Pass,false);
+  assert.equal(result.failure,'roblox-package-asset-binding-failed');
+  assert.deepEqual(result.assetThreshold,threshold);
+  assert.equal(record({...failure,sourceRevision:'b'.repeat(40)}).assetBindingFailed,false);
+  assert.equal(record(failure,{SUPERSEDED:'true'}).assetBindingFailed,false);
+
+  const sibling={gameId:'unrelated',robloxSourceCommit:'c'.repeat(40),robloxRuntimePassed:true,otherWork:'preserve'};
+  const persist=(currentRevision)=>{
+    const queue={items:[{gameId,robloxSourceCommit:currentRevision},sibling]};
+    const files=new Map([['development-queue.json',JSON.stringify(queue)],[`/tmp/roblox-technical-batch/results/${gameId}.result.json`,JSON.stringify(result)]]);
+    const mockFs={existsSync:()=>true,readdirSync:()=>[`${gameId}.result.json`],readFileSync:p=>files.get(p),writeFileSync:(p,v)=>files.set(p,v)};
+    runInNewContext(nodeStep('Persist exact Roblox build package evidence'),{
+      require:name=>name==='fs'?mockFs:path,console:{log(){}},
+      process:{env:{EXPECTED_TARGETS_JSON:JSON.stringify([{gameId}]),GITHUB_RUN_ID:'100'}}
+    });
+    return JSON.parse(files.get('development-queue.json'));
+  };
+  const persisted=persist(revision);
+  const item=persisted.items[0];
+  assert.equal(item.robloxQualityBuildUpRequired,true);
+  assert.equal(item.robloxQualityBuildUpSourceRevision,revision);
+  assert.equal(item.robloxQualityBuildUpEvidence.authority,'roblox-package-asset-binding-failure');
+  assert.deepEqual(item.robloxQualityBuildUpEvidence.qualityFailureKinds,threshold.blockers);
+  assert.deepEqual(item.robloxQualityBuildUpEvidence.assetThreshold,threshold);
+  assert.deepEqual(item.robloxQualityBuildUpEvidence.qualityFailureDetails[0].observed.familyResult,threshold.familyResults[0]);
+  assert.equal(item.robloxQualityBuildUpEvidence.assetFallbackPolicy.mode,'SIMILAR_GENRE_COMPATIBLE_INTERNAL_ASSET');
+  for(const key of ['robloxBuildOrPackagePassed','robloxFoundationF0Passed','robloxRuntimePassed','robloxFinalReviewPassed'])assert.equal(item[key],false,key);
+  assert.deepEqual(persisted.items[1],sibling);
+  assert.deepEqual(persist('d'.repeat(40)).items,[{gameId,robloxSourceCommit:'d'.repeat(40)},sibling]);
+  assert.match(workflow,/\['roblox-f0-gameplay-product-readiness-failure','roblox-package-asset-binding-failure'\]\.includes/);
+});
+
+test('failed asset packaging preserves exact repair evidence without publishing a success artifact',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-failure-evidence-'));
+  try{
+    const gameId='asset-evidence-fixture',sourcePath=`roblox-games/${gameId}`;
+    const root=path.join(tmp,sourcePath);
+    for(const dir of ['shared','server','client'])fs.mkdirSync(path.join(root,dir),{recursive:true});
+    fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{Shared:{$path:'shared'}},ServerScriptService:{GameServer:{$path:'server'}},StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}}}}));
+    fs.writeFileSync(path.join(root,'shared/GameConfig.luau'),'return {}\n');
+    fs.writeFileSync(path.join(root,'server/Game.server.luau'),'local server = true\n');
+    fs.writeFileSync(path.join(root,'client/Game.client.luau'),'local client = true\n');
+    fs.writeFileSync(path.join(tmp,'company-asset-library.json'),JSON.stringify({version:1,baseMaterialLibrary:{families:Object.fromEntries(ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>[family,[`${family}_ATOM`]]))}}));
+    const baseline={content:{robloxBuildProfile:{version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',genre:'Adventure',subgenre:null,playMode:'SINGLE',multiplayerRequired:false,networkingRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,displayLabelKo:'Adventure'}}};
+    fs.writeFileSync(path.join(tmp,'baseline.json'),JSON.stringify(baseline));
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+    git('init');git('config','user.name','fixture');git('config','user.email','fixture@example.test');
+    git('add','.');git('commit','-m','fixture source');
+    const first=git('rev-parse','HEAD'),tree=git('rev-parse',`HEAD:${sourcePath}`);
+    // An existing verified source handoff must never bypass the package asset threshold.
+    fs.writeFileSync(path.join(tmp,'development-queue.json'),JSON.stringify({items:[{gameId,robloxVibe2VerifiedHandoff:{verified:true,gameId,sourceRevision:first,candidateSha:first,sourceTreeSha:tree,qaRunId:1}}]}));
+    git('add','development-queue.json');git('commit','-m','fixture handoff');
+    const revision=git('rev-parse','HEAD'),evidenceFile=path.join(tmp,'failure.json');
+    const run=spawnSync(process.execPath,[new URL('../tools/company-development-roblox-package.mjs',import.meta.url).pathname,
+      `--repo-root=${tmp}`,`--game-id=${gameId}`,`--source-path=${sourcePath}`,`--source-revision=${revision}`,`--runtime-ref=${revision}`,
+      `--baseline=${path.join(tmp,'baseline.json')}`,`--evidence=${evidenceFile}`,`--rojo=${process.execPath}`,`--output-dir=${path.join(tmp,'packages')}`],{encoding:'utf8'});
+    assert.equal(run.status,1,run.stdout+run.stderr);
+    assert.match(run.stderr,/ROBLOX_PACKAGE_ASSET_THRESHOLD_FAILED/);
+    const evidence=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
+    assert.equal(evidence.gameId,gameId);
+    assert.equal(evidence.sourceRevision,revision);
+    assert.equal(evidence.assetBindingFailed,true);
+    assert.equal(evidence.assetThreshold.pass,false);
+    assert.ok(evidence.blockers.includes('ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:CHARACTER'));
+    assert.equal(evidence.artifactIdentity,null);
+    for(const key of ['buildOrPackagePassed','runtimePassed','independentQaPassed','regressionPassed','finalReviewPassed','releaseClaim'])assert.equal(evidence[key],false,key);
+    assert.deepEqual(fs.readdirSync(path.join(tmp,'packages')),[]);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
