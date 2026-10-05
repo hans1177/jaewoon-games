@@ -9,7 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
@@ -85,6 +85,109 @@ test('hero asset routing selects stronger local model without changing generatio
   assert.equal(route.cacheKey,'qwen3-4b-instruct');
   assert.equal(route.generationBudgetUnchanged,true);
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),4);
+});
+
+test('Roblox internal asset family binding requires actual family use and rejects false NOT_APPLICABLE',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'roblox-games/demo');
+  const expectedFamilies=Object.fromEntries(ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]));
+  const configFamilies=ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>family+' = { "'+family+'_ATOM" }').join(', ');
+  write(path.join(root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = { '+configFamilies+' } } }\n');
+  write(path.join(root,'client/Game.client.luau'),'local placeholder = true\n');
+  const statusRows=ROBLOX_INTERNAL_ASSET_FAMILIES
+    .map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`)
+    .join('\n');
+  const appliedUi=[
+    'local studioAssetFamilies = {}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    'local STUDIO_ASSET_FAMILY_STATUS = {',
+    statusRows,
+    '}',
+    'local root = Instance.new("Frame")',
+    'local stroke = Instance.new("UIStroke")',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end'
+  ].join('\n');
+  const pass=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi}]}
+  });
+  assert.equal(pass.pass,true);
+  assert.equal(pass.appliedCount,1);
+  assert.equal(pass.notApplicableCount,11);
+  assert.equal(pass.changedAppliedFamilyCount,1);
+
+  const falseNotApplicable=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi+'\nlocal enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'}]}
+  });
+  assert.equal(falseNotApplicable.pass,false);
+  assert.ok(falseNotApplicable.blockers.includes('ROBLOX_INTERNAL_ASSET_NOT_APPLICABLE_EXISTING_SYSTEM:CREATURE'));
+
+  const markerOnly=appliedUi
+    .replace('local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }','local STUDIO_ASSET_SELECTION = { UI = {"UI_ATOM"} }')
+    .replace('if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end','stroke.Thickness = 2');
+  const rejected=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:markerOnly}]}
+  });
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
+});
+
+test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{
+  const cwd=tempRoot();
+  const sourcePaths=[];
+  for(let i=0;i<6;i++){
+    const relative=`assets/internal-api-${i}/Common${i}.luau`;
+    sourcePaths.push(relative);
+    write(path.join(cwd,relative),[
+      `local Common${i} = {}`,
+      `function Common${i}.Create${i}(options)`,
+      '  return options',
+      'end',
+      `return Common${i}`
+    ].join('\n')+'\n');
+  }
+  const contract={
+    target:'roblox',
+    exactFamilies:{},
+    flowSelections:[],
+    sourceCandidates:sourcePaths.map((relative,index)=>({
+      assetId:`asset-${index}`,
+      family:'CUSTOM',
+      sourceFiles:[relative],
+      path:null
+    })),
+    synchronization:{
+      apiContextBatchSize:4,
+      apiContextMaxBytes:18000,
+      apiContextPerFileMaxBytes:4500,
+      apiContextRotationByBuildUpGeneration:true
+    }
+  };
+  const first=attachSelectedInternalAssetApiContext(
+    {files:[],bytes:0},
+    {cwd,contract,order:{selectedTask:{buildUpGeneration:1}}}
+  );
+  const second=attachSelectedInternalAssetApiContext(
+    {files:[],bytes:0},
+    {cwd,contract,order:{selectedTask:{buildUpGeneration:2}}}
+  );
+  assert.equal(first.internalAssetApiContextFiles.length,4);
+  assert.equal(second.internalAssetApiContextFiles.length,4);
+  assert.equal(first.internalAssetApiContextRotationStart,0);
+  assert.equal(second.internalAssetApiContextRotationStart,4);
+  assert.notDeepEqual(first.internalAssetApiContextFiles,second.internalAssetApiContextFiles);
+  assert.equal(first.internalAssetApiContextEligibleSourceCount,6);
+  assert.equal(first.internalAssetApiIndexRepresentedSourceCount,6);
+  assert.equal(first.internalAssetApiIndexAvailableSourceCount,6);
+  assert.equal(first.internalAssetApiIndexUnavailableSourceCount,0);
+  assert.equal(first.internalAssetApiIndexSignatureCount,6);
+  assert.equal(first.internalAssetApiIndexAllSelectedSourcesEveryBuildUp,true);
+  assert.equal(second.internalAssetApiIndex,first.internalAssetApiIndex);
+  for(let i=0;i<6;i++)assert.match(first.internalAssetApiIndex,new RegExp(`Common${i}\\.Create${i}\\(options\\)`));
 });
 
 test('native asset authoring evidence requires real engine-native source delta and never claims runtime promotion',()=>{
@@ -2090,6 +2193,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   };
   workOrder.assetProduction={
     baseMaterialLoadout:{
+      families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
       robloxSelectionHandoff:{
         handoffRequired:true,
         downstreamApplicationRequired:true,
@@ -2098,10 +2202,9 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     }
   };
   workOrder.goal='일반 Roblox BUILD_UP 소스 코딩에서 선택된 내부 자산을 실제 시각 책임 소스에 적용';
-  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),'return { GameId = "demo" }\n');
+  const configSource='return { GameId = "demo", StudioAssets = { Families = { UI = { "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH" } } } }';
+  write(path.join(cwd,'roblox-games/demo/shared/GameConfig.luau'),configSource+'\n');
   const clientSource=[
-    'local Players = game:GetService("Players")',
-    'local player = Players.LocalPlayer',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
     'root.BackgroundColor3 = Color3.fromRGB(18,28,48)',
@@ -2110,18 +2213,21 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   write(path.join(cwd,'roblox-games/demo/client/Game.client.luau'),clientSource);
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   write(bad,JSON.stringify({
-    edits:[{path:'shared/GameConfig.luau',find:'return { GameId = "demo" }',replace:'return { GameId = "demo", StudioAssets = true }'}]
+    edits:[{path:'shared/GameConfig.luau',find:configSource,replace:configSource.replace('GameId = "demo"','GameId = "demo", Marker = true')}]
   }));
   const bound=[
-    'local Players = game:GetService("Players")',
-    'local player = Players.LocalPlayer',
     'local STUDIO_ASSET_BINDING_VERSION = 2',
-    'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
+    'local studioAssetFamilies = { UI = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"} }',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    'local STUDIO_ASSET_FAMILY_STATUS = { CHARACTER = "NOT_APPLICABLE", CREATURE = "NOT_APPLICABLE", BUILDING = "NOT_APPLICABLE", ENVIRONMENT = "NOT_APPLICABLE", WEAPON = "NOT_APPLICABLE", SKILL = "NOT_APPLICABLE", MATERIAL = "NOT_APPLICABLE", AUDIO = "NOT_APPLICABLE", VFX = "NOT_APPLICABLE", UI = "APPLIED", MOTION = "NOT_APPLICABLE", PROP = "NOT_APPLICABLE" }',
     'local gui = Instance.new("ScreenGui")',
     'local root = Instance.new("Frame")',
+    'local stroke = Instance.new("UIStroke")',
     'root.BackgroundColor3 = Color3.fromRGB(22,34,58)',
     'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
-    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end',
     'root.Parent = gui'
   ].join('\n');
   write(good,JSON.stringify({
@@ -2134,6 +2240,8 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files/client/Game.client.luau'),'utf8');
   assert.match(candidate,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(candidate,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+  assert.match(candidate,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+  assert.match(candidate,/studioAssetFamily\("UI"\)/);
   assert.match(candidate,/StudioAssetAtoms/);
 });
 

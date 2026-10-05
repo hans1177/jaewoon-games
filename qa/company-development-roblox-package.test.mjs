@@ -92,6 +92,9 @@ ${familyRows}
   },
 }
 `;
+    const statusRows=ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES
+      .map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`)
+      .join('\n');
     const client=[
       'local C = require(game.ReplicatedStorage.Shared.GameConfig)',
       'local STUDIO_ASSET_BINDING_VERSION = 2',
@@ -99,10 +102,14 @@ ${familyRows}
       'local studioAssetFamilies = studioAssetConfig.Families or {}',
       'local function studioAssetFamily(family) local atoms=studioAssetFamilies[family]; return type(atoms)=="table" and atoms or {} end',
       'local function hasStudioAssetAtom(family,atom) return table.find(studioAssetFamily(family),atom) ~= nil end',
-      'local studioUi = studioAssetFamily("UI")',
+      'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+      'local STUDIO_ASSET_FAMILY_STATUS = {',
+      statusRows,
+      '}',
       'local root = Instance.new("Frame")',
       'local stroke = Instance.new("UIStroke")',
-      'root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))',
+      'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+      'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
       'if hasStudioAssetAtom("UI","UI_ATOM") then stroke.Thickness = 2 end',
     ].join('\n');
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
@@ -113,13 +120,29 @@ ${familyRows}
     assert.equal(pass.requiredFamilyCount,12);
     assert.equal(pass.allFamiliesAutoSelected,true);
     assert.equal(pass.visibleAssetBindingPass,true);
+    assert.equal(pass.familyBindingPassCount,1);
+    assert.equal(pass.appliedFamilyCount,1);
+    assert.equal(pass.notApplicableFamilyCount,11);
+    assert.equal(pass.resolvedFamilyCount,12);
+    assert.equal(pass.allFamiliesResolved,true);
     assert.equal(pass.productionVerified,false);
     assert.equal(pass.runtimeVerified,false);
 
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config.replace('      PROP = { "PROP_ATOM" },\n',''));
     const missing=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
     assert.equal(missing.pass,false);
-    assert.ok(missing.blockers.includes('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_MISSING:PROP'));
+    assert.ok(missing.blockers.includes('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_SELECTION_MISMATCH:PROP'));
+
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),client+'\nlocal enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"\n');
+    const falseNotApplicable=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    assert.equal(falseNotApplicable.pass,false);
+    assert.ok(falseNotApplicable.blockers.includes('ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CREATURE'));
+
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),client.replace('local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }','local STUDIO_ASSET_SELECTION = { UI = {"UI_ATOM"} }').replace('if hasStudioAssetAtom("UI","UI_ATOM") then stroke.Thickness = 2 end','stroke.Thickness = 2'));
+    const markerOnly=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    assert.equal(markerOnly.pass,false);
+    assert.ok(markerOnly.blockers.includes('ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
 
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
     fs.writeFileSync(path.join(root,'client','Game.client.luau'),'local root=Instance.new("Frame")\nroot.BackgroundColor3=Color3.fromRGB(20,20,20)\n');
@@ -220,6 +243,23 @@ test('Roblox package rejects artifacts that can reopen as deprecated Compatibili
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+test('Vibe2 candidate release binds BUILD_UP source and selection fingerprints through package and F0',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+  assert.match(workflow,/asset_source_usage_fingerprint:/);
+  assert.match(workflow,/asset_selection_fingerprint:/);
+  assert.match(workflow,/BUILD_UP_ASSET_FINGERPRINT:/);
+  assert.match(workflow,/BUILD_UP_SELECTION_FINGERPRINT:/);
+  assert.match(workflow,/--build-up-asset-fingerprint="\$BUILD_UP_ASSET_FINGERPRINT"/);
+  assert.match(workflow,/--expected-asset-selection-fingerprint="\$BUILD_UP_SELECTION_FINGERPRINT"/);
+  assert.match(workflow,/candidate package BUILD_UP selection fingerprint mismatch/);
+  assert.match(workflow,/--asset-selection-fingerprint="\$asset_selection_fingerprint"/);
+  assert.match(workflow,/candidate F0 asset selection fingerprint mismatch/);
+  assert.match(workflow,/Persist exact runtime asset binding and promotion plan/);
+  assert.match(workflow,/robloxStudioAssetBinding=persistedBinding/);
+  assert.match(workflow,/ROBLOX_ASSET_RUNTIME_BINDING=/);
+  assert.match(workflow,/studioRuntimeRequired:false/);
 });
 
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{

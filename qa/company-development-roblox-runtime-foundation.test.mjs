@@ -373,6 +373,65 @@ test('Open Cloud engine probe matches the declared current Studio asset binding 
  assert.equal(r.studioAssetSelectionMatched,true);
 });
 
+test('Open Cloud engine probe binds exact package selection fingerprint and library version on the deployed version',async()=>{
+ const fingerprint='a'.repeat(64);
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT='+fingerprint},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=109'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
+  ]}]}}
+ ];
+ const fetchImpl=async()=>{const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
+ const expected={
+  required:true,bindingVersion:2,libraryVersion:109,selectionFingerprint:fingerprint,
+  expectedAtomIds:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH'],
+  buildUpAssetSourceUsageFingerprint:'b'.repeat(64)
+ };
+ const r=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:expected,
+ });
+ assert.equal(r.studioAssetBindingRequired,true);
+ assert.equal(r.studioAssetSelectionMatched,true);
+ assert.equal(r.studioAssetAtomMatch,true);
+ assert.equal(r.studioAssetFingerprintMatch,true);
+ assert.equal(r.studioAssetLibraryVersionMatch,true);
+ assert.equal(r.expectedStudioAssetSelectionFingerprint,fingerprint);
+ assert.equal(r.observedStudioAssetSelectionFingerprint,fingerprint);
+ assert.equal(r.expectedStudioAssetLibraryVersion,109);
+ assert.equal(r.observedStudioAssetLibraryVersion,109);
+ assert.equal(r.expectedBuildUpAssetSourceUsageFingerprint,'b'.repeat(64));
+
+ const mismatchResponses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t2',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_SELECTION_FINGERPRINT='+'c'.repeat(64)},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_LIBRARY_VERSION=108'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
+  ]}]}}
+ ];
+ const mismatch=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:expected,
+  fetchImpl:async()=>{const row=mismatchResponses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};},
+ });
+ assert.equal(mismatch.studioAssetSelectionMatched,false);
+ assert.equal(mismatch.studioAssetFingerprintMatch,false);
+ assert.equal(mismatch.studioAssetLibraryVersionMatch,false);
+});
+
 test('Open Cloud engine probe rejects a deployed Studio material selection mismatch',async()=>{
  const responses=[
   {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
