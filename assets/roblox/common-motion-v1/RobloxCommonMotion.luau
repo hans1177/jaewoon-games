@@ -8,9 +8,9 @@ local RobloxCommonMotion = {}
 
 local MOTION = table.freeze({
 	IDLE_RELAXED = table.freeze({looped = true, priority = Enum.AnimationPriority.Idle, duration = 3.2, mode = "IDLE"}),
-	WALK = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.00, mode = "LOCOMOTION", stride = 0.62, lift = 0.18, lean = 0.035}),
-	JOG = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.78, mode = "LOCOMOTION", stride = 0.82, lift = 0.25, lean = 0.070}),
-	RUN = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.60, mode = "LOCOMOTION", stride = 1.04, lift = 0.33, lean = 0.125}),
+	WALK = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.00, mode = "LOCOMOTION", stride = 0.62, lift = 0.18, lean = 0.035, stance = 0.625}),
+	JOG = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.78, mode = "LOCOMOTION", stride = 0.82, lift = 0.25, lean = 0.070, stance = 0.50}),
+	RUN = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.60, mode = "LOCOMOTION", stride = 1.04, lift = 0.33, lean = 0.125, stance = 0.4375}),
 	START = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.42, mode = "START"}),
 	STOP = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.45, mode = "STOP"}),
 	TURN_90 = table.freeze({looped = false, priority = Enum.AnimationPriority.Movement, duration = 0.55, mode = "TURN"}),
@@ -23,7 +23,7 @@ local MOTION = table.freeze({
 	PARRY_PERFECT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.32, mode = "PARRY"}),
 	GUARD_BREAK = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.70, mode = "GUARD_BREAK"}),
 	COUNTER_READY = table.freeze({looped = false, priority = Enum.AnimationPriority.Action3, duration = 0.42, mode = "COUNTER_READY"}),
-	SPRINT = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.48, mode = "LOCOMOTION", stride = 1.28, lift = 0.40, lean = 0.18}),
+	SPRINT = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 0.48, mode = "LOCOMOTION", stride = 1.28, lift = 0.40, lean = 0.18, stance = 0.375}),
 	CROUCH_IDLE = table.freeze({looped = true, priority = Enum.AnimationPriority.Movement, duration = 1.40, mode = "CROUCH"}),
 	DODGE_LEFT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.46, mode = "DODGE", direction = -1}),
 	DODGE_RIGHT = table.freeze({looped = false, priority = Enum.AnimationPriority.Action2, duration = 0.46, mode = "DODGE", direction = 1}),
@@ -131,88 +131,123 @@ local function clamp(value, a, b)
 	return math.max(a, math.min(b, tonumber(value) or 0))
 end
 
-local function poseTree(node, transforms, root)
+local function poseTree(node, transforms, root, easing)
 	local pose = Instance.new("Pose")
 	pose.Name = node.name
 	pose.Weight = node.name == "HumanoidRootPart" and 0 or 1
 	pose.CFrame = transforms[node.name] or CFrame.new()
+	pose.EasingStyle = easing or Enum.PoseEasingStyle.Linear
+	pose.EasingDirection = Enum.PoseEasingDirection.InOut
 	if root then
 		root:AddPose(pose)
 	end
 	for _, child in ipairs(node.children or {}) do
-		poseTree(child, transforms, pose)
+		poseTree(child, transforms, pose, easing)
 	end
 	return pose
 end
 
-local function addFrame(sequence, time, transforms, name)
+local function addFrame(sequence, time, transforms, name, easing)
 	local keyframe = Instance.new("Keyframe")
 	keyframe.Name = name or string.format("K_%03d", math.floor(time * 1000 + 0.5))
 	keyframe.Time = time
-	poseTree(HIERARCHY, transforms, keyframe)
+	poseTree(HIERARCHY, transforms, keyframe, easing)
 	sequence:AddKeyframe(keyframe)
 	return keyframe
 end
 
 local function locomotionTransforms(phase, row)
-	local s = math.sin(phase)
-	local c = math.cos(phase)
 	local stride = row.stride or 0.7
 	local lift = row.lift or 0.2
 	local lean = row.lean or 0.05
-
-	local leftSwing = s * stride
-	local rightSwing = -leftSwing
-	local leftKnee = math.max(0, -s) * (32 + lift * 50)
-	local rightKnee = math.max(0, s) * (32 + lift * 50)
-	local armSwing = stride * 0.70
-
-	return {
-		LowerTorso = angles(-lean * 38, c * 1.8, -s * 1.4),
-		UpperTorso = angles(lean * 18, -c * 2.4, s * 1.8),
-		Head = angles(-lean * 8, c * 1.5, -s * 0.8),
-
-		LeftUpperArm = angles(-leftSwing * 50, -3, -5),
-		LeftLowerArm = angles(-8 - math.max(0, leftSwing) * 22, 0, -2),
-		LeftHand = angles(3, 0, 1),
-		RightUpperArm = angles(-rightSwing * 50, 3, 5),
-		RightLowerArm = angles(-8 - math.max(0, rightSwing) * 22, 0, 2),
-		RightHand = angles(3, 0, -1),
-
-		LeftUpperLeg = angles(leftSwing * 52, 0, -1.5),
-		LeftLowerLeg = angles(leftKnee, 0, 0),
-		LeftFoot = angles(-leftSwing * 15 - leftKnee * 0.32, 0, 0),
-		RightUpperLeg = angles(rightSwing * 52, 0, 1.5),
-		RightLowerLeg = angles(rightKnee, 0, 0),
-		RightFoot = angles(-rightSwing * 15 - rightKnee * 0.32, 0, 0),
+	local stance = row.stance or 0.5625
+	local cycle = (phase / (math.pi * 2)) % 1
+	local pelvisPitch = -lean * 38
+	local pelvisRoll = math.sin(phase) * 1.2
+	local pelvisYaw = math.cos(phase) * (2 + stride * 1.2)
+	local bob = -math.cos(phase * 2) * (0.018 + lift * 0.045)
+	local reach = 0.15 + stride * 0.11
+	local armLag = phase - 0.20
+	local elbowLag = phase - 0.42
+	local wristLag = phase - 0.66
+	local armArc = 14 + stride * 19
+	local elbowBend = 12 + lean * 170
+	local transforms = {
+		LowerTorso = CFrame.new(0, bob, 0) * angles(pelvisPitch, pelvisYaw, pelvisRoll),
+		UpperTorso = angles(lean * 17 + math.sin(phase * 2 - 0.2) * 0.8, -pelvisYaw * 1.65, -pelvisRoll * 1.25),
+		Head = angles(lean * 18 - math.sin(phase * 2 - 0.35) * 0.65, pelvisYaw * 0.65, pelvisRoll * 0.25),
+		LeftUpperArm = angles(-math.cos(armLag) * armArc, -3, -5 - math.sin(armLag) * 2),
+		RightUpperArm = angles(math.cos(armLag) * armArc, 3, 5 - math.sin(armLag) * 2),
+		LeftLowerArm = angles(elbowBend + (1 - math.cos(elbowLag)) * 7, 0, -2),
+		RightLowerArm = angles(elbowBend + (1 + math.cos(elbowLag)) * 7, 0, 2),
+		LeftHand = angles(math.cos(wristLag) * 3, 0, -1),
+		RightHand = angles(-math.cos(wristLag) * 3, 0, 1),
 	}
+	-- 모션: 지지 발은 일정한 속도로 뒤로 보내고, 회수 발만 위로 들어 올린다.
+	-- 표준 R15 비율의 관절 원본이다. 게임 속도 동기화·다른 비율 리타깃은 소비자가 검증한다.
+	for index, side in ipairs({"Left", "Right"}) do
+		local p = (cycle + (index - 1) * 0.5) % 1
+		local forward, height, footRoll
+		if p <= stance then
+			local u = p / stance
+			forward = reach * (1 - 2 * u)
+			height = 0
+			local heel = math.max(0, 1 - u / 0.18)
+			local toe = math.max(0, (u - 0.78) / 0.22)
+			footRoll = heel * heel * 7 - toe * toe * 12
+		else
+			local u = (p - stance) / (1 - stance)
+			local u2, u3 = u * u, u * u * u
+			local tangent = -2 * reach * (1 - stance) / stance
+			forward = -reach * (2 * u3 - 3 * u2 + 1) + reach * (-2 * u3 + 3 * u2)
+				+ tangent * (2 * u3 - 3 * u2 + u)
+			height = (0.07 + lift * 0.28) * math.sin(math.pi * u) ^ 2
+			local ease = u2 * (3 - 2 * u)
+			footRoll = -12 + 19 * ease
+		end
+		local down = 0.935 + bob / 2.1 - height
+		local distance = math.sqrt(forward * forward + down * down)
+		local bend = math.acos(clamp(distance, 0.1, 0.999))
+		local hip = math.deg(math.atan2(forward, down) + bend) - pelvisPitch
+		local knee = -math.deg(bend * 2)
+		transforms[side .. "UpperLeg"] = angles(hip, -pelvisYaw, -pelvisRoll)
+		transforms[side .. "LowerLeg"] = angles(knee, 0, 0)
+		transforms[side .. "Foot"] = angles(footRoll - hip - knee - pelvisPitch, 0, 0)
+	end
+	return transforms
 end
 
 local function makeIdle(sequence, row)
-	local samples = 8
+	local samples = 32
 	for i = 0, samples do
 		local t = row.duration * i / samples
 		local phase = math.pi * 2 * i / samples
 		local breathe = math.sin(phase)
-		local sway = math.sin(phase * 0.5)
+		local sway = math.sin(phase)
+		local chest = math.sin(phase - 0.22)
+		local head = math.sin(phase - 0.42)
 		addFrame(sequence, t, {
-			LowerTorso = angles(-1.2 + breathe * 0.7, sway * 1.6, sway * 0.8),
-			UpperTorso = angles(1.1 - breathe * 0.45, -sway * 1.2, -sway * 0.6),
-			Head = angles(-1.0 + breathe * 0.30, sway * 2.1, sway * 0.5),
+			LowerTorso = angles(-1.2 + breathe * 0.45, sway * 0.7, sway * 0.35),
+			UpperTorso = angles(1.1 - chest * 0.65, -sway * 0.9, -sway * 0.4),
+			Head = angles(-1.0 + head * 0.35, sway * 0.3, sway * 0.1),
 			LeftUpperArm = angles(-4 + breathe * 1.1, -2, -4),
-			LeftLowerArm = angles(-7 - breathe * 1.4, 0, -2),
+			LeftLowerArm = angles(7 + chest * 1.4, 0, -2),
+			LeftHand = angles(math.sin(phase - 0.6) * 0.9, 0, -1),
 			RightUpperArm = angles(-4 - breathe * 1.1, 2, 4),
-			RightLowerArm = angles(-7 + breathe * 1.4, 0, 2),
-			LeftUpperLeg = angles(0.8, 0, -1.2),
-			RightUpperLeg = angles(-0.8, 0, 1.2),
-			LeftLowerLeg = angles(1.0, 0, 0),
-			RightLowerLeg = angles(1.0, 0, 0),
+			RightLowerArm = angles(7 - chest * 1.4, 0, 2),
+			RightHand = angles(-math.sin(phase - 0.6) * 0.9, 0, 1),
+			LeftUpperLeg = angles(2.2 - breathe * 0.45, -sway * 0.7, -sway * 0.35),
+			RightUpperLeg = angles(2.2 - breathe * 0.45, -sway * 0.7, -sway * 0.35),
+			LeftLowerLeg = angles(-2, 0, 0),
+			RightLowerLeg = angles(-2, 0, 0),
+			LeftFoot = angles(1, 0, 0),
+			RightFoot = angles(1, 0, 0),
 		}, i == 0 and "LoopStart" or i == samples and "LoopEnd" or nil)
 	end
 end
 
 local function makeLocomotion(sequence, row)
-	local samples = 8
+	local samples = 32
 	for i = 0, samples do
 		local t = row.duration * i / samples
 		local phase = math.pi * 2 * i / samples
@@ -227,6 +262,13 @@ local function makeStart(sequence, row)
 		LeftUpperLeg = angles(0, 0, 0),
 		RightUpperLeg = angles(0, 0, 0),
 	}, "Start")
+	addFrame(sequence, row.duration * 0.16, {
+		LowerTorso = angles(2, -2, -1), UpperTorso = angles(-1, 3, 1), Head = angles(-2, 0, 0),
+		LeftUpperLeg = angles(10, 0, 1), LeftLowerLeg = angles(-14, 0, 0), LeftFoot = angles(2, 0, 0),
+		RightUpperLeg = angles(8, 0, 1), RightLowerLeg = angles(-12, 0, 0), RightFoot = angles(2, 0, 0),
+		LeftUpperArm = angles(-8, 0, -5), RightUpperArm = angles(3, 0, 5),
+		LeftLowerArm = angles(14, 0, -2), RightLowerArm = angles(12, 0, 2),
+	}, "Load")
 	addFrame(sequence, row.duration * 0.38, {
 		LowerTorso = angles(-8, 0, -2),
 		UpperTorso = angles(4, 0, 2),
@@ -234,9 +276,13 @@ local function makeStart(sequence, row)
 		RightUpperArm = angles(-22, 0, 6),
 		LeftUpperLeg = angles(-18, 0, -2),
 		RightUpperLeg = angles(23, 0, 2),
-		LeftLowerLeg = angles(18, 0, 0),
+		LeftLowerLeg = angles(-12, 0, 0), RightLowerLeg = angles(-34, 0, 0),
+		LeftFoot = angles(38, 0, 0), RightFoot = angles(19, 0, 0),
+		LeftLowerArm = angles(22, 0, -2), RightLowerArm = angles(20, 0, 2), Head = angles(3, 0, 0),
 	}, "Commit")
-	addFrame(sequence, row.duration, locomotionTransforms(math.pi * 0.5, {stride = 0.65, lift = 0.2, lean = 0.05}), "BlendOut")
+	addFrame(sequence, row.duration * 0.68, locomotionTransforms(math.pi * 1.72, MOTION.WALK), "FirstSwing")
+	addFrame(sequence, row.duration * 0.86, locomotionTransforms(math.pi * 1.90, MOTION.WALK), "HeelApproach")
+	addFrame(sequence, row.duration, locomotionTransforms(0, MOTION.WALK), "BlendOut")
 end
 
 local function makeStop(sequence, row)
@@ -248,13 +294,34 @@ local function makeStop(sequence, row)
 		RightUpperArm = angles(12, 0, 4),
 		LeftUpperLeg = angles(12, 0, -2),
 		RightUpperLeg = angles(-8, 0, 2),
-		RightLowerLeg = angles(17, 0, 0),
+		LeftLowerLeg = angles(-28, 0, 0), RightLowerLeg = angles(-12, 0, 0),
+		LeftFoot = angles(8, 0, 0), RightFoot = angles(12, 0, 0),
+		LeftLowerArm = angles(20, 0, -2), RightLowerArm = angles(26, 0, 2), Head = angles(-3, 0, 0),
 	}, "Brake")
+	addFrame(sequence, row.duration * 0.70, {
+		LowerTorso = angles(3, 0, 1), UpperTorso = angles(-1, 0, -1), Head = angles(-2, 0, 0),
+		LeftUpperLeg = angles(8, 0, -1), LeftLowerLeg = angles(-13, 0, 0), LeftFoot = angles(2, 0, 0),
+		RightUpperLeg = angles(5, 0, -1), RightLowerLeg = angles(-10, 0, 0), RightFoot = angles(2, 0, 0),
+		LeftUpperArm = angles(-6, 0, -4), RightUpperArm = angles(7, 0, 4),
+		LeftLowerArm = angles(16, 0, -2), RightLowerArm = angles(20, 0, 2),
+	}, "Overshoot", Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence, row.duration * 0.86, {
+		LowerTorso = angles(-2, 0, 0), UpperTorso = angles(2, 0, 0), Head = angles(-1, 0, 0),
+		LeftUpperArm = angles(-5, 0, -4), RightUpperArm = angles(-2, 0, 4),
+		LeftLowerArm = angles(10, 0, -2), RightLowerArm = angles(12, 0, 2),
+		LeftUpperLeg = angles(4, 0, 0), RightUpperLeg = angles(4, 0, 0),
+		LeftLowerLeg = angles(-3, 0, 0), RightLowerLeg = angles(-3, 0, 0),
+		LeftFoot = angles(1, 0, 0), RightFoot = angles(1, 0, 0),
+	}, "Rebalance", Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence, row.duration, {
 		LowerTorso = angles(-1, 0, 0),
 		UpperTorso = angles(1, 0, 0),
 		LeftUpperArm = angles(-3, 0, -3),
 		RightUpperArm = angles(-3, 0, 3),
+		LeftLowerArm = angles(7, 0, -2), RightLowerArm = angles(7, 0, 2),
+		LeftUpperLeg = angles(2, 0, 0), RightUpperLeg = angles(2, 0, 0),
+		LeftLowerLeg = angles(-2, 0, 0), RightLowerLeg = angles(-2, 0, 0),
+		LeftFoot = angles(1, 0, 0), RightFoot = angles(1, 0, 0), Head = angles(-1, 0, 0),
 	}, "Settle")
 end
 
@@ -266,6 +333,13 @@ local function makeTurn(sequence, row)
 		LeftUpperLeg = angles(-6, 8, -2),
 		RightUpperLeg = angles(8, -6, 2),
 	}, "Anticipate")
+	addFrame(sequence, row.duration * 0.18, {
+		LowerTorso = angles(-2, -4, -1), UpperTorso = angles(1, 20, 2), Head = angles(-1, 32, 0),
+		LeftUpperLeg = angles(12, 4, 1), LeftLowerLeg = angles(-16, 0, 0), LeftFoot = angles(6, -4, 0),
+		RightUpperLeg = angles(6, 4, 1), RightLowerLeg = angles(-8, 0, 0), RightFoot = angles(4, -4, 0),
+		LeftUpperArm = angles(4, -4, -5), RightUpperArm = angles(-8, 6, 6),
+		LeftLowerArm = angles(16, 0, -2), RightLowerArm = angles(14, 0, 2),
+	}, "LookLead")
 	addFrame(sequence, row.duration * 0.45, {
 		LowerTorso = angles(-4, 23, -2),
 		UpperTorso = angles(2, 30, 3),
@@ -274,12 +348,34 @@ local function makeTurn(sequence, row)
 		RightUpperArm = angles(-12, 10, 7),
 		LeftUpperLeg = angles(14, 10, -4),
 		RightUpperLeg = angles(-17, -8, 4),
-		LeftLowerLeg = angles(20, 0, 0),
+		LeftLowerLeg = angles(-26, 0, 0), RightLowerLeg = angles(-6, 0, 0),
+		LeftFoot = angles(16, -10, 0), RightFoot = angles(27, 8, 0),
+		LeftLowerArm = angles(20, 0, -2), RightLowerArm = angles(22, 0, 2),
 	}, "Pivot")
+	addFrame(sequence, row.duration * 0.67, {
+		LowerTorso = angles(-2, 14, 1), UpperTorso = angles(2, 19, -1), Head = angles(0, 18, 0),
+		LeftUpperLeg = angles(10, -6, -1), LeftLowerLeg = angles(-12, 0, 0), LeftFoot = angles(4, 4, 0),
+		RightUpperLeg = angles(8, -6, -1), RightLowerLeg = angles(-15, 0, 0), RightFoot = angles(9, 4, 0),
+		LeftUpperArm = angles(14, -6, -5), RightUpperArm = angles(-15, 8, 6),
+		LeftLowerArm = angles(18, 0, -2), RightLowerArm = angles(20, 0, 2),
+	}, "BodyFollow", Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence, row.duration * 0.84, {
+		LowerTorso = angles(-1, 5, 0), UpperTorso = angles(1, 8, 0), Head = angles(0, 9, 0),
+		LeftUpperArm = angles(3, -2, -4), RightUpperArm = angles(-6, 2, 4),
+		LeftLowerArm = angles(10, 0, -2), RightLowerArm = angles(13, 0, 2),
+		LeftUpperLeg = angles(5, -2, 0), RightUpperLeg = angles(5, -2, 0),
+		LeftLowerLeg = angles(-5, 0, 0), RightLowerLeg = angles(-5, 0, 0),
+		LeftFoot = angles(1, 2, 0), RightFoot = angles(1, 2, 0),
+	}, "ArmFollow", Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence, row.duration, {
 		LowerTorso = angles(-1, 4, 0),
 		UpperTorso = angles(1, 6, 0),
 		Head = angles(0, 8, 0),
+		LeftUpperArm = angles(-3, 0, -4), RightUpperArm = angles(-3, 0, 4),
+		LeftLowerArm = angles(7, 0, -2), RightLowerArm = angles(7, 0, 2),
+		LeftUpperLeg = angles(3, -4, 0), RightUpperLeg = angles(3, -4, 0),
+		LeftLowerLeg = angles(-3, 0, 0), RightLowerLeg = angles(-3, 0, 0),
+		LeftFoot = angles(1, 0, 0), RightFoot = angles(1, 0, 0),
 	}, "Recover")
 end
 
@@ -287,30 +383,61 @@ local function makeJump(sequence, row)
 	addFrame(sequence, 0, {
 		LowerTorso = angles(8, 0, 0),
 		UpperTorso = angles(-5, 0, 0),
-		LeftUpperLeg = angles(-18, 0, -3),
-		RightUpperLeg = angles(-18, 0, 3),
-		LeftLowerLeg = angles(32, 0, 0),
-		RightLowerLeg = angles(32, 0, 0),
+		LeftUpperLeg = angles(22, 0, -3),
+		RightUpperLeg = angles(22, 0, 3),
+		LeftLowerLeg = angles(-44, 0, 0),
+		RightLowerLeg = angles(-44, 0, 0),
+		LeftFoot = angles(14, 0, 0), RightFoot = angles(14, 0, 0),
 		LeftUpperArm = angles(18, 0, -8),
 		RightUpperArm = angles(18, 0, 8),
+		LeftLowerArm = angles(18, 0, -2), RightLowerArm = angles(18, 0, 2), Head = angles(-2, 0, 0),
 	}, "Crouch")
+	addFrame(sequence, row.duration * 0.22, {
+		LowerTorso = angles(11, 0, 0), UpperTorso = angles(-7, 0, 0), Head = angles(-3, 0, 0),
+		LeftUpperLeg = angles(31, 0, -3), RightUpperLeg = angles(31, 0, 3),
+		LeftLowerLeg = angles(-60, 0, 0), RightLowerLeg = angles(-60, 0, 0),
+		LeftFoot = angles(18, 0, 0), RightFoot = angles(18, 0, 0),
+		LeftUpperArm = angles(-22, 0, -9), RightUpperArm = angles(-22, 0, 9),
+		LeftLowerArm = angles(25, 0, -2), RightLowerArm = angles(25, 0, 2),
+	}, "Compression")
+	addFrame(sequence, row.duration * 0.40, {
+		LowerTorso = angles(1, 0, 0), UpperTorso = angles(-1, 0, 0), Head = angles(-3, 0, 0),
+		LeftUpperLeg = angles(16, 0, -2), RightUpperLeg = angles(16, 0, 2),
+		LeftLowerLeg = angles(-25, 0, 0), RightLowerLeg = angles(-25, 0, 0),
+		LeftFoot = angles(8, 0, 0), RightFoot = angles(8, 0, 0),
+		LeftUpperArm = angles(30, 0, -12), RightUpperArm = angles(30, 0, 12),
+		LeftLowerArm = angles(28, 0, -2), RightLowerArm = angles(28, 0, 2),
+	}, "Extension")
 	addFrame(sequence, row.duration * 0.55, {
 		LowerTorso = angles(-7, 0, 0),
 		UpperTorso = angles(3, 0, 0),
 		LeftUpperLeg = angles(16, 0, -2),
 		RightUpperLeg = angles(16, 0, 2),
-		LeftLowerLeg = angles(8, 0, 0),
-		RightLowerLeg = angles(8, 0, 0),
-		LeftUpperArm = angles(-22, 0, -12),
-		RightUpperArm = angles(-22, 0, 12),
+		LeftLowerLeg = angles(-8, 0, 0),
+		RightLowerLeg = angles(-8, 0, 0),
+		LeftFoot = angles(-10, 0, 0), RightFoot = angles(-10, 0, 0),
+		LeftUpperArm = angles(64, 0, -12),
+		RightUpperArm = angles(64, 0, 12),
+		LeftLowerArm = angles(20, 0, -2), RightLowerArm = angles(20, 0, 2), Head = angles(1, 0, 0),
 	}, "Takeoff")
+	addFrame(sequence, row.duration * 0.76, {
+		LowerTorso = angles(-5, 0, 0), UpperTorso = angles(2, 0, 0), Head = angles(1, 0, 0),
+		LeftUpperLeg = angles(23, 0, -2), RightUpperLeg = angles(20, 0, 2),
+		LeftLowerLeg = angles(-38, 0, 0), RightLowerLeg = angles(-32, 0, 0),
+		LeftFoot = angles(8, 0, 0), RightFoot = angles(7, 0, 0),
+		LeftUpperArm = angles(47, 0, -14), RightUpperArm = angles(43, 0, 14),
+		LeftLowerArm = angles(30, 0, -2), RightLowerArm = angles(28, 0, 2),
+	}, "FollowThrough", Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence, row.duration, {
 		LowerTorso = angles(-4, 0, 0),
 		UpperTorso = angles(2, 0, 0),
 		LeftUpperLeg = angles(8, 0, -1),
 		RightUpperLeg = angles(8, 0, 1),
-		LeftLowerLeg = angles(18, 0, 0),
-		RightLowerLeg = angles(18, 0, 0),
+		LeftLowerLeg = angles(-18, 0, 0),
+		RightLowerLeg = angles(-18, 0, 0),
+		LeftFoot = angles(14, 0, 0), RightFoot = angles(14, 0, 0),
+		LeftUpperArm = angles(22, 0, -10), RightUpperArm = angles(22, 0, 10),
+		LeftLowerArm = angles(22, 0, -2), RightLowerArm = angles(22, 0, 2), Head = angles(0, 0, 0),
 	}, "Air")
 end
 
@@ -319,29 +446,69 @@ local function makeLand(sequence, row)
 		LowerTorso = angles(-4, 0, 0),
 		LeftUpperLeg = angles(8, 0, -1),
 		RightUpperLeg = angles(8, 0, 1),
-		LeftLowerLeg = angles(12, 0, 0),
-		RightLowerLeg = angles(12, 0, 0),
+		UpperTorso = angles(2, 0, 0),
+		LeftLowerLeg = angles(-18, 0, 0), RightLowerLeg = angles(-18, 0, 0),
+		LeftFoot = angles(14, 0, 0), RightFoot = angles(14, 0, 0),
+		LeftUpperArm = angles(22, 0, -10), RightUpperArm = angles(22, 0, 10),
+		LeftLowerArm = angles(22, 0, -2), RightLowerArm = angles(22, 0, 2),
 	}, "Air")
+	addFrame(sequence, row.duration * 0.12, {
+		LowerTorso = angles(3, 0, 0), UpperTorso = angles(-1, 0, 0), Head = angles(-2, 0, 0),
+		LeftUpperLeg = angles(18, 0, -2), RightUpperLeg = angles(18, 0, 2),
+		LeftLowerLeg = angles(-34, 0, 0), RightLowerLeg = angles(-34, 0, 0),
+		LeftFoot = angles(13, 0, 0), RightFoot = angles(13, 0, 0),
+		LeftUpperArm = angles(29, 0, -12), RightUpperArm = angles(29, 0, 12),
+		LeftLowerArm = angles(24, 0, -2), RightLowerArm = angles(24, 0, 2),
+	}, "Contact")
 	addFrame(sequence, row.duration * 0.35, {
 		LowerTorso = angles(13, 0, 0),
 		UpperTorso = angles(-7, 0, 0),
-		LeftUpperLeg = angles(-22, 0, -3),
-		RightUpperLeg = angles(-22, 0, 3),
-		LeftLowerLeg = angles(42, 0, 0),
-		RightLowerLeg = angles(42, 0, 0),
+		LeftUpperLeg = angles(28, 0, -3),
+		RightUpperLeg = angles(28, 0, 3),
+		LeftLowerLeg = angles(-62, 0, 0),
+		RightLowerLeg = angles(-62, 0, 0),
+		LeftFoot = angles(21, 0, 0), RightFoot = angles(21, 0, 0),
 		LeftUpperArm = angles(24, 0, -12),
 		RightUpperArm = angles(24, 0, 12),
+		LeftLowerArm = angles(34, 0, -3), RightLowerArm = angles(34, 0, 3), Head = angles(-4, 0, 0),
 	}, "Impact")
+	addFrame(sequence, row.duration * 0.58, {
+		LowerTorso = angles(5, 0, 0), UpperTorso = angles(-1, 0, 0), Head = angles(-3, 0, 0),
+		LeftUpperLeg = angles(15, 0, -2), RightUpperLeg = angles(15, 0, 2),
+		LeftLowerLeg = angles(-28, 0, 0), RightLowerLeg = angles(-28, 0, 0),
+		LeftFoot = angles(8, 0, 0), RightFoot = angles(8, 0, 0),
+		LeftUpperArm = angles(-6, 0, -8), RightUpperArm = angles(-6, 0, 8),
+		LeftLowerArm = angles(24, 0, -2), RightLowerArm = angles(24, 0, 2),
+	}, "Rebound", Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence, row.duration * 0.82, {
+		LowerTorso = angles(-2, 0, 0), UpperTorso = angles(3, 0, 0), Head = angles(-1, 0, 0),
+		LeftUpperLeg = angles(5, 0, 0), RightUpperLeg = angles(5, 0, 0),
+		LeftLowerLeg = angles(-5, 0, 0), RightLowerLeg = angles(-5, 0, 0),
+		LeftFoot = angles(2, 0, 0), RightFoot = angles(2, 0, 0),
+		LeftUpperArm = angles(-7, 0, -5), RightUpperArm = angles(-7, 0, 5),
+		LeftLowerArm = angles(12, 0, -2), RightLowerArm = angles(12, 0, 2),
+	}, "Settle", Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence, row.duration, {
 		LowerTorso = angles(-1, 0, 0),
 		UpperTorso = angles(1, 0, 0),
-		LeftLowerLeg = angles(2, 0, 0),
-		RightLowerLeg = angles(2, 0, 0),
+		LeftUpperLeg = angles(3, 0, 0), RightUpperLeg = angles(3, 0, 0),
+		LeftLowerLeg = angles(-3, 0, 0), RightLowerLeg = angles(-3, 0, 0),
+		LeftFoot = angles(1, 0, 0), RightFoot = angles(1, 0, 0),
+		LeftUpperArm = angles(-3, 0, -4), RightUpperArm = angles(-3, 0, 4),
+		LeftLowerArm = angles(7, 0, -2), RightLowerArm = angles(7, 0, 2), Head = angles(-1, 0, 0),
 	}, "Recover")
 end
 
 local function makeHit(sequence, row)
 	addFrame(sequence, 0, {}, "Ready")
+	addFrame(sequence, row.duration * 0.08, {
+		LowerTorso = angles(2, 0, 1), UpperTorso = angles(14, -3, 8), Head = angles(1, -2, -1),
+		LeftUpperArm = angles(-8, 0, -10), RightUpperArm = angles(10, 0, 10),
+		LeftLowerArm = angles(14, 0, -2), RightLowerArm = angles(18, 0, 2),
+		LeftUpperLeg = angles(6, 0, -1), RightUpperLeg = angles(6, 0, -1),
+		LeftLowerLeg = angles(-9, 0, 0), RightLowerLeg = angles(-9, 0, 0),
+		LeftFoot = angles(1, 0, 0), RightFoot = angles(1, 0, 0),
+	}, "ImpactLead")
 	addFrame(sequence, row.duration * 0.22, {
 		LowerTorso = angles(12, 0, 8),
 		UpperTorso = angles(18, -5, 12),
@@ -350,12 +517,36 @@ local function makeHit(sequence, row)
 		RightUpperArm = angles(21, 0, 16),
 		LeftUpperLeg = angles(-9, 0, -3),
 		RightUpperLeg = angles(13, 0, 3),
+		LeftLowerLeg = angles(-12, 0, 0), RightLowerLeg = angles(-28, 0, 0),
+		LeftFoot = angles(9, 0, 0), RightFoot = angles(3, 0, 0),
+		LeftLowerArm = angles(24, 0, -3), RightLowerArm = angles(32, 0, 3),
 	}, "Recoil")
+	addFrame(sequence, row.duration * 0.38, {
+		LowerTorso = angles(10, 0, 6), UpperTorso = angles(13, -4, 10), Head = angles(15, -9, -10),
+		LeftUpperArm = angles(-18, 0, -20), RightUpperArm = angles(26, 0, 18),
+		LeftLowerArm = angles(30, 0, -3), RightLowerArm = angles(36, 0, 3),
+		LeftHand = angles(-6, 0, -3), RightHand = angles(7, 0, 3),
+		LeftUpperLeg = angles(-4, 0, -6), LeftLowerLeg = angles(-12, 0, 0), LeftFoot = angles(6, 0, 0),
+		RightUpperLeg = angles(14, 0, -6), RightLowerLeg = angles(-30, 0, 0), RightFoot = angles(6, 0, 0),
+	}, "HeadFollow", Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence, row.duration * 0.62, {
 		LowerTorso = angles(4, 0, 3),
 		UpperTorso = angles(6, -2, 5),
 		Head = angles(3, -2, -3),
-	}, "Absorb")
+		LeftUpperArm = angles(-6, 0, -9), RightUpperArm = angles(9, 0, 9),
+		LeftLowerArm = angles(15, 0, -2), RightLowerArm = angles(18, 0, 2),
+		LeftUpperLeg = angles(4, 0, -3), RightUpperLeg = angles(8, 0, -3),
+		LeftLowerLeg = angles(-12, 0, 0), RightLowerLeg = angles(-16, 0, 0),
+		LeftFoot = angles(4, 0, 0), RightFoot = angles(4, 0, 0),
+	}, "Absorb", Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence, row.duration * 0.84, {
+		LowerTorso = angles(-1, 0, -1), UpperTorso = angles(-2, 1, -2), Head = angles(0, 1, 1),
+		LeftUpperArm = angles(-2, 0, -3), RightUpperArm = angles(1, 0, 3),
+		LeftLowerArm = angles(5, 0, -1), RightLowerArm = angles(6, 0, 1),
+		LeftUpperLeg = angles(3, 0, 1), RightUpperLeg = angles(3, 0, 1),
+		LeftLowerLeg = angles(-4, 0, 0), RightLowerLeg = angles(-4, 0, 0),
+		LeftFoot = angles(2, 0, 0), RightFoot = angles(2, 0, 0),
+	}, "Rebalance", Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence, row.duration, {}, "Recover")
 end
 
@@ -678,33 +869,120 @@ end
 
 local function makeLightAttack(sequence,row)
 	addFrame(sequence,0,{
-		LowerTorso=angles(-4,-10,0),UpperTorso=angles(7,14,0),
-		RightUpperArm=angles(-72,24,34),RightLowerArm=angles(-42,0,12),
+		LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0),Head=angles(0,0,0),
+		RightUpperArm=angles(-12,6,8),RightLowerArm=angles(20,0,2),
+		LeftUpperArm=angles(6,-4,-9),LeftLowerArm=angles(24,0,-2),
+		LeftUpperLeg=angles(8,0,0),LeftLowerLeg=angles(-8,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(4,0,0),RightLowerLeg=angles(-4,0,0),RightFoot=angles(2,0,0),
 	},"Anticipation")
+	addFrame(sequence,row.duration*0.18,{
+		LowerTorso=angles(-5,-12,-2),UpperTorso=angles(8,22,3),Head=angles(-3,-8,-1),
+		RightUpperArm=angles(-58,22,30),RightLowerArm=angles(38,0,9),RightHand=angles(-8,4,6),
+		LeftUpperArm=angles(15,-8,-16),LeftLowerArm=angles(32,0,-4),
+		LeftUpperLeg=angles(15,0,2),LeftLowerLeg=angles(-14,0,0),LeftFoot=angles(4,0,0),
+		RightUpperLeg=angles(7,0,2),RightLowerLeg=angles(-12,0,0),RightFoot=angles(10,0,0),
+	},"Windup")
+	addFrame(sequence,row.duration*0.30,{
+		LowerTorso=angles(1,8,1),UpperTorso=angles(3,8,1),Head=angles(-2,-9,0),
+		RightUpperArm=angles(-52,14,28),RightLowerArm=angles(30,0,6),RightHand=angles(-11,0,5),
+		LeftUpperArm=angles(8,-5,-15),LeftLowerArm=angles(28,0,-3),
+		LeftUpperLeg=angles(10,0,-1),LeftLowerLeg=angles(-12,0,0),LeftFoot=angles(1,0,0),
+		RightUpperLeg=angles(11,0,-1),RightLowerLeg=angles(-10,0,0),RightFoot=angles(-2,0,0),
+	},"Drive")
 	addFrame(sequence,row.duration*0.42,{
 		LowerTorso=angles(6,15,3),UpperTorso=angles(-7,-22,-5),Head=angles(-2,-12,0),
-		RightUpperArm=angles(48,-38,12),RightLowerArm=angles(-10,0,3),
-		LeftUpperArm=angles(-16,0,-12),
+		RightUpperArm=angles(48,-38,12),RightLowerArm=angles(10,0,3),RightHand=angles(5,-4,-2),
+		LeftUpperArm=angles(-16,0,-12),LeftLowerArm=angles(18,0,-2),
+		LeftUpperLeg=angles(12,0,-3),LeftLowerLeg=angles(-20,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(-4,0,-3),RightLowerLeg=angles(-6,0,0),RightFoot=angles(4,0,0),
 	},"Impact")
-	addFrame(sequence,row.duration,{LowerTorso=angles(-1,0,0),UpperTorso=angles(1,0,0),RightUpperArm=angles(-12,6,8)},"Recover")
+	addFrame(sequence,row.duration*0.54,{
+		LowerTorso=angles(7,17,3),UpperTorso=angles(-6,-28,-4),Head=angles(0,-8,1),
+		RightUpperArm=angles(58,-44,7),RightLowerArm=angles(22,0,1),RightHand=angles(11,-6,-4),
+		LeftUpperArm=angles(-21,2,-10),LeftLowerArm=angles(22,0,-2),
+		LeftUpperLeg=angles(12,0,-3),LeftLowerLeg=angles(-22,0,0),LeftFoot=angles(3,0,0),
+		RightUpperLeg=angles(-3,0,-3),RightLowerLeg=angles(-7,0,0),RightFoot=angles(3,0,0),
+	},"FollowThrough",Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence,row.duration*0.72,{
+		LowerTorso=angles(2,5,1),UpperTorso=angles(1,-8,-1),Head=angles(0,-2,0),
+		RightUpperArm=angles(12,-8,8),RightLowerArm=angles(30,0,3),RightHand=angles(4,0,-2),
+		LeftUpperArm=angles(-3,-2,-9),LeftLowerArm=angles(26,0,-2),
+		LeftUpperLeg=angles(10,0,-1),LeftLowerLeg=angles(-14,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(3,0,-1),RightLowerLeg=angles(-6,0,0),RightFoot=angles(1,0,0),
+	},"Absorb",Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence,row.duration*0.88,{
+		LowerTorso=angles(-2,-1,0),UpperTorso=angles(2,2,0),Head=angles(0,0,0),
+		RightUpperArm=angles(-15,7,9),RightLowerArm=angles(22,0,2),RightHand=angles(-1,0,0),
+		LeftUpperArm=angles(7,-4,-9),LeftLowerArm=angles(25,0,-2),
+		LeftUpperLeg=angles(8,0,0),LeftLowerLeg=angles(-8,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(4,0,0),RightLowerLeg=angles(-4,0,0),RightFoot=angles(2,0,0),
+	},"Settle",Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0),Head=angles(0,0,0),
+		RightUpperArm=angles(-12,6,8),RightLowerArm=angles(20,0,2),
+		LeftUpperArm=angles(6,-4,-9),LeftLowerArm=angles(24,0,-2),
+		LeftUpperLeg=angles(8,0,0),LeftLowerLeg=angles(-8,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(4,0,0),RightLowerLeg=angles(-4,0,0),RightFoot=angles(2,0,0),
+	},"Recover")
 end
 
 local function makeHeavyAttack(sequence,row)
 	addFrame(sequence,0,{
-		LowerTorso=angles(-10,-16,-3),UpperTorso=angles(15,24,5),Head=angles(-4,10,0),
-		RightUpperArm=angles(-128,26,42),RightLowerArm=angles(-58,0,15),
-		LeftUpperArm=angles(-72,-18,-28),LeftLowerArm=angles(-42,0,-10),
+		LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0),
+		RightUpperArm=angles(-12,6,8),RightLowerArm=angles(20,0,2),
+		LeftUpperArm=angles(6,-4,-9),LeftLowerArm=angles(24,0,-2),
+		LeftUpperLeg=angles(8,0,0),LeftLowerLeg=angles(-8,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(4,0,0),RightLowerLeg=angles(-4,0,0),RightFoot=angles(2,0,0),
 	},"DeepWindup")
+	addFrame(sequence,row.duration*0.18,{
+		LowerTorso=angles(-10,-16,-3),UpperTorso=angles(15,24,5),Head=angles(-4,-6,0),
+		RightUpperArm=angles(-108,26,38),RightLowerArm=angles(48,0,12),RightHand=angles(-8,0,5),
+		LeftUpperArm=angles(-62,-18,-26),LeftLowerArm=angles(40,0,-10),
+		LeftUpperLeg=angles(24,0,3),LeftLowerLeg=angles(-28,0,0),LeftFoot=angles(14,0,0),
+		RightUpperLeg=angles(18,0,3),RightLowerLeg=angles(-24,0,0),RightFoot=angles(16,0,0),
+	},"Coil",Enum.PoseEasingStyle.Cubic)
 	addFrame(sequence,row.duration*0.32,{
-		LowerTorso=angles(-14,-12,-4),UpperTorso=angles(20,18,7),
-		RightUpperArm=angles(-142,22,35),LeftUpperArm=angles(-86,-14,-24),
+		LowerTorso=angles(-14,-12,-4),UpperTorso=angles(20,18,7),Head=angles(-5,-5,-1),
+		RightUpperArm=angles(-142,22,35),RightLowerArm=angles(58,0,12),RightHand=angles(-12,0,6),
+		LeftUpperArm=angles(-86,-14,-24),LeftLowerArm=angles(48,0,-8),
+		LeftUpperLeg=angles(30,0,4),LeftLowerLeg=angles(-34,0,0),LeftFoot=angles(18,0,0),
+		RightUpperLeg=angles(22,0,4),RightLowerLeg=angles(-28,0,0),RightFoot=angles(20,0,0),
 	},"Commit")
+	addFrame(sequence,row.duration*0.46,{
+		LowerTorso=angles(3,14,2),UpperTorso=angles(10,-4,3),Head=angles(-1,-10,0),
+		RightUpperArm=angles(-106,4,30),RightLowerArm=angles(35,0,7),RightHand=angles(-15,0,4),
+		LeftUpperArm=angles(-56,-6,-20),LeftLowerArm=angles(32,0,-6),
+		LeftUpperLeg=angles(15,0,-2),LeftLowerLeg=angles(-22,0,0),LeftFoot=angles(4,0,0),
+		RightUpperLeg=angles(4,0,-2),RightLowerLeg=angles(-12,0,0),RightFoot=angles(5,0,0),
+	},"Drive")
 	addFrame(sequence,row.duration*0.58,{
 		LowerTorso=angles(12,20,6),UpperTorso=angles(-16,-30,-8),Head=angles(5,-15,1),
-		RightUpperArm=angles(68,-42,10),RightLowerArm=angles(-4,0,2),
-		LeftUpperArm=angles(34,24,-8),LeftLowerArm=angles(-8,0,-2),
+		RightUpperArm=angles(68,-42,10),RightLowerArm=angles(4,0,2),RightHand=angles(8,-5,-3),
+		LeftUpperArm=angles(34,24,-8),LeftLowerArm=angles(8,0,-2),
+		LeftUpperLeg=angles(18,0,-6),LeftLowerLeg=angles(-34,0,0),LeftFoot=angles(4,0,0),
+		RightUpperLeg=angles(-6,0,-6),RightLowerLeg=angles(-10,0,0),RightFoot=angles(4,0,0),
 	},"HeavyImpact")
-	addFrame(sequence,row.duration,{LowerTorso=angles(2,0,0),UpperTorso=angles(1,0,0)},"Recover")
+	addFrame(sequence,row.duration*0.69,{
+		LowerTorso=angles(14,24,5),UpperTorso=angles(-14,-34,-7),Head=angles(8,-11,1),
+		RightUpperArm=angles(80,-46,6),RightLowerArm=angles(20,0,2),RightHand=angles(14,-5,-4),
+		LeftUpperArm=angles(44,25,-8),LeftLowerArm=angles(20,0,-3),
+		LeftUpperLeg=angles(20,0,-5),LeftLowerLeg=angles(-40,0,0),LeftFoot=angles(6,0,0),
+		RightUpperLeg=angles(-4,0,-5),RightLowerLeg=angles(-14,0,0),RightFoot=angles(4,0,0),
+	},"FollowThrough",Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence,row.duration*0.86,{
+		LowerTorso=angles(2,3,1),UpperTorso=angles(3,-5,-1),Head=angles(1,-1,0),
+		RightUpperArm=angles(4,-4,10),RightLowerArm=angles(34,0,3),RightHand=angles(3,0,-1),
+		LeftUpperArm=angles(9,0,-10),LeftLowerArm=angles(30,0,-3),
+		LeftUpperLeg=angles(11,0,-1),LeftLowerLeg=angles(-14,0,0),LeftFoot=angles(1,0,0),
+		RightUpperLeg=angles(5,0,-1),RightLowerLeg=angles(-8,0,0),RightFoot=angles(1,0,0),
+	},"Absorb",Enum.PoseEasingStyle.Cubic)
+	addFrame(sequence,row.duration,{
+		LowerTorso=angles(-2,0,0),UpperTorso=angles(2,0,0),
+		RightUpperArm=angles(-12,6,8),RightLowerArm=angles(20,0,2),
+		LeftUpperArm=angles(6,-4,-9),LeftLowerArm=angles(24,0,-2),
+		LeftUpperLeg=angles(8,0,0),LeftLowerLeg=angles(-8,0,0),LeftFoot=angles(2,0,0),
+		RightUpperLeg=angles(4,0,0),RightLowerLeg=angles(-4,0,0),RightFoot=angles(2,0,0),
+	},"Recover")
 end
 
 local function makeRangedAttack(sequence,row)

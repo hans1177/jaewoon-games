@@ -7,6 +7,8 @@ on:
       - vibe2-unreal-core
       - vibe2-main-integration-20260916
     paths:
+      - 'assets/roblox/common-motion-v1/**'
+      - 'qa/roblox-common-motion-source.test.mjs'
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'assets/vibe-engine-adapter.js'
@@ -120,6 +122,8 @@ on:
       - main
       - vibe2-unreal-core
     paths:
+      - 'assets/roblox/common-motion-v1/**'
+      - 'qa/roblox-common-motion-source.test.mjs'
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'assets/vibe-continuous-queue.js'
@@ -403,4 +407,8 @@ jobs:
           chmod +x "$luau_dir/luau"
           echo "VIBE2_LUAU_BINARY=$luau_dir/luau" >> "$GITHUB_ENV"
       - name: Execute baseline repair and hidden variants
-        run: node --test qa/vibe2-learning-practice-worker.test.mjs
+        run: |
+          test -x "$VIBE2_LUAU_BINARY"
+          node --test qa/roblox-common-motion-source.test.mjs
+          node --test qa/vibe2-learning-practice-worker.test.mjs
+
