@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1egyh9e",
+      "worker": "vibe2",
+      "taskId": "cozy-island-unity-web-base-implementation-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
+        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/generated/unity/cozy-island/background/asset.glb",
+        "assets/generated/unity/cozy-island/background/preview.png",
+        "assets/generated/unity/cozy-island/background/evidence.json",
+        "assets/generated/unity/cozy-island/item/asset.glb",
+        "assets/generated/unity/cozy-island/item/preview.png",
+        "assets/generated/unity/cozy-island/item/evidence.json",
+        "assets/generated/unity/cozy-island/prop/asset.glb",
+        "assets/generated/unity/cozy-island/prop/preview.png",
+        "assets/generated/unity/cozy-island/prop/evidence.json"
+      ],
+      "baseSha": "d9bf0c6a7e70847ca1934ce994949c26e9d1c8be",
+      "runId": "37282569963",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T08:29:53.712Z",
+      "expiresAt": "2026-10-05T09:14:53.712Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
