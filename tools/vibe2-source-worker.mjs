@@ -2240,7 +2240,7 @@ function universalAssetWorkerGuidance(order={}) {
     customization?'커마 선언이나 스타일 이름은 실제 메시·아이콘·관절 곡선 변경의 증거가 아니다. 모델에 없는 변형 연결은 AUTHORING_REQUIRED로 남기고, 잠긴 특징을 유지한다. 부품·의상 맞춤, 발 접촉, 손-무기 정렬, 이동/회전/정지/공격/스킬/피격/사망/상호작용 전환과 모바일 UI 상태를 검수한다. 빠진 측정값을 0이나 PASS로 채우지 않는다.':'',
     'For each family record exactly APPLIED or NOT_APPLICABLE. NOT_APPLICABLE is allowed only when the current game truly has no existing system for that family; never use it to skip an existing system.',
     'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
-    'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
+    'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade. Roblox package admission requires all 12 family statuses to be explicit, every selected loadout atom to remain traceable in the responsible source, and at least three native detail axes (mesh/material/VFX/audio/motion/UI) so a blank primitive presentation cannot package.',
     'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
     target==='roblox'?'Roblox source link: selected internal assets are already exposed through the existing shared Config.StudioAssets.Families table. Read the needed family directly from that table in the current responsible Luau source and use those selected atoms while authoring the existing Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator ownership. Do not edit company-asset-library.json or create a second asset pipeline. Use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } as trace evidence only; metadata never replaces actual native source use.':target==='unity'?'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.':'Web evidence must bind the shared visual document to actual existing model/material/animation/Canvas/DOM/UI owners. Preserve the canonical asset IDs and revision; metadata alone cannot pass.',
     'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
@@ -4691,18 +4691,38 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         ...(candidate.newFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||'')),
         ...(candidate.replaceFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||''))
       ].join('\n');
-      const studioHandoff=order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff||{};
+      const loadout=order?.assetProduction?.baseMaterialLoadout||{};
+      const studioHandoff=loadout?.robloxSelectionHandoff||{};
       const studioBindingVersion=Math.max(1,Math.floor(Number(studioHandoff.bindingVersion||2)));
+      const universalFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
       const required=[
         new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+studioBindingVersion+'\\b'),
         /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
+        /\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/,
         /StudioAssetBindingVersion/,
         /StudioAssetAtoms/,
         /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
       ];
       if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_FAMILY_STATUS_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
       }
+      const statusBody=visualChangeText.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+      const missingFamilyStatus=universalFamilies.filter(family=>!new RegExp('\\b'+family+'\\s*=\\s*[\"\\\'](?:APPLIED|NOT_APPLICABLE)[\"\\\']').test(statusBody));
+      if(missingFamilyStatus.length)throw new Error('ROBLOX_INTERNAL_ASSET_FAMILY_STATUS_REQUIRED:'+missingFamilyStatus.join('|'));
+      const selectedAtoms=Object.values(loadout?.families||{}).flat().map(clean).filter(Boolean);
+      const missingSelectedAtoms=selectedAtoms.filter(atom=>!visualChangeText.includes(atom));
+      if(missingSelectedAtoms.length)throw new Error('ROBLOX_INTERNAL_ASSET_SELECTED_ATOMS_REQUIRED:'+missingSelectedAtoms.join('|'));
+      const nativeDetailAxes=[
+        /(?:MeshPart|SpecialMesh|SurfaceAppearance|MeshId|TextureID)/i,
+        /(?:\.Material\s*=|MaterialVariant|SurfaceAppearance)/i,
+        /(?:ParticleEmitter|Trail|Beam|BloomEffect|ColorCorrectionEffect|Atmosphere|Sky)/i,
+        /(?:Instance\.new\s*\(\s*[\"\\\']Sound[\"\\\']|SoundService|\.SoundId\s*=)/i,
+        /(?:Animator|AnimationTrack|LoadAnimation|Motor6D|TweenService|RenderStepped|Heartbeat)/i,
+        /(?:UIStroke|UIGradient|UICorner|ImageLabel|ImageButton|ScreenGui)/i
+      ].filter(pattern=>pattern.test(visualChangeText)).length;
+      const primitivePartUsed=/Instance\.new\s*\(\s*[\"\\\']Part[\"\\\']\s*\)/i.test(visualChangeText);
+      if(nativeDetailAxes<3)throw new Error('ROBLOX_INTERNAL_ASSET_NATIVE_DETAIL_AXES_REQUIRED:'+nativeDetailAxes);
+      if(primitivePartUsed&&nativeDetailAxes<3)throw new Error('ROBLOX_PRIMITIVE_ONLY_PRESENTATION_FORBIDDEN');
     }
     if(bootstrap&&target==='unity'){
       for(const relative of responsibleFiles)if(!touched.has(relative))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:'+relative);
