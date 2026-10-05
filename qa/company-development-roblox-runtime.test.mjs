@@ -1105,7 +1105,7 @@ test('source-plan dedupe keeps only the newest same-game ingress on the fixed co
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: true/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: true/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
