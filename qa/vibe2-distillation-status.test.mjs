@@ -18,6 +18,7 @@ function verifiedSample({ project, index, taskType = 'bugfix' }) {
     difficulty: taskType === 'unity' ? 'unity-build' : 'bug',
     independentQa: 'PASS',
     browserQa: 'PASS',
+    verification: { runtime: 'PASS' },
     quality: {
       codeQuality: 1,
       noRegression: true,
@@ -86,6 +87,16 @@ test('브라우저 QA가 빠진 텍스트 샘플은 진짜 학습 데이터로 �
   assert.equal(status.diagnostics.fullyVerifiedTextSamples, 0);
   assert.equal(status.tasks.bugfix.ready, false);
   assert.equal(status.tasks.bugfix.skippedUnverified, 1);
+});
+
+test('독립 QA와 브라우저 QA만으로 런타임 검증을 대신하지 않는다', () => {
+  const record=verifiedSample({project:'P0001',index:1});
+  delete record.verification;
+  const status=buildDistillationStatus([entry(record,0)]);
+  assert.equal(status.diagnostics.fullyVerifiedTextSamples,0);
+  assert.equal(status.tasks.bugfix.accepted,0);
+  assert.equal(status.tasks.bugfix.skippedUnverified,1);
+  assert.equal(status.tasks.bugfix.ready,false);
 });
 
 test('검증된 외부 Android black-box QA 샘플은 브라우저 QA를 위조하지 않고 학습 데이터로 인정한다', () => {
