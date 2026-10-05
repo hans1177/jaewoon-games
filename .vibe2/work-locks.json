@@ -1,5 +1,35 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1a4tmux",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "roblox-games/monster-adventure/client/Game.client.luau",
+        "roblox-games/monster-adventure/server/Game.server.luau",
+        "assets/generated/roblox/monster-adventure/background/asset.glb",
+        "assets/generated/roblox/monster-adventure/background/preview.png",
+        "assets/generated/roblox/monster-adventure/background/evidence.json",
+        "assets/generated/roblox/monster-adventure/item/asset.glb",
+        "assets/generated/roblox/monster-adventure/item/preview.png",
+        "assets/generated/roblox/monster-adventure/item/evidence.json",
+        "assets/generated/roblox/monster-adventure/prop/asset.glb",
+        "assets/generated/roblox/monster-adventure/prop/preview.png",
+        "assets/generated/roblox/monster-adventure/prop/evidence.json"
+      ],
+      "baseSha": "e5820c6d325e1417029e9575aefaa7b7722b4e7b",
+      "runId": "37317077942",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-05T13:45:39.731Z",
+      "expiresAt": "2026-10-05T14:30:39.731Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
