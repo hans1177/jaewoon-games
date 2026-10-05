@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import vm from 'node:vm';
+import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {
   STUDIO_ASSET_UNIVERSE_TARGET,
@@ -3954,10 +3955,11 @@ test('asset homepage shows only total count and three representatives while zero
   const html=fs.readFileSync(path.join(root,'asset-library.html'),'utf8');
   const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   registry.assets.push({id:'zero-atom',atomId:'ZERO_TEST_ATOM',title:'영점 시험 소품',category:'PROP',platform:'ROBLOX',internalAuditScore:0,path:'assets/test.luau'});
-  const elements=new Map();
+  const elements=new Map(),documentListeners={};
+  registry.assets.find(row=>row.id==='roblox-world-ghost-gwisin-bride').internalAuditScore=0;
   registry.assets.find(row=>row.id==='roblox-insect-spider-hd-v1').internalAuditScore=0;
-  const element=id=>{if(!elements.has(id))elements.set(id,{dataset:{paused:'false'},innerHTML:'',textContent:'',attributes:{},listeners:{},setAttribute(name,value){this.attributes[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;}});return elements.get(id);};
-  const context=vm.createContext({document:{getElementById:element,querySelectorAll:()=>[]},fetch:async()=>({ok:true,json:async()=>registry}),setTimeout,clearTimeout});
+  const element=id=>{if(!elements.has(id))elements.set(id,{dataset:{paused:'false'},src:'',paused:true,play(){this.paused=false;return Promise.resolve();},pause(){this.paused=true;},innerHTML:'',textContent:'',attributes:{},listeners:{},setAttribute(name,value){this.attributes[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;}});return elements.get(id);};
+  const context=vm.createContext({document:{hidden:false,getElementById:element,querySelectorAll:()=>[],addEventListener(name,fn){documentListeners[name]=fn;}},fetch:async()=>({ok:true,json:async()=>registry}),setTimeout,clearTimeout});
   vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(element('assetCount').textContent,registry.assets.length.toLocaleString('ko-KR')+'개');
@@ -3967,14 +3969,53 @@ test('asset homepage shows only total count and three representatives while zero
   assert.equal((element('monsterPreview').innerHTML.match(/<img /g)||[]).length,1);
   assert.match(element('monsterPreview').innerHTML,/native\/spider\/spider\.png/);
   assert.equal(element('monsterName').textContent,'고디테일 거미');
+  assert.doesNotMatch(html,/fighter|@keyframes|class="(?:head|torso|blade)"/);
+  assert.equal((html.match(/<video /g)||[]).length,2);
+  assert.match(element('motionVideo').src,/native\/mesh\/idle\.mp4$/);
+  assert.match(element('actionVideo').src,/native\/mesh\/attack\.mp4$/);
+  assert.equal(element('motionVideo').paused,false);
   assert.doesNotMatch(element('monsterPreview').innerHTML,/test\.luau|영점 시험 소품/);
   element('toggleMotion').listeners.click();
   assert.equal(element('showcase').dataset.paused,'true');
+  assert.equal(element('motionVideo').paused,true);
+  assert.equal(element('actionVideo').paused,true);
   assert.equal(element('toggleMotion').attributes['aria-pressed'],'true');
   element('toggleMotion').listeners.click();
   assert.equal(element('showcase').dataset.paused,'false');
+  assert.equal(element('motionVideo').paused,false);
+  element('motionVideo').pause();
+  context.document.hidden=true;documentListeners.visibilitychange();
+  assert.equal(element('actionVideo').paused,true);
+  context.document.hidden=false;documentListeners.visibilitychange();
+  assert.equal(element('motionVideo').paused,true,'native control pause stays paused');
+  assert.equal(element('actionVideo').paused,false,'background pause resumes previously playing video');
   element('monsterImage').listeners.error();
   assert.doesNotMatch(element('monsterPreview').innerHTML,/<img /);
+});
+
+test('representative videos preserve exact source lineage without promoting quality or runtime proof',()=>{
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const asset=registry.assets.find(row=>row.id==='roblox-world-ghost-gwisin-bride');
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'assets/roblox/world-ghosts/native/mesh/evidence.json'),'utf8'));
+  const previews=evidence.inspectionPreviews;
+  const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
+  assert.equal(digest(fs.readFileSync(path.join(root,previews.sourceRender))),previews.sourceRenderSha256);
+  assert.equal(previews.nativeRuntimeProof,false);
+  assert.equal(previews.scorePromotionAllowed,false);
+  assert.notEqual(asset.productionVerified,true);
+  assert.deepEqual(asset.previewClips,previews.clips);
+  for(const clip of Object.values(previews.clips)){
+    const bytes=fs.readFileSync(path.join(root,clip.path.replace(/^\//,'')));
+    assert.equal(bytes.length,clip.bytes);
+    assert.equal(digest(bytes),clip.sha256);
+    assert.equal(bytes.toString('ascii',4,8),'ftyp');
+    assert.equal(clip.frameCount,64);
+    assert.equal(clip.frameCount/clip.frameRate,clip.durationSeconds);
+    assert.equal(clip.runtimeProof,false);
+  }
+  assert.equal(previews.clips.idle.sourceStartSeconds,0);
+  assert.equal(previews.clips.attack.sourceStartSeconds,3.2);
 });
 
 test('dynamic asset binding refreshes when source bytes change without a catalog version bump',()=>{
