@@ -61,3 +61,28 @@ test('common character assets use the 3D R15 motion viewer instead of image fall
  assert.match(viewer,/host\.dataset\.kind='common'/);
  assert.match(viewer,/function applyCommonMotion\(atom,time\)/);
 });
+
+
+test('featured authored movement and action remain source-bound and reuse the canonical 3D viewer',()=>{
+ const page=fs.readFileSync('asset-library.html','utf8');
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const manifest=JSON.parse(fs.readFileSync('assets/roblox/world-ghosts/native/asset-gallery.json','utf8'));
+ const targets=[
+  {button:'featuredWalk',asset:'ghoul',clip:'walk'},
+  {button:'featuredAttack',asset:'ifrit',clip:'attack'}
+ ];
+ for(const target of targets){
+  assert.match(page,new RegExp('id="'+target.button+'"'));
+  const row=manifest.monsters.find(item=>item.id===target.asset);assert.ok(row);
+  assert.ok(row.clips.includes(target.clip));
+  const source=fs.readFileSync('assets/roblox/world-ghosts/motions/'+target.asset+'/init.luau','utf8');
+  assert.match(source,new RegExp('Motion\\.AuthoredClip = "'+target.clip+'"'));
+  const sample=JSON.parse(fs.readFileSync(row.path.slice(1),'utf8'));
+  assert.equal(sample.sampledBy,'OFFICIAL_LUAU');
+  assert.equal(sample.sourceFingerprint,manifest.sourceFingerprint);
+  const clip=sample.clips.find(item=>item.id===target.clip);assert.ok(clip);
+  assert.equal(clip.frames.length,121);
+ }
+ assert.match(script,/await choose\(row,true\);applyClip\(clipId\);/);
+ assert.match(script,/activeViewer\.setModel\(data,kind==='environment'\)/);
+});
