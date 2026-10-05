@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-05T17:49:12.487Z",
+  "updatedAt": "2026-10-05T17:59:40.010Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -714,7 +714,9 @@
         "{\"sourceRevision\":\"c91ffce54fe3421934cecf4ea553120b6f6755f3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"1cc0bb542ad1c545b2c28660b5425d0df24175b1\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"1547fd22276b706c70d2123c22828be3debc556f\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"3f405d1dfae22042902e8d40da0ad3776a5c9841\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"3f405d1dfae22042902e8d40da0ad3776a5c9841\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "roblox-runtime-evidence-pending",
+        "{\"sourceRevision\":\"9a1c61ac1d03107e0bebb4e69ef26fa666b19d40\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -723,8 +725,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T04:43:41.874Z",
-      "updatedAt": "2026-10-05T07:52:27.087Z",
-      "occurrenceCount": 58
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 59
     },
     {
       "id": "bug-99f6b8c5bbd5d227e80c",
@@ -742,7 +744,8 @@
         "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED",
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"4ca07c5c784ab271870319a49bc3b14564830416\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"06e5ffed4caa534b9ddcaa82088eca0c8ca85839\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"06e5ffed4caa534b9ddcaa82088eca0c8ca85839\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"a72970a67df66ede20b0abb601be90a4a4068b11\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -751,8 +754,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T04:43:41.874Z",
-      "updatedAt": "2026-09-30T09:55:52.154Z",
-      "occurrenceCount": 27
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 28
     },
     {
       "id": "bug-9435eb3559169c01c615",
@@ -1084,7 +1087,8 @@
         "{\"sourceRevision\":\"bd382ef791dbc5c4605e36e32add907a4a26b966\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"c3537dccfb7dfed9911dacaf6b03250bdbfa48e4\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"899b9824cc1460c6b83af78d3c60058a88fa1065\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"3f405d1dfae22042902e8d40da0ad3776a5c9841\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"3f405d1dfae22042902e8d40da0ad3776a5c9841\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"43621b7e5d0a7d205b5d6a0711bf2e2110299662\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -1093,8 +1097,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T08:00:39.064Z",
-      "updatedAt": "2026-10-05T07:52:27.087Z",
-      "occurrenceCount": 48
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 49
     },
     {
       "id": "bug-464ed398325e5af6fd49",
@@ -3714,8 +3718,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T21:54:48.103Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 15
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 16
     },
     {
       "id": "bug-c7db2be1bdc6c06c3fa4",
@@ -5126,8 +5130,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 380
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 381
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5153,8 +5157,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 380
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 381
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -5181,8 +5185,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 218
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 219
     },
     {
       "id": "bug-21a9483913fbc47f4745",
@@ -5209,8 +5213,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 218
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 219
     },
     {
       "id": "bug-b5588ff2b4ec06cf2a70",
@@ -5442,8 +5446,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 444
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 445
     },
     {
       "id": "bug-ab4cd36474b0527e2ece",
@@ -5469,8 +5473,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 444
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 445
     },
     {
       "id": "bug-1c6129dad74bac44976e",
@@ -5821,8 +5825,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T15:49:42.055Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 157
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 158
     },
     {
       "id": "bug-83f9304dbad3b4ee26bf",
@@ -6833,8 +6837,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T16:11:53.993Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-a6f5d3b250499c30aca4",
@@ -6856,8 +6860,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T16:20:05.482Z",
-      "updatedAt": "2026-10-05T17:49:12.484Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-10-05T17:59:40.007Z",
+      "occurrenceCount": 7
     },
     {
       "id": "bug-80d915aca0a7f0595b57",

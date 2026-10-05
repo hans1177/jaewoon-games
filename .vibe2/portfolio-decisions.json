@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-05T17:49:23.526Z",
+  "generatedAt": "2026-10-05T17:59:52.423Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -64,36 +64,6 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "horror-escape-room",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 94,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 22
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
       "gameId": "wild-survival",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
@@ -138,7 +108,7 @@
           "activeTasks": 16,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 23
+          "repeatedFailureSignal": 24
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -166,6 +136,36 @@
         },
         "development": {
           "activeTasks": 5,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "horror-escape-room",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 94,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 22
@@ -438,7 +438,7 @@
           "activeTasks": 6,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 22
+          "repeatedFailureSignal": 23
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
