@@ -1190,7 +1190,7 @@ test('F0 private validation defers same-source quality repair and resumes for re
     robloxFoundationF0Passed:true,
     robloxBuildPreflightPassed:true,
     robloxBuildOrPackagePassed:true,
-    robloxBuildInternalAssetContractVersion:1,
+    robloxBuildInternalAssetContractVersion:2,
     robloxBuildInternalAssetBindingPassed:true,
     robloxBuildInternalLibraryAutoLoadPassed:true,
     robloxBuildInternalLibraryModulesPackaged:true,
