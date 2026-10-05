@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {promoteReadyDesignSeeds} from '../tools/design-only-promotion-sync.mjs';
+import {migrateDirectNativeRuntime} from '../tools/company-direct-native-design-migration.mjs';
 
 const write=(root,file,value)=>{
   const out=path.join(root,file);
@@ -407,3 +408,76 @@ test('promotion restores a durable dedicated Roblox target after a queue row is 
     assert.equal(item.robloxDedicatedTargetRegistryBinding.source,'roblox-dedicated-targets.json');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('repeated seed migration preserves source-ready package and repair checkpoints without creating a PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'native-migration-progress-'));
+  try{
+    base(root);
+    write(root,'game-seed-state.json',{version:1,seeds:[]});
+    const sourceRevision='a'.repeat(40),passedAt='2026-10-05T09:00:22.238Z';
+    const cases=[
+      {id:'source-ready',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'SOURCE_READY'},
+      {id:'package-pending',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+        robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:'ROBLOX_BUILD_PACKAGE_PENDING'},
+      {id:'asset-repair',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+        robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:'ROBLOX_PACKAGE_ASSET_THRESHOLD_REQUIRED',
+        robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:sourceRevision,
+        robloxQualityBuildUpEvidence:{authority:'roblox-package-asset-binding-failure',sourceRevision,artifactIdentity:null,assetThreshold:{pass:false,blockers:['binding-missing']}}},
+      {id:'f0-repair',currentStep:'ROBLOX_F0_SOURCE_PREFLIGHT',canonicalState:'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'},
+      {id:'unity-technical',selectedPlatform:'UNITY',currentStep:'UNITY_ANDROID_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+        robloxSourceCommit:null,robloxSourceBootstrapPassedAt:null,unitySourceCommit:sourceRevision,unitySourceBootstrapPassedAt:passedAt},
+      {id:'post-f9-build-up',currentStep:'POST_F9_CONTINUOUS_EVOLUTION',canonicalState:'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION',
+        robloxFinalReviewPassed:true,robloxF9ReleaseRegressionPassed:true,robloxF9ReleaseRegressionEvidence:{sourceRevision,artifactIdentity:'sha256:'+'b'.repeat(64),candidateVersionNumber:7}}
+    ];
+    const items=cases.map(({id,...stage})=>{
+      const source=writeMinimumDesign(root,id);
+      return{gameId:id,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'ROBLOX',
+        designBaselineSource:source,minimumDesignContract:{pass:true,source},concurrentTargetPlatforms:['ROBLOX','UNITY'],
+        robloxSourceCommit:sourceRevision,robloxSourceBootstrapPassedAt:passedAt,robloxSourceBootstrapFailedAt:null,
+        robloxBuildOrPackagePassed:false,robloxRuntimePassed:false,robloxFinalReviewPassed:false,robloxReleaseClaim:false,...stage};
+    });
+    write(root,'development-queue.json',{version:1,items});
+    for(let repeat=0;repeat<2;repeat++){
+      migrateDirectNativeRuntime(root);
+      const actual=read(root,'development-queue.json').items;
+      for(const expected of items){
+        const item=actual.find(row=>row.gameId===expected.gameId);
+        for(const key of ['currentStep','canonicalState','robloxSourceCommit','robloxSourceBootstrapPassedAt','robloxFailureStage','robloxFailureSignature',
+          'robloxQualityBuildUpRequired','robloxQualityBuildUpEvidence','robloxBuildOrPackagePassed','robloxRuntimePassed','robloxFinalReviewPassed',
+          'robloxF9ReleaseRegressionPassed','robloxF9ReleaseRegressionEvidence','robloxReleaseClaim','unitySourceCommit','unitySourceBootstrapPassedAt']){
+          assert.deepEqual(item[key],expected[key],expected.gameId+':'+key);
+        }
+      }
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('seed migration starts new designs and unverified or failed sources at source binding',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'native-migration-unverified-'));
+  try{
+    base(root);write(root,'game-seed-state.json',{version:1,seeds:[]});
+    const items=[
+      {id:'new-seed'},
+      {id:'unverified-source',robloxSourceCommit:'a'.repeat(40)},
+      {id:'changed-design',robloxSourceCommit:'a'.repeat(40),robloxSourceBootstrapPassedAt:'2026-10-05T09:00:22.238Z',oldDesign:true},
+      {id:'failed-source',robloxSourceCommit:'a'.repeat(40),robloxSourceBootstrapPassedAt:'2026-10-05T09:00:22.238Z',robloxSourceBootstrapFailedAt:'2026-10-05T09:01:22.238Z'}
+    ].map(({id,oldDesign,...evidence})=>{
+      const source=writeMinimumDesign(root,id);
+      return{gameId:id,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'ROBLOX',designBaselineSource:source,
+        minimumDesignContract:{pass:true,source:oldDesign?'design/'+id+'/older/design-revised.json':source},
+        currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+        robloxBuildOrPackagePassed:false,robloxRuntimePassed:false,robloxFinalReviewPassed:false,...evidence};
+    });
+    write(root,'development-queue.json',{version:1,items});
+    migrateDirectNativeRuntime(root);
+    for(const item of read(root,'development-queue.json').items){
+      assert.equal(item.currentStep,'TARGET_PLATFORM_SOURCE_BIND',item.gameId);
+      assert.equal(item.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND',item.gameId);
+      assert.equal(item.robloxBuildOrPackagePassed,false);
+      assert.equal(item.robloxRuntimePassed,false);
+      assert.equal(item.robloxFinalReviewPassed,false);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+

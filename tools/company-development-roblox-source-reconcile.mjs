@@ -2,6 +2,7 @@
 // This validates source only. It never claims Roblox runtime, independent QA, regression, or release success.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
@@ -13,6 +14,31 @@ const clean=value=>String(value??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
+
+export function robloxPackageAssetRepairContext({assetLibrary={},baseline={}}={}){
+  const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
+  const validators=['company-development-roblox-source-reconcile.mjs','company-development-roblox-package.mjs','company-development-roblox-bootstrap.mjs','vibe3-roblox-learning-context.mjs','company-approved-scope-contract.mjs'];
+  return {
+    libraryFingerprint:hash(JSON.stringify(assetLibrary)),
+    baselineFingerprint:hash(JSON.stringify(baseline)),
+    validatorFingerprint:hash(validators.map(file=>file+':'+hash(fs.readFileSync(new URL(file,import.meta.url)))).join('\n')),
+  };
+}
+
+export function hasCurrentRobloxPackageAssetRepair({item={},assetLibrary={},baseline={},sourceTreeSha=''}={}){
+  const evidence=item.robloxQualityBuildUpEvidence;
+  const revision=clean(item.robloxSourceCommit);
+  if(item.robloxQualityBuildUpRequired!==true||!sha40(revision)
+    ||clean(item.robloxQualityBuildUpSourceRevision)!==revision
+    ||evidence?.authority!=='roblox-package-asset-binding-failure'
+    ||clean(evidence.gameId)!==clean(item.gameId)||clean(evidence.sourceRevision)!==revision
+    ||clean(evidence.artifactIdentity)||evidence.assetThreshold?.pass!==false
+    ||!Array.isArray(evidence.assetThreshold?.blockers)||!evidence.assetThreshold.blockers.some(clean)
+    ||!sha40(evidence.sourceTreeSha)
+    ||(sourceTreeSha&&clean(evidence.sourceTreeSha)!==clean(sourceTreeSha)))return false;
+  const current=robloxPackageAssetRepairContext({assetLibrary,baseline});
+  return Object.entries(current).every(([key,value])=>evidence.assetRepairContext?.[key]===value);
+}
 
 function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const expected=buildRobloxStudioAssetBootstrapPlan({gameId:'library-refresh-probe',profile:{genre:''},assetLibrary});
@@ -199,6 +225,12 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     let baseline=null;
     let baselineLoadError=null;
     try{baseline=loadBaseline(item);}catch(error){baselineLoadError=error;}
+    if(baseline&&sourceTreeSha&&hasCurrentRobloxPackageAssetRepair({item,assetLibrary,baseline,sourceTreeSha})){
+      results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:clean(item.robloxSourceCommit),sourceTreeSha,
+        sourceRepairPending:true,blockers:[...item.robloxQualityBuildUpEvidence.assetThreshold.blockers],
+        failure:'existing-source-package-asset-repair-required',authority:'roblox-package-asset-binding-failure'});
+      continue;
+    }
     const learningProfile=baseline?robloxBuildProfileFromBaseline(baseline):null;
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};

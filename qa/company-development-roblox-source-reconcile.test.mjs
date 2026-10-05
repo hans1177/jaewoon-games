@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
-import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
@@ -880,4 +880,24 @@ test('verified learning sweep supports exact per-game scope',()=>{
   assert.match(sweep,/ROBLOX_LEARNING_SWEEP_GAME_NOT_FOUND/);
   assert.match(sweep,/requestedGameId:requestedGameId\|\|null/);
   assert.match(sweep,/ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCOPE=/);
+});
+
+
+test('unchanged package asset failure cannot be turned into a new source PASS by shallow reconciliation',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-repair-reconcile-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);writeCompiledTree(root);initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD'),sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const item={...staleItem(),robloxSourceCommit:revision,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,
+      robloxQualityBuildUpEvidence:{gameId,sourceRevision:revision,sourceTreeSha,artifactIdentity:null,authority:'roblox-package-asset-binding-failure',
+        assetThreshold:{pass:false,blockers:['ACTUAL_BINDING_REQUIRED']},assetRepairContext:robloxPackageAssetRepairContext({assetLibrary:companyAssetLibrary,baseline})}};
+    const evaluate=(assetLibrary=companyAssetLibrary)=>evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:git('rev-parse','HEAD'),loadBaseline:()=>baseline,assetLibrary,playbooks:verifiedPlaybooks});
+    assert.equal(evaluate()[0].sourceRepairPending,true);assert.equal(evaluate()[0].pass,false);
+    fs.writeFileSync(path.join(tmp,'unrelated.txt'),'unrelated');git('add','.');git('commit','-m','unrelated change');
+    assert.equal(evaluate()[0].sourceRepairPending,true,'unrelated main advance must not replay source binding');
+    assert.notEqual(evaluate({...companyAssetLibrary,version:companyAssetLibrary.version+1})[0]?.sourceRepairPending,true);
+    fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- repaired source change\n');git('add','.');git('commit','-m','real game source repair');
+    assert.notEqual(evaluate()[0]?.sourceRepairPending,true,'changed game tree must run source validation');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
