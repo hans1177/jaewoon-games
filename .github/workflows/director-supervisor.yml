@@ -290,6 +290,34 @@ jobs:
                 return Boolean(gameId&&currentCentralExactGames.has(gameId));
               }))add(stale,'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN');
 
+              // Coalesce only exact duplicate same-head exact-game ingress.
+              // Preserve any already-running representative; otherwise keep the newest queued wake.
+              const exactSameHeadGroups=new Map();
+              for(const run of runs){
+                if(run.path!=='.github/workflows/company-development-confirmed-runtime.yml')continue;
+                if(String(run.event||'')!=='workflow_dispatch')continue;
+                if(!active.has(String(run.status||'').toLowerCase()))continue;
+                const gameId=exactGameId(run);
+                if(!gameId)continue;
+                const head=String(run.head_sha||'');
+                const title=String(run.display_title||'');
+                if(!head||!title)continue;
+                const key=[gameId,head,title].join('|');
+                if(!exactSameHeadGroups.has(key))exactSameHeadGroups.set(key,[]);
+                exactSameHeadGroups.get(key).push(run);
+              }
+              for(const group of exactSameHeadGroups.values()){
+                if(group.length<2)continue;
+                const running=group
+                  .filter(r=>String(r.status||'').toLowerCase()==='in_progress')
+                  .sort((a,b)=>Number(a.id)-Number(b.id));
+                const winner=running[0]||[...group].sort((a,b)=>Number(b.id)-Number(a.id))[0];
+                for(const stale of group){
+                  if(Number(stale.id)===Number(winner.id))continue;
+                  if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD');
+                }
+              }
+
               for(const stale of runs.filter(r=>
                 [
                   '.github/workflows/company-development-roblox-runtime.yml',
@@ -405,7 +433,7 @@ jobs:
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
             safe_force_cancel=false
-            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
+            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
               safe_force_cancel=true
             fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
