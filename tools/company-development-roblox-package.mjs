@@ -151,7 +151,7 @@ export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',pr
   return Object.freeze({pass:true,technology,lightingStyle,prioritizeLightingQuality,expectsRetro,...checks});
 }
 
-export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false}={}){
+export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false,internalAssetBinding=null}={}){
   const identity=clean(artifactSha256)?`sha256:${clean(artifactSha256)}`:null;
   return Object.freeze({
     version:1,
@@ -163,6 +163,14 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
     artifactIdentity:identity,
     artifactPath:clean(artifactPath)||null,
     luauOrSourceValidationPassed:sourceValidationPassed===true,
+    internalAssetLibraryRequired:internalAssetBinding?.required===true,
+    internalAssetAllFamiliesBound:internalAssetBinding?.allFamiliesBound===true,
+    internalAssetPrimitiveOnlyForbidden:true,
+    internalAssetPrimitiveOnlyDetected:internalAssetBinding?.primitiveOnly===true,
+    internalAssetLibraryVersion:Number(internalAssetBinding?.libraryVersion||0),
+    internalAssetSelectionFingerprint:clean(internalAssetBinding?.expectedSelectionFingerprint||internalAssetBinding?.selectionFingerprint)||null,
+    internalAssetNativeFamilySignalCount:Number(internalAssetBinding?.nativeFamilyCount||0),
+    internalAssetBindingAuthority:'company-asset-library.json#baseMaterialLibrary',
     saveRequired:saveRequired===true,
     rojoVersion:ROBLOX_PACKAGE_TOOL.rojoVersion,
     rojoAssetSha256:ROBLOX_PACKAGE_TOOL.linuxX64AssetSha256,
@@ -248,10 +256,18 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
   try{
     execFileSync('git',['-C',path.resolve(repoRoot),'worktree','add','--detach',worktree,revision],{stdio:'pipe',encoding:'utf8'});
     const root=path.join(worktree,relativeSource);
-    const staticVerdict=validateExistingRobloxSourceTree({root,baseline});
+    const assetLibraryFile=path.join(worktree,'company-asset-library.json');
+    if(!fs.existsSync(assetLibraryFile))throw new Error('ROBLOX_INTERNAL_ASSET_LIBRARY_REQUIRED_FOR_PACKAGE');
+    const assetLibrary=readJson(assetLibraryFile);
+    const staticVerdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary,gameId:id});
     const actualSourceTreeSha=clean(execFileSync('git',['-C',path.resolve(repoRoot),'rev-parse',`${revision}:${relativeSource}`],{stdio:'pipe',encoding:'utf8'}));
     const validation=resolvePackageSourceValidation({staticVerdict,verifiedSourceTreeSha,actualSourceTreeSha});
     if(!validation.pass)throw new Error(`exact-source validation failed: ${validation.blockers.join(',')}`);
+    const internalAssetBinding=staticVerdict.internalAssetBinding||null;
+    if(internalAssetBinding?.required!==true)throw new Error('ROBLOX_INTERNAL_ASSET_PACKAGE_GATE_REQUIRED');
+    if(internalAssetBinding.refreshRequired===true)throw new Error('ROBLOX_INTERNAL_ASSET_PACKAGE_BINDING_STALE:'+String(internalAssetBinding.reason||'UNKNOWN'));
+    if(internalAssetBinding.allFamiliesBound!==true)throw new Error('ROBLOX_INTERNAL_ASSET_PACKAGE_ALL_FAMILIES_REQUIRED');
+    if(internalAssetBinding.primitiveOnly===true)throw new Error('ROBLOX_PRIMITIVE_ONLY_PACKAGE_FORBIDDEN');
     const expectedScripts=collectRobloxSourceScriptInventory(root);
     if(expectedScripts.total<=0)throw new Error('Roblox source contains no executable Luau scripts');
     const artifact=path.join(outDir,`${safeName(id)}.rbxlx`);
@@ -263,6 +279,7 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact,projectPath:path.join(root,'default.project.json')});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
+    console.log(`ROBLOX_BUILD_INTERNAL_ASSET_FAMILIES=PASS:libraryVersion=${Number(internalAssetBinding.libraryVersion||0)}:nativeSignals=${Number(internalAssetBinding.nativeFamilyCount||0)}:primitiveOnly=NO`);
     console.log(`ROBLOX_BUILD_LIGHTING_SERIALIZATION=NORMALIZED:technology=${lightingSerialization.technology}:lightingStyle=${lightingSerialization.lightingStyle}`);
     console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technology=${lightingGuard.technology}:lightingStyle=${lightingGuard.lightingStyle}:retroRequired=${lightingGuard.expectsRetro}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
     return createRobloxBuildEvidence({
@@ -272,6 +289,7 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
       artifactPath:artifact,
       artifactSha256:sha256,
       sourceValidationPassed:true,
+      internalAssetBinding,
       saveRequired:validation.saveRequired,
     });
   }finally{
