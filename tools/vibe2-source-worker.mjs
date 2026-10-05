@@ -1873,6 +1873,7 @@ export function buildInternalAssetSourceUsageContract(order={}){
   const flowLoadout=assetProduction?.flowAssetLoadout||{};
   const commonPackPlan=assetProduction?.commonPackAutoUse||{};
   const commonPackIds=unique(commonPackPlan?.packIds||[]).sort();
+  const registryPackIds=unique(commonPackPlan?.registryPackIds||[]).sort();
   const commonPackSourceFiles=unique(commonPackPlan?.sourceFiles||[]).map(posix).filter(Boolean).sort();
   const commonPacks=(commonPackPlan?.packs||[]).map(row=>Object.freeze({
     packId:clean(row?.packId),
@@ -1916,6 +1917,7 @@ export function buildInternalAssetSourceUsageContract(order={}){
     version:4,target,gameId,libraryVersion,
     exactFamilies,
     commonPackIds,
+    registryPackIds,
     commonPackSourceFiles,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
@@ -2047,6 +2049,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
       mode:clean(commonPackPlan?.mode)||null,
       packCount:commonPackIds.length,
       packIds:Object.freeze(commonPackIds),
+      registryPackIds:Object.freeze(registryPackIds),
+      registryAssetCount:Number(commonPackPlan?.registryAssetCount||0),
+      allRegistryAssetsEligible:commonPackPlan?.allRegistryAssetsEligible===true,
+      automaticUseRule:clean(commonPackPlan?.automaticUseRule)||null,
       sourceFiles:Object.freeze(commonPackSourceFiles),
       packs:Object.freeze(commonPacks),
       completeAgainstDiscoveredCatalogs:commonPackPlan?.completeAgainstDiscoveredCatalogs===true,
