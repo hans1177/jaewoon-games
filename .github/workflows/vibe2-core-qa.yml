@@ -428,7 +428,7 @@ jobs:
         run: |
           test -x "$VIBE2_LUAU_BINARY"
           node --test qa/roblox-common-motion-source.test.mjs
+          VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler" qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
-
 

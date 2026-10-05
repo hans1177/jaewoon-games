@@ -13,6 +13,7 @@ import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
+import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
@@ -399,6 +400,59 @@ test('internal motion coaching drops a stale reference and fails closed on chang
   fs.appendFileSync(path.join(cwd,root,'GhostSkinFactory.luau'),'\n-- changed rig');
   assert.equal(buildInternalMotionCoaching({cwd,order}).evidence.retrieved,false);
 });
+test('internal motion prompt uses one compatible compiled example while retaining all quality axes',()=>{
+  const source=fs.readFileSync('assets/roblox/world-ghosts/motions/aswang/init.luau','utf8');
+  const unit={scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-aswang',clipId:'walk',sourcePath:'init.luau',sourceWindow:source.slice(source.indexOf('function Motion.walk'),source.lastIndexOf('return Motion')).trim(),sourceHash:crypto.createHash('sha256').update(source).digest('hex')};
+  const order={target:'roblox',assetProductionLane:true,source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:unit}};
+  const context={files:[{path:'init.luau',editable:true,content:source}]};
+  const motionCoaching=buildInternalMotionCoaching({order});
+  assert.ok(motionCoaching.evidence.reference);
+  const prompt=buildPrompt(order,context,['init.luau'],{motionCoaching});
+  const duplicated=buildPrompt(order,context,['init.luau'],{motionCoaching:{block:motionCoaching.block}});
+  const recipe=JSON.parse(prompt.split('[MOTION TEACHER PRACTICE BEGIN]\n')[1].split('\n[MOTION TEACHER PRACTICE END]')[0]);
+  assert.deepEqual(recipe.lessons.map(row=>row.axis),SINGLE_MOTION_DEPTH_AXES);
+  assert.equal(recipe.example.reference.sha256,motionCoaching.evidence.reference.sha256);
+  assert.equal(recipe.example.source,undefined);
+  assert.ok(prompt.includes(motionCoaching.block));
+  assert.ok(prompt.includes(unit.sourceWindow));
+  assert.ok(Buffer.byteLength(prompt)<Buffer.byteLength(duplicated)-2000);
+  assert.match(prompt,/quarter speed/);assert.match(prompt,/worst frame/);
+  assert.match(prompt,/motionRepairReport/);assert.match(prompt,/SOURCE SAMPLING/);
+  assert.equal(recipe.runtimeVerified,false);
+});
+
+test('internal motion sampler rejects invisible-only changes, frozen output, stateful sampling and rig mutation',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const root=path.join(cwd,'assets/roblox/world-ghosts');
+  for(const file of ['GhostSkinCatalog.luau','GhostSkinFactory.luau'])write(path.join(root,file),fs.readFileSync(path.join('assets/roblox/world-ghosts',file),'utf8'));
+  const sourceRoot=path.join(root,'motions/gwisin-bride');
+  const source=fs.readFileSync('assets/roblox/world-ghosts/motions/gwisin-bride/init.luau','utf8');
+  write(path.join(sourceRoot,'init.luau'),source);
+  const check=insert=>validateCandidateSyntax({sourceRoot,target:'roblox',luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER,internalMotionUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-gwisin-bride'},candidate:{edits:[{path:'init.luau',find:' return result',replace:insert+'\n return result'}],newFiles:[],replaceFiles:[]}});
+  assert.throws(()=>check(' result.LeftLeg.rx = result.LeftLeg.rx + .1'),/MOTION_VISIBLE_OUTPUT_UNCHANGED/);
+  assert.throws(()=>check(' for _,p in pairs(result)do for axis in pairs(p)do p[axis]=0 end end'),/MOTION_VISIBLE_OUTPUT_FROZEN/);
+  assert.throws(()=>check(' Motion.calls=(Motion.calls or 0)+1\n result.Head.rx=Motion.calls*.0001'),/MOTION_SAMPLE_ORDER_DEPENDENT/);
+  assert.throws(()=>check(' bones.Head.position[1]=.2'),/readonly/);
+  assert.throws(()=>check(' result.Root.rx=.1'),/GAMEPLAY_ROOT_CHANGED/);
+  const result=check(' result.Head.rx=result.Head.rx+.01*math.sin(time*2)');
+  assert.equal(result.pass,true);
+  assert.equal(result.scope,'SYNTAX_AND_MOTION_SAMPLES');
+  assert.equal(result.motionSamples.count,133);
+  assert.equal(result.motionSamples.visibleOutputChanged,true);
+  assert.equal(result.motionSamples.reverseOrderDeterministic,true);
+  assert.equal(result.runtimeVerified,false);
+  assert.equal(result.motionSamples.nativeQualityVerified,false);
+  const responseFiles=['result.LeftLeg.rx=result.LeftLeg.rx+.1','result.Head.rx=result.Head.rx+.01*math.sin(time*2)'].map((code,i)=>{
+    const file=path.join(cwd,'answer-'+i+'.json');
+    write(file,JSON.stringify({edits:[{path:'init.luau',find:' return result',replace:' '+code+'\n return result'}]}));
+    return file;
+  });
+  const recovered=await generateCandidateWithRecovery({prompt:'Engine: roblox\n[SINGLE MOTION WORK UNIT BEGIN]\none source-bound walk\n[SINGLE MOTION WORK UNIT END]',target:'roblox',responsibleFiles:['init.luau'],sourceRootRelative:'assets/roblox/world-ghosts/motions/gwisin-bride',sourceRoot,allowFullRewrite:false,singleMotionWorkUnit:true,responseFiles,candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot,target:'roblox',luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER,internalMotionUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-gwisin-bride'}})});
+  assert.equal(recovered.generation.attempts,2);
+  assert.equal(recovered.generation.completionMode,'JSON_SINGLE_MOTION');
+  assert.equal(fs.readFileSync(path.join(sourceRoot,'init.luau'),'utf8'),source);
+});
+
 test('internal motion prompt keeps exact scope, short source anchors and complete response contract without the oversized game goal',t=>{
   const f=singleMotionFixture(t);
   f.unit.scope='INTERNAL_ASSET_LIBRARY';
