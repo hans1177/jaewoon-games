@@ -171,7 +171,7 @@ jobs:
           node <<'NODE' > /tmp/roblox-runtime-stale-run-ids
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-contract-runs.json','utf8'));
-          const states=new Set(['queued','pending','in_progress','requested']);
+          const states=new Set(['queued','pending','requested']);
           const currentRun=Number(process.env.GITHUB_RUN_ID||0);
           const currentSha=String(process.env.GITHUB_SHA||'');
           for(const run of payload.workflow_runs||[]){
