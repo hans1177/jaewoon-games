@@ -4332,7 +4332,6 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
   const oversizedStandardInitial=!allowFullRewrite
-    &&!singleMotionWorkUnit
     &&specializedInitialPrompt===prompt
     &&!dedicatedRobloxOversizePath
     &&Buffer.byteLength(prompt,'utf8')>MAX_INITIAL_JSON_PROMPT_BYTES;
@@ -4453,7 +4452,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       ?accumulatedFullWeb.content
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     let attemptPrompt=singleMotionWorkUnit
-      ?prompt+(retry?'\n[SINGLE MOTION REPAIR FEEDBACK]\n'+clean(lastError?.message)+'\nReturn the complete same-target patch and all grounded depth evidence; do not reduce this work unit to one partial edit.':'')
+      ?initialStudioPrompt+(retry?'\n[SINGLE MOTION REPAIR FEEDBACK]\n'+clean(lastError?.message)+'\nReturn the complete same-target patch and all grounded depth evidence; do not reduce this work unit to one partial edit.':'')
       :expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
