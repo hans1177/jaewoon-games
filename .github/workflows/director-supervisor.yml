@@ -264,6 +264,32 @@ jobs:
                 &&String(r.head_sha||'')!==currentMain
               ))add(stale,'CENTRAL_DEVELOPMENT_STALE_HEAD_REPLACED_BY_CURRENT_RUN');
 
+              // Exact-game coordinator runs are run-scoped so independent cycles may overlap.
+              // Retire only an unstarted stale-head ingress when the same exact game already has
+              // a current-main replacement. Active old-head work is never cancelled here.
+              const exactGameId=run=>{
+                const m=String(run.display_title||'').match(/^DEVELOPMENT cycle \| ([a-z0-9][a-z0-9-]{1,80}) \|/);
+                return m&&m[1]!=='batch'?m[1]:null;
+              };
+              const currentCentralExactGames=new Set(runs
+                .filter(r=>
+                  r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+                  &&String(r.event||'')==='workflow_dispatch'
+                  &&active.has(String(r.status||'').toLowerCase())
+                  &&String(r.head_branch||'')==='main'
+                  &&String(r.head_sha||'')===currentMain
+                )
+                .map(exactGameId)
+                .filter(Boolean));
+              for(const stale of runs.filter(r=>{
+                if(r.path!=='.github/workflows/company-development-confirmed-runtime.yml')return false;
+                if(String(r.event||'')!=='workflow_dispatch')return false;
+                if(!queued.has(String(r.status||'').toLowerCase()))return false;
+                if(String(r.head_branch||'')!=='main'||String(r.head_sha||'')===currentMain)return false;
+                const gameId=exactGameId(r);
+                return Boolean(gameId&&currentCentralExactGames.has(gameId));
+              }))add(stale,'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN');
+
               for(const stale of runs.filter(r=>
                 [
                   '.github/workflows/company-development-roblox-runtime.yml',
@@ -379,7 +405,7 @@ jobs:
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
             safe_force_cancel=false
-            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
+            if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
               safe_force_cancel=true
             fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
