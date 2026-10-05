@@ -151,7 +151,7 @@ export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',pr
   return Object.freeze({pass:true,technology,lightingStyle,prioritizeLightingQuality,expectsRetro,...checks});
 }
 
-export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false}={}){
+export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false,internalAssetBinding=null,artifactInternalAssetBinding=null}={}){
   const identity=clean(artifactSha256)?`sha256:${clean(artifactSha256)}`:null;
   return Object.freeze({
     version:1,
@@ -164,6 +164,12 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
     artifactPath:clean(artifactPath)||null,
     luauOrSourceValidationPassed:sourceValidationPassed===true,
     saveRequired:saveRequired===true,
+    internalAssetBindingPassed:internalAssetBinding?.pass===true,
+    internalAssetFamilyCount:Number(internalAssetBinding?.familyCount||0),
+    internalAssetAppliedFamilyCount:Number(internalAssetBinding?.appliedFamilyCount||0),
+    primitiveOnlyPresentationForbidden:true,
+    primitiveOnlyPresentationDetected:internalAssetBinding?.primitiveOnly===true,
+    artifactInternalAssetBindingPassed:artifactInternalAssetBinding?.pass===true,
     rojoVersion:ROBLOX_PACKAGE_TOOL.rojoVersion,
     rojoAssetSha256:ROBLOX_PACKAGE_TOOL.linuxX64AssetSha256,
     buildPreflightPassed:false,
@@ -181,6 +187,7 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
 
 export function resolvePackageSourceValidation({staticVerdict={},verifiedSourceTreeSha='',actualSourceTreeSha=''}={}){
   const blockers=Array.isArray(staticVerdict?.blockers)?[...staticVerdict.blockers]:[];
+  const protectedAssetBlockers=blockers.filter(value=>/^ROBLOX_INTERNAL_ASSET_|^ROBLOX_PRIMITIVE_ONLY_/i.test(clean(value)));
   const saveRequired=staticVerdict?.saveRequired===true;
   const expectedTree=clean(verifiedSourceTreeSha);
   if(!expectedTree){
@@ -189,6 +196,14 @@ export function resolvePackageSourceValidation({staticVerdict={},verifiedSourceT
       blockers:Object.freeze([...new Set(blockers)]),
       saveRequired,
       authority:'exact-source-static-validation',
+    });
+  }
+  if(protectedAssetBlockers.length){
+    return Object.freeze({
+      pass:false,
+      blockers:Object.freeze([...new Set(protectedAssetBlockers)]),
+      saveRequired,
+      authority:'verified-vibe2-source-handoff-protected-asset-gate',
     });
   }
   if(!SHA.test(expectedTree)){
@@ -231,6 +246,27 @@ export function verifiedVibe2SourceTreeShaFromRuntime({repoRoot='.',runtimeRef='
   }
 }
 
+export function validateRobloxArtifactInternalAssetBinding({artifactPath='',sourceBinding={}}={}){
+  if(sourceBinding?.pass!==true)throw new Error('ROBLOX_PACKAGE_INTERNAL_ASSET_SOURCE_BINDING_REQUIRED');
+  if(!artifactPath||!fs.existsSync(artifactPath))throw new Error('ROBLOX_PACKAGE_INTERNAL_ASSET_ARTIFACT_REQUIRED');
+  const xml=fs.readFileSync(artifactPath,'utf8');
+  const blockers=[];
+  if(!/STUDIO_ASSET_BINDING_VERSION/.test(xml))blockers.push('ROBLOX_PACKAGE_ASSET_BINDING_VERSION_TRACE_REQUIRED');
+  if(!/STUDIO_ASSET_FAMILY_STATUS/.test(xml))blockers.push('ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_TRACE_REQUIRED');
+  if(!/StudioAssetAtoms/.test(xml))blockers.push('ROBLOX_PACKAGE_ASSET_RUNTIME_TRACE_REQUIRED');
+  const selected=Object.values(sourceBinding?.selectedByFamily||{}).flat().map(clean).filter(Boolean);
+  for(const atom of selected)if(!xml.includes(atom))blockers.push('ROBLOX_PACKAGE_SELECTED_ASSET_ATOM_MISSING:'+atom);
+  if(sourceBinding?.primitiveOnly===true)blockers.push('ROBLOX_PRIMITIVE_ONLY_PRESENTATION_FORBIDDEN');
+  if(blockers.length)throw new Error('ROBLOX_PACKAGE_INTERNAL_ASSET_BINDING_FAILED:'+blockers.join(','));
+  return Object.freeze({
+    pass:true,
+    familyCount:Number(sourceBinding?.familyCount||0),
+    appliedFamilyCount:Number(sourceBinding?.appliedFamilyCount||0),
+    selectedAtomCount:selected.length,
+    primitiveOnly:false,
+  });
+}
+
 export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir='',verifiedSourceTreeSha=''}={}){
   const id=clean(gameId);
   const relativeSource=clean(sourcePath).replaceAll('\\','/');
@@ -248,7 +284,10 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
   try{
     execFileSync('git',['-C',path.resolve(repoRoot),'worktree','add','--detach',worktree,revision],{stdio:'pipe',encoding:'utf8'});
     const root=path.join(worktree,relativeSource);
-    const staticVerdict=validateExistingRobloxSourceTree({root,baseline});
+    const assetLibraryFile=path.join(worktree,'company-asset-library.json');
+    if(!fs.existsSync(assetLibraryFile))throw new Error('ROBLOX_PACKAGE_COMPANY_ASSET_LIBRARY_REQUIRED');
+    const assetLibrary=readJson(assetLibraryFile);
+    const staticVerdict=validateExistingRobloxSourceTree({root,gameId:id,baseline,assetLibrary});
     const actualSourceTreeSha=clean(execFileSync('git',['-C',path.resolve(repoRoot),'rev-parse',`${revision}:${relativeSource}`],{stdio:'pipe',encoding:'utf8'}));
     const validation=resolvePackageSourceValidation({staticVerdict,verifiedSourceTreeSha,actualSourceTreeSha});
     if(!validation.pass)throw new Error(`exact-source validation failed: ${validation.blockers.join(',')}`);
@@ -261,8 +300,10 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     if(!stat.isFile()||stat.size<=0)throw new Error('Rojo package artifact missing or empty');
     const actualScripts=validateRobloxArtifactScriptInventory({artifactPath:artifact,expected:expectedScripts});
     const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact,projectPath:path.join(root,'default.project.json')});
+    const artifactInternalAssetBinding=validateRobloxArtifactInternalAssetBinding({artifactPath:artifact,sourceBinding:staticVerdict.internalAssetBinding});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
+    console.log(`ROBLOX_BUILD_INTERNAL_ASSET_BINDING=PASS:${artifactInternalAssetBinding.appliedFamilyCount}/${artifactInternalAssetBinding.familyCount}:atoms=${artifactInternalAssetBinding.selectedAtomCount}:primitiveOnly=NO`);
     console.log(`ROBLOX_BUILD_LIGHTING_SERIALIZATION=NORMALIZED:technology=${lightingSerialization.technology}:lightingStyle=${lightingSerialization.lightingStyle}`);
     console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technology=${lightingGuard.technology}:lightingStyle=${lightingGuard.lightingStyle}:retroRequired=${lightingGuard.expectsRetro}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
     return createRobloxBuildEvidence({
@@ -273,6 +314,8 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
       artifactSha256:sha256,
       sourceValidationPassed:true,
       saveRequired:validation.saveRequired,
+      internalAssetBinding:staticVerdict.internalAssetBinding,
+      artifactInternalAssetBinding,
     });
   }finally{
     try{execFileSync('git',['-C',path.resolve(repoRoot),'worktree','remove','--force',worktree],{stdio:'ignore'});}catch{}
