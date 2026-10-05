@@ -1926,6 +1926,7 @@ export function buildInternalAssetSourceUsageContract(order={}){
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,path:row.path,internalAuditScore:row.internalAuditScore,sourceFiles:[...row.sourceFiles]})),
     compatibleAssets:compatibleAssets.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,path:row.path,license:row.license,internalAuditScore:row.internalAuditScore,lowQuality:row.lowQuality,sourceFiles:[...row.sourceFiles]})),
+    libraryEvaluation:{...(flowLoadout?.libraryEvaluation||{})},
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
   };
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
@@ -2062,6 +2063,13 @@ export function buildInternalAssetSourceUsageContract(order={}){
       fullCatalogPromptInjectionForbidden:true,
       selectedSubsetOnly:false,
       fullLibraryEvaluatedEveryBuildUp:true,
+      automaticMatchingEveryBuildUp:true,
+      automaticConnectionEveryBuildUp:true,
+      automaticRebindOnLibraryChange:true,
+      libraryEvaluationFingerprintBound:Boolean(clean(flowLoadout?.libraryEvaluation?.evaluationFingerprint)),
+      staleSelectionReuseForbidden:flowLoadout?.libraryEvaluation?.staleSelectionReuseForbidden!==false,
+      manualRefreshRequired:false,
+      manualAssetPinRequired:false,
       allCompatibleLibraryAssetsIncluded:true,
       compatibilityFilteredUsageSet:true,
       qualityScoreNeverFiltersCompatibility:true,
