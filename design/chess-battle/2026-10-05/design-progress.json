@@ -114,15 +114,15 @@
       "updatedAt": "2026-10-05T12:49:43.288Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 16714,
-      "lastMs": 8774,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-10-05T12:49:47.780Z"
+      "totalMs": 38108,
+      "lastMs": 12602,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-10-05T12:52:03.933Z"
     },
     "ollama:qwen3:1.7b": {
       "calls": 1,
@@ -137,5 +137,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T12:51:57.390Z"
+  "updatedAt": "2026-10-05T12:52:03.933Z"
 }
