@@ -2264,12 +2264,21 @@ function internalAssetSourceUsageGuidance(order={}){
     .filter(row=>row.sourceFiles.length||row.path)
     .map(row=>row.assetId+'@'+([...(row.sourceFiles||[]),row.path].filter(Boolean).join('|')))
     .join('; ');
+  const commonPack=contract.commonPackAutoUse||{};
+  const commonPackRows=(commonPack.packIds||[]).join('|');
+  const commonApiRows=(commonPack.sourceFiles||[]).join('|');
+  const registryPackRows=(commonPack.registryPackIds||[]).join('|');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
+    'All registry packs are automatically eligible when safe/platform-compatible/role-compatible/applicable: '+(registryPackRows||'NONE')+'; registryAssets='+Number(commonPack.registryAssetCount||0)+'.',
+    'All Roblox common packs are evaluated every BUILD_UP: '+(commonPackRows||'NONE')+'.',
+    'All Roblox common Luau APIs are auto-indexed every BUILD_UP: '+(commonApiRows||'NONE')+'. Detailed API bodies may rotate only for prompt budget; that rotation NEVER removes eligibility or automatic-use responsibility.',
+    'For every existing compatible system, consume the matching internal library/common-pack API before authoring a plain Part/Frame/color-only substitute. Primitive-only, color-only, marker-only, or metadata-only completion is forbidden.',
+    'A pack may be unapplied only when the current game truly has no compatible existing responsibility; never invent a gameplay system only to force a pack.',
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
     'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
