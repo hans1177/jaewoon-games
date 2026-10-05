@@ -495,6 +495,15 @@ test('runner drain force-settles only still-queued safe duplicates after accepte
   assert.doesNotMatch(director,/current_state.*in_progress.*force-cancel/s);
 });
 
+test('director treats accepted asynchronous cancel settlement as success before counting failure',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/for settle_attempt in 1 2 3 4 5; do/);
+  assert.match(director,/settle_state=.*actions\/runs\/\$\{run_id\}/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_CANCEL_SETTLED_AFTER_ACCEPTED_CANCEL=/);
+  assert.match(director,/if \[ "\$settled" = true \]; then[\s\S]*?cancelled=\$\(\(cancelled\+1\)\)[\s\S]*?else[\s\S]*?failed=\$\(\(failed\+1\)\)/);
+  assert.doesNotMatch(director,/force-cancel[\s\S]{0,700}settle_state.*in_progress/s);
+});
+
 test('director coalesces pending pre-supervision wakes while preserving active completion',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
