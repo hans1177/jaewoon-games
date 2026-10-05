@@ -1265,11 +1265,11 @@ function stableMaterialSeed(value=''){
   for(const ch of clean(value)){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
   return hash>>>0;
 }
-function stableMaterialAtoms(values=[],key='',count=3){
+function stableMaterialAtoms(values=[],key=''){
   const rows=unique(values);
   if(!rows.length)return freezeList([]);
   const start=stableMaterialSeed(key)%rows.length,out=[];
-  for(let i=0;i<Math.min(Math.max(1,count),rows.length);i++)out.push(rows[(start+i)%rows.length]);
+  for(let i=0;i<rows.length;i++)out.push(rows[(start+i)%rows.length]);
   return freezeList(out);
 }
 function baseMaterialRecipeForRequest(request='',templates=[]){
@@ -1301,7 +1301,7 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
       continue;
     }
     const values=Array.isArray(productionActive?.[family])&&productionActive[family].length?productionActive[family]:configured?.[family]||[];
-    families[family]=stableMaterialAtoms(values,`${gameId}|${['unity','web'].includes(resolvedTarget)?'UNITY_WEB_SHARED':target}|${family}`,3);
+    families[family]=stableMaterialAtoms(values,`${gameId}|${['unity','web'].includes(resolvedTarget)?'UNITY_WEB_SHARED':target}|${family}`);
   }
   const recipe=baseMaterialRecipeForRequest(request,companyRegistry?.variantRecipeTemplates||[]);
   const visualScope=/(?:PRESENTATION_PASS|GRAPHICS_PRODUCTION|ASSET_ADAPTATION|graphics?|visual|presentation|asset|model|environment|background|terrain|material|lighting|animation|motion|vfx|effect|particle|ui|hud|그래픽|비주얼|연출|에셋|모델|환경|배경|지형|재질|조명|애니|모션|이펙트|효과|파티클|외형|실루엣|스타일)/i.test(clean(request));
