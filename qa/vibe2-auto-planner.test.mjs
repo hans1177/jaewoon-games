@@ -1269,6 +1269,7 @@ test('first studio build-up cycle establishes presentation baseline even when no
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  writeStudioDesign(root,gameId);
   const project={
     gameId,name:'Studio First Cycle',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`,
     developmentValidation:{blockers:['MOBILE_TOUCH_ACTION_NOT_CONNECTED'],nextAction:'repair input later'}
@@ -1291,6 +1292,7 @@ test('legacy verified studio cycle without presentation is corrected to presenta
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  writeStudioDesign(root,gameId);
   const project={
     gameId,name:'Studio Legacy Baseline Recovery',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`,
     developmentValidation:{blockers:['MOBILE_TOUCH_ACTION_NOT_CONNECTED']}
@@ -4071,13 +4073,12 @@ test('queued rebuild and released caretaker receive lobby binding before backlog
     assert.equal(again.queue.tasks.find(t=>t.id==='task-0').goal,first.queue.tasks.find(t=>t.id==='task-0').goal);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-test('real cozy-island Web source produces both code BUILD_UP and graphics replacement work',()=>{
+test('real cozy-island Web source waits for verified design before any BUILD_UP',()=>{
   const repoRoot=path.resolve(process.cwd());
   const sourceRoot='web-games/cozy-island';
   assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'index.html')),true);
   assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'style.css')),true);
   assert.equal(fs.existsSync(path.join(repoRoot,sourceRoot,'game.js')),true);
-
   const project={
     gameId:'cozy-island',
     name:'포근섬: 작은 왕국 키우기',
@@ -4090,33 +4091,8 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
     source:'real-main-game-regression'
   };
   const queue=createVibeContinuousQueue({tasks:[],maxConcurrentTasks:256});
-
-  const codeBuildUp=findStudioContinuousImprovementTask(project,repoRoot,queue,'USABILITY');
-  assert.ok(codeBuildUp);
-  assert.equal(codeBuildUp.target,'web');
-  assert.equal(codeBuildUp.sourceRoot,sourceRoot);
-  assert.ok(codeBuildUp.responsibleFiles.length>0);
-  assert.ok(codeBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
-  assert.equal(codeBuildUp.studioQualityEvolution?.nextCycleRequired,true);
-  assert.equal(codeBuildUp.maxRetries,null);
-  assert.equal(codeBuildUp.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
-  assert.ok(codeBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
-
-  const graphicsBuildUp=findStudioContinuousImprovementTask(project,repoRoot,queue,'PRESENTATION');
-  assert.ok(graphicsBuildUp);
-  assert.equal(graphicsBuildUp.target,'web');
-  assert.equal(graphicsBuildUp.sourceRoot,sourceRoot);
-  assert.equal(graphicsBuildUp.assetProductionLane,true);
-  assert.equal(graphicsBuildUp.studioQualityEvolution?.nextCycleRequired,true);
-  assert.ok(graphicsBuildUp.graphicsReplacementContract);
-  assert.equal(graphicsBuildUp.graphicsReplacementContract.implementation.actualSourceOrBindingDeltaRequired,true);
-  assert.equal(graphicsBuildUp.graphicsReplacementContract.implementation.zeroActualReplacementCannotPass,true);
-  assert.ok(graphicsBuildUp.completionCriteria.includes('GRAPHICS_REPLACEMENT_REAL_SOURCE_OR_BINDING_DELTA'));
-  assert.ok(graphicsBuildUp.evidence.includes('adaptive-graphics-replacement:v1'));
-  assert.ok(graphicsBuildUp.evidence.includes('studio-quality-next-cycle-required:YES'));
-  assert.ok(graphicsBuildUp.responsibleFiles.length>0);
-  assert.ok(graphicsBuildUp.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
-  assert.ok(graphicsBuildUp.responsibleFiles.some(file=>/\.(?:html?|css|js|mjs)$/i.test(file)));
+  assert.equal(findStudioContinuousImprovementTask(project,repoRoot,queue,'USABILITY'),null);
+  assert.equal(findStudioContinuousImprovementTask(project,repoRoot,queue,'PRESENTATION'),null);
 });
 
 test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
@@ -4230,56 +4206,22 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
 });
 
-test('actual fantasy-survival Web source emits code and graphics BUILD_UP work',()=>{
+test('actual fantasy-survival Web source cannot bypass verified design with existing code alone',()=>{
   const root=path.resolve(process.cwd());
   const sourceFile=path.join(root,'web-games','fantasy-survival','index.html');
   assert.ok(fs.existsSync(sourceFile),'actual fantasy-survival Web source must exist');
   assert.ok(fs.statSync(sourceFile).size>100000,'actual fantasy-survival source must be the real game, not a tiny fixture');
-
   const catalogData=JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8'));
   const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
   assert.ok(game,'fantasy-survival must exist in the real catalog');
-
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
   const project=projects.find(row=>row.gameId==='fantasy-survival'&&row.engine==='web');
   assert.ok(project,'real fantasy-survival must enter the Web planner lane');
   assert.equal(project.projectPath,'web-games/fantasy-survival');
-
-  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
-  assert.ok(tasks.length>=3,'real Web BUILD_UP should emit multiple quality-axis tasks');
-  const presentation=tasks.find(row=>row.studioQualityEvolution?.focusPillar==='PRESENTATION');
-  const code=tasks.find(row=>['CORE_FUN','PROGRESSION','USABILITY','STABILITY'].includes(row.studioQualityEvolution?.focusPillar));
-
-  assert.ok(code,'real Web BUILD_UP must include a non-presentation code/system task');
-  assert.ok((code.responsibleFiles||[]).includes('web-games/fantasy-survival/index.html'));
-  assert.equal(code.target,'web');
-  assert.ok(code.buildUpDirective?.directiveId);
-
-  assert.ok(presentation,'real Web BUILD_UP must include a PRESENTATION task');
-  assert.equal(presentation.target,'web');
-  assert.equal(presentation.assetProductionLane,true);
-  assert.ok((presentation.responsibleFiles||[]).includes('web-games/fantasy-survival/index.html'));
-  assert.equal(presentation.graphicsReplacementContract?.platform,'WEB');
-  assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.minimumActual,1);
-  assert.equal(presentation.graphicsReplacementContract?.adaptiveCount?.maximumActual,60);
-  assert.equal(presentation.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
-  assert.equal(presentation.graphicsReplacementContract?.implementation?.beforeAfterEvidenceRequired,true);
-  assert.ok((presentation.evidence||[]).includes('graphics-pass-real-asset-binding-runtime-required'));
-  assert.ok((presentation.evidence||[]).includes('presentation-runtime-qa-required'));
-  assert.ok((presentation.evidence||[]).includes('adaptive-graphics-replacement:v1'));
-
-  assert.equal(code.buildUpDirectiveId,presentation.buildUpDirectiveId,'code and graphics work must share the same BUILD_UP generation');
-  assert.equal(code.buildUpGeneration,presentation.buildUpGeneration);
-  assert.equal(presentation.buildUpDirective?.designContextMode,'SOURCE_SAFE_NO_DESIGN');
-  assert.equal(presentation.buildUpDirective?.autonomousContentExpansion?.designlessSafeMode,true);
-  assert.equal(presentation.buildUpDirective?.autonomousContentExpansion?.derivedRuleEvolution?.allowed,false);
-  assert.ok((presentation.evidence||[]).includes('build-up-designless-gameplay-expansion:FORBIDDEN'));
-  assert.deepEqual(
-    new Set(tasks.map(row=>row.studioQualityEvolution?.focusPillar)),
-    new Set(['PRESENTATION','USABILITY','STABILITY'])
-  );
+  assert.deepEqual(findStudioContinuousImprovementTasks(project,root,{tasks:[]}),[]);
 });
-test('queued Web assessment with PRESENTATION generation is repaired into graphics BUILD_UP',()=>{
+
+test('queued Web BUILD_UP becomes DESIGN_PENDING when its verified design disappears',()=>{
   const root=tempRepo();
   const gameId='web-presentation-carrier';
   const webRoot=path.join(root,'web-games',gameId);
@@ -4294,73 +4236,26 @@ test('queued Web assessment with PRESENTATION generation is repaired into graphi
     id:gameId,name:'Web Presentation Carrier',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
     hasWebArchive:true,homepageWebPlayable:false,webPath:`/web-games/${gameId}/`
   }]};
-
   const first=planVibe2AutonomousTask({
     status:{projects:[]},catalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(first.planned,true);
-  assert.equal(first.task.id,`${gameId}-existing-web-assessment-v1`);
-  assert.ok(first.task.buildUpDirective?.directiveId,'assessment must bind the BUILD_UP generation immediately');
-
+  assert.ok(first.task.buildUpDirective?.directiveId);
   fs.rmSync(path.join(root,'design',gameId),{recursive:true,force:true});
-  const legacyDirectiveId=`${gameId}-build-up-g1-legacy-presentation`;
-  const stale={
-    ...first.task,
-    status:'queued',
-    assetProductionLane:false,
-    presentationPass:null,
-    graphicsReplacementContract:null,
-    buildUpDirectiveId:legacyDirectiveId,
-    buildUpGeneration:1,
-    buildUpDirective:{
-      directiveId:legacyDirectiveId,
-      gameId,
-      generation:1,
-      primaryFocus:'PRESENTATION',
-      autonomousContentExpansion:{version:1}
-    },
-    evidence:(first.task.evidence||[]).filter(value=>
-      value!=='presentation-pass:ASSET_ADAPTATION'
-      &&value!=='presentation-quality-pipeline:v1'
-      &&value!=='adaptive-graphics-replacement:v1'
-    )
-  };
+  const stale={...first.task,status:'queued',buildUpDirective:null,buildUpDirectiveId:null,buildUpStatus:null};
   const second=planVibe2AutonomousTasks({
     status:{projects:[]},catalog,
     queue:{maxConcurrentTasks:4,tasks:[stale]},
     repoRoot:root,maxConcurrentTasks:4,queueMaxConcurrentTasks:4,
     planningBacklogTarget:1,planningBacklogMinimum:0
   });
-  const repaired=second.queue.tasks.find(row=>row.id===stale.id);
-  assert.ok(repaired);
-  assert.equal(repaired.buildUpDirective?.primaryFocus,'PRESENTATION');
-  assert.equal(repaired.assetProductionLane,true);
-  assert.equal(repaired.presentationPass,'ASSET_ADAPTATION');
-  assert.equal(repaired.graphicsReplacementContract?.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
-  assert.equal(repaired.graphicsReplacementContract?.implementation?.actualSourceOrBindingDeltaRequired,true);
-  assert.equal(repaired.graphicsReplacementContract?.implementation?.zeroActualReplacementCannotPass,true);
-  assert.ok(repaired.evidence.includes('presentation-quality-pipeline:v1'));
-  assert.ok(repaired.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
-  assert.ok(repaired.evidence.includes('adaptive-graphics-replacement:v1'));
-  assert.ok(repaired.evidence.includes('asset-production-parallel:v1'));
-  assert.ok(repaired.evidence.includes('build-up-pre-reserve-binding:CHECKED'));
-  assert.match(repaired.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
-
-  const laneOnlyStale={
-    ...repaired,
-    assetProductionLane:false,
-    evidence:(repaired.evidence||[]).filter(value=>value!=='asset-production-parallel:v1')
-  };
-  const third=planVibe2AutonomousTasks({
-    status:{projects:[]},catalog,
-    queue:{maxConcurrentTasks:4,tasks:[laneOnlyStale]},
-    repoRoot:root,maxConcurrentTasks:4,queueMaxConcurrentTasks:4,
-    planningBacklogTarget:1,planningBacklogMinimum:0
-  });
-  const laneRecovered=third.queue.tasks.find(row=>row.id===stale.id);
-  assert.ok(laneRecovered);
-  assert.equal(laneRecovered.assetProductionLane,true);
-  assert.ok(laneRecovered.evidence.includes('asset-production-parallel:v1'));
+  const pending=second.queue.tasks.find(row=>row.id===stale.id);
+  assert.ok(pending);
+  assert.equal(pending.buildUpDirectiveId,null);
+  assert.equal(pending.buildUpStatus,'DESIGN_PENDING');
+  assert.ok(pending.evidence.includes('build-up-directive:DESIGN_PENDING'));
+  assert.ok(pending.evidence.includes('web-build-up:VERIFIED_DESIGN_REQUIRED'));
+  assert.ok(pending.evidence.includes('web-build-up:SIMPLE_CODE_SUBSTITUTE_FORBIDDEN'));
 });
 
 
