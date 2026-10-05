@@ -3298,6 +3298,12 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
   const motionTeaching=order.target==='roblox'&&assetDevelopmentTask(order)?createRobloxWalkTeachingRecipe(motionUnit):null;
+  // 실제 같은 형태의 컴파일된 교재가 있으면 일반 예제 코드를 중복 전송하지 않는다.
+  // 여섯 검수 축, 원본 바인딩과 검증 전 상태는 그대로 보존한다.
+  const boundMotionReference=motionUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&motionCoaching?.evidence?.retrieved===true&&motionCoaching.evidence.reference;
+  const motionLesson=motionTeaching&&boundMotionReference
+    ?{...motionTeaching,example:{contract:'Use the source-hash-bound example in INTERNAL MOTION COACHING; adapt its principles to the target rig, never its identity or duration.',reference:boundMotionReference}}
+    :motionTeaching;
   const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
   const photoCraft=!motionUnit&&(order.assetProduction?.imageAssetCreation?.enabled===true||order.imageAssetObservation?.required===true);
   const assetTeaching=assetDevelopmentTask(order)?createAssetProductionTeachingRecipe({
@@ -3313,10 +3319,10 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const studioMotionTeaching=order.target==='roblox'&&assetTeaching?.familyLessons.some(row=>row.family==='MOTION')?createStudioMotionActionProfile({platform:'ROBLOX',teachingClip:motionUnit?.clipId||'ALL'}).teaching:null;
   // Bound motion functions keep pure samples; carrying new spring/lifecycle state is
   // outside their responsibility. Full recipes retain those examples for other owners.
-  const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify({...assetTeaching,...(motionUnit?{advancedTechniques:assetTeaching.advancedTechniques.map(({id,when,check})=>({id,when,check})),applicationExamples:assetTeaching.applicationExamples.filter(example=>['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND'].includes(example.id))}:{}),...(studioMotionTeaching?{studioMotion:studioMotionTeaching}:{})})+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
+  const assetTeachingBlock=assetTeaching?'[INTERNAL ASSET TEACHER PRACTICE BEGIN]\n'+JSON.stringify({...assetTeaching,...(motionUnit?{advancedTechniques:assetTeaching.advancedTechniques.map(({id,when,check})=>({id,when,check})),applicationExamples:boundMotionReference?[]:assetTeaching.applicationExamples.filter(example=>['HERMITE_POSE_SEGMENT','TWO_BONE_REACH_GEOMETRY','SHORTEST_QUATERNION_BLEND'].includes(example.id)),...(boundMotionReference?{sourceBoundExample:boundMotionReference}:{})}:{}),...(studioMotionTeaching?{studioMotion:studioMotionTeaching}:{})})+'\n[INTERNAL ASSET TEACHER PRACTICE END]':'';
   const singleMotionBlock=motionUnit?[
     '[SINGLE MOTION WORK UNIT BEGIN]',JSON.stringify(motionUnit),
-    motionTeaching?'[MOTION TEACHER PRACTICE BEGIN]\n'+JSON.stringify(motionTeaching)+'\n[MOTION TEACHER PRACTICE END]':'',
+    motionLesson?'[MOTION TEACHER PRACTICE BEGIN]\n'+JSON.stringify(motionLesson)+'\n[MOTION TEACHER PRACTICE END]':'',
     'One existing object, one existing motion only. Estimate sixty minutes of active modification depth; preparation, QA, waiting and reporting do not fill that estimate. Refine pose/staging, weight/balance, joint arcs/spacing, contact/constraints, overlap/settle, and loop/transition within this one exact sourceWindow. Preserve the original object/clip binding, lockedSource, clip duration and gameplay event times. Do not edit shared functions affecting other objects or clips. Do not switch targets, add motions, or stop at a renamed constant or one cosmetic edit. A complete function-level change may be one edits[] item. Return motionRepairReport: {objectId,clipId,depthEvidence:[{axis,before,after}]} with exactly these axes: '+SINGLE_MOTION_DEPTH_AXES.join(',')+'. Use status CHANGED with distinct exact changed executable source excerpts from the patch. For a sound axis predeclared in preservedAxes, use status PRESERVED with before and after equal to its exact locked excerpt; do not change a sound axis to pad the workload. At least one real refinement remains required. This report proves source scope only, never native animation quality or hours actually worked. Native same-condition before/after inspection remains required.',
     '[SINGLE MOTION WORK UNIT END]'
   ].join('\n'):'';
@@ -3338,6 +3344,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       'TARGET SOURCE: edits[].find must be a unique character-for-character excerpt wholly inside this exact sourceWindow. Prefer non-overlapping focused edits with short exact anchors; return a complete patch and all six depth axes together.',
       '=== FILE '+motionUnit.sourcePath+' [EDITABLE EXACT SOURCE WINDOW] ===\n'+sourceWindow,
       'Preserve the current API and all behavior outside this window. Root authority, gameplay, saves, damage, hitboxes, hit timing and clip duration cannot change. Use only real bound joints. No newFiles or replaceFiles.',
+      'SOURCE SAMPLING: the candidate must change an actually visible joint or its ancestor, retain time-varying visible motion, return identical poses when the same times are sampled in reverse order, and never mutate the input bones. Unused-joint edits and frozen poses fail. These source checks cannot prove world-space contact or native visual quality.',
       'Required response schema: '+JSON.stringify(singleMotionResponseSchema()),
       'motionRepairReport.objectId='+JSON.stringify(motionUnit.objectId)+'; clipId='+JSON.stringify(motionUnit.clipId)+'. Report exact executable before/after excerpts for each axis, not prose. Each CHANGED pair must differ and be distinct; PRESERVED is allowed only for that axis in preservedAxes. Never report tests or runtime inspection as passed unless executed.'
     ].filter(Boolean).join('\n');
@@ -5112,10 +5119,82 @@ export function validateCandidateSyntax({candidate,sourceRoot,target='system',lu
       const factory=fs.readFileSync(path.join(assetRoot,'GhostSkinFactory.luau'),'utf8');
       const motion=fs.readFileSync(path.join(tempRoot,'init.luau'),'utf8');
       const check=path.join(tempRoot,'motion-check.luau');
-      fs.writeFileSync(check,`local Catalog=(function()${catalog}\nend)()\nlocal script={Parent={WaitForChild=function()return 'catalog'end}}\nlocal require=function()return Catalog end\nlocal Factory=(function()${factory}\nend)()\nlocal Motion=(function()${motion}\nend)()\nlocal data=Factory.Describe(${JSON.stringify(id)})\nassert(Motion.AssetId==data.id,'MOTION_IDENTITY_CHANGED')\nfor frame=0,128 do\n local poses=Motion.walk(data.form,data.bones,frame/32)\n for name in pairs(poses)do assert(data.bones[name],'UNKNOWN_MOTION_JOINT')end\n for name in pairs(data.bones)do\n  local pose=assert(poses[name],'MISSING_MOTION_JOINT')\n  for _,axis in ipairs({'x','y','z','rx','ry','rz'})do\n   local value=pose[axis]\n   assert(type(value)=='number' and value==value and math.abs(value)<16,'MOTION_POSE_UNBOUNDED')\n   if name=='Root'then assert(value==0,'GAMEPLAY_ROOT_CHANGED')end\n  end\n end\nend\n`,'utf8');
+      // 실제 보이는 관절과 상위 관절의 출력만 변화로 인정한다. 네이티브 품질 통과는 별도다.
+      const baseline=fs.readFileSync(path.join(sourceRoot,'init.luau'),'utf8');
+      fs.writeFileSync(check,`local Catalog=(function()${catalog}
+end)()
+local script={Parent={WaitForChild=function()return 'catalog'end}}
+local require=function()return Catalog end
+local Factory=(function()${factory}
+end)()
+local Baseline=(function()${baseline}
+end)()
+local Motion=(function()${motion}
+end)()
+local data=Factory.Describe(${JSON.stringify(id)})
+assert(Motion.AssetId==data.id,'MOTION_IDENTITY_CHANGED')
+local visible={}
+for _,part in ipairs(data.parts)do
+ local name=part.bone
+ while name do
+  assert(data.bones[name],'INVALID_VISIBLE_BONE')
+  visible[name]=true
+  name=data.bones[name].parent
+ end
+end
+for _,bone in pairs(data.bones)do table.freeze(bone.position);table.freeze(bone)end
+table.freeze(data.bones)
+local axes={'x','y','z','rx','ry','rz'}
+local times={0.0137,0.1389,1.7311,3.9973}
+for frame=0,128 do table.insert(times,frame/32)end
+local samples={}
+local visibleChanged=false
+local visibleAnimated=false
+local function distance(a,b,axis)
+ local delta=a-b
+ if axis=='rx' or axis=='ry' or axis=='rz'then delta=(delta+math.pi)%(2*math.pi)-math.pi end
+ return math.abs(delta)
+end
+for index,time in ipairs(times)do
+ local before=Baseline.walk(data.form,data.bones,time)
+ local poses=Motion.walk(data.form,data.bones,time)
+ assert(type(poses)=='table','MOTION_POSES_REQUIRED')
+ for name in pairs(poses)do assert(data.bones[name],'UNKNOWN_MOTION_JOINT')end
+ local snapshot={}
+ for name in pairs(data.bones)do
+  local pose=assert(poses[name],'MISSING_MOTION_JOINT')
+  snapshot[name]={}
+  for _,axis in ipairs(axes)do
+   local value=pose[axis]
+   assert(type(value)=='number' and value==value and math.abs(value)<16,'MOTION_POSE_UNBOUNDED')
+   if name=='Root'then assert(value==0,'GAMEPLAY_ROOT_CHANGED')end
+   snapshot[name][axis]=value
+   if visible[name]and name~='Root'then
+    if distance(value,before[name][axis],axis)>0.000001 then visibleChanged=true end
+    if index>1 and distance(value,samples[1][name][axis],axis)>0.000001 then visibleAnimated=true end
+   end
+  end
+ end
+ samples[index]=snapshot
+end
+for index=#times,1,-1 do
+ local poses=Motion.walk(data.form,data.bones,times[index])
+ for name in pairs(data.bones)do
+  for _,axis in ipairs(axes)do
+   local value=poses[name]and poses[name][axis]
+   assert(type(value)=='number' and value==value and distance(value,samples[index][name][axis],axis)<0.0000001,'MOTION_SAMPLE_ORDER_DEPENDENT:'..name..':'..axis)
+  end
+ end
+end
+assert(visibleChanged,'MOTION_VISIBLE_OUTPUT_UNCHANGED')
+assert(visibleAnimated,'MOTION_VISIBLE_OUTPUT_FROZEN')
+`,'utf8');
       const interpreter=path.join(path.dirname(luauCompiler),process.platform==='win32'?'luau.exe':'luau');
       try{execFileSync(interpreter,[check],{encoding:'utf8',timeout:15000,maxBuffer:262144,stdio:['ignore','pipe','pipe']});}
-      catch(error){throw new Error('INTERNAL_MOTION_LUAU_BOUNDS_REQUIRED:'+clean(error?.stderr||error?.message).replaceAll(tempRoot,'[candidate]').slice(0,360));}
+      catch(error){
+        if(error.code==='ENOENT'||error.code==='EACCES')throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:INTERPRETER:'+error.code);
+        throw new Error('SINGLE_MOTION_SOURCE_SAMPLES_REQUIRED:'+clean(error?.stderr||error?.message).replaceAll(tempRoot,'[candidate]').slice(0,360));
+      }
     }
     const structuralChangedFiles=[];
     if(roblox){
@@ -5146,7 +5225,7 @@ export function validateCandidateSyntax({candidate,sourceRoot,target='system',lu
       }
       if(!structuralChangedFiles.length)throw new Error('변경 없는 edit: LUAU_AST_UNCHANGED:'+touched.join(','));
     }
-    return{pass:true,files:touched,compiler:roblox?'LUAU':'NODE',scope:'SYNTAX_ONLY',runtimeVerified:false,...(roblox?{structuralChangedFiles,sourceChangeScope:'LUAU_AST'}:{})};
+    return{pass:true,files:touched,compiler:roblox?'LUAU':'NODE',scope:internalMotionUnit?.scope==='INTERNAL_ASSET_LIBRARY'?'SYNTAX_AND_MOTION_SAMPLES':'SYNTAX_ONLY',runtimeVerified:false,...(roblox?{structuralChangedFiles,sourceChangeScope:'LUAU_AST'}:{}),...(internalMotionUnit?.scope==='INTERNAL_ASSET_LIBRARY'?{motionSamples:{count:133,visibleOutputChanged:true,visibleMotionRetained:true,reverseOrderDeterministic:true,inputRigImmutable:true,nativeQualityVerified:false}}:{})};
   }finally{
     fs.rmSync(tempRoot,{recursive:true,force:true});
   }
