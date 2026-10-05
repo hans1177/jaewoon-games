@@ -2,6 +2,13 @@
 // 단일 홈페이지 관리 실행계약과 canonical Top30 실시간 미러/PWA/Web 링크를 self-QA 한다.
 import fs from 'node:fs';
 import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
+import { normalizeCatalog, validatedHomepageMedia, webTreeFingerprint } from './game-catalog-normalization.mjs';
+
+// Media capture stays inside the existing manager / self-QA / Director chain.
+if(process.argv.includes('--capture-release-media')||process.argv.includes('--plan-release-media')){
+  await captureReleaseMedia(process.argv.includes('--plan-release-media'));
+  process.exit(0);
+}
 
 const readJson=path=>JSON.parse(fs.readFileSync(path,'utf8'));
 const readText=path=>fs.readFileSync(path,'utf8');
@@ -40,7 +47,7 @@ const games=catalog.games||[];
 const canonicalOf=game=>game?.canonical&&typeof game.canonical==='object'?game.canonical:{};
 const canonicalId=game=>String(canonicalOf(game)?.identity?.gameId||game?.id||'').trim();
 const canonicalClass=game=>String(canonicalOf(game)?.production?.class||game?.productionClass||'').toUpperCase();
-const canonicalImage=game=>String(canonicalOf(game)?.marketing?.thumbnail||canonicalOf(game)?.identity?.image||game?.marketingThumbnail||game?.image||'').trim();
+const canonicalImage=game=>String(canonicalOf(game)?.marketing?.homepageMedia?.small?.src||canonicalOf(game)?.marketing?.thumbnail||canonicalOf(game)?.identity?.image||game?.marketingThumbnail||game?.image||'').trim();
 const canonicalWeb=game=>canonicalOf(game)?.sources?.web&&typeof canonicalOf(game).sources.web==='object'?canonicalOf(game).sources.web:{};
 const canonicalOrder=game=>{const n=Number(canonicalOf(game)?.catalogOrder??game?.catalogOrder);return Number.isFinite(n)&&n>0?n:null;};
 const canonicalOrderValid=games.every((game,index)=>canonicalOrder(game)===index+1);
@@ -147,3 +154,138 @@ console.log(`HOMEPAGE_SELF_QA=${Object.keys(checks).length-failures.length}/${Ob
 console.log(`HOMEPAGE_CATALOG_ORDER=${canonicalOrderValid?'CANONICAL_STABLE':'INVALID'}`);
 console.log(`HOMEPAGE_CATALOG_SOURCE=${catalogPath}`);console.log(`HOMEPAGE_STATUS_SOURCE=${statusPath}`);console.log(`HOMEPAGE_CATALOG=${games.length}`);console.log(`HOMEPAGE_CANONICAL_RECORDS=${games.filter(game=>canonicalOf(game)?.schemaVersion===1).length}/${games.length}`);console.log(`HOMEPAGE_OFFICIAL_CARD_COUNT=${officialGames.length}`);console.log(`HOMEPAGE_VALIDATION_CANDIDATE_COUNT=${testCandidates.length}`);console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);console.log(`HOMEPAGE_BROKEN_GAME_IMAGES=${brokenGameImages.length}`);console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);console.log(`HOMEPAGE_PLAYABLE_OFFICIAL_WEB_GAMES=${homepagePlayableGames.length}`);console.log(`HOMEPAGE_BROKEN_WEB_LINKS=${brokenWebGameLinks.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_WEB_LINKS=${brokenTestWebRoutes.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_ARTBOOKS=${brokenTestArtbooks.length}`);console.log(`HOMEPAGE_PREPROMOTION_OFFICIAL_CARD_VIOLATIONS=${prepromotionOfficialCards.length}`);console.log('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE');console.log('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY');console.log('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC');console.log('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=DATA_ONLY_SAMPLE_UI_HIDDEN');console.log('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE');console.log('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT');console.log('HOMEPAGE_DEVELOPMENT_ACTIONS=ROBLOX_UNITY_PLUS_OPTIONAL_UNITY_WEB');console.log('HOMEPAGE_LEGACY_WEB_SHELF=HIDDEN');console.log('HOMEPAGE_TOP30_SHELF=DISABLED_VALIDATION_MANIFEST_ONLY');console.log('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM');console.log('HOMEPAGE_OFFICIAL_CARD_POLICY=STRICT_PASS_AND_PROMOTION_ONLY');console.log('HOMEPAGE_RUNTIME_SYNC=SERVER_CATALOG_PLUS_NATIVE_PLATFORM_EXPOSURE');console.log(`HOMEPAGE_PORTFOLIO_CONTROL=${checks.homepagePortfolioControlSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_PLATFORM_EXPOSURE=${checks.homepageInternalPlatformExposureSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SHA256=${homepageCentral.fingerprint||'INVALID'}`);console.log(`HOMEPAGE_CENTRAL_PLATFORMS=${(centralHomepage.supportedPlatforms||[]).join(',')}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SYNC=${checks.centralHomepageExecutionFingerprint?'PASS':'FAIL'}`);console.log(`HOMEPAGE_DIRECTIVE_MIRROR=${directiveMirrorMatchesCentral?'SYNCED':'STALE_NON_AUTHORITATIVE'}`);console.log('HOMEPAGE_RAW_DESIGN_ONLY_EXECUTION_SHELF=FORBIDDEN');console.log('HOMEPAGE_MANAGER_COUNT=1');console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
 if(failures.length){console.error(`HOMEPAGE_FAILURES=${failures.join(',')}`);process.exitCode=1;}
+
+async function captureReleaseMedia(planOnly=false){
+  const {createHash}=await import('node:crypto');
+  const {createServer}=await import('node:http');
+  const {resolve,extname,sep}=await import('node:path');
+  const {tmpdir}=await import('node:os');
+  const {execFileSync}=await import('node:child_process');
+  const {createRequire}=await import('node:module');
+  const root=process.cwd();
+  const manifestPath='assets/homepage-covers/manifest.json';
+  const json=file=>JSON.parse(fs.readFileSync(file,'utf8'));
+  const media=fs.existsSync(manifestPath)?json(manifestPath):{version:1,games:{}};
+  const catalogPath=process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json';
+  const catalog=json(catalogPath);
+  const exposure=json('homepage-platform-exposure.json');
+  const gameFilter=process.argv.find(x=>x.startsWith('--media-game='))?.slice(13);
+  const candidates=[];
+  for(const game of catalog.games||[]){
+    const id=game.canonical?.identity?.gameId||game.id;
+    if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||gameFilter&&gameFilter!==id)continue;
+    const release=(exposure.games||[]).find(x=>x.gameId===id);
+    const ready=(release?.platforms||[]).some(p=>['ROBLOX','UNITY'].includes(p.platform)&&Boolean(p.internalUrl||p.publicUrl)&&((p.internalReleaseReady===true&&p.releaseReadiness?.homepageReady===true)||(p.platform==='ROBLOX'&&p.historicalInternalRelease===true)));
+    if(!ready||game.canonical?.sources?.web?.playable!==true||!media.games[id])continue;
+    const dir=resolve(root,'web-games',id),entry=dir+'/index.html';
+    if(!fs.existsSync(entry))continue;
+    const artifactIdentity=webTreeFingerprint(fs,dir);
+    const current=validatedHomepageMedia(id,media.games[id]);
+    if(current?.video?.artifactIdentity===artifactIdentity)continue;
+    const attempt=media.games[id].captureAttempt;
+    if(attempt?.artifactIdentity===artifactIdentity&&Date.now()-Date.parse(attempt.at)<86400000)continue;
+    candidates.push({id,artifactIdentity,platform:/createUnityInstance|\.loader\.js/.test(fs.readFileSync(entry,'utf8'))?'UNITY_WEB':'WEB'});
+  }
+  console.log('HOMEPAGE_RELEASE_MEDIA_PENDING='+candidates.length);
+  if(planOnly){
+    if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,`needed=${candidates.length>0}\n`);
+    return;
+  }
+  if(!candidates.length)return;
+  const sourceRevision=process.env.HOMEPAGE_MEDIA_SOURCE_SHA||execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  if(!/^[a-f0-9]{40}$/.test(sourceRevision))throw Error('MEDIA_SOURCE_REVISION_REQUIRED');
+  const require=createRequire(import.meta.url);
+  const {chromium}=require(process.env.HOMEPAGE_PLAYWRIGHT_MODULE||'playwright');
+  const temp=fs.mkdtempSync(tmpdir()+'/homepage-media-');
+  const server=createServer((request,response)=>{
+    try{
+      const pathname=decodeURIComponent(new URL(request.url,'http://localhost').pathname);
+      // Serve only public runtime trees; never the repository root or credentials.
+      if(!/^\/(web-games|assets)\//.test(pathname)){response.writeHead(404).end();return;}
+      let file=resolve(root,'.'+pathname);
+      if(!file.startsWith(root+sep)||!fs.existsSync(file)){response.writeHead(404).end();return;}
+      if(fs.statSync(file).isDirectory())file+='/index.html';
+      if(!fs.existsSync(file)||!fs.statSync(file).isFile()){response.writeHead(404).end();return;}
+      const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.wasm':'application/wasm','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'}[extname(file)]||'application/octet-stream';
+      response.setHeader('Content-Type',mime);
+      fs.createReadStream(file).pipe(response);
+    }catch{response.writeHead(404).end();}
+  });
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+  const origin=`http://127.0.0.1:${server.address().port}`;
+  let browser;
+  try{
+    browser=await chromium.launch({headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+    fs.mkdirSync('assets/homepage-media',{recursive:true});
+    for(const candidate of candidates.slice(0,6)){
+      let context;
+      const {id,platform,artifactIdentity}=candidate;
+      try{
+        context=await browser.newContext({viewport:{width:960,height:540},recordVideo:{dir:temp,size:{width:960,height:540}},serviceWorkers:'block'});
+        const page=await context.newPage();
+        const errors=[];
+        const loadedFiles=new Set();
+        page.on('response',response=>{
+          const url=new URL(response.url());
+          const file=decodeURIComponent(url.pathname).replace(/^\/+/, '');
+          if(url.origin===origin&&response.ok()&&/^(web-games|assets)\//.test(file)&&!file.split('/').includes('..')){
+            const candidate=file.endsWith('/')?file+'index.html':file;
+            if(fs.existsSync(candidate)&&fs.statSync(candidate).isFile())loadedFiles.add(candidate);
+          }
+        });
+        page.on('pageerror',e=>errors.push(e.message));
+        page.setDefaultTimeout(10000);
+        await page.goto(`${origin}/web-games/${id}/`,{waitUntil:'networkidle',timeout:45000});
+        const known={ 'horror-escape-room':'#startHuman', 'daechung-rpg':'#startBtn', 'ant-simulator':'#startOffline' };
+        let start=known[id]?page.locator(known[id]):page.getByRole('button',{name:/^(게임 시작|혼자 시작|시작하기|모험 시작|새 게임|Start|Play)$/i}).first();
+        if(id==='cozy-island'){
+          await page.locator('#actionButton').click();
+        }else{
+          if(!await start.isVisible())throw Error('VISIBLE_GAME_START_REQUIRED');
+          await start.click();
+          await start.waitFor({state:'hidden',timeout:10000});
+        }
+        await page.locator('canvas').first().waitFor({state:'visible'});
+        await page.waitForTimeout(700);
+        const clipStart=await page.evaluate(()=>performance.now()/1000);
+        const before=await page.screenshot();
+        let inputEvents=1;
+        for(const key of ['ArrowRight','ArrowUp','ArrowLeft','ArrowDown']){
+          await page.keyboard.down(key);inputEvents++;
+          await page.keyboard.press('Space');inputEvents++;
+          await page.waitForTimeout(2900);
+          await page.keyboard.up(key);inputEvents++;
+        }
+        const after=await page.screenshot();
+        const digest=b=>createHash('sha256').update(b).digest('hex');
+        if(digest(before)===digest(after))throw Error('NO_VISIBLE_RUNTIME_CHANGE');
+        if(errors.length)throw Error('RUNTIME_SCRIPT_ERROR');
+        const dependencies=[...loadedFiles].sort().map(path=>({path,sha256:digest(fs.readFileSync(path))}));
+        if(!dependencies.length)throw Error('CAPTURE_DEPENDENCIES_MISSING');
+        const videoPath=await page.video().path();
+        await context.close();context=null;
+        const output=`assets/homepage-media/${id}.mp4`;
+        const temporaryOutput=temp+'/'+id+'.mp4';
+        execFileSync('ffmpeg',['-y','-loglevel','error','-ss',String(Math.max(0,clipStart)),'-i',videoPath,'-t','12','-vf','scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2','-r','24','-c:v','libx264','-preset','fast','-crf','29','-maxrate','1500k','-bufsize','3000k','-pix_fmt','yuv420p','-an','-movflags','+faststart',temporaryOutput],{timeout:60000,stdio:'pipe'});
+        const duration=Number(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',temporaryOutput],{encoding:'utf8'}).trim());
+        const bytes=fs.readFileSync(temporaryOutput);
+        if(duration<10||duration>12.5||bytes.length<2048||bytes.length>3145728)throw Error('VIDEO_DURATION_OR_SIZE_INVALID');
+        // Publish only after a complete successful capture. Existing media survives failures.
+        fs.copyFileSync(temporaryOutput,output);
+        media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt:new Date().toISOString(),src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
+        delete media.games[id].captureAttempt;
+        console.log(`HOMEPAGE_RELEASE_MEDIA_CAPTURED=${id} PLATFORM=${platform} BYTES=${bytes.length}`);
+      }catch(error){
+        media.games[id].captureAttempt={artifactIdentity,at:new Date().toISOString(),state:'CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN',reason:String(error.message||error).slice(0,160)};
+        console.log(`HOMEPAGE_RELEASE_MEDIA_PENDING=${id}`);
+      }finally{if(context)await context.close();}
+    }
+    fs.writeFileSync(manifestPath,JSON.stringify(media,null,2)+'\n');
+    normalizeCatalog(catalog);
+    fs.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
+  }finally{
+    if(browser)await browser.close();
+    await new Promise(resolve=>server.close(resolve));
+    fs.rmSync(temp,{recursive:true,force:true});
+  }
+}

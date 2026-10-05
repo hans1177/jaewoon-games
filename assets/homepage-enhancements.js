@@ -238,13 +238,15 @@ function verifiedRobloxDeploymentRows(catalog){
     .map(game=>({...game,homepageDisplayMode:'ROBLOX_HISTORICAL_DEPLOYMENT'}))
     .sort(catalogOrderCompare);
 }
+function mediaImageHref(asset){return asset?.src?`${asset.src}?v=${String(asset.sha256||'').slice(0,12)}`:'';}
 function mergeGame(row){
   const displayMode=String(row?.homepageDisplayMode||'').trim();
   const identity=identityOf(row),web=sourcesOf(row).web||{};
+  const media=marketingOf(row).homepageMedia;
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
   const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  return {...row,id:gameIdOf(row),homepageMedia:media,name:media?.titleEn||identity.name||row?.name||gameIdOf(row),subtitle:media?.titleKo||'',webPath,image:mediaImageHref(media?.cover)||marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
@@ -312,6 +314,7 @@ function installStyles(){
   style.id='homepageEnhancementStyles';
   style.textContent=`
 .homeGameShelf{scroll-margin-top:18px}
+.homeGameSubtitle{font-size:14px;line-height:1.5;font-weight:600;margin:4px 0 10px}.homeFocus .homeGameSubtitle{font-size:20px}.foldGameArt{aspect-ratio:16/9;height:auto}.foldGameArt img{width:100%;height:100%;object-fit:cover}.homeGameplayVideo{margin:10px 0}.homeGameplayVideo summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-size:13px}.homeGameplayVideo video{display:block;width:100%;max-height:320px;background:#111;object-fit:contain}
 .shelfEmpty{padding:18px 4px;color:#65758a;font-size:13px;line-height:1.7}.foldGameCard{overflow:hidden}
 .foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
 .foldGameCompletion{margin-top:8px;font-size:11px;line-height:1.6;color:#526477;overflow-wrap:anywhere}
@@ -336,7 +339,7 @@ function buildFocus(catalog,status){
   const actionLabel=links.roblox||links.unity?'게임 입장':links.unityWeb?'Unity Web 플레이':'웹 플레이';
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
@@ -364,7 +367,10 @@ function buildCard(row){
     return `<details><summary>${esc(title)}</summary><small>보존된 최종 검증·배포 기록 기준. 현재 수리 상태와 별개야. 최근 ${records.length}건 · 한국 시간</small><ol>${records.map(r=>`<li><a href="${esc(r.evidenceUrl)}" target="_blank" rel="noopener noreferrer">${esc(formatDate(r.completedAt))} · 증거 보기</a></li>`).join('')}</ol></details>`;
   }).join('');
   const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
+  const media=game.homepageMedia;
+  const video=hasInternalRelease(game)&&media?.video?.runtimeVerification?.pass===true&&/^assets\/homepage-media\/[a-z0-9-]+\.mp4$/.test(media.video.src||'')?media.video:null;
+  const videoMarkup=video?`<details class="homeGameplayVideo"><summary>실제 플레이 · ${esc(video.platform==='WEB'?'웹':video.platform==='UNITY_WEB'?'Unity Web':'Unity 앱')}</summary><video controls playsinline preload="none" data-src="/${esc(video.src)}?v=${esc(video.sha256.slice(0,12))}" poster="${esc(mediaImageHref(media.small))}" aria-label="${esc(game.subtitle||game.name)} 실제 플레이"></video></details>`:'';
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(mediaImageHref(media?.small)||game.image)}" alt="${esc(game.name+(game.subtitle?' · '+game.subtitle:''))}" width="480" height="270" loading="lazy" decoding="async"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
@@ -423,8 +429,16 @@ function directPlayTarget(card){
 function bindDirectGameLaunch(){
   if(document.documentElement.dataset.directGameLaunchBound==='1')return;
   document.documentElement.dataset.directGameLaunchBound='1';
+  document.addEventListener('toggle',event=>{
+    const details=event.target;
+    if(!details.matches?.('.homeGameplayVideo'))return;
+    const video=details.querySelector('video');
+    if(!video)return;
+    if(details.open&&!video.src){video.src=video.dataset.src;video.load();}
+    if(!details.open)video.pause();
+  },true);
   document.addEventListener('click',event=>{
-    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary');
+    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary,video');
     if(interactive)return;
     const card=event.target.closest('.foldGameCard,.gameCard');
     if(!card)return;

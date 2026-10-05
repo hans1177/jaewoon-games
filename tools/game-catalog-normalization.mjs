@@ -148,7 +148,7 @@ function normalizationPolicy(){
   }
 }
 
-function webTreeFingerprint(filesystem,root){
+export function webTreeFingerprint(filesystem,root){
   const files=[];
   const walk=(dir,relative='')=>{
     for(const entry of filesystem.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
@@ -203,7 +203,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
       const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map(match=>match[1].split(/[?#]/)[0]);
       if(excluded.has(id)){valid=false;sourceState='NON_GAME_SURFACE';}
-      else if(list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
+      else if(list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))||list(quality.withdrawnImplementationMarkers).some(marker=>html.includes(marker))||quality.withdrawnEntrySha256?.[id]===crypto.createHash('sha256').update(html.trim()).digest('hex')){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
     }
     if(valid){
       const html=filesystem.readFileSync(indexFile,'utf8');
@@ -352,7 +352,8 @@ export function canonicalizeGameRecord(game={}){
     },
     marketing:{
       thumbnail:clean(game.marketingThumbnail)||clean(game.image)||'assets/pwa-icon-512.png',
-      source:'CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET'
+      source:'CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET',
+      homepageMedia:game.homepageMedia||null
     },
     lifecycle:{
       state:lifecycleState,
@@ -432,11 +433,33 @@ export function canonicalizeGameRecord(game={}){
   };
 }
 
+export function validatedHomepageMedia(id,entry,{filesystem=fs,root='.'}={}){
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||entry?.gameId!==id||!clean(entry.titleEn)||!clean(entry.titleKo))return null;
+  const validFile=(row,prefix,maxBytes)=>{
+    if(!row||typeof row.src!=='string'||!prefix.test(row.src)||!/^[a-f0-9]{64}$/.test(String(row.sha256||'')))return false;
+    try{const bytes=filesystem.readFileSync(root+'/'+row.src);return bytes.length>0&&bytes.length<=maxBytes&&bytes.length===row.bytes&&crypto.createHash('sha256').update(bytes).digest('hex')===row.sha256;}catch{return false;}
+  };
+  if(!validFile(entry.cover,new RegExp('^assets/homepage-covers/'+id+'\\.webp$'),143360)||!validFile(entry.small,new RegExp('^assets/homepage-covers/'+id+'-480\\.webp$'),49152))return null;
+  const result={gameId:id,titleEn:clean(entry.titleEn),titleKo:clean(entry.titleKo),cover:entry.cover,small:entry.small,kind:'MARKETING_ARTWORK',style:entry.style,typography:clean(entry.typography)};
+  const v=entry.video;
+  if(v&&v.gameId===id&&['WEB','UNITY_WEB','UNITY'].includes(v.platform)&&/^[a-f0-9]{40}$/.test(v.sourceRevision||'')&&/^[a-f0-9]{64}$/.test(v.artifactIdentity||'')&&Number.isFinite(Date.parse(v.capturedAt))&&v.runtimeVerification?.pass===true&&v.runtimeVerification?.inputEvents>0&&v.runtimeVerification?.visualChangeObserved===true&&validFile(v,new RegExp('^assets/homepage-media/'+id+'\\.mp4$'),3145728)){
+    let current=false;
+    try{current=['WEB','UNITY_WEB'].includes(v.platform)&&webTreeFingerprint(filesystem,root+'/web-games/'+id)===v.artifactIdentity;}catch{}
+    if(current&&Array.isArray(v.dependencies)&&v.dependencies.length>0&&v.dependencies.every(dep=>{
+      if(!/^(web-games|assets)\/[a-zA-Z0-9_./-]+$/.test(dep.path||'')||dep.path.split('/').includes('..'))return false;
+      try{return crypto.createHash('sha256').update(filesystem.readFileSync(root+'/'+dep.path)).digest('hex')===dep.sha256;}catch{return false;}
+    }))result.video=v;
+  }
+  return result;
+}
+
 export function normalizeCatalog(catalog={}){
   if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
   const policy=normalizationPolicy();
   catalog.webExposurePolicy=policy.ownerWebAutoIngest?.webExposureQuality||{};
   const ids=new Set();
+  let covers={};
+  try{covers=JSON.parse(fs.readFileSync('assets/homepage-covers/manifest.json','utf8')).games||{};}catch{}
   for(const game of catalog.games){
     for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)delete game[field];
     applyHomepageAutoClassification(game);
@@ -444,6 +467,9 @@ export function normalizeCatalog(catalog={}){
     if(!id)throw new Error('catalog game id missing');
     if(ids.has(id))throw new Error('duplicate catalog game id: '+id);
     ids.add(id);
+    const media=validatedHomepageMedia(id,covers[id]);
+    if(media)game.homepageMedia=media;
+    else delete game.homepageMedia;
     game.productionClass=normalizedProductionClass(game.productionClass);
     const legacyHistorical=clean(game.homepageCategory).toLowerCase()==='historical-deployed';
     game.homepageCategory=homepageCategoryForProductionClass(game.productionClass)||'design-only';

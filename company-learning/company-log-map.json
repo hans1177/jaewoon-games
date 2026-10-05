@@ -1,5 +1,5 @@
 {
-  "version": 168,
+  "version": 169,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3169,5 +3169,11 @@
     "sharedBindingsSerialized": true,
     "nativeQualityPassRequiresActualPlayback": true,
     "status": "IMPLEMENTATION_PENDING_MAIN_QA"
+  },
+  "homepageGameMediaEvidence": {
+    "sourcePolicy": "homepageGameMediaContract",
+    "imageBytesAndSha256Required": true,
+    "actualVideoBindingsRequired": true,
+    "failedCaptureMayNotBeMarkedPass": true
   }
 }

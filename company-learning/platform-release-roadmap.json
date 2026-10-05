@@ -1,5 +1,5 @@
 {
-  "version": 533,
+  "version": 534,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -6405,7 +6405,19 @@
           "ROBLOX",
           "UNITY"
         ],
-        "sizeAloneIsNotGameplayEvidence": true
+        "sizeAloneIsNotGameplayEvidence": true,
+        "withdrawnImplementationMarkers": [
+          "FULL APPROVED WEB COMPANION",
+          "승인 분량 전체 구현"
+        ],
+        "withdrawnEntrySha256": {
+          "seed-roblox-roleplay-life-avat-brookhaven-rp": "01e6ac8ea988f805db79ef699d196a226512d56ee6af7076b4c3643167dd0852",
+          "seed-roblox-simulator-tycoon-i-adopt-me": "2a055d3e2b9420ae45ac2bf48b724ad318164598132173df69a51f8ef73979b5",
+          "seed-roblox-survival-horror-es-doors": "31b911e48df0c21e845e564fc4367d134180e96178112c7ff79e2fb34b059189",
+          "seed-roblox-story-rpg-adventur-blox-fruits": "63a3825b63c480b42437f0a1fe443f80acbacde2f3620db7f6ac96f86d06b24a"
+        },
+        "simplePlacementAndButtonCounterOnlyIsInsufficient": true,
+        "entryDigestNormalization": "TRIM_OUTER_WHITESPACE"
       }
     }
   },
@@ -6966,7 +6978,8 @@
       "edgeMustReconcileDeployedCanonicalSourceMetadata": true,
       "deployedWebExposurePolicyOverridesStaleRuntimeWebFlags": true
     },
-    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate"
+    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate",
+    "homepageGameMediaRef": "homepageGameMediaContract"
   },
   "longHorizonVision": {
     "version": 2,
@@ -8576,6 +8589,13 @@
       "newPipelineCreated": false,
       "loopStopsOnlyOnOwnerHoldOrRemoval": true,
       "webRequiresExactProductionDeploymentBeforeNextBuildUp": true
+    },
+    "homepageGameMedia20261005": {
+      "authority": "OWNER_DIRECTIVE_2026-10-05",
+      "status": "IMPLEMENTED_PENDING_DEPLOYMENT",
+      "policy": "homepageGameMediaContract",
+      "newPipeline": false,
+      "robloxGameMutation": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -27013,5 +27033,82 @@
       "mayNotExpandWritableAuthority": true,
       "assistOutcomeMustReturnToExistingVibeLoop": true
     }
+  },
+  "homepageGameMediaContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-05",
+    "scope": "ALL_HOMEPAGE_GAMES",
+    "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+    "titles": {
+      "primary": "ENGLISH",
+      "subtitle": "KOREAN_GAME_NAME",
+      "smallCardReadable": true,
+      "typography": {
+        "mode": "PER_GAME_ART_DIRECTION",
+        "sharedTitleFontForbidden": true,
+        "englishTitleRasterizedIntoCover": true,
+        "additionalWebFontDownloads": false,
+        "koreanSubtitleReadableAt480Width": true,
+        "avoidGlossyExtrusion": true
+      }
+    },
+    "images": {
+      "aspectRatio": "16:9",
+      "format": "WEBP",
+      "cardWidth": 480,
+      "heroWidth": 960,
+      "maximumCardBytes": 49152,
+      "maximumHeroBytes": 143360,
+      "lazyLoad": true,
+      "uniquePerGame": true,
+      "generatedArtworkIsNotRuntimeEvidence": true,
+      "targetCardBytes": 40960,
+      "noGlossOrCinematicOverprocessing": true
+    },
+    "videos": {
+      "scope": "RELEASED_OR_VERIFIED_HISTORICAL_RELEASE_GAME",
+      "actualRuntimeOnly": true,
+      "capturePlatformLabelRequired": true,
+      "webCompanionMustNotBeLabeledRobloxOrUnityNative": true,
+      "format": "MP4_H264",
+      "seconds": 12,
+      "maximumBytes": 3145728,
+      "preload": "none",
+      "autoplay": false,
+      "requiredBindings": [
+        "gameId",
+        "platform",
+        "sourceRevision",
+        "artifactIdentity",
+        "sha256",
+        "capturedAt",
+        "runtimeVerification"
+      ],
+      "failedCaptureCannotReplaceVerifiedVideo": true
+    },
+    "automation": {
+      "owner": "EXISTING_HOMEPAGE_MANAGER",
+      "captureInsideExistingSelfQa": true,
+      "publication": "EXISTING_DIRECTOR_REVIEW_AND_MAIN_PR",
+      "regenerateOnlyWhenSourceIdentityChanges": true,
+      "perGameFailureIsolated": true,
+      "humanUploadRequired": false,
+      "newWorkflowForbidden": true,
+      "newWrapperForbidden": true,
+      "maximumCapturesPerRun": 6,
+      "unchangedFailedCaptureRetryHours": 24,
+      "mediaInfrastructureFailureCannotBlockHomepagePublication": true
+    },
+    "preservation": {
+      "robloxGameSourceUnchanged": true,
+      "robloxPublicationTargetUnchanged": true,
+      "robloxThumbnailUploadUnchanged": true,
+      "nativeReleaseClassificationUnchanged": true,
+      "lockedF0F9SequenceUnchanged": true
+    },
+    "manifest": "assets/homepage-covers/manifest.json",
+    "releaseMediaRoot": "assets/homepage-media",
+    "artDirectionSource": "CURRENT_GAME_DESIGN_AND_IMPLEMENTED_FEATURES",
+    "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
   }
 }
