@@ -750,7 +750,7 @@ const inferUniverseFamily=row=>{
 export function buildRegisteredRobloxLibraryPackInventory({registry={},repoRoot=process.cwd()}={}){
   const packs=new Map();
   const assetRows=Array.isArray(registry?.assets)?registry.assets:[];
-  const normalizePath=value=>clean(value).replaceAll('\\\\','/').replace(/^\.\//,'');
+  const normalizePath=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'');
   const registeredPaths=row=>[
     row?.path,row?.sourcePath,row?.catalogPath,
     ...(Array.isArray(row?.sourceFiles)?row.sourceFiles:[]),
@@ -792,7 +792,7 @@ export function buildRegisteredRobloxLibraryPackInventory({registry={},repoRoot=
       const full=path.join(dir,entry.name);
       if(entry.isDirectory()){walkContextFiles(root,full,rows,depth+1);continue;}
       if(!entry.isFile()||!/\.(?:lua|luau|js|mjs|json)$/i.test(entry.name))continue;
-      rows.push(path.relative(repoRoot,full).replaceAll('\\\\','/'));
+      rows.push(path.relative(repoRoot,full).replaceAll('\\','/'));
     }
   };
   const normalized=[...packs.values()].map(pack=>{
