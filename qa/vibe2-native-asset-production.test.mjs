@@ -87,8 +87,9 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.synchronization.fullLibraryReplicationForbidden,true);
   assert.equal(a.synchronization.selectedSubsetOnly,true);
   assert.equal(a.synchronization.changedFamilyRebindOnly,true);
+  assert.equal(a.selectionFingerprint,null);
   assert.deepEqual(a.exactFamilies.WEAPON,['BLADE_LONG','GRIP_LONG']);
-  assert.equal(a.version,3);
+  assert.equal(a.version,4);
   assert.ok(a.usageMatrix.length>=72);
   assert.ok(a.usageMatrix.some(row=>row.signal==='ATTACK_OR_COMBO'&&row.families.includes('WEAPON')&&row.families.includes('MOTION')));
   for(const signal of [
