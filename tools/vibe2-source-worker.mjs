@@ -4759,6 +4759,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }
     }
     if(robloxInternalAssetApplicationRequired){
+      const commonPackPlan=order?.assetProduction?.commonPackAutoUse||{};
+      if(commonPackPlan?.enabled===true&&commonPackPlan?.completeAgainstDiscoveredCatalogs!==true){
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:COMMON_PACK_SOURCE_COVERAGE_INCOMPLETE');
+      }
       if(!robloxInternalAssetVisualOwners.length)throw new Error('ROBLOX_INTERNAL_ASSET_VISUAL_OWNER_REQUIRED:NO_VISUAL_OWNER_IN_RESPONSIBLE_FILES');
       const touchedVisual=robloxInternalAssetVisualOwners.filter(file=>touched.has(file));
       if(!touchedVisual.length)throw new Error('ROBLOX_INTERNAL_ASSET_VISUAL_OWNER_REQUIRED:'+robloxInternalAssetVisualOwners.join('|'));
@@ -4772,12 +4776,17 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const required=[
         new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+studioBindingVersion+'\\b'),
         /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
+        /\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/,
         /StudioAssetBindingVersion/,
         /StudioAssetAtoms/,
         /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
       ];
       if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_FAMILY_STATUS_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+      }
+      const nonPlainAssetUse=/(?:\bRobloxCommon[A-Z][A-Za-z0-9_]*\b|MeshPart|SpecialMesh|SurfaceAppearance|MaterialVariant|TextureID|MeshId|ParticleEmitter|Trail|Beam|SoundId|Animator|AnimationTrack|Motor6D|\bBone\b|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i.test(visualChangeText);
+      if(!nonPlainAssetUse){
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:PRIMITIVE_ONLY_OR_COLOR_ONLY_FORBIDDEN');
       }
     }
     if(bootstrap&&target==='unity'){
