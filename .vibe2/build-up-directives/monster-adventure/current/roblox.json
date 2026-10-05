@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "monster-adventure-build-up-g6-a756f99f8d75",
-  "directiveFingerprint": "a756f99f8d755ff991e8ba518b04d21c7a505eeff2dff69194ca96d3789afe29",
-  "previousDirectiveFingerprint": "37b0cfbd1f77bba5ac003c6057bddc0b269c4e48bb3fb54d025ca24b134c545e",
-  "forbiddenRepeatFingerprint": "37b0cfbd1f77bba5ac003c6057bddc0b269c4e48bb3fb54d025ca24b134c545e",
+  "directiveId": "monster-adventure-build-up-g7-676f5564ac2a",
+  "directiveFingerprint": "676f5564ac2a97b4f587c086cec78a0a0b2b22a4a85919286e86ea60116f32fa",
+  "previousDirectiveFingerprint": "a756f99f8d755ff991e8ba518b04d21c7a505eeff2dff69194ca96d3789afe29",
+  "forbiddenRepeatFingerprint": "a756f99f8d755ff991e8ba518b04d21c7a505eeff2dff69194ca96d3789afe29",
   "gameId": "monster-adventure",
   "gameName": "몬스터 어드벤처",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/monster-adventure",
-  "sourceTreeFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
+  "sourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
   "designFingerprint": "12241ec9f7bee45cc9530fe4d93406ee26ca58ced2e9892d3454be8ff3741f84",
   "gameIdentityAndNonNegotiables": {
     "identity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.",
@@ -52,52 +52,51 @@
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 74,
-      "progression": 118,
+      "combat": 86,
+      "progression": 124,
       "ai": 28,
       "save": 49,
       "multiplayer": 13,
-      "animation": 40,
-      "motionStates": 133,
-      "gameFeel": 22,
-      "vfx": 20,
-      "camera": 31,
+      "animation": 41,
+      "motionStates": 154,
+      "gameFeel": 29,
+      "vfx": 22,
+      "camera": 33,
       "audio": 1,
       "audioDynamics": 15,
-      "ui": 56,
-      "uiFlow": 31,
+      "ui": 61,
+      "uiFlow": 34,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 65,
-      "map": 96,
-      "landmark": 2,
+      "input": 68,
+      "map": 109,
+      "landmark": 8,
       "interaction": 29,
-      "inventory": 2,
-      "equipment": 0,
-      "settings": 1,
-      "feedback": 70,
+      "inventory": 6,
+      "equipment": 3,
+      "settings": 2,
+      "feedback": 71,
       "session": 11,
-      "content": 85,
-      "choice": 12,
-      "connection": 0,
-      "performance": 30,
-      "lighting": 37,
+      "content": 98,
+      "choice": 18,
+      "connection": 1,
+      "performance": 31,
+      "lighting": 39,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 12
+      "errorRecovery": 13
     },
     "topFiles": [
       {
         "file": "roblox-games/monster-adventure/shared/GameConfig.luau",
-        "score": 252
+        "score": 282
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "score": 205
+        "score": 203
       },
       {
         "file": "roblox-games/monster-adventure/server/Game.server.luau",
@@ -111,7 +110,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 616,
+        "line": 622,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -167,7 +166,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 250,
+        "line": 256,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -175,7 +174,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 115,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -183,7 +182,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 635,
+        "line": 641,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -199,7 +198,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 436,
+        "line": 442,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -215,7 +214,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 133,
+        "line": 139,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningCreateFootIk",
         "context": "local function verifiedLearningCreateFootIk(state, side)",
@@ -223,15 +222,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 23,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(atom)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 513,
+        "line": 519,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -239,7 +230,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 162,
+        "line": 168,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindMotionActor",
         "context": "local function verifiedLearningBindMotionActor(character)",
@@ -247,7 +238,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 364,
+        "line": 370,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningTryBindMotionInstance",
         "context": "local function verifiedLearningTryBindMotionInstance(instance)",
@@ -270,6 +261,14 @@
         "score": 42
       },
       {
+        "file": "roblox-games/monster-adventure/client/Game.client.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/monster-adventure/server/Game.server.luau",
         "line": 187,
         "kind": "FUNCTION",
@@ -279,7 +278,15 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 111,
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/monster-adventure/client/Game.client.luau",
+        "line": 117,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningHorizontal",
         "context": "local function verifiedLearningHorizontal(v)",
@@ -290,9 +297,9 @@
   "previousVersionDelta": {
     "previousGoal": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "e14e1cebd128f777564025ea0065e58ae27e30e1295fdc04bf015871f09e7bb8",
-    "currentSourceTreeFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
+    "currentSourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -435,18 +442,18 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "NOT_APPLICABLE",
-      "reason": "game has no current equipment/loadout system"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CRAFTING",
@@ -480,8 +487,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -510,8 +517,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -907,8 +914,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -916,8 +923,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -925,12 +932,12 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 game has no current equipment/loadout system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CRAFTING",
@@ -988,8 +995,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1042,8 +1049,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1349,27 +1356,12 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
+      "domain": "EQUIPMENT_LOADOUT",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1462,8 +1454,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 120159,
-        "largestFileBytes": 43406,
+        "sourceBytes": 103798,
+        "largestFileBytes": 47990,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1495,8 +1487,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=6.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1506,7 +1498,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1515,6 +1507,7 @@
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -1548,7 +1541,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 210,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1557,16 +1550,10 @@
         ]
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 64,
-        "gapDomains": []
-      },
-      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 54,
+        "score": 44,
         "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
+          "EQUIPMENT_LOADOUT",
           "SYSTEM_CONNECTION"
         ]
       },
@@ -1592,6 +1579,11 @@
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 10,
+        "gapDomains": []
+      },
+      {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": -96,
         "gapDomains": []
       }
     ],
@@ -1666,6 +1658,27 @@
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
   },
+  "internalAssetEvolution": {
+    "required": true,
+    "generation": 7,
+    "previousGeneration": 6,
+    "evaluateAllLibrariesAndFamiliesEveryCycle": true,
+    "sourceFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
+    "priorSourceFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
+    "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
+    "currentLibrarySelectionAndSourceHashesRequired": true,
+    "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
+    "unchangedVerifiedBindingMayBeReused": true,
+    "strongIdentityAndManualLocksPreserved": true,
+    "randomSwapOrMarkerOnlyGrowthForbidden": true,
+    "codeQualityAndApprovedContentExpansionMustContinue": true,
+    "previousFailureRequiresCausalRepairBeforeRepeatingStrategy": true,
+    "runtimeAndDeploymentEvidenceRequired": true,
+    "returnToNextBuildUpAfterF9": true,
+    "generationLimit": null,
+    "shadowPipelineForbidden": true
+  },
   "visualBuildUpDirective": {
     "artDirection": {
       "identity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.",
@@ -1735,7 +1748,7 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
@@ -1770,8 +1783,7 @@
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
     "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
+      "AUDIO_MUSIC_AND_FEEDBACK"
     ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
@@ -1907,7 +1919,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 616,
+        "line": 622,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -1970,7 +1982,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 250,
+        "line": 256,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "currentBehavior": "local function verifiedLearningMotionFailureReason(state)",
@@ -2069,7 +2081,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 616,
+        "line": 622,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2153,7 +2165,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 250,
+        "line": 256,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -2175,8 +2187,7 @@
       "GRAPHICS",
       "MAP",
       "UI",
-      "GAMEPLAY",
-      "SAVE"
+      "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2184,15 +2195,13 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
+    "securityRelevant": false,
     "openCloudWorldChecks": [
       "SERVER_BOOT",
       "FINITE_WORLD_BOUNDS",
@@ -2222,8 +2231,7 @@
         "GRAPHICS",
         "MAP",
         "UI",
-        "GAMEPLAY",
-        "SAVE"
+        "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2231,15 +2239,13 @@
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
+      "securityRelevant": false,
       "openCloudWorldChecks": [
         "SERVER_BOOT",
         "FINITE_WORLD_BOUNDS",
@@ -2265,8 +2271,6 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2295,7 +2299,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "9673523374b7463e4e61738ca2813dc53bdc2a251bf31af0570e13452d90184e",
+      "sourceTreeFingerprint": "126c87bf8d3c21b6987a065ec7def2ac397d9f253804a982c27ddf8fc1bf43fb",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2342,7 +2346,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2399,16 +2403,12 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
+      "EQUIPMENT_LOADOUT",
       "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
-      "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
     "notApplicable": [
       "QUESTS",
-      "EQUIPMENT_LOADOUT",
       "CRAFTING",
       "NPC_SOCIAL_BEHAVIOR",
       "NARRATIVE_STORY",
@@ -2416,5 +2416,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-03T15:37:02.708Z"
+  "generatedAt": "2026-10-05T07:28:24.594Z"
 }

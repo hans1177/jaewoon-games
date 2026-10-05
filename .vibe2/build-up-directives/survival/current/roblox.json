@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g5-216083abf76d",
-  "directiveFingerprint": "216083abf76d24c00f918c522dbf4653a0625f8aaec1f1e99c5cbaf50b4ff9a6",
-  "previousDirectiveFingerprint": "de96646189cd6bce45b75fb535b2980596bda9398a4ba558d5abae32f851870b",
-  "forbiddenRepeatFingerprint": "de96646189cd6bce45b75fb535b2980596bda9398a4ba558d5abae32f851870b",
+  "directiveId": "survival-build-up-g6-7641a292a518",
+  "directiveFingerprint": "7641a292a51838d538189566d114cbf99617e5e547b6711f46a9e6ca21125351",
+  "previousDirectiveFingerprint": "216083abf76d24c00f918c522dbf4653a0625f8aaec1f1e99c5cbaf50b4ff9a6",
+  "forbiddenRepeatFingerprint": "216083abf76d24c00f918c522dbf4653a0625f8aaec1f1e99c5cbaf50b4ff9a6",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 5,
+  "generation": 6,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "eb90c4c776df86f1d0d73a49d9ab841e9f2263c39d0fd50c85c2689f4f6694a7",
+  "sourceTreeFingerprint": "4643ef4f640a59a5e42b1af7e68ef51bd95b51101803994ffe164adce8b6901f",
   "designFingerprint": "efe91120fd918ad40a64d2470a22f7dfb7986423ca1af5ded6711ca024b29a44",
   "gameIdentityAndNonNegotiables": {
     "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
@@ -306,9 +306,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 4,
-    "previousSourceTreeFingerprint": "a1520a05359762d1d41e49c1c015bfb63c50d41c5310b65a733891bd1143a5f0",
-    "currentSourceTreeFingerprint": "eb90c4c776df86f1d0d73a49d9ab841e9f2263c39d0fd50c85c2689f4f6694a7",
+    "previousGeneration": 5,
+    "previousSourceTreeFingerprint": "eb90c4c776df86f1d0d73a49d9ab841e9f2263c39d0fd50c85c2689f4f6694a7",
+    "currentSourceTreeFingerprint": "4643ef4f640a59a5e42b1af7e68ef51bd95b51101803994ffe164adce8b6901f",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1492,20 +1492,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 6,
-    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "1 explicit GAP(s) and 8 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 6,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 0
       },
       "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -1546,7 +1547,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 104,
+        "score": 86,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -1662,11 +1663,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 5,
-    "previousGeneration": 4,
+    "generation": 6,
+    "previousGeneration": 5,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "eb90c4c776df86f1d0d73a49d9ab841e9f2263c39d0fd50c85c2689f4f6694a7",
-    "priorSourceFingerprint": "a1520a05359762d1d41e49c1c015bfb63c50d41c5310b65a733891bd1143a5f0",
+    "sourceFingerprint": "4643ef4f640a59a5e42b1af7e68ef51bd95b51101803994ffe164adce8b6901f",
+    "priorSourceFingerprint": "eb90c4c776df86f1d0d73a49d9ab841e9f2263c39d0fd50c85c2689f4f6694a7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2301,7 +2302,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "eb90c4c776df86f1d0d73a49d9ab841e9f2263c39d0fd50c85c2689f4f6694a7",
+      "sourceTreeFingerprint": "4643ef4f640a59a5e42b1af7e68ef51bd95b51101803994ffe164adce8b6901f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2348,7 +2349,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 6,
+    "nextGeneration": 7,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2416,5 +2417,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:00:29.729Z"
+  "generatedAt": "2026-10-05T07:28:24.665Z"
 }

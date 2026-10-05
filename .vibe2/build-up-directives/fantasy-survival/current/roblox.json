@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g18-e55aa24d8016",
-  "directiveFingerprint": "e55aa24d8016fd1aa73027655b8629fcbf7686dea41706e2d6bfe93a4b1462fe",
-  "previousDirectiveFingerprint": "ba8c82a49ba8a2dbb587e2d5c67fb77783a93d86c5adbd49a391f544fa26fcdd",
-  "forbiddenRepeatFingerprint": "ba8c82a49ba8a2dbb587e2d5c67fb77783a93d86c5adbd49a391f544fa26fcdd",
+  "directiveId": "fantasy-survival-build-up-g19-8f519c81b367",
+  "directiveFingerprint": "8f519c81b3670709c381fd3187eb4ab62bb5fbcd02a96b19f3f11fb7357ce522",
+  "previousDirectiveFingerprint": "e55aa24d8016fd1aa73027655b8629fcbf7686dea41706e2d6bfe93a4b1462fe",
+  "forbiddenRepeatFingerprint": "e55aa24d8016fd1aa73027655b8629fcbf7686dea41706e2d6bfe93a4b1462fe",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/fantasy-survival",
-  "sourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
+  "sourceTreeFingerprint": "0ee0ba4ecc33ef206a247eb22d2ac82ac84ba03b6ffd8dfabb55c8befaaa9484",
   "designFingerprint": "c73a53e121ef51a605007aa1df16ee39732f54300166fd6e453eb97497f1f07e",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
@@ -257,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
-    "currentSourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
+    "currentSourceTreeFingerprint": "0ee0ba4ecc33ef206a247eb22d2ac82ac84ba03b6ffd8dfabb55c8befaaa9484",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1442,8 +1442,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1453,14 +1453,14 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1502,7 +1502,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 92,
+        "score": 74,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1618,11 +1618,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
-    "priorSourceFingerprint": "3903f7a7e3cc8ec05030c670a67c77531f3b5723b29c94de3225b8c7ea131ca9",
+    "sourceFingerprint": "0ee0ba4ecc33ef206a247eb22d2ac82ac84ba03b6ffd8dfabb55c8befaaa9484",
+    "priorSourceFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2257,7 +2257,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5dbfbd147508fa216bfc0af0d143eae865f95ee2c8005e01ddf28050bac01ed2",
+      "sourceTreeFingerprint": "0ee0ba4ecc33ef206a247eb22d2ac82ac84ba03b6ffd8dfabb55c8befaaa9484",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2304,7 +2304,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2369,5 +2369,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:00:29.831Z"
+  "generatedAt": "2026-10-05T07:35:03.258Z"
 }

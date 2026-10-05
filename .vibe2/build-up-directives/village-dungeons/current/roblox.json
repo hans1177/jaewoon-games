@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g19-a7adae2e20aa",
-  "directiveFingerprint": "a7adae2e20aa7a1f1605fff4867d0f53938b65287fa7eeab487dd507227726c7",
-  "previousDirectiveFingerprint": "8cf7fa5999da3a696d8a5c6b7c7f3a90b09893330116de93b1a18ad67888edef",
-  "forbiddenRepeatFingerprint": "8cf7fa5999da3a696d8a5c6b7c7f3a90b09893330116de93b1a18ad67888edef",
+  "directiveId": "village-dungeons-build-up-g20-27ed4a678c4b",
+  "directiveFingerprint": "27ed4a678c4be39d45174f9c850ce5f9d296487bfab5cabcc6df0d180595d10e",
+  "previousDirectiveFingerprint": "a7adae2e20aa7a1f1605fff4867d0f53938b65287fa7eeab487dd507227726c7",
+  "forbiddenRepeatFingerprint": "a7adae2e20aa7a1f1605fff4867d0f53938b65287fa7eeab487dd507227726c7",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 19,
+  "generation": 20,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
+  "sourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
   "designFingerprint": "5cb61a18f23090e8cb2c5b187e890559e2a12f93a9bea456407eb6f1a2f6a284",
   "gameIdentityAndNonNegotiables": {
     "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
@@ -363,9 +363,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 18,
-    "previousSourceTreeFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
-    "currentSourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
+    "previousGeneration": 19,
+    "previousSourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
+    "currentSourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1544,14 +1544,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1560,7 +1560,6 @@
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1572,7 +1571,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1583,19 +1583,17 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
@@ -1603,16 +1601,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 30,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -1641,19 +1629,29 @@
         "gapDomains": []
       },
       {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 12,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": -122,
         "gapDomains": []
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1719,11 +1717,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 19,
-    "previousGeneration": 18,
+    "generation": 20,
+    "previousGeneration": 19,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
-    "priorSourceFingerprint": "55bc7f835cb7d7a91d96e795b61606eb0be916b7225dc56d60b23594604e33c7",
+    "sourceFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
+    "priorSourceFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2353,7 +2351,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ae75ceb81752fbd384799102d92a9dcf05010984784ea546d69cb8c2bb8439bd",
+      "sourceTreeFingerprint": "2910b355c6012ea28e146495afe621e90ae170108f009e09c84464c6504f98c9",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2400,7 +2398,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 20,
+    "nextGeneration": 21,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2466,5 +2464,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:00:29.758Z"
+  "generatedAt": "2026-10-05T07:35:03.119Z"
 }

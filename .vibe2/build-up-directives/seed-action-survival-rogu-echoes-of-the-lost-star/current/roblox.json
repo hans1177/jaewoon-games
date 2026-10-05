@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g19-c1801bdfef95",
-  "directiveFingerprint": "c1801bdfef95dbb2bccb6d2ec9e738992a1bbc7ef1adcc51015530906d5971a0",
-  "previousDirectiveFingerprint": "46e950e2d8726efce61a4213400d717a407de4c813d7aba4548deb65fa1c2320",
-  "forbiddenRepeatFingerprint": "46e950e2d8726efce61a4213400d717a407de4c813d7aba4548deb65fa1c2320",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g20-db0ff691e5c0",
+  "directiveFingerprint": "db0ff691e5c0c987fd0f4ba95b563f058b1e7c1705ec8f6bfe3f42cdff899662",
+  "previousDirectiveFingerprint": "c1801bdfef95dbb2bccb6d2ec9e738992a1bbc7ef1adcc51015530906d5971a0",
+  "forbiddenRepeatFingerprint": "c1801bdfef95dbb2bccb6d2ec9e738992a1bbc7ef1adcc51015530906d5971a0",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
-  "generation": 19,
+  "generation": 20,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "cc84beae16ab77d72041d604fe3aeee0d6444603cdfc5cc8cc0daae58688c33c",
+  "sourceTreeFingerprint": "8e362afd21980f6517b694bdddb8bfc317e23913455560bd0568c27020b7365e",
   "designFingerprint": "f82191ecfbaafd23f36b80b618d3a6262e90d6bf333e105b4a488bcbb0ac84eb",
   "gameIdentityAndNonNegotiables": {
     "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
@@ -257,9 +257,9 @@
   "previousVersionDelta": {
     "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 18,
-    "previousSourceTreeFingerprint": "800fd2bf41bed5e5f2f2337af020137b09fe4f0186d780ea50c3bf832abeacb1",
-    "currentSourceTreeFingerprint": "cc84beae16ab77d72041d604fe3aeee0d6444603cdfc5cc8cc0daae58688c33c",
+    "previousGeneration": 19,
+    "previousSourceTreeFingerprint": "cc84beae16ab77d72041d604fe3aeee0d6444603cdfc5cc8cc0daae58688c33c",
+    "currentSourceTreeFingerprint": "8e362afd21980f6517b694bdddb8bfc317e23913455560bd0568c27020b7365e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1442,8 +1442,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 11,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
+    "themeDepth": 12,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1453,12 +1453,12 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 11
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1502,7 +1502,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 48,
+        "score": 30,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1618,11 +1618,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 19,
-    "previousGeneration": 18,
+    "generation": 20,
+    "previousGeneration": 19,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "cc84beae16ab77d72041d604fe3aeee0d6444603cdfc5cc8cc0daae58688c33c",
-    "priorSourceFingerprint": "800fd2bf41bed5e5f2f2337af020137b09fe4f0186d780ea50c3bf832abeacb1",
+    "sourceFingerprint": "8e362afd21980f6517b694bdddb8bfc317e23913455560bd0568c27020b7365e",
+    "priorSourceFingerprint": "cc84beae16ab77d72041d604fe3aeee0d6444603cdfc5cc8cc0daae58688c33c",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2257,7 +2257,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "cc84beae16ab77d72041d604fe3aeee0d6444603cdfc5cc8cc0daae58688c33c",
+      "sourceTreeFingerprint": "8e362afd21980f6517b694bdddb8bfc317e23913455560bd0568c27020b7365e",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2304,7 +2304,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 20,
+    "nextGeneration": 21,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2372,5 +2372,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:00:29.618Z"
+  "generatedAt": "2026-10-05T07:35:03.000Z"
 }

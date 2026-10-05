@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g19-e8810344ee86",
-  "directiveFingerprint": "e8810344ee862042e0b6bb76499d6634999b12d34dfc50da530091966aecf120",
-  "previousDirectiveFingerprint": "c9bb6a91339b161dd58690aa39c159be92a2d246adff65e65d5cad1581bd9efd",
-  "forbiddenRepeatFingerprint": "c9bb6a91339b161dd58690aa39c159be92a2d246adff65e65d5cad1581bd9efd",
+  "directiveId": "daechung-rpg-build-up-g20-ea907f98c79c",
+  "directiveFingerprint": "ea907f98c79c6ff5224c284594a2f5d0e43e0835e6a653d3b9a6ac596348b0e4",
+  "previousDirectiveFingerprint": "e8810344ee862042e0b6bb76499d6634999b12d34dfc50da530091966aecf120",
+  "forbiddenRepeatFingerprint": "e8810344ee862042e0b6bb76499d6634999b12d34dfc50da530091966aecf120",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 19,
+  "generation": 20,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+  "sourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
   "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
     "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
@@ -547,9 +547,9 @@
   "previousVersionDelta": {
     "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 18,
-    "previousSourceTreeFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
-    "currentSourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+    "previousGeneration": 19,
+    "previousSourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+    "currentSourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1729,13 +1729,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 8,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=5.",
+    "themeDepth": 9,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=PRESENTATION; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 8,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1748,7 +1748,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1789,7 +1789,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 68,
+        "score": 50,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1903,11 +1903,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 19,
-    "previousGeneration": 18,
+    "generation": 20,
+    "previousGeneration": 19,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
-    "priorSourceFingerprint": "708f16a7f38dd6e5f13fa87a8c91cb0995182cbc6b3deb0bf6f1fc71e592f4c9",
+    "sourceFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
+    "priorSourceFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2550,7 +2550,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ab1da885c1d9c5d263a4f20583ba4e8c5faebae795c22ecc8015ef1abd7c83c8",
+      "sourceTreeFingerprint": "31861fa6b39622fa7f9de35b3709eb6a189886d87f82cc6bcef148d593c9d6e1",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2597,7 +2597,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 20,
+    "nextGeneration": 21,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2662,5 +2662,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T07:00:29.556Z"
+  "generatedAt": "2026-10-05T07:28:24.524Z"
 }
