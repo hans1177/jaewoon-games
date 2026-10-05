@@ -1,5 +1,5 @@
 {
-  "version": 537,
+  "version": 538,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -2118,10 +2118,10 @@
     },
     "modelQuotaContinuity": {
       "enabled": true,
-      "designProviderPolicy": "GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK",
+      "designProviderPolicy": "VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI",
       "quotaFailureClassification": "EXTERNAL_MODEL_CAPACITY",
       "quotaFailureIsDesignGateFailure": false,
-      "quotaBlockedState": "WAITING_FOR_GEMINI_QUOTA",
+      "quotaBlockedState": "EXTERNAL_AI_OPTIONAL",
       "runnerStopOnQuotaExhaustion": false,
       "continuousRefillRequired": true,
       "blockedModelTaskConsumesDevelopmentSlot": false,
@@ -22480,7 +22480,11 @@
       "responsibleFileScopeRequired": true,
       "disjointResponsibleFilesParallel": true,
       "deterministicQaRequired": true,
-      "securityScanRequired": true
+      "securityScanRequired": true,
+      "externalAiRequiredForProduction": false,
+      "externalAiDefaultEnabled": false,
+      "externalAiOptInVariable": "COMPANY_EXTERNAL_AI_ENABLED",
+      "localAuthoringContinuesWithoutExternalAi": true
     },
     "vibe": {
       "remainsPrimaryLearningAndIntegrationAgent": true,
@@ -22725,7 +22729,7 @@
     "authority": "OWNER_DIRECTIVE_2026-09-27",
     "status": "ACTIVE",
     "priority": "DEVELOPMENT_THROUGHPUT_FIRST_WITH_MINIMUM_NECESSARY_PROCEDURE",
-    "objective": "MINIMIZE_PROCESS_SECURITY_REVIEW_REGRESSION_AND_ADMINISTRATIVE_OVERHEAD_WHILE_PRESERVING_ONLY_EVIDENCE_RELEVANT_TO_THE_CHANGED_RISK_SCOPE",
+    "objective": "FINISH_EXISTING_WORK_WITH_MINIMUM_CAUSAL_CHANGES_AND_SCOPE_RELEVANT_VALIDATION",
     "defaultMode": "MINIMUM_NECESSARY_VALIDATION_AND_NONBLOCKING_AUDIT",
     "principles": {
       "procedureIsMeansNotGoal": true,
@@ -22773,7 +22777,10 @@
       "sameFailedGateRetestFirst": true,
       "unrelatedQaMayRunInParallel": true,
       "portfolioWideBarrierForbidden": true,
-      "reviewMayNotBecomeRoutineSerializationPoint": true
+      "reviewMayNotBecomeRoutineSerializationPoint": true,
+      "designAiReviewerRosterRequired": false,
+      "externalAiQuotaMayHoldDesignContinuation": false,
+      "deterministicDesignEvidenceReplacesModelReview": true
     },
     "execution": {
       "workerSlotPriority": "IMPLEMENTATION_AND_CAUSAL_REPAIR_BEFORE_NONBLOCKING_PROCEDURE",

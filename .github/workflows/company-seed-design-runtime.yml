@@ -38,9 +38,8 @@ env:
   COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
   COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
-  COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite'
   COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite'
-  COMPANY_GEMINI_LEAD_FALLBACK_LANES: ''
+  COMPANY_EXTERNAL_AI_ENABLED: ${{ vars.COMPANY_EXTERNAL_AI_ENABLED || 'false' }}
   COMPANY_VIBE_LOCAL_MODEL: 'qwen3:1.7b'
 
 jobs:
@@ -476,7 +475,7 @@ jobs:
           node --check tools/company-baseline-gate.mjs
           node --check tools/company-minimum-design-contract.mjs
           node --test qa/company-minimum-design-contract.test.mjs
-          echo 'DESIGN_AI_PROVIDER=GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'
+          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_WITH_OPTIONAL_EXTERNAL_AI'
           echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
           echo 'GEMINI_API_KEY_REQUIRED_FOR_GATE=NO'
       - name: Recover verified deterministic design checkpoint before external model wait
@@ -501,7 +500,7 @@ jobs:
           fi
           exit 0
 
-      - name: Resolve checkpoint-aware Gemini quota lanes
+      - name: Resolve local design authoring from the current checkpoint
         id: gemini_quota
         if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true'
         env:
@@ -513,104 +512,20 @@ jobs:
           node --input-type=module <<'NODE' | tee /tmp/gemini-quota-governor.txt
           import fs from 'node:fs';
           import path from 'node:path';
-
           const clean=value=>String(value??'').trim();
-          const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
-          const roles=['planning','graphics','development','qa','audio'];
-          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const authorizedLeadPool=uniq(directive?.ai?.modelPool||[]);
-          const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(','));
-          if(leads.length<roles.length)throw new Error(`GEMINI_QUOTA_GOVERNOR_LEAD_COUNT=${leads.length}/${roles.length}`);
-          const primary=leads.slice(0,roles.length);
-          if(primary.some(model=>!authorizedLeadPool.includes(model)))throw new Error('GEMINI_QUOTA_GOVERNOR_UNAUTHORIZED_LEAD_MODEL');
-          const fallback=authorizedLeadPool;
-          const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
-          const configuredLanes=Object.fromEntries(roles.map(role=>[role,[]]));
-          for(const entry of laneSpec.split(';').map(clean).filter(Boolean)){
-            const at=entry.indexOf(':');if(at<1)continue;
-            const role=clean(entry.slice(0,at));if(!roles.includes(role))continue;
-            configuredLanes[role]=uniq(entry.slice(at+1).split('|'));
-          }
           const checkpointPath=path.join('design',clean(process.env.ARTBOOK_GAME_ID),clean(process.env.ARTBOOK_DATE),'design-checkpoint.json');
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
-          const permanentUnavailable=/no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
-          const retryableQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded/i;
-          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
-          const DAILY_QUOTA_PROBE_MS=60*60*1000;
-          const providerRetryMs=row=>{
-            const error=clean(row?.lastError);
-            const seconds=Number(error.match(/Please retry in\s+([0-9.]+)s/i)?.[1]||error.match(/"retryDelay"\s*:\s*"([0-9.]+)s"/i)?.[1]);
-            const providerMs=Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):0;
-            return dailyQuota.test(error)?Math.max(DAILY_QUOTA_PROBE_MS,providerMs):(providerMs||60*60*1000);
-          };
-          const modelUnavailable=row=>{
-            const error=clean(row?.lastError);
-            if(permanentUnavailable.test(error))return true;
-            if(!retryableQuota.test(error))return false;
-            const updated=Date.parse(row?.updatedAt||'');
-            if(!Number.isFinite(updated))return true;
-            return Date.now()<updated+providerRetryMs(row);
-          };
-          const exhausted=new Set();
-          for(const [rawModel,row] of Object.entries(checkpoint.modelHealth||{})){
-            if(!modelUnavailable(row))continue;
-            exhausted.add(clean(rawModel).replace(/^gemini:/,''));
-          }
-          const completedTasks=checkpoint.tasks&&typeof checkpoint.tasks==='object'?checkpoint.tasks:{};
-          const completedPhases=checkpoint.phases&&typeof checkpoint.phases==='object'?checkpoint.phases:{};
-          const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(completedTasks,`five_lead_reviews::${role}`));
-          const currentPhase=clean(checkpoint.currentPhase).toUpperCase()||'BOOTSTRAP';
-          const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
-          const primarySet=new Set(primary);
-          const availableExtraFallbacks=fallback.filter(model=>!primarySet.has(model)&&!exhausted.has(model));
-          const adaptiveFallbacks=Object.fromEntries(roles.map(role=>[role,[]]));
-          const usedFallbacks=new Set();
-          const blockedPrimaryRoles=leadPhaseActive
-            ? missingRoles.filter(role=>exhausted.has(primary[roles.indexOf(role)]))
-            : [];
-          const assignFallback=(role,candidates)=>{
-            for(const model of candidates){
-              if(exhausted.has(model)||primarySet.has(model)||usedFallbacks.has(model))continue;
-              adaptiveFallbacks[role].push(model);
-              usedFallbacks.add(model);
-              return true;
-            }
-            return false;
-          };
-          for(const role of blockedPrimaryRoles){
-            if(assignFallback(role,configuredLanes[role]))continue;
-            assignFallback(role,availableExtraFallbacks);
-          }
-          for(const role of missingRoles){
-            if(blockedPrimaryRoles.includes(role)||adaptiveFallbacks[role].length)continue;
-            assignFallback(role,configuredLanes[role]);
-          }
-          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([primary[index],...adaptiveFallbacks[role]])]));
-          const adaptiveLaneSpec=roles
-            .filter(role=>adaptiveFallbacks[role].length)
-            .map(role=>`${role}:${adaptiveFallbacks[role].join('|')}`)
-            .join(';');
-          const blockedRoles=leadPhaseActive?missingRoles.filter(role=>lanes[role].every(model=>exhausted.has(model))):[];
-          const designerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
-          const designerCheckpointPresent=Object.prototype.hasOwnProperty.call(completedPhases,'designer_draft');
-          const generativeAuthoringNeeded=!designerCheckpointPresent||['PRE_GATE_REPAIR','DESIGNER_DRAFT','DESIGNER_REVISION','BOOTSTRAP'].includes(currentPhase);
-          const localFallbackNeeded=generativeAuthoringNeeded;
-          const runModelCycle=true;
-          const geminiDesignerAvailable=!exhausted.has(designerModel);
+          // A cycle not recovered above can require a local repair after current-policy validation.
+          const localAuthoringNeeded=true;
           console.log('DESIGN_PROVIDER_GOVERNOR=READY_WITH_LOCAL_FAILOVER');
-          console.log(`GEMINI_QUOTA_GOVERNOR=${geminiDesignerAvailable?'READY':'DEGRADED_LOCAL_FALLBACK'}`);
-          console.log(`GEMINI_QUOTA_CURRENT_PHASE=${currentPhase}`);
-          console.log('GEMINI_QUOTA_LEAD_PHASE_BLOCKING=NO');
+          console.log('DESIGN_EXTERNAL_AI_REQUIRED=NO');
           console.log('DESIGN_AI_REVIEW_REQUIRED=NO');
-          console.log(`GEMINI_UNAVAILABLE_MODELS=${[...exhausted].join(',')||'NONE'}`);
-          console.log(`GEMINI_INCOMPLETE_LEAD_ROLES=${missingRoles.join(',')||'NONE'}`);
-          console.log(`GEMINI_BLOCKED_LEAD_ROLES=${blockedRoles.join(',')||'NONE'}`);
-          console.log(`GEMINI_ADAPTIVE_FALLBACK_LANES=${adaptiveLaneSpec||'NONE'}`);
-          console.log(`DESIGN_LOCAL_AUTHORING_FALLBACK_NEEDED=${localFallbackNeeded?'YES':'NO'}`);
+          console.log('DESIGN_AI_REVIEW_LANES=NONE');
+          console.log(`DESIGN_LOCAL_AUTHORING_FALLBACK_NEEDED=${localAuthoringNeeded?'YES':'NO'}`);
           console.log(`GEMINI_QUOTA_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
           console.log('GEMINI_QUOTA_FULL_CYCLE_RESTART=NO');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=${geminiDesignerAvailable?'READY':'DEGRADED_LOCAL_FALLBACK'}\nfallback_lanes=${adaptiveLaneSpec}\nlocal_fallback_needed=${localFallbackNeeded?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=EXTERNAL_AI_OPTIONAL\nlocal_fallback_needed=${localAuthoringNeeded?'true':'false'}\n`);
           NODE
       - name: Restore Vibe local design fallback cache
         id: design_local_cache
@@ -680,7 +595,6 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          COMPANY_GEMINI_LEAD_FALLBACK_LANES: ${{ steps.gemini_quota.outputs.fallback_lanes }}
           COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
         shell: bash
         run: |
@@ -770,70 +684,8 @@ jobs:
             exit 0
           fi
 
-          quota_wait='false'
-          if [ -f "$checkpoint_path" ]; then
-            quota_wait="$(CHECKPOINT="$checkpoint_path" node <<'NODE'
-          const fs=require('fs');
-          const clean=value=>String(value??'').trim();
-          const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
-          const roles=['planning','graphics','development','qa','audio'];
-          const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
-          const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
-          const configured=Object.fromEntries(roles.map(role=>[role,[]]));
-          for(const entry of laneSpec.split(';').map(clean).filter(Boolean)){
-            const at=entry.indexOf(':');
-            if(at<1)continue;
-            const role=clean(entry.slice(0,at));
-            if(!roles.includes(role))continue;
-            configured[role]=uniq(entry.slice(at+1).split('|'));
-          }
-          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...configured[role]])]));
-          const cp=JSON.parse(fs.readFileSync(process.env.CHECKPOINT,'utf8'));
-          const permanentUnavailable=/no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
-          const retryableQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded/i;
-          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
-          const DAILY_QUOTA_PROBE_MS=60*60*1000;
-          const providerRetryMs=row=>{
-            const error=clean(row?.lastError);
-            const seconds=Number(error.match(/Please retry in\s+([0-9.]+)s/i)?.[1]||error.match(/"retryDelay"\s*:\s*"([0-9.]+)s"/i)?.[1]);
-            const providerMs=Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):0;
-            return dailyQuota.test(error)?Math.max(DAILY_QUOTA_PROBE_MS,providerMs):(providerMs||60*60*1000);
-          };
-          const modelUnavailable=row=>{
-            const error=clean(row?.lastError);
-            if(permanentUnavailable.test(error))return true;
-            if(!retryableQuota.test(error))return false;
-            const updated=Date.parse(row?.updatedAt||'');
-            if(!Number.isFinite(updated))return true;
-            return Date.now()<updated+providerRetryMs(row);
-          };
-          const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>modelUnavailable(row)).map(([model])=>clean(model).replace(/^gemini:/,'')));
-          const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
-          const phases=cp.phases&&typeof cp.phases==='object'?cp.phases:{};
-          const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
-          const currentPhase=clean(cp.currentPhase).toUpperCase()||'BOOTSTRAP';
-          const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
-          const roleBlocked=leadPhaseActive&&missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
-          const designer=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
-          const designerBlocked=!Object.prototype.hasOwnProperty.call(phases,'designer_draft')&&exhausted.has(designer);
-          const currentFailureQuota=retryableQuota.test(clean(cp.lastError));
-          const aggregateCapacityFailure=/GEMINI_NO_AVAILABLE_(?:CANDIDATES|MODELS)\b/i.test(clean(cp.lastError));
-          const checkpointHasQuotaEvidence=Object.values(cp.modelHealth||{}).some(row=>retryableQuota.test(clean(row?.lastError)));
-          const currentFailureAggregateCapacity=aggregateCapacityFailure&&checkpointHasQuotaEvidence;
-          if(currentFailureQuota||currentFailureAggregateCapacity)console.error('DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY');
-          process.stdout.write(currentFailureQuota||currentFailureAggregateCapacity||roleBlocked||(!leadPhaseActive&&designerBlocked)?'true':'false');
-          NODE
-            )"
-          fi
-
-          if [ "$quota_wait" = "true" ]; then
-            echo 'complete=false' >> "$GITHUB_OUTPUT"
-            echo 'quota_state=WAITING_FOR_GEMINI_QUOTA' >> "$GITHUB_OUTPUT"
-            echo 'DESIGN_MODEL_CYCLE_RESULT=WAITING_FOR_GEMINI_QUOTA'
-            echo 'DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO'
-            echo 'DESIGN_CHECKPOINT_RESUME_REQUIRED=YES'
-            exit 0
-          fi
+          echo 'DESIGN_EXTERNAL_AI_WAIT=DISABLED'
+          echo 'DESIGN_CHECKPOINT_RESUME_REQUIRED=YES'
 
           echo 'complete=false' >> "$GITHUB_OUTPUT"
           echo 'quota_state=ERROR' >> "$GITHUB_OUTPUT"
@@ -1044,7 +896,7 @@ jobs:
               else runtime.seeds[index]=seed;
               fs.writeFileSync(process.env.RUNTIME_SEED_STATE,JSON.stringify(runtime,null,2)+'\n');
               console.log('SEED_RUNTIME_TARGET_MERGE=YES|game='+gameId);
-              NODE
+          NODE
             fi
             git -C "$runtime_worktree" add -- "$game_path"
             if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" add -- game-seed-state.json; fi
@@ -1285,91 +1137,11 @@ jobs:
           echo "DESIGN_GATE_REPAIR_PENDING=$pending"
           active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID);const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "DESIGN_GATE_ACTIVE_OTHER_RUNS=$active_other"
-          quota_blocked="$(node --input-type=module <<'NODE'
-          import {execFileSync} from 'node:child_process';
-          const clean=value=>String(value??'').trim();
-          const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
-          const roles=['planning','graphics','development','qa','audio'];
-          const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
-          const fallback=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS).split(','));
-          const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
-          const configuredLanes=Object.fromEntries(roles.map(role=>[role,[]]));
-          for(const entry of laneSpec.split(';').map(clean).filter(Boolean)){
-            const at=entry.indexOf(':');if(at<1)continue;
-            const role=clean(entry.slice(0,at));if(!roles.includes(role))continue;
-            configuredLanes[role]=uniq(entry.slice(at+1).split('|'));
-          }
-          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...configuredLanes[role]])]));
-          const branch=process.env.COMPANY_RUNTIME_BRANCH;
-          const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
-          const exists=file=>{try{execFileSync('git',['cat-file','-e',`origin/${branch}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
-          const state=JSON.parse(show('game-seed-state.json'));
-          const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
-          const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const permanentUnavailable=/no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
-          const retryableQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded/i;
-          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
-          const DAILY_QUOTA_PROBE_MS=60*60*1000;
-          const providerRetryMs=row=>{
-            const error=clean(row?.lastError);
-            const seconds=Number(error.match(/Please retry in\s+([0-9.]+)s/i)?.[1]||error.match(/"retryDelay"\s*:\s*"([0-9.]+)s"/i)?.[1]);
-            const providerMs=Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):0;
-            return dailyQuota.test(error)?Math.max(DAILY_QUOTA_PROBE_MS,providerMs):(providerMs||60*60*1000);
-          };
-          const modelUnavailable=row=>{
-            const error=clean(row?.lastError);
-            if(permanentUnavailable.test(error))return true;
-            if(!retryableQuota.test(error))return false;
-            const updated=Date.parse(row?.updatedAt||'');
-            if(!Number.isFinite(updated))return true;
-            return Date.now()<updated+providerRetryMs(row);
-          };
-          const designReviewEligible=seed=>{const status=clean(seed?.status).toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||seed?.promotion?.strictDesignReviewContinuesInParallel===true);};
-          let blocked=0;
-          for(const seed of state.seeds||[]){
-            if(!designReviewEligible(seed))continue;
-            const cpPath=`design/${seed.gameId}/${date}/design-checkpoint.json`;
-            if(!exists(cpPath))continue;
-            let cp={};try{cp=JSON.parse(show(cpPath));}catch{continue;}
-            const deterministicRows=Object.entries(cp.phases||{}).filter(([name,value])=>/^deterministic_pre_gate(?:_after_repair_\d+)?$/.test(name)&&value&&typeof value==='object');
-            const deterministicRecoverable=deterministicRows.some(([,value])=>{
-              const threshold=Math.max(80,Number(value.passMinimum||80));
-              const hard=Array.isArray(value.hardFailures)?value.hardFailures:[];
-              const critical=Array.isArray(value.criticalAxisFailures)?value.criticalAxisFailures:[];
-              return cp.phases?.designer_draft&&Number(value.totalScore)>=threshold&&hard.length===0&&critical.length===0;
-            });
-            if(deterministicRecoverable)continue;
-            const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>modelUnavailable(row)).map(([model])=>clean(model).replace(/^gemini:/,'')));
-            if(!exhausted.size)continue;
-            const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
-            const phases=cp.phases&&typeof cp.phases==='object'?cp.phases:{};
-            const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
-            const currentPhase=clean(cp.currentPhase).toUpperCase()||'BOOTSTRAP';
-            const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
-            const roleBlocked=leadPhaseActive&&missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
-            const designerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
-            const designerBlocked=!Object.prototype.hasOwnProperty.call(phases,'designer_draft')&&exhausted.has(designerModel);
-            if(roleBlocked||(!leadPhaseActive&&designerBlocked))blocked++;
-          }
-          process.stdout.write(String(blocked));
-          NODE
-          )"
-          echo "DESIGN_GATE_QUOTA_BLOCKED=$quota_blocked"
-          echo 'DESIGN_DETERMINISTIC_RECOVERABLE_EXCLUDED_FROM_QUOTA_WAIT=YES'
-          echo 'DESIGN_DAILY_QUOTA_IMMEDIATE_REDISPATCH=NO'
-          all_quota_blocked=0
-          if [[ "$pending" =~ ^[1-9][0-9]*$ && "$quota_blocked" == "$pending" ]]; then all_quota_blocked=1; fi
-          if [ "$all_quota_blocked" = 0 ]; then
-            gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
-            echo 'GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX'
-          else
-            echo 'GAME_SEED_CONTINUATION_DISPATCHED=NO_GEMINI_QUOTA'
-            echo 'DESIGN_GATE_QUOTA_STATE=WAITING_FOR_GEMINI_QUOTA'
-          fi
-          if [ "$all_quota_blocked" = 1 ]; then
-            echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=WAITING_FOR_GEMINI_QUOTA'
-          elif [[ "$pending" =~ ^[1-9][0-9]*$ && "$active_other" == '0' ]]; then
+          echo 'DESIGN_EXTERNAL_AI_WAIT=DISABLED'
+          gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
+          echo 'GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX'
+          if [[ "$pending" =~ ^[1-9][0-9]*$ && "$active_other" == '0' ]]; then
             gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=YES'
           elif [[ "$pending" =~ ^[1-9][0-9]*$ ]]; then
