@@ -439,14 +439,15 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
 export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
+  const webGameFlowTarget=policy?.developmentSpeedExecution?.webGameFlow?.enabled===true?policy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const focus=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalAssetOnly=focus?.enabled===true&&focus?.exclusive!==false;
   const assetDemandFirst=policy?.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment?.qualityBeforeVolume===true;
   if(clean(lane).toLowerCase()==='asset-development')maxConcurrentTasks=Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst });
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation, lane, internalAssetOnly, assetDemandFirst });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
@@ -454,11 +455,12 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue=synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
   const laneMode=clean(lane||'game-primary').toLowerCase();
+  const webGameFlowTarget=policy?.developmentSpeedExecution?.webGameFlow?.enabled===true?policy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const focus=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalAssetOnly=focus?.enabled===true&&focus?.exclusive!==false;
   const assetDemandFirst=policy?.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment?.qualityBeforeVolume===true;
   if(clean(lane).toLowerCase()==='asset-development')maxConcurrentTasks=Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode, internalAssetOnly, assetDemandFirst });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   let tasks = started.tasks || [];
   const reservedTaskOrder = tasks.map((task) => task.id);
   const workerBudget = Math.max(
@@ -979,6 +981,8 @@ export function runQueueCommand(args = {}) {
   let queue = createVibeContinuousQueue(queueStateRecovered?{...rawQueue,maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX}:rawQueue);
   if(queueStateRecovered)writeJson(file,queue);
   const command = clean(args.command).toLowerCase();
+  const reservationPolicy=readJson(CANONICAL_RESERVATION_POLICY);
+  const webGameFlowTarget=reservationPolicy?.developmentSpeedExecution?.webGameFlow?.enabled===true?reservationPolicy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
   let result;
@@ -1046,7 +1050,7 @@ export function runQueueCommand(args = {}) {
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=executionLane==='learning-idle'?1:(optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks);
@@ -1098,7 +1102,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane }) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, speculativeExpansion, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -1128,14 +1132,14 @@ export function runQueueCommand(args = {}) {
     queue = neuron.queue;
     if (neuron.updated || transientLockRecovery.recovered) writeJson(file, queue);
     const refillSelection=neuron.reason==='TASK_MICRO_FANIN_COMPLETE'
-      ?selectVibeQueueBatch(queue,{maxConcurrentTasks:reservationMaxConcurrentTasks,lane:executionLane})
+      ?selectVibeQueueBatch(queue,{maxConcurrentTasks:reservationMaxConcurrentTasks,lane:executionLane,webGameFlowTarget})
       :null;
     result = {
       command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks,
       reservationMaxConcurrentTasks, adaptiveControl, ...neuron,
       refillReady:refillSelection?.hasEligibleWork===true,
       refillStopReason:refillSelection?.stopReason||null,
-      summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
+      summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget })
     };
   } else if (command === 'fan-in-regression-fail') {
     const input = clean(args.input);
@@ -1177,7 +1181,7 @@ export function runQueueCommand(args = {}) {
     result = {
       command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry,
       adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged,
-      summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
+      summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget })
     };
   } else if (['pass','fail','block','cancel'].includes(command)) {
     const outcome = command === 'pass' ? 'PASS' : command === 'fail' ? 'FAIL' : command === 'block' ? 'BLOCKED' : 'CANCELLED';
@@ -1195,11 +1199,11 @@ export function runQueueCommand(args = {}) {
       const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
       const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl,configuredMaxConcurrentTasks,{minimumMax:adaptiveMinimumConcurrentTasks});
       const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
-      const summary=summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane });
+      const summary=summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget });
       result = {
         command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks,
         adaptiveControl, queue, summary,
-        selection:selectVibeQueueBatch(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
+        selection:selectVibeQueueBatch(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget })
       };
     } else {
       result = { command, queue, summary: summarizeVibeContinuousQueue(queue), selection: selectVibeQueueBatch(queue) };
@@ -1257,6 +1261,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_BRAIN_LIVE=${result.summary?.brainLive===true?'YES':'NO'}`);
   console.log(`VIBE2_CAUSAL_REPLAN_REQUIRED=${result.summary?.causalReplanRequired===true?'YES':'NO'}`);
   console.log(`VIBE2_QUEUE_RELEASED_WORKER_SLOTS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
+  if(result.selection?.webGameFlow?.target){
+    console.log(`VIBE2_WEB_FLOW_TARGET=${result.selection.webGameFlow.target}`);
+    console.log(`VIBE2_WEB_FLOW_ACTIVE_GAMES=${result.selection.webGameFlow.activeGameIds.join(',')||'NONE'}`);
+    console.log(`VIBE2_WEB_FLOW_SHORTFALL=${result.selection.webGameFlow.shortfall}`);
+  }
   if(Array.isArray(result.selection?.deferredConflicts)){
     const conflicts=result.selection.deferredConflicts.slice(0,20);
     console.log(`VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=${result.selection.deferredConflicts.length}`);

@@ -33,6 +33,49 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
+// 웹 상시 두 게임: 실제 예약·완료·대기 복구를 거쳐 서로 다른 게임을 유지한다.
+test('canonical web target fills two distinct games and refills a released game without cancelling native work',()=>{
+  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}}};
+  const task=(id,gameId,target='web',extra={})=>({id,gameId,target,goal:'develop',department:'development',type:'implementation',status:'queued',sourceRoot:`${target}-games/${gameId}`,responsibleFiles:[`${id}.js`],...extra});
+  const reservation={id:'web-two:1',runId:'live-web',reservedAt:new Date().toISOString()};
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks:[task('a-1','a'),task('a-2','a'),task('b','b'),task('c','c'),task('roblox','r','roblox'),task('unity','u','unity')]});
+  const first=reserveVibeTaskBatch(queue,{maxConcurrentTasks:8,lane:'game-primary',policy,reservation});
+  assert.deepEqual([...first.selection.webGameFlow.activeGameIds].sort(),['a','b']);
+  assert.equal(first.tasks.filter(t=>t.gameId==='a').length,2);
+  assert.ok(first.tasks.some(t=>t.target==='roblox')&&first.tasks.some(t=>t.target==='unity'));
+  assert.equal(first.queue.tasks.find(t=>t.id==='c').status,'queued');
+  const waiting=markVibeTaskAwaiting(first.queue,{taskId:'b',blocker:'candidate-awaiting-qa-and-deployment'});
+  const next=reserveVibeTaskBatch(waiting,{maxConcurrentTasks:8,lane:'game-primary',policy,reservation});
+  assert.deepEqual(next.tasks.map(t=>t.id),['c']);
+  assert.deepEqual([...next.selection.webGameFlow.activeGameIds].sort(),['a','c']);
+  assert.equal(next.queue.tasks.find(t=>t.id==='b').status,'running');
+  assert.equal(next.queue.tasks.find(t=>t.id==='roblox').status,'running');
+});
+
+test('web target preserves holds, exact file conflicts and existing excess work while reporting real shortage',()=>{
+  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}},ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['held']}}};
+  const tasks=['held','a','b','c'].map(id=>({id,gameId:id,target:'web',goal:'develop',department:'development',type:'implementation',status:'queued',sourceRoot:`web-games/${id}`,responsibleFiles:['index.html']}));
+  const one=reserveVibeTaskBatch({tasks:tasks.slice(0,2),maxConcurrentTasks:4},{policy});
+  assert.deepEqual(one.tasks.map(t=>t.id),['a']);assert.equal(one.selection.webGameFlow.shortfall,1);
+  const reservation={id:'current',runId:'current',reservedAt:new Date().toISOString()};
+  const excess=tasks.slice(1).map(t=>({...t,status:'running',reservationId:'current',reservationRunId:'current',reservedAt:reservation.reservedAt}));
+  const next=reserveVibeTaskBatch({tasks:[...excess,{...tasks[1],id:'new',gameId:'new',sourceRoot:'web-games/new'}],maxConcurrentTasks:8},{policy,reservation});
+  assert.equal(next.tasks.length,0);assert.equal(next.queue.tasks.filter(t=>t.status==='running').length,3);
+  const locked=reserveVibeTaskBatch({tasks:[excess[0],{...tasks[1],id:'a-conflict'},tasks[2]],maxConcurrentTasks:4},{policy,reservation});
+  assert.deepEqual(locked.tasks.map(t=>t.id),['b']);
+});
+
+test('web two-game floor is reserved before ordinary platform weight and never applies to learning or assets',()=>{
+  const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}}};
+  const tasks=['roblox','unity','web'].flatMap(target=>Array.from({length:8},(_,i)=>({id:`${target}-${i}`,gameId:`${target}-${i}`,target,goal:'develop',department:'development',type:'implementation',status:'queued',sourceRoot:`${target}-games/${target}-${i}`,responsibleFiles:['index.js']})));
+  const result=reserveVibeTaskBatch({tasks,maxConcurrentTasks:9},{policy,maxConcurrentTasks:9});
+  assert.equal(new Set(result.tasks.filter(t=>t.target==='web').map(t=>t.gameId)).size,2);
+  assert.equal(result.tasks.filter(t=>t.target==='unity').length,1);
+  assert.equal(result.tasks.filter(t=>t.target==='roblox').length,6);
+  const assets=reserveVibeTaskBatch({tasks:tasks.filter(t=>t.target==='web').map(t=>({...t,assetProductionLane:true})),maxConcurrentTasks:8},{policy,lane:'asset-development',maxConcurrentTasks:8});
+  assert.equal(assets.tasks.length,8);assert.equal(assets.selection.webGameFlow.target,0);
+});
+
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
@@ -415,13 +458,13 @@ test('game-primary keeps adaptive telemetry but reserves primary work to provide
   const controlFile=path.join(dir,'control.json');
   const batchFile=path.join(dir,'batch.json');
   const running=Array.from({length:7},(_,i)=>({
-    id:`running-${i}`,gameId:`running-${i}`,target:'web',department:'development',type:'implementation',
-    goal:'running',status:'running',sourceRoot:`web-games/running-${i}`,responsibleFiles:['index.html'],
+    id:`running-${i}`,gameId:`running-${i}`,target:'unity',department:'development',type:'implementation',
+    goal:'running',status:'running',sourceRoot:`unity-games/running-${i}`,responsibleFiles:['index.html'],
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
   const queued=Array.from({length:20},(_,i)=>({
-    id:`queued-${i}`,gameId:`queued-${i}`,target:'web',department:'development',type:'implementation',
-    goal:'queued',status:'queued',sourceRoot:`web-games/queued-${i}`,responsibleFiles:['index.html']
+    id:`queued-${i}`,gameId:`queued-${i}`,target:'unity',department:'development',type:'implementation',
+    goal:'queued',status:'queued',sourceRoot:`unity-games/queued-${i}`,responsibleFiles:['index.html']
   }));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
@@ -762,7 +805,7 @@ test('awaiting QA holds only its responsible file and same-game disjoint work co
   queue=add(queue,'first','game-a','unity',{responsibleFiles:['Assets/Scripts/Combat.cs']});
   queue=add(queue,'same-next','game-a','unity',{responsibleFiles:['Assets/Scripts/Progression.cs']});
   queue=add(queue,'other','game-b','web',{responsibleFiles:['index.html']});
-  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1});
+  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1,policy:{}});
   assert.deepEqual(reserved.tasks.map(t=>t.id),['first']);
   queue=markVibeTaskAwaiting(reserved.queue,{taskId:'first',blocker:'candidate-awaiting-qa-and-deployment'});
   const next=selectVibeQueueBatch(queue,{maxConcurrentTasks:4});
@@ -870,7 +913,7 @@ test('high-risk Roblox task stays single-candidate so native repair reaches QA w
 
 test('primary task coverage consumes the worker budget before speculative variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
-  for(let i=0;i<4;i++) queue=add(queue,`primary-first-${i}`,`primary-first-${i}`,'web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  for(let i=0;i<4;i++) queue=add(queue,`primary-first-${i}`,`primary-first-${i%2}`,'web',{responsibleFiles:[`part-${i}.js`],priority:'critical',estimatedRisk:'high',speculativeEligible:true});
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
   assert.equal(reserved.tasks.length,4);
   assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[1,1,1,1]);
@@ -1415,7 +1458,7 @@ test('protected or paid autonomous work remains ineligible', () => {
 
 test('twenty independent tasks can fill all 20 slots', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
-  for(let i=0;i<20;i++) queue=add(queue,`t-${i}`,`g-${i}`,'web',{responsibleFiles:[`f-${i}.js`]});
+  for(let i=0;i<20;i++) queue=add(queue,`t-${i}`,`g-${i%2}`,'web',{responsibleFiles:[`f-${i}.js`]});
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
   assert.equal(reserved.tasks.length,20);
   assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
@@ -2249,7 +2292,7 @@ test('game-primary keeps live 6:2:1 mix without verified history consuming futur
     }))
   ];
   const queue=createVibeContinuousQueue({maxConcurrentTasks:9,tasks:[...verifiedRoblox,...queued]});
-  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:9,lane:'game-primary',reservation:{id:'live-ratio:1',runId:'live-ratio',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:9,lane:'game-primary',policy:{},reservation:{id:'live-ratio:1',runId:'live-ratio',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
   const counts=batch.tasks.reduce((acc,task)=>{acc[task.target]=(acc[task.target]||0)+1;return acc;},{});
   assert.equal(batch.tasks.length,9);
   assert.deepEqual(counts,{roblox:6,unity:2,web:1});
@@ -2271,7 +2314,7 @@ test('platform floors never displace higher release-stage Roblox work',()=>{
       goal:'web development',status:'queued',releaseState:'development-confirmed',sourceRoot:'web-games/development-web'
     }
   ]});
-  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary',reservation:{id:'release-priority:1',runId:'release-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary',policy:{},reservation:{id:'release-priority:1',runId:'release-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
   assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['release-roblox-0','release-roblox-1','release-roblox-2']);
 });
 

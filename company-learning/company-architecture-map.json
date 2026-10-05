@@ -1,5 +1,5 @@
 {
-  "version": 321,
+  "version": 322,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7023,7 +7023,14 @@
       "defaultProvider": "VIBE_LOCAL_OLLAMA",
       "aiReviewLanes": 0,
       "continuation": ".github/workflows/company-seed-design-runtime.yml"
-    }
+    },
+    "webActiveGames": 2,
+    "unityWebUsesCanonicalUnitySource": true,
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "WEB"
+    ]
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",

@@ -1268,7 +1268,7 @@ export function directivePrompt(d={}){
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
-    ...robloxProductionPromptLines(d.robloxProductionPlan),
+    ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
     d.playtestRuntimeFindings?.studioQualityFailure
       ?'STUDIO_OBSERVED_FAILURES: '+JSON.stringify(d.playtestRuntimeFindings.studioQualityFailure)
       :'STUDIO_OBSERVED_FAILURES: NO_CURRENT_EXACT_ARTIFACT_EVIDENCE',
@@ -1552,9 +1552,10 @@ export function buildGameSpecificBuildUpDirective({
   const preMutationDryRun=buildDevelopmentDryRun({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
-  const robloxProductionPlan=buildRobloxProductionPlan({
-    gameId:id,platform,design,source,responsibleFiles:topFiles,
-    previousPlan:previousDirective?.robloxProductionPlan,focus,
+  const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
+  const productionPlan=buildRobloxProductionPlan({
+    gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,
+    previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,
     policy:readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{}
@@ -1626,7 +1627,8 @@ export function buildGameSpecificBuildUpDirective({
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
     robloxNativeExecution,
-    robloxProductionPlan,
+    productionPlan,
+    robloxProductionPlan:productionPlan?.platform==='ROBLOX'?productionPlan:null,
     preserveConstraints:[
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',
       '승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.',
