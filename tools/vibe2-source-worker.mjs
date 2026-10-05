@@ -2393,7 +2393,7 @@ export function evaluateWebInternalAssetSourceBinding({order={},candidate={},sou
     existingBound:0,newlyBound:0,missing:0,allSelectedRequired:false
   });
 
-  const selectionKey=row=>clean(row?.requirementId||row?.assetId)||[row?.family,row?.role].map(clean).join(':');
+  const selectionKey=row=>[clean(row?.requirementId),clean(row?.assetId),clean(row?.family),clean(row?.role)].filter(Boolean).join(':');
   const boundIn=(row,text)=>row.sourceFiles.some(reference=>webAssetReferenceUsed(text,reference));
   const currentText=currentWebSourceText(sourceRoot);
   const existingBoundSelections=selections.filter(row=>boundIn(row,currentText));
