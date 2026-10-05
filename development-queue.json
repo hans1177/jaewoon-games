@@ -18554,14 +18554,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T21:29:19.217Z",
+      "updatedAt": "2026-10-05T21:35:44.109Z",
       "robloxSourceCommit": "54e2f0339c4ce32b0a9cb532db927bbd3e0c893c",
       "robloxSourceBootstrapPassedAt": "2026-10-05T18:02:10.167Z",
       "robloxSourceBootstrapFailedAt": "2026-10-05T18:06:35.121Z",
@@ -18727,11 +18727,11 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-05T19:13:35.560Z"
+        "verifiedAt": "2026-10-05T21:35:44.109Z"
       },
       "unityCanonicalEvidenceBound": true,
       "unityF9ReleaseRegressionPassed": true,
-      "unityF9ReleaseRegressionPassedAt": "2026-10-05T19:13:35.560Z",
+      "unityF9ReleaseRegressionPassedAt": "2026-10-05T21:35:44.109Z",
       "unityCanonicalPublishPending": false,
       "unityInternalReleaseReady": false,
       "unityInternalReleaseAt": null,
@@ -26979,7 +26979,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T21:35:29.019Z",
+  "updatedAt": "2026-10-05T21:35:47.501Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
