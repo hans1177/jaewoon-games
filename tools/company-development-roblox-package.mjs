@@ -248,7 +248,8 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
   try{
     execFileSync('git',['-C',path.resolve(repoRoot),'worktree','add','--detach',worktree,revision],{stdio:'pipe',encoding:'utf8'});
     const root=path.join(worktree,relativeSource);
-    const staticVerdict=validateExistingRobloxSourceTree({root,baseline});
+    const assetLibrary=readJson(path.join(worktree,'company-asset-library.json'));
+    const staticVerdict=validateExistingRobloxSourceTree({root,baseline,assetLibrary});
     const actualSourceTreeSha=clean(execFileSync('git',['-C',path.resolve(repoRoot),'rev-parse',`${revision}:${relativeSource}`],{stdio:'pipe',encoding:'utf8'}));
     const validation=resolvePackageSourceValidation({staticVerdict,verifiedSourceTreeSha,actualSourceTreeSha});
     if(!validation.pass)throw new Error(`exact-source validation failed: ${validation.blockers.join(',')}`);
@@ -263,6 +264,8 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     const lightingGuard=validateRobloxArtifactLightingMigrationGuard({artifactPath:artifact,projectPath:path.join(root,'default.project.json')});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
+    const assetCoverage=staticVerdict.internalAssetCoverage||{};
+    console.log(`ROBLOX_BUILD_INTERNAL_ASSET_COVERAGE=PASS:families=${Number(assetCoverage.familyCount||0)}/${Number(assetCoverage.requiredFamilyCount||0)}:atoms=${Number(assetCoverage.selectedAtomCount||0)}/${Number(assetCoverage.requiredSelectedAtomCount||0)}:coveragePct=${Number(assetCoverage.coveragePct||0)}`);
     console.log(`ROBLOX_BUILD_LIGHTING_SERIALIZATION=NORMALIZED:technology=${lightingSerialization.technology}:lightingStyle=${lightingSerialization.lightingStyle}`);
     console.log(`ROBLOX_BUILD_LIGHTING_MIGRATION_GUARD=PASS:technology=${lightingGuard.technology}:lightingStyle=${lightingGuard.lightingStyle}:retroRequired=${lightingGuard.expectsRetro}:retroToneMap=${lightingGuard.compatibilityToneMap}`);
     return createRobloxBuildEvidence({
