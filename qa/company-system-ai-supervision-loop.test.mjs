@@ -119,13 +119,23 @@ test('push-triggered System AI runs are coalesced QA-only and never reserve work
   assert.match(reserve,/COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES/);
   assert.match(reserve,/matrix=\{"include":\[\]\}/);
   assert.match(reserve,/count=0/);
-  assert.match(reserve,/SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCEL_COUNT=/);
-  assert.match(reserve,/SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_IN_PROGRESS_CANCEL=NO/);
-  assert.match(reserve,/director_in_progress/);
-  assert.match(reserve,/rows\.slice\(1\)/);
-  assert.match(reserve,/director_state.*'queued'.*'pending'.*'requested'.*'waiting'/s);
   assert.match(reserve,/\.event!="push"/);
   assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
+});
+
+test('System AI stale Director bootstrap bypasses slim pressure without cancelling active Director work',()=>{
+  const start=workflow.indexOf('\n  runner-pressure-bootstrap:\n');
+  const end=workflow.indexOf('\n  reserve:\n',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/if: github\.event_name == 'push'/);
+  assert.match(block,/runs-on: ubuntu-24\.04/);
+  assert.match(block,/SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCEL_COUNT=/);
+  assert.match(block,/SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_IN_PROGRESS_CANCEL=NO/);
+  assert.match(block,/director_in_progress/);
+  assert.match(block,/rows\.slice\(1\)/);
+  assert.match(block,/director_state.*'queued'.*'pending'.*'requested'.*'waiting'/s);
+  assert.doesNotMatch(block,/director_state.*in_progress.*force-cancel/s);
 });
 
 test('System AI uses provider matrix capacity without an internal worker cap',()=>{
