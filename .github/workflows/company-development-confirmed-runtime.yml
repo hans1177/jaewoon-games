@@ -405,7 +405,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          latest_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
+          active_batch_id=''
+          if [[ "$latest_main" =~ ^[0-9a-f]{40}$ ]]; then
+            if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?per_page=100" > /tmp/development-continuation-runs.json 2>/dev/null; then
+              active_batch_id="$(jq -r --arg sha "$latest_main" --argjson current "$GITHUB_RUN_ID" '
+                [
+                  .workflow_runs[]
+                  | select(.id != $current)
+                  | select(.head_sha == $sha)
+                  | select(.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested" or .status == "waiting")
+                  | select(
+                      .display_title == "Company DEVELOPMENT_CONFIRMED Runtime"
+                      or (.display_title | startswith("DEVELOPMENT cycle | batch | "))
+                    )
+                  | .id
+                ]
+                | max // empty
+              ' /tmp/development-continuation-runs.json)"
+              echo "DEVELOPMENT_CONTINUOUS_CYCLE_ACTIVE_BATCH_SCAN=PASS:$latest_main"
+            else
+              echo 'DEVELOPMENT_CONTINUOUS_CYCLE_ACTIVE_BATCH_SCAN=FAIL_OPEN_DISPATCH'
+            fi
+          else
+            echo 'DEVELOPMENT_CONTINUOUS_CYCLE_MAIN_SHA=UNAVAILABLE_FAIL_OPEN_DISPATCH'
+          fi
+
+          if [ -n "$active_batch_id" ]; then
+            echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
+            echo "DEVELOPMENT_CONTINUOUS_CYCLE_REOPEN_MODE=REUSED_ACTIVE_CURRENT_MAIN_BATCH:$active_batch_id"
+            echo 'DEVELOPMENT_CONTINUOUS_CYCLE_DISPATCH=SKIPPED_ACTIVE_CURRENT_MAIN_BATCH'
+            echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
+            exit 0
+          fi
+
           gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
             -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
           echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPEN_MODE=DISPATCHED_NEW_BATCH'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_DISPATCH=YES'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
