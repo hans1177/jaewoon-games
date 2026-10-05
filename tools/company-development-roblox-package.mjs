@@ -17,7 +17,7 @@ export const ROBLOX_PACKAGE_TOOL=Object.freeze({
   rojoVersion:'7.7.0',
   linuxX64Asset:'rojo-7.7.0-linux-x86_64.zip',
   linuxX64AssetSha256:'22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073',
-  internalAssetContractVersion:1,
+  internalAssetContractVersion:2,
 });
 
 function walkFiles(root){
@@ -226,6 +226,7 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
   const packagePassed=Boolean(identity)
     &&sourceValidationPassed===true
     &&internalAssetBinding?.pass===true
+    &&internalAssetBinding?.allLibrariesAutoLoaded===true
     &&internalLibraryInventory?.pass===true;
   return Object.freeze({
     version:2,
