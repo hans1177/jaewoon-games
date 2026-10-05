@@ -12,7 +12,7 @@
   "lastSuccessfulModelCallAt": "2026-10-05T01:43:26.315Z",
   "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_NO_AVAILABLE_MODELS gemini-3.5-flash-lite:429,gemini-3.8-flash:429,gemini-3.7-flash:429,gemini-3.6-flash:429,gemini-3.5-flash:429,gemini-3.1-pro-preview:429,gemini-2.5-pro:404,gemini-2.5-flash:404,gemini-2.5-flash-lite:404,gemini-3.1-flash-lite:429 local=Expected ',' or '}' after property value in JSON at position 2698 (line 1 column 2699)",
+  "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=GEMINI_NO_AVAILABLE_MODELS gemini-3.5-flash-lite:429,gemini-3.8-flash:429,gemini-3.7-flash:429,gemini-3.6-flash:429,gemini-3.5-flash:429,gemini-3.1-pro-preview:429,gemini-2.5-pro:404,gemini-2.5-flash:404,gemini-2.5-flash-lite:404,gemini-3.1-flash-lite:429 local=OLLAMA_DESIGN_TIMEOUT 90000ms",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 3,
@@ -125,17 +125,17 @@
       "updatedAt": "2026-10-05T01:43:28.224Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 31,
+      "calls": 32,
       "successes": 0,
-      "failures": 31,
-      "timeouts": 26,
+      "failures": 32,
+      "timeouts": 27,
       "jsonFailures": 5,
-      "totalMs": 3378185,
-      "lastMs": 120101,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
-      "updatedAt": "2026-10-05T03:58:51.603Z"
+      "totalMs": 3468271,
+      "lastMs": 90086,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
+      "updatedAt": "2026-10-05T04:00:21.690Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T03:58:51.603Z"
+  "updatedAt": "2026-10-05T04:00:21.691Z"
 }
