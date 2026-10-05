@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-05T14:09:34.767Z",
+  "updatedAt": "2026-10-05T14:39:36.582Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -611,14 +611,14 @@
         },
         {
           "platform": "UNITY",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": false,
+            "technicalReady": true,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -639,8 +639,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "1e97954fcf37eeff816d01d9336e469de5d045a1",
+            "artifactIdentity": "sha256:f8ef2854dd829ae49850173c0637d22f5d88dbffc9ca5f18e16323e0119a8716",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
