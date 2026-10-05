@@ -25,7 +25,7 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  const context=vm.createContext({document,Option:function(text,value){return {textContent:text,value};},matchMedia:()=>({matches:false}),AbortSignal,Date,Set,Map,console,
   setInterval:fn=>intervals.push(fn),fetch:async url=>{
    requests.push(url);if(offline)throw Error('연결 끊김');
-   return {ok:true,headers:{get:()=>null},json:async()=>url.includes('company-asset-library')?structuredClone(registry):{schemaVersion:1,sampledBy:'OFFICIAL_LUAU',sourceFingerprint:'test',monsters:[],environments:[]}};
+   return {ok:true,headers:{get:()=>null},json:async()=>url.includes('company-asset-library')?structuredClone(registry):{schemaVersion:1,sampledBy:'OFFICIAL_LUAU',sourceFingerprint:'test',monsters:[],environments:[],commonMotions:[]}};
   }});
  vm.runInContext(fs.readFileSync('assets/asset-library.js','utf8'),context);
  const settle=async()=>{for(let n=0;n<6;n++)await new Promise(resolve=>setImmediate(resolve));};
@@ -46,4 +46,18 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  offline=true;await intervals[0]();await settle();assert.match(e('syncStatus').textContent,/이전 목록/);assert.equal(e('environmentCount').textContent,1);
  const count=requests.length;document.hidden=true;await intervals[0]();assert.equal(requests.length,count);
  offline=false;document.hidden=false;listeners.visibilitychange();await settle();assert.match(e('syncStatus').textContent,/자동 동기화 연결됨/);
+});
+
+
+test('common character assets use the 3D R15 motion viewer instead of image fallback',()=>{
+ const page=fs.readFileSync('asset-library.html','utf8');
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+ assert.match(page,/공용 캐릭터/);
+ assert.match(script,/kind==='common'&&row\.atom/);
+ assert.match(script,/activeViewer\.setCommonMotion\(row\.atom\)/);
+ assert.match(script,/previewBadge'\)\.textContent='모션 재생'/);
+ assert.match(viewer,/function setCommonMotion\(atom\)/);
+ assert.match(viewer,/host\.dataset\.kind='common'/);
+ assert.match(viewer,/function applyCommonMotion\(atom,time\)/);
 });
