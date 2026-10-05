@@ -5565,7 +5565,7 @@
     "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES",
     "workflowLevelConcurrencyGroup": null,
     "workflowLevelConcurrencyForbidden": true,
-    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
     "runnerDrainMayRunInParallel": true,
     "runnerDrainRunsInParallelWithGamePrimaryGate": true,
     "superviseWaitsForRunnerDrainAndGamePrimaryGate": true,
@@ -5584,7 +5584,7 @@
     "gamePrimaryGateRunner": "ubuntu-slim",
     "superviseRunner": "ubuntu-slim",
     "gameHeavyRunnerUnchanged": "ubuntu-latest",
-    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v2",
     "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true,
     "staleCentralPushRequiresCurrentHeadReplacement": true,
     "staleNativeBatchPushRequiresCurrentHeadCentralReplacement": true,
@@ -5760,11 +5760,11 @@
     "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.directorPreSupervisionCoalescing20260927",
     "runnerDrain": {
-      "group": "director-runner-drain-v2",
+      "group": "director-runner-drain-v3",
       "activeCompletionPreserved": true,
       "pendingLatestWins": true,
       "cancelInProgress": false,
-      "previousGroup": "director-runner-drain-v1",
+      "previousGroup": "director-runner-drain-v2",
       "epochAdvancedToBypassLegacyPendingGroup": true
     },
     "gamePrimaryGate": {
@@ -6102,8 +6102,8 @@
     "drainLogicChanged": false,
     "activeGameCancellationForbidden": true,
     "independentGameCancellationForbidden": true,
-    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v3",
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "concurrentPlatformSharedProgressMonotonicity": {
