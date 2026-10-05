@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
+import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -18,6 +19,7 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.buildOrPackagePassed,true);
   assert.equal(evidence.artifactIdentity,`sha256:${'b'.repeat(64)}`);
   assert.equal(evidence.luauOrSourceValidationPassed,true);
+  assert.equal(evidence.assetThreshold,null);
   assert.equal(evidence.buildPreflightPassed,false);
   assert.equal(evidence.runtimePassed,false);
   assert.equal(evidence.independentQaPassed,false);
@@ -59,6 +61,74 @@ test('Roblox package source validation rejects a verified Vibe2 handoff when the
   assert.equal(validation.pass,false);
   assert.deepEqual(validation.blockers,['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']);
   assert.equal(validation.authority,'verified-vibe2-source-handoff');
+});
+
+test('Roblox package requires all internal library families and rejects primitive or color-only visual binding',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-assets-'));
+  try{
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    const baseline={content:{robloxBuildProfile:{
+      version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',genre:'Adventure',subgenre:null,playMode:'SINGLE',
+      multiplayerRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,
+      networkingRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,displayLabelKo:'Adventure'
+    }}};
+    const assetLibrary={version:109,baseMaterialLibrary:{
+      status:'PREPARED_SEMANTIC_ATOM_LIBRARY',
+      families:Object.fromEntries(ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]))
+    }};
+    const profile=robloxBuildProfileFromBaseline(baseline);
+    const plan=buildRobloxStudioAssetBootstrapPlan({gameId:'demo',profile,assetLibrary});
+    const familyRows=ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>`      ${family} = { "${family}_ATOM" },`).join('\n');
+    const config=`return {
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 2,
+    LibraryVersion = ${plan.libraryVersion},
+    SelectionFingerprint = "${plan.selectionFingerprint}",
+    Families = {
+${familyRows}
+    },
+  },
+}
+`;
+    const client=[
+      'local C = require(game.ReplicatedStorage.Shared.GameConfig)',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
+      'local studioAssetConfig = C.StudioAssets or {}',
+      'local studioAssetFamilies = studioAssetConfig.Families or {}',
+      'local function studioAssetFamily(family) local atoms=studioAssetFamilies[family]; return type(atoms)=="table" and atoms or {} end',
+      'local function hasStudioAssetAtom(family,atom) return table.find(studioAssetFamily(family),atom) ~= nil end',
+      'local studioUi = studioAssetFamily("UI")',
+      'local root = Instance.new("Frame")',
+      'local stroke = Instance.new("UIStroke")',
+      'root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))',
+      'if hasStudioAssetAtom("UI","UI_ATOM") then stroke.Thickness = 2 end',
+    ].join('\n');
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),client);
+    const pass=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    assert.equal(pass.pass,true);
+    assert.equal(pass.familyCoverageCount,12);
+    assert.equal(pass.requiredFamilyCount,12);
+    assert.equal(pass.allFamiliesAutoSelected,true);
+    assert.equal(pass.visibleAssetBindingPass,true);
+    assert.equal(pass.productionVerified,false);
+    assert.equal(pass.runtimeVerified,false);
+
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config.replace('      PROP = { "PROP_ATOM" },\n',''));
+    const missing=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    assert.equal(missing.pass,false);
+    assert.ok(missing.blockers.includes('ROBLOX_PACKAGE_INTERNAL_ASSET_FAMILY_MISSING:PROP'));
+
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),'local root=Instance.new("Frame")\nroot.BackgroundColor3=Color3.fromRGB(20,20,20)\n');
+    const primitive=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    assert.equal(primitive.pass,false);
+    assert.ok(primitive.blockers.includes('ROBLOX_PACKAGE_PRIMITIVE_ONLY_OR_COLOR_ONLY_FORBIDDEN'));
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
