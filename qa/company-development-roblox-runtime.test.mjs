@@ -907,6 +907,9 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
     assert.match(client,/StudioAssetBindingVersion/);
     assert.match(client,/StudioAssetAtoms/);
     assert.match(client,/FRAME_PANEL/);
+    assert.match(client,/COMPANY_ASSET_LIBRARY_NAMES/);
+    assert.match(client,/ROBLOX_INTERNAL_LIBRARY_LOAD_FAILED/);
+    assert.match(client,/CompanyAssetLibrariesLoaded/);
     assert.match(server,/native-foundation-sentinel-v1/);
     assert.match(server,/RuntimeFoundationReport/);
     assert.equal(project.tree.Lighting.$properties.Technology,'Voxel');
