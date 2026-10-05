@@ -1279,6 +1279,37 @@ test('lower quality compatible asset still binds when it is the only usable choi
   assert.equal(loadout.qualityScoreIsNotBindingGate,true);
 });
 
+test('all compatible internal assets remain eligible even when their scores are low',()=>{
+  const assets=[
+    {
+      id:'hud-high',family:'UI',subfamily:'HUD',status:'REPO_ASSET',platform:'WEB',
+      license:'project-original',internalAuditScore:950,path:'assets/web/hud-high.svg'
+    },
+    {
+      id:'hud-low',family:'UI',subfamily:'HUD',status:'REPO_ASSET',platform:'WEB',
+      license:'project-original',internalAuditScore:120,path:'assets/web/hud-low.svg'
+    },
+    {
+      id:'hud-mid',family:'UI',subfamily:'HUD',status:'REPO_ASSET',platform:'WEB',
+      license:'project-original',internalAuditScore:520,path:'assets/web/hud-mid.svg'
+    }
+  ];
+  const loadout=buildStudioAssetLoadout({
+    requirements:[{id:'hud',family:'UI',subfamily:'HUD',required:true}],
+    assets,
+    gameDna:{targetPlatform:'WEB'},
+    usageByAsset:{}
+  });
+  assert.equal(loadout.complete,true);
+  assert.equal(loadout.compatibleAssetCount,3);
+  assert.deepEqual(loadout.compatibleAssets.map(row=>row.assetId).sort(),['hud-high','hud-low','hud-mid']);
+  assert.equal(loadout.compatibleAssets.find(row=>row.assetId==='hud-low').lowQuality,true);
+  assert.equal(loadout.compatibleAssets.find(row=>row.assetId==='hud-low').qualityScoreBlocksBinding,false);
+  assert.equal(loadout.lowQualityBindingAllowedRegardlessOfScore,true);
+  assert.equal(loadout.lowScoreCompatibleAssetMustRemainUsageEligible,true);
+  assert.equal(loadout.allCompatibleAssetsAutoUseRequired,true);
+});
+
 test('quality program includes item and UI family outputs and evolves the weakest asset first',()=>{
   const program=buildStudioAssetQuality120Program({
     assets:[
@@ -3224,7 +3255,7 @@ test('Vibe loadout returns machine-readable discovery and use contract from exis
   });
   assert.equal(loadout.complete,true);
   assert.equal(loadout.machineReadableDiscovery,true);
-  assert.equal(loadout.selectionContractVersion,3);
+  assert.equal(loadout.selectionContractVersion,4);
   assert.equal(loadout.newPipelineCreated,false);
   assert.equal(loadout.selections[0].assetId,'common-forest-kit');
   assert.equal(loadout.selections[0].packId,'roblox-common-environment-v1');
