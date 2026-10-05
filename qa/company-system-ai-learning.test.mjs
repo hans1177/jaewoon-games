@@ -238,14 +238,27 @@ test('bottleneck System AI receives policy-grounded advanced causal optimization
   assert.equal(context.bottleneckPlaybook.verifiedPolicyBound,true);
   assert.equal(context.bottleneckPlaybook.authority,'company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution');
   const ids=context.bottleneckPlaybook.methods.map(row=>row.id);
+  assert.equal(context.bottleneckPlaybook.scope,'SYSTEM_AI_ONLY');
   for(const required of [
-    'CAUSAL_WAIT_GRAPH','LOGICAL_PHYSICAL_CAPACITY_SPLIT','MINIMUM_LOCK_SCOPE','STAGE_SCOPED_EXACT_DEDUPE',
-    'CONTROL_PLANE_ISOLATION','EVENT_DRIVEN_REFILL','CHECKPOINT_PRESERVING_HANDOFF','REPRESENTATIVE_CANARY_COHORT',
-    'STALE_QA_TRIANGULATION','MULTI_HYPOTHESIS_CAUSAL_REPAIR','WORK_CONSERVING_DISJOINT_PARALLELISM',
-    'SPARE_CAPACITY_HEDGING','CAUSE_SCOPED_BACKPRESSURE','OBSERVABILITY_TO_VERIFIED_LEARNING'
+    'CAUSAL_WAIT_GRAPH','CRITICAL_PATH_FIRST','LITTLE_LAW_FLOW_ACCOUNTING','UTILIZATION_KNEE_DETECTION',
+    'TAIL_LATENCY_PERCENTILES','SERVICE_DEMAND_DECOMPOSITION','LOGICAL_PHYSICAL_CAPACITY_SPLIT',
+    'MINIMUM_LOCK_SCOPE','LOCK_HOLD_TIME_MINIMIZATION','PRIORITY_INVERSION_CONTROL','HEAD_OF_LINE_BLOCKING',
+    'CONVOY_BREAKING','STAGE_SCOPED_EXACT_DEDUPE','THUNDERING_HERD_COALESCING','RETRY_STORM_SUPPRESSION',
+    'EXPONENTIAL_BACKOFF_WITH_JITTER','CIRCUIT_BREAKER_EXTERNAL_DEPENDENCY','CAUSE_SCOPED_BACKPRESSURE',
+    'ADMISSION_CONTROL_BY_MARGINAL_THROUGHPUT','QUEUE_AGING_AND_STARVATION_GUARD',
+    'WORK_CONSERVING_DISJOINT_PARALLELISM','SAFE_WORK_STEALING','CONTROL_PLANE_ISOLATION',
+    'EVENT_DRIVEN_REFILL','CHECKPOINT_PRESERVING_HANDOFF','REPRESENTATIVE_CANARY_COHORT',
+    'MULTI_HYPOTHESIS_CAUSAL_REPAIR','COUNTERFACTUAL_BEFORE_AFTER','BOTTLENECK_MIGRATION_DETECTION',
+    'STRAGGLER_HEDGING_WITH_BUDGET','STALE_ORPHAN_SIGNAL_HYGIENE','STALE_QA_TRIANGULATION',
+    'OBSERVABILITY_TO_VERIFIED_LEARNING'
   ])assert.ok(ids.includes(required),required);
+  assert.ok(ids.length>=33);
+  assert.deepEqual(context.bottleneckPlaybook.diagnosticProtocol.map(row=>row.phase),['OBSERVE','CLASSIFY','HYPOTHESIZE','REPAIR','VERIFY','LEARN']);
   assert.match(context.guidance,/POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK/);
-  assert.match(context.guidance,/STALE_QA_TRIANGULATION/);
+  assert.match(context.guidance,/DIAGNOSTIC PROTOCOL/);
+  assert.match(context.guidance,/PRIORITY_INVERSION_CONTROL/);
+  assert.match(context.guidance,/RETRY_STORM_SUPPRESSION/);
+  assert.match(context.guidance,/STALE_ORPHAN_SIGNAL_HYGIENE/);
   assert.match(context.guidance,/MULTI_HYPOTHESIS_CAUSAL_REPAIR/);
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.advisoryOnly,true);
@@ -259,8 +272,43 @@ test('ordinary non-bottleneck System AI task does not receive bottleneck playboo
     experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:policy
   });
   assert.equal(context.bottleneckPlaybook.applied,false);
+  assert.equal(context.bottleneckPlaybook.scope,'SYSTEM_AI_ONLY');
   assert.deepEqual(context.bottleneckPlaybook.methods,[]);
+  assert.deepEqual(context.bottleneckPlaybook.diagnosticProtocol,[]);
   assert.ok(!context.guidance.includes('POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK'));
+});
+
+test('System AI bottleneck playbook activation depends only on System AI evolution contract',()=>{
+  const sourcePolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=structuredClone(sourcePolicy);
+  delete policy.developmentSpeedExecution?.robloxEndToEndParallelExecution;
+  delete policy.finalDevelopmentLock?.parallelismBoundary;
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'sys-queue-tail-latency',
+      taskType:'bottleneck-repair',
+      goal:'reduce queue tail latency and retry storm in System AI control plane',
+      blocker:'priority inversion retry storm head of line blocking',
+      responsibleFiles:['tools/company-system-ai-bottleneck-sensor.mjs']
+    },
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:policy
+  });
+  assert.equal(context.bottleneckPlaybook.applied,true);
+  assert.equal(context.bottleneckPlaybook.scope,'SYSTEM_AI_ONLY');
+  assert.ok(context.bottleneckPlaybook.methods.some(row=>row.id==='TAIL_LATENCY_PERCENTILES'));
+  assert.ok(context.bottleneckPlaybook.methods.some(row=>row.id==='PRIORITY_INVERSION_CONTROL'));
+});
+
+test('System AI bottleneck playbook fails closed when System AI evolution contract is incomplete',()=>{
+  const policy=structuredClone(JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')));
+  policy.aiExecutionEfficiency.systemAiEvolution.bottleneckSensing.enabled=false;
+  const context=buildSystemAiLearningContext({
+    task:{id:'sys-bottleneck-closed',taskType:'bottleneck-repair',goal:'repair queue bottleneck',responsibleFiles:['tools/company-system-ai-bottleneck-sensor.mjs']},
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:policy
+  });
+  assert.equal(context.bottleneckPlaybook.applied,false);
+  assert.deepEqual(context.bottleneckPlaybook.methods,[]);
+  assert.deepEqual(context.bottleneckPlaybook.diagnosticProtocol,[]);
 });
 
 
