@@ -1735,8 +1735,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1766,9 +1766,9 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-05T08:04:15.521Z",
-      "robloxSourceCommit": "f6627f156cf6c166b71026ac2ada6bef89d03d38",
-      "robloxSourceBootstrapPassedAt": "2026-10-05T08:03:39.278Z",
+      "updatedAt": "2026-10-05T08:04:45.129Z",
+      "robloxSourceCommit": "af4ebef46d306ba02110dd60fedbb8d231bf307c",
+      "robloxSourceBootstrapPassedAt": "2026-10-05T08:04:45.129Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -1868,9 +1868,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "86efee2139d6273f2a49155b2bd8c65fe94eb318",
-        "newSourceRevision": "f6627f156cf6c166b71026ac2ada6bef89d03d38",
-        "invalidatedAt": "2026-10-05T08:03:39.278Z"
+        "previousSourceRevision": "f6627f156cf6c166b71026ac2ada6bef89d03d38",
+        "newSourceRevision": "af4ebef46d306ba02110dd60fedbb8d231bf307c",
+        "invalidatedAt": "2026-10-05T08:04:45.129Z"
       },
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-horror-escape-room-37131116107",
@@ -45754,7 +45754,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T08:04:15.521Z",
+  "updatedAt": "2026-10-05T08:04:45.129Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
