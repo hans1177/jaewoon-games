@@ -899,7 +899,7 @@ test('post-runtime dedupe job uses the lightweight controller runner with stage-
   const end=workflow.indexOf('\n  runtime-foundation-qa:',start);
   const block=workflow.slice(start,end);
   assert.match(block,/runs-on:\s*ubuntu-slim/);
-  assert.match(block,/\n\s+concurrency:\n\s+group: roblox-runtime-foundation-dedupe-\$\{\{ github\.sha \}\}-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
+  assert.match(block,/\n\s+concurrency:\n\s+group: roblox-runtime-foundation-dedupe-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: true/);
   assert.match(block,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
 });
 
