@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-05T13:03:35.844Z",
+  "updatedAt": "2026-10-05T13:31:50.065Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -4119,7 +4119,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d72216eef80f68ee91d0b608f1d2373e3a91223e\",\"sourceRootTreeSha\":\"d98d1d415aefb45c58699f10966ee7eb18d0a476\",\"sourceFingerprint\":\"6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d72216eef80f68ee91d0b608f1d2373e3a91223e\",\"sourceRootTreeSha\":\"d98d1d415aefb45c58699f10966ee7eb18d0a476\",\"sourceFingerprint\":\"6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d72216eef80f68ee91d0b608f1d2373e3a91223e\",\"sourceRootTreeSha\":\"d98d1d415aefb45c58699f10966ee7eb18d0a476\",\"sourceFingerprint\":\"6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7d085a1286f12ab5dac52074c7a0daa73fca589f\",\"sourceRootTreeSha\":\"d946990373e62b415e8983d410553e4168707c19\",\"sourceFingerprint\":\"5521a7bc474e3e22b2c29ae9b64834347576f8b6f26d384eb075b0199eb6787c\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:653ae1d917282565e5968cd443412f0d2a0de5f5e11e76c47df3b434ba760c03\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}"
       ],
       "exactFailedStage": "F1_SERVER_BOOT",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4128,8 +4129,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T21:11:42.546Z",
-      "occurrenceCount": 84
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 85
     },
     {
       "id": "bug-2acb75a00e5cafb13c0d",
@@ -4143,7 +4144,8 @@
       "responsibleFiles": [],
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d72216eef80f68ee91d0b608f1d2373e3a91223e\",\"sourceRootTreeSha\":\"d98d1d415aefb45c58699f10966ee7eb18d0a476\",\"sourceFingerprint\":\"6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d72216eef80f68ee91d0b608f1d2373e3a91223e\",\"sourceRootTreeSha\":\"d98d1d415aefb45c58699f10966ee7eb18d0a476\",\"sourceFingerprint\":\"6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d72216eef80f68ee91d0b608f1d2373e3a91223e\",\"sourceRootTreeSha\":\"d98d1d415aefb45c58699f10966ee7eb18d0a476\",\"sourceFingerprint\":\"6e6a3a7c6446a062ea1b3ad0740eac7a15acdccd8dec6813515d86d81be1bfc3\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:90bc5bc75e0054b02d92365687fc4f977c82a9f150125156fa17e5939d93dbfe\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7d085a1286f12ab5dac52074c7a0daa73fca589f\",\"sourceRootTreeSha\":\"d946990373e62b415e8983d410553e4168707c19\",\"sourceFingerprint\":\"5521a7bc474e3e22b2c29ae9b64834347576f8b6f26d384eb075b0199eb6787c\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:653ae1d917282565e5968cd443412f0d2a0de5f5e11e76c47df3b434ba760c03\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"2b2442097907ed5f3fd1ea363411c07f18180e3123b86b61ecab02c463f66bfd\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4152,8 +4154,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T21:11:42.546Z",
-      "occurrenceCount": 84
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 85
     },
     {
       "id": "bug-5ad58a17f9c4534fdd6e",
@@ -4358,7 +4360,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"c9f9f4d0f48fa1dd7322d2981b9c534d1fe056eb8ed7a92ec8dbb6a2c154e182\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"8d7e554e225dd9d25bcde991e103da70b6c2cd2e0ab184f8ff8f81ddc5277801\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"c9f9f4d0f48fa1dd7322d2981b9c534d1fe056eb8ed7a92ec8dbb6a2c154e182\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"8d7e554e225dd9d25bcde991e103da70b6c2cd2e0ab184f8ff8f81ddc5277801\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"910c8784a17ce2c06aeb2d0300f2cfd856863940\",\"sourceRootTreeSha\":\"235f415f4ec43033b87ad6ab32b6d3562c19ac66\",\"sourceFingerprint\":\"4676584a4511c2459ba85d6610b02c8d387602a8e483876174e7a674c571cb43\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:edb6b68d83ef5bc0535e1796cc4b3b830f406c13d17fcc8070b65102001d10de\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"8d7e554e225dd9d25bcde991e103da70b6c2cd2e0ab184f8ff8f81ddc5277801\"}"
       ],
       "exactFailedStage": "F1_SERVER_BOOT",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4367,8 +4370,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T21:11:42.546Z",
-      "occurrenceCount": 87
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 88
     },
     {
       "id": "bug-ee2bb9b32489fc14c5ea",
@@ -4381,7 +4384,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"c9f9f4d0f48fa1dd7322d2981b9c534d1fe056eb8ed7a92ec8dbb6a2c154e182\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"8d7e554e225dd9d25bcde991e103da70b6c2cd2e0ab184f8ff8f81ddc5277801\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"92c76090d928b7724e18a0fd980f1f173a4581ba\",\"sourceRootTreeSha\":\"0279cea278bbe3490d79f3cd682aba5fde9bd5db\",\"sourceFingerprint\":\"c9f9f4d0f48fa1dd7322d2981b9c534d1fe056eb8ed7a92ec8dbb6a2c154e182\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"8d7e554e225dd9d25bcde991e103da70b6c2cd2e0ab184f8ff8f81ddc5277801\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"910c8784a17ce2c06aeb2d0300f2cfd856863940\",\"sourceRootTreeSha\":\"235f415f4ec43033b87ad6ab32b6d3562c19ac66\",\"sourceFingerprint\":\"4676584a4511c2459ba85d6610b02c8d387602a8e483876174e7a674c571cb43\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:edb6b68d83ef5bc0535e1796cc4b3b830f406c13d17fcc8070b65102001d10de\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"8d7e554e225dd9d25bcde991e103da70b6c2cd2e0ab184f8ff8f81ddc5277801\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4390,8 +4394,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T01:05:47.127Z",
-      "updatedAt": "2026-10-01T21:11:42.546Z",
-      "occurrenceCount": 87
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 88
     },
     {
       "id": "bug-2ddae6fab29f5f2b4b38",
@@ -4932,7 +4936,8 @@
       "evidence": [
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"74e980574272e59d284d0ea57020bef9d0faa20034c12f95025f7fc7f659cc0c\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:e57a85a9d710549f5fadba89855b0936797eb938ac6167ec7125278d0422cb95\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"d019adeefe574f588aa708e4f85e0638cdebeac6c7d93bd8848f3fd42bc55867\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:81879044f99ec1783be7015b7de553f00e875681a5549a95f1656ee17d10e4c2\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"d019adeefe574f588aa708e4f85e0638cdebeac6c7d93bd8848f3fd42bc55867\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:81879044f99ec1783be7015b7de553f00e875681a5549a95f1656ee17d10e4c2\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dcb0c574594500da5c1eba3830e956dacd6aab6c\",\"sourceRootTreeSha\":\"f07770c67f822a90555f53d48caedb317e29c8da\",\"sourceFingerprint\":\"d019adeefe574f588aa708e4f85e0638cdebeac6c7d93bd8848f3fd42bc55867\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:81879044f99ec1783be7015b7de553f00e875681a5549a95f1656ee17d10e4c2\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"b529c1fcd32130b3e0ce1757f0b46d4b1ff74bf8\",\"sourceRootTreeSha\":\"9db1ed8660e8b29320ce72616c79ae360a89273e\",\"sourceFingerprint\":\"3b163d8353a5bb50cbd3d6db67fc875c36f28f8852a8663fcf149889f12b63e8\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:31e0c50f9db5b345e793788b6c930768ef8d28951db348fc8230c30211cb0807\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F0_SOURCE_INTEGRITY\",\"failureStage\":\"F1_SERVER_BOOT\",\"failureSignature\":\"0868e0111a4f323f50f79a8e7dd2b67608df925c8ff30f4ab0d3e2324b8f49b0\"}"
       ],
       "exactFailedStage": "F1_SERVER_BOOT",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -4941,8 +4946,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-01T12:56:10.606Z",
-      "updatedAt": "2026-10-03T15:20:40.392Z",
-      "occurrenceCount": 60
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 61
     },
     {
       "id": "bug-f9d7a7f938eee3e808c5",
@@ -5165,8 +5170,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 203
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 204
     },
     {
       "id": "bug-21a9483913fbc47f4745",
@@ -5191,8 +5196,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 203
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 204
     },
     {
       "id": "bug-b5588ff2b4ec06cf2a70",
@@ -5559,7 +5564,8 @@
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd5c7abbaf1eec3f06ca5d07b821d67f6cec10cb\",\"sourceRootTreeSha\":\"7d441247fa440247ee731d0cddaa7b96bb6fbac3\",\"sourceFingerprint\":\"9b4639ae4f48fef655f7c5806309326302b7bba6fb71a2ef2b1e5e13057a470b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ad591ebfa977b468965094f2e229bb5f20e9edb7\",\"sourceRootTreeSha\":\"bcb6fecd9163087533cc7e2dbc65d9bec2bd1ed5\",\"sourceFingerprint\":\"a9bfb9f568c4c408dccc0ba85f29252a94675a6306a412a7e06f5bbabeb7bef6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ad591ebfa977b468965094f2e229bb5f20e9edb7\",\"sourceRootTreeSha\":\"bcb6fecd9163087533cc7e2dbc65d9bec2bd1ed5\",\"sourceFingerprint\":\"a9bfb9f568c4c408dccc0ba85f29252a94675a6306a412a7e06f5bbabeb7bef6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e97954fcf37eeff816d01d9336e469de5d045a1\",\"sourceRootTreeSha\":\"901f52c29f8688741ad0c8cccfce145f0c7a9544\",\"sourceFingerprint\":\"5986301a827adb5d56416df203a989ea86341c6275e83e45b1475ac02e5f5f48\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
       ],
       "exactFailedStage": "F0_SOURCE_INTEGRITY",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5568,8 +5574,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T11:11:42.183Z",
-      "occurrenceCount": 362
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 363
     },
     {
       "id": "bug-ad9dae5e09804b30a45f",
@@ -5586,7 +5592,8 @@
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e59c94ee019ad8ab915868d07013e58953d6324\",\"sourceRootTreeSha\":\"1bb10e8141f3508c8d26bacbe17a5cde7d82518a\",\"sourceFingerprint\":\"c8276b63c6258fd81b5f15f33811f75494ce3e37b6ecaafe320abf37f6be1b45\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
         "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd5c7abbaf1eec3f06ca5d07b821d67f6cec10cb\",\"sourceRootTreeSha\":\"7d441247fa440247ee731d0cddaa7b96bb6fbac3\",\"sourceFingerprint\":\"9b4639ae4f48fef655f7c5806309326302b7bba6fb71a2ef2b1e5e13057a470b\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ad591ebfa977b468965094f2e229bb5f20e9edb7\",\"sourceRootTreeSha\":\"bcb6fecd9163087533cc7e2dbc65d9bec2bd1ed5\",\"sourceFingerprint\":\"a9bfb9f568c4c408dccc0ba85f29252a94675a6306a412a7e06f5bbabeb7bef6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"ad591ebfa977b468965094f2e229bb5f20e9edb7\",\"sourceRootTreeSha\":\"bcb6fecd9163087533cc7e2dbc65d9bec2bd1ed5\",\"sourceFingerprint\":\"a9bfb9f568c4c408dccc0ba85f29252a94675a6306a412a7e06f5bbabeb7bef6\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"1e97954fcf37eeff816d01d9336e469de5d045a1\",\"sourceRootTreeSha\":\"901f52c29f8688741ad0c8cccfce145f0c7a9544\",\"sourceFingerprint\":\"5986301a827adb5d56416df203a989ea86341c6275e83e45b1475ac02e5f5f48\",\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":false,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"F0_SOURCE_INTEGRITY\",\"failureSignature\":\"bfcddce403b89d9ed0c9cfbc8843c055ad3563c4a05fa2f52e7e18349f38a1d4\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -5595,8 +5602,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T14:39:22.616Z",
-      "updatedAt": "2026-10-05T11:11:42.183Z",
-      "occurrenceCount": 362
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 363
     },
     {
       "id": "bug-4591ef62527e5cb1e58b",
@@ -5898,8 +5905,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 294
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 295
     },
     {
       "id": "bug-fcd7e3b7410acdcb39be",
@@ -5923,8 +5930,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-03T20:11:49.967Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 294
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 295
     },
     {
       "id": "bug-cfadf0bcd8b805cea6a8",
@@ -6021,8 +6028,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T09:25:30.990Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 13
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 14
     },
     {
       "id": "bug-a6310c0c658116117611",
@@ -6069,8 +6076,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T09:25:30.990Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 13
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 14
     },
     {
       "id": "bug-8084514be682767cc396",
@@ -6161,8 +6168,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T11:36:33.510Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 7
     },
     {
       "id": "bug-04f446ef7cf42361408d",
@@ -6184,8 +6191,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T11:36:33.510Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 7
     },
     {
       "id": "bug-0fa2d57eec519c9b7a85",
@@ -6207,8 +6214,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T11:36:33.510Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 7
     },
     {
       "id": "bug-d4d7a7f72378cfcfe4f1",
@@ -6230,8 +6237,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T11:36:33.510Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 7
     },
     {
       "id": "bug-c8c48144caaf58659855",
@@ -6299,8 +6306,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T12:41:49.310Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 5
     },
     {
       "id": "bug-d37c8f6cad1ad2d74b89",
@@ -6322,8 +6329,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T12:41:49.310Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 5
     },
     {
       "id": "bug-02ac2eb3721221a1a68e",
@@ -6345,8 +6352,261 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T12:41:49.310Z",
-      "updatedAt": "2026-10-05T13:03:35.841Z",
-      "occurrenceCount": 4
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 5
+    },
+    {
+      "id": "bug-d341533d1fab95dd3d80",
+      "gameId": "horror-escape-room",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "b8da8796dfb862a87e32974340d99a8b676af22f42a7a0e36bb9448478da62a5",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"a299841b6706c5ac82e05757e623160f16e417e4\",\"sourceRootTreeSha\":\"159bbff2767097371ec329d6395311ab391c384a\",\"sourceFingerprint\":\"379e9f88aeb7ca12d4f4fb3264463f1ed50445f70ea49c524892ea6ee57613cc\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:449ccc72b6d63c1710757dd6246ec24e1630d3ad40cdbea42b6650c9d6496665\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F6_CORE_SERVICES\",\"failureStage\":\"F7_MULTIPLAYER_FOUNDATION\",\"failureSignature\":\"b8da8796dfb862a87e32974340d99a8b676af22f42a7a0e36bb9448478da62a5\"}"
+      ],
+      "exactFailedStage": "F7_MULTIPLAYER_FOUNDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-7281b9792cfa0246605b",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "150458625cf996d370564e7e95c9b57272379024b19f25ec3301149cd1516560",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"fb380c5ad9b2528178c55170039fb088be8de40b\",\"sourceRootTreeSha\":\"e9dbc64e6a5cb54868bcc42cd6e65b2b99efb9c7\",\"sourceFingerprint\":\"e23ee250708af6d859063ada56f1619bd574d22267f7576ece342e079547b8ec\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:fc0c993fe6898e6425f1f3a555dfc47a78d679e9fa1d6fdd7fa8fe2d5c2fe018\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"150458625cf996d370564e7e95c9b57272379024b19f25ec3301149cd1516560\"}"
+      ],
+      "exactFailedStage": "F5_INPUT_CAMERA_UI",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-e3b6a16daf8337bb4480",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "150458625cf996d370564e7e95c9b57272379024b19f25ec3301149cd1516560",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"fb380c5ad9b2528178c55170039fb088be8de40b\",\"sourceRootTreeSha\":\"e9dbc64e6a5cb54868bcc42cd6e65b2b99efb9c7\",\"sourceFingerprint\":\"e23ee250708af6d859063ada56f1619bd574d22267f7576ece342e079547b8ec\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:fc0c993fe6898e6425f1f3a555dfc47a78d679e9fa1d6fdd7fa8fe2d5c2fe018\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"150458625cf996d370564e7e95c9b57272379024b19f25ec3301149cd1516560\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-63d389916a76a0568212",
+      "gameId": "fantasy-survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "5c2a94f2c3280c11b0821391f5d698dc598b377b637700516170213aa9220c9d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d0c077b5aa81321bebe24135374820a54c4d0bd0\",\"sourceRootTreeSha\":\"80d0efb94da73aa54a620a28a865133fc944159a\",\"sourceFingerprint\":\"38970e645147d2fb689e0d6b85dc327666381d146e2bfb4ead619b22caa03707\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:c20524bc87c8497bd0a266373b72d76e06f37b6016d3378cdf92842c12d78e5f\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"5c2a94f2c3280c11b0821391f5d698dc598b377b637700516170213aa9220c9d\"}"
+      ],
+      "exactFailedStage": "F5_INPUT_CAMERA_UI",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-abc9c28d475b893b28e8",
+      "gameId": "fantasy-survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "5c2a94f2c3280c11b0821391f5d698dc598b377b637700516170213aa9220c9d",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"d0c077b5aa81321bebe24135374820a54c4d0bd0\",\"sourceRootTreeSha\":\"80d0efb94da73aa54a620a28a865133fc944159a\",\"sourceFingerprint\":\"38970e645147d2fb689e0d6b85dc327666381d146e2bfb4ead619b22caa03707\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:c20524bc87c8497bd0a266373b72d76e06f37b6016d3378cdf92842c12d78e5f\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":false,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"5c2a94f2c3280c11b0821391f5d698dc598b377b637700516170213aa9220c9d\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-62a469e13a649e75fc6a",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"08dee6a7d41a36a13092a7b5735da6b7d5607c98\",\"sourceRootTreeSha\":\"8deec4a38853be98a26269038d79694a40b6e837\",\"sourceFingerprint\":\"8dea4362215314c549db690876107dad7b28740881ae2891d9838aa4d01b5075\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:53f86699fd18f04a77ed58c6f3534bbd6c5d401ea81758bf25b5fc5a1284e28b\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec\"}"
+      ],
+      "exactFailedStage": "F5_INPUT_CAMERA_UI",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c08681f2ce70085b696f",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"08dee6a7d41a36a13092a7b5735da6b7d5607c98\",\"sourceRootTreeSha\":\"8deec4a38853be98a26269038d79694a40b6e837\",\"sourceFingerprint\":\"8dea4362215314c549db690876107dad7b28740881ae2891d9838aa4d01b5075\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:53f86699fd18f04a77ed58c6f3534bbd6c5d401ea81758bf25b5fc5a1284e28b\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-ae86c69e05f6d9eb4720",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"406ddabfc280d1c457ca3b7d5b47050ecd32c9d3\",\"sourceRootTreeSha\":\"492312b732e342e233014d1b9bfa46866d2174f0\",\"sourceFingerprint\":\"78fc1cba78e44b5c8f1c2f463dd91c1c4d3097e6c8250fcc63099063949700fa\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:47324ce303883044346f5cd5ce62bc156621590a30ac6d382a687e9369b0ec71\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec\"}"
+      ],
+      "exactFailedStage": "F5_INPUT_CAMERA_UI",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-5d5fa238957a5519f342",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"406ddabfc280d1c457ca3b7d5b47050ecd32c9d3\",\"sourceRootTreeSha\":\"492312b732e342e233014d1b9bfa46866d2174f0\",\"sourceFingerprint\":\"78fc1cba78e44b5c8f1c2f463dd91c1c4d3097e6c8250fcc63099063949700fa\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:47324ce303883044346f5cd5ce62bc156621590a30ac6d382a687e9369b0ec71\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":false,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F4_PHYSICS_AND_MOVEMENT\",\"failureStage\":\"F5_INPUT_CAMERA_UI\",\"failureSignature\":\"c7661d58a75f354b663869eb924abb9e3396a6c02f6fe225be2ce71672b192ec\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-e47c9bff7348fe215139",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "aa88813b99b1153d3858f8be845eee9826207f07dcf952ae41a5cce710dece63",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dce387db9f42aae3cabf350f653f0e3fe70e598c\",\"sourceRootTreeSha\":\"2d189178d79e99e31c0f3b0e5a1d943fdfb48c7e\",\"sourceFingerprint\":\"352eca303172227a040ad44b4f94222bc44ccdb8229468678ddeb56069b03d88\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:3d6e74baf38a29324e1cbe4eb1de236d06f54b1e354fec10c5ef744390eb9369\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F8_GAMEPLAY_SYSTEMS\",\"failureStage\":\"F9_RELEASE_REGRESSION\",\"failureSignature\":\"aa88813b99b1153d3858f8be845eee9826207f07dcf952ae41a5cce710dece63\"}"
+      ],
+      "exactFailedStage": "F9_RELEASE_REGRESSION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-a7fe82f237754ded0a73",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "aa88813b99b1153d3858f8be845eee9826207f07dcf952ae41a5cce710dece63",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"dce387db9f42aae3cabf350f653f0e3fe70e598c\",\"sourceRootTreeSha\":\"2d189178d79e99e31c0f3b0e5a1d943fdfb48c7e\",\"sourceFingerprint\":\"352eca303172227a040ad44b4f94222bc44ccdb8229468678ddeb56069b03d88\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:3d6e74baf38a29324e1cbe4eb1de236d06f54b1e354fec10c5ef744390eb9369\",\"runtimePassed\":false,\"independentQaPassed\":false,\"multiplayerPassed\":true,\"regressionPassed\":false,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":false},\"canonicalEvidenceBound\":false,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F8_GAMEPLAY_SYSTEMS\",\"failureStage\":\"F9_RELEASE_REGRESSION\",\"failureSignature\":\"aa88813b99b1153d3858f8be845eee9826207f07dcf952ae41a5cce710dece63\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-05T13:31:50.061Z",
+      "updatedAt": "2026-10-05T13:31:50.061Z",
+      "occurrenceCount": 1
     }
   ]
 }
