@@ -3298,9 +3298,14 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
   const motionTeaching=order.target==='roblox'&&assetDevelopmentTask(order)?createRobloxWalkTeachingRecipe(motionUnit):null;
+  const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
+  const photoCraft=!motionUnit&&(order.assetProduction?.imageAssetCreation?.enabled===true||order.imageAssetObservation?.required===true);
   const assetTeaching=assetDevelopmentTask(order)?createAssetProductionTeachingRecipe({
     platform:order.target||'UNSPECIFIED',
-    visualReference:!motionUnit&&(order.assetProduction?.imageAssetCreation?.enabled===true||order.imageAssetObservation?.required===true),
+    visualReference:photoCraft,
+    actorAI:!motionUnit&&(order.selectedTask?.actorAI===true||/\bai\b|인공지능|행동\s*트리|길찾기|pathfinding|behaviou?r\s*tree/i.test(craftGoal)),
+    surfaceCraft:!motionUnit&&(photoCraft||order.selectedTask?.surfaceCraft===true||/재질|질감|표면|텍스처|털|비늘|깃털|저폴리|\b(?:material|texture|surface|fur|scale|feather|pbr|low[\s-]?poly)s?\b/i.test(craftGoal)),
+    creatureCraft:!motionUnit&&(photoCraft||order.selectedTask?.creatureCraft===true||/동물|몬스터|생물|체형|괴물|\b(?:animal|monster|creature|wildlife|body[\s-]?plan)s?\b/i.test(craftGoal)),
     cinematic:!motionUnit&&(/컷신|시네마틱|연출|cut[\s-]?scene|cinematic|storyboard|shot[\s-]?list/i.test([order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' '))||order.selectedTask?.cinematicDirection===true),
     families:motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)],
     styleBible:order.assetProduction?.styleBible||{styleFamily:order.selectedTask?.styleFamily||order.styleFamily}

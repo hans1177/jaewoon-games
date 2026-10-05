@@ -621,7 +621,7 @@ test('central planner dedupes active Unity Web floor and bootstrap runs without 
 });
 
 
-test('shared Ollama model cache is opt-in for native development workers and preserves dedicated Vibe cache',()=>{
+test('shared Ollama cache serves model consumers while Unity settlement needs no model download',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
@@ -643,9 +643,10 @@ test('shared Ollama model cache is opt-in for native development workers and pre
   assert.match(action,/continue-on-error: true/);
   assert.ok(action.indexOf('Ensure requested local model')<action.indexOf('Save requested Ollama model cache immediately'));
 
-  for(const workflow of [roblox,continuation,unity]){
+  for(const workflow of [roblox,continuation]){
     assert.match(workflow,/cache-model: 'true'/);
   }
+  assert.doesNotMatch(unity,/prepare-ollama|ollama pull/);
   assert.match(vibe,/key: vibe2-ollama-v5-/);
   assert.match(vibe,/runner\.os/);
   assert.match(vibe,/runner\.arch/);
