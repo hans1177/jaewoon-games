@@ -4816,7 +4816,7 @@
         "UNITY": "unity-games/village-dungeons"
       },
       "robloxProjectPath": "roblox-games/village-dungeons",
-      "unityProjectPath": "unity-games/village-dungeons",
+      "unityProjectPath": "",
       "targetSourcePath": "unity-games/village-dungeons",
       "sourcePath": "unity-games/village-dungeons",
       "designBaselineSource": "design/village-dungeons/2026-09-19/design-revised.json",
@@ -4856,14 +4856,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T08:01:30.726Z",
+      "updatedAt": "2026-10-05T08:02:20.110Z",
       "robloxSourceCommit": "86efee2139d6273f2a49155b2bd8c65fe94eb318",
       "robloxSourceBootstrapPassedAt": "2026-10-05T07:57:28.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -10304,8 +10304,8 @@
         ]
       },
       "platformAdapter": "tools/company-development-unity-platform.mjs",
-      "unityCandidateBranch": "development/unity-tech-village-dungeons-37133197766",
-      "unitySourceCommit": "f7020e73f8a1f138e7ee26fcaf9418ef856d607c",
+      "unityCandidateBranch": null,
+      "unitySourceCommit": null,
       "unityBuildRunId": null,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
@@ -10313,9 +10313,9 @@
       "unityF0ThroughF9Evidence": {
         "version": 2,
         "platform": "UNITY",
-        "sourceRevision": "f7020e73f8a1f138e7ee26fcaf9418ef856d607c",
+        "sourceRevision": null,
         "artifactIdentity": null,
-        "sourceRootTreeSha": "e1881c7ed91be0212bd4ae33267e61b44755addb",
+        "sourceRootTreeSha": null,
         "evidenceMode": "F0_COMPILE_PLUS_ONE_EXACT_ANDROID_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
         "singleRuntimeSessionF1ThroughF8": true,
         "f9RuntimeReplayRequired": false,
@@ -10364,7 +10364,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-10-05T07:46:04.102Z"
+        "verifiedAt": "2026-10-05T08:02:20.110Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -10380,9 +10380,9 @@
       "unityExecutionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "f7020e73f8a1f138e7ee26fcaf9418ef856d607c",
-        "sourceRootTreeSha": "e1881c7ed91be0212bd4ae33267e61b44755addb",
-        "sourceFingerprint": "46e12ee22867e458c04965de10a51660f9ad0ecdf09c379bba28b49c3c921ca3",
+        "sourceRevision": null,
+        "sourceRootTreeSha": null,
+        "sourceFingerprint": null,
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -10404,9 +10404,9 @@
       "executionEvidence": {
         "version": 4,
         "platform": "UNITY",
-        "sourceRevision": "f7020e73f8a1f138e7ee26fcaf9418ef856d607c",
-        "sourceRootTreeSha": "e1881c7ed91be0212bd4ae33267e61b44755addb",
-        "sourceFingerprint": "46e12ee22867e458c04965de10a51660f9ad0ecdf09c379bba28b49c3c921ca3",
+        "sourceRevision": null,
+        "sourceRootTreeSha": null,
+        "sourceFingerprint": null,
         "buildOrPackagePassed": false,
         "artifactIdentity": null,
         "runtimePassed": false,
@@ -45754,7 +45754,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T08:02:42.862Z",
+  "updatedAt": "2026-10-05T08:02:55.456Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
