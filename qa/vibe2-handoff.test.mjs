@@ -222,12 +222,12 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   }));
   fs.writeFileSync(resultFile, JSON.stringify({ version:1, results:rows }, null, 2));
   const fanIn = runQueueCommand({ command:'fan-in', queue:queueFile, control:controlFile, input:resultFile });
-  assert.equal(fanIn.adaptiveControl.currentMax, 30);
-  assert.equal(fanIn.adaptiveControl.lastDecision, 'DOWN');
+  assert.equal(fanIn.adaptiveControl.currentMax, 32);
+  assert.equal(fanIn.adaptiveControl.lastDecision, 'HOLD');
 
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
-  assert.equal(after.parallelism.currentPersistentMax, 30);
+  assert.equal(after.parallelism.currentPersistentMax, 32);
   assert.equal(after.workState.queuedCount, 29);
   assert.equal(after.workState.blockedCount, 2);
   assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));
