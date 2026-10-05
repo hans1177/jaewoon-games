@@ -287,7 +287,7 @@ function normalizeAssetRequirements(input=[]){
   }
   return freeze(rows);
 }
-function normalizeGraphicsReplacementContract(input=null){
+function normalizeSourceContract(input=null){
   if(!input||typeof input!=='object'||Array.isArray(input))return null;
   try{return freeze(JSON.parse(JSON.stringify(input)));}
   catch{return null;}
@@ -301,10 +301,10 @@ function normalizeTask(input = {}, index = 0) {
   const unlimitedRetry=unlimitedRetryEligible(input);
   const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
   const inputEvidence=normalizeEvidence(input.evidence||[]);
-  const atomicPresentation=/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
+  const atomicPresentation=Boolean(input.motionRepairWorkUnit)||/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
     ||inputEvidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(clean(value)));
   const normalizedEvidence=atomicPresentation
-    ?[...inputEvidence,'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
+    ?[...inputEvidence,...(input.motionRepairWorkUnit?['single-object-motion-repair:v1','asset-production-parallel:v1']:[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
     :inputEvidence;
   // 검증 전용 후보 식별자는 큐 재정규화 뒤에도 보존한다. 구형 저장 누락은 대기 증거로만 복구한다.
   let runtimeCandidate=input.runtimeEvidenceCandidate;
@@ -335,10 +335,11 @@ function normalizeTask(input = {}, index = 0) {
     target: clean(input.target) || 'auto',
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
-    assetProductionLane: input.assetProductionLane===true || inputEvidence.includes('asset-production-parallel:v1'),
+    assetProductionLane: input.assetProductionLane===true || normalizedEvidence.includes('asset-production-parallel:v1'),
     presentationPass: clean(input.presentationPass).toUpperCase() || null,
-    graphicsReplacementContract: normalizeGraphicsReplacementContract(input.graphicsReplacementContract),
-    executionLane: inferExecutionLane({...input,evidence:inputEvidence}),
+    graphicsReplacementContract: normalizeSourceContract(input.graphicsReplacementContract),
+    motionRepairWorkUnit: normalizeSourceContract(input.motionRepairWorkUnit),
+    executionLane: inferExecutionLane({...input,evidence:normalizedEvidence}),
     goal: clean(input.goal),
     responsibleFiles: freezeList(input.responsibleFiles || []),
     retainedResponsibleFileLocks: freezeList(input.retainedResponsibleFileLocks || []),

@@ -13,6 +13,7 @@ import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
+import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -65,6 +66,16 @@ test('single motion work unit planner carries the exact binding without silently
   const batch=buildVibeAssetProductionPlan({repoRoot:f.sourceRoot,target:'web',task:{motionRepairWorkUnit:{...f.unit,objectCount:2}},manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(batch.motionRepairWorkUnit.objectCount,2);
   assert.equal(evaluateSingleMotionWorkUnit({...f,order:{...f.order,assetProduction:batch}}).pass,false);
+});
+test('single motion work unit survives canonical queue persistence and enters the existing asset lane',t=>{
+  const f=singleMotionFixture(t);
+  const queue=createVibeContinuousQueue({tasks:[{id:'one-motion',target:'web',gameId:'demo',sourceRoot:'web-games/demo',responsibleFiles:['motion.js'],motionRepairWorkUnit:f.unit}]});
+  const persisted=createVibeContinuousQueue(JSON.parse(JSON.stringify(queue))).tasks[0];
+  assert.deepEqual(persisted.motionRepairWorkUnit,f.unit);
+  assert.equal(persisted.assetProductionLane,true);
+  assert.ok(persisted.evidence.includes('single-object-motion-repair:v1'));
+  const plan=buildVibeAssetProductionPlan({repoRoot:f.sourceRoot,target:'web',task:persisted,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.equal(plan.motionRepairWorkUnit.sourceHash,f.unit.sourceHash);
 });
 test('single motion work unit central budget means sixty minutes of modification excluding preparation and QA',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
