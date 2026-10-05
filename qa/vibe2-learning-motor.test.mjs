@@ -16,6 +16,8 @@ import {
   mergeVerifiedSpecializedQueueExperienceMemory,
   collectVerifiedRobloxStudioPlayExperience,
   mergeVerifiedRobloxStudioPlayExperienceMemory,
+  collectVerifiedRobloxCloudRuntimeExperience,
+  mergeVerifiedRobloxCloudRuntimeExperienceMemory,
   applyVerifiedGraphicsEvolutionOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
@@ -127,6 +129,68 @@ test('verified local Studio runtime failure becomes reusable failure lesson but 
   infra.robloxInternalVibePlayEvidence.capabilities.studioTestService=false;
   infra.robloxInternalVibePlayEvidence.infrastructureFailure=true;
   assert.equal(collectVerifiedRobloxStudioPlayExperience({items:[infra]}).records.length,0);
+});
+
+test('verified Open Cloud exact runtime QA regression becomes reusable Roblox coding experience while Studio-only proof cannot raise cloud-native mastery',()=>{
+  const source='e'.repeat(40);
+  const artifact='sha256:'+'f'.repeat(64);
+  const item={
+    gameId:'cloud-game',
+    robloxSourceCommit:source,
+    robloxBuildArtifactIdentity:artifact,
+    robloxFoundationF0Evidence:{artifactRunId:991},
+    robloxRuntimeCandidateEvidence:{
+      sourceRevision:source,artifactIdentity:artifact,artifactRunId:991,
+      universeId:'1001',placeId:'2002',versionNumber:11,published:true
+    },
+    robloxRuntimeEvidence:{
+      authority:'roblox-open-cloud-engine-probe',
+      provider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
+      actualRuntimeEvidence:true,
+      placeId:'2002',placeVersion:11,
+      runtimeFoundationPassed:true,runtimeAcceptancePassed:true,
+      requirements:{saveEnabled:true,multiplayerRequired:true},
+      studioAssetBindingRequired:false
+    },
+    robloxRuntimeFoundationPassed:true,
+    robloxRuntimePassed:true,
+    robloxServerClientBoundaryPassed:true,
+    robloxDatastoreRejoinPassed:true,
+    robloxMobileControlUiPassed:true,
+    robloxMultiplayerQaPassed:true,
+    robloxIndependentQaPassed:true,
+    robloxRegressionPassed:true,
+    robloxRuntimePassedAt:'2026-10-06T00:00:00.000Z',
+    robloxRegressionPassedAt:'2026-10-06T00:01:00.000Z'
+  };
+  const extracted=collectVerifiedRobloxCloudRuntimeExperience({items:[item]});
+  assert.equal(extracted.records.length,1);
+  const row=extracted.records[0];
+  assert.equal(row.taskType,'roblox-open-cloud-runtime');
+  assert.equal(row.cloudRuntimeVerified,true);
+  assert.ok(row.evidence.includes('roblox-open-cloud-runtime:PASS'));
+  assert.ok(row.evidence.includes('roblox-open-cloud-exact-candidate:PASS'));
+  assert.ok(row.reusablePatterns.includes('verified-open-cloud-runtime:roblox-datastore'));
+  const merged=mergeVerifiedRobloxCloudRuntimeExperienceMemory({records:[]},{items:[item]});
+  assert.equal(merged.added,1);
+  assert.equal(merged.memory.records.length,1);
+
+  const learned=applyVerifiedExperienceToMastery({},extracted);
+  assert.ok(learned.state.domains.ROBLOX_REMOTE_SECURITY.xp>0);
+  assert.ok(learned.state.domains.ROBLOX_REPLICATION.xp>0);
+  assert.ok(learned.state.domains.ROBLOX_DATASTORE.xp>0);
+  assert.ok(learned.state.domains.ROBLOX_MULTIPLAYER.xp>0);
+  assert.ok(learned.state.domains.ROBLOX_TOUCH_INPUT.xp>0);
+  assert.ok(learned.state.domains.ROBLOX_UI_STATE.xp>0);
+
+  const studioOnly=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'studio-only',gameId:'cloud-game',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
+    goal:'RemoteEvent replication multiplayer touch UI',
+    evidence:['roblox-studio-local-runtime:PASS','roblox-native-actual-play-feedback:PASS'],
+    reusablePatterns:['verified-studio-local-play:roblox-replication']
+  }]});
+  assert.equal(studioOnly.state.domains.ROBLOX_REPLICATION.xp,0);
+  assert.equal(studioOnly.state.domains.ROBLOX_MULTIPLAYER.xp,0);
 });
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
@@ -605,16 +669,43 @@ test('learning motor exposes Roblox touch character and UI native domains',()=>{
   assert.ok(all.includes('ROBLOX_UI_STATE'));
 });
 
-test('Roblox target retrieval prefers verified Roblox-native Studio outcomes over generic cross-platform history',()=>{
-  const task={gameId:'g-new',target:'roblox',goal:'repair RemoteEvent touch input and character respawn'};
+test('Roblox code practice is cloud-production oriented and covers advanced native coding domains',()=>{
+  const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
+  assert.equal(curriculum.version,3);
+  assert.equal(curriculum.productionRuntimeAuthority,'ROBLOX_OFFICIAL_CLOUD_API_ONLY');
+  assert.equal(curriculum.studioRequired,false);
+  assert.equal(curriculum.studioProductionEvidenceAccepted,false);
+  const ids=new Set(curriculum.drills.map(row=>row.id));
+  for(const id of ['remote-validation','datastore-transaction','replication-revision','respawn-lifecycle','touch-intent','bounded-cache'])assert.ok(ids.has(id),id);
+  const domains=new Set(curriculum.drills.flatMap(row=>row.domains||[]));
+  for(const domain of ['ROBLOX_REMOTE_SECURITY','ROBLOX_DATASTORE','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER','ROBLOX_TOUCH_INPUT','ROBLOX_CHARACTER_STATE','ROBLOX_UI_STATE','PERFORMANCE'])assert.ok(domains.has(domain),domain);
+});
+
+test('Roblox cloud coding distilled knowledge is advisory retrieval only',()=>{
+  const store=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'cloud-code',target:'roblox',taskType:'coding',goal:'RemoteEvent server validate DataStore replication multiplayer ContextActionService respawn UI performance'},
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},
+    practiceDistilledInput:{entries:[]},externalAiDistilledInput:store,masteryInput:{}
+  });
+  const row=ctx.externalAiDistilled.find(item=>item.id==='external-ai-distilled:openai-roblox-cloud-coding-v1');
+  assert.ok(row);
+  assert.ok(row.domains.includes('ROBLOX_REMOTE_SECURITY'));
+  assert.ok(row.domains.includes('ROBLOX_DATASTORE'));
+  assert.ok(ctx.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-roblox-cloud-coding-v1'));
+});
+
+test('Roblox target retrieval prefers verified Open Cloud runtime outcomes over generic and Studio-only history',()=>{
+  const task={gameId:'g-new',target:'roblox',goal:'repair RemoteEvent touch input character respawn replication'};
   const experienceInput={records:[
     {id:'generic',gameId:'other',engine:'unity',verified:true,reusable:true,problem:'touch input character state',goal:'repair touch input',change:'fixed',outcome:'PASS',reusablePatterns:['generic touch input pattern'],avoidPatterns:[],confirmations:5},
-    {id:'roblox-native',gameId:'other2',engine:'roblox',taskType:'roblox-studio-local-internal-play',verified:true,reusable:true,problem:'RemoteEvent touch input character respawn',goal:'repair Roblox native input',change:'fixed',outcome:'PASS',evidence:['roblox-native-actual-play-feedback:PASS','roblox-studio-local-runtime:PASS'],reusablePatterns:['verified-studio-local-play:roblox-touch-input'],avoidPatterns:[],confirmations:1}
+    {id:'studio-only',gameId:'other-studio',engine:'roblox',taskType:'roblox-studio-local-internal-play',verified:true,reusable:true,problem:'RemoteEvent touch input character respawn',goal:'repair Roblox native input',change:'fixed',outcome:'PASS',evidence:['roblox-native-actual-play-feedback:PASS','roblox-studio-local-runtime:PASS'],reusablePatterns:['verified-studio-local-play:roblox-touch-input'],avoidPatterns:[],confirmations:3},
+    {id:'roblox-cloud',gameId:'other-cloud',engine:'roblox',taskType:'roblox-open-cloud-runtime',verified:true,reusable:true,problem:'RemoteEvent touch input character respawn replication',goal:'repair Roblox cloud native input and replication',change:'fixed',outcome:'PASS',evidence:['roblox-open-cloud-runtime:PASS','roblox-open-cloud-exact-candidate:PASS','provider:ROBLOX_OFFICIAL_CLOUD_API_ONLY'],reusablePatterns:['verified-open-cloud-runtime:roblox-touch-input','verified-open-cloud-runtime:roblox-replication'],avoidPatterns:[],confirmations:1}
   ]};
   const result=retrieveUnifiedLearning({task,experienceInput,codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},practiceDistilledInput:{entries:[]},masteryInput:{}});
-  assert.equal(result.experience[0].id,'roblox-native');
-  assert.ok(result.experience[0].reasons.includes('roblox-native-verified'));
-  assert.equal(result.priority[1],'ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX');
+  assert.equal(result.experience[0].id,'roblox-cloud');
+  assert.ok(result.experience[0].reasons.includes('roblox-open-cloud-verified'));
+  assert.equal(result.priority[1],'ROBLOX_OPEN_CLOUD_VERIFIED_WHEN_TARGET_ROBLOX');
 });
 
 test('benchmark ladder includes narrative tracks and never counts directly as training sample',()=>{
@@ -1779,7 +1870,7 @@ test('Roblox asset mastery requires asset-binding runtime PASS in addition to ge
   const passed=applyVerifiedExperienceToMastery({}, {records:[{
     id:'rbx-asset-runtime-bound',gameId:'g-rbx',engine:'roblox',verified:true,reusable:true,outcome:'PASS',
     goal:'asset adaptation material style',reusablePatterns:['asset adaptation material'],
-    evidence:['roblox runtime qa pass','ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS']
+    evidence:['roblox-open-cloud-runtime:PASS','roblox-open-cloud-exact-candidate:PASS','ROBLOX_OPEN_CLOUD_ASSET_RUNTIME_BINDING_PASS']
   }]});
   assert.ok(passed.state.domains.ASSET_ADAPTATION.xp>0);
 

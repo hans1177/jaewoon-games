@@ -23,6 +23,17 @@ test('native learning accepts only verified Roblox or Unity runtime QA regressio
   assert.equal(learning.robloxStudioVerifiedLearning.robloxPlayerAutomationForbidden,true);
   assert.equal(learning.robloxStudioVerifiedLearning.directRawTelemetryTraining,false);
   assert.equal(learning.robloxStudioVerifiedLearning.directRawSourceTraining,false);
+  assert.equal(learning.robloxStudioVerifiedLearning.cloudProductionRuntimeAuthority,false);
+  const cloud=learning.robloxOpenCloudVerifiedLearning;
+  assert.equal(cloud.enabled,true);
+  assert.equal(cloud.provider,'ROBLOX_OFFICIAL_CLOUD_API_ONLY');
+  assert.equal(cloud.exactCandidateRequired,true);
+  assert.equal(cloud.cachedLocalEvidenceCannotSatisfyCloudRuntime,true);
+  assert.equal(cloud.studioLocalEvidenceCannotSatisfyCloudRuntime,true);
+  assert.equal(cloud.productionMasteryRequiresCloudRuntime,true);
+  assert.equal(cloud.canonicalIngress,'tools/vibe2-learning-motor.mjs#collectVerifiedRobloxCloudRuntimeExperience');
+  assert.ok(cloud.requiredOutcomeGates.includes('SERVER_CLIENT_AUTHORITY_AND_REMOTE_SECURITY_PASS'));
+  assert.ok(cloud.conditionalOutcomeGates.includes('DATASTORE_REJOIN_PASS_WHEN_SAVE_REQUIRED'));
   assert.equal(dual.platformEvidenceIndependent,true);
   assert.equal(dual.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate,true);
   assert.equal(dual.verifiedPatternsFeedExistingCanonicalTrainingSamples,true);
