@@ -3949,27 +3949,32 @@ test('atomic asset search resolves exact atoms from one snapshot and rejects sta
   assert.equal(zero.selections[0].qualityScoreBlocksBinding,false);
 });
 
-test('asset gallery searches atoms and platforms without hiding zero quality and limits initial DOM work',async()=>{
+test('asset homepage shows only total count and three representatives while zero scores remain usable',async()=>{
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
   const html=fs.readFileSync(path.join(root,'asset-library.html'),'utf8');
   const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   registry.assets.push({id:'zero-atom',atomId:'ZERO_TEST_ATOM',title:'영점 시험 소품',category:'PROP',platform:'ROBLOX',internalAuditScore:0,path:'assets/test.luau'});
   const elements=new Map();
-  const element=id=>{if(!elements.has(id))elements.set(id,{value:id==='assetPlatform'?'ALL':id==='assetSort'?'RELEVANCE':'',checked:false,innerHTML:'',textContent:'',hidden:false,listeners:{},addEventListener(name,fn){this.listeners[name]=fn;}});return elements.get(id);};
+  registry.assets.find(row=>row.id==='roblox-insect-spider-hd-v1').internalAuditScore=0;
+  const element=id=>{if(!elements.has(id))elements.set(id,{dataset:{paused:'false'},innerHTML:'',textContent:'',attributes:{},listeners:{},setAttribute(name,value){this.attributes[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;}});return elements.get(id);};
   const context=vm.createContext({document:{getElementById:element,querySelectorAll:()=>[]},fetch:async()=>({ok:true,json:async()=>registry}),setTimeout,clearTimeout});
   vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],context);
   await new Promise(resolve=>setImmediate(resolve));
-  assert.equal((element('assetGrid').innerHTML.match(/class="card"/g)||[]).length,48);
-  element('moreAssets').listeners.click();
-  assert.equal((element('assetGrid').innerHTML.match(/class="card"/g)||[]).length,96);
-  element('assetQuery').value='ZERO_TEST_ATOM';
-  vm.runInContext('visibleAssets=48;renderAssetResults()',context);
-  assert.match(element('assetGrid').innerHTML,/영점 시험 소품/);
-  assert.match(element('assetGrid').innerHTML,/내부 0\/1000/);
-  assert.doesNotMatch(element('assetGrid').innerHTML,/<img[^>]+\.luau/);
-  element('assetPlatform').value='UNITY';element('assetPlatform').listeners.change();
-  assert.match(element('assetGrid').innerHTML,/조건에 맞는 자산이 없어/);
-  assert.equal(element('moreAssets').hidden,true);
+  assert.equal(element('assetCount').textContent,registry.assets.length.toLocaleString('ko-KR')+'개');
+  assert.equal((html.match(/<article /g)||[]).length,3);
+  assert.deepEqual([...html.matchAll(/data-representative="([^"]+)"/g)].map(row=>row[1]),['motion','action','monster']);
+  assert.doesNotMatch(html,/id="(?:assetGrid|assetQuery|moreAssets|researchGrid|externalGrid)"/);
+  assert.equal((element('monsterPreview').innerHTML.match(/<img /g)||[]).length,1);
+  assert.match(element('monsterPreview').innerHTML,/native\/spider\/spider\.png/);
+  assert.equal(element('monsterName').textContent,'고디테일 거미');
+  assert.doesNotMatch(element('monsterPreview').innerHTML,/test\.luau|영점 시험 소품/);
+  element('toggleMotion').listeners.click();
+  assert.equal(element('showcase').dataset.paused,'true');
+  assert.equal(element('toggleMotion').attributes['aria-pressed'],'true');
+  element('toggleMotion').listeners.click();
+  assert.equal(element('showcase').dataset.paused,'false');
+  element('monsterImage').listeners.error();
+  assert.doesNotMatch(element('monsterPreview').innerHTML,/<img /);
 });
 
 test('dynamic asset binding refreshes when source bytes change without a catalog version bump',()=>{
