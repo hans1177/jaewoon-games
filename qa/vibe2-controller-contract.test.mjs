@@ -121,9 +121,9 @@ test('fan-in controller contract directly verifies design intelligence stages an
 test('runtime enables DAG sharding and work stealing with fixed 64 repeat-development slots',()=>{
   assert(runtime.version>=14);
   assert.equal(runtime.continuous.strategy,'atomic-neuron-dag-sharded-work-stealing');
-  assert.equal(runtime.continuous.maxConcurrentGameTasks,64);
-  assert.equal(runtime.continuous.parallelismPolicy,'FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64');
-  assert.equal(runtime.continuous.externalMatrixBatchMax,64);
+  assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
+  assert.equal(runtime.continuous.parallelismPolicy,'SHARED_QUEUE_EXTERNAL_BOUNDARY_256_GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_64');
+  assert.equal(runtime.continuous.externalMatrixBatchMax,256);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,null);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
@@ -218,7 +218,7 @@ test('runtime enables DAG sharding and work stealing with fixed 64 repeat-develo
   assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.reservationTargetMutationAllowed,false);
   assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,64);
   assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,64);
-  assert.equal(runtime.adaptiveBackpressure.externalBatchMax,64);
+  assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
 });
 
 test('graphics presentation uses atomic neuron task micro-fan-in without expanding authority',()=>{
@@ -292,7 +292,7 @@ test('controller reserves repeat-development batches at the fixed 64-slot target
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
   assert.equal(workflow.includes('max-parallel: 30'),false);
-  assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '64'"));
+  assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
   assert(workflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'"));
   assert(workflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'"));
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
