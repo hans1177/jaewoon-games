@@ -74,10 +74,11 @@ jobs:
   dedupe:
     if: inputs.candidate_context == ''
     name: collapse duplicate runtime foundation scans
-    # Stage-scoped ingress coalescing only; active validation remains untouched.
+    # Exact dedupe ingress only: newest same-game/batch scan supersedes stale dedupe work.
+    # Runtime foundation validation itself remains outside this job-level cancellation group.
     concurrency:
-      group: roblox-runtime-foundation-dedupe-${{ github.sha }}-${{ inputs.game_id || 'batch' }}
-      cancel-in-progress: false
+      group: roblox-runtime-foundation-dedupe-${{ inputs.game_id || 'batch' }}
+      cancel-in-progress: true
     runs-on: ubuntu-slim
     timeout-minutes: 3
     outputs:
