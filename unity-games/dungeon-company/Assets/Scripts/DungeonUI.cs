@@ -21,6 +21,32 @@ namespace JaewoonGames.DungeonCompany
         private void Awake() => DontDestroyOnLoad(gameObject);
         private void Start() => game = FindFirstObjectByType<DungeonGame>();
 
+        public static Rect ActionRect()
+        {
+            var width = Mathf.Min(260f, Screen.width - 32f);
+            return new Rect((Screen.width - width) * .5f, Screen.height * .45f - 26f, width, 52f);
+        }
+
+        private void Update()
+        {
+            if (game == null) return;
+            if (Input.GetKeyDown(KeyCode.Space)) UsePrimaryAction(false);
+            for (var i = 0; i < Input.touchCount; i++)
+            {
+                var touch = Input.GetTouch(i);
+                var point = new Vector2(touch.position.x, Screen.height - touch.position.y);
+                if (touch.phase != TouchPhase.Began || !ActionRect().Contains(point)) continue;
+                UsePrimaryAction(true);
+                break;
+            }
+        }
+
+        private void UsePrimaryAction(bool touch)
+        {
+            var starting = !game.WaveActive;
+            if (game.CommandDefense()) DungeonQaBridge.ObserveCommand(touch, starting);
+        }
+
         private void OnGUI()
         {
             if (game == null) game = FindFirstObjectByType<DungeonGame>();
@@ -43,6 +69,10 @@ namespace JaewoonGames.DungeonCompany
             if (game.HeroPresent) GUILayout.Label($"침입자 HP {game.HeroHp}/{game.HeroMaxHp}   공격 {game.HeroAttack}");
             GUILayout.Label(game.Message);
             GUILayout.EndArea();
+
+            // Keep the combat control outside the scroll view on narrow screens.
+            if (GUI.Button(ActionRect(), game.WaveActive ? "집중 방어 · SPACE" : "침입 시작"))
+                UsePrimaryAction(false);
 
             GUILayout.BeginArea(new Rect(left, bottomY, width, Screen.height - bottomY - 8), GUI.skin.box);
             scroll = GUILayout.BeginScrollView(scroll);
