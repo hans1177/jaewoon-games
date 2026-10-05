@@ -1,3 +1,5 @@
+-- 파일명: roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
