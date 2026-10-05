@@ -73,6 +73,44 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
+  runner-pressure-bootstrap:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Evict stale queued Director blocker
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" > /tmp/system-ai-director-runs.json
+          director_in_progress="$(node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const n=(j.workflow_runs||[]).filter(r=>String(r.path||'')==='.github/workflows/director-supervisor.yml'&&String(r.status||'').toLowerCase()==='in_progress').length;process.stdout.write(String(n))" /tmp/system-ai-director-runs.json)"
+          if [ "$director_in_progress" != '0' ]; then
+            echo "SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_SKIPPED_ACTIVE=$director_in_progress"
+            echo 'SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCEL_COUNT=0'
+            echo 'SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_IN_PROGRESS_CANCEL=NO'
+            exit 0
+          fi
+          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const safe=new Set(['queued','pending','requested','waiting']);const rows=(j.workflow_runs||[]).filter(r=>String(r.path||'')==='.github/workflows/director-supervisor.yml'&&safe.has(String(r.status||'').toLowerCase())).sort((a,b)=>Number(b.id)-Number(a.id));for(const r of rows.slice(1))console.log(r.id)" /tmp/system-ai-director-runs.json > /tmp/system-ai-stale-director-run-ids
+          director_cancelled=0
+          while read -r director_run_id; do
+            [ -n "$director_run_id" ] || continue
+            if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$director_run_id/cancel" >/dev/null 2>&1; then
+              director_state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$director_run_id" --jq '.status' 2>/dev/null || true)"
+              if [[ "$director_state" == 'queued' || "$director_state" == 'pending' || "$director_state" == 'requested' || "$director_state" == 'waiting' ]]; then
+                gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$director_run_id/force-cancel" >/dev/null 2>&1 || true
+              fi
+              director_cancelled=$((director_cancelled+1))
+              echo "SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCELLED=$director_run_id:${director_state:-unknown}"
+            fi
+          done < /tmp/system-ai-stale-director-run-ids
+          echo "SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCEL_COUNT=$director_cancelled"
+          echo 'SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_IN_PROGRESS_CANCEL=NO'
+
   reserve:
     # Control-plane reservation only. Keep heavy game/model capacity on ubuntu-latest.
     runs-on: ubuntu-slim
@@ -136,27 +174,6 @@ jobs:
             done < /tmp/system-ai-roblox-runtime-active.tsv
             echo "SYSTEM_AI_STALE_ROBLOX_INGRESS_CANCEL_COUNT=$stale_cancelled"
             echo 'SYSTEM_AI_STALE_ROBLOX_INGRESS_IN_PROGRESS_CANCEL=NO'
-            gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" > /tmp/system-ai-director-runs.json
-            director_in_progress="$(node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const n=(j.workflow_runs||[]).filter(r=>String(r.path||'')==='.github/workflows/director-supervisor.yml'&&String(r.status||'').toLowerCase()==='in_progress').length;process.stdout.write(String(n))" /tmp/system-ai-director-runs.json)"
-            director_cancelled=0
-            if [ "$director_in_progress" = '0' ]; then
-              node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const safe=new Set(['queued','pending','requested','waiting']);const rows=(j.workflow_runs||[]).filter(r=>String(r.path||'')==='.github/workflows/director-supervisor.yml'&&safe.has(String(r.status||'').toLowerCase())).sort((a,b)=>Number(b.id)-Number(a.id));for(const r of rows.slice(1))console.log(r.id)" /tmp/system-ai-director-runs.json > /tmp/system-ai-stale-director-run-ids
-              while read -r director_run_id; do
-                [ -n "$director_run_id" ] || continue
-                if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$director_run_id/cancel" >/dev/null 2>&1; then
-                  director_state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$director_run_id" --jq '.status' 2>/dev/null || true)"
-                  if [[ "$director_state" == 'queued' || "$director_state" == 'pending' || "$director_state" == 'requested' || "$director_state" == 'waiting' ]]; then
-                    gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$director_run_id/force-cancel" >/dev/null 2>&1 || true
-                  fi
-                  director_cancelled=$((director_cancelled+1))
-                  echo "SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCELLED=$director_run_id:${director_state:-unknown}"
-                fi
-              done < /tmp/system-ai-stale-director-run-ids
-            else
-              echo "SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_SKIPPED_ACTIVE=$director_in_progress"
-            fi
-            echo "SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_CANCEL_COUNT=$director_cancelled"
-            echo 'SYSTEM_AI_DIRECTOR_DRAIN_BOOTSTRAP_IN_PROGRESS_CANCEL=NO'
             echo 'matrix={"include":[]}' >> "$GITHUB_OUTPUT"
             echo 'count=0' >> "$GITHUB_OUTPUT"
             echo 'targeted_security_recovery=NO' >> "$GITHUB_OUTPUT"
