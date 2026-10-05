@@ -12,6 +12,25 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('Roblox BUILD_UP loadout uses the exact same canonical selection as GameConfig bootstrap',()=>{
+  const assetLibrary=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const config=fs.readFileSync('roblox-games/bug-defense/shared/GameConfig.luau','utf8');
+  const field=name=>String(config.match(new RegExp('\\b'+name+'\\s*=\\s*["\\\']([^"\\\']*)["\\\']','i'))?.[1]||'').trim();
+  const profile={genre:field('Genre'),subgenre:field('Subgenre')};
+  const bootstrap=buildRobloxStudioAssetBootstrapPlan({gameId:'bug-defense',profile,assetLibrary});
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',
+    task:{gameId:'bug-defense',goal:'기존 Roblox 게임 BUILD_UP에서 내부 자산 전 계열을 실제 책임 소스에 적용'}
+  });
+  assert.equal(plan.baseMaterialLoadout.selectionAuthority,'company-development-roblox-bootstrap.mjs#buildRobloxStudioAssetBootstrapPlan');
+  assert.equal(plan.baseMaterialLoadout.robloxSelectionExactMatch,true);
+  assert.equal(plan.baseMaterialLoadout.robloxSelectionFingerprint,bootstrap.selectionFingerprint);
+  assert.equal(plan.baseMaterialLoadout.robloxSelectionLibraryVersion,bootstrap.libraryVersion);
+  assert.deepEqual(plan.baseMaterialLoadout.families,bootstrap.families);
+  assert.equal(plan.baseMaterialLoadout.universalAssetFirst.allFamiliesEvaluated,true);
+  assert.equal(plan.baseMaterialLoadout.universalAssetFirst.missingFamilies.length,0);
+});
+
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
   const order={
     gameId:'demo',
