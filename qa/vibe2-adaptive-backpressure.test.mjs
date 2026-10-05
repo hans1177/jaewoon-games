@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-adaptive-backpressure.test.mjs
-// 역할: 외부 한계 256을 기본 요청하고 검증된 외부 압력에서만 단계적으로 낮아졌다가 복구되는지 검증한다.
+// 역할: 외부 물리 한계 256의 압력 텔레메트리를 유지하면서 game-primary 예약은 중앙정책의 고정 64 슬롯을 따르는지 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -160,7 +160,7 @@ test('stale pressure evidence resets to maximum before fresh evaluation',()=>{
 });
 
 
-test('game-primary keeps adaptive pressure telemetry while reserving to provider boundary',()=>{
+test('game-primary keeps adaptive telemetry while reserving to fixed repeat-development boundary',()=>{
   const files=tempFiles();
   try{
     const tasks=Array.from({length:40},(_,i)=>({
@@ -174,8 +174,9 @@ test('game-primary keeps adaptive pressure telemetry while reserving to provider
       max:'256',min:'4','reservation-id':'adaptive:1','reservation-run':'adaptive','reserved-at':'2026-09-28T00:00:00Z',output:files.output
     });
     assert.equal(result.adaptiveMaxConcurrentTasks,20);
-    assert.equal(result.reservationMaxConcurrentTasks,256);
-    assert.equal(result.tasks.length,40);
+    assert.equal(result.reservationMaxConcurrentTasks,64);
+    assert.equal(result.selection?.webGameFlow?.target,2);
+    assert.equal(result.tasks.length,2);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });
 
