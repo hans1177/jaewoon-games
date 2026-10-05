@@ -2152,20 +2152,50 @@ test('Roblox BUILD_UP exposes every selected internal library API in the same cy
   };
   for(const [family,file] of Object.entries(apiByFamily))write(path.join(cwd,file),'local API = { Family = '+JSON.stringify(family)+' }\nreturn API\n');
   const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'all-internal-library-api-context'});
-  workOrder.assetProduction={baseMaterialLoadout:{families:Object.fromEntries(Object.keys(apiByFamily).map(family=>[family,[family+'_ATOM']]))}};
+  const packs=Object.entries(apiByFamily).map(([family,file])=>({
+    root:file.split('/')[2],packIds:['pack-'+family.toLowerCase()],families:[family],assetCount:1,contextFile:file,evaluationRequired:true
+  }));
+  workOrder.assetProduction={
+    baseMaterialLoadout:{families:Object.fromEntries(Object.keys(apiByFamily).map(family=>[family,[family+'_ATOM']]))},
+    registeredRobloxLibraryPacks:{
+      required:true,expectedPackCount:packs.length,packCount:packs.length,countMatchesMaintenance:true,
+      allPacksEvaluated:true,allRegisteredPacksAutoDiscovery:true,allApplicablePacksRequireRealSourceBinding:true,
+      notApplicableRequiresExistingSystemAbsenceEvidence:true,plainDefaultPrimitiveFallbackForbidden:true,packs
+    }
+  };
   const contract=buildInternalAssetSourceUsageContract(workOrder);
+  assert.equal(contract.version,4);
   assert.equal(contract.synchronization.allSelectedApiSourcesEveryBuildUp,true);
   assert.equal(contract.synchronization.apiContextRotationByBuildUpGeneration,false);
+  assert.equal(contract.registeredPackInventory.packCount,packs.length);
+  assert.equal(contract.registeredPackInventory.countMatchesMaintenance,true);
   assert.equal(contract.applicationCoverage.allApplicableExistingSystemsMustUseSelectedInternalLibrary,true);
+  assert.equal(contract.applicationCoverage.allRegisteredPacksMustBeEvaluated,true);
+  assert.equal(contract.applicationCoverage.allApplicableRegisteredPacksMustUseRealSourceBinding,true);
   assert.equal(contract.applicationCoverage.plainPrimitivePresentationForbidden,true);
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   const response=path.join(cwd,'candidate.json');
   write(response,JSON.stringify({edits:[{path:relative,find:'local value = 1',replace:'local value = 2'}]}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[response]});
   assert.equal(result.internalAssetApiContextAllSelectedEveryBuildUp,true);
+  assert.equal(result.internalAssetRegisteredPackCount,packs.length);
+  assert.equal(result.internalAssetExpectedRegisteredPackCount,packs.length);
+  assert.equal(result.internalAssetRegisteredPackCountMatchesMaintenance,true);
   assert.equal(result.internalAssetApiContextEligibleSourceCount,6);
   assert.equal(result.internalAssetApiContextCoverageCount,6);
+  assert.deepEqual(new Set(result.internalAssetRegisteredPackContextFiles),new Set(Object.values(apiByFamily)));
   assert.deepEqual(new Set(result.internalAssetApiContextFiles),new Set(Object.values(apiByFamily)));
+});
+
+test('Roblox BUILD_UP rejects a registered library inventory whose actual pack count disagrees with maintenance',()=>{
+  const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'pack-count-mismatch'});
+  workOrder.assetProduction={
+    registeredRobloxLibraryPacks:{
+      required:true,expectedPackCount:20,packCount:1,countMatchesMaintenance:false,
+      packs:[{root:'common-ui-v1',families:['UI'],assetCount:1,contextFile:'assets/roblox/common-ui-v1/RobloxCommonUI.luau',evaluationRequired:true}]
+    }
+  };
+  assert.throws(()=>buildInternalAssetSourceUsageContract(workOrder),/ROBLOX_INTERNAL_LIBRARY_PACK_COUNT_MISMATCH/);
 });
 
 test('Roblox internal asset application retries a bare visual Part and accepts materialized source',async()=>{
