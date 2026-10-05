@@ -1739,7 +1739,7 @@ export function evaluateGraphicsReplacementReport({candidate={},contract={}}={})
   return{required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',report,min,max,groundedCount:report.replacementEvidence.length};
 }
 
-export function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport)};}
+export function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport),...(parsed.motionRepairReport&&typeof parsed.motionRepairReport==='object'?{motionRepairReport:parsed.motionRepairReport}:{})};}
 
 const PRESENTATION_PATCH_PATTERNS=Object.freeze({
   ASSET_ADAPTATION:/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition)/i,
@@ -1786,13 +1786,85 @@ export function evaluatePresentationCandidateDelta({candidate={},sourceRoot='',c
   };
 }
 
-export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={}}={}){
+// A source-bound work unit stays in the existing worker and never grants new path authority.
+export const SINGLE_MOTION_DEPTH_AXES=Object.freeze(['POSE_AND_STAGING','WEIGHT_AND_BALANCE','JOINT_ARCS_AND_SPACING','CONTACT_AND_CONSTRAINTS','OVERLAP_AND_SETTLE','LOOP_AND_TRANSITION']);
+export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsibleFiles=[],candidate=null}={}){
+  const unit=order?.assetProduction?.motionRepairWorkUnit;
+  if(!unit){
+    const requested=Boolean(order?.selectedTask?.motionRepairWorkUnit)||(order?.selectedTask?.evidence||[]).includes('single-object-motion-repair:v1');
+    return{required:requested,pass:!requested,reason:requested?'SINGLE_MOTION_BINDING_REQUIRED':'NOT_REQUIRED',runtimeVerified:false};
+  }
+  const fail=reason=>({required:true,pass:false,reason,runtimeVerified:false});
+  if(!assetDevelopmentTask(order))return fail('SINGLE_MOTION_ASSET_LANE_REQUIRED');
+  const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+  if(presentationPass&&!['LIVING_MOTION','ANIMATION_FEEL'].includes(presentationPass))return fail('SINGLE_MOTION_PRESENTATION_SCOPE_CONFLICT');
+  if(unit.objectCount!==1||unit.motionCount!==1||Number(unit.estimatedModificationMinutes)!==60)return fail('SINGLE_MOTION_UNIT_SCOPE_INVALID');
+  for(const key of ['objectId','clipId','sourcePath','sourceHash','sourceWindow','objectBindingEvidence','clipBindingEvidence']){
+    if(typeof unit[key]!=='string'||!unit[key].trim())return fail('SINGLE_MOTION_BINDING_REQUIRED:'+key);
+  }
+  const relative=posix(unit.sourcePath);
+  if(relative.startsWith('/')||relative.split('/').includes('..')||!responsibleFiles.includes(relative))return fail('SINGLE_MOTION_RESPONSIBLE_PATH_REQUIRED');
+  let source;
+  try{
+    const root=fs.realpathSync(sourceRoot),file=fs.realpathSync(path.join(root,relative));
+    if(!file.startsWith(root+path.sep))return fail('SINGLE_MOTION_SOURCE_ESCAPE');
+    source=fs.readFileSync(file,'utf8');
+  }catch{return fail('SINGLE_MOTION_SOURCE_UNAVAILABLE');}
+  const sourceHash=crypto.createHash('sha256').update(source).digest('hex');
+  if(unit.sourceHash!==sourceHash)return fail('SINGLE_MOTION_STALE_SOURCE');
+  const window=unit.sourceWindow,start=source.indexOf(window);
+  if(Buffer.byteLength(window,'utf8')>24000||start<0||source.indexOf(window,start+1)>=0)return fail('SINGLE_MOTION_EXACT_WINDOW_REQUIRED');
+  if(!source.includes(unit.objectBindingEvidence)||!window.includes(unit.clipBindingEvidence))return fail('SINGLE_MOTION_BINDING_NOT_IN_SOURCE');
+  const preserved=unit.preservedAxes&&typeof unit.preservedAxes==='object'&&!Array.isArray(unit.preservedAxes)?unit.preservedAxes:{};
+  if(Object.entries(preserved).some(([axis,value])=>!SINGLE_MOTION_DEPTH_AXES.includes(axis)||typeof value!=='string'||!value||!window.includes(value)))return fail('SINGLE_MOTION_PRESERVED_AXIS_NOT_BOUND');
+  const locked=[...(Array.isArray(unit.lockedSource)?unit.lockedSource:[]),...Object.values(preserved)];
+  if(locked.some(value=>typeof value!=='string'||!value||!source.includes(value)))return fail('SINGLE_MOTION_LOCK_NOT_IN_SOURCE');
+  const base={required:true,pass:true,reason:'SINGLE_MOTION_SOURCE_BOUND',objectId:unit.objectId,clipId:unit.clipId,sourcePath:relative,sourceHash,estimatedModificationMinutes:60,runtimeVerified:false};
+  if(!candidate)return base;
+  if(candidate.newFiles?.length||candidate.replaceFiles?.length||!candidate.edits?.length)return fail('SINGLE_MOTION_EXACT_EDITS_REQUIRED');
+  let after=source,currentWindow=window;
+  for(const edit of candidate.edits){
+    if(edit.path!==relative||!edit.find||typeof edit.replace!=='string')return fail('SINGLE_MOTION_EDIT_OUTSIDE_TARGET');
+    const at=after.indexOf(edit.find),inWindow=currentWindow.indexOf(edit.find);
+    if(at<0||after.indexOf(edit.find,at+1)>=0||inWindow<0||at!==start+inWindow)return fail('SINGLE_MOTION_EDIT_OUTSIDE_WINDOW');
+    currentWindow=currentWindow.slice(0,inWindow)+edit.replace+currentWindow.slice(inWindow+edit.find.length);
+    after=after.slice(0,at)+edit.replace+after.slice(at+edit.find.length);
+  }
+  if(!after.includes(unit.objectBindingEvidence)||!currentWindow.includes(unit.clipBindingEvidence)||locked.some(value=>!after.includes(value)))return fail('SINGLE_MOTION_LOCK_CHANGED');
+  const rows=candidate.motionRepairReport?.depthEvidence;
+  if(candidate.motionRepairReport?.objectId!==unit.objectId||candidate.motionRepairReport?.clipId!==unit.clipId)return fail('SINGLE_MOTION_REPORT_TARGET_MISMATCH');
+  if(!Array.isArray(rows)||rows.length!==SINGLE_MOTION_DEPTH_AXES.length)return fail('SINGLE_MOTION_DEPTH_EVIDENCE_REQUIRED');
+  const axes=new Set(),evidence=new Set(),changedAxes=[];
+  for(const row of rows){
+    if(!SINGLE_MOTION_DEPTH_AXES.includes(row?.axis)||axes.has(row.axis))return fail('SINGLE_MOTION_DEPTH_AXIS_INVALID');
+    axes.add(row.axis);
+    const before=String(row.before??''),changed=String(row.after??'');
+    if(row.status==='PRESERVED'){
+      if(preserved[row.axis]!==before||before!==changed||!currentWindow.includes(changed))return fail('SINGLE_MOTION_PRESERVATION_NOT_BOUND:'+row.axis);
+      continue;
+    }
+    if(row.status&&row.status!=='CHANGED')return fail('SINGLE_MOTION_DEPTH_STATUS_INVALID');
+    // Each dimension needs an actual changed source excerpt; descriptions and edit counts are not proof.
+    const pair=candidate.edits.some(edit=>edit.find.includes(before)&&edit.replace.includes(changed)&&!edit.find.includes(changed));
+    if(!before.trim()||!changed.trim()||!pair||!window.includes(before)||!currentWindow.includes(changed)
+      ||meaningfulReviewSource(changed,relative)==='[]'||meaningfulReviewSource(before,relative)===meaningfulReviewSource(changed,relative))return fail('SINGLE_MOTION_UNGROUNDED_DEPTH:'+row.axis);
+    const key=before+'\u0000'+changed;
+    if(evidence.has(key))return fail('SINGLE_MOTION_DUPLICATE_DEPTH_EVIDENCE');
+    evidence.add(key);
+    changedAxes.push(row.axis);
+  }
+  if(!changedAxes.length)return fail('SINGLE_MOTION_REAL_REFINEMENT_REQUIRED');
+  return{...base,reason:'SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS',changedSourceHash:crypto.createHash('sha256').update(after).digest('hex'),depthEvidence:rows,changedAxes,qualityStatus:'NATIVE_BEFORE_AFTER_QA_REQUIRED'};
+}
+
+export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={},singleMotionCheck=null}={}){
   if(!contract||typeof contract!=='object')return{required:false,pass:true,phase:null,focusPillar:null,requiredSourceDeltaUnits:0,sourceDeltaUnits:0,requiredVisualUnits:0,visualUnits:0,reason:'NOT_REQUIRED'};
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
   const focusPillar=clean(contract.focusPillar).toUpperCase()||'STABILITY';
   const minConnected=Math.max(1,Math.floor(Number(contract?.requiredConnectedImprovements?.min||3)||3));
-  const requiredSourceDeltaUnits=phase==='BUILD_UP'?minConnected:(contract.realSourceDeltaRequired===true?1:0);
-  const requiredVisualUnits=focusPillar==='PRESENTATION'?2:0;
+  const singleMotion=singleMotionCheck?.required===true&&singleMotionCheck?.pass===true&&singleMotionCheck?.reason==='SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS';
+  const requiredSourceDeltaUnits=singleMotion?1:(phase==='BUILD_UP'?minConnected:(contract.realSourceDeltaRequired===true?1:0));
+  const requiredVisualUnits=focusPillar==='PRESENTATION'?(singleMotion?1:2):0;
   const sourceRows=[];
   const visualRows=[];
   const visualPattern=/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition|idle|walk|run|motion|animation|Animator|Motor6D|Bone|attack|hit|death|impact|recoil|trail|ParticleEmitter|ParticleSystem|Beam\b|AudioSource|SoundService|Sound\b|AudioContext|camera|Camera\b|shake|zoom|touch|pointer|joystick|safe.?area|mobile)/i;
@@ -1868,6 +1940,7 @@ function presentationWorkerGuidance(order = {}) {
 function studioQualityWorkerGuidance(order = {}) {
   const contract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
   if(!contract||typeof contract!=='object')return'';
+  if(order?.assetProduction?.motionRepairWorkUnit)return '[STUDIO QUALITY EVOLUTION]\nThe source-bound SINGLE MOTION WORK UNIT controls this repair scope. Complete all six review dimensions in that one object and clip; one complete function edit is valid. Do not split edits or add other objects to satisfy generic package counts. Source scope evidence does not complete the wider presentation program or native quality review.';
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
   const focus=clean(contract.focusPillar).toUpperCase()||'STABILITY';
   const connected=contract.requiredConnectedImprovements||{min:3,max:6};
@@ -3178,6 +3251,12 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
 export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
+  const motionUnit=order.assetProduction?.motionRepairWorkUnit;
+  const singleMotionBlock=motionUnit?[
+    '[SINGLE MOTION WORK UNIT BEGIN]',JSON.stringify(motionUnit),
+    'One existing object, one existing motion only. Estimate sixty minutes of active modification depth; preparation, QA, waiting and reporting do not fill that estimate. Refine pose/staging, weight/balance, joint arcs/spacing, contact/constraints, overlap/settle, and loop/transition within this one exact sourceWindow. Preserve the original object/clip binding, lockedSource, clip duration and gameplay event times. Do not edit shared functions affecting other objects or clips. Do not switch targets, add motions, or stop at a renamed constant or one cosmetic edit. A complete function-level change may be one edits[] item. Return motionRepairReport: {objectId,clipId,depthEvidence:[{axis,before,after}]} with exactly these axes: '+SINGLE_MOTION_DEPTH_AXES.join(',')+'. Use status CHANGED with distinct exact changed executable source excerpts from the patch. For a sound axis predeclared in preservedAxes, use status PRESERVED with before and after equal to its exact locked excerpt; do not change a sound axis to pad the workload. At least one real refinement remains required. This report proves source scope only, never native animation quality or hours actually worked. Native same-condition before/after inspection remains required.',
+    '[SINGLE MOTION WORK UNIT END]'
+  ].join('\n'):'';
   const detailReview=order.assetProduction?.detailReview,motionAudit=order.assetProduction?.motionContinuityAudit;
   const repairSubjects=new Set((detailReview?.repairs||[]).map(repair=>repair.recipeId));
   const assetDetailBlock=repairSubjects.size||motionAudit?[
@@ -3253,6 +3332,7 @@ studioAssetQualityCoreGuidance(order),
 assetDetailBlock,
 runtimeVisualBlock,
 runtimeVisualRepairBlock,
+singleMotionBlock,
 applyFirstBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
@@ -3275,7 +3355,7 @@ clean(order.target).toLowerCase()==='web'?'For web target, stay inside the exist
 sourceRootBootstrap&&clean(order.target).toLowerCase()==='unity'?'UNITY WEB BOOTSTRAP: the project configuration and WebBuild.cs scaffold are supplied by the system. You MUST edit BOTH Assets/Scripts/GameCore.cs and Assets/Scripts/RuntimeBootstrap.cs from the exact provided stub text. Implement real approved gameplay, state, save meaning, mobile input, and QA markers in those existing files. Do not create HTML/Canvas source and do not return newFiles or replaceFiles.':'',
 'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
 allowFullRewrite?'':'This is an implementation candidate. You MUST produce at least one real source change. Never return empty edits/newFiles/replaceFiles. When responsible files are listed, use an edits[] entry on an exact allowed path; copy find text exactly from the FILE block and make replace materially different.',
-focusedWebRepair&&!allowFullRewrite?'FOCUSED WEB REPAIR STREAM CONTRACT: put the edits array first. Emit the smallest single complete edits[0] object before optional summary/tests. The worker may stop generation immediately after one complete exact edit is available, so that first edit must independently satisfy the Goal and preserve unrelated behavior.':'',
+focusedWebRepair&&!allowFullRewrite&&!motionUnit?'FOCUSED WEB REPAIR STREAM CONTRACT: put the edits array first. Emit the smallest single complete edits[0] object before optional summary/tests. The worker may stop generation immediately after one complete exact edit is available, so that first edit must independently satisfy the Goal and preserve unrelated behavior.':'',
 allowFullRewrite?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':order?.presentationQuality?.graphicsReplacement?.required===true?'GRAPHICS REPLACEMENT RESULT REPORT REQUIRED: graphicsReplacementReport.actualCount must equal replacementEvidence.length exactly. Every replacementEvidence item must name one real replacement with surface, exact touched relative path, an exact runtime bindingKey/identifier, reuseMode, and a short sourceEvidence snippet copied verbatim from NEW changed source for that path. bindingKey must literally occur inside sourceEvidence. Duplicate evidence, comments/markers, untouched paths, or a self-reported count without grounded source evidence cannot pass.':'',
 'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."],"graphicsReplacementReport":{"actualCount":1,"changedSurfaces":["VFX"],"reuseModesUsed":["ADAPT_RESTYLE_AND_RETARGET"],"replacementEvidence":[{"surface":"VFX","path":"exact changed path","bindingKey":"impactVfx","reuseMode":"ADAPT_RESTYLE_AND_RETARGET","sourceEvidence":"const impactVfx = createImpactVfx()"}],"before":"...","after":"..."}}',
 `Required QA: ${(order.qa||[]).join(', ')}`,
@@ -3461,6 +3541,7 @@ function repeatedFailureStrategyGuidance(failureClass='',repeatCount=0){
 }
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
+  if(/^SINGLE_MOTION_/.test(message))return'SINGLE_MOTION_SCOPE';
   if(/CANDIDATE_SELF_REVIEW_REQUIRED/i.test(message))return'SELF_REVIEW';
   if(/실제 source 변경|변경 없는 edit/i.test(message))return'NO_OP';
   if(/시간 초과|timeout|prediction aborted|token repeat limit/i.test(message))return'TIMEOUT';
@@ -4199,7 +4280,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null}={}){
+export async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,singleMotionWorkUnit=false}={}){
   let lastError=null;
   let lastRaw='';
   let lastRejectedCandidate=null;
@@ -4243,7 +4324,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
   if(robloxGraphicsInitial)robloxFullGraphicsPackageActive=true;
-  const specializedInitialPrompt=studioExpansion&&!allowFullRewrite
+  const specializedInitialPrompt=singleMotionWorkUnit?prompt:studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :robloxGraphicsInitial
       ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
@@ -4354,9 +4435,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
     const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
-    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||studioFocusedSourceRepair||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||(target==='roblox'&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message)))||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!singleMotionWorkUnit&&!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||studioFocusedSourceRepair||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||(target==='roblox'&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message)))||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
+    const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics&&!singleMotionWorkUnit
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
     const systemAtomicPairCompletion=!allowFullRewrite&&((systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED')||(multiFilePairRequired&&priorFailureClass==='UNITY_BOOTSTRAP_PAIR'))
@@ -4370,7 +4451,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
-    let attemptPrompt=expansionMode
+    let attemptPrompt=singleMotionWorkUnit
+      ?initialStudioPrompt+(retry?'\n[SINGLE MOTION REPAIR FEEDBACK]\n'+clean(lastError?.message)+'\nReturn the complete same-target patch and all grounded depth evidence; do not reduce this work unit to one partial edit.':'')
+      :expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
     let maxPredict=expansionMode
@@ -4388,7 +4471,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       recoveredOutputBudget=Math.min(JSON_OUTPUT_RECOVERY_MAX_PREDICT,Math.max(recoveredOutputBudget,Number(lastError.vibe2MaxPredict||maxPredict)*2));
       console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
     }
-    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget);
+    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
     const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
       ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
       :(expansionMode
@@ -4400,10 +4483,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
-    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW']){
+    for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=label==='SINGLE MOTION WORK UNIT'?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
@@ -4423,8 +4506,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const controlTokenRecovery=target==='roblox'&&focusedReplaceOnly&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message));
     const temperature=controlTokenRecovery?Math.min(0.32,0.08*(1+controlTokenRecoveryCount)):(target==='roblox'&&focusedReplaceOnly&&syntaxRecoveryCount>=2&&/LUAU_SYNTAX/.test(clean(lastError?.message)))?Math.min(0.24,0.08*syntaxRecoveryCount):systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     if(controlTokenRecovery)console.log(`VIBE2_CONTROL_TOKEN_RECOVERY=pass:${controlTokenRecoveryCount}:temperature:${temperature}`);
-    const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
-    const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    const focusedFirstEditEarlyStop=!singleMotionWorkUnit&&focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
+    const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((!singleMotionWorkUnit&&(timeoutFastEscalation||focusedFirstEditEarlyStop))&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const promptCoverage=assertVerifiedExternalLearningPromptCoverage(attemptPrompt,verifiedExternalLearningContract||{});
       if(promptCoverage.required===true){
@@ -4538,7 +4621,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           }
         }
       }
-      const partialRecoveryClass=!allowFullRewrite&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)?failureClass:'';
+      const partialRecoveryClass=!singleMotionWorkUnit&&!allowFullRewrite&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)?failureClass:'';
       const partialRecoveryOutput=partialRecoveryClass==='TIMEOUT'?partialOutput:(partialRecoveryClass==='MALFORMED_OUTPUT'?lastRaw:'');
       if(partialRecoveryClass&&partialRecoveryOutput.trim()){
         const recoveredPartial=recoverPartialJsonEdit(partialRecoveryOutput,{reason:partialRecoveryClass==='MALFORMED_OUTPUT'?'malformed':'timeout'});
@@ -4705,6 +4788,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         console.log(`VIBE2_ROBLOX_${/LUAU_SYNTAX/.test(clean(error?.message))?'LUAU_SYNTAX':'CONTROL_TOKEN'}_RETRY_CREDIT=${attempt}->${maxAttempts}`);
       }
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
+      const singleMotionRetry=singleMotionWorkUnit&&attempt<maxAttempts&&(/^SINGLE_MOTION_/.test(clean(error?.message))||shouldRetryGenerationError(error));
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const focusedPrimaryBudgetRetry=!allowFullRewrite&&focusedReplaceOnly&&!speculativeVariant&&focusedFinalRetryAllowed(error)&&attempt<maxAttempts;
       if(focusedPrimaryBudgetRetry)console.log(`VIBE2_FOCUSED_PRIMARY_BUDGET_RETRY=${attempt}->${attempt+1}:${candidateVariant}:${failureClass}`);
@@ -4712,7 +4796,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const zeroOutputCircuitOpen=consecutiveZeroOutputTimeouts>=2;
       if(zeroOutputCircuitOpen)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN=${attempt}:${candidateVariant}`);
-      const hasAnother=!zeroOutputCircuitOpen&&(robloxStructuralRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||focusedPrimaryBudgetRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry);
+      const hasAnother=!zeroOutputCircuitOpen&&(singleMotionRetry||robloxStructuralRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||focusedPrimaryBudgetRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry);
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
@@ -5018,8 +5102,15 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
+  const target=clean(order.target).toLowerCase();
+  const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
+  const sourceRoot=path.resolve(cwd,sourceRootRelative);
+  const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
+  if(!singleMotionPreflight.pass)throw new Error(singleMotionPreflight.reason);
   let dccEvidence=null;
   const dccRecipes=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes;
+  if(singleMotionPreflight.required&&dccRecipes?.length)throw new Error('SINGLE_MOTION_DCC_CLIP_SCOPE_REQUIRED');
   if(applySource&&assetDevelopmentTask(order)&&Array.isArray(dccRecipes)&&dccRecipes.length){
     assertCandidateBranch(cwd);
     dccEvidence=executeDeclaredNativeDccAuthoringVerification({cwd,order,persistCandidateOutputs:true});
@@ -5039,15 +5130,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       dcc:{...(order.assetProduction?.nativeAuthoringExecution?.dcc||{}),executionEvidence:dccEvidence}
     }}};
   }
-  const target=clean(order.target).toLowerCase();
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
     ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
     :assertGameDevelopmentAuthority();
-  const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
-  const sourceRoot=path.resolve(cwd,sourceRootRelative);
-  const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
   if(!sourceRootExists&&!bootstrap)throw new Error(`source root 없음: ${sourceRootRelative}`);
@@ -5272,6 +5359,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         if(studioAxisCount<3)throw new Error('STUDIO_QUALITY_DELTA_REQUIRED:ASSET_AXES:'+studioAxisCount+'/3');
       }
     }
+    const singleMotionCheck=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles,candidate});
+    if(!singleMotionCheck.pass)throw new Error(singleMotionCheck.reason);
     const nativeAuthoringCheck=evaluateNativeAssetAuthoringCandidate({order,candidate});
     if(nativeAuthoringCheck.generatedAssetBindingRequired===true&&nativeAuthoringCheck.generatedAssetBindingApplied!==true){
       throw new Error('GENERATED_ASSET_BINDING_REQUIRED:'+(nativeAuthoringCheck.generatedNativeArtifacts||[]).join(','));
@@ -5280,7 +5369,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       throw new Error('WEB_NATIVE_AUTHORING_DELTA_REQUIRED:'+(nativeAuthoringCheck.requiredNativeTextTypes||[]).join(','));
     }
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
-    const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract});
+    const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract,singleMotionCheck});
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
@@ -5292,7 +5381,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
       })
       :null;
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding};
+    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
@@ -5343,7 +5432,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       generationSourceRoot=generationBootstrapRoot;
     }
     try{
-      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
+      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract,singleMotionWorkUnit:singleMotionPreflight.required});
     }finally{
       if(generationBootstrapRoot)fs.rmSync(generationBootstrapRoot,{recursive:true,force:true});
     }
@@ -5565,6 +5654,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     graphicsReplacementValidation:semanticDiffEnforcement?.graphicsReplacementReport||{required:false,pass:true,reason:'NOT_REQUIRED',groundedCount:0},
     presentationCandidateDelta,
     studioQualityCandidateDelta,
+    singleMotionWorkUnit:semanticDiffEnforcement?.singleMotionCheck||evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles,candidate}),
     candidateSelfReview:semanticDiffEnforcement?.candidateSelfReview||null,
     gameContextCapsule:buildGameContextCapsule({order,exploration,responsibleFiles}),
     studioAssetQualityAxes:semanticDiffEnforcement?.studioAssetQualityAxes||null,
