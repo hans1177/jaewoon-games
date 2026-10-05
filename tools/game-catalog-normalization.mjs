@@ -182,21 +182,48 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
   const entryFile=clean(policy.requiredEntryFile)||'index.html';
   const minBytes=Math.max(1,Number(policy.minimumEntryBytes)||512);
   const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean));
+  const quality=policy.webExposureQuality||{};
+  const excluded=new Set(list(quality.excludeFromGameCatalog));
+  const discovered=policy.discoverCanonicalEntriesEverySync===true&&filesystem.existsSync?.(diskRoot)
+    ?filesystem.readdirSync(diskRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name):[];
+  const ids=list([...gameIds,...discovered,...catalog.games.filter(game=>game.webPath||game.hasWebArchive).map(game=>game.id)]);
   const byId=new Map(catalog.games.map(game=>[clean(game?.id),game]).filter(([id])=>id));
   const added=[],updated=[],disabled=[],ignored=[];
-  for(const rawId of list(gameIds)){
+  for(const rawId of ids){
     const id=clean(rawId);
     if(!/^[a-z0-9][a-z0-9-]*$/i.test(id)||removed.has(id)){ignored.push(id);continue;}
     const dir=diskRoot+'/'+id;
     const indexFile=dir+'/'+entryFile;
     const existing=byId.get(id)||null;
+    let sourceState='CURRENT_OWNER_BASELINE';
     let valid=false;
     try{valid=filesystem.existsSync(indexFile)&&filesystem.statSync(indexFile).isFile()&&filesystem.statSync(indexFile).size>=minBytes;}catch{valid=false;}
+    if(valid&&quality.enabled===true){
+      const html=filesystem.readFileSync(indexFile,'utf8');
+      const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
+      const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map(match=>match[1].split(/[?#]/)[0]);
+      if(excluded.has(id)){valid=false;sourceState='NON_GAME_SURFACE';}
+      else if(list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
+    }
+    if(valid){
+      const html=filesystem.readFileSync(indexFile,'utf8');
+      if(/Unity Web Player|unity-container|createUnityInstance/i.test(html)){
+        const buildRoot=html.match(/(?:var|let|const)\s+buildUrl\s*=\s*["']([^"']+)["']/)?.[1]||'Build';
+        const refs=[...html.matchAll(/["']([^"']+\.(?:loader\.js|data(?:\.(?:br|gz))?|framework\.js(?:\.(?:br|gz))?|wasm(?:\.(?:br|gz))?))["']/gi)].map(match=>match[1].replace(/^\.\//,'').replace(/^\//,''));
+        const complete=[/\.loader\.js$/i,/\.data(?:\.(?:br|gz))?$/i,/\.framework\.js(?:\.(?:br|gz))?$/i,/\.wasm(?:\.(?:br|gz))?$/i].every(pattern=>refs.some(ref=>{
+          if(!pattern.test(ref)||ref.includes('..')||buildRoot.includes('..'))return false;
+          const file=dir+'/'+(ref.startsWith(buildRoot+'/')?ref:buildRoot+'/'+ref);
+          try{return filesystem.statSync(file).isFile()&&filesystem.statSync(file).size>0;}catch{return false;}
+        }));
+        if(!complete){valid=false;sourceState='UNITY_WEB_BUNDLE_INCOMPLETE';}
+      }
+    }
     if(!valid){
       if(existing){
         existing.homepageWebPlayable=false;
         existing.hasWebArchive=false;
-        existing.ownerWebSourceState='ENTRY_MISSING_OR_INVALID';
+        existing.ownerWebSourceState=sourceState==='CURRENT_OWNER_BASELINE'?'ENTRY_MISSING_OR_INVALID':sourceState;
+        if(existing.canonical?.sources?.web){existing.canonical.sources.web.playable=false;existing.canonical.sources.web.archive=false;existing.canonical.sources.web.state=existing.ownerWebSourceState;}
         disabled.push(id);
       }else ignored.push(id);
       continue;
@@ -345,6 +372,7 @@ export function canonicalizeGameRecord(game={}){
         path:webPath,
         archive:bool(game.hasWebArchive),
         playable:bool(game.homepageWebPlayable),
+        state:clean(game.ownerWebSourceState),
         purpose:clean(game.webPurpose)
       },
       unity:{
@@ -407,6 +435,7 @@ export function canonicalizeGameRecord(game={}){
 export function normalizeCatalog(catalog={}){
   if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
   const policy=normalizationPolicy();
+  catalog.webExposurePolicy=policy.ownerWebAutoIngest?.webExposureQuality||{};
   const ids=new Set();
   for(const game of catalog.games){
     for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)delete game[field];

@@ -1,5 +1,5 @@
 {
-  "version": 314,
+  "version": 315,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6967,5 +6967,17 @@
       "directCrossPlatformBinaryReuseForbidden": true,
       "verifiedPlatformMayProceedWithoutWaitingForUnrelatedPlatformFailure": true
     }
+  },
+  "allGamePlayableAccessTopology": {
+    "sourcePolicy": "serverHomepageIntegration",
+    "existingFlow": [
+      "COMPANY_STATUS_SYNC",
+      "HOMEPAGE_MANAGER_SELF_QA",
+      "DIRECTOR_PUBLICATION",
+      "EDGE_CANONICAL_RUNTIME_RECONCILE"
+    ],
+    "newPipeline": false,
+    "simplePrototypeWebAccessWithdrawn": true,
+    "gameCodeAndSaveDataPreserved": true
   }
 }

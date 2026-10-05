@@ -490,20 +490,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
 
   // 실제 web-games/<gameId>/index.html 이 존재하는 기존 카탈로그 게임은
   // 런타임 미러의 오래된 웹 플래그와 무관하게 홈페이지 웹 플레이를 복구한다.
-  const actualWebPlayableReconciled=[];
-  for(const game of catalog.games||[]){
-    const id=clean(game?.id||game?.gameId);
-    if(!/^[a-z0-9][a-z0-9-]*$/i.test(id))continue;
-    const entry=`web-games/${id}/index.html`;
-    let valid=false;
-    try{valid=filesystem.existsSync(entry)&&filesystem.statSync(entry).isFile()&&filesystem.statSync(entry).size>=512;}catch{valid=false;}
-    if(!valid)continue;
-    game.webPath=`/web-games/${id}/`;
-    game.hasWebArchive=true;
-    game.homepageWebPlayable=true;
-    game.homepageDisplayMode='WEB_PUBLISHED';
-    actualWebPlayableReconciled.push(id);
-  }
+  const actualWebPlayableReconciled=[...ownerWebIngest.added,...ownerWebIngest.updated];
 
   catalog.runtimeCounts={
     ...(catalog.runtimeCounts||{}),

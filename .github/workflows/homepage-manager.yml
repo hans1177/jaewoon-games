@@ -14,6 +14,7 @@ on:
       - '.github/agents/homepage.agent.md'
       - '.github/agents/director.agent.md'
       - 'index.html'
+      - '_worker.js'
       - 'company.html'
       - 'game-catalog.json'
       - 'company-status.json'
@@ -55,6 +56,7 @@ on:
       - '.github/agents/homepage.agent.md'
       - '.github/agents/director.agent.md'
       - 'index.html'
+      - '_worker.js'
       - 'company.html'
       - 'game-catalog.json'
       - 'company-status.json'
@@ -132,6 +134,7 @@ jobs:
             /qa/company-homepage-runtime-propagation.test.mjs
             /qa/game-catalog-normalization.test.mjs
             /index.html
+            /_worker.js
             /sw.js
             /asset-library.html
             /company-asset-library.json
@@ -203,7 +206,7 @@ jobs:
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
             import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses } from './tools/company-status-sync.mjs';
-            import { validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
+            import { ingestOwnerWebGameIds, validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
             const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
             const runtimeCatalog=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/runtime-game-catalog.json','utf8'));
             const developmentQueue=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/development-queue.json','utf8'));
@@ -211,6 +214,7 @@ jobs:
             const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
             const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
             mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
+            ingestOwnerWebGameIds(catalog,[],{filesystem:fs});
             syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem:fs});
             applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
             const validation=validateNormalizedCatalog(catalog);

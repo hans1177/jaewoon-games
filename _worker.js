@@ -220,8 +220,16 @@ function latestById(rows,idField){
   }
   return map;
 }
-function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
-  const allBaseGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
+function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,canonicalCatalog=baseCatalog){
+  const runtimeGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
+  const canonicalGames=Array.isArray(canonicalCatalog?.games)?canonicalCatalog.games:[];
+  const canonicalById=new Map(canonicalGames.map(game=>[game.id,game]));
+  const allBaseGames=[...runtimeGames,...canonicalGames.filter(game=>!runtimeGames.some(row=>row.id===game.id))].map(runtime=>{
+    const source=canonicalById.get(runtime.id);
+    if(!source)return {...runtime,homepageWebPlayable:false,hasWebArchive:false,canonical:{...runtime.canonical,sources:{...runtime.canonical?.sources,web:{...runtime.canonical?.sources?.web,playable:false,archive:false}}}};
+    return {...runtime,name:source.name,webPath:source.webPath,hasWebArchive:source.hasWebArchive,homepageWebPlayable:source.homepageWebPlayable,ownerWebSourceState:source.ownerWebSourceState,
+      canonical:{...runtime.canonical,identity:source.canonical?.identity||runtime.canonical?.identity,sources:{...runtime.canonical?.sources,web:source.canonical?.sources?.web||{path:source.webPath,playable:source.homepageWebPlayable,archive:source.hasWebArchive,state:source.ownerWebSourceState}}}};
+  });
   const baseGames=allBaseGames.filter(game=>['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
   const projects=Array.isArray(portfolio?.projects)?portfolio.projects:[];
   const activeSeeds=(Array.isArray(seedState?.seeds)?seedState.seeds:[]).filter(seed=>String(seed?.status||'').toUpperCase()==='ACTIVE');
@@ -257,8 +265,8 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
       genre:baseGenres,
       image:base.image||meta.image,
       webPath,
-      hasWebArchive:Boolean(base.hasWebArchive||hasProjectWeb),
-      homepageWebPlayable:false,
+      hasWebArchive:base.hasWebArchive===true,
+      homepageWebPlayable:base.homepageWebPlayable===true,
       homepageCategory:productionCategory(productionClass),
       productionClass,
       productionClassSource:rawProductionClass==='RELEASE_CONFIRMED'&&!releaseVerified?'SERVER_RELEASE_EVIDENCE_REQUIRED_2026-09-17':(base.productionClassSource||queue?.productionClassSource||project?.productionClassSource||seed?.productionClassSource||'COMPANY_RUNTIME'),
@@ -297,6 +305,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
   });
   return {
     ...baseCatalog,
+    webExposurePolicy:canonicalCatalog.webExposurePolicy||{},
     version:Math.max(1,Number(baseCatalog?.version)||0)+1,
     runtimeAuthority:'company-runtime',
     runtimeInfoAuthority:'company-runtime',
@@ -309,13 +318,14 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
 async function handleRuntimeCatalog(request,env){
   if(request.method!=='GET'&&request.method!=='HEAD')return aiJson({error:'method_not_allowed'},405);
   try{
-    const [catalog,portfolio,seedState,developmentQueue]=await Promise.all([
+    const [catalog,portfolio,seedState,developmentQueue,canonicalCatalog]=await Promise.all([
       fetchRuntimeJson('game-catalog.json'),
       fetchRuntimeJson('autonomous-portfolio.json'),
       fetchRuntimeJson('game-seed-state.json'),
-      fetchRuntimeJson('development-queue.json')
+      fetchRuntimeJson('development-queue.json'),
+      env.ASSETS.fetch(new Request(new URL('/game-catalog.json',request.url))).then(response=>{if(!response.ok)throw new Error('canonical_catalog_unavailable');return response.json();})
     ]);
-    const merged=mergeRuntimeCatalog(catalog,portfolio,seedState,developmentQueue);
+    const merged=mergeRuntimeCatalog(catalog,portfolio,seedState,developmentQueue,canonicalCatalog);
     const headers={...AI_JSON_HEADERS,'Cache-Control':`public, max-age=${RUNTIME_SYNC_SECONDS}`,'X-Jaewoon-Runtime-Authority':'company-runtime','X-Jaewoon-Runtime-Games':String(merged.games.length)};
     return new Response(request.method==='HEAD'?null:JSON.stringify(merged),{status:200,headers});
   }catch(error){
@@ -409,9 +419,22 @@ export default{
     if(url.pathname==='/game-catalog.json')return handleRuntimeCatalog(request,env);
     if(url.pathname==='/company-status.json')return handleRuntimeStatus(request,env);
     if(url.pathname==='/homepage-platform-exposure.json')return handleRuntimeExposure(request,env);
-    if(url.pathname==='/web-games/egg-heist/'||url.pathname==='/web-games/egg-heist/index.html')return new Response('Not Found',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate'}});
-    if(url.pathname==='/web-games/survival2/'||url.pathname==='/web-games/survival2/index.html')return serveSurvival2(request,env);
     const response=await env.ASSETS.fetch(request);
+    const webEntry=url.pathname.match(/^\/web-games\/([a-z0-9-]+)(?:\/(?:index\.html)?)?$/i);
+    if(webEntry&&response.ok&&(response.headers.get('content-type')||'').includes('text/html')){
+      const catalogResponse=await env.ASSETS.fetch(new Request(new URL('/game-catalog.json',request.url)));
+      if(catalogResponse.ok){
+        const catalog=await catalogResponse.json();
+        const policy=catalog.webExposurePolicy||{};
+        const html=await response.clone().text();
+        const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
+        const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map(match=>match[1].split(/[?#]/)[0]);
+        const source=catalog.games?.find(game=>game.id===webEntry[1]);
+        const withdrawn=policy.enabled===true&&(source?.ownerWebSourceState==='WITHDRAWN_SIMPLE_PROTOTYPE'||(policy.withdrawnEntryTitles||[]).includes(title)||scripts.some(src=>(policy.withdrawnRuntimeScripts||[]).includes(src)));
+        if(withdrawn)return new Response(request.method==='HEAD'?null:'<!doctype html><html lang="ko"><meta charset="utf-8"><title>게임 개선 중</title><main><h1>게임 개선 중</h1><p>이 웹 버전은 내려갔어. 실제 게임플레이와 콘텐츠를 개선한 뒤 다시 공개할게.</p><a href="/">게임 목록으로</a></main></html>',{status:410,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
+      }
+    }
+    if(url.pathname==='/web-games/survival2/'||url.pathname==='/web-games/survival2/index.html')return serveSurvival2(request,env);
     if(url.pathname.startsWith('/web-games/daechung-rpg/'))return response;
     if(url.pathname.startsWith('/web-games/'))return injectUniversalTouchControls(response);
     if(!['/','/index.html'].includes(url.pathname))return response;
