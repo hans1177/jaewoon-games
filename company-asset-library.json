@@ -1,5 +1,5 @@
 {
-  "version": 112,
+  "version": 113,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -68608,7 +68608,7 @@
     }
   },
   "internalAssetLibraryAutomation": {
-    "version": 12,
+    "version": 13,
     "status": "ACTIVE_CATALOG_DRIVEN_INTERNAL_ASSET_AUTOMATION",
     "contract": "assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT",
     "syncFunction": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry",
@@ -68620,7 +68620,7 @@
     "overSoftLimitAction": "DEDUPLICATION_REVIEW_ONLY",
     "overSoftLimitBlocksUse": false,
     "perDomainIdeaBudgetPerCycle": 24,
-    "volumeBeforeQuality": true,
+    "volumeBeforeQuality": false,
     "reuseAdaptRecombineBeforeNewAuthoring": true,
     "newAuthoringPolicy": {
       "version": 1,
@@ -69278,8 +69278,8 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 112,
-    "focusPhase": "VOLUME_UP",
+    "lastCatalogSynchronizedVersion": 113,
+    "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
     "volumeBlockingDomains": [
@@ -69600,7 +69600,7 @@
     "audioRoleContractCount": 65,
     "actualVerifiedAudioAssetCount": 0,
     "audioRoleVolumeSeparateFromVerifiedFileCount": true,
-    "qualityUpStartsOnlyAfterRecommendedVolume": true,
+    "qualityUpStartsOnlyAfterRecommendedVolume": false,
     "nextVolumeActions": [
       {
         "kind": "DOMAIN_VOLUME",
@@ -69653,7 +69653,7 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -69731,7 +69731,7 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -69809,7 +69809,7 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -69887,7 +69887,7 @@
           "SEASON_EVENT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -69968,7 +69968,7 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70045,7 +70045,7 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70125,7 +70125,7 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70205,7 +70205,7 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70285,7 +70285,7 @@
           "SET_DRESSING_CONTEXT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70359,7 +70359,7 @@
           "POWER_TIER",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70441,7 +70441,7 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70524,7 +70524,7 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70607,7 +70607,7 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70669,7 +70669,7 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70727,7 +70727,7 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70785,7 +70785,7 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70843,7 +70843,7 @@
           "REPEATER_DEDUPE",
           "MOBILE_BUDGET"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70918,7 +70918,7 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -70996,7 +70996,7 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71080,7 +71080,7 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71164,7 +71164,7 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71248,7 +71248,7 @@
           "CONSTRUCTION_STATE",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71314,7 +71314,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -71324,7 +71324,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71407,7 +71407,7 @@
           "ATMOSPHERE",
           "LOD_STREAMING"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71480,7 +71480,7 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71555,7 +71555,7 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71630,7 +71630,7 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71711,7 +71711,7 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71771,7 +71771,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -71781,7 +71781,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71845,7 +71845,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -71855,7 +71855,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71934,7 +71934,7 @@
           "CONTACT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -71994,7 +71994,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -72004,7 +72004,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72087,7 +72087,7 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72173,7 +72173,7 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72259,7 +72259,7 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72343,7 +72343,7 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72423,7 +72423,7 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72494,7 +72494,7 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
@@ -72574,7 +72574,7 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72654,7 +72654,7 @@
           "WEAR_DAMAGE",
           "STACK_PRESENTATION"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72725,7 +72725,7 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
@@ -72797,7 +72797,7 @@
           "INPUT_SKIP_ACCESSIBILITY",
           "MOBILE_DENSITY"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72882,7 +72882,7 @@
           "MOTION_VFX_PAIRING",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -72957,7 +72957,7 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
@@ -73028,7 +73028,7 @@
           "MOBILE_DENSITY",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "NOT_AVAILABLE",
         "bulkPrefetchAllowed": false,
@@ -73109,7 +73109,7 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73191,7 +73191,7 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73273,7 +73273,7 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73355,7 +73355,7 @@
           "CEREMONIAL_WORK_COMBAT",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73437,7 +73437,7 @@
           "FOREGROUND_MIDGROUND_BACKGROUND",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73519,7 +73519,7 @@
           "FOREGROUND_MIDGROUND_BACKGROUND",
           "LOD"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73600,7 +73600,7 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73679,7 +73679,7 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73758,7 +73758,7 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73837,7 +73837,7 @@
           "LIGHT_RESPONSE",
           "LOD_COST"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73900,7 +73900,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -73910,7 +73910,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -73975,7 +73975,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -73985,7 +73985,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74050,7 +74050,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74060,7 +74060,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74125,7 +74125,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74135,7 +74135,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74200,7 +74200,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74210,7 +74210,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74275,7 +74275,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74285,7 +74285,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74350,7 +74350,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74360,7 +74360,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74425,7 +74425,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74435,7 +74435,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74500,7 +74500,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74510,7 +74510,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74575,7 +74575,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74585,7 +74585,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74650,7 +74650,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74660,7 +74660,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74725,7 +74725,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74735,7 +74735,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74800,7 +74800,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74810,7 +74810,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74875,7 +74875,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74885,7 +74885,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -74950,7 +74950,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -74960,7 +74960,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75025,7 +75025,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75035,7 +75035,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75100,7 +75100,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75110,7 +75110,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75175,7 +75175,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75185,7 +75185,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75250,7 +75250,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75260,7 +75260,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75325,7 +75325,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75335,7 +75335,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75400,7 +75400,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75410,7 +75410,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75475,7 +75475,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75485,7 +75485,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75550,7 +75550,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75560,7 +75560,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75625,7 +75625,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75635,7 +75635,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75700,7 +75700,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75710,7 +75710,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75775,7 +75775,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75785,7 +75785,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75850,7 +75850,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75860,7 +75860,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -75925,7 +75925,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -75935,7 +75935,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76000,7 +76000,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76010,7 +76010,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76075,7 +76075,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76085,7 +76085,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76150,7 +76150,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76160,7 +76160,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76225,7 +76225,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76235,7 +76235,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76300,7 +76300,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76310,7 +76310,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76375,7 +76375,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76385,7 +76385,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76450,7 +76450,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76460,7 +76460,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76525,7 +76525,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76535,7 +76535,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76600,7 +76600,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76610,7 +76610,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76675,7 +76675,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76685,7 +76685,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76750,7 +76750,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76760,7 +76760,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76825,7 +76825,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76835,7 +76835,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -76900,7 +76900,7 @@
         "internalReusePreviewLimit": 4,
         "allCompatibleInternalAssetsRemainEligible": true,
         "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "card-rpg-v2",
+        "detailImprovementAssetId": "roblox-rpg-system-menu-v1",
         "studioVariationAxes": [
           "DEFAULT_HOVER_PRESSED_DISABLED",
           "EMPTY_LOADING_ERROR_SUCCESS",
@@ -76910,7 +76910,7 @@
           "INFORMATION_DENSITY",
           "CONTEXT_STATE"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
         "bulkPrefetchAllowed": false,
@@ -77278,7 +77278,7 @@
       "missingFreeSourcePolicy": "CONTINUE_RESOLUTION_ORDER_TO_NEW_AUTHORING",
       "runtimeEvidenceMissingPolicy": "KEEP_PRODUCTION_UNVERIFIED_AND_CONTINUE_INTERNAL_QUALITY_WORK",
       "failureRetryPolicy": "REBUILD_FROM_LATEST_REGISTRY_AND_RETRY_SAFE_ASSET_SCOPE",
-      "volumeExitCondition": "RECOMMENDED_VOLUME_AND_REQUIRED_ROLE_GAPS_CLEAR",
+      "volumeExitCondition": "EXISTING_SAFE_ASSET_QUALITY_WORK_AVAILABLE",
       "qualityEntryAction": "QUALITY_UP_1000",
       "qualitySelection": "WEAKEST_INTERNAL_AUDIT_AXIS_FIRST",
       "qualityTarget": 1000,
@@ -77311,87 +77311,79 @@
     "humanPresenceRequired": false,
     "chatgptPresenceRequired": false,
     "autonomousNextAction": {
-      "kind": "CONSUME_PRIORITY_WORKLIST_ACTION",
-      "phase": "VOLUME_UP",
+      "kind": "QUALITY_UP_1000",
+      "phase": "QUALITY_UP_1000",
+      "selection": "WEAKEST_INTERNAL_AUDIT_AXIS_FIRST",
+      "workingBandMin": 980,
+      "target": 1000,
       "action": {
-        "kind": "DOMAIN_VOLUME",
-        "domain": "CREATURE",
-        "ideaId": "CREATURE_AMORPHOUS_BASE",
-        "source": "SYSTEM_DEPTH_GAP",
-        "role": "AMORPHOUS",
-        "priority": 300,
-        "targetMin": 180,
-        "currentCount": 24,
-        "freeSourceCandidateIds": [
-          "quaternius-ultimate-animated-animals"
+        "kind": "IMPROVE_ASSET_DETAIL",
+        "assetId": "roblox-rpg-system-menu-v1",
+        "packId": null,
+        "family": "UI",
+        "consumerGameIds": [
+          "daechung-rpg"
         ],
-        "freeSourceAvailable": true,
-        "internalReuseCandidateCount": 141,
-        "internalReuseCandidatePreview": [
-          {
-            "id": "roblox-insect-spider-hd",
-            "quality": 909.6,
-            "grade": "COMMERCIAL_READY"
-          },
-          {
-            "id": "roblox-insect-spider-hd-v1",
-            "quality": 909.6,
-            "grade": "COMMERCIAL_READY"
-          },
-          {
-            "id": "roblox-world-ghost-adze",
-            "quality": 859.1,
-            "grade": "HIGH_QUALITY"
-          },
-          {
-            "id": "roblox-world-ghost-akaname",
-            "quality": 859.1,
-            "grade": "HIGH_QUALITY"
-          }
+        "consumerPriority": 2,
+        "sourceFiles": [
+          "assets/roblox/rpg-menu/RPGMenu.luau",
+          "assets/roblox/rpg-menu/RPGMenuModel.luau"
         ],
-        "internalReusePreviewLimit": 4,
-        "allCompatibleInternalAssetsRemainEligible": true,
-        "internalReusePreviewIsNotEligibilityCap": true,
-        "detailImprovementAssetId": "roblox-monster-adventure-bat",
-        "studioVariationAxes": [
-          "BODY_PLAN",
-          "AGE_SIZE",
-          "REGION_CLIMATE",
-          "NORMAL_ALPHA_ELITE_BOSS",
-          "SURFACE_MATERIAL",
-          "DAMAGE_SCAR_WEAR",
-          "MOTION_IDENTITY",
-          "SEASON_EVENT",
-          "LOD"
+        "sourceHash": null,
+        "sourceInspectionRequired": false,
+        "weakestAxis": "MOTION_RIG",
+        "currentAxisScore": 76,
+        "targetAxisScore": 100,
+        "detailSteps": [
+          "JOINT_CONTACT_AND_WEIGHT_TRANSFER",
+          "ENTRY_CONTACT_RECOVERY_AND_INTERRUPT_CONTINUITY",
+          "SECONDARY_FOLLOW_THROUGH_WITH_LOCKED_GAMEPLAY_TIMING"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "preserveAxes": [
+          "PERFORMANCE_LOD",
+          "ACCESSIBILITY_INPUT",
+          "FORM_STRUCTURE",
+          "READABILITY_SCALE",
+          "UI_UX_SYSTEM",
+          "INTEGRATION_READINESS",
+          "PROVENANCE_MAINTAINABILITY"
+        ],
+        "familyExpectations": [
+          "HUD",
+          "inventory",
+          "character sheet",
+          "equipment",
+          "minimap",
+          "dialogue/helper",
+          "NPC interaction",
+          "quest",
+          "party",
+          "crafting",
+          "shop",
+          "notification",
+          "status effects",
+          "hotbar",
+          "interaction prompt",
+          "touch/keyboard/gamepad states",
+          "empty/loading/disabled/selected/error states"
+        ],
+        "comparisonViews": [
+          "GAME_CAMERA",
+          "MID_RANGE",
+          "CLOSEUP",
+          "CONTACT_OR_STATE"
+        ],
+        "completionRequires": [
+          "RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED",
+          "FRESH_SAME_CONDITION_COMPARISON",
+          "NO_STRONG_AXIS_REGRESSION",
+          "MOBILE_BUDGET_CHECK"
+        ],
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
-        "freeSourceAcquisitionMode": "ON_DEMAND_SELECTED_ACTION_ONLY",
-        "bulkPrefetchAllowed": false,
-        "speculativeDownloadAllowed": false,
-        "acquireExternalOnlyAfterInternalReuseFailure": true,
-        "styleExpressionAdaptationRequired": true,
-        "styleExpressionAxisIds": [
-          "SURFACE_FEEL",
-          "SHAPE_TEMPER",
-          "EXPRESSION_INTENSITY",
-          "MATERIAL_FINISH",
-          "LINE_ENERGY",
-          "COLOR_ENERGY",
-          "DETAIL_DENSITY",
-          "DAMAGE_WEAR",
-          "MOTION_ENERGY"
-        ],
-        "worklistOrder": 1,
-        "resolutionOrder": [
-          "REUSE_EXISTING",
-          "DERIVE_VARIANT",
-          "RECOMBINE_EXISTING",
-          "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
-          "NEW_AUTHORING"
-        ]
+        "productionPromotionAllowed": false,
+        "gameplayAuthority": false
       },
-      "continueAfterCompletion": true,
       "continueWithoutHuman": true
     },
     "autonomousMaintenanceContract": {
@@ -77428,7 +77420,7 @@
     "maintenance": {
       "version": 1,
       "status": "SELF_MAINTENANCE_READY",
-      "inventoryFingerprint": "c00df77b",
+      "inventoryFingerprint": "243b46f8",
       "typeRoleFingerprint": "dcc70aba",
       "qualityFingerprint": "4f892245",
       "assetCount": 717,
@@ -79722,15 +79714,14 @@
       "continueWithoutChatgpt": true,
       "qualityActionCount": 75,
       "lastChangeReasons": [
-        "INVENTORY_CHANGED",
-        "QUALITY_METADATA_CHANGED"
+        "INVENTORY_CHANGED"
       ],
       "lastNewTypeRoleTokens": [],
       "lastRemovedTypeRoleTokens": [],
-      "lastChangeFingerprint": "c00df77b",
+      "lastChangeFingerprint": "243b46f8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 112
+      "synchronizedRegistryVersion": 113
     },
     "studioVariationAxes": {
       "BUILDING": [
@@ -80242,10 +80233,80 @@
     },
     "nextQualityActions": [
       {
+        "kind": "IMPROVE_ASSET_DETAIL",
+        "assetId": "roblox-rpg-system-menu-v1",
+        "packId": null,
+        "family": "UI",
+        "consumerGameIds": [
+          "daechung-rpg"
+        ],
+        "consumerPriority": 2,
+        "sourceFiles": [
+          "assets/roblox/rpg-menu/RPGMenu.luau",
+          "assets/roblox/rpg-menu/RPGMenuModel.luau"
+        ],
+        "sourceHash": null,
+        "sourceInspectionRequired": false,
+        "weakestAxis": "MOTION_RIG",
+        "currentAxisScore": 76,
+        "targetAxisScore": 100,
+        "detailSteps": [
+          "JOINT_CONTACT_AND_WEIGHT_TRANSFER",
+          "ENTRY_CONTACT_RECOVERY_AND_INTERRUPT_CONTINUITY",
+          "SECONDARY_FOLLOW_THROUGH_WITH_LOCKED_GAMEPLAY_TIMING"
+        ],
+        "preserveAxes": [
+          "PERFORMANCE_LOD",
+          "ACCESSIBILITY_INPUT",
+          "FORM_STRUCTURE",
+          "READABILITY_SCALE",
+          "UI_UX_SYSTEM",
+          "INTEGRATION_READINESS",
+          "PROVENANCE_MAINTAINABILITY"
+        ],
+        "familyExpectations": [
+          "HUD",
+          "inventory",
+          "character sheet",
+          "equipment",
+          "minimap",
+          "dialogue/helper",
+          "NPC interaction",
+          "quest",
+          "party",
+          "crafting",
+          "shop",
+          "notification",
+          "status effects",
+          "hotbar",
+          "interaction prompt",
+          "touch/keyboard/gamepad states",
+          "empty/loading/disabled/selected/error states"
+        ],
+        "comparisonViews": [
+          "GAME_CAMERA",
+          "MID_RANGE",
+          "CLOSEUP",
+          "CONTACT_OR_STATE"
+        ],
+        "completionRequires": [
+          "RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED",
+          "FRESH_SAME_CONDITION_COMPARISON",
+          "NO_STRONG_AXIS_REGRESSION",
+          "MOBILE_BUDGET_CHECK"
+        ],
+        "libraryFreshnessFingerprint": "243b46f8",
+        "qualityFreshnessFingerprint": "4f892245",
+        "productionPromotionAllowed": false,
+        "gameplayAuthority": false
+      },
+      {
         "kind": "INSPECT_ASSET_QUALITY",
         "assetId": "card-rpg-v2",
         "packId": null,
         "family": "UI",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/card-rpg-v2.webp"
         ],
@@ -80290,7 +80351,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80300,6 +80361,8 @@
         "assetId": "crystal-v2",
         "packId": null,
         "family": "VFX",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/crystal-v2.webp"
         ],
@@ -80335,7 +80398,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80345,6 +80408,8 @@
         "assetId": "fantasy-rpg-v2",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/fantasy-rpg-v2.webp"
         ],
@@ -80380,7 +80445,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80390,6 +80455,8 @@
         "assetId": "insect-main-v3",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/insect-main-v3.webp"
         ],
@@ -80425,7 +80492,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80435,6 +80502,8 @@
         "assetId": "insect-war-v2",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/insect-war-v2.webp"
         ],
@@ -80470,7 +80539,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80480,6 +80549,8 @@
         "assetId": "page-bg-v4",
         "packId": null,
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/page-bg-v4.webp"
         ],
@@ -80515,7 +80586,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80525,6 +80596,8 @@
         "assetId": "roblox-common-environment-cave",
         "packId": "roblox-common-environment-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau",
           "assets/roblox/common-environment-v1/catalog.json"
@@ -80574,7 +80647,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80584,6 +80657,8 @@
         "assetId": "roblox-common-intro-short",
         "packId": "roblox-common-presentation-v1",
         "family": "UI",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
           "assets/roblox/common-presentation-v1/catalog.json"
@@ -80641,7 +80716,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80651,6 +80726,8 @@
         "assetId": "roblox-horror-lore-hospital_01",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80692,7 +80769,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80702,6 +80779,8 @@
         "assetId": "roblox-horror-lore-hospital_02",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80743,7 +80822,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80753,6 +80832,8 @@
         "assetId": "roblox-horror-lore-hospital_03",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80794,7 +80875,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80804,6 +80885,8 @@
         "assetId": "roblox-horror-lore-park_01",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80845,7 +80928,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80855,6 +80938,8 @@
         "assetId": "roblox-horror-lore-park_02",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80896,7 +80981,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80906,6 +80991,8 @@
         "assetId": "roblox-horror-lore-park_03",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80947,7 +81034,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -80957,6 +81044,8 @@
         "assetId": "roblox-horror-lore-school_01",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -80998,7 +81087,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81008,6 +81097,8 @@
         "assetId": "roblox-horror-lore-school_02",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -81049,7 +81140,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81059,6 +81150,8 @@
         "assetId": "roblox-horror-lore-school_03",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -81100,7 +81193,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81110,6 +81203,8 @@
         "assetId": "roblox-horror-lore-school_04",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -81151,7 +81246,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81161,6 +81256,8 @@
         "assetId": "roblox-horror-lore-v1",
         "packId": "roblox-horror-lore-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/horror-lore-v1/catalog.json",
           "assets/roblox/horror-lore-v1/horror-lore.mtl",
@@ -81212,7 +81309,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81222,6 +81319,8 @@
         "assetId": "roblox-survival-chest",
         "packId": "roblox-survival-core-world-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/chest.obj",
@@ -81264,7 +81363,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81274,6 +81373,8 @@
         "assetId": "roblox-survival-core-world-v1",
         "packId": "roblox-survival-core-world-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/chest.obj",
@@ -81327,7 +81428,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81337,6 +81438,8 @@
         "assetId": "roblox-survival-crate",
         "packId": "roblox-survival-core-world-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/crate.obj",
@@ -81379,7 +81482,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81389,6 +81492,8 @@
         "assetId": "roblox-survival-door_single",
         "packId": "roblox-survival-core-world-v1",
         "family": "BUILDING",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/door_single.obj",
@@ -81431,7 +81536,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81441,6 +81546,8 @@
         "assetId": "roblox-survival-foundation_rect",
         "packId": "roblox-survival-core-world-v1",
         "family": "BUILDING",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/foundation_rect.obj",
@@ -81483,7 +81590,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81493,6 +81600,8 @@
         "assetId": "roblox-survival-lamp",
         "packId": "roblox-survival-core-world-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/lamp.obj",
@@ -81535,7 +81644,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81545,6 +81654,8 @@
         "assetId": "roblox-survival-road_dirt",
         "packId": "roblox-survival-core-world-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/road_dirt.obj",
@@ -81587,7 +81698,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81597,6 +81708,8 @@
         "assetId": "roblox-survival-rock_medium",
         "packId": "roblox-survival-core-world-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/rock_medium.obj",
@@ -81639,7 +81752,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81649,6 +81762,8 @@
         "assetId": "roblox-survival-roof_gable",
         "packId": "roblox-survival-core-world-v1",
         "family": "BUILDING",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/roof_gable.obj",
@@ -81691,7 +81806,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81701,6 +81816,8 @@
         "assetId": "roblox-survival-tree_crown_round",
         "packId": "roblox-survival-core-world-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
@@ -81743,7 +81860,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81753,6 +81870,8 @@
         "assetId": "roblox-survival-tree_trunk_thick",
         "packId": "roblox-survival-core-world-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
@@ -81795,7 +81914,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81805,6 +81924,8 @@
         "assetId": "roblox-survival-wall_solid",
         "packId": "roblox-survival-core-world-v1",
         "family": "BUILDING",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-core-world-v1/catalog.json",
           "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
@@ -81847,7 +81968,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81857,6 +81978,8 @@
         "assetId": "bug-defense-boss",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [],
         "sourceHash": null,
         "sourceInspectionRequired": true,
@@ -81894,7 +82017,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81904,6 +82027,8 @@
         "assetId": "bug-defense-hero",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [],
         "sourceHash": null,
         "sourceInspectionRequired": true,
@@ -81941,7 +82066,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81951,6 +82076,8 @@
         "assetId": "bug-defense-spider",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [],
         "sourceHash": null,
         "sourceInspectionRequired": true,
@@ -81988,7 +82115,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -81998,6 +82125,8 @@
         "assetId": "roblox-monster-adventure-bat",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/bat.obj",
           "assets/roblox/monster-adventure-v1/catalog.json",
@@ -82043,7 +82172,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82053,6 +82182,8 @@
         "assetId": "roblox-monster-adventure-bird",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/bird.obj",
           "assets/roblox/monster-adventure-v1/catalog.json",
@@ -82098,7 +82229,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82108,6 +82239,8 @@
         "assetId": "roblox-monster-adventure-boar",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/boar.obj",
           "assets/roblox/monster-adventure-v1/catalog.json",
@@ -82153,7 +82286,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82163,6 +82296,8 @@
         "assetId": "roblox-monster-adventure-flamefox",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/catalog.json",
           "assets/roblox/monster-adventure-v1/flamefox.obj",
@@ -82208,7 +82343,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82218,6 +82353,8 @@
         "assetId": "roblox-monster-adventure-hornbull",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/catalog.json",
           "assets/roblox/monster-adventure-v1/hornbull.obj",
@@ -82263,7 +82400,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82273,6 +82410,8 @@
         "assetId": "roblox-monster-adventure-leafturtle",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/catalog.json",
           "assets/roblox/monster-adventure-v1/leafturtle.obj",
@@ -82318,7 +82457,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82328,6 +82467,8 @@
         "assetId": "roblox-monster-adventure-rockgator",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/catalog.json",
           "assets/roblox/monster-adventure-v1/monster-adventure.mtl",
@@ -82373,7 +82514,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82383,6 +82524,8 @@
         "assetId": "roblox-monster-adventure-stormeagle",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/catalog.json",
           "assets/roblox/monster-adventure-v1/monster-adventure.mtl",
@@ -82428,7 +82571,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82438,6 +82581,8 @@
         "assetId": "roblox-monster-adventure-v1",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/bat.obj",
           "assets/roblox/monster-adventure-v1/bird.obj",
@@ -82492,7 +82637,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82502,6 +82647,8 @@
         "assetId": "roblox-monster-adventure-waterotter",
         "packId": "roblox-monster-adventure-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/monster-adventure-v1/catalog.json",
           "assets/roblox/monster-adventure-v1/monster-adventure.mtl",
@@ -82547,7 +82694,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82557,6 +82704,8 @@
         "assetId": "dragonfly-sprite",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/logo-sprite-dragonfly.svg"
         ],
@@ -82595,7 +82744,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82605,6 +82754,8 @@
         "assetId": "ladybug-sprite",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/logo-sprite-ladybug.svg"
         ],
@@ -82643,7 +82794,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82653,6 +82804,8 @@
         "assetId": "mantis-sprite",
         "packId": null,
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/logo-sprite-mantis.svg"
         ],
@@ -82691,7 +82844,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82701,6 +82854,8 @@
         "assetId": "roblox-survival-back_cape",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/back_cape.obj",
           "assets/roblox/survival-combat-parts-v1/catalog.json",
@@ -82743,7 +82898,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82753,6 +82908,8 @@
         "assetId": "roblox-survival-blade_long",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "WEAPON",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/blade_long.obj",
           "assets/roblox/survival-combat-parts-v1/catalog.json",
@@ -82795,7 +82952,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82805,6 +82962,8 @@
         "assetId": "roblox-survival-claw",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/claw.obj",
@@ -82847,7 +83006,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82857,6 +83016,8 @@
         "assetId": "roblox-survival-combat-parts-v1",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "WEAPON",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/back_cape.obj",
           "assets/roblox/survival-combat-parts-v1/blade_long.obj",
@@ -82908,7 +83069,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82918,6 +83079,8 @@
         "assetId": "roblox-survival-grip_long",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "WEAPON",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/grip_long.obj",
@@ -82960,7 +83123,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -82970,6 +83133,8 @@
         "assetId": "roblox-survival-guard_cross",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "WEAPON",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/guard_cross.obj",
@@ -83012,7 +83177,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83022,6 +83187,8 @@
         "assetId": "roblox-survival-head_canine",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/head_canine.obj",
@@ -83064,7 +83231,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83074,6 +83241,8 @@
         "assetId": "roblox-survival-jaw_long",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/jaw_long.obj",
@@ -83116,7 +83285,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83126,6 +83295,8 @@
         "assetId": "roblox-survival-shoulder_light",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/shoulder_light.obj",
@@ -83168,7 +83339,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83178,6 +83349,8 @@
         "assetId": "roblox-survival-torso_cloth",
         "packId": "roblox-survival-combat-parts-v1",
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/survival-combat-parts-v1/catalog.json",
           "assets/roblox/survival-combat-parts-v1/survival-combat-parts.mtl",
@@ -83220,7 +83393,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83230,6 +83403,8 @@
         "assetId": "roblox-common-creature-part-aquatic-body",
         "packId": "roblox-common-creature-parts-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
           "assets/roblox/common-creature-parts-v1/catalog.json"
@@ -83270,7 +83445,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83280,6 +83455,8 @@
         "assetId": "roblox-world-ghost-adze",
         "packId": "roblox-world-ghost-skins-v1",
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
           "assets/roblox/world-ghosts/GhostSkinFactory.luau",
@@ -83322,7 +83499,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83332,6 +83509,8 @@
         "assetId": "roblox-world-ghost-skins-v1",
         "packId": null,
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/world-ghosts/Gallery.client.luau",
           "assets/roblox/world-ghosts/GhostSkinAudit.luau",
@@ -83384,71 +83563,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
-        "qualityFreshnessFingerprint": "4f892245",
-        "productionPromotionAllowed": false,
-        "gameplayAuthority": false
-      },
-      {
-        "kind": "IMPROVE_ASSET_DETAIL",
-        "assetId": "roblox-rpg-system-menu-v1",
-        "packId": null,
-        "family": "UI",
-        "sourceFiles": [
-          "assets/roblox/rpg-menu/RPGMenu.luau",
-          "assets/roblox/rpg-menu/RPGMenuModel.luau"
-        ],
-        "sourceHash": null,
-        "sourceInspectionRequired": false,
-        "weakestAxis": "MOTION_RIG",
-        "currentAxisScore": 76,
-        "targetAxisScore": 100,
-        "detailSteps": [
-          "JOINT_CONTACT_AND_WEIGHT_TRANSFER",
-          "ENTRY_CONTACT_RECOVERY_AND_INTERRUPT_CONTINUITY",
-          "SECONDARY_FOLLOW_THROUGH_WITH_LOCKED_GAMEPLAY_TIMING"
-        ],
-        "preserveAxes": [
-          "PERFORMANCE_LOD",
-          "ACCESSIBILITY_INPUT",
-          "FORM_STRUCTURE",
-          "READABILITY_SCALE",
-          "UI_UX_SYSTEM",
-          "INTEGRATION_READINESS",
-          "PROVENANCE_MAINTAINABILITY"
-        ],
-        "familyExpectations": [
-          "HUD",
-          "inventory",
-          "character sheet",
-          "equipment",
-          "minimap",
-          "dialogue/helper",
-          "NPC interaction",
-          "quest",
-          "party",
-          "crafting",
-          "shop",
-          "notification",
-          "status effects",
-          "hotbar",
-          "interaction prompt",
-          "touch/keyboard/gamepad states",
-          "empty/loading/disabled/selected/error states"
-        ],
-        "comparisonViews": [
-          "GAME_CAMERA",
-          "MID_RANGE",
-          "CLOSEUP",
-          "CONTACT_OR_STATE"
-        ],
-        "completionRequires": [
-          "RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED",
-          "FRESH_SAME_CONDITION_COMPARISON",
-          "NO_STRONG_AXIS_REGRESSION",
-          "MOBILE_BUDGET_CHECK"
-        ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83458,6 +83573,8 @@
         "assetId": "roblox-common-foliage-autumn-tree-variant",
         "packId": "roblox-common-foliage-v1",
         "family": "ENVIRONMENT",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-foliage-v1/RobloxCommonFoliage.luau",
           "assets/roblox/common-foliage-v1/catalog.json"
@@ -83501,7 +83618,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83511,6 +83628,8 @@
         "assetId": "roblox-insect-spider-hd",
         "packId": null,
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/world-ghosts/SPIDER.md",
           "assets/roblox/world-ghosts/build-spider.py",
@@ -83559,7 +83678,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83569,6 +83688,8 @@
         "assetId": "roblox-insect-spider-hd-v1",
         "packId": null,
         "family": "CREATURE",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/world-ghosts/SPIDER.md",
           "assets/roblox/world-ghosts/build-spider.py",
@@ -83620,7 +83741,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83630,6 +83751,8 @@
         "assetId": "roblox-common-character-gear-cloth-hood",
         "packId": "roblox-common-character-gear-v1",
         "family": "CHARACTER",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
           "assets/roblox/common-character-gear-v1/catalog.json"
@@ -83672,7 +83795,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83682,6 +83805,8 @@
         "assetId": "roblox-common-world-prop-animal-trough",
         "packId": "roblox-common-world-props-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau",
           "assets/roblox/common-world-props-v1/catalog.json"
@@ -83723,7 +83848,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83733,6 +83858,8 @@
         "assetId": "roblox-common-building-archway",
         "packId": "roblox-common-building-v1",
         "family": "BUILDING",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-building-v1/RobloxCommonBuilding.luau",
           "assets/roblox/common-building-v1/catalog.json"
@@ -83775,7 +83902,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83785,6 +83912,8 @@
         "assetId": "roblox-common-item-antidote",
         "packId": "roblox-common-items-v1",
         "family": "PROP",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-items-v1/RobloxCommonItems.luau",
           "assets/roblox/common-items-v1/catalog.json"
@@ -83829,7 +83958,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83839,6 +83968,8 @@
         "assetId": "roblox-common-tool-axe",
         "packId": "roblox-common-tools-v1",
         "family": "WEAPON",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-tools-v1/RobloxCommonTools.luau",
           "assets/roblox/common-tools-v1/catalog.json"
@@ -83882,7 +84013,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83892,6 +84023,8 @@
         "assetId": "roblox-common-vfx-attack-telegraph-pulse",
         "packId": "roblox-common-vfx-v1",
         "family": "VFX",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
           "assets/roblox/common-vfx-v1/catalog.json"
@@ -83939,7 +84072,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -83949,6 +84082,8 @@
         "assetId": "roblox-common-motion-bed-lie-down",
         "packId": "roblox-common-motion-v1",
         "family": "MOTION",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
           "assets/roblox/common-motion-v1/catalog.json"
@@ -83999,7 +84134,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -84009,6 +84144,8 @@
         "assetId": "roblox-common-material-asphalt",
         "packId": "roblox-common-materials-v1",
         "family": "MATERIAL",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-materials-v1/RobloxCommonMaterials.luau",
           "assets/roblox/common-materials-v1/catalog.json"
@@ -84052,7 +84189,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -84062,6 +84199,8 @@
         "assetId": "roblox-common-skill-area-field",
         "packId": "roblox-common-skill-v1",
         "family": "SKILL",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau",
           "assets/roblox/common-skill-v1/catalog.json"
@@ -84108,7 +84247,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -84118,6 +84257,8 @@
         "assetId": "roblox-common-ui-accessibility-color-blind-shape-backup",
         "packId": "roblox-common-ui-v1",
         "family": "UI",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-ui-v1/RobloxCommonIcons.luau",
           "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
@@ -84183,7 +84324,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false
@@ -84193,6 +84334,8 @@
         "assetId": "roblox-common-ui-ai-companion-autonomy-panel",
         "packId": "roblox-common-ui-v1",
         "family": "UI",
+        "consumerGameIds": [],
+        "consumerPriority": 0,
         "sourceFiles": [
           "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
           "assets/roblox/common-ui-v1/catalog.json"
@@ -84256,7 +84399,7 @@
           "NO_STRONG_AXIS_REGRESSION",
           "MOBILE_BUDGET_CHECK"
         ],
-        "libraryFreshnessFingerprint": "c00df77b",
+        "libraryFreshnessFingerprint": "243b46f8",
         "qualityFreshnessFingerprint": "4f892245",
         "productionPromotionAllowed": false,
         "gameplayAuthority": false

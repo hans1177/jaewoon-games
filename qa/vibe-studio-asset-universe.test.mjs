@@ -3856,7 +3856,7 @@ test('company common seed asset ideation reads all company seed artbooks and pro
     assert.ok(COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS.some(row=>row.id===id),id+':library');
   }
 
-  assert.equal(plan.volumeBeforeQuality,true);
+  assert.equal(plan.volumeBeforeQuality,false);
   assert.equal(plan.reuseAdaptRecombineBeforeNewAuthoring,true);
   assert.equal(plan.schedulerCreated,false);
   assert.equal(plan.workflowCreated,false);
@@ -4304,7 +4304,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,12);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,13);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -4380,7 +4380,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.equal(plan.productionPromotionAutomatic,false);
   assert.equal(plan.runtimeVerificationRequired,true);
   assert.equal(plan.qualityTarget,1000);
-  assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,true);
+  assert.equal(plan.qualityUpStartsOnlyAfterRecommendedVolume,false);
   assert.equal(plan.audioRoleVolumeSeparateFromVerifiedFileCount,true);
   assert.equal(plan.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
   assert.equal(plan.audioStudioBreadth.roleTargetMin,180);
@@ -4531,10 +4531,10 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   assert.ok(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_02'));
 });
 
-test('internal asset breadth profiles support simple-to-deep progression and volume-before-quality',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,12);
+test('internal asset breadth profiles support simple-to-deep progression and quality-before-volume',()=>{
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,13);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,true);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,false);
 
   assert.deepEqual(Object.keys(INTERNAL_PROGRESSION_COMPLEXITY_PROFILES),['VERY_SIMPLE','SURVIVAL_SIMPLE','DEEP_RPG']);
   assert.equal(selectInternalProgressionComplexityProfile({requested:'VERY_SIMPLE'}).id,'VERY_SIMPLE');
@@ -4606,7 +4606,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,12);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,13);
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4682,7 +4682,7 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,12);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,13);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
@@ -4719,4 +4719,18 @@ test('canonical company asset registry is dry-run synchronization idempotent',()
   assert.equal(result.registry.internalAssetLibraryAutomation.pipelineCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.wrapperCreated,false);
   assert.equal(result.registry.internalAssetLibraryAutomation.shadowSystemCreated,false);
+});
+
+// 실제 출시 게임 수요가 미사용 자산의 점수나 권장 수량보다 우선한다.
+test('quality-first repairs current released Roblox assets before unused volume even below target counts',()=>{
+ const assets=[
+  {id:'unused',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/unused.luau'],intendedConsumerGameIds:['live'],internalAuditScore:1},
+  {id:'used',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/used.luau'],consumerGameIds:['live'],internalAuditScore:900}
+ ];
+ const plan=buildInternalAssetLibraryAutomationPlan({assets,consumerGames:[{id:'live',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'}]});
+ assert.equal(plan.volumeReady,false);assert.equal(plan.focusPhase,'QUALITY_UP_1000');
+ assert.equal(plan.autonomousNextAction.action.assetId,'used');
+ assert.equal(plan.nextQualityActions.find(row=>row.assetId==='unused').consumerPriority,0);
+ assert.equal(plan.productionPromotionAutomatic,false);
+ assert.equal(buildInternalAssetLibraryAutomationPlan({assets:[]}).focusPhase,'VOLUME_UP');
 });

@@ -1545,7 +1545,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentSpeculativeVariantsPerTask,1);
   assert.equal(parallel.assetDevelopmentSpeculativeVariantsSuppressed,true);
   assert.equal(parallel.assetDevelopmentDistinctTaskParallelismPreserved,true);
-  assert.equal(parallel.assetDevelopmentLaneMax,64);
+  assert.equal(parallel.assetDevelopmentLaneMax,63);
   assert.equal(parallel.assetDevelopmentLaneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch,true);
   assert.equal(parallel.assetDevelopmentFanInOptimisticRetryHardAttemptCap,false);
   assert.equal(parallel.assetDevelopmentFanInOptimisticRetryMode,'RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE');
@@ -1575,7 +1575,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(topology.dedicatedExecution.speculativeVariantsPerTask,1);
   assert.equal(topology.dedicatedExecution.speculativeVariantsSuppressed,true);
   assert.equal(topology.dedicatedExecution.distinctTaskParallelismPreserved,true);
-  assert.equal(topology.dedicatedExecution.laneMax,64);
+  assert.equal(topology.dedicatedExecution.laneMax,63);
   assert.equal(topology.dedicatedExecution.laneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch,true);
   assert.equal(topology.dedicatedExecution.fanInOptimisticRetryHardAttemptCap,false);
   assert.equal(topology.dedicatedExecution.fanInForcePushForbidden,true);
@@ -1583,7 +1583,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.runnerLabel,'ubuntu-24.04-arm');
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.physicalRunnerPoolSeparated,true);
-  assert.match(vibe24hRunner,/asset_development:[\s\S]*execution_lane: asset-development[\s\S]*lane_max: '64'/);
+  assert.match(vibe24hRunner,/asset_development:[\s\S]*execution_lane: asset-development[\s\S]*lane_max: '63'/);
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_QUEUED=/);
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_ACTIVE=/);
   assert.match(vibe24hRunner,/game_study:[\s\S]*needs: \[plan, continuous, asset_development, learning_idle\]/);
@@ -1593,7 +1593,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibeContinuousCore,/assetLane\?1:requestedVariantCount/);
   assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=/);
   assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=/);
-  assert.match(vibeContinuousCore,/github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && '64'/);
+  assert.match(vibeContinuousCore,/github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && '63'/);
   assert.match(vibeContinuousCore,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
   assert.match(vibeContinuousCore,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
   assert.doesNotMatch(vibeContinuousCore,/for attempt in 1 2 3 4 5; do/);

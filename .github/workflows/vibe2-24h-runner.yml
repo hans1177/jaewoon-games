@@ -91,7 +91,7 @@ env:
   VIBE2_LEARNING_ALWAYS_ON: 'true'
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
-  VIBE2_ASSET_DEVELOPMENT_MAX: '64'
+  VIBE2_ASSET_DEVELOPMENT_MAX: '63'
   VIBE2_ASSET_PRIORITY_BURST_MAX: '8'
   VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD: '4'
   VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'
@@ -211,7 +211,7 @@ jobs:
           const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
           const queuedAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
           const gameMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
-          const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||64));
+          const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||63));
           process.stdout.write([
             queuedGame,activeGame,Math.max(0,gameMax-activeGame),
             queuedAsset,activeAsset,Math.max(0,assetMax-activeAsset)
@@ -820,7 +820,7 @@ jobs:
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
           const waveReady=activeGame===0?'YES':'NO';
           const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
-          const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||64));
+          const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||63));
           const assetRefillReady=Math.max(0,assetMax-activeAsset)>0?'YES':'NO';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
             'wave_ready='+waveReady+'\n'+
@@ -1005,7 +1005,7 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
-      lane_max: '64'
+      lane_max: '63'
     permissions:
       contents: write
       actions: write

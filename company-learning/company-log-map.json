@@ -1,5 +1,5 @@
 {
-  "version": 172,
+  "version": 173,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2481,8 +2481,8 @@
       "maxPredict": 768,
       "contextWindow": 8192
     },
-    "laneMax": 64,
-    "repositoryDispatchLaneMaxMustRemain64": true,
+    "laneMax": 63,
+    "repositoryDispatchLaneMaxMustRemain63": true,
     "fanInOptimisticRetryHardAttemptCap": false,
     "fanInForcePushForbidden": true,
     "latestVerifiedLiveRun": {
@@ -3203,6 +3203,40 @@
       "DESIGN_EXTERNAL_AI_REQUIRED=NO",
       "DESIGN_AI_REVIEW_LANES=NONE",
       "DESIGN_EXTERNAL_AI_WAIT=DISABLED"
+    ]
+  },
+  "assetQualityFirstDevelopment": {
+    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
+    "version": 1,
+    "concurrentSlots": 63,
+    "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
+    "normalOperationsOwner": "VIBE2_VIBE3",
+    "priority": [
+      "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
+      "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
+      "OTHER_ACTIVE_GAME_CURRENT_ASSET",
+      "REUSABLE_LIBRARY_QUALITY",
+      "DEMAND_BOUND_MISSING_ASSET"
+    ],
+    "qualityBeforeVolume": true,
+    "recommendedVolumeBlocksQuality": false,
+    "quantityQuotaRequiresNewAsset": false,
+    "currentConsumerEvidenceRequired": true,
+    "intendedConsumerAloneIsNotActualUse": true,
+    "sameFailedObjectAndMotionRepairRequired": true,
+    "sourceScopeAndGameplaySemanticsPreserved": true,
+    "sameFileParallelForbidden": true,
+    "runningTasksDrainWithoutCancellation": true,
+    "safeWorkShortageMayLeaveSlotsIdle": true,
+    "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
+    "sourceOnlyPassIsNotQualityPass": true,
+    "newWorkflowQueueOrScheduler": false,
+    "evidenceRequired": [
+      "ACTUAL_RESERVED_TASK_COUNT",
+      "RUNNING_ASSET_TASK_COUNT",
+      "GAME_AND_ASSET_IDENTITY",
+      "SOURCE_DIFF",
+      "NATIVE_BEFORE_AFTER_AND_MOBILE_QA"
     ]
   }
 }
