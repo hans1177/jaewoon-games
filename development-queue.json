@@ -12271,14 +12271,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-05T08:01:30.726Z",
+      "updatedAt": "2026-10-05T08:03:16.035Z",
       "robloxSourceCommit": "86efee2139d6273f2a49155b2bd8c65fe94eb318",
       "robloxSourceBootstrapPassedAt": "2026-10-05T07:57:28.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -16387,7 +16387,7 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-fantasy-survival-37168152727",
       "unitySourceCommit": "05d4cbfd4f2aaf87e9d44ca354d3d365d9c1b6e4",
-      "unityBuildRunId": 37278554457,
+      "unityBuildRunId": 37280880892,
       "unityRuntimeSmokeRunId": null,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
@@ -16445,7 +16445,7 @@
           }
         },
         "multiplayerRequired": true,
-        "verifiedAt": "2026-10-05T07:44:24.836Z"
+        "verifiedAt": "2026-10-05T08:03:16.035Z"
       },
       "unityCanonicalEvidenceBound": false,
       "unityF9ReleaseRegressionPassed": false,
@@ -45754,7 +45754,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-05T08:02:55.456Z",
+  "updatedAt": "2026-10-05T08:03:18.254Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
