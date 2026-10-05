@@ -4,11 +4,13 @@ on:
     branches: [main]
     paths:
       - 'assets/roblox/world-ghosts/**'
+      - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
       - '.github/workflows/roblox-world-ghost-assets.yml'
   pull_request:
     paths:
       - 'assets/roblox/world-ghosts/**'
+      - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
       - '.github/workflows/roblox-world-ghost-assets.yml'
   workflow_dispatch:
@@ -288,7 +290,9 @@ jobs:
             assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx \
             assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx \
             assets/roblox/world-ghosts/native/build-evidence.json \
-            assets/roblox/world-ghosts/native/motion-experiments.json
+            assets/roblox/world-ghosts/native/motion-experiments.json \
+            assets/roblox/world-ghosts/native/asset-gallery.json \
+            assets/roblox/world-ghosts/native/gallery/
           if [[ "$SPIDER_BUILT" == 'true' ]]; then
             git add \
               assets/roblox/world-ghosts/native/spider/spider.glb \

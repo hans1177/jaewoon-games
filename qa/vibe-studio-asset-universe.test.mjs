@@ -4151,47 +4151,12 @@ test('atomic asset search resolves exact atoms from one snapshot and rejects sta
   assert.equal(zero.selections[0].qualityScoreBlocksBinding,false);
 });
 
-test('asset homepage shows only total count and three representatives while zero scores remain usable',async()=>{
+test('asset homepage replaces retired representatives with selectable monsters and environments',()=>{
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
   const html=fs.readFileSync(path.join(root,'asset-library.html'),'utf8');
-  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  registry.assets.push({id:'zero-atom',atomId:'ZERO_TEST_ATOM',title:'영점 시험 소품',category:'PROP',platform:'ROBLOX',internalAuditScore:0,path:'assets/test.luau'});
-  const elements=new Map(),documentListeners={};
-  registry.assets.find(row=>row.id==='roblox-world-ghost-gwisin-bride').internalAuditScore=0;
-  registry.assets.find(row=>row.id==='roblox-insect-spider-hd-v1').internalAuditScore=0;
-  const element=id=>{if(!elements.has(id))elements.set(id,{dataset:{paused:'false'},src:'',paused:true,play(){this.paused=false;return Promise.resolve();},pause(){this.paused=true;},innerHTML:'',textContent:'',attributes:{},listeners:{},setAttribute(name,value){this.attributes[name]=value;},addEventListener(name,fn){this.listeners[name]=fn;}});return elements.get(id);};
-  const context=vm.createContext({document:{hidden:false,getElementById:element,querySelectorAll:()=>[],addEventListener(name,fn){documentListeners[name]=fn;}},fetch:async()=>({ok:true,json:async()=>registry}),setTimeout,clearTimeout});
-  vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],context);
-  await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(element('assetCount').textContent,registry.assets.length.toLocaleString('ko-KR')+'개');
-  assert.equal((html.match(/<article /g)||[]).length,3);
-  assert.deepEqual([...html.matchAll(/data-representative="([^"]+)"/g)].map(row=>row[1]),['motion','action','monster']);
-  assert.doesNotMatch(html,/id="(?:assetGrid|assetQuery|moreAssets|researchGrid|externalGrid)"/);
-  assert.equal((element('monsterPreview').innerHTML.match(/<img /g)||[]).length,1);
-  assert.match(element('monsterPreview').innerHTML,/native\/spider\/spider\.png/);
-  assert.equal(element('monsterName').textContent,'고디테일 거미');
-  assert.doesNotMatch(html,/fighter|@keyframes|class="(?:head|torso|blade)"/);
-  assert.equal((html.match(/<video /g)||[]).length,2);
-  assert.match(element('motionVideo').src,/native\/mesh\/idle\.mp4$/);
-  assert.match(element('actionVideo').src,/native\/mesh\/attack\.mp4$/);
-  assert.equal(element('motionVideo').paused,false);
-  assert.doesNotMatch(element('monsterPreview').innerHTML,/test\.luau|영점 시험 소품/);
-  element('toggleMotion').listeners.click();
-  assert.equal(element('showcase').dataset.paused,'true');
-  assert.equal(element('motionVideo').paused,true);
-  assert.equal(element('actionVideo').paused,true);
-  assert.equal(element('toggleMotion').attributes['aria-pressed'],'true');
-  element('toggleMotion').listeners.click();
-  assert.equal(element('showcase').dataset.paused,'false');
-  assert.equal(element('motionVideo').paused,false);
-  element('motionVideo').pause();
-  context.document.hidden=true;documentListeners.visibilitychange();
-  assert.equal(element('actionVideo').paused,true);
-  context.document.hidden=false;documentListeners.visibilitychange();
-  assert.equal(element('motionVideo').paused,true,'native control pause stays paused');
-  assert.equal(element('actionVideo').paused,false,'background pause resumes previously playing video');
-  element('monsterImage').listeners.error();
-  assert.doesNotMatch(element('monsterPreview').innerHTML,/<img /);
+  assert.doesNotMatch(html,/data-representative|monsterPreview|motionVideo|actionVideo|이전 자산 미리보기/);
+  for(const id of ['monsterTab','environmentTab','assetList','basicClips','actionClips','refreshAssets'])assert.ok(html.includes('id="'+id+'"'),id);
+  assert.match(html,/script type="module" src="\/assets\/asset-library.js"/);
 });
 
 test('representative videos preserve exact source lineage without promoting quality or runtime proof',()=>{
