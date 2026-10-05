@@ -373,6 +373,17 @@ test('runner drain keeps active same-game work but prefers the newest queued nat
   assert.equal(evidence.inProgressSameTitleCancellationForbidden,true);
 });
 
+test('director coalesces queued Recovery Fast wakes while preserving active recovery and game work',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/r\.path==='\.github\/workflows\/vibe2-recovery-fast\.yml'/);
+  assert.match(director,/const recoveryFastQueued=/);
+  assert.match(director,/recoveryFastQueued\.slice\(1\)/);
+  assert.match(director,/VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED/);
+  assert.match(director,/VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' \]\]; then|VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  assert.doesNotMatch(director,/recoveryFastQueued[\s\S]{0,400}?in_progress/);
+});
+
 test('runner drain uses a YAML-safe delimiter and preserves the game gate block',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
