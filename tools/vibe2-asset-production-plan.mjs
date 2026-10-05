@@ -1959,6 +1959,39 @@ export function buildVibeAssetProductionPlan({
   const companyRegistry=companyAssetLibraryRegistry(repoRoot);
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionCatalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
+  const executionCommonPacks=executionCatalogs.map(row=>{
+    const packId=clean(row.catalog?.packId);
+    const relativeDir=path.posix.dirname(row.path);
+    let sourceFiles=[];
+    try{
+      sourceFiles=fs.readdirSync(path.resolve(repoRoot,relativeDir),{withFileTypes:true})
+        .filter(entry=>entry.isFile()&&/\.luau?$/i.test(entry.name))
+        .map(entry=>path.posix.join(relativeDir,entry.name))
+        .sort();
+    }catch{}
+    return freeze({
+      packId,
+      domain:COMMON_PACK_DOMAIN_BY_ID[packId]||clean(row.catalog?.family).toUpperCase()||'UNCLASSIFIED',
+      catalogPath:row.path,
+      sourceFiles:freezeList(sourceFiles)
+    });
+  }).filter(row=>row.packId);
+  const commonPackAutoUse=freeze({
+    enabled:resolvedTarget==='roblox',
+    mode:'ALL_COMPATIBLE_COMMON_PACKS_AUTO_ELIGIBLE',
+    packCount:executionCommonPacks.length,
+    packIds:freezeList(executionCommonPacks.map(row=>row.packId)),
+    sourceFiles:freezeList(unique(executionCommonPacks.flatMap(row=>row.sourceFiles))),
+    packs:freezeList(executionCommonPacks),
+    completeAgainstDiscoveredCatalogs:executionCommonPacks.length===executionCatalogs.length&&executionCommonPacks.every(row=>row.sourceFiles.length>0),
+    everyPackEvaluatedEveryBuildUp:true,
+    applyEveryCompatiblePackToExistingSystems:true,
+    qualityScoreIsUsageGate:false,
+    lowScoreCompatibleAssetsRemainEligible:true,
+    primitiveOnlyFallbackForbidden:true,
+    contextBatchingIsNotUsageCap:true,
+    gameplayAuthority:false
+  });
   const executionUiCatalog=executionCatalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const executionSeedPlan=createCompanySeedAssetIdeationPlan({seeds:companySeedRows(repoRoot),assets:companyRegistry?.assets||[]});
   const executionLibraryPlan=buildInternalAssetLibraryAutomationPlan({
@@ -2598,6 +2631,7 @@ export function buildVibeAssetProductionPlan({
     productionProfile:selector.production||null,
     commercialDistillation,
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
+    commonPackAutoUse,
     flowAssetRequirements,
     flowAssetLoadout:freeze({
       selectionContractVersion:Number(studioUniversePlan?.loadout?.selectionContractVersion||0),
