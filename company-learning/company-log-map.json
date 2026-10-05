@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -492,7 +492,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1559,13 +1559,14 @@
     "gamePrimaryBoundaryMustRemain": 256
   },
   "universalAssetFirstUpgradeEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
     "requiredFor": [
       "VIBE2",
       "VIBE3",
       "ROBLOX",
-      "UNITY"
+      "UNITY",
+      "WEB"
     ],
     "assetFamilies": [
       "CHARACTER",
@@ -1588,14 +1589,30 @@
       "SOURCE_BINDING_FILES_AND_SYMBOLS",
       "ACTUAL_RUNTIME_USAGE_RESULT",
       "MAP_ENVIRONMENT_COVERAGE_RESULT",
-      "PRIMITIVE_ONLY_CHECK_RESULT"
+      "PRIMITIVE_ONLY_CHECK_RESULT",
+      "LIBRARY_VERSION",
+      "SELECTION_FINGERPRINT",
+      "SELECTED_SOURCE_CONTENT_HASHES",
+      "GAME_SOURCE_REVISION",
+      "PLATFORM_ARTIFACT_IDENTITY",
+      "PER_GAME_PLATFORM_CONVERSION_RESULT",
+      "CYCLE_ID",
+      "PREVIOUS_ASSET_SELECTION",
+      "ASSET_REPLACEMENT_REASON",
+      "SOURCE_GROWTH_DIFF",
+      "CONTENT_EXPANSION_RESULT",
+      "EXACT_RUNTIME_OUTCOME"
     ],
     "rules": {
       "everyFamilyMustBeAccountedFor": true,
       "notApplicableRequiresEvidence": true,
       "markersOrConfigSelectionAloneCannotProveUsage": true,
       "runtimeEvidenceRequiredBeforeVerifiedPromotion": true,
-      "exactFailureClassRequired": true
+      "exactFailureClassRequired": true,
+      "staleIdentityCannotProveSynchronized": true,
+      "allRegisteredLibrariesAccountedFor": true,
+      "sourceAndRuntimeAndDeploymentEvidenceRequiredForConversionCompletion": true,
+      "platformEvidenceCannotSubstituteForAnotherPlatform": true
     },
     "hardFailureClasses": [
       "UNIVERSAL_ASSET_LOOKUP_MISSING",

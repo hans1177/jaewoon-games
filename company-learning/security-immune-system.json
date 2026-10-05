@@ -1,5 +1,5 @@
 {
-  "version": 65,
+  "version": 66,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -472,7 +472,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -928,7 +928,7 @@
     "publicReleaseAuthorityUnchanged": true
   },
   "universalAssetFirstUpgradeSecurity": {
-    "version": 1,
+    "version": 2,
     "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
     "protections": {
       "assetRequirementCannotAuthorizeGameplayMutation": true,
@@ -939,7 +939,16 @@
       "placeholderOrPrimitiveOnlyUpgradeCannotClaimVisualPass": true,
       "notApplicableCannotHideExistingApplicableSystem": true,
       "rawExternalProtectedAssetCopyForbidden": true,
-      "gameStyleLockMustBePreserved": true
+      "gameStyleLockMustBePreserved": true,
+      "dynamicSyncCannotBypassLicensePlatformOrSourceIntegrity": true,
+      "libraryVersionSelectionAndSourceMismatchCannotPass": true,
+      "automaticRebindingCannotExpandWritableScope": true,
+      "conversionCannotChangeLockedF0F9Sequence": true,
+      "conversionCannotCreateShadowQueueOrSyncService": true,
+      "conversionCompletionRequiresExactSourceRuntimeAndDeploymentEvidence": true,
+      "lowQualityScoreMayNotOverrideSafetyOrCompatibility": true,
+      "randomSwapOrCountOnlyCannotClaimEvolution": true,
+      "contentExpansionCannotBreakGameIdentityBalanceSaveOrAuthority": true
     }
   },
   "existingGameHolisticBackfillSecurity": {

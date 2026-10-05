@@ -1,5 +1,5 @@
 {
-  "version": 310,
+  "version": 311,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4255,7 +4255,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-05",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -5302,7 +5302,7 @@
     "gameCatalogBackwardCompatibilityPreserved": true
   },
   "universalAssetFirstUpgradeTopology": {
-    "version": 1,
+    "version": 2,
     "policy": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
     "existingPipelineOnly": true,
     "noNewWorker": true,
@@ -5349,6 +5349,26 @@
       "vibe2Vibe3OwnActualGameSourceBinding": true,
       "actualBindingMustUseExistingResponsibleFiles": true,
       "markerOnlyBindingForbidden": true
+    },
+    "automaticDynamicBinding": {
+      "registry": "company-asset-library.json",
+      "planner": "tools/vibe2-asset-production-plan.mjs",
+      "sourceConsumer": "tools/vibe2-source-worker.mjs",
+      "implementationOrder": [
+        "ROBLOX",
+        "UNITY",
+        "WEB"
+      ],
+      "existingBuildUpOnly": true,
+      "allRegisteredLibrariesEvaluated": true,
+      "affectedBindingsRefreshedOnLibrarySelectionOrSourceChange": true,
+      "unchangedExactBindingsReused": true,
+      "generationDetailRotationPreserved": true,
+      "completeSelectedSourceApiIndexEveryBuildUp": true,
+      "noNewRealtimeService": true,
+      "platformQaRuntimeAndDeploymentRemainIndependent": true,
+      "everyExistingFloorCycleReevaluatesAndEvolvesAssets": true,
+      "verifiedSourceAssetAndContentOutcomesFeedNextBuildUp": true
     }
   },
   "vibeSourceGenerationFocusedRecoveryTopology": {
