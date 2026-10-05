@@ -5579,7 +5579,7 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   assert.equal(rows[0].distilledAvoidancePrinciples.includes('A-no-clone'),true);
   assert.match(withLearning,/nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA/);
   assert.equal(rawGoal.includes(qaPrinciple),true);
-  const customGoal=rawGoal.replace('검증되지 않은 성공은 재사용하지 않는다.','사용자 수정 학습 지시');
+  const customGoal=rawGoal.replace('Studio-local 또는 캐시된 로컬 증거는 cloud production runtime PASS를 대신하지 않는다.','사용자 수정 학습 지시');
   const custom=buildPrompt({...order,goal:customGoal,unifiedLearning:learning},context,['index.html']);
   assert.ok(custom.includes(customGoal),'정확히 일치하지 않는 사용자 지시는 삭제하지 않는다');
 
