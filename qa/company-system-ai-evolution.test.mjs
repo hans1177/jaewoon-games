@@ -302,6 +302,35 @@ test('bottleneck sensor separates scheduler pending, runnable starvation, and fa
   assert.equal(snapshot.actions.includes('REDUCE_SCHEDULER_OR_FAN_IN_WAIT'),false);
 });
 
+test('jobless stale Action orphan is excluded from runner pressure without hiding stale ingress',()=>{
+  const snapshot=analyzeSystemAiBottlenecks({
+    systemAiQueue:{tasks:[
+      {id:'ready-a',status:'queued',priority:'critical',responsibleFiles:['tools/a.mjs']},
+      {id:'ready-b',status:'queued',priority:'high',responsibleFiles:['tools/b.mjs']}
+    ]},
+    workflowMetrics:{
+      runnerQueuedRuns:4,
+      runnerInProgressRuns:2,
+      primaryGameQueuedRuns:1,
+      joblessOrphanQueuedRuns:1,
+      joblessOrphanPrimaryRuns:1,
+      stalePrimaryRuns:1
+    },
+    maxBatch:4
+  });
+  assert.equal(snapshot.workflow.observedRunnerQueuedRuns,4);
+  assert.equal(snapshot.workflow.runnerQueuedRuns,3);
+  assert.equal(snapshot.workflow.observedPrimaryGameQueuedRuns,1);
+  assert.equal(snapshot.workflow.primaryGameQueuedRuns,0);
+  assert.equal(snapshot.workflow.joblessOrphanQueuedRuns,1);
+  assert.equal(snapshot.workflow.joblessOrphanPrimaryRuns,1);
+  assert.equal(snapshot.workflow.stalePrimaryRuns,1);
+  assert.equal(snapshot.workflow.runnerPressure,false);
+  assert.equal(snapshot.recommendedBatch,2);
+  assert.ok(snapshot.actions.includes('EXCLUDE_JOBLESS_ORPHAN_FROM_RUNNER_PRESSURE'));
+  assert.ok(snapshot.actions.includes('CANCEL_STALE_PRIMARY_REVISION_INGRESS'));
+});
+
 test('QA evolution blocks coverage weakening and only allows independently verified stale-contract repair',()=>{
   const task={
     id:'qa-fix',taskType:'qa-contract-repair',failureClass:'STALE_QA_CONTRACT',
@@ -344,6 +373,12 @@ test('system AI workflow wires sensing, exact reservation identity, missing-resu
   assert.match(workflow,/reservation_wait_ms=.*shared-signature-canary-pending:/);
   assert.match(workflow,/reservation_wait_ms=.*byId\.get/);
   assert.match(workflow,/SYSTEM_AI_FAN_IN_WAIT_MS=/);
+  assert.match(workflow,/orphanBefore=now-\(24\*60\*60\*1000\)/);
+  assert.match(workflow,/actions\/runs\/\$\{r\.id\}\/jobs\?per_page=1/);
+  assert.match(workflow,/joblessOrphanIds/);
+  assert.match(workflow,/SYSTEM_AI_JOBLESS_ORPHAN_QUEUED_RUNS_OBSERVED=/);
+  assert.match(workflow,/--jobless-orphan-queued-runs="\$jobless_orphan_queued_runs"/);
+  assert.match(workflow,/--jobless-orphan-primary-runs="\$jobless_orphan_primary_runs"/);
   assert.match(workflow,/--pending-runs="\$pending_runs"/);
   assert.match(workflow,/--reservation-wait-ms="\$reservation_wait_ms"/);
   assert.match(workflow,/--fan-in-wait-ms="\$fan_in_wait_ms"/);
