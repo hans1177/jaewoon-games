@@ -31,7 +31,7 @@ function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source
 function singleMotionFixture(t){
   const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const before=['pose = t','weight = t','arc = t','contact = t','overlap = t','settle = t'];
-  const after=['pose = smoothstep(t)','weight = supportWeight(t)','arc = jointArc(t)','contact = footContact(t)','overlap = delayedRotation(t)','settle = dampedRecovery(t)'];
+  const after=['pose = smoothstep(t) + walkLean(t)','weight = supportWeight(t)','arc = jointArc(t)','contact = footContact(t)','overlap = delayedRotation(t)','settle = dampedRecovery(t)'];
   const window='function brideWalk(t) {\n'+before.map(line=>'  '+line+';').join('\n')+'\n}';
   const source='const objectId = "bride";\nconst duration = 1.05;\n'+window+'\nfunction brideIdle(t) { return t; }\n';
   write(path.join(root,'motion.js'),source);
@@ -50,6 +50,9 @@ test('single motion work unit accepts one complete function and keeps native qua
   assert.equal(result.estimatedModificationMinutes,60);
   assert.notEqual(result.changedSourceHash,result.sourceHash);
   assert.equal(f.candidate.edits.length,1);
+  const contract={phase:'BUILD_UP',focusPillar:'PRESENTATION',requiredConnectedImprovements:{min:3}};
+  assert.equal(evaluateStudioQualityCandidateDelta({...f,contract,singleMotionCheck:result}).pass,true);
+  assert.equal(evaluateStudioQualityCandidateDelta({...f,contract}).pass,false);
 });
 test('single motion work unit planner carries the exact binding without silently shrinking an invalid batch',t=>{
   const f=singleMotionFixture(t);
@@ -80,6 +83,10 @@ test('single motion work unit rejects another clip even in the same responsible 
   const f=singleMotionFixture(t);
   f.candidate.edits.push({path:'motion.js',find:'return t;',replace:'return t * 2;'});
   assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_EDIT_OUTSIDE_WINDOW');
+});
+test('single motion work unit cannot silently replace a whole-game graphics assignment',t=>{
+  const f=singleMotionFixture(t);f.order.presentationQuality={required:true,pass:'ASSET_ADAPTATION'};
+  assert.equal(evaluateSingleMotionWorkUnit(f).reason,'SINGLE_MOTION_PRESENTATION_SCOPE_CONFLICT');
 });
 test('single motion work unit rejects stale source, multiple objects and unbound requests',t=>{
   const f=singleMotionFixture(t);f.unit.sourceHash='old';

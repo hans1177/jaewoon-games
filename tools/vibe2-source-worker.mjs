@@ -1796,6 +1796,8 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
   }
   const fail=reason=>({required:true,pass:false,reason,runtimeVerified:false});
   if(!assetDevelopmentTask(order))return fail('SINGLE_MOTION_ASSET_LANE_REQUIRED');
+  const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+  if(presentationPass&&!['LIVING_MOTION','ANIMATION_FEEL'].includes(presentationPass))return fail('SINGLE_MOTION_PRESENTATION_SCOPE_CONFLICT');
   if(unit.objectCount!==1||unit.motionCount!==1||Number(unit.estimatedModificationMinutes)!==60)return fail('SINGLE_MOTION_UNIT_SCOPE_INVALID');
   for(const key of ['objectId','clipId','sourcePath','sourceHash','sourceWindow','objectBindingEvidence','clipBindingEvidence']){
     if(typeof unit[key]!=='string'||!unit[key].trim())return fail('SINGLE_MOTION_BINDING_REQUIRED:'+key);
@@ -1846,13 +1848,14 @@ export function evaluateSingleMotionWorkUnit({order={},sourceRoot='',responsible
   return{...base,reason:'SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS',changedSourceHash:crypto.createHash('sha256').update(after).digest('hex'),depthEvidence:rows,qualityStatus:'NATIVE_BEFORE_AFTER_QA_REQUIRED'};
 }
 
-export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={}}={}){
+export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={},singleMotionCheck=null}={}){
   if(!contract||typeof contract!=='object')return{required:false,pass:true,phase:null,focusPillar:null,requiredSourceDeltaUnits:0,sourceDeltaUnits:0,requiredVisualUnits:0,visualUnits:0,reason:'NOT_REQUIRED'};
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
   const focusPillar=clean(contract.focusPillar).toUpperCase()||'STABILITY';
   const minConnected=Math.max(1,Math.floor(Number(contract?.requiredConnectedImprovements?.min||3)||3));
-  const requiredSourceDeltaUnits=phase==='BUILD_UP'?minConnected:(contract.realSourceDeltaRequired===true?1:0);
-  const requiredVisualUnits=focusPillar==='PRESENTATION'?2:0;
+  const singleMotion=singleMotionCheck?.required===true&&singleMotionCheck?.pass===true&&singleMotionCheck?.reason==='SINGLE_MOTION_SOURCE_SCOPE_AND_DEPTH_EVIDENCE_PASS';
+  const requiredSourceDeltaUnits=singleMotion?1:(phase==='BUILD_UP'?minConnected:(contract.realSourceDeltaRequired===true?1:0));
+  const requiredVisualUnits=focusPillar==='PRESENTATION'?(singleMotion?1:2):0;
   const sourceRows=[];
   const visualRows=[];
   const visualPattern=/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition|idle|walk|run|motion|animation|Animator|Motor6D|Bone|attack|hit|death|impact|recoil|trail|ParticleEmitter|ParticleSystem|Beam\b|AudioSource|SoundService|Sound\b|AudioContext|camera|Camera\b|shake|zoom|touch|pointer|joystick|safe.?area|mobile)/i;
@@ -1928,6 +1931,7 @@ function presentationWorkerGuidance(order = {}) {
 function studioQualityWorkerGuidance(order = {}) {
   const contract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
   if(!contract||typeof contract!=='object')return'';
+  if(order?.assetProduction?.motionRepairWorkUnit)return '[STUDIO QUALITY EVOLUTION]\nThe source-bound SINGLE MOTION WORK UNIT controls this repair scope. Complete all six review dimensions in that one object and clip; one complete function edit is valid. Do not split edits or add other objects to satisfy generic package counts. Source scope evidence does not complete the wider presentation program or native quality review.';
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
   const focus=clean(contract.focusPillar).toUpperCase()||'STABILITY';
   const connected=contract.requiredConnectedImprovements||{min:3,max:6};
@@ -4474,7 +4478,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
       if(!block||attemptPrompt.includes(block))continue;
-      const retryBlock=retry&&label!=='SINGLE MOTION WORK UNIT'?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
+      const retryBlock=label==='SINGLE MOTION WORK UNIT'?block:retry?boundedLargeExcerpt(block,RETRY_OBSERVATION_CHUNK_BYTES).content:block;
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
@@ -5357,7 +5361,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       throw new Error('WEB_NATIVE_AUTHORING_DELTA_REQUIRED:'+(nativeAuthoringCheck.requiredNativeTextTypes||[]).join(','));
     }
     const studioQualityContract=order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null;
-    const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract});
+    const studioQualityDelta=evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:studioQualityContract,singleMotionCheck});
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
