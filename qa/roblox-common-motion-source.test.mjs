@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 const mock = String.raw`
 local table = setmetatable({freeze = function(t) return t end}, {__index = table})
 local Enum = setmetatable({}, {__index=function(t,k)
@@ -67,6 +68,100 @@ local function capture(sequence)
 end
 `;
 const binary=process.env.VIBE2_LUAU_BINARY;
+
+// Pure teaching snippets share Lua/Luau syntax. Standard Lua execution tests arithmetic
+// and lifecycle mocks only; native Roblox and the authored R15 suite still require their own gate.
+const teacherBinary=process.env.VIBE2_LUAU_BINARY||process.env.VIBE2_TEACHER_LUA_BINARY;
+test('teacher application examples execute boundary timing placement inventory and lifecycle cases',{skip:!teacherBinary&&'Set a Lua/Luau teaching executor; native Roblox remains a separate gate'},()=>{
+  const recipe=createAssetProductionTeachingRecipe();
+  assert.equal(recipe.applicationExamples.length,10);
+  const script='local examples={}\n'+recipe.applicationExamples.map(row=>'examples['+JSON.stringify(row.id)+']=(function()\n'+row.code+'\nend)()').join('\n')+String.raw`
+local function near(a,b) assert(math.abs(a-b)<1e-9, tostring(a).." ~= "..tostring(b)) end
+local follow = examples.FRAME_RATE_INDEPENDENT_FOLLOW
+for _, fps in ipairs({30,60,120}) do
+  local value=0
+  for i=1,fps do value=follow(value,1,4,1/fps); assert(value>=0 and value<=1) end
+  near(value,1-math.exp(-4))
+end
+near(follow(.2,1,4,0),.2);near(follow(.2,1,4,-1),.2);near(follow(.2,1,0,1),.2)
+local blend=examples.SMOOTH_STATE_TRANSITION
+near(blend(-1,2),0);near(blend(1,2),.5);near(blend(4,2),1);near(blend(0,0),1)
+assert(not pcall(blend,1,-1))
+local eps=1e-6
+assert(blend(eps,1)/eps<1e-5);assert((1-blend(1-eps,1))/eps<1e-5)
+local lift=examples.PERIODIC_SWING_ENVELOPE
+for i=0,720 do
+  local phase=i*math.pi/180
+  local y=lift(phase,2)
+  assert(y>=0 and y<=2);near(y,lift(phase+2*math.pi,2))
+end
+for _, phase in ipairs({0,math.pi,2*math.pi}) do
+  assert(math.abs((lift(phase+eps,1)-lift(phase,1))/eps)<1e-5)
+  assert(math.abs((lift(phase,1)-lift(phase-eps,1))/eps)<1e-5)
+end
+near(lift(math.pi/2,-1),0)
+local variation=examples.STABLE_DECORATIVE_VARIATION
+for i=1,1000 do local id="prop-"..i;local v=variation(id);near(v,variation(id));assert(v>=0 and v<1) end
+assert(variation("prop-a")~=variation("prop-b"))
+math.randomseed(77);local expected=math.random()
+math.randomseed(77);variation("decorative");near(math.random(),expected)
+local snap=examples.MODULAR_GRID_SNAP
+near(snap(1.5,1),2);near(snap(-1.5,1),-1);near(snap(-1.6,1),-2)
+for i=-100,100 do local x=snap(i/13,.25);near(snap(x,.25),x) end
+assert(not pcall(snap,1,0));assert(not pcall(snap,1,-1))
+local function vec(x,y,z)
+  return {X=x,Y=y,Z=z,Dot=function(self,b)return self.X*b.X+self.Y*b.Y+self.Z*b.Z end}
+end
+local support=examples.SUPPORT_PLANE_OFFSET
+local normal,right,up,look=vec(0,1,0),vec(1,0,0),vec(0,1,0),vec(0,0,1)
+near(support(normal,right,up,look,vec(1,2,3),5,0),-3)
+near(support(normal,right,up,look,vec(1,2,3),5,.2),-2.8)
+local c=math.sqrt(.5)
+near(support(normal,vec(c,c,0),vec(-c,c,0),look,vec(1,1,1),0,0),math.sqrt(2))
+local slope=vec(0,c,c)
+local shift=support(slope,right,up,look,vec(1,2,3),0,.1)
+near(shift,5*c+.1);near(support(slope,right,up,look,vec(1,2,3),shift,.1),0)
+local detail=examples.DETAIL_HYSTERESIS
+assert(detail(false,9,10,15));assert(detail(true,12,10,15))
+assert(not detail(false,12,10,15));assert(not detail(true,15,10,15))
+assert(not pcall(detail,true,12,10,10))
+local filter=examples.STABLE_INVENTORY_FILTER
+local items={{id="a",name="Potion [Blue]",category="potion",count=3},{id="b",name="Potion [Blue]",category="potion",count=7},{id="c",name="Ore",category="resource",count=9}}
+local ids=filter(items,"[",nil);assert(#ids==2 and ids[1]=="a" and ids[2]=="b")
+ids=filter(items,"potion","resource");assert(#ids==0)
+ids=filter(items,"ORE","resource");assert(#ids==1 and ids[1]=="c")
+ids=filter(items,"",nil);assert(#ids==3 and ids[1]=="a" and ids[3]=="c")
+assert(#items==3 and items[1].count==3 and items[2].count==7 and items[1].name=="Potion [Blue]")
+local refresh=examples.LATEST_VIEW_RESULT_ONLY
+local state,callbacks,rendered={version=0,open=true},{},{}
+local function fetch(cb)table.insert(callbacks,cb)end
+local function render(data,err)table.insert(rendered,{data=data,err=err})end
+refresh(state,fetch,render);refresh(state,fetch,render)
+callbacks[1]("stale",nil);assert(#rendered==0)
+callbacks[2]("current",nil);callbacks[2]("duplicate",nil)
+assert(#rendered==1 and rendered[1].data=="current")
+refresh(state,fetch,render);state.open=false;state.version=state.version+1
+callbacks[3]("closed",nil);assert(#rendered==1)
+state.open=true;state.version=state.version+1;callbacks[3]("reopened stale",nil);assert(#rendered==1)
+refresh(state,fetch,render);callbacks[4](nil,"NETWORK");assert(#rendered==2 and rendered[2].err=="NETWORK")
+local disconnect=examples.DISCONNECT_OWNED_LISTENERS
+local a,b,other=0,0,0
+local connections={{Disconnect=function()a=a+1 end},{Disconnect=function()b=b+1 end}}
+local unrelated={Disconnect=function()other=other+1 end}
+disconnect(connections);disconnect(connections)
+assert(a==1 and b==1 and #connections==0 and other==0)
+print("TEACHER_APPLICATION_EXAMPLES=10_PASS")
+`;
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'asset-teacher-'));
+  try{
+    const file=path.join(dir,'teacher-examples.luau');fs.writeFileSync(file,script);
+    const result=spawnSync(teacherBinary,[file],{encoding:'utf8',timeout:15000,maxBuffer:1024*1024});
+    assert.equal(result.status,0,result.error?.message||result.stderr||result.stdout);
+    assert.match(result.stdout,/TEACHER_APPLICATION_EXAMPLES=10_PASS/);
+    assert.equal(recipe.runtimeVerified,false);
+    assert.equal(recipe.productionVerified,false);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
 const near=(a,b,label)=>assert.ok(Math.abs(a-b)<1e-8,`${label}: ${a} != ${b}`);
 const samePose=(a,b,label)=>{
   assert.deepEqual(Object.keys(a.joints).sort(),Object.keys(b.joints).sort());

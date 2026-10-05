@@ -143,6 +143,36 @@ test('asset teacher covers every registered object family, base material family 
   assert.equal(unknown.style.needsSpecificBrief,true);
 });
 
+test('asset teacher application code is scoped, original practice input and never quality authority',()=>{
+  const all=createAssetProductionTeachingRecipe();
+  assert.equal(all.applicationExamples.length,10);
+  assert.equal(new Set(all.applicationExamples.map(row=>row.id)).size,10);
+  for(const platform of ['UNITY','WEB']){
+    const other=createAssetProductionTeachingRecipe({platform});
+    assert.deepEqual(other.applicationExamples,[]);
+    assert.equal(other.familyLessons.length,12);
+  }
+  for(const family of STUDIO_ASSET_FAMILIES){
+    const recipe=createAssetProductionTeachingRecipe({families:[family]});
+    assert.ok(recipe.applicationExamples.length>0,family);
+    for(const row of recipe.applicationExamples){
+      assert.ok(row.families.includes(family));
+      assert.match(row.code,/local function/);
+      assert.match(row.code,/return \w+$/);
+      assert.ok(row.checks.length>50);
+    }
+    assert.equal(recipe.provenance,'TEACHER_AUTHORED');
+    assert.equal(recipe.status,'PRACTICE_ONLY');
+    assert.equal(recipe.runtimeVerified,false);
+  }
+  const motion=createAssetProductionTeachingRecipe({families:['MOTION']});
+  assert.ok(motion.applicationExamples.some(row=>row.id==='PERIODIC_SWING_ENVELOPE'));
+  assert.ok(!motion.applicationExamples.some(row=>row.id==='STABLE_INVENTORY_FILTER'));
+  const ui=createAssetProductionTeachingRecipe({families:['UI']});
+  assert.ok(ui.applicationExamples.some(row=>row.id==='LATEST_VIEW_RESULT_ONLY'));
+  assert.ok(!ui.applicationExamples.some(row=>row.id==='SUPPORT_PLANE_OFFSET'));
+});
+
 test('asset teacher details buildings settlements weather items inventory and menus using existing native APIs',()=>{
   const recipe=createAssetProductionTeachingRecipe({families:['modern_building','medieval_building','village','city','weather','background_prop','item','inventory','menu','system_ui']});
   assert.deepEqual(recipe.unmappedFamilies,[]);

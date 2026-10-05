@@ -72,6 +72,8 @@ test('asset teacher survives initial compaction and retries at the model request
     const recipe=JSON.parse(request.prompt.split(marker+'\n')[1].split('\n[INTERNAL ASSET TEACHER PRACTICE END]')[0]);
     assert.equal(recipe.style.profileKey,'COZY');assert.equal(recipe.runtimeVerified,false);
     assert.deepEqual(recipe.familyLessons.map(row=>row.family),['CREATURE']);
+    assert.ok(recipe.applicationExamples.some(row=>row.id==='FRAME_RATE_INDEPENDENT_FOLLOW'&&row.code.includes('math.exp')));
+    assert.ok(!recipe.applicationExamples.some(row=>row.id==='STABLE_INVENTORY_FILTER'));
     assert.ok(request.prompt.includes('init.luau'));
     assert.ok(Buffer.byteLength(request.prompt)<20000);
   }
