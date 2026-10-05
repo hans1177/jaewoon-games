@@ -189,6 +189,11 @@ export function validateRobloxArtifactInternalAssetBinding({artifactPath='',expe
   const bindingVersionPresent=new RegExp('(?:BindingVersion|STUDIO_ASSET_BINDING_VERSION)\\s*=\\s*'+bindingVersion+'\\b').test(xml);
   const selectionRuntimeVisible=/StudioAssetAtoms/.test(xml)
     &&/(hasStudioAssetAtom|hasStudioAtom|studioAssetFamily)/.test(xml);
+  const libraryAutoloadVisible=/CompanyAssets/.test(xml)
+    &&/COMPANY_ASSET_LIBRARY_NAMES/.test(xml)
+    &&/ROBLOX_INTERNAL_LIBRARY_LOAD_FAILED/.test(xml)
+    &&/CompanyAssetLibrariesLoaded/.test(xml)
+    &&/CompanyAssetLibraryNames/.test(xml);
   const visualPrimitivePresent=/Instance\.new\(&quot;(?:Frame|TextButton|TextLabel|ImageLabel|ImageButton|ViewportFrame|Part|MeshPart|WedgePart)&quot;\)|Instance\.new\(["'](?:Frame|TextButton|TextLabel|ImageLabel|ImageButton|ViewportFrame|Part|MeshPart|WedgePart)["']\)/.test(xml);
   const plainPrimitiveVisual=visualPrimitivePresent&&!selectionRuntimeVisible;
   const blockers=[];
@@ -196,6 +201,7 @@ export function validateRobloxArtifactInternalAssetBinding({artifactPath='',expe
   if(missingAtoms.length)blockers.push('ROBLOX_INTERNAL_ASSET_PACKAGE_SELECTED_ATOMS_REQUIRED');
   if(!exactFingerprint)blockers.push('ROBLOX_INTERNAL_ASSET_PACKAGE_FINGERPRINT_REQUIRED');
   if(!bindingVersionPresent||!selectionRuntimeVisible)blockers.push('ROBLOX_INTERNAL_ASSET_PACKAGE_RUNTIME_BINDING_REQUIRED');
+  if(!libraryAutoloadVisible)blockers.push('ROBLOX_INTERNAL_LIBRARY_PACKAGE_AUTOLOAD_REQUIRED');
   if(plainPrimitiveVisual)blockers.push('ROBLOX_PLAIN_PRIMITIVE_PACKAGE_FORBIDDEN');
   if(blockers.length)throw new Error('ROBLOX_INTERNAL_ASSET_PACKAGE_GUARD_FAILED:'+blockers.join(','));
   return Object.freeze({
@@ -209,6 +215,7 @@ export function validateRobloxArtifactInternalAssetBinding({artifactPath='',expe
     missingFamilies:Object.freeze([]),
     missingAtoms:Object.freeze([]),
     primitiveOnlyVisualsForbidden:true,
+    allLibrariesAutoLoaded:libraryAutoloadVisible,
     runtimeVerificationStillRequired:true,
     authority:'roblox-package-internal-asset-binding-guard',
   });
@@ -236,6 +243,7 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
     internalAssetFamilyCount:Number(internalAssetBinding?.familyCount||0),
     internalAssetAtomCount:Number(internalAssetBinding?.selectedAtomCount||0),
     primitiveOnlyVisualsForbidden:internalAssetBinding?.primitiveOnlyVisualsForbidden===true,
+    internalLibraryAutoLoadPassed:internalAssetBinding?.allLibrariesAutoLoaded===true,
     internalLibraryModulesPackaged:internalLibraryInventory?.pass===true,
     internalLibraryRequiredModuleCount:Number(internalLibraryInventory?.requiredCount||0),
     internalLibraryPackagedModuleCount:Number(internalLibraryInventory?.packagedCount||0),
