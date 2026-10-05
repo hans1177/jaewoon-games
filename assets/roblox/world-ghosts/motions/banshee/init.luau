@@ -1,45 +1,34 @@
 -- 파일명: banshee.luau
--- 원본 동작을 보존한 오브젝트 전용 파생 모션. 검수 전 품질 통과 아님.
+-- 내부 오브젝트 전용 동작 실험. 수치 검증과 네이티브 실행 검증은 별도.
 local Motion = {}
 Motion.AssetId = "banshee"
 Motion.ParentSourceHash = "e0681af58b961cfcd5c30ae3a3db7c30232eeaf43367bec29313f3b9cf0d2f22"
+Motion.AuthoredClip = "walk"
+Motion.Duration = 2.8
+Motion.Intent = "밴시 · 곡선 부유"
 function Motion.walk(form,bones,time)
- local state="walk"
+
  local result={}
  for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end
  local function pose(name,x,y,z,rx,ry,rz)
   if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end
  end
- local moving=state=="walk" or state=="chase"
- local speed=state=="chase" and 10 or moving and 6 or 2
- local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)
- local floating=form=="SHROUD" or form=="FLOATING_HEAD" or form=="OBJECT_SWARM" or form=="RIBBON" or form=="LANTERN"
- pose("Torso",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)
- pose("Head",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)
- if moving then
-  if form=="BEAST" or form=="CENTAUR"then
-   pose("FrontLeftLeg",0,0,0,wave*.48);pose("BackRightLeg",0,0,0,wave*.48)
-   pose("FrontRightLeg",0,0,0,-wave*.48);pose("BackLeftLeg",0,0,0,-wave*.48)
-  elseif form=="ARACHNID"then
-   for i=1,4 do for _,side in ipairs({"Left","Right"})do
-    local sign=side=="Left" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))
-    pose("Spider"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)
-    pose("Spider"..side..i.."Knee",0,0,0,0,0,sign*math.max(0,cycle)*.25)
-   end end
-  elseif form=="WHEEL"then pose("Torso",0,0,0,0,0,-(time*2.8)%(math.pi*2))
-  elseif not floating and form~="SERPENT" and form~="WALL" and form~="BOUND"then
-   pose("LeftLeg",0,0,0,wave*.4);pose("RightLeg",0,0,0,-wave*.4)
-   pose("LeftArm",0,0,0,-wave*.3);pose("RightArm",0,0,0,wave*.3)
-  elseif form=="BOUND"then pose("Torso",0,math.abs(wave)*.16,0,0,0,wave*.03)end
- end
- for name in pairs(bones)do
-  local coil=tonumber(string.match(name,"^Coil(%d+)$"))
-  local tail=tonumber(string.match(name,"^TailFan(%d+)$"))
-  if coil then pose(name,math.sin(phase-coil*.55)*.045,0,0,0,math.sin(phase-coil*.55)*.12,0)
-  elseif tail then pose(name,0,0,0,math.sin(time*2-tail*.4)*.07,math.sin(time*2-tail*.4)*.11,0)end
- end
- pose("LeftWing",0,0,0,0,math.sin(phase)*.3,-.06)
- pose("RightWing",0,0,0,0,-math.sin(phase)*.3,.06)
+ local function smooth(value)local u=math.clamp(value,0,1);return u*u*u*(u*(u*6-15)+10)end
+ local TAU=math.pi*2
+
+ -- Closed cubic Bezier loop. Tangents agree at both joins; no foot cycle.
+ local p=(time/Motion.Duration)%1
+ local u=(p*2)%1
+ local points=p<.5 and {{-.2,0,0},{-.2,.28,-.14},{.2,.28,.14},{.2,0,0}}
+  or {{.2,0,0},{.2,-.28,-.14},{-.2,-.28,.14},{-.2,0,0}}
+ local v=1-u;local b={v^3,3*v*v*u,3*v*u*u,u^3}
+ local xyz={0,0,0}
+ for i=1,4 do for axis=1,3 do xyz[axis]+=points[i][axis]*b[i] end end
+ local a=p*TAU
+ pose("Torso",xyz[1],.18+xyz[2],xyz[3],.025*math.sin(a*2),.075*math.sin(a),-.06*math.cos(a))
+ pose("Head",0,0,0,-.08+.025*math.sin(a-.55),-.065*math.sin(a-.35),.035*math.cos(a-.35))
+ pose("LeftArm",0,0,0,-.1+.11*math.sin(a-.65),.03,-.19-.055*math.cos(a))
+ pose("RightArm",0,0,0,-.1+.09*math.sin(a-1.0),-.03,.19+.055*math.cos(a))
  return result
 end
 return Motion

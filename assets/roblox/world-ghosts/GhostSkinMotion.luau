@@ -7,13 +7,14 @@ function Motion.Sample(form,bones,time,state,assetId)
  assert(states[state or "idle"],"INVALID_MOTION_STATE")
  assert(type(time)=="number" and time==time and math.abs(time)<1e12,"INVALID_MOTION_TIME")
  state=state or "idle"
- if state=="walk" and assetId then
+ if (state=="walk" or state=="attack") and assetId then
   local folder=script:FindFirstChild("Motions")
   local source=folder and folder:FindFirstChild(assetId)
   if source then
    local motion=require(source)
    assert(motion.AssetId==assetId,"MOTION_ASSET_BINDING_MISMATCH")
-   return motion.walk(form,bones,time)
+   local sample=motion[state]
+   if sample then return sample(form,bones,time)end
   end
  end
  local result={}

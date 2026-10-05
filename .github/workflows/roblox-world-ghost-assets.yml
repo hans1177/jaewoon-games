@@ -94,6 +94,7 @@ jobs:
       - name: Rebuild gallery and reusable native module pack
         env:
           VIBE2_LUAU_COMPILER: /tmp/ghost-tools/luau/luau-compile
+          VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
           VIBE2_ROJO_BINARY: /tmp/ghost-tools/rojo/rojo
         run: node assets/roblox/world-ghosts/build-native.mjs
       - name: Verify regenerated packages
@@ -286,7 +287,8 @@ jobs:
           git add \
             assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx \
             assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx \
-            assets/roblox/world-ghosts/native/build-evidence.json
+            assets/roblox/world-ghosts/native/build-evidence.json \
+            assets/roblox/world-ghosts/native/motion-experiments.json
           if [[ "$SPIDER_BUILT" == 'true' ]]; then
             git add \
               assets/roblox/world-ghosts/native/spider/spider.glb \

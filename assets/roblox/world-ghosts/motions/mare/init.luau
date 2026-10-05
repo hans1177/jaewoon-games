@@ -1,5 +1,5 @@
 -- 파일명: mare.luau
--- 원본 동작을 보존한 오브젝트 전용 파생 모션. 검수 전 품질 통과 아님.
+-- 내부 오브젝트 전용 동작 실험. 수치 검증과 네이티브 실행 검증은 별도.
 local Motion = {}
 Motion.AssetId = "mare"
 Motion.ParentSourceHash = "e0681af58b961cfcd5c30ae3a3db7c30232eeaf43367bec29313f3b9cf0d2f22"
@@ -40,6 +40,33 @@ function Motion.walk(form,bones,time)
  end
  pose("LeftWing",0,0,0,0,math.sin(phase)*.3,-.06)
  pose("RightWing",0,0,0,0,-math.sin(phase)*.3,.06)
+ return result
+end
+Motion.AuthoredClip = "attack"
+Motion.Duration = 1
+Motion.Intent = "메어 · 낮은 기습"
+function Motion.attack(form,bones,time)
+
+ local result={}
+ for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end
+ local function pose(name,x,y,z,rx,ry,rz)
+  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end
+ end
+ local function smooth(value)local u=math.clamp(value,0,1);return u*u*u*(u*(u*6-15)+10)end
+ local TAU=math.pi*2
+
+ local t=math.clamp(time,0,1)
+ local coil=smooth(t/.28);local spring=smooth((t-.28)/.18);local land=smooth((t-.52)/.16)
+ local recover=smooth((t-.70)/.30);local remain=1-recover
+ local flight=math.max(0,spring-land)
+ pose("Torso",0,(-.14*coil+.27*flight)*remain,(-.30*spring+.30*recover)*remain,
+  (.13*coil-.29*spring+.16*land)*remain,0,0)
+ pose("Head",0,0,0,(-.1*coil+.17*spring-.07*land)*remain,0,0)
+ pose("LeftArm",0,0,0,(-.27*coil-.72*spring+.45*land)*remain,0,-.11*coil*remain)
+ pose("RightArm",0,0,0,(-.27*coil-.72*spring+.45*land)*remain,0,.11*coil*remain)
+ pose("LeftLeg",0,.06*flight,0,(.18*coil-.42*spring+.24*land)*remain,0,0)
+ pose("RightLeg",0,.06*flight,0,(.18*coil-.42*spring+.24*land)*remain,0,0)
+ pose("Tail",0,0,0,.14*flight,0,0)
  return result
 end
 return Motion

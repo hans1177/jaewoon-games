@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="10">
+<html lang="ko" data-asset-library-version="11">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -23,15 +23,39 @@ a{color:inherit}.shell{width:min(1100px,100%);margin:auto;padding:22px 22px 48px
 .body{padding:20px}.tag{display:inline-block;color:var(--blue);font-size:12px;font-weight:800}.body h3{margin:9px 0 8px;font-size:21px}.body p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
 .footer{margin-top:30px;color:var(--muted);font-size:12px;line-height:1.6}.status{color:var(--muted);font-size:13px}
 @media(max-width:760px){.shell{padding:12px 14px 32px}.hero{padding:24px;align-items:flex-start;flex-direction:column;gap:22px}.hero h1{font-size:30px}.count{text-align:left}.count b{font-size:44px}.showcase{grid-template-columns:1fr}.sectionHead{align-items:flex-start}.sectionHead h2{font-size:20px}.sectionHead button{flex-shrink:0;padding:10px}.brand{font-size:18px}}
+
+.experiments{margin:0 0 30px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#101c28}
+.experimentHead{padding:22px 24px 14px}.experimentHead h2{margin:5px 0 8px;font-size:25px}.experimentHead p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+.motionPickers{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:10px 24px}
+.motionPickers label{display:grid;gap:8px;color:var(--blue);font-size:12px;font-weight:800}
+.motionPickers select{width:100%;min-height:44px;background:#182b3d;color:var(--ink);border:1px solid #395269;border-radius:8px;padding:8px;font:inherit;font-size:14px}
+#experimentCanvas{height:440px;position:relative;touch-action:pan-y;background:#0d1821}
+#experimentCanvas canvas{display:block;width:100%;height:100%}
+.experimentTools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 24px}.experimentTools p{margin:0;flex:1 1 260px;font-size:12px;color:var(--muted)}
+.experimentStatus{padding:0 24px 14px;color:var(--muted);font-size:13px;margin:0}
+.archive{margin-top:28px}.archive>summary{cursor:pointer;padding:16px 0;color:var(--muted)}
+@media(max-width:600px){.experimentHead,.motionPickers,.experimentTools{padding-left:14px;padding-right:14px}.motionPickers{gap:10px}#experimentCanvas{height:360px}.motionPickers select{font-size:12px}.experimentHead h2{font-size:22px}}
 </style>
 </head>
 <body>
 <main class="shell">
 <header class="top"><a class="brand" href="/">JAEWOON <span>GAMES</span></a><a class="back" href="/">홈으로</a></header>
 <section class="hero" aria-label="내부 자산 요약">
-  <div><div class="eyebrow">ASSET LIBRARY</div><h1>내부 자산</h1><p>함께 쌓아가는 게임의 재료들.<br>대표 모션, 액션, 몬스터를 간단히 확인해 봐.</p></div>
+  <div><div class="eyebrow">ASSET LIBRARY</div><h1>내부 자산</h1><p>함께 쌓아가는 게임의 재료들.<br>이번에 만든 10가지 움직임을 확인해 봐.</p></div>
   <div class="count"><b id="assetCount" aria-live="polite">—</b><span>총 등록 자산</span></div>
 </section>
+
+<section class="experiments" id="new-motions" aria-label="이번 작업 모션과 액션 10개">
+ <div class="experimentHead"><div class="eyebrow">NEW · 10 MOTIONS</div><h2>이번에 만든 모션과 액션</h2><p>내부 캐릭터 10종에 새로 작성한 이동 6개 · 공격 4개.<br>왼쪽은 이동, 오른쪽은 공격이야. 캐릭터를 바꿔서 확인해 봐.</p></div>
+ <div class="motionPickers">
+  <label>이동 모션 6개<select id="walkExperiment" disabled aria-label="새 이동 모션 선택"></select></label>
+  <label>공격 액션 4개<select id="attackExperiment" disabled aria-label="새 공격 액션 선택"></select></label>
+ </div>
+ <div id="experimentCanvas" role="img" aria-label="이번에 작성한 이동 모션과 공격 액션의 3차원 재생"></div>
+ <div class="experimentTools"><button id="experimentPause" type="button" disabled>멈춤</button><button id="experimentCompare" type="button" aria-pressed="false" disabled>수정 전과 비교</button><p>내부 모델에 새 동작 코드를 적용한 미리보기 · 로블록스 실행 검수 전</p></div>
+ <p class="experimentStatus" id="experimentStatus" role="status">이번 작업 결과를 불러오는 중…</p>
+</section>
+<details class="archive"><summary>이전 자산 미리보기</summary>
 <section aria-label="대표 자산">
   <div class="sectionHead"><div><h2>대표 미리보기</h2><p>모션 · 액션 · 몬스터, 한 가지씩</p></div><button id="toggleMotion" type="button" aria-pressed="false">모션 멈춤</button></div>
   <div class="showcase" id="showcase" data-paused="false">
@@ -49,6 +73,7 @@ a{color:inherit}.shell{width:min(1100px,100%);margin:auto;padding:22px 22px 48px
     </article>
   </div>
 </section>
+</details>
 <p class="status" id="assetStatus" role="status"></p>
 <footer class="footer">전체 자산은 점수와 관계없이 내부에서 사용할 수 있어.</footer>
 </main>
@@ -116,6 +141,206 @@ load().catch(()=>{
   document.getElementById('assetStatus').textContent='자산 정보를 불러오지 못했어. 잠시 후 다시 확인해 줘.';
   document.getElementById('monsterPreview').innerHTML='<span>대표 이미지 연결을 확인 중이야.</span>';
 });
+</script>
+
+<script type="module">
+// Replays samples from the exact Luau sources packaged by the existing native build.
+const host=document.getElementById('experimentCanvas');
+const message=document.getElementById('experimentStatus');
+try{
+ const [THREE,response]=await Promise.all([
+  import('/assets/roblox/world-ghosts/native/mesh/three/three.module.js'),
+  fetch('/assets/roblox/world-ghosts/native/motion-experiments.json')
+ ]);
+ if(!response.ok)throw Error('이번 작업 결과가 아직 준비되지 않았어.');
+ const data=await response.json();
+ if(data.experiments?.length!==10||data.sampledBy!=='OFFICIAL_LUAU')throw Error('동작 데이터 확인이 필요해.');
+ let renderer,software=false;
+ try{renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});}
+ catch{
+  // Same scene, joints and sampled poses; CPU projection for browsers without WebGL.
+  software=true;
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false});
+  if(!ctx)throw Error('이 브라우저에서 동작 화면을 열 수 없어.');
+  let viewport=[0,0,1,1],animation=null,scheduled=0,lastDraw=0;
+  renderer={
+   domElement:canvas,setPixelRatio(){},setClearColor(){},setScissorTest(){},setScissor(){},
+   setSize(w,h){canvas.width=w;canvas.height=h;},
+   setViewport(x,y,w,h){viewport=[x,y,w,h];},
+   setAnimationLoop(callback){
+    animation=callback;cancelAnimationFrame(scheduled);
+    const tick=now=>{if(!animation)return;if(now-lastDraw>=50){lastDraw=now;animation(now);}scheduled=requestAnimationFrame(tick);};
+    if(callback)scheduled=requestAnimationFrame(tick);
+   },
+   render(scene,camera){
+    scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+    const [vx,vy,vw,vh]=viewport,top=canvas.height-vy-vh;
+    ctx.save();ctx.beginPath();ctx.rect(vx,top,vw,vh);ctx.clip();
+    ctx.fillStyle='#0d1821';ctx.fillRect(vx,top,vw,vh);
+    const projection=new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
+    const faces=[],worldA=new THREE.Vector3(),worldB=new THREE.Vector3(),worldC=new THREE.Vector3();
+    const edgeA=new THREE.Vector3(),edgeB=new THREE.Vector3(),normal=new THREE.Vector3();
+    const light=new THREE.Vector3(-.4,.8,-.6).normalize();
+    scene.traverse(mesh=>{
+     if(!mesh.isMesh)return;
+     const geometry=mesh.geometry,position=geometry.attributes.position,index=geometry.index;
+     const count=index?index.count:position.count;
+     const rgb=mesh.material.color.clone().convertLinearToSRGB();
+     for(let i=0;i<count;i+=3){
+      worldA.fromBufferAttribute(position,index?index.getX(i):i).applyMatrix4(mesh.matrixWorld);
+      worldB.fromBufferAttribute(position,index?index.getX(i+1):i+1).applyMatrix4(mesh.matrixWorld);
+      worldC.fromBufferAttribute(position,index?index.getX(i+2):i+2).applyMatrix4(mesh.matrixWorld);
+      normal.crossVectors(edgeA.subVectors(worldB,worldA),edgeB.subVectors(worldC,worldA)).normalize();
+      const shade=.42+.58*Math.max(0,normal.dot(light));
+      const a=worldA.clone().applyMatrix4(projection),b=worldB.clone().applyMatrix4(projection),c=worldC.clone().applyMatrix4(projection);
+      if([a,b,c].some(p=>p.z < -1 || p.z>1))continue;
+      faces.push({z:(a.z+b.z+c.z)/3,points:[a,b,c],color:'rgb('+[rgb.r,rgb.g,rgb.b].map(v=>Math.round(Math.min(1,v*(mesh.material.emissiveIntensity>.1?1:shade))*255)).join(',')+')'});
+     }
+    });
+    faces.sort((a,b)=>b.z-a.z);
+    for(const face of faces){
+     ctx.beginPath();face.points.forEach((p,i)=>{
+      const x=vx+(p.x+1)*vw/2,y=top+(1-p.y)*vh/2;
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+     });
+     ctx.closePath();ctx.fillStyle=face.color;ctx.fill();
+    }
+    ctx.restore();
+   }
+  };
+ }
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+ renderer.setClearColor(0x0d1821);renderer.setScissorTest(true);
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ host.append(renderer.domElement);
+ const scenes=[];
+ const geometries={
+  Block:new THREE.BoxGeometry(1,1,1),
+  Ball:new THREE.SphereGeometry(.5,software?8:16,software?6:12),
+  Cylinder:new THREE.CylinderGeometry(.5,.5,1,software?8:16)
+ };
+ geometries.Cylinder.rotateZ(Math.PI/2);
+ // Roblox wedge: back face at +Z; slope descends to the front (-Z).
+ const wedge=new THREE.BufferGeometry();
+ const v=[[-.5,-.5,-.5],[.5,-.5,-.5],[-.5,-.5,.5],[.5,-.5,.5],[-.5,.5,.5],[.5,.5,.5]];
+ const triangles=[0,1,3,0,3,2,2,3,5,2,5,4,0,4,5,0,5,1,0,2,4,1,5,3];
+ wedge.setAttribute('position',new THREE.Float32BufferAttribute(triangles.flatMap(i=>v[i]),3));
+ wedge.computeVertexNormals();geometries.Wedge=wedge;
+ let paused=matchMedia('(prefers-reduced-motion:reduce)').matches,before=false,elapsed=0,visible=true;
+ const pauseButton=document.getElementById('experimentPause');
+ const compareButton=document.getElementById('experimentCompare');
+ function clearSlot(slot){
+  if(!slot.model)return;
+  slot.scene.remove(slot.model);
+  for(const material of slot.materials)material.dispose();
+ }
+ function select(slot,id){
+  clearSlot(slot);
+  const entry=data.experiments.find(x=>x.id===id);
+  if(!entry)throw Error('동작을 찾지 못했어.');
+  slot.entry=entry;slot.model=new THREE.Group();slot.joints={};slot.materials=[];
+  const recipe=entry.model;
+  for(const [name,bone]of Object.entries(recipe.bones)){
+   const group=new THREE.Group();group.name=name;
+   group.userData.rest=new THREE.Vector3(...bone.position);
+   slot.joints[name]=group;
+  }
+  for(const [name,bone]of Object.entries(recipe.bones)){
+   const joint=slot.joints[name],parent=slot.joints[bone.parent];
+   if(parent){joint.userData.rest.sub(new THREE.Vector3(...recipe.bones[bone.parent].position));parent.add(joint);}
+   else slot.model.add(joint);
+   joint.position.copy(joint.userData.rest);
+  }
+  const materials={};
+  for(const [name,rgb]of Object.entries(recipe.palette)){
+   const color=new THREE.Color().setRGB(...rgb.map(x=>x/255),THREE.SRGBColorSpace);
+   const material=new THREE.MeshStandardMaterial({color,roughness:.8,metalness:.05,
+    ...(name==='eye'?{emissive:color,emissiveIntensity:.6}:{})});
+   materials[name]=material;slot.materials.push(material);
+  }
+  for(const part of recipe.parts){
+   const mesh=new THREE.Mesh(geometries[part.shape]||geometries.Block,materials[part.color]);
+   mesh.scale.set(...part.size);
+   mesh.position.set(...part.position).sub(new THREE.Vector3(...recipe.bones[part.bone].position));
+   mesh.rotation.set(...part.rotation.map(x=>x*Math.PI/180),'XYZ');
+   slot.joints[part.bone].add(mesh);
+  }
+  slot.scene.add(slot.model);
+  const bounds=new THREE.Box3().setFromObject(slot.model),size=bounds.getSize(new THREE.Vector3());
+  slot.center=bounds.getCenter(new THREE.Vector3());
+  slot.extent=Math.max(size.y,size.x,size.z)*1.15;
+  elapsed=0;
+  host.dataset[slot.kind]=id;
+ }
+ for(const [kind,selectId]of [['walk','walkExperiment'],['attack','attackExperiment']]){
+  const scene=new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xc2e5ff,0x3b2b23,2.1));
+  const key=new THREE.DirectionalLight(0xffddbd,3.2);key.position.set(-4,8,-6);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x71bfff,2.3);rim.position.set(4,5,5);scene.add(rim);
+  const grid=new THREE.GridHelper(18,18,0x355064,0x233646);grid.position.y=-.08;scene.add(grid);
+  const camera=new THREE.PerspectiveCamera(34,1,.01,150);
+  const slot={scene,camera,kind};scenes.push(slot);
+  const selector=document.getElementById(selectId);
+  for(const entry of data.experiments.filter(x=>x.clip===kind)){
+   const option=document.createElement('option');option.value=entry.id;option.textContent=entry.title;selector.append(option);
+  }
+  selector.disabled=false;
+  selector.addEventListener('change',()=>select(slot,selector.value));
+  select(slot,selector.value);
+ }
+ pauseButton.disabled=false;compareButton.disabled=false;
+ function pauseText(){pauseButton.textContent=paused?'재생':'멈춤';pauseButton.setAttribute('aria-pressed',String(paused));}
+ pauseText();
+ pauseButton.addEventListener('click',()=>{paused=!paused;pauseText();});
+ compareButton.addEventListener('click',()=>{
+  before=!before;elapsed=0;
+  compareButton.setAttribute('aria-pressed',String(before));
+  compareButton.textContent=before?'이번 작업으로 돌아가기':'수정 전과 비교';
+  message.textContent=before?'비교 중 · 수정 전 공통 동작':'이번 작업 · 새 이동 모션 6개와 새 공격 액션 4개';
+  host.dataset.comparison=before?'before':'after';
+ });
+ function resize(){
+  const w=host.clientWidth,h=host.clientHeight;
+  renderer.setSize(w,h,false);
+  for(const slot of scenes){slot.camera.aspect=(w/2)/h;slot.camera.updateProjectionMatrix();}
+ }
+ const observer=new ResizeObserver(resize);observer.observe(host);resize();
+ new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;},{threshold:.05}).observe(host);
+ let last=performance.now();
+ renderer.setAnimationLoop(now=>{
+  const dt=Math.max(0,Math.min((now-last)/1000,.1));last=now;
+  if(document.hidden||!visible)return;
+  if(!paused)elapsed+=dt;
+  const w=host.clientWidth,h=host.clientHeight;
+  scenes.forEach((slot,index)=>{
+   const entry=slot.entry;
+   const t=entry.clip==='walk'?elapsed%entry.duration:Math.min(elapsed%(entry.duration+.8),entry.duration);
+   const samples=before?entry.before:entry.frames;
+   const frame=t/entry.duration*(samples.length-1),lo=Math.floor(frame),hi=Math.min(samples.length-1,lo+1),mix=frame-lo;
+   entry.boneNames.forEach((name,i)=>{
+    const a=samples[lo][i],b=samples[hi][i],p=a.map((x,j)=>x+(b[j]-x)*mix),joint=slot.joints[name];
+    joint.position.copy(joint.userData.rest).add(new THREE.Vector3(p[0],p[1],p[2]));
+    joint.rotation.set(p[3],p[4],p[5],'XYZ');
+   });
+   const distance=slot.extent/(2*Math.tan(34*Math.PI/360))*Math.max(1,1/slot.camera.aspect);
+   slot.camera.position.copy(slot.center).add(new THREE.Vector3(distance*.35,distance*.15,-distance));
+   slot.camera.lookAt(slot.center);
+   const x=index===0?0:Math.floor(w/2),width=index===0?Math.floor(w/2):w-x;
+   renderer.setViewport(x,0,width,h);renderer.setScissor(x,0,width,h);
+   renderer.render(slot.scene,slot.camera);
+  });
+  host.dataset.frame=String(Math.floor(elapsed*60));
+ });
+ host.dataset.loaded='true';host.dataset.comparison='after';host.dataset.renderer=software?'canvas':'webgl';
+ message.textContent='이번 작업 · 새 이동 모션 6개와 새 공격 액션 4개';
+ renderer.domElement.addEventListener('webglcontextlost',event=>{
+  event.preventDefault();renderer.setAnimationLoop(null);
+  message.textContent='화면 연결이 끊겼어. 페이지를 새로 열어 줘.';
+ });
+}catch(error){
+ message.textContent=error.message||'이번 작업 미리보기를 불러오지 못했어.';
+ console.error(error);
+}
 </script>
 </body>
 </html>
