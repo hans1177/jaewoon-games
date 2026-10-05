@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-character-gear-v1",
   "recordedAt": "2026-10-04",
   "productionVerified": false,
@@ -118,5 +118,68 @@
       "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
     ],
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 883.4,
+    "currentGrade": "COMMERCIAL_READY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "requiredEvidence": [
+          "BODY_PLAN_FIT_AND_ATTACHMENT_SOCKET_METADATA",
+          "DEFORMATION_CLIPPING_RISK_NOTES",
+          "EQUIP_UNEQUIP_DAMAGE_WEAR_STATE_PRESENTATION",
+          "WORLD_VIEWPORT_EQUIPPED_LINEAGE",
+          "MOBILE_CHARACTER_CAMERA_READABILITY"
+        ]
+      },
+      {
+        "id": "ELITE_950",
+        "targetScore": 950,
+        "requiredEvidence": [
+          "SPECIES_AND_BODY_PLAN_COMPATIBLE_GEAR_VARIANTS",
+          "SET_IDENTITY_UPGRADE_AND_TRANSMOG_STAGES",
+          "CAUSE_BASED_WEAR_STITCH_EDGE_AND_MATERIAL_DETAIL",
+          "MOTION_CONTACT_SAFE_ATTACHMENT_VARIANTS",
+          "LOD_AND_CROWD_READABILITY"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "FEEDBACK_STATES",
+      "MOTION_RIG",
+      "ACCESSIBILITY_INPUT",
+      "DETAIL_FINISH",
+      "MATERIAL_SURFACE",
+      "INTEGRATION_READINESS"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "NEW_BODY_SLOT_OR_GEAR_ROLE_GAP_REMAINS",
+        "SPECIES_BODY_PLAN_COMPATIBILITY_GAP_REMAINS",
+        "SET_IDENTITY_OR_UPGRADE_STAGE_CANNOT_BE_DERIVED_WITHOUT_QUALITY_LOSS"
+      ],
+      "resolutionOrder": [
+        "REUSE_EXISTING",
+        "DERIVE_VARIANT",
+        "RECOMBINE_EXISTING",
+        "NEW_AUTHORING"
+      ],
+      "exactDuplicateSpamForbidden": true,
+      "recolorOnlyVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "gameplayBalanceSaveNetworkAuthorityUnchanged": true
+    }
   }
 }
