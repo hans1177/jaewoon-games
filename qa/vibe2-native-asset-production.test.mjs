@@ -1828,6 +1828,44 @@ test('quality DNA keeps hero floors higher than background floors without invent
   assert.match(guidance,/최소 제작 하한/);
 });
 
+test('Web BUILD_UP evaluates registry manifest and every internal catalog before asset use',()=>{
+  const root=process.cwd();
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const manifest=JSON.parse(fs.readFileSync(path.join(root,'assets','asset-manifest.json'),'utf8'));
+  const catalogs=[];
+  const walk=dir=>{
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      if(entry.name.startsWith('.')||['node_modules','generated','previews'].includes(entry.name))continue;
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())walk(full);
+      else if(entry.isFile()&&entry.name==='catalog.json')catalogs.push(full);
+    }
+  };
+  walk(path.join(root,'assets'));
+  const plan=buildVibeAssetProductionPlan({
+    target:'web',
+    task:{
+      gameId:'web-all-library-fixture',
+      goal:'Web BUILD_UP 전체 내부 라이브러리 자동사용',
+      assetRequirements:[
+        {id:'hud',family:'UI',subfamily:'HUD',required:true,resolution:'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',assetIdPinned:false,gameplayAuthority:false}
+      ]
+    }
+  });
+  const audit=plan.flowAssetLoadout.libraryEvaluation;
+  assert.equal(audit.registryAssetCount,(registry.assets||[]).length);
+  assert.equal(audit.manifestAssetCount,(manifest.assets||[]).length);
+  assert.equal(audit.allCatalogCount,catalogs.length);
+  assert.equal(audit.registryEvaluated,true);
+  assert.equal(audit.manifestEvaluated,true);
+  assert.equal(audit.allCatalogsEvaluated,true);
+  assert.equal(audit.allLibrarySourcesEvaluated,true);
+  assert.equal(audit.qualityScoreIsUsageGate,false);
+  assert.equal(audit.lowScoreCompatibleAssetUseRequired,true);
+  assert.equal(plan.flowAssetLoadout.allCompatibleAssetsAutoUseRequired,true);
+  assert.equal(plan.flowAssetLoadout.lowQualityBindingAllowedRegardlessOfScore,true);
+});
+
 test('flow asset requirements resolve through the latest company library and are exposed to source workers',()=>{
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
