@@ -90,9 +90,10 @@ test('hero asset routing selects stronger local model without changing generatio
 test('Roblox internal asset family binding requires actual family use and rejects false NOT_APPLICABLE',()=>{
   const cwd=tempRoot();
   const root=path.join(cwd,'roblox-games/demo');
-  write(path.join(root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = {} } }\n');
-  write(path.join(root,'client/Game.client.luau'),'local placeholder = true\n');
   const expectedFamilies=Object.fromEntries(ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]));
+  const configFamilies=ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>family+' = { "'+family+'_ATOM" }').join(', ');
+  write(path.join(root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = { '+configFamilies+' } } }\n');
+  write(path.join(root,'client/Game.client.luau'),'local placeholder = true\n');
   const statusRows=ROBLOX_INTERNAL_ASSET_FAMILIES
     .map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`)
     .join('\n');
