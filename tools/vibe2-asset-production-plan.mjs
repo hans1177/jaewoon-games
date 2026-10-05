@@ -1333,7 +1333,9 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
     selectionAuthority:clean(target).toLowerCase()==='roblox'?'company-development-roblox-bootstrap.mjs#buildRobloxStudioAssetBootstrapPlan':'vibe2-asset-production-plan',
     robloxSelectionFingerprint:robloxCanonicalSelection?.selectionFingerprint||null,
     robloxSelectionLibraryVersion:Number(robloxCanonicalSelection?.libraryVersion||0)||null,
-    robloxSelectionExactMatch:clean(target).toLowerCase()!=='roblox'||JSON.stringify(families)===JSON.stringify(robloxCanonicalSelection?.families||{}),
+    robloxSelectionExactMatch:clean(target).toLowerCase()!=='roblox'||UNIVERSAL_ASSET_FAMILIES.every(family=>
+      JSON.stringify(families[family]||[])===JSON.stringify(robloxCanonicalSelection?.families?.[family]||[])
+    ),
     robloxSelectionHandoff:freeze({
       selectionRequired:clean(target).toLowerCase()==='roblox',
       handoffRequired:clean(target).toLowerCase()==='roblox'&&selectedAtomCount>0,
