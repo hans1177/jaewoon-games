@@ -259,7 +259,7 @@
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
     "ownerDirectivePreemptsAutonomy": true,
-    "maxConcurrentGameTasks": 64,
+    "maxConcurrentGameTasks": 256,
     "unityReleaseFocusSlots": null,
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
@@ -325,11 +325,11 @@
     "legacySlotRefillBranchCompatibility": false,
     "systemStewardProtectedSlots": 1,
     "systemStewardSlotBorrowableWhenIdle": true,
-    "parallelismPolicy": "FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64",
-    "externalMatrixBatchMax": 64,
+    "parallelismPolicy": "SHARED_QUEUE_EXTERNAL_BOUNDARY_256_GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_64",
+    "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_ATOMIC_COMPLETION_REFILL",
-    "maxConcurrentGameTasksMeaning": "FIXED_64_GAME_PRIMARY_REPEAT_DEVELOPMENT_TASKS; EXTERNAL_PROVIDER_BOUNDARY_256_IS_PHYSICAL_ONLY; RUNNER_PRESSURE_MAY_QUEUE_BUT_NOT_RETARGET",
+    "maxConcurrentGameTasksMeaning": "SHARED_QUEUE_AND_EXTERNAL_PLANNING_BOUNDARY_256; GAME_PRIMARY_REPEAT_DEVELOPMENT_RESERVATION_IS_FIXED_64_BY_EXECUTION_LANE",
     "minimumNecessaryProcedure": {
       "enabled": true,
       "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
@@ -843,7 +843,7 @@
     "staleTelemetryResetsToMax": false,
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
-    "externalBatchMax": 64,
+    "externalBatchMax": 256,
     "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-10-06_FIXED_REPEAT_DEVELOPMENT_64",
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
