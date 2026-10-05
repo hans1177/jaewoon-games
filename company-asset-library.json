@@ -1,5 +1,5 @@
 {
-  "version": 108,
+  "version": 109,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-05",
@@ -719,7 +719,13 @@
           "productionVerifiedMayNotBeInferredFromPlan": true,
           "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
         }
-      }
+      },
+      "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+      "newVolumeAuthoringAllowed": true,
+      "newVolumeAuthoringGloballyBlocked": false,
+      "newVolumeAuthoringPolicySource": "qualityImprovementPlan.newVolumeAuthoring",
+      "qualityPlanIsPlanningOnlyNotVerifiedEvidence": true,
+      "productionRuntimeVerificationStillRequired": true
     },
     {
       "id": "bug-defense-boss",
@@ -852,7 +858,13 @@
           "productionVerifiedMayNotBeInferredFromPlan": true,
           "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
         }
-      }
+      },
+      "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+      "newVolumeAuthoringAllowed": true,
+      "newVolumeAuthoringGloballyBlocked": false,
+      "newVolumeAuthoringPolicySource": "qualityImprovementPlan.newVolumeAuthoring",
+      "qualityPlanIsPlanningOnlyNotVerifiedEvidence": true,
+      "productionRuntimeVerificationStillRequired": true
     },
     {
       "id": "bug-defense-spider",
@@ -985,7 +997,13 @@
           "productionVerifiedMayNotBeInferredFromPlan": true,
           "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
         }
-      }
+      },
+      "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+      "newVolumeAuthoringAllowed": true,
+      "newVolumeAuthoringGloballyBlocked": false,
+      "newVolumeAuthoringPolicySource": "qualityImprovementPlan.newVolumeAuthoring",
+      "qualityPlanIsPlanningOnlyNotVerifiedEvidence": true,
+      "productionRuntimeVerificationStillRequired": true
     },
     {
       "id": "roblox-insect-spider-hd-v1",
@@ -1187,7 +1205,13 @@
           "productionVerifiedMayNotBeInferredFromPlan": true,
           "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
         }
-      }
+      },
+      "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+      "newVolumeAuthoringAllowed": true,
+      "newVolumeAuthoringGloballyBlocked": false,
+      "newVolumeAuthoringPolicySource": "qualityImprovementPlan.newVolumeAuthoring",
+      "qualityPlanIsPlanningOnlyNotVerifiedEvidence": true,
+      "productionRuntimeVerificationStillRequired": true
     },
     {
       "id": "mantis-sprite",
@@ -1316,7 +1340,13 @@
           "productionVerifiedMayNotBeInferredFromPlan": true,
           "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
         }
-      }
+      },
+      "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+      "newVolumeAuthoringAllowed": true,
+      "newVolumeAuthoringGloballyBlocked": false,
+      "newVolumeAuthoringPolicySource": "qualityImprovementPlan.newVolumeAuthoring",
+      "qualityPlanIsPlanningOnlyNotVerifiedEvidence": true,
+      "productionRuntimeVerificationStillRequired": true
     },
     {
       "id": "dragonfly-sprite",
@@ -1445,7 +1475,13 @@
           "productionVerifiedMayNotBeInferredFromPlan": true,
           "gameplayDamageMovementHitboxSaveNetworkAuthorityUnchanged": true
         }
-      }
+      },
+      "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+      "newVolumeAuthoringAllowed": true,
+      "newVolumeAuthoringGloballyBlocked": false,
+      "newVolumeAuthoringPolicySource": "qualityImprovementPlan.newVolumeAuthoring",
+      "qualityPlanIsPlanningOnlyNotVerifiedEvidence": true,
+      "productionRuntimeVerificationStillRequired": true
     },
     {
       "id": "survival2-tree",
@@ -69208,7 +69244,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 108,
+    "lastCatalogSynchronizedVersion": 109,
     "focusPhase": "VOLUME_UP",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -79562,7 +79598,7 @@
       "lastChangeFingerprint": "1e5874b8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 108
+      "synchronizedRegistryVersion": 109
     },
     "studioVariationAxes": {
       "BUILDING": [
