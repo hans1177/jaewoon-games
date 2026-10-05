@@ -59,74 +59,362 @@
     "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 110,
-    "selectionFingerprint": "6267245671586d9e69ddb7b3ea3b1fac463d3f8f364e5dd106745ad8b210e2c9",
+    "libraryVersion": 111,
+    "selectionFingerprint": "99aa3dab1d105094e4fbf3b6007d4c2e77565acecf1c5fdca69249d997a65789",
     "synchronization": {
       "mode": "VERSION_AND_SELECTION_FINGERPRINT_INCREMENTAL",
       "fullLibraryReplicationForbidden": true,
       "selectedSubsetOnly": true,
+      "allPreparedBaseMaterialAtomsEligible": true,
+      "noArtificialAtomCountCap": true,
       "unchangedFingerprintMayReuseExistingBinding": true,
       "changedFamiliesOnlyMayRebind": true
     },
     "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
-    "selectedAtomCount": 46,
+    "selectedAtomCount": 360,
     "families": {
       "UI": [
         "FRAME_PANEL",
         "BUTTON_PRIMARY",
-        "BAR_HEALTH"
+        "BAR_HEALTH",
+        "MAP_FRAME",
+        "MINIMAP_FRAME",
+        "MARKER_PLAYER",
+        "MARKER_ENEMY",
+        "MARKER_QUEST",
+        "TOUCH_JOYSTICK",
+        "TOUCH_ACTION",
+        "TOUCH_DODGE",
+        "FRAME_MODAL",
+        "FRAME_TOOLTIP",
+        "BUTTON_SECONDARY",
+        "BUTTON_ICON",
+        "ICON_ITEM",
+        "ICON_SKILL",
+        "ICON_STATUS",
+        "BAR_MANA",
+        "BAR_PROGRESS",
+        "SLOT_INVENTORY",
+        "SLOT_EQUIPMENT",
+        "SLOT_SKILL",
+        "HUD_OBJECTIVE",
+        "HUD_CURRENCY",
+        "HUD_WAVE"
       ],
       "ENVIRONMENT": [
         "TREE_TRUNK_THICK",
         "TREE_CROWN_ROUND",
         "ROCK_MEDIUM",
-        "ROAD_DIRT"
+        "ROAD_DIRT",
+        "ROAD_STONE",
+        "ROAD_SNOW",
+        "PATH_NARROW",
+        "BRIDGE_WOOD",
+        "BRIDGE_STONE",
+        "WATER_SHALLOW",
+        "WATER_DEEP",
+        "RUIN_WALL",
+        "RUIN_PILLAR",
+        "LANDMARK_TOWER",
+        "LANDMARK_SHRINE",
+        "LANDMARK_TREE",
+        "FOG_LAYER",
+        "SKY_LAYER",
+        "TERRAIN_FLAT",
+        "TERRAIN_SLOPE",
+        "TERRAIN_RIDGE",
+        "TERRAIN_VALLEY",
+        "CLIFF_LOW",
+        "CLIFF_HIGH",
+        "ROCK_SMALL",
+        "ROCK_LARGE",
+        "TREE_TRUNK_THIN",
+        "TREE_CROWN_TALL",
+        "TREE_CROWN_SPARSE",
+        "GRASS_PATCH",
+        "BUSH",
+        "FLOWER_PATCH",
+        "MUSHROOM_PATCH",
+        "DEAD_BRANCH",
+        "LOG",
+        "STUMP"
       ],
       "BUILDING": [
         "FOUNDATION_RECT",
         "WALL_SOLID",
         "DOOR_SINGLE",
-        "ROOF_GABLE"
+        "ROOF_GABLE",
+        "DOOR_DOUBLE",
+        "DOOR_GATE",
+        "WINDOW_SMALL",
+        "WINDOW_LARGE",
+        "ROOF_FLAT",
+        "ROOF_HIP",
+        "ROOF_DOME",
+        "STAIR_STRAIGHT",
+        "STAIR_CORNER",
+        "STAIR_SPIRAL",
+        "BALCONY",
+        "PILLAR",
+        "FENCE",
+        "SIGN",
+        "FLOOR_TILE",
+        "CEILING",
+        "INTERIOR_WALL",
+        "SOCKET_WALL",
+        "SOCKET_FLOOR",
+        "SOCKET_CEILING",
+        "FOUNDATION_SQUARE",
+        "FOUNDATION_ROUND",
+        "WALL_WINDOW",
+        "WALL_ARCH",
+        "CORNER_INNER",
+        "CORNER_OUTER"
       ],
       "PROP": [
         "CHEST",
         "CRATE",
-        "LAMP"
+        "LAMP",
+        "WORKBENCH",
+        "BARREL",
+        "SACK",
+        "CART",
+        "ANVIL",
+        "FURNACE",
+        "COOKING_POT",
+        "RESOURCE_WOOD",
+        "RESOURCE_STONE",
+        "RESOURCE_ORE",
+        "RESOURCE_HERB",
+        "SIGNPOST",
+        "TORCH",
+        "ROPE",
+        "CHAIN",
+        "BANNER",
+        "RUG",
+        "BOTTLE",
+        "BOOK",
+        "WEAPON_RACK",
+        "ARMOR_STAND",
+        "CHAIR",
+        "TABLE",
+        "BED",
+        "SHELF",
+        "BENCH",
+        "LANTERN"
       ],
       "MATERIAL": [
         "WOOD",
         "STONE",
-        "METAL"
+        "METAL",
+        "CLOTH",
+        "SCALE",
+        "ICE",
+        "LAVA",
+        "CRYSTAL",
+        "SLIME",
+        "BONE",
+        "MOD_CLEAN",
+        "MOD_WORN",
+        "MOD_DIRTY",
+        "MOD_WET",
+        "MOD_BURNT",
+        "MOD_FROSTED",
+        "MOD_RUSTED",
+        "MOD_CRACKED",
+        "MOD_GLOWING",
+        "MOD_POISONED",
+        "LEATHER",
+        "SKIN",
+        "FUR"
       ],
       "AUDIO": [
         "ENV_WIND",
         "ENV_WATER",
-        "UI_CONFIRM"
+        "UI_CONFIRM",
+        "ATTACK_SWING_LIGHT",
+        "HIT_FLESH",
+        "HIT_ARMOR",
+        "HIT_STONE",
+        "WEAPON_METAL",
+        "WEAPON_WOOD",
+        "ENV_FOREST",
+        "ENV_CAVE",
+        "UI_CANCEL",
+        "UI_WARNING",
+        "MAGIC_CAST",
+        "MAGIC_IMPACT",
+        "BOSS_STINGER",
+        "BUILDING_DOOR",
+        "BUILDING_BREAK",
+        "WEATHER_RAIN",
+        "WEATHER_SNOW",
+        "WEATHER_STORM",
+        "FOOTSTEP_SOFT",
+        "FOOTSTEP_HARD",
+        "FOOTSTEP_WET",
+        "CREATURE_SMALL",
+        "CREATURE_HEAVY",
+        "CREATURE_HISS",
+        "CREATURE_ROAR",
+        "ATTACK_SWING_HEAVY"
       ],
       "VFX": [
         "IMPACT_FLASH",
         "TRAIL_SHORT",
-        "SHAPE_BURST"
+        "SHAPE_BURST",
+        "STATUS_GLOW",
+        "STATUS_SMOKE",
+        "WEATHER_RAIN",
+        "WEATHER_SNOW",
+        "WEATHER_FOG",
+        "DESTRUCTION_WOOD",
+        "DESTRUCTION_STONE",
+        "DESTRUCTION_METAL",
+        "SHAPE_ORB",
+        "SHAPE_RING",
+        "SHAPE_CONE",
+        "SHAPE_LINE",
+        "SHAPE_SHOCKWAVE",
+        "TRAIL_LONG",
+        "ELEMENT_FIRE",
+        "ELEMENT_ICE",
+        "ELEMENT_ELECTRIC",
+        "ELEMENT_POISON",
+        "ELEMENT_MAGIC",
+        "ELEMENT_DUST",
+        "ELEMENT_WATER",
+        "IMPACT_SPARK",
+        "IMPACT_DEBRIS"
       ],
       "SKILL": [
         "CAST_HAND",
         "TELEGRAPH_CIRCLE",
-        "IMPACT_SMALL"
+        "IMPACT_SMALL",
+        "PROJECTILE_WAVE",
+        "PROJECTILE_ARC",
+        "IMPACT_HEAVY",
+        "IMPACT_AOE",
+        "AURA_BODY",
+        "AURA_WEAPON",
+        "STATUS_RING",
+        "STATUS_MARK",
+        "REACTION_LIGHT",
+        "REACTION_HEAVY",
+        "CAMERA_KICK",
+        "CAMERA_SHAKE",
+        "CAST_WEAPON",
+        "CAST_GROUND",
+        "CAST_CHANNEL",
+        "TELEGRAPH_CONE",
+        "TELEGRAPH_LINE",
+        "PROJECTILE_ORB",
+        "PROJECTILE_BOLT"
       ],
       "WEAPON": [
         "BLADE_LONG",
         "GUARD_CROSS",
-        "GRIP_LONG"
+        "GRIP_LONG",
+        "HAMMER_HEAD",
+        "MACE_HEAD",
+        "BOW_LIMB",
+        "BOW_GRIP",
+        "CROSSBOW_BODY",
+        "FIREARM_RECEIVER",
+        "FIREARM_BARREL",
+        "FIREARM_STOCK",
+        "STAFF_SHAFT",
+        "WAND_SHAFT",
+        "MAGIC_CORE",
+        "SHIELD_ROUND",
+        "SHIELD_KITE",
+        "SHIELD_TOWER",
+        "THROWN_BLADE",
+        "THROWN_ORB",
+        "BLADE_SHORT",
+        "BLADE_CURVED",
+        "BLADE_HEAVY",
+        "BLADE_DOUBLE",
+        "GUARD_ROUND",
+        "GUARD_WIDE",
+        "GRIP_SHORT",
+        "POMMEL_SIMPLE",
+        "POMMEL_ORNATE",
+        "SPEAR_HEAD",
+        "AXE_HEAD"
       ],
       "CHARACTER": [
         "TORSO_CLOTH",
         "SHOULDER_LIGHT",
-        "BACK_CAPE"
+        "BACK_CAPE",
+        "ACCESSORY_POUCH",
+        "ACCESSORY_CHARM",
+        "BODY_STANDARD",
+        "BODY_SMALL",
+        "BODY_HEAVY",
+        "BODY_SLENDER",
+        "HEAD_ROUND",
+        "HEAD_ANGULAR",
+        "HEAD_BROAD",
+        "HEAD_LONG",
+        "FACE_NEUTRAL",
+        "FACE_HEROIC",
+        "FACE_ROUGH",
+        "FACE_CUTE",
+        "HAIR_SHORT",
+        "HAIR_LONG",
+        "HAIR_TIED",
+        "HAIR_SPIKED",
+        "HAND_BARE",
+        "HAND_GLOVE",
+        "FOOT_BOOT",
+        "FOOT_SHOE",
+        "TORSO_LEATHER",
+        "TORSO_PLATE",
+        "TORSO_ROBE",
+        "SHOULDER_HEAVY",
+        "BACK_PACK"
       ],
       "CREATURE": [
         "HEAD_CANINE",
         "JAW_LONG",
-        "CLAW"
+        "CLAW",
+        "EAR_POINTED",
+        "EAR_ROUND",
+        "EYE_PAIR",
+        "EYE_CLUSTER",
+        "WING_FEATHER",
+        "WING_LEATHER",
+        "WING_INSECT",
+        "TAIL_SHORT",
+        "TAIL_LONG",
+        "TAIL_BLADE",
+        "TAIL_STINGER",
+        "PAW",
+        "HOOF",
+        "TALON",
+        "CARAPACE",
+        "FUR_PATCH",
+        "SCALE_PLATE",
+        "FIN",
+        "TENTACLE",
+        "ROOT_LIMB",
+        "CRYSTAL_CORE",
+        "MECH_PLATE",
+        "HEAD_FELINE",
+        "HEAD_REPTILE",
+        "HEAD_INSECT",
+        "HEAD_SKULL",
+        "HEAD_DEMON",
+        "HEAD_GOLEM",
+        "JAW_SHORT",
+        "MANDIBLE",
+        "BEAK",
+        "HORN_SHORT",
+        "HORN_LONG",
+        "HORN_CURVED",
+        "ANTLER",
+        "ANTENNA"
       ],
       "MOTION": [
         "IDLE_RELAXED",
@@ -139,7 +427,35 @@
         "JUMP_START",
         "LAND",
         "HIT_FRONT",
-        "DEATH_FRONT"
+        "DEATH_FRONT",
+        "SPRINT",
+        "STRAFE_L",
+        "STRAFE_R",
+        "BACKSTEP",
+        "TURN_45",
+        "TURN_180",
+        "JUMP_AIR",
+        "DODGE_L",
+        "DODGE_R",
+        "ATTACK_LIGHT_1",
+        "ATTACK_LIGHT_2",
+        "ATTACK_LIGHT_3",
+        "ATTACK_HEAVY",
+        "BLOCK",
+        "PARRY",
+        "HIT_BACK",
+        "HIT_LEFT",
+        "HIT_RIGHT",
+        "KNOCKDOWN",
+        "GETUP",
+        "DEATH_SIDE",
+        "DEATH_BACK",
+        "CAST_PREPARE",
+        "CAST_RELEASE",
+        "RECOVERY",
+        "TAUNT",
+        "LOOK_AROUND",
+        "IDLE_ALERT"
       ]
     },
     "universalAssetFirst": {
@@ -163,6 +479,8 @@
       "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
       "actualSourceBindingRequired": true,
       "markerOnlyApplicationForbidden": true,
+      "noArtificialAtomCountCap": true,
+      "allPreparedBaseMaterialAtomsEvaluated": true,
       "mapEnvironmentBuildingPropRequired": true
     },
     "recipeId": "NORMAL_VARIANT",
@@ -179,7 +497,35 @@
         "JUMP_START",
         "LAND",
         "HIT_FRONT",
-        "DEATH_FRONT"
+        "DEATH_FRONT",
+        "SPRINT",
+        "STRAFE_L",
+        "STRAFE_R",
+        "BACKSTEP",
+        "TURN_45",
+        "TURN_180",
+        "JUMP_AIR",
+        "DODGE_L",
+        "DODGE_R",
+        "ATTACK_LIGHT_1",
+        "ATTACK_LIGHT_2",
+        "ATTACK_LIGHT_3",
+        "ATTACK_HEAVY",
+        "BLOCK",
+        "PARRY",
+        "HIT_BACK",
+        "HIT_LEFT",
+        "HIT_RIGHT",
+        "KNOCKDOWN",
+        "GETUP",
+        "DEATH_SIDE",
+        "DEATH_BACK",
+        "CAST_PREPARE",
+        "CAST_RELEASE",
+        "RECOVERY",
+        "TAUNT",
+        "LOOK_AROUND",
+        "IDLE_ALERT"
       ],
       "libraryFirst": true,
       "semanticAtomsAreNotAnimationClips": true,
@@ -208,574 +554,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "daechung-rpg-build-up-g17-61f9d39d281f",
-  "buildUpGeneration": 17,
+  "buildUpDirectiveId": "daechung-rpg-build-up-g18-c9bb6a91339b",
+  "buildUpGeneration": 18,
   "buildUpGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
-  "buildUpDirectiveFingerprint": "61f9d39d281fd89420e6d6987a484886a9cdb1e85e8c6bb02a2ddbcb747171cd",
+  "buildUpDirectiveFingerprint": "c9bb6a91339b161dd58690aa39c159be92a2d246adff65e65d5cad1581bd9efd",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-05T06:28:30.546Z",
-  "semanticMappingVersion": 1,
-  "semanticMappingFingerprint": "x8z4cs",
-  "semanticVariant": "PROGRESSION_RISK",
-  "coreKind": "PROGRESSION",
-  "gameSpecificSemanticMappings": [
-    {
-      "principleId": "compact-tactical-state-with-immediate-feedback",
-      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
-      "sourceLearningIds": [
-        "external-black-box-cavern-cravers-run-47"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-rpg-interaction",
-      "domains": [
-        "CORE_GAMEPLAY_FEEL",
-        "PLAYER_INPUT_AND_TOUCH",
-        "VISIBLE_ACTION_FEEDBACK",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "CORE_GAMEPLAY_FEEL",
-      "mapping": "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.",
-      "implementation": "variant-specific action cue bound to LastApprovedScope",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
-    },
-    {
-      "principleId": "persistent-primary-rpg-navigation",
-      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
-      "sourceLearningIds": [
-        "external-black-box-idle-fantasy-run-42"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-rpg-ui",
-      "domains": [
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "PROGRESSION_RISK_READABILITY",
-        "REWARD_AND_EVENT_PRESENTATION"
-      ],
-      "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep level, progression, and next-step context visible around the primary action.",
-      "implementation": "persistent context cue uses existing Config.Actions and replicated player attributes",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
-    },
-    {
-      "principleId": "danger-and-level-gating-visible-before-commitment",
-      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
-      "sourceLearningIds": [
-        "external-black-box-idle-fantasy-run-42"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "rpg-progression-observation",
-      "domains": [
-        "PROGRESSION_RISK_READABILITY",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "VISIBLE_ACTION_FEEDBACK"
-      ],
-      "domain": "PROGRESSION_RISK_READABILITY",
-      "mapping": "Show level and risk context before the next action is committed.",
-      "implementation": "pre-action risk cue reads existing replicated state; it never grants authority",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
-    },
-    {
-      "principleId": "touch-look-produces-immediate-spatial-feedback",
-      "sourceLearningId": "external-black-box-luanti-run-10",
-      "sourceLearningIds": [
-        "external-black-box-luanti-run-10"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-3d-controls",
-      "domains": [
-        "PLAYER_INPUT_AND_TOUCH",
-        "CAMERA_RESPONSE",
-        "VISIBLE_ACTION_FEEDBACK",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
-      "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
-    },
-    {
-      "principleId": "persistent-core-state-around-world-view",
-      "sourceLearningId": "external-black-box-revengate-run-59",
-      "sourceLearningIds": [
-        "external-black-box-revengate-run-59"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "rpg-mobile-ux",
-      "domains": [
-        "WORLD_AND_BACKGROUND_PRESENTATION",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "CORE_GAMEPLAY_FEEL"
-      ],
-      "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
-      "mapping": "Keep the core state visible while the game world remains readable.",
-      "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
-    },
-    {
-      "principleId": "movement-needs-immediate-visible-response",
-      "sourceLearningId": "external-black-box-revengate-run-59",
-      "sourceLearningIds": [
-        "external-black-box-revengate-run-59"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "rpg-input-feedback",
-      "domains": [
-        "CHARACTER_NPC_CREATURE_ANIMATION",
-        "MOTION_AND_TRANSITIONS",
-        "PLAYER_INPUT_AND_TOUCH",
-        "VISIBLE_ACTION_FEEDBACK"
-      ],
-      "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
-      "mapping": "Show the player action transition immediately after input.",
-      "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
-    },
-    {
-      "principleId": "persistent-contextual-action-controls",
-      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
-      "sourceLearningIds": [
-        "external-black-box-sgtpuzzles-run-29"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-interaction-observation",
-      "domains": [
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "PLAYER_INPUT_AND_TOUCH",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep contextual actions anchored beside the active game state.",
-      "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
-    },
-    {
-      "principleId": "immediate-spatially-anchored-input-feedback",
-      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
-      "sourceLearningIds": [
-        "external-black-box-sgtpuzzles-run-29"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-feedback-observation",
-      "domains": [
-        "PLAYER_INPUT_AND_TOUCH",
-        "VISIBLE_ACTION_FEEDBACK",
-        "CAMERA_RESPONSE"
-      ],
-      "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Anchor input feedback to the active game control.",
-      "implementation": "control-local motion cue is separate from server authority and save state",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
-    },
-    {
-      "principleId": "touch-instruction-near-first-play-state",
-      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
-      "sourceLearningIds": [
-        "external-black-box-shattered-pixel-dungeon-run-4"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-onboarding-observation",
-      "domains": [
-        "CONTEXTUAL_ONBOARDING",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "CONTEXTUAL_ONBOARDING",
-      "mapping": "Place the first-play instruction beside the first game action.",
-      "implementation": "contextual instruction is rendered in the game-specific HUD variant",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
-    }
-  ],
-  "verifiedExternalLearningDispositions": [
-    {
-      "principleId": "native-arm64-redroid-is-valid-free-server-route",
-      "sourceLearningId": "external-black-box-block-blast-run-30",
-      "sourceLearningIds": [
-        "external-black-box-block-blast-run-30"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "android-runtime-compatibility",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "separate-system-overlay-consent-and-game-entry",
-      "sourceLearningId": "external-black-box-block-blast-run-30",
-      "sourceLearningIds": [
-        "external-black-box-block-blast-run-30"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "black-box-playtest-automation",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "visual-state-change-plus-process-survival-strengthens-input-evidence",
-      "sourceLearningId": "external-black-box-block-blast-run-30",
-      "sourceLearningIds": [
-        "external-black-box-block-blast-run-30"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "qa-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "tutorial-separated-from-game-entry",
-      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
-      "sourceLearningIds": [
-        "external-black-box-cavern-cravers-run-47"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "mobile-rpg-onboarding",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "compact-tactical-state-with-immediate-feedback",
-      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
-      "sourceLearningIds": [
-        "external-black-box-cavern-cravers-run-47"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-rpg-interaction",
-      "domains": [
-        "CORE_GAMEPLAY_FEEL",
-        "PLAYER_INPUT_AND_TOUCH",
-        "VISIBLE_ACTION_FEEDBACK",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "CORE_GAMEPLAY_FEEL",
-      "mapping": "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.",
-      "implementation": "variant-specific action cue bound to LastApprovedScope",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
-    },
-    {
-      "principleId": "semantic-gameplay-input-plus-survival",
-      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
-      "sourceLearningIds": [
-        "external-black-box-cavern-cravers-run-47"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "qa-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "first-run-friction-separated-from-game-entry",
-      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
-      "sourceLearningIds": [
-        "external-black-box-idle-fantasy-run-42"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "mobile-rpg-onboarding",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "persistent-primary-rpg-navigation",
-      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
-      "sourceLearningIds": [
-        "external-black-box-idle-fantasy-run-42"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-rpg-ui",
-      "domains": [
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "PROGRESSION_RISK_READABILITY",
-        "REWARD_AND_EVENT_PRESENTATION"
-      ],
-      "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep level, progression, and next-step context visible around the primary action.",
-      "implementation": "persistent context cue uses existing Config.Actions and replicated player attributes",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
-    },
-    {
-      "principleId": "danger-and-level-gating-visible-before-commitment",
-      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
-      "sourceLearningIds": [
-        "external-black-box-idle-fantasy-run-42"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "rpg-progression-observation",
-      "domains": [
-        "PROGRESSION_RISK_READABILITY",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "VISIBLE_ACTION_FEEDBACK"
-      ],
-      "domain": "PROGRESSION_RISK_READABILITY",
-      "mapping": "Show level and risk context before the next action is committed.",
-      "implementation": "pre-action risk cue reads existing replicated state; it never grants authority",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
-    },
-    {
-      "principleId": "semantic-input-plus-runtime-survival",
-      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
-      "sourceLearningIds": [
-        "external-black-box-idle-fantasy-run-42"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "qa-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "content-setup-is-separate-from-3d-game-entry",
-      "sourceLearningId": "external-black-box-luanti-run-10",
-      "sourceLearningIds": [
-        "external-black-box-luanti-run-10"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "sandbox-onboarding-observation",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "touch-look-produces-immediate-spatial-feedback",
-      "sourceLearningId": "external-black-box-luanti-run-10",
-      "sourceLearningIds": [
-        "external-black-box-luanti-run-10"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-3d-controls",
-      "domains": [
-        "PLAYER_INPUT_AND_TOUCH",
-        "CAMERA_RESPONSE",
-        "VISIBLE_ACTION_FEEDBACK",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
-      "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
-    },
-    {
-      "principleId": "world-entry-needs-load-window-before-input-proof",
-      "sourceLearningId": "external-black-box-luanti-run-10",
-      "sourceLearningIds": [
-        "external-black-box-luanti-run-10"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "mobile-runtime-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "narrative-onboarding-is-not-game-entry",
-      "sourceLearningId": "external-black-box-revengate-run-59",
-      "sourceLearningIds": [
-        "external-black-box-revengate-run-59"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "rpg-onboarding-qa",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "persistent-core-state-around-world-view",
-      "sourceLearningId": "external-black-box-revengate-run-59",
-      "sourceLearningIds": [
-        "external-black-box-revengate-run-59"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "rpg-mobile-ux",
-      "domains": [
-        "WORLD_AND_BACKGROUND_PRESENTATION",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "CORE_GAMEPLAY_FEEL"
-      ],
-      "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
-      "mapping": "Keep the core state visible while the game world remains readable.",
-      "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
-    },
-    {
-      "principleId": "movement-needs-immediate-visible-response",
-      "sourceLearningId": "external-black-box-revengate-run-59",
-      "sourceLearningIds": [
-        "external-black-box-revengate-run-59"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "rpg-input-feedback",
-      "domains": [
-        "CHARACTER_NPC_CREATURE_ANIMATION",
-        "MOTION_AND_TRANSITIONS",
-        "PLAYER_INPUT_AND_TOUCH",
-        "VISIBLE_ACTION_FEEDBACK"
-      ],
-      "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
-      "mapping": "Show the player action transition immediately after input.",
-      "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
-    },
-    {
-      "principleId": "gameplay-state-must-be-visually-distinct-from-selection-state",
-      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
-      "sourceLearningIds": [
-        "external-black-box-sgtpuzzles-run-29"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "mobile-runtime-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "persistent-contextual-action-controls",
-      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
-      "sourceLearningIds": [
-        "external-black-box-sgtpuzzles-run-29"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-interaction-observation",
-      "domains": [
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "PLAYER_INPUT_AND_TOUCH",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep contextual actions anchored beside the active game state.",
-      "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
-    },
-    {
-      "principleId": "immediate-spatially-anchored-input-feedback",
-      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
-      "sourceLearningIds": [
-        "external-black-box-sgtpuzzles-run-29"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-feedback-observation",
-      "domains": [
-        "PLAYER_INPUT_AND_TOUCH",
-        "VISIBLE_ACTION_FEEDBACK",
-        "CAMERA_RESPONSE"
-      ],
-      "domain": "PLAYER_INPUT_AND_TOUCH",
-      "mapping": "Anchor input feedback to the active game control.",
-      "implementation": "control-local motion cue is separate from server authority and save state",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
-    },
-    {
-      "principleId": "before-after-plus-runtime-survival-evidence",
-      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
-      "sourceLearningIds": [
-        "external-black-box-sgtpuzzles-run-29"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "qa-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "separate-android-overlay-onboarding-and-gameplay-entry",
-      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
-      "sourceLearningIds": [
-        "external-black-box-shattered-pixel-dungeon-run-4"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "black-box-playtest-automation",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    },
-    {
-      "principleId": "touch-instruction-near-first-play-state",
-      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
-      "sourceLearningIds": [
-        "external-black-box-shattered-pixel-dungeon-run-4"
-      ],
-      "coreKind": "PROGRESSION",
-      "disposition": "APPLIED_GAME_SOURCE",
-      "scope": "mobile-onboarding-observation",
-      "domains": [
-        "CONTEXTUAL_ONBOARDING",
-        "HUD_AND_CONTEXTUAL_GUIDANCE",
-        "MOBILE_READABILITY_AND_RESPONSE"
-      ],
-      "domain": "CONTEXTUAL_ONBOARDING",
-      "mapping": "Place the first-play instruction beside the first game action.",
-      "implementation": "contextual instruction is rendered in the game-specific HUD variant",
-      "variant": "PROGRESSION_RISK",
-      "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
-    },
-    {
-      "principleId": "input-visual-transition-plus-foreground-survival",
-      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
-      "sourceLearningIds": [
-        "external-black-box-shattered-pixel-dungeon-run-4"
-      ],
-      "disposition": "VALIDATION_ONLY",
-      "scope": "qa-evidence",
-      "domains": [],
-      "mapping": "",
-      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
-      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
-    }
-  ],
-  "verifiedExternalValidationOnlyPrincipleCount": 14,
-  "verifiedExternalLearningGameDevelopmentAppliedCount": 9,
-  "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-10-05T06:48:43.752Z"
+  "createdAt": "2026-10-05T06:57:30.293Z"
 }
