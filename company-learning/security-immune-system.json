@@ -1,5 +1,5 @@
 {
-  "version": 73,
+  "version": 74,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1204,5 +1204,14 @@
     "missingOrFailedRuntimeCannotClaimRunnable": true,
     "webWithdrawalCannotSuppressNativeTarget": true,
     "releaseAndF0F9GatesUnchanged": true
+  },
+  "robloxStudioProductionSecurity": {
+    "sourcePolicy": "robloxStudioProductionFlowContract",
+    "approvedIdentityAndScopePreserved": true,
+    "readOnlyContextDoesNotGrantWriteAuthority": true,
+    "noSyntheticRuntimePass": true,
+    "saveEconomyNetworkAuthorityPreserved": true,
+    "lockedSequenceAndGuardsUnchanged": true,
+    "ownerRemovalMustRemainExcludedUntilNewExplicitOwnerChange": true
   }
 }

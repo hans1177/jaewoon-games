@@ -16,6 +16,36 @@ const runtimeWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unit
 const independentQaSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-independent-qa.yml'),'utf8');
 const regressionSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-regression.yml'),'utf8');
 const runtimeSmokeSource=fs.readFileSync(path.resolve('tools/unity-apk-runtime-smoke.sh'),'utf8');
+
+test('verified Unity settlement skips unused model downloads and checks out only queue state',()=>{
+  assert.doesNotMatch(workflowSource,/prepare-ollama|ollama pull|evidence meeting/);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-fanin-sparse-'));
+  try{
+    const remote=path.join(root,'remote'),checkout=path.join(root,'checkout');
+    fs.mkdirSync(remote);
+    const git=(...args)=>{const r=spawnSync('git',args,{cwd:remote,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+    git('init','-q','-b','vibe2-unreal-core');git('config','user.email','qa@example.invalid');git('config','user.name','QA');
+    for(const dir of ['.vibe2','company-learning','roblox-games/example','assets'])fs.mkdirSync(path.join(remote,dir),{recursive:true});
+    fs.writeFileSync(path.join(remote,'.vibe2/queue.json'),'{"tasks":[]}');
+    fs.writeFileSync(path.join(remote,'.vibe2/parallelism-control.json'),'{}');
+    fs.writeFileSync(path.join(remote,'company-learning/platform-release-roadmap.json'),'{}');
+    fs.writeFileSync(path.join(remote,'roblox-games/example/source.luau'),'local value = 1');
+    fs.writeFileSync(path.join(remote,'assets/large.dat'),'large asset');
+    git('add','.');git('commit','-qm','old history');
+    fs.writeFileSync(path.join(remote,'.vibe2/queue.json'),'{"tasks":[],"version":3}');git('add','.');git('commit','-qm','current queue');
+    const start=workflowSource.indexOf('          git clone --depth=1 --filter=blob:none --no-checkout --branch vibe2-unreal-core');
+    assert.ok(start>0);
+    const end=workflowSource.indexOf('          git -C /tmp/vibe2-unity-runtime-control config user.name',start);
+    const script=workflowSource.slice(start,end).replace(/          /g,'').replace('"https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"',JSON.stringify('file://'+remote)).replaceAll('/tmp/vibe2-unity-runtime-control',checkout);
+    const run=spawnSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8'});
+    assert.equal(run.status,0,run.stderr);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(checkout,'.vibe2/queue.json'),'utf8')).version,3);
+    assert.equal(fs.existsSync(path.join(checkout,'assets/large.dat')),false);
+    assert.equal(fs.existsSync(path.join(checkout,'roblox-games/example/source.luau')),false);
+    const history=spawnSync('git',['-C',checkout,'rev-list','--count','HEAD'],{encoding:'utf8'});
+    assert.equal(history.stdout.trim(),'1');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 const evidenceTool=path.resolve('tools/company-development-unity-evidence.mjs');
 const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';

@@ -1,5 +1,5 @@
 {
-  "version": 535,
+  "version": 536,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -27136,5 +27136,96 @@
     "releaseMediaRoot": "assets/homepage-media",
     "artDirectionSource": "CURRENT_GAME_DESIGN_AND_IMPLEMENTED_FEATURES",
     "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
+  },
+  "robloxStudioProductionFlowContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "authority": "OWNER_DIRECTIVE_2026-10-05",
+    "objective": "STUDIO_STYLE_GAME_SPECIFIC_CONCEPT_AND_GENRE_DESIGN_TO_CONNECTED_NATIVE_IMPLEMENTATION",
+    "executionBoundary": "EXISTING_BUILD_UP_AND_VIBE_SOURCE_WORKER",
+    "implementation": "tools/company-roblox-production-plan.mjs",
+    "designInput": [
+      "APPROVED_IDENTITY",
+      "GENRE_AND_SUBGENRE",
+      "CORE_LOOP",
+      "SIGNATURE_SYSTEMS",
+      "PROGRESSION_DIRECTION",
+      "SOURCE_RESPONSIBILITIES"
+    ],
+    "productionActivities": [
+      "CONCEPT_AND_GENRE_TRANSLATION",
+      "CONNECTED_RULE_AND_STATE_DESIGN",
+      "PLAYER_ACTION_AND_CONTENT_IMPLEMENTATION",
+      "REWARD_AND_NEXT_GOAL_CONNECTION",
+      "COMPATIBLE_CONTENT_VARIATION"
+    ],
+    "supportedGenres": [
+      "RPG",
+      "ADVENTURE",
+      "TYCOON",
+      "SURVIVAL",
+      "DEFENSE",
+      "PUZZLE",
+      "OBBY",
+      "RACING",
+      "HORROR",
+      "ROLEPLAY",
+      "SANDBOX",
+      "SHOOTER",
+      "STRATEGY"
+    ],
+    "variationAxes": [
+      "PLAYER_DECISION",
+      "CONTENT_ROLE",
+      "SPACE_OR_ROUTE",
+      "TRIGGER_AND_CONSEQUENCE",
+      "SYSTEM_CONNECTION"
+    ],
+    "machineHandoff": [
+      "GENRE_BLUEPRINT",
+      "CONCEPT_IDENTITY",
+      "IMPLEMENTATION_IDEAS",
+      "SELECTED_IDEA",
+      "EXISTING_SOURCE_RESPONSIBILITIES",
+      "CONNECTED_PLAY_FLOW"
+    ],
+    "preserveApprovedConcept": true,
+    "genreChangeByExpansionForbidden": true,
+    "unknownGenreUsesApprovedDesignOnly": true,
+    "designlessMode": "EXISTING_SOURCE_QUALITY_ONLY",
+    "presentationOnlyMayNotRequireServerWork": true,
+    "proposedIdeasAreNotCompletedGameplay": true,
+    "workerMustImplementWithinExistingWriteScope": true,
+    "compatibleAssetsReuseFirst": true,
+    "unrelatedFileWorkMayRemainParallel": true,
+    "newWorkflow": false,
+    "newQueue": false,
+    "newApprovalStage": false,
+    "newQaStage": false,
+    "lockedF0F9SequenceUnchanged": true,
+    "ownerFeatureIntervention": {
+      "enabled": true,
+      "canonicalIntent": "GAME_DESIGN_BASELINE.content.ownerFeatureChanges",
+      "entryFields": [
+        "requestId",
+        "featureId",
+        "action",
+        "requirement"
+      ],
+      "actions": [
+        "ADD",
+        "REMOVE",
+        "UPDATE"
+      ],
+      "conflictResolution": "LAST_CANONICAL_ENTRY_PER_FEATURE",
+      "recordOnlyExplicitOwnerRequests": true,
+      "directSourceEditAndIntentMustStayTogether": true,
+      "removedFeaturesMayNotBeRestoredByAutonomousIdeas": true,
+      "newOwnerRequestResetsStaleIdeaContext": true,
+      "sourceReentry": ".github/workflows/company-roblox-source-drift-sync.yml",
+      "resume": "CURRENT_MAIN_SOURCE_THROUGH_EXISTING_F0_F9_TO_NEXT_BUILD_UP",
+      "manualRestartRequired": false,
+      "newGlobalPause": false
+    }
   }
 }

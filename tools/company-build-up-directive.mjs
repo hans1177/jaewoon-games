@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=v=>[...new Set((Array.isArray(v)?v:[]).map(clean).filter(Boolean))];
@@ -517,6 +518,9 @@ export function extractDesignContext(record={}){
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
+    genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
+    subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
+    ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
@@ -1264,6 +1268,7 @@ export function directivePrompt(d={}){
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
+    ...robloxProductionPromptLines(d.robloxProductionPlan),
     d.playtestRuntimeFindings?.studioQualityFailure
       ?'STUDIO_OBSERVED_FAILURES: '+JSON.stringify(d.playtestRuntimeFindings.studioQualityFailure)
       :'STUDIO_OBSERVED_FAILURES: NO_CURRENT_EXACT_ARTIFACT_EVIDENCE',
@@ -1547,6 +1552,13 @@ export function buildGameSpecificBuildUpDirective({
   const preMutationDryRun=buildDevelopmentDryRun({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
+  const robloxProductionPlan=buildRobloxProductionPlan({
+    gameId:id,platform,design,source,responsibleFiles:topFiles,
+    previousPlan:previousDirective?.robloxProductionPlan,focus,
+    repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
+    safeDesignlessMode,
+    policy:readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{}
+  });
   return Object.freeze({
     version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
@@ -1614,6 +1626,7 @@ export function buildGameSpecificBuildUpDirective({
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
     robloxNativeExecution,
+    robloxProductionPlan,
     preserveConstraints:[
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',
       '승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.',

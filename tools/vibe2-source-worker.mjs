@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2-motion-coaching.mjs';
 import { buildRobloxSourceCoaching } from './vibe3-roblox-distillation.mjs';
+import { robloxProductionPromptLines } from './company-roblox-production-plan.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -2019,6 +2020,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
+    ...(platformKey==='ROBLOX'?robloxProductionPromptLines(d.robloxProductionPlan,{prefix:'robloxProduction',responsibleFiles}):[]),
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
     `whyNow=${clean(d.primaryGoalReason)}`,
@@ -2063,9 +2065,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
+    'robloxProduction',
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
+    'robloxProduction',
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
@@ -2090,7 +2094,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     }
     if(!compact||line===begin||line===end)return[line];
     if(!keepPrefixes.some(prefix=>line.startsWith(prefix)))return[];
-    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix)))return[line];
+    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||line.startsWith('robloxProductionOWNER='))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
@@ -2101,6 +2105,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
 
   const essentialPrefixes=[
+    'robloxProductionCONCEPT=','robloxProductionIDEA=','robloxProductionCONNECTION=','robloxProductionFILES=','robloxProductionSCOPE=','robloxProductionOWNER=',
     'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2116,7 +2121,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(prefix==='sourceAnchors='){
       if(essentialAnchors>=3)continue;
       essentialAnchors+=1;
-    }else{
+    }else if(prefix!=='robloxProductionOWNER='){
       if(seen.has(prefix))continue;
       seen.add(prefix);
     }
@@ -2125,7 +2130,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix)))return line;
+    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||line.startsWith('robloxProductionOWNER='))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);

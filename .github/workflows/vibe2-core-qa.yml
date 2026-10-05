@@ -25,6 +25,9 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/company-build-up-directive.mjs'
+      - 'tools/company-roblox-production-plan.mjs'
+      - 'qa/company-roblox-production-plan.test.mjs'
+      - 'qa/company-roblox-production-handoff.test.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
@@ -132,6 +135,9 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/company-build-up-directive.mjs'
+      - 'tools/company-roblox-production-plan.mjs'
+      - 'qa/company-roblox-production-plan.test.mjs'
+      - 'qa/company-roblox-production-handoff.test.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
@@ -217,6 +223,7 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/company-build-up-directive.mjs
+          node --check tools/company-roblox-production-plan.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-asset-production-plan.mjs
           node --check tools/vibe2-central-work-contract.mjs
@@ -312,6 +319,7 @@ jobs:
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/company-build-up-experience-quality.test.mjs
+          node --test qa/company-roblox-production-plan.test.mjs qa/company-roblox-production-handoff.test.mjs
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
@@ -416,4 +424,5 @@ jobs:
           test -x "$VIBE2_LUAU_BINARY"
           node --test qa/roblox-common-motion-source.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
+
 

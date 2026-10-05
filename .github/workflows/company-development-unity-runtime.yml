@@ -979,24 +979,6 @@ jobs:
           echo "passed=true" >> "$GITHUB_OUTPUT"
           echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"; echo "qa_run=$qa_run" >> "$GITHUB_OUTPUT"; echo "regression_run=$regression_run" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare free models only after technical stages pass
-        if: steps.canonical.outputs.passed == 'true'
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: 'llama3.2:1b'
-          version: '0.33.3'
-          pull-model: 'true'
-          department-role: development
-          cache-model: 'true'
-
-      - name: Ensure configured department models only for evidence meeting
-        if: steps.canonical.outputs.passed == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
-          have="$(ollama list | awk 'NR>1{print $1}')"; for model in "${models[@]}";do grep -Fxq "$model"<<<"$have"||ollama pull "$model";done
-
       - name: Persist exact checkpoint package even when a later stage fails
         id: checkpoint
         if: always()
@@ -1604,7 +1586,9 @@ jobs:
           [[ "$runtime_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
           echo "UNITY_BUILD_UP_RUNTIME_SOURCE_TREE_SHA=$GAME_ID:$runtime_source_tree_sha"
           rm -rf /tmp/vibe2-unity-runtime-control
-          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-unity-runtime-control >/dev/null 2>&1
+          git clone --depth=1 --filter=blob:none --no-checkout --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-unity-runtime-control >/dev/null 2>&1
+          git -C /tmp/vibe2-unity-runtime-control sparse-checkout set --no-cone '/.vibe2/queue.json' '/.vibe2/parallelism-control.json' '/company-learning/platform-release-roadmap.json'
+          git -C /tmp/vibe2-unity-runtime-control checkout vibe2-unreal-core
           git -C /tmp/vibe2-unity-runtime-control config user.name 'jaewoon-unity-runtime-fanin'
           git -C /tmp/vibe2-unity-runtime-control config user.email 'actions@users.noreply.github.com'
           pushed=0
