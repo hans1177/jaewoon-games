@@ -125,17 +125,17 @@
       "updatedAt": "2026-10-05T01:43:28.224Z"
     },
     "ollama:qwen3:1.7b": {
-      "calls": 24,
+      "calls": 25,
       "successes": 0,
-      "failures": 24,
-      "timeouts": 21,
+      "failures": 25,
+      "timeouts": 22,
       "jsonFailures": 3,
-      "totalMs": 2651315,
-      "lastMs": 75650,
-      "lastError": "Expected ',' or ']' after array element in JSON at position 3071 (line 1 column 3072)",
-      "updatedAt": "2026-10-05T03:02:44.053Z"
+      "totalMs": 2771316,
+      "lastMs": 120001,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-05T03:20:25.196Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-05T03:18:25.134Z"
+  "updatedAt": "2026-10-05T03:20:25.197Z"
 }
