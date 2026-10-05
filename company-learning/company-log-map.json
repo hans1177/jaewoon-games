@@ -1,5 +1,5 @@
 {
-  "version": 169,
+  "version": 170,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3175,5 +3175,11 @@
     "imageBytesAndSha256Required": true,
     "actualVideoBindingsRequired": true,
     "failedCaptureMayNotBeMarkedPass": true
+  },
+  "runnablePlatformAccessEvidence": {
+    "sourcePolicy": "serverHomepageIntegration.runnablePlatformAccess",
+    "launchAvailabilitySeparateFromReleaseReadiness": true,
+    "sourceTargetAndRuntimeAvailabilityRequired": true,
+    "webWithdrawalMustRecordWebOnlyScope": true
   }
 }

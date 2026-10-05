@@ -602,6 +602,7 @@ jobs:
             fi
           fi
 
+          preserved_source=false
           if [[ "$reuse_source" =~ ^[0-9a-f]{40}$ ]]; then
             git checkout "$reuse_source" -- "$PROJECT" "$REQUEST" 2>/dev/null || true
             source_generator=''
@@ -610,24 +611,33 @@ jobs:
             fi
             if [[ -f "$PROJECT/ProjectSettings/ProjectVersion.txt" && -f "$REQUEST" && "$source_generator" == "$current_generator" ]]; then
               bind_catalog
-              echo "source_revision=$reuse_source" >> "$GITHUB_OUTPUT"
-              echo "branch=$reuse_branch" >> "$GITHUB_OUTPUT"
-              echo 'source_reused=true' >> "$GITHUB_OUTPUT"
-              echo 'CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED'
-              exit 0
+              current_build_driver="$(git rev-parse HEAD:.github/workflows/unity-cloud-android-test.yml)"
+              reused_build_driver="$(git rev-parse "${reuse_source}:.github/workflows/unity-cloud-android-test.yml" 2>/dev/null || true)"
+              if [[ "$current_build_driver" == "$reused_build_driver" ]]; then
+                echo "source_revision=$reuse_source" >> "$GITHUB_OUTPUT"
+                echo "branch=$reuse_branch" >> "$GITHUB_OUTPUT"
+                echo 'source_reused=true' >> "$GITHUB_OUTPUT"
+                echo 'CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED'
+                exit 0
+              fi
+              preserved_source=true
+              echo 'UNITY_SOURCE_REUSE_INVALIDATED=BUILD_DRIVER_CHANGED_PRESERVE_GAME_SOURCE'
+            else
+              echo "UNITY_SOURCE_REUSE_INVALIDATED=GENERATOR_FINGERPRINT_MISMATCH old=${source_generator:-MISSING} current=$current_generator"
             fi
-            echo "UNITY_SOURCE_REUSE_INVALIDATED=GENERATOR_FINGERPRINT_MISMATCH old=${source_generator:-MISSING} current=$current_generator"
           fi
 
           directive_args=()
           if [[ -n "$BUILD_UP_DIRECTIVE" && -f "$BUILD_UP_DIRECTIVE" ]]; then directive_args+=(--build-up-directive="$BUILD_UP_DIRECTIVE"); fi
-          node tools/company-development-unity-bootstrap.mjs \
+          if [[ "$preserved_source" != true ]]; then
+            node tools/company-development-unity-bootstrap.mjs \
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
             --baseline="$DESIGN_SOURCE" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --output="$PROJECT" \
             "${directive_args[@]}"
+          fi
           bind_catalog
           branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
           git config user.name 'jaewoon-development-unity-runtime'
@@ -635,7 +645,7 @@ jobs:
           git checkout -b "$branch"
           git add "$PROJECT" game-catalog.json
           git diff --cached --check
-          git commit -m "dev: bind $GAME_ID selected-platform Unity source [skip ci]"
+          git diff --cached --quiet || git commit -m "dev: bind $GAME_ID selected-platform Unity source [skip ci]"
           mkdir -p "$(dirname "$REQUEST")"
           source_commit="$(git rev-parse HEAD)"
           node - "$REQUEST" "$GAME_ID" "$PROJECT" "$source_commit" "$GITHUB_RUN_ID" <<'NODE'

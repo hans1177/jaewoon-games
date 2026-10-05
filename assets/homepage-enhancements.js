@@ -264,8 +264,8 @@ function internalReleaseLinks(game){
   const state=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
   const roblox=state('ROBLOX'),unity=state('UNITY');
   return {
-    roblox:(roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true)||roblox.historicalInternalRelease===true?links.roblox:'',
-    unity:(unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true)||game?.unityBuildVerified===true?links.unity:'',
+    roblox:roblox.executionAvailable===true||(roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true)||roblox.historicalInternalRelease===true?links.roblox:'',
+    unity:unity.executionAvailable===true||(unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true)||game?.unityBuildVerified===true?links.unity:'',
     unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:'',
     web:links.web
   };
@@ -343,7 +343,7 @@ function buildFocus(catalog,status){
 }
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
-  const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return platformReleaseLabel(p);};
+  const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);const label=platformReleaseLabel(p);return label==='개발 중'&&links[platform==='ROBLOX'?'roblox':'unity']?'개발 중 · 실행 가능':label;};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
