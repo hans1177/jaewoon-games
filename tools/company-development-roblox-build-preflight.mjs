@@ -64,7 +64,7 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
   if(!SHA256.test(artifactIdentity))blockers.push('artifact-identity-invalid');
   if(!sourceAssetBindingComplete)blockers.push('internal-asset-all-families-source-binding-required');
-  if(packageAssetContractVersion<1)blockers.push('internal-asset-package-contract-version-required');
+  if(packageAssetContractVersion<2)blockers.push('internal-asset-package-contract-version-required');
   if(!packageAssetBindingPassed)blockers.push('internal-asset-package-binding-pass-required');
   if(!packageLibrariesAutoLoaded)blockers.push('internal-library-package-autoload-required');
   if(!packageLibrariesPackaged||packageRequiredLibraryCount<=0||packagePackagedLibraryCount!==packageRequiredLibraryCount){
