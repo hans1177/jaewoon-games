@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "ROBLOX_ASSET_PACKAGE_BUILD",
-  "sourceFingerprint": "245b54c6a150c6062cd024e438cd26d3cf220ea0cb4be11ecdb60222093aa1b4",
+  "sourceFingerprint": "afcad7bd7512bb4cab6561bf92be6a68b04bcd20f31e6ffee2f99f1d32474898",
   "sources": [
     {
       "file": "Gallery.client.luau",
@@ -21,27 +21,427 @@
     },
     {
       "file": "GhostSkinMotion.luau",
-      "sha256": "e0681af58b961cfcd5c30ae3a3db7c30232eeaf43367bec29313f3b9cf0d2f22"
+      "sha256": "a34c972f2027a4c113a9dfb4f556079a63163f1b12fb1d2bfe5ab185e3c70f1d"
     },
     {
       "file": "default.project.json",
-      "sha256": "23817f111234029e1274ec65da2db03f154425f09fc099c8ba4d52d0cc95bf95"
+      "sha256": "fd9c6653dfc0b9d238b725edd9d48d72450fcd6b12ddcffe34f49782bd21746e"
     },
     {
       "file": "model.project.json",
-      "sha256": "3820b618cba504770eb0c28e216676dde14f80cc50f54a57645f07859eb5c550"
+      "sha256": "220ba1267b521cf5d0fb8310e24f5f18eb8ef49ea8249703e141c2737051e246"
+    },
+    {
+      "file": "motions/adze/init.luau",
+      "sha256": "81fe73b07928fad69416add2191205d6dd676d4ed0b2473e32ece69da481f708"
+    },
+    {
+      "file": "motions/akaname/init.luau",
+      "sha256": "e35395d1a775ed45ea04b280bf4e5efdcfd01cf6ae4c1649b4e33ac38d7db7bd"
+    },
+    {
+      "file": "motions/asanbosam/init.luau",
+      "sha256": "d6912765a6df5627e525cefe6da92fe16203cda551c99eea47377ac94bfaacb7"
+    },
+    {
+      "file": "motions/aswang/init.luau",
+      "sha256": "b2926c2809f48b9678664c35b02b436c4b0279780cd86cced63aee12357d3a3f"
+    },
+    {
+      "file": "motions/baba-yaga/init.luau",
+      "sha256": "4d74c45ac8a72fe591b4c982e01079d6928f947d1d40b37124cdd6a5d1f89e5a"
+    },
+    {
+      "file": "motions/bai-wuchang/init.luau",
+      "sha256": "875f21b6461c80168600a5bfca6b8c68409eae60cefd5af0c29a72b82999d2c6"
+    },
+    {
+      "file": "motions/baigujing/init.luau",
+      "sha256": "3b79c39e84862c8c7154992ef6ec6055d45e298a986682284729a509a68166f9"
+    },
+    {
+      "file": "motions/bakeneko/init.luau",
+      "sha256": "095734da46b5734998f54fb2bcd26520606aa997c68ee461fdf88408a9053573"
+    },
+    {
+      "file": "motions/banshee/init.luau",
+      "sha256": "a092e474e3217a39bf65e491eae0155d7e41a491291b72108c831ec38300a4cb"
+    },
+    {
+      "file": "motions/barghest/init.luau",
+      "sha256": "989922807ef0e41b14dce08b55058caea5bdf433fdcf0078c457c4e935da1d6e"
+    },
+    {
+      "file": "motions/boggart/init.luau",
+      "sha256": "6cde01a53e35db62fc726a8cf17cde9e1577535bf9a10823a3dd2b3019401cc9"
+    },
+    {
+      "file": "motions/boitata/init.luau",
+      "sha256": "ecb0c0509162ea2f5c698d8d1c59ae67fc0414401817976eb867dde8ae434034"
+    },
+    {
+      "file": "motions/brahmadaitya/init.luau",
+      "sha256": "0897fd957e6a3551d4d262ee53b68764ffe5d86ee3555062af0fb8e11df1f3e2"
+    },
+    {
+      "file": "motions/bulgasari/init.luau",
+      "sha256": "0b63d804b31c4d4196b198949bd6df6a77c0065715b9ec5961e843f842718c80"
+    },
+    {
+      "file": "motions/cadejo/init.luau",
+      "sha256": "a4ba1eeaa688ce57fc74c0df8e623a1999061b90f0a3c8e800d1d497c8f0f052"
+    },
+    {
+      "file": "motions/chochin/init.luau",
+      "sha256": "3f8fd0f388050dc730db62d6f9632d554a550e708d9987db1bd5e2b0bea5f13a"
+    },
+    {
+      "file": "motions/chupacabra/init.luau",
+      "sha256": "43381067f543f9aa6c870fdf46b4d86aed56659e75005cb8ce68379439ba0ea6"
+    },
+    {
+      "file": "motions/churel/init.luau",
+      "sha256": "1b0f95f48782dee9c0ad7e81b09085cc68f5eedb67d3a8b183d106cf20e4b6f9"
+    },
+    {
+      "file": "motions/curupira/init.luau",
+      "sha256": "e430dd3a444609f90b429dc0f04d8308d09cf7078fd6580478745aef471afe97"
+    },
+    {
+      "file": "motions/dodomeki/init.luau",
+      "sha256": "82a53edfa24baaa27cc901372d40d4ed610235d312ca7f8e2ae2b2e7f02434f9"
+    },
+    {
+      "file": "motions/dokkaebi/init.luau",
+      "sha256": "f69a4239719e55f0f23da5b2ccdec459532ac0ea978ef84ddedd75d475a9dcdc"
+    },
+    {
+      "file": "motions/draugr/init.luau",
+      "sha256": "56fa8c305c5df6e8b8076adf131e2eb776972ef2a04e074b21685571f6159b62"
+    },
+    {
+      "file": "motions/dueoksini/init.luau",
+      "sha256": "8b66ecdc0db13030ab17958f76313503521e9c0044019b25531db57f75bab41c"
+    },
+    {
+      "file": "motions/dullahan/init.luau",
+      "sha256": "f070ce2fcf28ea50443a4367f5da73557dc2939784a59ce5bbbb35ebf4c41b83"
+    },
+    {
+      "file": "motions/egg-face/init.luau",
+      "sha256": "f6f5aef4f7f49eee711de0739c75ef4b4e9776cef77994b428a1094f897ad106"
+    },
+    {
+      "file": "motions/el-silbon/init.luau",
+      "sha256": "49b144ec7cd1739d91f32307aead16d564d38fbb213aa77419761a8a2cd289f7"
+    },
+    {
+      "file": "motions/eoduksini/init.luau",
+      "sha256": "974749320692beb6ca81ecf201e7adc857331cc10e97bad071b1970ce8950978"
+    },
+    {
+      "file": "motions/futakuchi/init.luau",
+      "sha256": "c1fa38b187725560aa8f3b0e65cd8588ba9cefa6bc8b2680c52e3e81353c04ac"
+    },
+    {
+      "file": "motions/gangcheori/init.luau",
+      "sha256": "fe023c082601621be6292dbd9ab229111161cbb2000510b43f48977f7d7820fd"
+    },
+    {
+      "file": "motions/gashadokuro/init.luau",
+      "sha256": "72ed5b55f22cc2beed080659f6bbf0232d34828cbf68fb245e9cc4769a27d3d8"
+    },
+    {
+      "file": "motions/ghoul/init.luau",
+      "sha256": "4dfec431a5363cd366ce8f4b19a5062cc85cd2f01e64cc721758ebefc74ebfd0"
+    },
+    {
+      "file": "motions/gumiho/init.luau",
+      "sha256": "f70e1f789216843874d919abf07bb3fcdea3a9befcd7833dcc4b24460d7fc282"
+    },
+    {
+      "file": "motions/gwisin-bride/init.luau",
+      "sha256": "b325fa2bb7ced3503d528980c4d31d5170dd9de08b7a6fa99b73eb26e41f825e"
+    },
+    {
+      "file": "motions/headless-horseman/init.luau",
+      "sha256": "1549efef5188d3603115c35559b333e6062f4d21593158efad8f6c7513acbb48"
+    },
+    {
+      "file": "motions/hei-wuchang/init.luau",
+      "sha256": "e07fc607f82045ad91d80c997689b44d32b1c40298c158ef94f369c71e4f0cbe"
+    },
+    {
+      "file": "motions/huapi/init.luau",
+      "sha256": "ea6530bf68783b6e8b1bd4f96f6af852f5b6cb4689463774227975bdde0f56f0"
+    },
+    {
+      "file": "motions/huli-jing/init.luau",
+      "sha256": "9e0914da9b7d35b69b5470555b5801876856510fc552abab9dd19fd70e747527"
+    },
+    {
+      "file": "motions/ifrit/init.luau",
+      "sha256": "431d4425dad6e11f8da7cfb6f11b8515703abb5684d39e809f4ef135a08edd75"
+    },
+    {
+      "file": "motions/impundulu/init.luau",
+      "sha256": "469b2f4567f253e0dafe8b9c74774b44ad21857b898673f94ccd65b09e6a5123"
+    },
+    {
+      "file": "motions/ittan-momen/init.luau",
+      "sha256": "62aa9b48d2258275384cf53a2db873e1740201168c9d0677d8e6b82bbf2b955f"
+    },
+    {
+      "file": "motions/jangsanbeom/init.luau",
+      "sha256": "ce2ada4a7cae43f78ddceed69b78a1d9c2877d62b855d18d68ad38a10796af84"
+    },
+    {
+      "file": "motions/jeoseung/init.luau",
+      "sha256": "fe93bf52bf41bc4ab45b881c032242514909d36c8aa59db1871e954ead842ec5"
+    },
+    {
+      "file": "motions/jiangshi/init.luau",
+      "sha256": "8ef3942ef02607414fa37dd581482b2da9b4b871207204ba0251d4d96159b802"
+    },
+    {
+      "file": "motions/jinn/init.luau",
+      "sha256": "57f84911775e9d9f46d0a70647786aa4ce41e00e1433c2a6ac0ee3f2fd052779"
+    },
+    {
+      "file": "motions/jorogumo/init.luau",
+      "sha256": "bd5392ba005ad33aa3d51dccec8ea16000493f745c3236e45a7032ae1899b37c"
+    },
+    {
+      "file": "motions/kappa/init.luau",
+      "sha256": "5bd8e5170311e0755dae213c813f94b2e6a48709695bace81b27ec4d220468c6"
+    },
+    {
+      "file": "motions/kapre/init.luau",
+      "sha256": "d1fd797d19e36857308624987df3e4b1da657f30ebbad628d561516450372660"
+    },
+    {
+      "file": "motions/karakasa/init.luau",
+      "sha256": "7d7e9e00db828e701e115325c79e2aecbb9b8a7bf076a1bd3d1e01d70857d5dc"
+    },
+    {
+      "file": "motions/kelpie/init.luau",
+      "sha256": "876a7817c13b75f9e82cdf90d4b37e3c81c836498edc561c93a91d22d7a175b8"
+    },
+    {
+      "file": "motions/krahang/init.luau",
+      "sha256": "fc5c4063c0bdea711c6c6582a2a86d4690eef2fe52cbaa5dc7de9305a8c49219"
+    },
+    {
+      "file": "motions/krasue/init.luau",
+      "sha256": "098f0d739fae82ce9d0395c6f96fc0fd2c250b1bc98468c1d3f2484d9978c5d1"
+    },
+    {
+      "file": "motions/kuchisake/init.luau",
+      "sha256": "1c0b03b4404b9aeff6b4a16d00bfeab6b0bc302e00d00324259e9e2a0d2663bb"
+    },
+    {
+      "file": "motions/la-llorona/init.luau",
+      "sha256": "bb42f4d1db9ded8f31ebf2a55b1e141f79250a191dcb230f7d02ffd6fe371954"
+    },
+    {
+      "file": "motions/la-sayona/init.luau",
+      "sha256": "078df1657f7b0498b6a65c02f4775a45d833e84ab3ae4353eec2ed9e739ffec1"
+    },
+    {
+      "file": "motions/leshy/init.luau",
+      "sha256": "5d89c00fa83820241bb88632d3f3c8b54c74885b9e5f132f5f65d83a264a56b5"
+    },
+    {
+      "file": "motions/mae-nak/init.luau",
+      "sha256": "cc7b3d2029445670d1076869fc94e846372103906b8dfac0e3deb746565089db"
+    },
+    {
+      "file": "motions/manananggal/init.luau",
+      "sha256": "cfe9fc6791f72b12871df98e16502c59f33392bfcd73b6a09c1a07f1eaf31445"
+    },
+    {
+      "file": "motions/mapinguari/init.luau",
+      "sha256": "a9aed18be5d42af67c63cff10147f516337a6b37cec7645037fff50d8e7bdea5"
+    },
+    {
+      "file": "motions/mare/init.luau",
+      "sha256": "961de2ed12cb87d71d03370f012f0acd81dbc34e25138cceac966e2dda0851b5"
+    },
+    {
+      "file": "motions/mongdal/init.luau",
+      "sha256": "66ce6215a37a2afbce8fcede2f410bfda4ad610ce400d894664f467e697e037f"
+    },
+    {
+      "file": "motions/moroi/init.luau",
+      "sha256": "a0b9cb3489af798d676b5c95a464ecf74f25c90a7be04997dd8c48541f218bb2"
+    },
+    {
+      "file": "motions/nasnas/init.luau",
+      "sha256": "3c664e22d3fa7732d0d4b02e0d0f7666a4e168fc07295cc6afaf3880e1af2794"
+    },
+    {
+      "file": "motions/nekomata/init.luau",
+      "sha256": "a34667b1d475799ccd211004dd74411ede4f040837f9043c927c8309b8e0f801"
+    },
+    {
+      "file": "motions/nian/init.luau",
+      "sha256": "946f89fe2332998e2377ea1de03c45747a5ed89d790c301281bed594196b8f2f"
+    },
+    {
+      "file": "motions/nopperabo/init.luau",
+      "sha256": "2b8385b165c3fa2bb0cffe14c46393bebe6aab7b1571f234bfe6b67514556908"
+    },
+    {
+      "file": "motions/nuckelavee/init.luau",
+      "sha256": "f18be5006e971f963a67441d257c71e2308bc16e1c345466fbce43807a2fc3ec"
+    },
+    {
+      "file": "motions/nukekubi/init.luau",
+      "sha256": "9d7b0a3f9ad14229e5ba4edbadfd81416aa71160a1ba1a720b01b06f5e3d939d"
+    },
+    {
+      "file": "motions/nurikabe/init.luau",
+      "sha256": "f92e570f819e6b8159912d5a6ea87880220b8b24fbd30d46cc7e381ead8de60b"
+    },
+    {
+      "file": "motions/oni/init.luau",
+      "sha256": "8f2e7c17aea77214ff4bd674be3e37569da499a48d5699f76c983ce8452e0b2e"
+    },
+    {
+      "file": "motions/orang-minyak/init.luau",
+      "sha256": "07ef3002d9f14ae5abc663fd6ec1fcf74f5be60eac7c8a0dc8e5b387586df132"
+    },
+    {
+      "file": "motions/penanggalan/init.luau",
+      "sha256": "0454c9837d7371b0bb426a0f722eb35c3a4cba4dda0b42797f5d4f5e53715b67"
+    },
+    {
+      "file": "motions/phi-pop/init.luau",
+      "sha256": "43d7c19da2ffab6c30fadfc46f5e6eb913fe06c96ebd468fee81aaf6cf8938eb"
+    },
+    {
+      "file": "motions/phi-tai-hong/init.luau",
+      "sha256": "7463dbb5ad9b92ce85df62a2f9df9a6eb0fb84a569ea5816f28825648263c1fd"
+    },
+    {
+      "file": "motions/pisadeira/init.luau",
+      "sha256": "e81f3f514db296996322cc6c256454ef3f5fb6432013301cbeb674703758836d"
+    },
+    {
+      "file": "motions/pishacha/init.luau",
+      "sha256": "4089f2ca4857d03a2947b770d020ccf20de721e3c8df98c590450ee82299befc"
+    },
+    {
+      "file": "motions/pocong/init.luau",
+      "sha256": "64d309bcfe4871f8d9fb9898d8d5849d44259a3dcd322c3b8e4e90001fd21fee"
+    },
+    {
+      "file": "motions/poltergeist/init.luau",
+      "sha256": "8317119db3f19ec4e48c43713caba4b250cb39e6f3bbeb7744830e7085fa2ffe"
+    },
+    {
+      "file": "motions/pontianak/init.luau",
+      "sha256": "77437b661a66703a23e72a8f1af7a40df4b301bdb42b4f48dac7d9cad5228a69"
+    },
+    {
+      "file": "motions/popobawa/init.luau",
+      "sha256": "e1ee2c38767fcbf09e1ecbce33bb60f0cf4f71965da6a60242abe57ffc4d2c1f"
+    },
+    {
+      "file": "motions/preta/init.luau",
+      "sha256": "f9f81cf32f2b80061fa70646ce535bfe8a5051c73258b58504c512a392e4d504"
+    },
+    {
+      "file": "motions/rakshasa/init.luau",
+      "sha256": "e62b2289df3683dcbe5defc717c14490dcdc64658b46237f00ad6816d1fd0660"
+    },
+    {
+      "file": "motions/redcap/init.luau",
+      "sha256": "c07a08a4fd44047adf1ff35f547f70e5be967b8469f33a26f2cc78f49a772d28"
+    },
+    {
+      "file": "motions/rokurokubi/init.luau",
+      "sha256": "aebb945292e09caa3a0e8749f02e5e6271aabc0963947bb6646bf1e832ee44c6"
+    },
+    {
+      "file": "motions/rusalka/init.luau",
+      "sha256": "b52a62741a31375d3a86a32cbd7d8a05aff3fbd7409c546f37452080a00da091"
+    },
+    {
+      "file": "motions/sasabonsam/init.luau",
+      "sha256": "0d45233d3757232022645f07700404fb089a62f62ca7b4ed8f4c9085d21f28b6"
+    },
+    {
+      "file": "motions/shui-gui/init.luau",
+      "sha256": "14817bda34b5b36c8d2bd7a6da52502377093dc3ee16ef8e9b65ae879abb6a46"
+    },
+    {
+      "file": "motions/siguanaba/init.luau",
+      "sha256": "880ca4b533e0ad6e88c1706793265af19c9b624fa09b23e3308ec3477dc60e32"
+    },
+    {
+      "file": "motions/strigoi/init.luau",
+      "sha256": "09fd523aa8a70e20be7c7268b8b17cf10f8d656cfdb949581bf5ea020ef34050"
+    },
+    {
+      "file": "motions/tengu/init.luau",
+      "sha256": "d9ce05440c295b57cd550a0e5831e38bc397848e0f27a48add0fe08b205e10fa"
+    },
+    {
+      "file": "motions/tikbalang/init.luau",
+      "sha256": "3e87b3e932f881009d74b51737e5988016d1b9124099698d714e4facd7284610"
+    },
+    {
+      "file": "motions/tokoloshe/init.luau",
+      "sha256": "135f6f99eeb2998161c8b66cec055e201bd9e8a58d83044e42a45972a4fd958e"
+    },
+    {
+      "file": "motions/toyol/init.luau",
+      "sha256": "848fee56badcd4cb9c832603caaed2c43f4f63fc727c92753376be35da24cb5c"
+    },
+    {
+      "file": "motions/tsuchigumo/init.luau",
+      "sha256": "8cecfeca4913ec70ddfd3b39806bc341878e85f289ec5f77f333b5c1c787a54f"
+    },
+    {
+      "file": "motions/umibozu/init.luau",
+      "sha256": "5404da8567d2468c0e683e74492739f340b45709929216437f656527775c42ed"
+    },
+    {
+      "file": "motions/ushioni/init.luau",
+      "sha256": "a27ebfd064e669e2f3158e23446db65ed81f74a1b327d0f1d4e33ac55a1292dd"
+    },
+    {
+      "file": "motions/vetala/init.luau",
+      "sha256": "b40513bfda1bd923d0ceb1e6867ea69831385be412db842695b07950649c92ca"
+    },
+    {
+      "file": "motions/wanyudo/init.luau",
+      "sha256": "199d7a01eb822e19e67499acf65cb5440400b2b8821312c6d7a76d818aaac0e6"
+    },
+    {
+      "file": "motions/water-gwisin/init.luau",
+      "sha256": "7949938e1f47312adf2ff1b652261e8ffe9d8b08fb7af6dadf6896fbb2ff401f"
+    },
+    {
+      "file": "motions/yuki-onna/init.luau",
+      "sha256": "845b09c5dc148e7b12c2366d9674545e19157f4faca549a037e636f9a3ec3024"
+    },
+    {
+      "file": "motions/yurei/init.luau",
+      "sha256": "12601637b6e6b4fd10812e76238389a32a4e34429b40174fd5c7eb86c322d476"
     }
   ],
   "artifacts": [
     {
       "file": "world-ghosts-gallery.rbxlx",
-      "sha256": "6bba9b213e4bb97938ede36bbc1fadd67d97d93e90eb19422ba8d867bbd56dca",
-      "bytes": 68741
+      "sha256": "db94db2a8c04fa43014103dc0b10b6163afd8fbf71315383f0c89869001ec9a1",
+      "bytes": 335849
     },
     {
       "file": "world-ghost-skins.rbxmx",
-      "sha256": "666a6852791984bedc774e2b03a9ed9ce24a0d0c0ce0dea7722403876854ca67",
-      "bytes": 59635
+      "sha256": "c093016020d9a781e985f5fd829f353d9611ea4fa14d8bd978003a9a08cc197a",
+      "bytes": 325520
     }
   ],
   "skinCount": 100,
@@ -50,172 +450,5 @@
   "officialLuauCompiled": true,
   "nativeStudioVerified": false,
   "artVerified": false,
-  "gameplayVerified": false,
-  "sourceAudit": {
-    "type": "PACK_LEVEL_GHOST_LIBRARY_SOURCE_AUTHORING_AUDIT",
-    "version": 1,
-    "studioRequired": false,
-    "nativeRuntimeRequired": false,
-    "productionPromotionIndependent": true,
-    "maxScore": 1000,
-    "passScore": 880,
-    "targetGrade": "ELITE",
-    "targetScore": 950,
-    "continualImprovementTargets": [
-      920,
-      950,
-      980,
-      1000
-    ],
-    "axes": {
-      "IDENTITY_SILHOUETTE": 92,
-      "FORM_STRUCTURE": 86,
-      "MATERIAL_SURFACE": 80,
-      "COLOR_LIGHTING": 82,
-      "STYLE_COHERENCE": 89,
-      "DETAIL_FINISH": 78,
-      "READABILITY_SCALE": 88,
-      "MOTION_RIG": 72,
-      "FEEDBACK_STATES": 70,
-      "MODULAR_REUSE": 95,
-      "VARIATION_BREADTH": 99,
-      "PERFORMANCE_LOD": 84,
-      "PROVENANCE_MAINTAINABILITY": 96,
-      "INTEGRATION_READINESS": 88
-    },
-    "expectedScore": 859.1,
-    "expectedGrade": "HIGH_QUALITY",
-    "auditPass": false,
-    "hardGateFailures": [
-      "DETAIL_FINISH:78<82_CREATURE",
-      "MOTION_RIG:72<84_CREATURE"
-    ],
-    "evidenceBasis": {
-      "skinCount": 100,
-      "bodyFormCount": 27,
-      "motionStateCount": 6,
-      "officialLuauCompiled": true,
-      "catalogRows": 100,
-      "nativePackageArtifacts": [
-        "world-ghosts-gallery.rbxlx",
-        "world-ghost-skins.rbxmx"
-      ],
-      "authoredSkinnedMeshEvidence": [
-        "assets/roblox/world-ghosts/native/mesh/evidence.json"
-      ],
-      "provenanceResearch": "assets/roblox/world-ghosts/research.json",
-      "structuralAuditSource": "assets/roblox/world-ghosts/GhostSkinAudit.luau",
-      "sourceFiles": [
-        "Gallery.client.luau",
-        "GhostSkinAudit.luau",
-        "GhostSkinCatalog.luau",
-        "GhostSkinFactory.luau",
-        "GhostSkinMotion.luau",
-        "default.project.json",
-        "model.project.json"
-      ]
-    },
-    "limitations": [
-      "ALL_100_SKINS_NOT_PROVEN_AS_INDIVIDUAL_SKINNED_MESHES",
-      "STRUCTURAL_AUDIT_SOURCE_EXISTS_BUT_NATIVE_STUDIO_PASS_NOT_RECORDED",
-      "ART_REVIEW_NOT_VERIFIED",
-      "GAMEPLAY_RUNTIME_NOT_VERIFIED",
-      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
-    ],
-    "lowScoreDoesNotBlockInternalUse": true,
-    "newAuthoringMayFillVerifiedGaps": true,
-    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
-  },
-  "qualityImprovementPlan": {
-    "version": 1,
-    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
-    "currentScore": 859.1,
-    "currentGrade": "HIGH_QUALITY",
-    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
-    "stages": [
-      {
-        "id": "COMMERCIAL_READY_880",
-        "targetScore": 880,
-        "projectedSourceAuditScore": 896.5,
-        "requiredAxisFloor": {
-          "IDENTITY_SILHOUETTE": 92,
-          "FORM_STRUCTURE": 88,
-          "MATERIAL_SURFACE": 86,
-          "COLOR_LIGHTING": 86,
-          "STYLE_COHERENCE": 90,
-          "DETAIL_FINISH": 86,
-          "READABILITY_SCALE": 90,
-          "MOTION_RIG": 86,
-          "FEEDBACK_STATES": 82,
-          "MODULAR_REUSE": 95,
-          "VARIATION_BREADTH": 99,
-          "PERFORMANCE_LOD": 88,
-          "PROVENANCE_MAINTAINABILITY": 96,
-          "INTEGRATION_READINESS": 90
-        },
-        "requiredEvidence": [
-          "BODY_FORM_SPECIFIC_RIG_AND_MOTION_PROFILE",
-          "CONTACT_READABLE_LOCOMOTION_ATTACK_HIT_DEATH_STATES",
-          "MATERIAL_AND_SURFACE_DETAIL_ABOVE_CURRENT_BASELINE",
-          "INDIVIDUAL_SKIN_OR_BODY_FORM_RUNTIME_BINDING_EVIDENCE",
-          "MOBILE_GAME_CAMERA_READABILITY_AND_LOD_REVIEW"
-        ]
-      },
-      {
-        "id": "HERO_920",
-        "targetScore": 920,
-        "projectedSourceAuditScore": 932.8,
-        "requiredAxisFloor": {
-          "IDENTITY_SILHOUETTE": 94,
-          "FORM_STRUCTURE": 92,
-          "MATERIAL_SURFACE": 92,
-          "COLOR_LIGHTING": 90,
-          "STYLE_COHERENCE": 94,
-          "DETAIL_FINISH": 92,
-          "READABILITY_SCALE": 92,
-          "MOTION_RIG": 92,
-          "FEEDBACK_STATES": 88,
-          "MODULAR_REUSE": 96,
-          "VARIATION_BREADTH": 99,
-          "PERFORMANCE_LOD": 92,
-          "PROVENANCE_MAINTAINABILITY": 98,
-          "INTEGRATION_READINESS": 94
-        },
-        "requiredEvidence": [
-          "SIGNATURE_GHOST_MOTION_IDENTITY_BY_BODY_FORM",
-          "FACE_APPENDAGE_CLOTH_OR_EFFECT_SECONDARY_ACTING",
-          "CAUSE_BASED_DAMAGE_WEAR_AND_MATERIAL_RESPONSE",
-          "ELITE_BOSS_SIGNATURE_VARIANTS_WITHOUT_COLOR_ONLY_REUSE",
-          "MOBILE_CROWD_LOD_AND_CAMERA_DISTANCE_READABILITY"
-        ]
-      }
-    ],
-    "repairOrder": [
-      "MOTION_RIG",
-      "DETAIL_FINISH",
-      "FEEDBACK_STATES",
-      "MATERIAL_SURFACE",
-      "FORM_STRUCTURE",
-      "PERFORMANCE_LOD"
-    ],
-    "newVolumeAuthoring": {
-      "allowed": true,
-      "globallyBlocked": false,
-      "mayRunInParallelWithQualityRepair": true,
-      "allowWhen": [
-        "NEW_GHOST_BODY_FORM_OR_CULTURAL_ROLE_GAP_REMAINS",
-        "BOSS_ELITE_SIGNATURE_SILHOUETTE_GAP_REMAINS",
-        "EXISTING_SKIN_DERIVATION_WOULD_COLLAPSE_IDENTITY_OR_READABILITY",
-        "NEW_REUSABLE_RIG_OR_MOTION_BASE_IS_REQUIRED"
-      ],
-      "exactDuplicateSkinSpamForbidden": true,
-      "recolorOnlySkinVolumeDoesNotCount": true
-    },
-    "safeguards": {
-      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
-      "productionVerifiedMayNotBeInferredFromPlan": true,
-      "runtimeVerificationStillRequiredForProductionPromotion": true,
-      "gameplayAiDamageMovementHitboxQuestSaveNetworkAuthorityUnchanged": true
-    }
-  }
+  "gameplayVerified": false
 }
