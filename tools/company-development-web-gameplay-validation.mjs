@@ -68,7 +68,7 @@ function resolveVerifiedWebDesignBaseline(gameId){
     signatureSystems
   };
 }
-function designRuntimeContract(baseline){
+export function designRuntimeContract(baseline){
   const content=baseline?.content||{};
   return{
     required:true,
@@ -87,7 +87,7 @@ function designRuntimeContract(baseline){
     postResetFresh:baseline?.postResetFresh===true
   };
 }
-function evaluateDesignRuntimeAlignment({contract={},scopeCoverage={},initialPlayableCycle={},runtimeFeatureEvidence={},interactionCount=0,stateTransitionCount=0,terminalReached=false,retryObserved=false,footprint={}}={}){
+export function evaluateDesignRuntimeAlignment({contract={},scopeCoverage={},initialPlayableCycle={},runtimeFeatureEvidence={},interactionCount=0,stateTransitionCount=0,terminalReached=false,retryObserved=false,footprint={}}={}){
   const blockers=[];
   if(contract.required!==true)return{required:false,pass:true,blockers:[]};
   if(!contract.identity)blockers.push('DESIGN_IDENTITY_MISSING');
