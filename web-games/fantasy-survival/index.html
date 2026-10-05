@@ -2483,7 +2483,7 @@ function applyRemoteEnemyEffect(payload){
  else if(payload.kind==='mudslow'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);showNotice('진흙 둔화 · 3초')}
  else if(payload.kind==='sandslow'){p.sandSlowUntil=Math.max(p.sandSlowUntil||0,now+duration);showNotice('모래 뿌리기 · 이동속도 30% 감소 · 3초')}
  else if(payload.kind==='scorpionBurrowPoison'){p.scorpionBurrowPoisonUntil=Math.max(p.scorpionBurrowPoisonUntil||0,now+duration);p.scorpionBurrowPoisonNext=now+1000;showNotice('맹독 전갈 독 · '+Math.round(duration/1000)+'초')}
- else if(payload.kind==='scorpionStingPoison'){applyScorpionStingPoison(p,duration);showNotice('독침 독 · 최대 3중첩')}}
+ else if(payload.kind==='scorpionStingPoison'){applyScorpionStingPoison(p,duration);showNotice('독침 독 · 최대 3중첩')}
  else if(payload.kind==='coldburst'){p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);showNotice('추위 상승속도 3배 · 5초')}
  else if(payload.kind==='slow30'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+duration);showNotice('독화살 · 이동속도 30% 감소')}
  else if(payload.kind==='attackblock'){p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+duration);showNotice('공격 불가 · '+Math.max(1,Math.round(duration/1000))+'초')}
