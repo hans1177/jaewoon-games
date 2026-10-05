@@ -32,7 +32,7 @@ function allRows(){
   const atom=common.get(asset.id), key=atom?.atomId||asset.id;
   return {id:asset.id,title:atom?(motionLabels[key]||key):asset.title||asset.id,
    form:atom?.priority||'MOTION',role:atom?[[(atom.looped?'반복':'단발'),atom.duration+'초'],atom.motionRole].filter(Boolean).join(' · '):'공용 R15 모션팩',
-   atom,image:localImage(asset.previewPath)||localImage(asset.path),sharedImage:false};
+   atom,sharedImage:false};
  }).sort((a,b)=>Number(Boolean(b.atom))-Number(Boolean(a.atom))||a.title.localeCompare(b.title,'ko'));
  return publicAssets(registry.assets).filter(row=>row.category===(kind==='monster'?'CREATURE':'ENVIRONMENT')).map(asset=>{
   const sample=(kind==='monster'?monsters:environments).get(asset.id);
@@ -55,7 +55,7 @@ function showList(){
  for(const row of filtered){
   const button=document.createElement('button');button.type='button';button.dataset.id=row.id;button.setAttribute('aria-pressed',String(row.id===selectedId));
   const title=document.createElement('strong');title.textContent=row.title;
-  const detail=document.createElement('small');detail.textContent=kind==='monster'?(forms[row.form]||row.form)+(row.sample?' · 6가지 동작':row.image?' · 이미지':' · 준비 중'):kind==='common'?(row.role||'공용 R15 동작'):(row.sample?'3차원 배경':row.image?'등록 이미지':'미리보기 준비 중');
+  const detail=document.createElement('small');detail.textContent=kind==='monster'?(forms[row.form]||row.form)+(row.sample?' · 6가지 동작':row.image?' · 이미지':' · 준비 중'):kind==='common'?(row.atom?(row.role||'공용 R15 동작')+' · 3D 모션':'미리보기 준비 중'):(row.sample?'3차원 배경':row.image?'등록 이미지':'미리보기 준비 중');
   button.append(title,detail);button.addEventListener('click',()=>choose(row));list.append(button);
  }
  if(!filtered.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='찾는 자산이 없어. 이름이나 종류를 바꿔 봐.';list.append(empty);}
@@ -80,7 +80,7 @@ async function getViewer(){
  return viewerPromise;
 }
 async function choose(row,force=false){
- const key=kind+':'+row.id+':'+(row.sample?.sha256||row.image);
+ const key=kind+':'+row.id+':'+(row.sample?.sha256||row.atom?.atomId||row.image);
  if(!force&&key===currentKey)return;
  const token=++selectionToken;currentKey='';selectedId=row.id;currentRow=row;
  for(const button of $('assetList').querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.id===row.id));
@@ -89,7 +89,14 @@ async function choose(row,force=false){
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;
  $('previewStatus').textContent='미리보기를 불러오는 중…';$('previewBadge').textContent='불러오는 중';
  try{
-  if(row.sample){
+  if(kind==='common'&&row.atom){
+   const activeViewer=await getViewer();if(token!==selectionToken)return;
+   $('assetCanvas').hidden=false;activeViewer.setCommonMotion(row.atom);
+   $('playbackControls').hidden=false;$('motionControls').hidden=true;
+   $('pauseMotion').hidden=false;$('replayMotion').hidden=false;$('playbackSpeed').parentElement.hidden=false;
+   $('previewBadge').textContent='모션 재생';$('previewStatus').textContent='회사 공용 R15 '+row.title+' · '+(row.atom.duration||0)+'초 · '+(row.atom.looped?'반복':'단발');
+   $('verificationNote').textContent='웹 3D R15 동작 시각화 · Roblox Studio Animator 실제 재생 검수 전이야.';
+  }else if(row.sample){
    if(!validSamplePath(row.sample.path))throw Error('미리보기 경로를 확인하고 있어.');
    const fingerprint=manifest.sourceFingerprint;
    let data=cache.get(row.sample.sha256);
@@ -104,10 +111,10 @@ async function choose(row,force=false){
    const activeViewer=await getViewer();if(token!==selectionToken)return;
    $('assetCanvas').hidden=false;activeViewer.setModel(data,kind==='environment');
    $('playbackControls').hidden=false;
-   for(const id of ['pauseMotion','replayMotion'])$(id).hidden=kind!=='monster';
-   $('playbackSpeed').parentElement.hidden=kind!=='monster';
+   for(const id of ['pauseMotion','replayMotion'])$(id).hidden=kind==='environment';
+   $('playbackSpeed').parentElement.hidden=kind==='environment';
    $('motionControls').hidden=kind!=='monster';
-   if(kind==='monster')showClips(row.sample);else if(kind==='common'){$('previewStatus').textContent='회사 공용 R15 원본 동작 · '+(row.atom?.duration||0)+'초 · '+(row.atom?.looped?'반복':'단발')+' · Roblox Studio에서 실제 재생 검수 전이야.';}else $('previewStatus').textContent='실제 배경 소스로 만든 3차원 미리보기 · 각도를 바꿔서 살펴봐.';
+   if(kind==='monster')showClips(row.sample);else $('previewStatus').textContent='실제 배경 소스로 만든 3차원 미리보기 · 각도를 바꿔서 살펴봐.';
    $('previewBadge').textContent='3차원 미리보기';
    $('verificationNote').textContent='소스 동작 재생 · 로블록스 안에서의 품질 검수 전이야.';
   }else if(row.image){
@@ -148,8 +155,8 @@ function switchKind(next){
 $('monsterTab').addEventListener('click',()=>switchKind('monster'));$('commonTab').addEventListener('click',()=>switchKind('common'));$('environmentTab').addEventListener('click',()=>switchKind('environment'));
 $('assetSearch').addEventListener('input',showList);$('formFilter').addEventListener('change',showList);
 $('refreshAssets').addEventListener('click',()=>refresh(true));
-$('pauseMotion').addEventListener('click',()=>{paused=!paused;viewer?.setPaused(paused);pauseLabel();$('previewStatus').textContent=(clipNames[selectedClip]||selectedClip)+(paused?' · 멈춤':' · 재생');});
-$('replayMotion').addEventListener('click',()=>{paused=false;viewer?.setPaused(false);viewer?.replay();pauseLabel();$('previewStatus').textContent=(clipNames[selectedClip]||selectedClip)+' · 재생';});
+$('pauseMotion').addEventListener('click',()=>{paused=!paused;viewer?.setPaused(paused);pauseLabel();$('previewStatus').textContent=(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+(paused?' · 멈춤':' · 재생');});
+$('replayMotion').addEventListener('click',()=>{paused=false;viewer?.setPaused(false);viewer?.replay();pauseLabel();$('previewStatus').textContent=(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+' · 재생';});
 $('playbackSpeed').addEventListener('change',()=>viewer?.setSpeed(Number($('playbackSpeed').value)));
 $('viewAngle').addEventListener('input',()=>viewer?.setAngle(Number($('viewAngle').value)));
 $('assetCanvas').addEventListener('previewlost',()=>{$('previewStatus').textContent='화면 연결이 끊겼어. 페이지를 새로 열어 줘.';});
