@@ -4,12 +4,20 @@ on:
     branches: [main]
     paths:
       - 'assets/roblox/world-ghosts/**'
+      - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/asset-library-sync.test.mjs'
+      - 'assets/asset-library*.js'
+      - 'asset-library.html'
       - '.github/workflows/roblox-world-ghost-assets.yml'
   pull_request:
     paths:
       - 'assets/roblox/world-ghosts/**'
+      - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/asset-library-sync.test.mjs'
+      - 'assets/asset-library*.js'
+      - 'asset-library.html'
       - '.github/workflows/roblox-world-ghost-assets.yml'
   workflow_dispatch:
 permissions:
@@ -100,7 +108,7 @@ jobs:
       - name: Verify regenerated packages
         env:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
-        run: node --test qa/roblox-world-ghost-skins.test.mjs
+        run: node --test qa/roblox-world-ghost-skins.test.mjs qa/asset-library-sync.test.mjs
       - name: Install Blender for authored assets
         if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
         run: |
@@ -288,7 +296,9 @@ jobs:
             assets/roblox/world-ghosts/native/world-ghosts-gallery.rbxlx \
             assets/roblox/world-ghosts/native/world-ghost-skins.rbxmx \
             assets/roblox/world-ghosts/native/build-evidence.json \
-            assets/roblox/world-ghosts/native/motion-experiments.json
+            assets/roblox/world-ghosts/native/motion-experiments.json \
+            assets/roblox/world-ghosts/native/asset-gallery.json \
+            assets/roblox/world-ghosts/native/gallery/
           if [[ "$SPIDER_BUILT" == 'true' ]]; then
             git add \
               assets/roblox/world-ghosts/native/spider/spider.glb \
@@ -308,6 +318,8 @@ jobs:
           git commit -m "assets: synchronize verified native packages and authored derivatives"
           git fetch --no-tags origin "$HEAD_BRANCH"
           git rebase "origin/$HEAD_BRANCH"
+          # A concurrent source edit must not publish stale derived previews.
+          node --test --test-name-pattern='native place and model|published comparison frames|automatic asset gallery' qa/roblox-world-ghost-skins.test.mjs
           git push origin "HEAD:$HEAD_BRANCH"
       - uses: actions/upload-artifact@v4
         if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'

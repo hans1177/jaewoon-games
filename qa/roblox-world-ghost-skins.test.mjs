@@ -377,3 +377,31 @@ test('published comparison frames are bound to the native build and actual inter
   }
  }
 });
+
+test('automatic asset gallery binds every monster and environment to exact source and finite poses',()=>{
+ const gallery=JSON.parse(fs.readFileSync(root+'native/asset-gallery.json','utf8'));
+ const hash=data=>crypto.createHash('sha256').update(data).digest('hex');
+ assert.equal(gallery.sampledBy,'OFFICIAL_LUAU');assert.equal(gallery.nativeStudioVerified,false);assert.equal(gallery.productionVerified,false);
+ for(const row of gallery.sources)assert.equal(hash(fs.readFileSync(row.file)),row.sha256,row.file);
+ assert.equal(hash(JSON.stringify(gallery.sources)),gallery.sourceFingerprint);
+ const catalogIds=[...catalog.matchAll(/\{id="([^"]+)"/g)].map(row=>row[1]).sort();
+ assert.deepEqual(gallery.monsters.map(row=>row.id).sort(),catalogIds);
+ const environment=JSON.parse(fs.readFileSync('assets/roblox/common-environment-v1/catalog.json','utf8'));
+ assert.deepEqual(gallery.environments.map(row=>row.id).sort(),environment.biomes.map(id=>id.toLowerCase()).sort());
+ for(const row of [...gallery.monsters,...gallery.environments]){
+  const bytes=fs.readFileSync(row.path.slice(1));assert.equal(bytes.length,row.bytes);assert.equal(hash(bytes),row.sha256,row.id);
+  const sample=JSON.parse(bytes);assert.equal(sample.id,row.id);assert.equal(sample.sourceFingerprint,gallery.sourceFingerprint);
+  assert.equal(sample.nativeStudioVerified,false);assert.equal(sample.productionVerified,false);assert.ok(sample.model.parts.length>0);
+  for(const part of sample.model.parts)for(const key of ['position','size','rotation'])assert.ok(part[key].length===3&&part[key].every(Number.isFinite));
+  if(!sample.clips)continue;
+  assert.deepEqual(sample.clips.map(clip=>clip.id),['idle','walk','chase','attack','hit','death']);
+  for(const clip of sample.clips){
+   assert.ok(clip.duration>0&&Number.isFinite(clip.duration));assert.equal(clip.frames.length,121);
+   for(const frame of clip.frames){
+    assert.equal(frame.length,sample.boneNames.length);
+    for(const pose of frame)assert.ok(pose.length===6&&pose.every(Number.isFinite));
+    assert.deepEqual(frame[sample.boneNames.indexOf('Root')],[0,0,0,0,0,0]);
+   }
+  }
+ }
+});
