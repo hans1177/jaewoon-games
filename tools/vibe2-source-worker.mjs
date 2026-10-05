@@ -1250,7 +1250,7 @@ export function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FU
     line('Goal:'),
     verifiedExternalLearningBlockFromPrompt(promptText),
     buildUpDirectiveBlockFromPrompt(promptText),
-    internalAssetSourceUsageBlockFromPrompt(promptText),
+    compactInternalAssetSourceUsageBlockFromPrompt(promptText),
     line('Allowed edit paths:'),
     line('Full Web generation target after automatic expansion:')||line('Full Web generation target:'),
     'Preserve the exact responsible path and existing playable systems. Do not widen scope.'
@@ -2145,11 +2145,15 @@ function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd(),contra
     for(const family of selectedFamilies)selectedCommonSourcePaths.push(...(commonSourceByFamily[family]||[]));
   }
   const contextTarget=clean(contract.target).toLowerCase();
+  const selectedFlowAssetIds=new Set((contract.flowSelections||[]).map(row=>clean(row?.assetId)).filter(Boolean));
+  const selectedSourceCandidates=(contract.sourceCandidates||[]).filter(row=>
+    contextTarget!=='web'||!selectedFlowAssetIds.size||selectedFlowAssetIds.has(clean(row?.assetId))
+  );
   const allSelectedPaths=unique([
     ...selectedCommonSourcePaths,
     ...(contract.flowSelections||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(contract.sourceCandidates||[]).flatMap(row=>row?.sourceFiles||[]),
-    ...(contract.sourceCandidates||[]).map(row=>row?.path)
+    ...selectedSourceCandidates.flatMap(row=>row?.sourceFiles||[]),
+    ...selectedSourceCandidates.map(row=>row?.path)
   ].map(value=>posix(value).replace(/^\/+/, '')).filter(file=>{
     if(!file||file.split('/').includes('..'))return false;
     if(contextTarget==='web'){
@@ -2241,6 +2245,28 @@ function internalAssetSourceUsageBlockFromPrompt(prompt=''){
   const finish=raw.indexOf(end,start+begin.length);
   if(finish<0)return'';
   return raw.slice(start,finish+end.length);
+}
+
+function compactInternalAssetSourceUsageBlockFromPrompt(prompt=''){
+  const block=internalAssetSourceUsageBlockFromPrompt(prompt);
+  if(!block)return'';
+  if(Buffer.byteLength(block,'utf8')<=6000)return block;
+  const keepPrefixes=[
+    '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'syncFingerprint=',
+    'Exact selected family IDs only:',
+    'Exact flow selections:',
+    'Selected source/API references:',
+    'Source consumption sequence:',
+    '[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]'
+  ];
+  const rows=block.split('\n').filter(line=>keepPrefixes.some(prefix=>line.startsWith(prefix)));
+  const end='[END INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]';
+  const endIndex=rows.indexOf(end);
+  const rule='Compact continuation rule: use only the exact selected asset IDs/source paths above, bind them in executable existing game source, and do not treat comments/metadata as application.';
+  if(endIndex>=0)rows.splice(endIndex,0,rule);
+  else rows.push(rule,end);
+  return rows.join('\n');
 }
 
 function webInternalAssetReference(value=''){
@@ -3349,7 +3375,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
-      internalAssetSourceUsageBlockFromPrompt(raw),
+      compactInternalAssetSourceUsageBlockFromPrompt(raw),
       gameContextCapsuleBlockFromPrompt(raw),
       preSubmitSelfReviewBlockFromPrompt(raw),
       studioAssetQualityCoreBlockFromPrompt(raw),
@@ -3566,7 +3592,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       compactGoalLine,
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
-      internalAssetSourceUsageBlockFromPrompt(rawPrompt),
+      compactInternalAssetSourceUsageBlockFromPrompt(rawPrompt),
       gameContextCapsuleBlockFromPrompt(rawPrompt),
       preSubmitSelfReviewBlockFromPrompt(rawPrompt),
       studioAssetQualityCoreBlockFromPrompt(rawPrompt),
@@ -3641,7 +3667,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           compactGoalLine,
           compactVerifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
-          internalAssetSourceUsageBlockFromPrompt(rawPrompt),
+          compactInternalAssetSourceUsageBlockFromPrompt(rawPrompt),
           gameContextCapsuleBlockFromPrompt(rawPrompt),
           preSubmitSelfReviewBlockFromPrompt(rawPrompt),
           studioAssetQualityCoreBlockFromPrompt(rawPrompt),
