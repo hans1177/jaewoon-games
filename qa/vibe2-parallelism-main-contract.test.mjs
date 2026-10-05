@@ -37,10 +37,11 @@ test('repeat development is fixed at 64 while physical provider capacity and con
   assert.equal(wave.responsibleFileConflictProtectionStillRequired,true);
   assert.equal(wave.globalActiveWorkerBarrier,false);
 
-  assert.equal(runtime.continuous.maxConcurrentGameTasks,64);
+  assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,64);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,64);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,64);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,64);
   const prePlan=runtime.continuous.prePlanGamePrimaryRefill||{};
   assert.equal(prePlan.enabled,true);
   assert.equal(prePlan.workerWorkflow,'.github/workflows/vibe2-continuous-core.yml');
@@ -91,7 +92,7 @@ test('repeat development is fixed at 64 while physical provider capacity and con
   assert.equal(queue.scheduling.responsibleFileExclusive,true);
   assert.equal(control.currentMax,256);
 
-  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '64'"));
+  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'"));
   assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'"));
   assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'"));
   assert.ok(runner.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
