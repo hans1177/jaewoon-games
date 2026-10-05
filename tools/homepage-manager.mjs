@@ -206,6 +206,8 @@ async function captureReleaseMedia(planOnly=false){
       if(!file.startsWith(root+sep)||!fs.existsSync(file)){response.writeHead(404).end();return;}
       if(fs.statSync(file).isDirectory())file+='/index.html';
       if(!fs.existsSync(file)||!fs.statSync(file).isFile()){response.writeHead(404).end();return;}
+      file=fs.realpathSync(file);
+      if(!['web-games','assets'].some(dir=>file.startsWith(resolve(root,dir)+sep))){response.writeHead(404).end();return;}
       const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.wasm':'application/wasm','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'}[extname(file)]||'application/octet-stream';
       response.setHeader('Content-Type',mime);
       fs.createReadStream(file).pipe(response);
