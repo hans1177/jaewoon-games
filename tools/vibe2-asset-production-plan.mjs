@@ -2417,11 +2417,31 @@ export function buildVibeAssetProductionPlan({
       };
     }
   }
+  // 동적 연결: 같은 파일은 한 번만 읽고 현재 바이트 지문을 선택 스냅샷에 함께 묶는다.
+  const sourceHashes=new Map();
+  const sourceBoundAssets=(companyRegistry?.assets||[]).map(asset=>{
+    const files=unique(asset.sourceFiles?.length?asset.sourceFiles:[asset.path])
+      .map(file=>file.replace(/^\//,''))
+      .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..')).sort();
+    for(const file of files){
+      if(sourceHashes.has(file))continue;
+      let hash=null;
+      try{
+        const real=fs.realpathSync(path.resolve(repoRoot,file));
+        if(real.startsWith(fs.realpathSync(repoRoot)+path.sep))hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+      }catch{}
+      sourceHashes.set(file,hash);
+    }
+    return {...asset,
+      sourceContentFingerprint:files.length?crypto.createHash('sha256').update(JSON.stringify(files.map(file=>[file,sourceHashes.get(file)]))).digest('hex'):null,
+      sourceFilesPresent:files.length?files.every(file=>sourceHashes.get(file)!==null):null
+    };
+  });
   const studioUniversePlan=universeActive?createStudioAssetUniversePlan({
     libraryVersion:Number(companyRegistry?.version)||0,
-    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:companyRegistry,repositoryAssets:universeRepositoryAssets})).digest('hex'),
+    librarySnapshotId:'sha256:'+crypto.createHash('sha256').update(JSON.stringify({registry:companyRegistry,sourceBoundAssets,repositoryAssets:universeRepositoryAssets})).digest('hex'),
     expectedSnapshotId:clean(task.expectedAssetLibrarySnapshotId),
-    assets:companyRegistry?.assets||[],
+    assets:sourceBoundAssets,
     repositoryAssets:universeRepositoryAssets,
     externalSources:companyRegistry?.externalSources||[],
     activeDemand,

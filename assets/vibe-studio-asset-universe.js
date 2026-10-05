@@ -4211,6 +4211,8 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       libraryVersion:Number(libraryVersion)||0,
       librarySnapshotId:snapshotId,
       sourceHash:text(picked?.asset.sourceHash||picked?.asset.sourceSha256||picked?.asset.contentHash)||null,
+      sourceContentFingerprint:text(picked?.asset.sourceContentFingerprint)||null,
+      sourceFilesPresent:picked?.asset.sourceFilesPresent??null,
       score:scored?.score??null,
       sourceTier:scored?.sourceTier??0,
       verified:picked?.row.verified===true,
@@ -4251,7 +4253,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     }));
   }
   const complete=snapshotMatches&&selections.every(row=>!row.required||!row.unresolved);
-  const bindingReady=complete&&selections.every(row=>!row.required||row.sourceFiles.length>0);
+  const bindingReady=complete&&selections.every(row=>!row.required||(row.sourceFiles.length>0&&row.sourceFilesPresent!==false));
   return Object.freeze({
     selections:Object.freeze(selections),
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
@@ -4262,6 +4264,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     atomicBindingReady:bindingReady,
     bindingBatch:freezeList(bindingReady?selections.filter(row=>!row.unresolved).map(row=>Object.freeze({
       assetId:row.assetId,atomId:row.atomId,packId:row.packId,sourceFiles:row.sourceFiles,sourceHash:row.sourceHash,
+      sourceContentFingerprint:row.sourceContentFingerprint,
       libraryVersion:row.libraryVersion,librarySnapshotId:row.librarySnapshotId,applicationMode:row.applicationMode,
       usageContract:row.usageContract
     })):[]),

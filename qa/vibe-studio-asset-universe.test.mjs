@@ -103,7 +103,7 @@ import {
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
-import {synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {synchronizeCompanyCommonAssetRegistry,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
@@ -3970,6 +3970,32 @@ test('asset gallery searches atoms and platforms without hiding zero quality and
   element('assetPlatform').value='UNITY';element('assetPlatform').listeners.change();
   assert.match(element('assetGrid').innerHTML,/조건에 맞는 자산이 없어/);
   assert.equal(element('moreAssets').hidden,true);
+});
+
+test('dynamic asset binding refreshes when source bytes change without a catalog version bump',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-dynamic-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({assetProductionParallelContract:{companyGraphicsLibrary24h:{status:'ACTIVE_EXECUTABLE_CONTRACT',studioAssetUniverse:{status:'ACTIVE_EXECUTABLE_CONTRACT'}}}}));
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[{id:'box',atomId:'BOX',family:'PROP',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',path:'assets/box.luau',internalAuditScore:0}]}));
+    const file=path.join(root,'assets/box.luau');fs.writeFileSync(file,'return {detail=1}');
+    const task={gameId:'test',assetRequirements:[{family:'PROP',atomId:'BOX'}]};
+    const first=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task}).flowAssetLoadout;
+    assert.equal(first.atomicBindingReady,true);
+    fs.writeFileSync(file,'return {detail=2}');
+    const second=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task}).flowAssetLoadout;
+    assert.equal(second.libraryVersion,first.libraryVersion);
+    assert.notEqual(second.librarySnapshotId,first.librarySnapshotId);
+    assert.notEqual(second.bindingBatch[0].sourceContentFingerprint,first.bindingBatch[0].sourceContentFingerprint);
+    const stale=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{...task,expectedAssetLibrarySnapshotId:first.librarySnapshotId}}).flowAssetLoadout;
+    assert.equal(stale.snapshotMatches,false);
+    assert.deepEqual(stale.bindingBatch,[]);
+    fs.unlinkSync(file);
+    const missing=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task}).flowAssetLoadout;
+    assert.equal(missing.atomicBindingReady,false);
+    assert.deepEqual(missing.bindingBatch,[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('studio audio breadth covers music ambience creature howls spatial layers and continuous quality',()=>{
