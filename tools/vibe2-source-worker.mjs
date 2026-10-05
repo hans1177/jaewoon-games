@@ -760,7 +760,7 @@ function robloxInternalAssetApplyCandidateDocuments(documents,candidate={}){
   for(const file of candidate?.replaceFiles||[])out.set(posix(file.path),String(file.content||''));
   return out;
 }
-export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={}}={}){
+export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={},expectedSelectionFingerprint='',expectedLibraryVersion=0}={}){
   const base=robloxInternalAssetSourceDocuments(sourceRoot);
   const result=robloxInternalAssetApplyCandidateDocuments(base,candidate);
   const touched=new Set([
@@ -770,16 +770,33 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
   ]);
   const statusSource=[...result.values()].join('\n');
   const statusBlock=statusSource.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const configEntry=[...result.entries()].find(([relative])=>/(?:^|\/)GameConfig\.luau$/i.test(relative))||null;
+  const configText=String(configEntry?.[1]||'');
+  const expectedFingerprint=clean(expectedSelectionFingerprint);
+  const requiredLibraryVersion=Math.max(0,Math.floor(Number(expectedLibraryVersion)||0));
+  const observedSelectionFingerprint=clean(configText.match(/\bSelectionFingerprint\s*=\s*["']([0-9a-f]{64})["']/i)?.[1]);
+  const observedLibraryVersion=Math.max(0,Math.floor(Number(configText.match(/\bLibraryVersion\s*=\s*(\d+)/i)?.[1])||0));
   const semanticSource=[...result.entries()]
     .filter(([relative])=>!/(?:^|\/)GameConfig\.luau$/i.test(relative))
     .map(([,text])=>robloxInternalAssetTraceStripped(text))
     .join('\n');
   const rows=[],blockers=[];
-  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0;
+  if(expectedFingerprint&&observedSelectionFingerprint!==expectedFingerprint){
+    blockers.push('ROBLOX_INTERNAL_ASSET_SELECTION_FINGERPRINT_MISMATCH');
+  }
+  if(requiredLibraryVersion>0&&observedLibraryVersion!==requiredLibraryVersion){
+    blockers.push('ROBLOX_INTERNAL_ASSET_LIBRARY_VERSION_MISMATCH');
+  }
+  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
     const systemPresent=ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true;
-    const selectedAtoms=Array.isArray(expectedFamilies?.[family])?expectedFamilies[family].map(clean).filter(Boolean):[];
+    const selectedAtoms=Array.isArray(expectedFamilies?.[family])?[...new Set(expectedFamilies[family].map(clean).filter(Boolean))].sort():[];
+    const configFamilyBody=configText.match(new RegExp('\\b'+family+'\\s*=\\s*\\{([^}]*)\\}','m'))?.[1]||'';
+    const configuredAtoms=[...new Set([...configFamilyBody.matchAll(/["']([^"']+)["']/g)].map(match=>clean(match[1])).filter(Boolean))].sort();
+    const configFamilyMatch=selectedAtoms.length===configuredAtoms.length&&selectedAtoms.every((atom,index)=>atom===configuredAtoms[index]);
+    if(configFamilyMatch)configFamilyMatchCount+=1;
+    else blockers.push('ROBLOX_INTERNAL_ASSET_CONFIG_FAMILY_SELECTION_MISMATCH:'+family);
     const boundFiles=[...result.entries()].filter(([,text])=>robloxInternalAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
     const actualBinding=boundFiles.length>0;
     const changedBinding=boundFiles.some(relative=>touched.has(relative));
@@ -795,6 +812,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     }
     rows.push(Object.freeze({
       family,status:status||null,systemPresent,selectedAtomCount:selectedAtoms.length,
+      configuredAtoms:Object.freeze(configuredAtoms),configFamilyMatch,
       actualBinding,changedBinding,boundFiles:Object.freeze(boundFiles)
     }));
   }
@@ -802,7 +820,14 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
   return Object.freeze({
     pass:blockers.length===0,
     requiredFamilies:ROBLOX_INTERNAL_ASSET_FAMILIES,
-    appliedCount,notApplicableCount,changedAppliedFamilyCount,
+    appliedCount,notApplicableCount,changedAppliedFamilyCount,configFamilyMatchCount,
+    configSelectionFingerprint:observedSelectionFingerprint||null,
+    expectedSelectionFingerprint:expectedFingerprint||null,
+    configLibraryVersion:observedLibraryVersion||null,
+    expectedLibraryVersion:requiredLibraryVersion||null,
+    configSelectionMatched:(!expectedFingerprint||observedSelectionFingerprint===expectedFingerprint)
+      &&(requiredLibraryVersion<=0||observedLibraryVersion===requiredLibraryVersion)
+      &&configFamilyMatchCount===ROBLOX_INTERNAL_ASSET_FAMILIES.length,
     familyResults:Object.freeze(rows),
     blockers:Object.freeze([...new Set(blockers)]),
     markerOnlyApplicationForbidden:true,
@@ -2039,9 +2064,10 @@ export function buildInternalAssetSourceUsageContract(order={}){
   }
   const dedupedSources=[...new Map(sourceCandidates.map(row=>[row.assetId,row])).values()]
     .sort((a,b)=>a.assetId.localeCompare(b.assetId));
-  const libraryVersion=Number(loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const libraryVersion=Number(loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const selectionFingerprint=clean(loadout?.robloxSelectionFingerprint);
   const payload={
-    version:3,target,gameId,libraryVersion,
+    version:4,target,gameId,libraryVersion,selectionFingerprint,
     exactFamilies,
     flowSelections:flowSelections.map(row=>({requirementId:row.requirementId,assetId:row.assetId,family:row.family,role:row.role,applicationMode:row.applicationMode,sourceFiles:[...row.sourceFiles]})),
     sourceCandidates:dedupedSources.map(row=>({assetId:row.assetId,type:row.type,family:row.family,role:row.role,sourceFiles:[...row.sourceFiles],path:row.path,sourceTier:row.sourceTier}))
@@ -2160,10 +2186,11 @@ export function buildInternalAssetSourceUsageContract(order={}){
     })
   });
   return Object.freeze({
-    version:3,
+    version:4,
     target:target||null,
     gameId:gameId||null,
     libraryVersion,
+    selectionFingerprint:selectionFingerprint||null,
     fingerprint,
     exactFamilies,
     flowSelections:Object.freeze(flowSelections),
@@ -2409,7 +2436,7 @@ function internalAssetSourceUsageGuidance(order={}){
     .join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
-    'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; syncMode='+contract.synchronization.mode,
+    'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
     'Selected source/API references: '+(sourceRows||'NONE'),
@@ -4917,7 +4944,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       }
       const familyBinding=evaluateRobloxInternalAssetFamilyBindingCandidate({
         candidate,sourceRoot,
-        expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{}
+        expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
+        expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
       });
       if(!familyBinding.pass){
         throw new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+familyBinding.blockers.join(','));
@@ -4993,7 +5022,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
     const robloxInternalAssetFamilyBinding=robloxInternalAssetApplicationRequired
-      ?evaluateRobloxInternalAssetFamilyBindingCandidate({candidate,sourceRoot,expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{}})
+      ?evaluateRobloxInternalAssetFamilyBindingCandidate({
+        candidate,sourceRoot,
+        expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
+        expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
+      })
       :null;
     return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,studioAssetQualityAxes,robloxInternalAssetFamilyBinding};
   };
