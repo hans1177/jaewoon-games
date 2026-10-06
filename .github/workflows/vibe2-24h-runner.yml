@@ -181,14 +181,17 @@ jobs:
           NODE
             )"
           fi
+          preplan_pressure_blocks_game='NO'
           if [[ "$preplan_pressure" =~ ^[0-9]+$ ]] && [ "$preplan_pressure" -ge "$pressure_threshold" ]; then
             echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:$preplan_pressure:$pressure_threshold"
-            exit 0
-          fi
-          if [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
+            echo 'VIBE2_PREPLAN_ASSET_PRESSURE_GATE=BYPASS_ASSET_RUNNER_CAPACITY_INDEPENDENT'
+            preplan_pressure_blocks_game='YES'
+          elif [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
             echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS:$preplan_pressure:$pressure_threshold"
+            echo 'VIBE2_PREPLAN_ASSET_PRESSURE_GATE=PASS'
           else
             echo 'VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'
+            echo 'VIBE2_PREPLAN_ASSET_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'
           fi
 
           state="$(node <<'NODE'
@@ -228,6 +231,39 @@ jobs:
           echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_ACTIVE=$asset_active"
           echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_FREE_SLOTS=$asset_free"
 
+          # 논리 active가 가득 찼더라도 해당 reservation workflow가 이미 종료됐다면
+          # 새 worker를 바로 만들지 않고 기존 asset core를 한 번 깨워 canonical recovery가 먼저 회수하게 한다.
+          asset_recovery_wake='NONE'
+          if [ "$asset_queued" -gt 0 ] && [ "$asset_free" -eq 0 ]; then
+            mapfile -t asset_recovery_run_ids < <(node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const ids=[...new Set((q.tasks||[])
+            .filter(t=>
+              String(t.status||'').toLowerCase()==='running'
+              &&String(t.reservationRunId||'').trim()
+              &&!String(t.blocker||'').trim()
+              &&(t.assetProductionLane===true||(t.evidence||[]).map(String).includes('asset-production-parallel:v1'))
+            )
+            .map(t=>String(t.reservationRunId||'').trim())
+            .filter(id=>/^\d+$/.test(id))
+          )];
+          process.stdout.write(ids.join('\n'));
+          NODE
+            )
+            for reservation_run_id in "${asset_recovery_run_ids[@]}"; do
+              [ -n "$reservation_run_id" ] || continue
+              reservation_run_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status // ""' 2>/dev/null || true)"
+              if [ "$reservation_run_status" = 'completed' ]; then
+                asset_free=1
+                asset_recovery_wake="COMPLETED_RUN:${reservation_run_id}"
+                break
+              fi
+            done
+          fi
+          echo "VIBE2_PREPLAN_ASSET_STALE_RESERVATION_RECOVERY_WAKE=$asset_recovery_wake"
+          echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_EFFECTIVE_FREE_SLOTS=$asset_free"
+
           if [ "$asset_queued" -gt 0 ] && [ "$asset_free" -gt 0 ]; then
             burst_max="${VIBE2_ASSET_PRIORITY_BURST_MAX:-8}"
             asset_burst="$asset_free"
@@ -246,6 +282,11 @@ jobs:
             else
               echo 'VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
             fi
+            exit 0
+          fi
+
+          if [ "$preplan_pressure_blocks_game" = 'YES' ]; then
+            echo "VIBE2_PREPLAN_GAME_PRIMARY_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:$preplan_pressure:$pressure_threshold"
             exit 0
           fi
 
