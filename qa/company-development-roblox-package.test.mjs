@@ -291,6 +291,12 @@ test('Roblox dynamic asset family detection follows actual native systems instea
   const status=robloxStudioAssetFamilyStatusFromSource({sourceText:'local enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'});
   assert.equal(status.CREATURE,'APPLIED');
   assert.equal(status.AUDIO,'NOT_APPLICABLE');
+
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/instance:IsA\("BasePart"\).*bindStudioAssetSemanticFamily\(instance, "MATERIAL"\)/s);
+  assert.match(bootstrap,/instance:IsA\("Lighting"\).*instance:IsA\("Terrain"\).*bindStudioAssetSemanticFamily\(instance, "ENVIRONMENT"\)/s);
+  assert.match(bootstrap,/game:GetDescendants\(\).*syncStudioAssetSemanticInstance/s);
+  assert.match(bootstrap,/game\.DescendantAdded:Connect\(syncStudioAssetSemanticInstance\)/);
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
