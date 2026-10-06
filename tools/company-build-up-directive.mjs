@@ -15,7 +15,7 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 
 export const BUILD_UP_DOMAINS=Object.freeze([
   'CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS',
-  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH',
+  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','INTERACTION_DISCOVERABILITY',
   'ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION',
   'SESSION_FLOW','FIRST_10_MINUTES','FAILURE_RESPAWN_CHECKPOINTS','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC',
@@ -31,7 +31,7 @@ export const HOLISTIC_CORE_DOMAINS=Object.freeze([
   'CORE_FUN','PLAYER_ACTIONS','PLAYER_AGENCY','PROGRESSION','CONTENT_VARIETY','CONTENT_DENSITY',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','INTERACTION_DISCOVERABILITY',
   'INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','SYSTEM_CONNECTION',
-  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SAVE_COMPLETENESS',
+  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','SAVE_COMPLETENESS',
   'INPUT','MOBILE_UX','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
   'ANTI_GRIND','CONTENT_DISCOVERY','PERFORMANCE_BUDGET','RUNTIME_STABILITY'
 ]);
@@ -79,7 +79,7 @@ const IMPACT_DOMAINS=Object.freeze({
   GRAPHICS:Object.freeze(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION']),
   MAP:Object.freeze(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','SPAWN_ENCOUNTER_DIRECTOR','ENVIRONMENT','TERRAIN']),
   UI:Object.freeze(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','UI_HUD']),
-  GAMEPLAY:Object.freeze(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','EQUIPMENT_LOADOUT','CRAFTING','DIFFICULTY_PACING','GAME_FEEL']),
+  GAMEPLAY:Object.freeze(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','EQUIPMENT_LOADOUT','CRAFTING','DIFFICULTY_PACING','GAME_FEEL','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT']),
   SAVE:Object.freeze(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY']),
   MULTIPLAYER_SERVER:Object.freeze(['MULTIPLAYER_AND_SYNC'])
 });
@@ -441,8 +441,21 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     lighting:tokenCount(joined,/lighting|light\b|colorcorrection|postprocess|ambient|shadow/gi),
     primitive:tokenCount(joined,/createprimitive|primitivetype|instance\.new\(["']Part["']|shape\s*=|capsule|sphere|cube/gi),
     todo:tokenCount(joined,/TODO|FIXME|NotImplementedException/g),
-    errorRecovery:tokenCount(joined,/try\s*\{|catch\s*\(|pcall|xpcall|fallback|retry|recover/gi)
+    errorRecovery:tokenCount(joined,/try\s*\{|catch\s*\(|pcall|xpcall|fallback|retry|recover/gi),
+    fusion:tokenCount(joined,/system.?connect|interconnect|synerg|combo|combine|fusion|craft.*equip|equip.*combat|quest.*reward|reward.*unlock|trade.*upgrade|collection.*bonus|party.*skill|companion.*combat|pet.*combat|resource.*build|build.*unlock|연결|연계|조합|융합|시너지/gi),
+    revisit:tokenCount(joined,/revisit|backtrack|return.?reason|old.?region|legacy.?content|previous.?area|unlock.*path|new.?route|재방문|다시.*지역|이전.*지역|옛.*지역|새.*경로|숨은.*경로/gi),
+    classicCard:tokenCount(joined,/card|deck|hand|draw.?card|poker|blackjack|trick.?taking|카드|덱|패|포커|블랙잭/gi),
+    boardMechanic:tokenCount(joined,/dice|tile|auction|worker.?placement|engine.?build|draft|board.?game|주사위|타일|경매|일꾼.?배치|엔진.?빌딩|드래프트|보드게임/gi),
+    arcadeMechanic:tokenCount(joined,/arcade|rhythm|timing|racing|minigame|mini.?game|아케이드|리듬|타이밍|레이싱|미니게임/gi),
+    socialEconomy:tokenCount(joined,/trade|market|shop|sell|merchant|auction|economy|reputation|guild|resident|villager|무역|시장|상점|판매|상인|경제|평판|길드|주민/gi),
+    collectionMeta:tokenCount(joined,/collection|catalog|codex|set.?bonus|merge|evol|relic|pet|summon|수집|도감|세트|합성|진화|유물|펫|소환/gi),
+    companionParty:tokenCount(joined,/companion|party|ally|affinity|relationship|formation|동료|파티|호감|관계|진형/gi),
+    explorationMechanic:tokenCount(joined,/explor|secret|ruin|treasure|discover|map.?unlock|탐험|비밀|유적|보물|발견|지도.?해금/gi),
+    craftBuild:tokenCount(joined,/craft|recipe|workbench|build|housing|farm|cook|fish|mine|제작|레시피|제작대|건축|하우징|농사|요리|낚시|채광/gi)
   };
+  signals.mechanicFamilyCount=[
+    'classicCard','boardMechanic','arcadeMechanic','socialEconomy','collectionMeta','companionParty','explorationMechanic','craftBuild'
+  ].filter(key=>Number(signals[key]||0)>0).length;
   const topFiles=rows.map(row=>({
     file:row.file,
     score:
@@ -478,7 +491,10 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       signals.session<2?'SESSION_FLOW_SPARSE':null,
       signals.settings<1?'SETTINGS_ACCESSIBILITY_SPARSE':null,
       signals.performance<2?'PERFORMANCE_BUDGET_SPARSE':null,
-      signals.todo>0?'EXPLICIT_TODO_OR_NOT_IMPLEMENTED_PRESENT':null
+      signals.todo>0?'EXPLICIT_TODO_OR_NOT_IMPLEMENTED_PRESENT':null,
+      signals.fusion<3?'SYSTEM_FUSION_DEPTH_SPARSE':null,
+      signals.mechanicFamilyCount<3?'MECHANIC_VARIETY_SPARSE':null,
+      signals.revisit<2?'LEGACY_CONTENT_REVISIT_SPARSE':null
     ])
   });
 }
@@ -524,9 +540,105 @@ export function extractDesignContext(record={}){
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
+    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({
+      fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)
+    })).filter(row=>row.fromSystem||row.toSystem||row.trigger||row.stateChange).slice(0,16),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({
+      milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)
+    })).filter(row=>row.milestone||row.newGameplay||row.systemImpact).slice(0,16),
+    compositionDepth:(
+      record?.gameplaySketch?.compositionDepth&&typeof record.gameplaySketch.compositionDepth==='object'
+        ?record.gameplaySketch.compositionDepth
+        :d?.gameplaySketch?.compositionDepth&&typeof d.gameplaySketch.compositionDepth==='object'
+          ?d.gameplaySketch.compositionDepth
+          :d?.compositionDepth&&typeof d.compositionDepth==='object'?d.compositionDepth:null
+    ),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
+  });
+}
+function inferMechanicFamilies({design={},source={}}={}){
+  const explicit=uniq(design?.compositionDepth?.mechanicDiversitySources);
+  if(explicit.length)return explicit;
+  const text=qualitySignalText([
+    design.identity,design.coreFun,design.progressionDirection,
+    ...(design.coreLoop||[]),
+    ...(design.signatureSystems||[]).flatMap(row=>[row.name,row.purpose,row.playerChoice]),
+    ...(design.contentExpansionPlan||[]).flatMap(row=>[row.milestone,row.newGameplay,row.systemImpact])
+  ]);
+  const signals=source?.signals||{};
+  return uniq([
+    (/card|deck|poker|blackjack|카드|덱|포커/.test(text)||Number(signals.classicCard||0)>0)?'CLASSIC_CARD':null,
+    (/dice|tile|auction|주사위|타일|경매/.test(text))?'CLASSIC_BOARD':null,
+    (/draft|worker.?placement|engine.?build|드래프트|일꾼.?배치|엔진.?빌딩/.test(text)||Number(signals.boardMechanic||0)>1)?'MODERN_BOARD':null,
+    (/arcade|rhythm|timing|racing|minigame|아케이드|리듬|레이싱|미니게임/.test(text)||Number(signals.arcadeMechanic||0)>0)?'ARCADE':null,
+    (/puzzle|match|connect|퍼즐|매치|연결/.test(text))?'PUZZLE':null,
+    (/explor|secret|ruin|treasure|탐험|비밀|유적|보물/.test(text)||Number(signals.explorationMechanic||0)>0)?'EXPLORATION':null,
+    (/strategy|tactic|defen[cs]e|territory|전략|전술|디펜스|영토/.test(text))?'TACTICAL_STRATEGY':null,
+    (/farm|cook|fish|housing|life.?sim|농사|요리|낚시|하우징|생활/.test(text))?'LIFE_SIM':null,
+    (/trade|market|shop|merchant|reputation|guild|무역|시장|상점|평판|길드/.test(text)||Number(signals.socialEconomy||0)>0)?'SOCIAL_ECONOMY':null,
+    (/collection|catalog|codex|relic|pet|summon|수집|도감|유물|펫|소환/.test(text)||Number(signals.collectionMeta||0)>0)?'COLLECTION_META':null,
+    (/craft|build|workbench|recipe|제작|건축|제작대|레시피/.test(text)||Number(signals.craftBuild||0)>0)?'CRAFT_BUILD':null,
+    (/companion|party|ally|affinity|동료|파티|호감/.test(text)||Number(signals.companionParty||0)>0)?'COMPANION_PARTY':null
+  ]);
+}
+export function deriveSystemFusionDepthPlan({design={},source={}}={}){
+  const explicit=design?.compositionDepth&&typeof design.compositionDepth==='object'?design.compositionDepth:null;
+  const majorSubSystems=uniq(explicit?.majorSubSystems?.length
+    ?explicit.majorSubSystems
+    :(design.signatureSystems||[]).map(row=>row.name||row.purpose));
+  const extensionSystems=uniq(explicit?.extensionSystems?.length
+    ?explicit.extensionSystems
+    :(design.contentExpansionPlan||[]).flatMap(row=>[row.milestone,row.newGameplay]));
+  const crossSystemCombinations=uniq(explicit?.crossSystemCombinations?.length
+    ?explicit.crossSystemCombinations
+    :(design.systemInterconnections||[]).map(row=>row.fromSystem+' × '+row.toSystem+': '+row.trigger+' -> '+row.stateChange));
+  const expansionText=(design.contentExpansionPlan||[]).map(row=>[row.milestone,row.newGameplay,row.systemImpact].join(' | '));
+  const hiddenCombinations=uniq(explicit?.hiddenCombinations?.length?explicit.hiddenCombinations:expansionText.filter(row=>/숨|비밀|hidden|secret/i.test(row)));
+  const growthMutations=uniq(explicit?.growthMutations?.length?explicit.growthMutations:expansionText.filter(row=>/변이|변화|성장|중반|후반|mutation|evol|early|mid|late/i.test(row)));
+  const legacyContentRevisitHooks=uniq(explicit?.legacyContentRevisitHooks?.length?explicit.legacyContentRevisitHooks:expansionText.filter(row=>/재방문|다시|옛|이전|revisit|return|legacy|old/i.test(row)));
+  const endgameFusion=clean(explicit?.endgameFusion)||clean(expansionText.find(row=>/엔드|최종|융합|endgame|fusion|A.?[×x].?B.?[×x].?C/i.test(row)));
+  const mechanicDiversitySources=inferMechanicFamilies({design,source});
+  const gaps=uniq([
+    majorSubSystems.length<3?'MAJOR_SUBSYSTEMS_BELOW_3':null,
+    extensionSystems.length<6?'EXTENSION_SYSTEM_POOL_BELOW_6':null,
+    crossSystemCombinations.length<4?'CROSS_SYSTEM_COMBINATIONS_BELOW_4':null,
+    hiddenCombinations.length<2?'HIDDEN_COMBINATIONS_BELOW_2':null,
+    growthMutations.length<2?'GROWTH_MUTATIONS_BELOW_2':null,
+    legacyContentRevisitHooks.length<2?'LEGACY_REVISIT_HOOKS_BELOW_2':null,
+    mechanicDiversitySources.length<3?'MECHANIC_FAMILIES_BELOW_3':null,
+    !endgameFusion?'ENDGAME_FUSION_MISSING':null,
+    Number(source?.signals?.fusion||0)<3?'SOURCE_FUSION_SIGNAL_SPARSE':null,
+    Number(source?.signals?.revisit||0)<2?'SOURCE_REVISIT_SIGNAL_SPARSE':null
+  ]);
+  return Object.freeze({
+    version:1,
+    mode:explicit?'DESIGN_EXPLICIT_V3_OR_LATER':'DERIVED_FROM_APPROVED_DESIGN_AND_CURRENT_SOURCE',
+    mainContent:clean(explicit?.mainContent)||clean(design.coreFun)||clean(design.identity),
+    majorSubSystems:Object.freeze(majorSubSystems),
+    extensionSystems:Object.freeze(extensionSystems),
+    crossSystemCombinations:Object.freeze(crossSystemCombinations),
+    hiddenCombinations:Object.freeze(hiddenCombinations),
+    growthMutations:Object.freeze(growthMutations),
+    legacyContentRevisitHooks:Object.freeze(legacyContentRevisitHooks),
+    endgameFusion:endgameFusion||null,
+    mechanicDiversitySources:Object.freeze(mechanicDiversitySources),
+    stageModel:Object.freeze([
+      'EARLY=A|B|C_INDIVIDUAL_LEARNING',
+      'MID=A×B|A×C|B×C',
+      'LATE=A×B×C',
+      'ENDGAME=A×B×C+@×@'
+    ]),
+    sourceEvidence:Object.freeze({
+      fusionSignals:Number(source?.signals?.fusion||0),
+      revisitSignals:Number(source?.signals?.revisit||0),
+      mechanicFamilySignals:Number(source?.signals?.mechanicFamilyCount||0)
+    }),
+    gaps:Object.freeze(gaps),
+    implementationBoundary:'USE_APPROVED_DESIGN_AND_EXISTING_RESPONSIBLE_SOURCE; A NEW MAJOR SYSTEM MAY NOT CHANGE PROTECTED RULE_BALANCE_ECONOMY_SAVE_NETWORK MEANING WITHOUT CANONICAL DESIGN AUTHORITY',
+    disconnectedSubsystemOrMinigameDumpForbidden:true,
+    legacyContentMustGainReturnReasonAsGrowthDeepens:true
   });
 }
 
@@ -535,7 +647,7 @@ function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
   if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
   if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
-  if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
+  if(/progress|reward|unlock|quest|goal|economy|content|fusion|subsystem|mechanic|revisit|융합|서브|재방문/.test(text))return'PROGRESSION';
   if(/mobile|touch|input|ui|hud|inventory|equipment|equip|menu|readability|navigation|accessib/.test(text))return'USABILITY';
   if(/visual|graphic|render|animation|motion|vfx|camera|lighting|material|silhouette|environment|placeholder|audio|music|bgm|sfx|sound|game.?feel/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
@@ -566,8 +678,12 @@ function domainState(domain,{design={},source={}}={}){
   const s=source?.signals||{};
   const relevantByText=qualitySignalText([
     design.identity,design.coreFun,design.progressionDirection,...(design.coreLoop||[]),
-    ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice])
+    ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice]),
+    ...(design.systemInterconnections||[]).flatMap(x=>[x.fromSystem,x.toSystem,x.trigger,x.stateChange]),
+    ...(design.contentExpansionPlan||[]).flatMap(x=>[x.milestone,x.newGameplay,x.systemImpact]),
+    design.compositionDepth?JSON.stringify(design.compositionDepth):''
   ]);
+  const fusionDepth=deriveSystemFusionDepthPlan({design,source});
   const no=(reason)=>({domain,state:'NOT_APPLICABLE',reason});
   const gap=(reason)=>({domain,state:'GAP',reason});
   const pass=(reason='current source and approved design provide sufficient implementation signal')=>({domain,state:'PASS',reason});
@@ -590,6 +706,28 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='RECONNECT_RECOVERY'&&!hasMultiplayer&&!hasSave)return no('game has no multiplayer or persistent reconnect state');
   if(domain==='SAVE_COMPLETENESS'&&!hasSave)return no('game has no persistent save system yet');
   if(domain==='MID_LATE_GAME_DEPTH'&&!hasProgression)return no('approved design has no multi-stage progression direction');
+  if(domain==='SUBSYSTEM_BREADTH'){
+    if(fusionDepth.majorSubSystems.length>=3&&fusionDepth.extensionSystems.length>=6)return pass('main content has at least three major sub-system axes and a reusable extension-system pool');
+    return gap('main content lacks three connected major sub-system axes or the @ extension-system pool is too narrow');
+  }
+  if(domain==='SYSTEM_FUSION_DEPTH'){
+    if(fusionDepth.majorSubSystems.length>=3
+      &&fusionDepth.crossSystemCombinations.length>=4
+      &&fusionDepth.growthMutations.length>=2
+      &&Boolean(fusionDepth.endgameFusion)
+      &&Number(s.fusion||0)>=3
+    )return pass('approved design and current source show pairwise/triple system fusion with growth depth');
+    return gap('A×B/A×C/B×C -> A×B×C -> A×B×C+@ fusion depth is missing or not implemented in current source');
+  }
+  if(domain==='MECHANIC_VARIETY'){
+    if(fusionDepth.mechanicDiversitySources.length>=3&&Number(s.mechanicFamilyCount||0)>=2)return pass('design draws from multiple mechanic families and current source implements more than one family');
+    return gap('mechanic family diversity is too narrow; vary rule families without creating disconnected minigame dumps');
+  }
+  if(domain==='LEGACY_CONTENT_REVISIT'){
+    if(!hasProgression&&!hasWorld)return no('game has no multi-stage progression or world surface to revisit');
+    if(fusionDepth.legacyContentRevisitHooks.length>=2&&Number(s.revisit||0)>=2)return pass('later growth gives earlier content new routes, interactions, rewards, or combination value');
+    return gap('later growth does not yet create enough reasons to revisit earlier regions/content');
+  }
 
   const weakByDomain={
     ANIMATION:Number(s.animation||0)<2||Number(s.motionStates||0)<5,
@@ -618,7 +756,7 @@ function domainState(domain,{design={},source={}}={}){
     SYSTEM_CONNECTION:(hasInventory||hasWorld||hasProgression)&&Number(s.connection||0)<2,
     SESSION_FLOW:Number(s.session||0)<4,
     FIRST_10_MINUTES:Number(s.session||0)<3||Number(s.progression||0)<3||Number(s.interaction||0)<2,
-    MID_LATE_GAME_DEPTH:hasProgression&&(Number(s.progression||0)<8||Number(s.content||0)<10),
+    MID_LATE_GAME_DEPTH:hasProgression&&(Number(s.progression||0)<8||Number(s.content||0)<10||Number(s.fusion||0)<3),
     SAVE_AND_RECOVERY:hasSave&&Number(s.save||0)<3,
     SAVE_COMPLETENESS:hasSave&&(Number(s.save||0)<5||(hasInventory&&Number(s.inventory||0)<3)),
     RECONNECT_RECOVERY:(hasMultiplayer||hasSave)&&Number(s.errorRecovery||0)<2,
@@ -681,8 +819,8 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   const progression=design.progressionDirection||'승인된 진행 방향';
   const depth=Number(depthInfo.developmentDepth||1);
   const focusDomains={
-    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','SESSION_FLOW','FIRST_10_MINUTES']),
-    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
+    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','MECHANIC_VARIETY','SUBSYSTEM_BREADTH','SESSION_FLOW','FIRST_10_MINUTES']),
+    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','SYSTEM_FUSION_DEPTH','SUBSYSTEM_BREADTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
     PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','GAME_FEEL','VFX','CAMERA','UI_HUD','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
     USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL','AUDIO_MUSIC_SFX']),
     STABILITY:new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'])
@@ -731,7 +869,11 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     INTERACTION_DISCOVERABILITY:`줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.`,
     INVENTORY_USABILITY:`인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.`,
     EQUIPMENT_LOADOUT:`장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.`,
-    SYSTEM_CONNECTION:`드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.`,
+    SYSTEM_CONNECTION:`드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 한다. 단순 메뉴 이동이나 같은 재화 숫자 공유만 연결로 계산하지 않고 한 시스템의 결과가 다른 시스템의 조건·선택·월드 상태를 바꾸게 한다.`,
+    SUBSYSTEM_BREADTH:`메인 콘텐츠 ${anchor}를 약화하지 말고 역할이 다른 대형 서브축을 최소 3개 확보한다. 탐험·하우징/건축·수집·관계/파티·경제/무역·제작·보드/카드 규칙 등은 현재 승인 설계와 소스에 맞는 것만 선택하며, 각 축은 메인 보상·위험·해금·목표 중 하나 이상과 실제 상태를 주고받게 한다. @ 확장요소는 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 등에서 게임 정체성에 맞게 폭을 확보하되 고립된 기능 나열을 금지한다.`,
+    SYSTEM_FUSION_DEPTH:`파고들기 구조를 초반 A/B/C 개별 학습→중반 A×B/A×C/B×C→후반 A×B×C→엔드게임 A×B×C+@×@ 순서로 깊게 만든다. 교차 조합마다 WHAT→TRIGGER→STATE_CHANGE→PLAYER_CHOICE→REWARD/RISK를 실제 책임 함수에 연결하고, 새로운 대형 시스템이 승인된 규칙·밸런스·경제·세이브·네트워크 의미를 바꾸려면 기존 canonical 설계 권한을 먼저 사용한다.`,
+    MECHANIC_VARIETY:`게임 시드와 현재 정체성에 맞는 범위에서 고전 카드/주사위/타일/경매, 현대 덱빌딩/드래프트/일꾼배치/엔진빌딩, 아케이드/퍼즐/탐험/생활/사회경제/수집/파티 계통 중 서로 다른 최소 3계통의 규칙 DNA를 활용한다. 완전한 별도 게임을 붙이지 말고 짧은 규칙 변주가 메인 성장·탐험·경제·수집·관계에 결과를 돌려주게 하며 이름·색·수치만 다른 변형은 금지한다.`,
+    LEGACY_CONTENT_REVISIT:`성장으로 얻은 이동수단·도구·관계·정보·장비·조합 능력 때문에 초반 지역/NPC/던전/상점/수집품을 다시 방문할 이유가 생기게 한다. 재방문은 새 경로·새 상호작용·새 교환가치·새 조합·숨은 보상 중 최소 하나를 제공하고 단순 일일 반복이나 숫자 파밍만으로 채우지 않는다.`,
     SESSION_FLOW:`접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.`,
     FIRST_10_MINUTES:`첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.`,
     SAVE_COMPLETENESS:`현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.`,
@@ -1259,6 +1401,7 @@ export function directivePrompt(d={}){
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   const expansion=d.autonomousContentExpansion||{};
+  const fusion=d.systemFusionDepthPlan||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
   const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
@@ -1279,6 +1422,13 @@ export function directivePrompt(d={}){
     `PREVIOUS_EFFECT: ${d.effectivenessMeasurement?.previousGeneration?.classification||'NO_PREVIOUS_GENERATION'} - ${d.effectivenessMeasurement?.previousGeneration?.reason||''}`,
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
     `AUTONOMOUS_CONTENT_EXPANSION: mode=${expansion.executionMode||'AUTONOMOUS_CONTENT_BUILD_UP'}; theme=${expansion.selectedTheme||'AUTO'}; themeDepth=${expansion.themeDepth||1}; decisionOwner=${expansion.autonomousDecisionOwner||'VIBE'}; boundary=${expansion.executionBoundary||'EXISTING_BUILD_UP_ONLY'}`,
+    `SYSTEM_FUSION_DEPTH: mode=${fusion.mode||'DERIVED'}; main=${fusion.mainContent||'CURRENT_CORE_FUN'}; major=${(fusion.majorSubSystems||[]).join(' / ')||'MISSING'}; mechanicFamilies=${(fusion.mechanicDiversitySources||[]).join(',')||'MISSING'}; gaps=${(fusion.gaps||[]).join(',')||'NONE'}`,
+    `SYSTEM_FUSION_STAGES: ${(fusion.stageModel||[]).join(' -> ')}`,
+    `SYSTEM_FUSION_COMBINATIONS: ${(fusion.crossSystemCombinations||[]).join(' | ')||'BUILD_FROM_APPROVED_DESIGN_AND_CURRENT_SOURCE'}`,
+    `SYSTEM_FUSION_HIDDEN: ${(fusion.hiddenCombinations||[]).join(' | ')||'MISSING'}`,
+    `SYSTEM_FUSION_GROWTH_MUTATION: ${(fusion.growthMutations||[]).join(' | ')||'MISSING'}`,
+    `SYSTEM_FUSION_LEGACY_REVISIT: ${(fusion.legacyContentRevisitHooks||[]).join(' | ')||'MISSING'}`,
+    `SYSTEM_FUSION_ENDGAME: ${fusion.endgameFusion||'MISSING'}`,
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
     expansion.dataCapacityBudget?.state==='NORMAL'?'DATA_CAPACITY_ACTION: 새 콘텐츠와 기존 시스템 심화 중 플레이어 가치가 높은 쪽을 선택한다.':'DATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.',
@@ -1320,6 +1470,7 @@ export function buildGameSpecificBuildUpDirective({
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
+  const systemFusionDepthPlan=deriveSystemFusionDepthPlan({design,source});
   const signals=uniq([
     ...qualitySignals,
     ...(source?.observations||[]),
@@ -1544,6 +1695,7 @@ export function buildGameSpecificBuildUpDirective({
       focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
       focus==='PRESENTATION'?'CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY':'RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE',
       'CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST',
+      'DEEPEN_SYSTEM_FUSION_HIDDEN_COMBINATIONS_AND_LEGACY_REVISIT_WHEN_APPROVED',
       'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
     ]);
   const developmentImpact=classifyDevelopmentImpact({
@@ -1601,6 +1753,7 @@ export function buildGameSpecificBuildUpDirective({
     gameplayImplementationDirectives:effectiveGameplay,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
+    systemFusionDepthPlan,
     internalAssetEvolution:{
       required:true,
       generation,

@@ -153,3 +153,68 @@ test('design cycle preserves v2 sketch and BUILD_UP reuses the full verified des
   assert.match(autoPlanner,/out\.flowArchitecture=flowArchitecture/);
 });
 
+
+
+test('GAMEPLAY_SKETCH v3 requires diverse cross-system composition depth without breaking v2',()=>{
+  assert.equal(GAME_SEED_POLICY.advancedGameplaySketchVersion,3);
+  const seed=legacySeed();
+  seed.GAMEPLAY_SKETCH={
+    version:3,
+    source:'TEST_GAMEPLAY_SKETCH_V3',
+    worldModel:'탐험 경로와 방어 배치, 거래 거점과 수집 목표가 하나의 월드 상태에서 서로 영향을 주는 전장.',
+    actors:['플레이어: 방어와 탐험 경로를 선택한다','적과 상인 및 수집 대상: 플레이어 선택에 실제 상태로 반응한다'],
+    interactionChains:['경로 선택 -> 실제 배치 입력 -> 위협 상태 변화 -> 보상 획득 -> 거래/수집/성장 선택 변화'],
+    stateMachine:['ENTRY','READ_ROUTE','PLACE_DEFENSE','EXPLORE','RESOLVE','GROW','RETRY'],
+    firstPlayableCycle:['전장 진입','경로 확인','방어 배치','탐험 결과 확인','첫 보상 획득','성장 선택','다음 목표 결정'],
+    playerPromise:'방어 판단을 중심으로 탐험, 수집, 거래의 결과를 조합해 다음 전장의 선택지를 넓힌다.',
+    funDrivers:['즉시 보이는 배치 반응과 상태 변화','위험과 보상 사이의 실제 비용 선택','숙련으로 새 조합과 전략 선택 해금','적과 월드가 배치에 반응'],
+    balanceRules:['지배 전략에는 카운터와 기회비용이 있다','성장과 위협 복잡도가 함께 변한다','실패 후 복구와 재시도가 가능하다','경제 획득원과 소비처를 함께 둔다','후반에는 압박 조합과 판단 구조가 바뀐다'],
+    pacingPlan:{first5Minutes:'조작과 목표, 첫 성공과 위험 선택',minutes5To15:'핵심 루프와 첫 성장 및 전략 선택',minutes15To25:'새 압박과 지역 및 시스템 연결',minutes25To30:'누적 선택과 시스템 조합으로 중간 목표 해결',midLateGame:'시스템 조합과 빌드 및 경로 판단이 달라진다',replayMotivation:'다른 빌드와 경로가 다른 월드 결과를 만든다'},
+    progressionLayers:['세션 성장으로 즉시 선택 변화','중기 성장으로 새 빌드와 전략 해금','장기 성장으로 월드와 플레이스타일 변화'],
+    expansionPlan:['새 적 행동과 대응 추가','새 지역과 경로 추가','새 목표와 상호작용 추가','새 빌드와 전략 결과 추가'],
+    longGoalScenario:['첫 방어 완료','탐험과 거래로 새 선택 해금','다중 시스템 조합으로 장기 목표 해결'],
+    completionCriteria:['첫 5분 실제 플레이','15~25분 새 결정 공간','30분 이상 시스템 조합','실패 복구와 재시도','모바일 터치와 성능','초중후반 역할 차이'],
+    codingGrowthHooks:['기존 책임 함수 직접 수정','데이터 테이블과 stable ID 확장','wrapper shadow와 중복 authority 금지','save migration으로 기존 의미 보존','프레젠테이션과 게임 로직 분리'],
+    validationRisks:['수치 배수만으로 깊이를 가장하지 않는다','저장 경제 모바일 소프트락 회귀를 검증한다'],
+    compositionDepth:{
+      mainContent:'라인 방어의 배치와 경로 판단을 메인으로 유지한다.',
+      majorSubSystems:['지역 탐험과 비밀 경로','수집 도감과 세트 조합','상인 무역과 지역 경제'],
+      extensionSystems:['동료 파티 조합','서브퀘스트 사건','카드 드래프트 미니게임','유물 강화와 합성','펫 소환 수집','경매와 희귀 거래'],
+      crossSystemCombinations:[
+        '메인 방어 × 탐험: 방어 성과가 새 경로를 연다',
+        '메인 방어 × 수집: 세트 조합이 다음 배치 선택을 바꾼다',
+        '탐험 × 무역: 지역 발견이 새로운 교환 조건을 연다',
+        '메인 × 탐험 × 수집 + @ 무역: 후반 조합으로 비밀 웨이브를 연다'
+      ],
+      hiddenCombinations:['특정 카드 세트 + 야간 지역에서 숨은 상인이 등장','희귀 유물 + 동료 조합으로 비밀 보스가 열린다'],
+      growthMutations:['초반 탐험이 중반 무역과 결합되고 후반 방어 빌드에 영향을 준다','성장한 이동 능력이 이전 지역의 새 경로를 연다'],
+      legacyContentRevisitHooks:['초기 숲에 비행 이동 해금 후 숨은 유적 접근','초기 상점이 후반 세트 아이템 교환처로 변화'],
+      endgameFusion:'엔드게임은 방어 × 탐험 × 수집 + 무역 × 파티 조합으로 비밀 웨이브와 희귀 빌드를 여는 융합 구조다.',
+      mechanicDiversitySources:['CLASSIC_CARD','MODERN_BOARD','EXPLORATION','COLLECTION_META']
+    },
+    flowArchitecture:buildGameFlowArchitecture({gameId:'seed-v3-depth',genre:seed.GAME_CATEGORY,baseline:{content:{identity:seed.DISTINCT_IDENTITY,coreFun:seed.CORE_FUN_TO_LEARN.join(' '),coreLoop:seed.CORE_LOOP,progressionDirection:'탐험과 수집, 무역이 방어 성장에 연결된다.'}},inventory:[]})
+  };
+  const pass=validateGameSeed(seed);
+  assert.equal(pass.pass,true,pass.errors.join(','));
+
+  const broken=structuredClone(seed);
+  broken.GAMEPLAY_SKETCH.compositionDepth.majorSubSystems=['탐험','수집'];
+  broken.GAMEPLAY_SKETCH.compositionDepth.crossSystemCombinations=['A×B'];
+  broken.GAMEPLAY_SKETCH.compositionDepth.endgameFusion='';
+  const fail=validateGameSeed(broken);
+  assert.equal(fail.pass,false);
+  assert.ok(fail.errors.some(error=>error.includes('majorSubSystems')));
+  assert.ok(fail.errors.some(error=>error.includes('crossSystemCombinations')));
+  assert.ok(fail.errors.some(error=>error.includes('endgameFusion')));
+});
+
+test('seed bootstrap emits v3 fusion schema and explicit diverse mechanic instructions',()=>{
+  const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  assert.match(source,/COMPOSITION_DEPTH_SCHEMA/);
+  assert.match(source,/version:3/);
+  assert.match(source,/majorSubSystems/);
+  assert.match(source,/crossSystemCombinations/);
+  assert.match(source,/legacyContentRevisitHooks/);
+  assert.match(source,/A×B×C\+@/);
+  assert.match(source,/고전 카드\/주사위\/타일\/경매/);
+});

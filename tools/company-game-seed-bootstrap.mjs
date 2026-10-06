@@ -14,7 +14,7 @@ import {
   releaseSeedMaterialReservations,
   seedPlatform,
 } from './game-seed-state.mjs';
-import {assertGameSeed} from './company-game-seed-contract.mjs';
+import {assertGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES} from './company-game-seed-contract.mjs';
 import {
   categorySeedProfile,
   loadPlatformProfiles,
@@ -104,9 +104,25 @@ const PACING_PLAN_SCHEMA={
   },
   additionalProperties:false,
 };
+const COMPOSITION_DEPTH_SCHEMA={
+  type:'object',
+  required:['mainContent','majorSubSystems','extensionSystems','crossSystemCombinations','hiddenCombinations','growthMutations','legacyContentRevisitHooks','endgameFusion','mechanicDiversitySources'],
+  properties:{
+    mainContent:{type:'string',minLength:20,maxLength:700},
+    majorSubSystems:{type:'array',minItems:3,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
+    extensionSystems:{type:'array',minItems:6,maxItems:15,uniqueItems:true,items:SKETCH_ITEM},
+    crossSystemCombinations:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    hiddenCombinations:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
+    growthMutations:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
+    legacyContentRevisitHooks:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
+    endgameFusion:{type:'string',minLength:30,maxLength:900},
+    mechanicDiversitySources:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES]}},
+  },
+  additionalProperties:false,
+};
 const GAMEPLAY_SKETCH_SCHEMA={
   type:'object',
-  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks'],
+  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks','compositionDepth'],
   properties:{
     worldModel:{type:'string',minLength:1,maxLength:900},
     actors:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
@@ -123,6 +139,7 @@ const GAMEPLAY_SKETCH_SCHEMA={
     completionCriteria:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     codingGrowthHooks:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     validationRisks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    compositionDepth:COMPOSITION_DEPTH_SCHEMA,
   },
   additionalProperties:false,
 };
@@ -368,6 +385,52 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     '프레젠테이션 자산 바인딩은 게임 로직과 분리해 최신 내부자산을 재선택·적응할 수 있게 한다'
   ],4,8);
   const validationRisks=sketchArray(raw.validationRisks,['버튼/라벨/파일 크기만으로 구현 완료를 가장하지 않는다','반복·재시작·대기로 콘텐츠 분량을 채우지 않는다','색상·체력·데미지 배수만 바꾼 변형을 새 콘텐츠 깊이로 계산하지 않는다'],2,8);
+  const compositionRaw=raw.compositionDepth&&typeof raw.compositionDepth==='object'&&!Array.isArray(raw.compositionDepth)?raw.compositionDepth:{};
+  const mainContent=clean(compositionRaw.mainContent)||(gameName+'의 메인 '+target.category+' 핵심 플레이를 유지하면서 서브 시스템이 메인 선택과 성장에 실제 상태로 연결된다.');
+  const majorSubSystems=sketchArray(compositionRaw.majorSubSystems,[
+    (coreLoop[1]||'핵심 결과')+'를 장기 성장·해금·전략 선택으로 연결하는 성장 축',
+    (coreLoop[2]||'다음 목표')+'를 공간·목표·발견 차이로 확장하는 탐험/콘텐츠 축',
+    '수집·관계·경제·제작 중 게임 정체성에 맞는 축을 메인 플레이 결과와 연결하는 서브 시스템'
+  ],3,6);
+  const extensionSystems=sketchArray(compositionRaw.extensionSystems,[
+    '판매·상점·거래 또는 지역별 교환 조건',
+    '동료·파티·주민·호감도 중 장르에 맞는 관계 성장',
+    '서브퀘스트·사건·도전 의뢰',
+    '고전 카드·주사위·타일·경매 규칙을 변형한 짧은 미니게임',
+    '아이템·유물·도감·세트 수집과 조합',
+    '강화·합성·진화·연구 중 기존 성장과 연결되는 메타 선택',
+    '펫·소환·동료 수집 또는 역할 조합',
+    '무역·생산·운송·시장 변동 중 장르에 맞는 경제 변주'
+  ],6,15);
+  const systemA=majorSubSystems[0]||'SUB_SYSTEM_A';
+  const systemB=majorSubSystems[1]||'SUB_SYSTEM_B';
+  const systemC=majorSubSystems[2]||'SUB_SYSTEM_C';
+  const crossSystemCombinations=sketchArray(compositionRaw.crossSystemCombinations,[
+    '메인 × '+systemA+': 서브 성과가 다음 핵심 플레이 선택을 바꾼다',
+    '메인 × '+systemB+': 새 공간·목표·위험이 핵심 루프의 다른 경로를 연다',
+    systemA+' × '+systemC+': 한 서브 시스템의 보상이 다른 서브 시스템의 선택을 확장한다',
+    '메인 × '+systemA+' × '+systemB+' + @: 중후반에는 세 축과 하나 이상의 확장 요소를 함께 조합해야 새로운 결과가 열린다'
+  ],4,10);
+  const hiddenCombinations=sketchArray(compositionRaw.hiddenCombinations,[
+    systemA+'의 특정 상태 + '+systemB+'의 특정 성과가 숨은 이벤트·보상·경로를 연다',
+    systemB+' + '+systemC+' + 특정 시기/지역/조건 조합으로 비밀 콘텐츠가 드러난다'
+  ],2,6);
+  const growthMutations=sketchArray(compositionRaw.growthMutations,[
+    '초반 단독 시스템이 중반에 다른 시스템과 결합되고 후반에는 새 선택 규칙으로 변형된다',
+    '성장으로 얻은 이동·도구·관계·정보가 이전 지역/콘텐츠의 접근법과 보상을 바꾼다'
+  ],2,6);
+  const legacyContentRevisitHooks=sketchArray(compositionRaw.legacyContentRevisitHooks,[
+    '새 성장 능력이나 도구가 초반 지역의 미개방 경로·상호작용·보상을 다시 열게 한다',
+    '후반 시스템이 초기 NPC·상점·던전·맵·수집품에 새로운 목적과 교환/조합 가치를 부여한다'
+  ],2,6);
+  const endgameFusion=clean(compositionRaw.endgameFusion)||('엔드게임은 메인 플레이 × '+systemA+' × '+systemB+' × '+systemC+' + 복수 @ 요소를 조합해 단순 수치 상승이 아닌 빌드·경로·수집·경제·관계의 상호작용으로 파고들기를 만든다.');
+  const allowedFamilies=new Set(GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES);
+  const mechanicDiversitySources=sketchArray(
+    (Array.isArray(compositionRaw.mechanicDiversitySources)?compositionRaw.mechanicDiversitySources:[]).filter(value=>allowedFamilies.has(clean(value))),
+    ['CLASSIC_CARD','MODERN_BOARD','COLLECTION_META','EXPLORATION'],
+    3,8
+  );
+  const compositionDepth={mainContent,majorSubSystems,extensionSystems,crossSystemCombinations,hiddenCombinations,growthMutations,legacyContentRevisitHooks,endgameFusion,mechanicDiversitySources};
   const flowBaseline={content:{
     identity:clean(p?.distinctIdentity)||gameName,
     playerFantasy:playerPromise,
@@ -376,7 +439,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     progressionDirection:progressionLayers.join(' '),
   }};
   const flowArchitecture=buildGameFlowArchitecture({gameId:`seed:${target.requestId}`,genre:target.category,baseline:flowBaseline,inventory:[]});
-  return{version:2,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V2',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,flowArchitecture};
+  return{version:3,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V3',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,compositionDepth,flowArchitecture};
 }
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
@@ -415,7 +478,7 @@ function validateProposal(target,p){
   if(target.lockedPlatform&&normalizeSeedPlatform(p.initialTargetPlatform)!==target.platform)errors.push('lockedPlatform');
   if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(p.multiplayerDesignMode))errors.push('multiplayerDesignMode');
   const sketch=p.gameplaySketch||{};
-  if(Number(sketch.version||0)<2||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2)errors.push('gameplaySketch');
+  if(Number(sketch.version||0)<3||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2||!sketch.compositionDepth||!clean(sketch.compositionDepth.mainContent)||!Array.isArray(sketch.compositionDepth.majorSubSystems)||sketch.compositionDepth.majorSubSystems.length<3||!Array.isArray(sketch.compositionDepth.extensionSystems)||sketch.compositionDepth.extensionSystems.length<6||!Array.isArray(sketch.compositionDepth.crossSystemCombinations)||sketch.compositionDepth.crossSystemCombinations.length<4||!Array.isArray(sketch.compositionDepth.hiddenCombinations)||sketch.compositionDepth.hiddenCombinations.length<2||!Array.isArray(sketch.compositionDepth.growthMutations)||sketch.compositionDepth.growthMutations.length<2||!Array.isArray(sketch.compositionDepth.legacyContentRevisitHooks)||sketch.compositionDepth.legacyContentRevisitHooks.length<2||!clean(sketch.compositionDepth.endgameFusion)||!Array.isArray(sketch.compositionDepth.mechanicDiversitySources)||sketch.compositionDepth.mechanicDiversitySources.length<3)errors.push('gameplaySketch');
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
 }
 async function callModelBatch(targets){
@@ -433,7 +496,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -441,7 +504,7 @@ async function callModelBatch(targets){
       body:JSON.stringify({
         model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),
         messages:[
-          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다.'},
+          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다. GAMEPLAY_SKETCH v3에서는 메인 장르만 바꾸는 반복을 피하고 고전 카드·보드·아케이드부터 현대 보드/수집/생활/사회경제 규칙까지 다른 계통의 메커니즘을 재조합해 메인×서브×서브×서브+@의 후반 파고들기 구조를 만든다.'},
           {role:'user',content:prompt},
         ],
         options:{temperature:0.25,num_ctx:16384,num_predict:7000},

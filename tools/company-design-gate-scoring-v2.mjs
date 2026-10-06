@@ -77,19 +77,35 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const platformKnown=['ROBLOX','UNITY'].includes(platform);
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
+  const sketchVersion=Math.max(1,Number(seed?.GAMEPLAY_SKETCH?.version||1));
+  const fusionRequired=sketchVersion>=3;
+  const requiredSignatureSystemCount=fusionRequired?4:2;
+  const requiredSystemConnectionCount=fusionRequired?4:3;
+  const requiredExpansionCount=fusionRequired?4:3;
+  const fusionExpansionText=list(design.contentExpansionPlan)
+    .flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
+    .map(clean).join(' ');
+  const fusionExpansionSemantics=!fusionRequired||[
+    /숨|비밀|hidden|secret/i,
+    /재방문|다시|옛|이전|revisit|return|legacy|old content/i,
+    /엔드|최종|융합|fusion|endgame|A.?[×x].?B.?[×x].?C|복수.*조합/i,
+    /성장.*변|변이|mutation|초반.*중반|중반.*후반|early.*mid|mid.*late/i
+  ].every(re=>re.test(fusionExpansionText));
+  const interconnectedSystemNames=distinct(list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem]));
+  const fusionConnectionSemantics=!fusionRequired||interconnectedSystemNames.length>=4;
 
   const ideaBasic=textReady(design.identity,60)&&textReady(design.playerFantasy,40)&&textReady(design.coreFun,40)&&materialContractOk;
-  const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=2;
+  const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=requiredSignatureSystemCount;
   const categoryBasic=textReady(seed.GAME_CATEGORY,3)&&clean(robloxGenreProfile?.genre).length>0;
   const categoryConnected=categoryBasic&&clean(robloxGenreProfile?.genre)!=='Utility & other'&&playModeKnown;
   const coreBasic=loops.length>=3;
-  const coreConnected=coreBasic&&signatureSystems.length>=2&&signatureSystems.every(row=>textReady(row?.name,2)&&textReady(row?.purpose,20)&&textReady(row?.playerChoice,20));
+  const coreConnected=coreBasic&&signatureSystems.length>=requiredSignatureSystemCount&&signatureSystems.every(row=>textReady(row?.name,2)&&textReady(row?.purpose,20)&&textReady(row?.playerChoice,20));
   const systemsBasic=list(design.systemInterconnections).length>0;
-  const systemsConnected=objectListReady(design.systemInterconnections,['fromSystem','toSystem','trigger','stateChange'],3,8);
+  const systemsConnected=objectListReady(design.systemInterconnections,['fromSystem','toSystem','trigger','stateChange'],requiredSystemConnectionCount,8)&&fusionConnectionSemantics;
   const progressionBasic=Boolean(design.progressionEconomyBalance)&&textReady(design.progressionDirection,24);
   const progressionConnected=progressionBasic&&objectReady(design.progressionEconomyBalance,['progressionLoop','resourceFlow','balanceRules'],20);
   const expansionBasic=list(design.contentExpansionPlan).length>0;
-  const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],3,12);
+  const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],requiredExpansionCount,12)&&fusionExpansionSemantics;
   const failureBasic=Boolean(design.failureRetryRisk);
   const failureConnected=failureBasic&&Array.isArray(design.failureRetryRisk?.failureStates)&&distinct(design.failureRetryRisk.failureStates).length>=2&&textReady(design.failureRetryRisk?.retryFlow,20)&&textReady(design.failureRetryRisk?.riskPressure,20)&&textReady(design.failureRetryRisk?.recoveryRules,20);
   const platformProfileFields=['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'];
@@ -159,7 +175,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
-    rejectionReasons.push(rejectionReason({code:'CORE_FUN_WEAK',axis:'CORE_LOOP_DESIGN',evidenceLevel:Math.min(Number(evidenceLevels.IDEA_AND_DISTINCTNESS||0),Number(evidenceLevels.CORE_LOOP_DESIGN||0)),minimumRequired:60,evidence:{ideaAndDistinctness:evidenceLevels.IDEA_AND_DISTINCTNESS,coreLoopDesign:evidenceLevels.CORE_LOOP_DESIGN,coreLoopCount:loops.length,signatureSystemCount:signatureSystems.length},requiredAction:'핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.'}));
+    rejectionReasons.push(rejectionReason({code:'CORE_FUN_WEAK',axis:'CORE_LOOP_DESIGN',evidenceLevel:Math.min(Number(evidenceLevels.IDEA_AND_DISTINCTNESS||0),Number(evidenceLevels.CORE_LOOP_DESIGN||0)),minimumRequired:60,evidence:{ideaAndDistinctness:evidenceLevels.IDEA_AND_DISTINCTNESS,coreLoopDesign:evidenceLevels.CORE_LOOP_DESIGN,coreLoopCount:loops.length,signatureSystemCount:signatureSystems.length,requiredSignatureSystemCount,fusionRequired},requiredAction:fusionRequired?'메인 핵심과 역할이 다른 대형 서브축 최소 3개를 signatureSystems에 구체화하고 실제 선택·상태변화로 연결한다.':'핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.'}));
   }
   if(criticalAxisFailures.length){
     hardFailures.push('CRITICAL_AXIS_MINIMUM_FAIL');
@@ -181,5 +197,18 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
+    systemFusionDepth:Object.freeze({
+      required:fusionRequired,
+      sketchVersion,
+      requiredSignatureSystemCount,
+      requiredSystemConnectionCount,
+      requiredExpansionCount,
+      observedSignatureSystemCount:signatureSystems.length,
+      observedSystemConnectionCount:list(design.systemInterconnections).length,
+      observedExpansionCount:list(design.contentExpansionPlan).length,
+      interconnectedSystemCount:interconnectedSystemNames.length,
+      fusionConnectionSemantics,
+      fusionExpansionSemantics
+    }),
   };
 }

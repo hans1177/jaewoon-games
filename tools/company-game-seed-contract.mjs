@@ -36,12 +36,27 @@ export const GAME_SEED_POLICY = Object.freeze({
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
   gameplaySketchRequired: true,
-  advancedGameplaySketchVersion: 2,
+  advancedGameplaySketchVersion: 3,
   advancedGameplaySketchRequiredForNewSeeds: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
   marketEvidenceHardPassFailGate: false
 });
+
+export const GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES = Object.freeze([
+  'CLASSIC_CARD',
+  'CLASSIC_BOARD',
+  'MODERN_BOARD',
+  'ARCADE',
+  'PUZZLE',
+  'EXPLORATION',
+  'TACTICAL_STRATEGY',
+  'LIFE_SIM',
+  'SOCIAL_ECONOMY',
+  'COLLECTION_META',
+  'CRAFT_BUILD',
+  'COMPANION_PARTY'
+]);
 
 const isNonEmptyString = value => typeof value === 'string' && value.trim().length > 0;
 const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
@@ -119,6 +134,31 @@ function validateGameplaySketch(sketch,errors){
       if(row?.gameplayAuthority===true||row?.balanceAuthority===true||row?.saveAuthority===true||row?.networkingAuthority===true)errors.push('GAMEPLAY_SKETCH flow asset requirements may not own gameplay/balance/save/network authority');
       if(row?.resolution&&String(row.resolution)!=='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME')errors.push('GAMEPLAY_SKETCH flow asset requirement resolution must use latest compatible internal asset at execution time');
     }
+  }
+
+  if(version<3)return;
+  const composition=sketch.compositionDepth;
+  if(!composition||typeof composition!=='object'||Array.isArray(composition)){
+    errors.push('GAMEPLAY_SKETCH.compositionDepth is required for version 3+');
+    return;
+  }
+  if(!isNonEmptyString(composition.mainContent))errors.push('GAMEPLAY_SKETCH.compositionDepth.mainContent is required for version 3+');
+  const depthArrays=[
+    ['majorSubSystems',3],
+    ['extensionSystems',6],
+    ['crossSystemCombinations',4],
+    ['hiddenCombinations',2],
+    ['growthMutations',2],
+    ['legacyContentRevisitHooks',2],
+    ['mechanicDiversitySources',3]
+  ];
+  for(const [field,min] of depthArrays){
+    if(!Array.isArray(composition[field])||uniq(composition[field]).length<min)errors.push(`GAMEPLAY_SKETCH.compositionDepth.${field} requires at least ${min} meaningful items for version 3+`);
+  }
+  if(!isNonEmptyString(composition.endgameFusion))errors.push('GAMEPLAY_SKETCH.compositionDepth.endgameFusion is required for version 3+');
+  const familySet=new Set(GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES);
+  for(const family of uniq(composition.mechanicDiversitySources)){
+    if(!familySet.has(family))errors.push(`GAMEPLAY_SKETCH.compositionDepth.mechanicDiversitySources invalid family: ${family}`);
   }
 }
 

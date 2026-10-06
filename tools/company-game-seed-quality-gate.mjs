@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import {validateGameSeed} from './company-game-seed-contract.mjs';
+import {validateGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES} from './company-game-seed-contract.mjs';
 import {normalizeSeedState,SEED_MATERIAL_POOL_TARGET,SEED_MATERIAL_SOURCE_FAMILIES} from './game-seed-state.mjs';
 import {categorySeedProfile,loadPlatformProfiles,normalizeSeedPlatform} from './game-seed-platform-profile.mjs';
 import {evaluateGameFlowArchitecture} from './company-vibe2-game-flow-architect.mjs';
@@ -117,6 +117,64 @@ function v2GameplaySketchFailures(sketch){
 
   const flowResult=evaluateGameFlowArchitecture(sketch?.flowArchitecture||{});
   for(const blocker of flowResult.blockers||[])out.push(`v2-flow:${blocker}`);
+
+  if(Number(sketch?.version||1)>=3){
+    const composition=sketch?.compositionDepth||{};
+    const mainContent=clean(composition.mainContent);
+    const major=uniq(composition.majorSubSystems);
+    const extensions=uniq(composition.extensionSystems);
+    const combinations=uniq(composition.crossSystemCombinations);
+    const hidden=uniq(composition.hiddenCombinations);
+    const mutations=uniq(composition.growthMutations);
+    const revisit=uniq(composition.legacyContentRevisitHooks);
+    const families=uniq(composition.mechanicDiversitySources);
+    const endgame=clean(composition.endgameFusion);
+    if(mainContent.length<20)out.push('v3-composition-main-content-too-shallow');
+    if(major.length<3)out.push(`v3-major-subsystems=${major.length}/3`);
+    if(extensions.length<6)out.push(`v3-extension-systems=${extensions.length}/6`);
+    if(combinations.length<4)out.push(`v3-cross-system-combinations=${combinations.length}/4`);
+    if(hidden.length<2)out.push(`v3-hidden-combinations=${hidden.length}/2`);
+    if(mutations.length<2)out.push(`v3-growth-mutations=${mutations.length}/2`);
+    if(revisit.length<2)out.push(`v3-legacy-revisit-hooks=${revisit.length}/2`);
+    if(endgame.length<30)out.push('v3-endgame-fusion-too-shallow');
+    if(families.length<3)out.push(`v3-mechanic-family-diversity=${families.length}/3`);
+    const allowed=new Set(GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES);
+    for(const family of families)if(!allowed.has(family))out.push(`v3-invalid-mechanic-family=${family}`);
+
+    const fusionText=combinations.join(' ');
+    const pairwise=/×|\bx\b|\+|연결|결합|조합|상호|연계/i;
+    const mainConnection=/메인|main|핵심|core/i;
+    if(!pairwise.test(fusionText))out.push('v3-cross-system-combination-language-missing');
+    if(!mainConnection.test(fusionText))out.push('v3-main-to-subsystem-connection-missing');
+
+    const isolated=/독립 메뉴|별도 메뉴|상관없이|무관하게|isolated menu|standalone menu/i;
+    if(extensions.some(row=>isolated.test(row))||combinations.some(row=>isolated.test(row)))out.push('v3-disconnected-subsystem-dump-forbidden');
+
+    const mechanicText=[...extensions,...combinations,...hidden,...mutations,...revisit,endgame].join(' ');
+    const mechanicGroups=[
+      [/카드|card|deck|draft|트릭|포커|블랙잭/i],
+      [/보드|board|주사위|dice|타일|tile|경매|auction|일꾼|worker placement|engine/i],
+      [/아케이드|arcade|리듬|rhythm|레이싱|racing|타이밍|timing/i],
+      [/탐험|explor|지도|map|유적|ruin|비밀|secret/i],
+      [/판매|상점|무역|trade|market|경제|economy|생산|물류/i],
+      [/동료|companion|party|파티|호감|resident|주민|guild|길드/i],
+      [/수집|collection|도감|catalog|펫|pet|summon|소환|세트|set/i],
+      [/강화|합성|evol|진화|craft|제작|research|연구|housing|하우징/i]
+    ];
+    const mechanicCoverage=semanticGroupCoverage(mechanicText,mechanicGroups);
+    if(mechanicCoverage<3)out.push(`v3-mechanic-semantic-coverage=${mechanicCoverage}/3`);
+
+    const deepText=[...combinations,...mutations,...revisit,endgame].join(' ');
+    const depthGroups=[
+      [/초반|early|단독|separate/i],
+      [/중반|mid|pair|두.*시스템|2개|A.?[×x].?B/i],
+      [/후반|late|세.*시스템|3개|A.?[×x].?B.?[×x].?C/i],
+      [/엔드|endgame|@|복수|융합|fusion/i],
+      [/이전|초기|옛|revisit|return|돌아|재방문/i]
+    ];
+    const depthCoverage=semanticGroupCoverage(deepText,depthGroups);
+    if(depthCoverage<4)out.push(`v3-fusion-depth-coverage=${depthCoverage}/4`);
+  }
   return out;
 }
 
@@ -136,4 +194,4 @@ for(const seed of active){
 // Concept duplication is blocked when a new material-composed GAME_SEED is created.
 // Do not retroactively reject historical or owner-enrolled projects as duplicate pairs here.
 if(failures.length){console.error('GAME_SEED_SEMANTIC_QUALITY=FAIL');for(const failure of failures)console.error(`- ${failure}`);process.exit(1);}
-console.log('GAME_SEED_SEMANTIC_QUALITY=PASS');console.log('GAMEPLAY_SKETCH_V2_SEMANTIC_QUALITY=ENFORCED');console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);console.log(`GAME_SEED_MATERIAL_COMPOSED_COUNT=${active.filter(isMaterialComposed).length}`);console.log('LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO');console.log('CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY');console.log(`SEED_MATERIAL_POOL_TARGET=${SEED_MATERIAL_POOL_TARGET}`);console.log('SEED_MATERIAL_IS_GAME=NO');console.log('GAME_REFERENCE_REQUIRED=NO');console.log('TARGET_SESSION_MINUTES=30');console.log('MULTIPLAYER_DECISION_STAGE=DESIGN');console.log('GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO');console.log('GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO');console.log('GAME_SEED_POLICY_DOCUMENT=COMPANY_FLOW.md');
+console.log('GAME_SEED_SEMANTIC_QUALITY=PASS');console.log('GAMEPLAY_SKETCH_V2_V3_SEMANTIC_QUALITY=ENFORCED');console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);console.log(`GAME_SEED_MATERIAL_COMPOSED_COUNT=${active.filter(isMaterialComposed).length}`);console.log('LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO');console.log('CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY');console.log(`SEED_MATERIAL_POOL_TARGET=${SEED_MATERIAL_POOL_TARGET}`);console.log('SEED_MATERIAL_IS_GAME=NO');console.log('GAME_REFERENCE_REQUIRED=NO');console.log('TARGET_SESSION_MINUTES=30');console.log('MULTIPLAYER_DECISION_STAGE=DESIGN');console.log('GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO');console.log('GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO');console.log('GAME_SEED_POLICY_DOCUMENT=COMPANY_FLOW.md');
