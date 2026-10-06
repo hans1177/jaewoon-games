@@ -56,9 +56,44 @@ function Model.companions(attributes, config)
  for id in string.gmatch(tostring(attributes.UnlockedCompanions or ""),"[^,]+") do unlocked[id]=true end
  local rows = {}
  for _, companion in ipairs(config.BossCompanions or {}) do
-  table.insert(rows,{name=companion.Name,role=companion.Role,unlocked=unlocked[companion.Id]==true})
+  table.insert(rows,{
+   id=companion.Id,
+   name=companion.Name,
+   role=companion.Role,
+   zone=companion.Zone,
+   basic=companion.Basic,
+   skill=companion.Skill,
+   trait=companion.Trait,
+   unlocked=unlocked[companion.Id]==true,
+  })
  end
+ table.sort(rows,function(a,b)
+  if a.unlocked~=b.unlocked then return a.unlocked end
+  if (a.zone or 0)~=(b.zone or 0) then return (a.zone or 0)<(b.zone or 0) end
+  return tostring(a.name)<tostring(b.name)
+ end)
  return rows
+end
+
+function Model.partySummary(attributes, config)
+ local slots=math.max(1,tonumber(config.PartySlots) or 4)
+ local companionSlots=math.max(0,slots-1)
+ local companionCount=math.clamp(tonumber(attributes.PartyCount) or 0,0,companionSlots)
+ local companionRows=Model.companions(attributes,config)
+ local unlockedCount=0
+ for _,row in ipairs(companionRows)do if row.unlocked then unlockedCount+=1 end end
+ return {
+  size=companionCount+1,
+  slots=slots,
+  companionCount=companionCount,
+  companionSlots=companionSlots,
+  unlockedCount=unlockedCount,
+  totalBossCompanions=#companionRows,
+  huntKills=math.max(0,tonumber(attributes.PartyKills) or 0),
+  huntNeed=math.max(1,tonumber(config.PartyHuntTarget) or 15),
+  contribution=math.max(0,tonumber(attributes.Contribution) or 0),
+  roomCode=tonumber(attributes.RoomCode) or 1,
+ }
 end
 
 return Model

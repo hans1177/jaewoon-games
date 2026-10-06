@@ -41,6 +41,9 @@ assert(q.active and q.ratio==.6 and q.text:find('3 / 5',1,true))
 assert(Model.quest({QuestPortal=1,QuestKills=9,QuestNeed=5},config).ratio==1)
 assert(not Model.companions({UnlockedCompanions='ONE_MORE'},config)[1].unlocked)
 assert(Model.companions({UnlockedCompanions='ONE'},config)[1].unlocked)
+local party=Model.partySummary({PartyCount=9,PartyKills=4,Contribution=7,RoomCode=3,UnlockedCompanions='ONE'},config)
+assert(party.size==4 and party.companionCount==3 and party.companionSlots==3)
+assert(party.unlockedCount==1 and party.totalBossCompanions==1 and party.huntKills==4 and party.contribution==7 and party.roomCode==3)
 for _,v in ipairs({{320,568},{393,852},{844,390},{1280,720}})do
  local layout=Model.layout(v[1],v[2]);assert(layout.width<=v[1]-24 and layout.height<=v[2]-24)
 end
@@ -65,7 +68,11 @@ function methods:Destroy()self.Parent=nil end
 function methods:WaitForChild()return {}end
 local Instance={new=function(class)
  local data={ClassName=class,children={},attributes={},ZIndex=1,Activated=signal(),ChildAdded=signal(),ChildRemoved=signal(),AttributeChanged=signal(),CharacterAdded=signal(),Destroying=signal()}
- local object=setmetatable({},{__index=function(_,k)return methods[k] or data[k]end,__newindex=function(self,k,v)
+ local object=setmetatable({},{__index=function(_,k)
+  if methods[k] then return methods[k] end
+  if data[k]~=nil then return data[k] end
+  for _,child in ipairs(data.children)do if child.Name==k then return child end end
+ end,__newindex=function(self,k,v)
   if k=='Parent' then
    local old=data.Parent
    if old then for i,c in ipairs(old.children)do if c==self then table.remove(old.children,i);break end end end
@@ -102,6 +109,7 @@ local api=Menu.install({Portals={},Classes={}},gui,player,{canOpen=function()ret
 local function find(name)for i=#instances,1,-1 do if instances[i].Name==name and instances[i].Parent then return instances[i]end end error('missing '..name)end
 api.button.Activated:Fire();assert(not api.isOpen())
 allowed=true;api.button.Activated:Fire();assert(api.isOpen() and not combat)
+local stableSlot=find('InventorySlot1');player:SetAttribute('Gold',10);assert(find('InventorySlot1')==stableSlot)
 find('Filter3').Activated:Fire();find('ItemAction').Activated:Fire();assert(equipped==1 and tool.Parent==character)
 find('ItemAction').Activated:Fire();assert(tool.Parent==backpack)
 input.focused={};input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())

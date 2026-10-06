@@ -1,3 +1,5 @@
+-- 파일명: roblox-games/daechung-rpg/shared/RPGMenu.luau
+-- 임포트: 장비·퀘스트·파티의 서버 상태를 표시한다.
 -- Responsive RPG menu; all progression comes from replicated state or real Tools.
 local Model = require(script.Parent:WaitForChild("RPGMenuModel"))
 local Input = game:GetService("UserInputService")
@@ -5,6 +7,7 @@ local GuiService = game:GetService("GuiService")
 local Menu = {}
 local colors = {base=Color3.fromRGB(19,23,29),panel=Color3.fromRGB(29,35,43),card=Color3.fromRGB(39,47,56),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(240,237,225),muted=Color3.fromRGB(171,184,192)}
 
+-- 유틸: 기존 메뉴 요소 생성.
 local function make(class,parent,name,properties)
  local item=Instance.new(class);item.Name=name
  if item:IsA("GuiObject") and parent:IsA("GuiObject")then item.ZIndex=parent.ZIndex+1 end
@@ -22,6 +25,7 @@ local function button(parent,name,text)
  round(b);return b
 end
 
+-- 메인: 메뉴와 입력·상태 갱신 연결.
 function Menu.install(config,gui,player,options)
  options=options or {}
  local opened=false
@@ -31,6 +35,7 @@ function Menu.install(config,gui,player,options)
  local selectedTool=nil
  local rows={}
  local itemButtons={}
+ local itemRows={}
  local connections={}
  local toolConnections={}
  local previousSelection=nil
@@ -109,7 +114,7 @@ function Menu.install(config,gui,player,options)
  local partyText=label(content["파티"],"PartySummary","",18);partyText.Size=UDim2.new(1,-8,0,100)
  local room=button(content["파티"],"ChangePartyCode","멀티 코드 변경");room.Size=UDim2.new(1,-8,0,52)
  room.Activated:Connect(function()if options.changeRoom then options.changeRoom()end end)
- local companions=label(content["파티"],"CompanionRoster","",16);companions.Size=UDim2.new(1,-8,0,270);companions.TextYAlignment=Enum.TextYAlignment.Top
+ local companions=label(content["파티"],"CompanionRoster","",16);companions.Size=UDim2.new(1,-8,0,0);companions.AutomaticSize=Enum.AutomaticSize.Y;companions.TextYAlignment=Enum.TextYAlignment.Top
  local soundButton=button(content["설정"],"ToggleMenuSound","효과음 켜짐");soundButton.Size=UDim2.new(1,-8,0,52)
  soundButton.Activated:Connect(function()
   muted=not muted
@@ -145,27 +150,55 @@ function Menu.install(config,gui,player,options)
     if tool:IsA("Tool")then table.insert(rows,{id=tool,tool=tool,name=tool.Name,icon="T",category="도구",equipped=container==player.Character})end
    end
   end
-  for _,b in pairs(itemButtons)do b:Destroy()end;itemButtons={}
+  -- 같은 아이템 버튼은 유지해 상태 갱신 중 터치·게임패드 선택이 끊기지 않게 한다.
   local filtered=Model.filter(rows,category,search.Text)
+  itemRows={}
   empty.Visible=#filtered==0
   local selection=nil
+  local removedFocus=false
   for index,row in ipairs(filtered)do
-   local b=button(items,"InventorySlot"..index,"");b.LayoutOrder=index;itemButtons[row.id]=b
-   local icon=label(b,"ItemIcon",row.icon,28);icon.Font=Enum.Font.GothamBold;icon.TextColor3=colors.gold;icon.TextXAlignment=Enum.TextXAlignment.Center;icon.Position=UDim2.fromOffset(4,6);icon.Size=UDim2.new(1,-8,0,36)
-   local name=label(b,"ItemName",row.name,13);name.TextXAlignment=Enum.TextXAlignment.Center;name.Position=UDim2.fromOffset(4,45);name.Size=UDim2.new(1,-8,0,34)
-   local badge=label(b,"ItemState",row.equipped and "착용 중" or "도구",11);badge.TextColor3=colors.gold;badge.TextXAlignment=Enum.TextXAlignment.Center;badge.Position=UDim2.fromOffset(4,82);badge.Size=UDim2.new(1,-8,0,18)
-   b.Activated:Connect(function()selectItem(row)end)
-   if row.id==selectedId then selection=row end
+   local id=row.id
+   itemRows[id]=row
+   local b=itemButtons[id]
+   if not b then
+    b=button(items,"InventorySlot"..index,"");itemButtons[id]=b
+    local icon=label(b,"ItemIcon",row.icon,28);icon.Font=Enum.Font.GothamBold;icon.TextColor3=colors.gold;icon.TextXAlignment=Enum.TextXAlignment.Center;icon.Position=UDim2.fromOffset(4,6);icon.Size=UDim2.new(1,-8,0,36)
+    local name=label(b,"ItemName",row.name,13);name.TextXAlignment=Enum.TextXAlignment.Center;name.Position=UDim2.fromOffset(4,45);name.Size=UDim2.new(1,-8,0,34)
+    local badge=label(b,"ItemState","",11);badge.TextColor3=colors.gold;badge.TextXAlignment=Enum.TextXAlignment.Center;badge.Position=UDim2.fromOffset(4,82);badge.Size=UDim2.new(1,-8,0,18)
+    b.Activated:Connect(function()
+     local current=itemRows[id]
+     if current then selectItem(current)end
+    end)
+   end
+   b.Name="InventorySlot"..index;b.LayoutOrder=index
+   b.ItemIcon.Text=row.icon;b.ItemName.Text=row.name
+   b.ItemState.Text=row.equipped and "착용 중" or "도구"
+   if id==selectedId then selection=row end
+  end
+  for id,b in pairs(itemButtons)do
+   if not itemRows[id]then
+    if GuiService.SelectedObject==b then removedFocus=true end
+    b:Destroy();itemButtons[id]=nil
+   end
   end
   for key,b in pairs(filterButtons)do b.BackgroundColor3=key==category and Color3.fromRGB(82,67,44) or colors.card end
   selection=selection or filtered[1]
   if selection then selectItem(selection)else selectedId=nil;selectedTool=nil;detailTitle.Text="아이템 없음";detailText.Text="검색어나 분류를 바꿔 봐. 없는 아이템은 표시되지 않아.";itemAction.Visible=false end
+  if removedFocus then GuiService.SelectedObject=itemButtons[selectedId] or filterButtons[category]end
   local class=(config.Classes or {})[a.ClassId]
   equipmentText.Text=string.format("%s  ·  Lv.%d\n\n최대 체력  %d\n공격력  %d\n\n무기  T%d    방어구  T%d\n유물  %s",class and class.Name or "직업 미선택",a.Level or 1,a.MaxHP or 100,a.AttackPower or 0,a.WeaponTier or 0,a.ArmorTier or 0,a.RelicId=="NONE" and "비어 있음" or tostring(a.RelicId or "비어 있음"))
   local quest=Model.quest(a,config);questTitle.Text=quest.title;questText.Text=quest.text;track.Visible=quest.active
-  partyText.Text=string.format("멀티 코드 %d  ·  파티 %d/%d\n사냥 %d/%d  ·  기여 %d",a.RoomCode or 1,(a.PartyCount or 0)+1,config.PartySlots or 4,a.PartyKills or 0,config.PartyHuntTarget or 15,a.Contribution or 0)
-  local roster={"동료 · 월드에서 두 번 터치해 초대"}
-  for _,row in ipairs(Model.companions(a,config))do table.insert(roster,(row.unlocked and "해금  " or "잠김  ")..row.name.." · "..row.role)end
+  local party=Model.partySummary(a,config)
+  partyText.Text=string.format("편성 %d/%d  ·  동료 슬롯 %d/%d\n보스 동료 해금 %d/%d  ·  멀티 코드 %d\n사냥 %d/%d  ·  기여 %d",party.size,party.slots,party.companionCount,party.companionSlots,party.unlockedCount,party.totalBossCompanions,party.roomCode,party.huntKills,party.huntNeed,party.contribution)
+  local roster={"보스 동료 도감 · 해금한 동료를 월드에서 두 번 터치해 편성"}
+  for _,row in ipairs(Model.companions(a,config))do
+   local zone=tonumber(row.zone)or 0
+   if row.unlocked then
+    table.insert(roster,string.format("● %s · %s · %d번 포탈\n기본 %s · 스킬 %s",tostring(row.name),tostring(row.role),zone,tostring(row.basic or"-"),tostring(row.skill or"-")))
+   else
+    table.insert(roster,string.format("○ %s · %s\n%d번 포탈 보스 첫 처치로 해금",tostring(row.name),tostring(row.role),zone))
+   end
+  end
   companions.Text=table.concat(roster,"\n\n")
   relayout()
  end
@@ -209,7 +242,7 @@ function Menu.install(config,gui,player,options)
   if pending or not opened then return end
   pending=true;task.defer(function()pending=false;if gui.Parent then refresh()end end)
  end
- local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,LastAction=true}
+ local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
  local function watchTools()
   for _,c in ipairs(toolConnections)do c:Disconnect()end;toolConnections={}

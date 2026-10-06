@@ -1,7 +1,7 @@
 {
   "version": 1,
   "packId": "roblox-rpg-system-menu-v1",
-  "recordedAt": "2026-10-05",
+  "recordedAt": "2026-10-06",
   "productionVerified": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "sourceAudit": {
@@ -72,7 +72,13 @@
       "readOnlyPresentationModel": true,
       "gameplayAuthority": false,
       "saveAuthority": false,
-      "networkAuthority": false
+      "networkAuthority": false,
+      "currentConsumerCanonicalParity": true,
+      "stableInventorySlotIdentityOnRefresh": true,
+      "gamepadSelectionRecoveryAfterFilteredRemoval": true,
+      "partySummary": true,
+      "companionRoleDetailPresentation": true,
+      "companionUnlockRefresh": true
     },
     "limitations": [
       "ROBLOX_STUDIO_RUNTIME_UNVERIFIED",

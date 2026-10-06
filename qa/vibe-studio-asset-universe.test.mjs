@@ -4699,3 +4699,31 @@ test('quality-first repairs current released Roblox assets before unused volume 
  assert.equal(plan.productionPromotionAutomatic,false);
  assert.equal(buildInternalAssetLibraryAutomationPlan({assets:[]}).focusPhase,'VOLUME_UP');
 });
+
+
+test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const assetRoot=path.join(root,'assets','roblox','rpg-menu');
+  const gameRoot=path.join(root,'roblox-games','daechung-rpg','shared');
+  for(const name of ['RPGMenu.luau','RPGMenuModel.luau']){
+    assert.equal(fs.readFileSync(path.join(assetRoot,name),'utf8'),fs.readFileSync(path.join(gameRoot,name),'utf8'),name);
+  }
+  const source=fs.readFileSync(path.join(assetRoot,'RPGMenu.luau'),'utf8');
+  const model=fs.readFileSync(path.join(assetRoot,'RPGMenuModel.luau'),'utf8');
+  assert.match(source,/local itemRows=\{\}/);
+  assert.match(source,/GuiService\.SelectedObject=itemButtons\[selectedId\] or filterButtons\[category\]/);
+  assert.match(model,/function Model\.partySummary\(attributes, config\)/);
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const asset=registry.assets.find(row=>row.id==='roblox-rpg-system-menu-v1');
+  assert.ok(asset);
+  assert.deepEqual(asset.consumerGameIds,['daechung-rpg']);
+  assert.equal(asset.productionVerified,false);
+  assert.equal(asset.verifiedCompanyReusable,false);
+  assert.equal(asset.runtimeVerificationState,'PENDING_STUDIO');
+  const quality=JSON.parse(fs.readFileSync(path.join(assetRoot,'quality-evidence.json'),'utf8'));
+  assert.equal(quality.productionVerified,false);
+  assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,true);
+  assert.equal(quality.sourceAudit.claim,'SOURCE_AUTHORING_INTERNAL_ASSET_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS');
+});
