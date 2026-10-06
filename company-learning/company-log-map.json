@@ -3343,7 +3343,7 @@
     "internalAndExternalReleaseAreDevelopmentCheckpoints": true
   },
   "buildReadyDesignToSourceEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.buildReadyDesignToSource20261007",
     "directiveProducer": "tools/company-build-up-directive.mjs",
     "sourceConsumer": "tools/vibe2-source-worker.mjs",
@@ -3351,23 +3351,70 @@
       "BUILD_READY_IMPLEMENTATION_BLUEPRINT:",
       "VERTICAL_SLICE:",
       "STATE_TRANSITIONS:",
+      "SYSTEM_CONTRACTS:",
       "RESPONSIBLE_SOURCE_PLAN:",
+      "PRESENTATION_PLAN:",
       "RUNTIME_ACCEPTANCE:",
       "BUILD_COMPLETION_GATE:"
-    ],
-    "compactPromptRequiredPrefixes": [
-      "buildReadyBlueprint=",
-      "verticalSlice=",
-      "stateTransitions=",
-      "responsibleSourcePlan=",
-      "runtimeAcceptance=",
-      "buildCompletionGate="
     ],
     "foundationRepairFirstWhenRuntimeFailed": true,
     "realGameplaySourceDeltaRequired": true,
     "bootstrapOnlyCompletionRejected": true,
     "statusMarkerOnlyCompletionRejected": true,
     "exactResponsibleSourcePlanRequiredWhenAnchorsExist": true,
-    "sameVerticalSliceInputStateFeedbackResultRequired": true
+    "sameVerticalSliceInputStateFeedbackResultRequired": true,
+    "implementationSpecStatus": "DETAILED_BUILD_READY_IMPLEMENTATION_SPEC",
+    "requiredCompactPrefixes": [
+      "buildReadyBlueprint=",
+      "blueprintCritical=",
+      "implementationFacts=",
+      "coreLoopExecutionPlan=",
+      "interactionCombatContract=",
+      "inputUiContract=",
+      "networkContract=",
+      "presentationContract=",
+      "sourceImplementationContract=",
+      "orderedImplementationSteps=",
+      "acceptanceScenarios=",
+      "antiShallowImplementationContract=",
+      "responsibleSourcePlan=",
+      "runtimeAcceptance=",
+      "buildCompletionGate="
+    ],
+    "detailedFullPromptPrefixes": [
+      "rosterContracts=",
+      "worldMapContract=",
+      "persistenceContract=",
+      "aiEncounterContract=",
+      "progressionEconomyContract=",
+      "performanceContract=",
+      "failureRecoveryContract="
+    ],
+    "requiredDesignFactEvidence": [
+      "technicalAssumptions",
+      "mobileUx",
+      "mvpScope",
+      "failureRetryRisk",
+      "platformProfiles",
+      "graphicsConcept",
+      "implementationSync"
+    ],
+    "exactApprovedValuesPreferred": true,
+    "inventedMissingValuesRejected": true,
+    "bootstrapStatusConfigUiShellRegistryOnlyCompletionRejected": true,
+    "runtimeScenarioMinimumSet": [
+      "BOOT_TO_PLAY",
+      "PRIMARY_HAPPY_PATH",
+      "INVALID_OR_BLOCKED_ACTION",
+      "FAILURE_AND_RETRY",
+      "UI_STATE_BINDING",
+      "ACTOR_LIFECYCLE",
+      "SAVE_REJOIN_WHEN_APPLICABLE",
+      "MULTIPLAYER_SYNC_WHEN_APPLICABLE",
+      "PRESENTATION_BEFORE_AFTER_WHEN_APPLICABLE",
+      "ERROR_AND_PERFORMANCE_SANITY"
+    ],
+    "initialPromptByteLimitMustRemain": 16000,
+    "compactBlueprintBudgetBytes": 9000
   }
 }
