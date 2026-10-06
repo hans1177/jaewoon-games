@@ -2662,7 +2662,11 @@ export function buildVibeAssetProductionPlan({
   const activeNextVolumeActions=referenceVolumeActions.filter(row=>
     assetDomainFamilies(row?.domain).some(family=>currentDemandFamilies.includes(family))
   );
-  const activeQualityActions=(executionLibraryPlan.nextQualityActions||[]).filter(row=>Number(row?.consumerPriority||0)>0);
+  const currentGameId=clean(task.gameId);
+  const activeQualityActions=(executionLibraryPlan.nextQualityActions||[]).filter(row=>
+    Number(row?.consumerPriority||0)>0
+    &&(!currentGameId||(row?.consumerGameIds||[]).map(clean).includes(currentGameId))
+  );
   const currentExecutionPhase=activeQualityActions.length?'QUALITY_UP_1000':activeNextVolumeActions.length?'VOLUME_UP':'HOLD';
   const internalLibraryEvolution=freeze({
     phase:currentExecutionPhase,
