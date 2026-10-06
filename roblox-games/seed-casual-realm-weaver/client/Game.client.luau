@@ -358,10 +358,108 @@ status.TextColor3 = Color3.fromRGB(220, 232, 250)
 status.TextScaled = true
 status.Parent = root
 
+local puzzleBoard = Instance.new("Frame")
+puzzleBoard.Name = "RealmPuzzleBoard"
+puzzleBoard.Size = UDim2.fromOffset(116, 116)
+puzzleBoard.Position = UDim2.fromOffset(10, 106)
+puzzleBoard.BackgroundColor3 = Color3.fromRGB(31, 43, 48)
+puzzleBoard.BorderSizePixel = 0
+puzzleBoard.Parent = root
+
+local puzzleInfo = Instance.new("TextLabel")
+puzzleInfo.Name = "RealmPuzzleInfo"
+puzzleInfo.Size = UDim2.new(1, -144, 0, 116)
+puzzleInfo.Position = UDim2.fromOffset(134, 106)
+puzzleInfo.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
+puzzleInfo.TextColor3 = Color3.fromRGB(224, 236, 245)
+puzzleInfo.TextWrapped = true
+puzzleInfo.TextScaled = true
+puzzleInfo.Parent = root
+
+local boardColors = {
+  Color3.fromRGB(74, 79, 84),
+  Color3.fromRGB(102, 181, 112),
+  Color3.fromRGB(96, 154, 211),
+  Color3.fromRGB(224, 184, 92),
+}
+local boardCells = {}
+local dragActive = false
+local dragCell = nil
+
+local function boardCellAtPosition(position)
+  for index, cell in ipairs(boardCells) do
+    local origin = cell.AbsolutePosition
+    local size = cell.AbsoluteSize
+    if position.X >= origin.X and position.X <= origin.X + size.X
+      and position.Y >= origin.Y and position.Y <= origin.Y + size.Y
+    then
+      return index
+    end
+  end
+  return nil
+end
+
+local function setDragCell(index)
+  dragCell = index
+  for cellIndex, cell in ipairs(boardCells) do
+    cell.BorderSizePixel = cellIndex == index and 2 or 0
+    cell.BorderColor3 = Color3.fromRGB(248, 244, 206)
+  end
+end
+
+for index = 1, 9 do
+  local row = math.floor((index - 1) / 3)
+  local col = (index - 1) % 3
+  local cell = Instance.new("TextButton")
+  cell.Name = "RealmCell" .. index
+  cell.Size = UDim2.fromOffset(34, 34)
+  cell.Position = UDim2.fromOffset(4 + col * 38, 4 + row * 38)
+  cell.BackgroundColor3 = boardColors[1]
+  cell.Text = ""
+  cell.AutoButtonColor = false
+  cell.Parent = puzzleBoard
+  cell.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+      or input.UserInputType == Enum.UserInputType.MouseButton1
+    then
+      dragActive = true
+      setDragCell(index)
+    end
+  end)
+  table.insert(boardCells, cell)
+end
+
+UserInputService.InputChanged:Connect(function(input)
+  if not dragActive then return end
+  if input.UserInputType ~= Enum.UserInputType.Touch
+    and input.UserInputType ~= Enum.UserInputType.MouseMovement
+  then
+    return
+  end
+  local position = Vector2.new(input.Position.X, input.Position.Y)
+  local index = boardCellAtPosition(position)
+  if index then setDragCell(index) end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+  if not dragActive then return end
+  if input.UserInputType ~= Enum.UserInputType.Touch
+    and input.UserInputType ~= Enum.UserInputType.MouseButton1
+  then
+    return
+  end
+  dragActive = false
+  if dragCell then
+    remote:FireServer("scope-coreloop-0-b46035eaa3", dragCell)
+  end
+  dragCell = nil
+  for _, cell in ipairs(boardCells) do cell.BorderSizePixel = 0 end
+end)
+
 local list = Instance.new("ScrollingFrame")
 list.Name = "ApprovedActions"
-list.Size = UDim2.new(1, -20, 1, -112)
-list.Position = UDim2.fromOffset(10, 106)
+list.Size = UDim2.new(1, -20, 1, -236)
+list.Position = UDim2.fromOffset(10, 230)
 list.BackgroundTransparency = 1
 list.BorderSizePixel = 0
 list.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -385,9 +483,32 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
-local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
+local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","CurrentStage","TurnsRemaining","RestorationGauge","NextPiece","InventoryThemeShards","ThemeUnlockLevel","GardenDecorCount","BoardPlaced","BoardState","PuzzleSessionActive","PuzzleHint","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+  status.Text = string.format(
+    "Stage %d · Score %d · Combo %d · Restore %d%%",
+    player:GetAttribute("CurrentStage") or 1,
+    player:GetAttribute("Score") or 0,
+    player:GetAttribute("Combo") or 0,
+    player:GetAttribute("RestorationGauge") or 0
+  )
+
+  local boardState = tostring(player:GetAttribute("BoardState") or "")
+  local values = string.split(boardState, ",")
+  for index, cell in ipairs(boardCells) do
+    local value = math.clamp(tonumber(values[index]) or 0, 0, 3)
+    cell.BackgroundColor3 = boardColors[value + 1]
+  end
+
+  puzzleInfo.Text = string.format(
+    "다음 조각 %d\n남은 턴 %d · 배치 %d/9\n테마 조각 %d · 해금 %d\n%s",
+    player:GetAttribute("NextPiece") or 1,
+    player:GetAttribute("TurnsRemaining") or 8,
+    player:GetAttribute("BoardPlaced") or 0,
+    player:GetAttribute("InventoryThemeShards") or 0,
+    player:GetAttribute("ThemeUnlockLevel") or 0,
+    tostring(player:GetAttribute("PuzzleHint") or "보드를 드래그해서 지형 조각 배치")
+  )
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
