@@ -206,3 +206,56 @@ test('GAMEPLAY_SKETCH v3 identity core is enforced while legacy sketches stay co
   assert.equal(fail.pass,false);
   assert.ok(fail.errors.some(error=>error.includes('identityCore')));
 });
+
+
+test('GAMEPLAY_SKETCH v4 causal grammar supports simple comic depth without requiring epic complexity',()=>{
+  const seed=legacySeed();
+  const grammar={
+    depth:'D1_LIGHT_COMIC',toneMode:'LIGHT_ABSURD_COMIC',
+    familiarAnchor:'체면 때문에 사소한 거짓말을 했다가 동네 전체가 그 말을 믿게 되는 익숙한 인간 갈등.',
+    causalDNAs:[
+      {id:'COMEDIC_MISUNDERSTANDING',source:'COMEDY_FARCE',principle:'오해가 연쇄적인 현실 결과를 만든다.',gameplayConversion:'NPC가 믿은 오해가 다음 목표와 동선을 실제로 바꾼다.',fusionRole:'사소한 거짓말을 반복 가능한 플레이 원인으로 만든다.'},
+      {id:'TESTIMONY_CONSENSUS_REALITY',source:'HISTORY_LAW_EPISTEMOLOGY',principle:'합의된 증언이 사회적 사실로 인정된다.',gameplayConversion:'같은 믿음이 임계치를 넘으면 공간 규칙이 바뀐다.',fusionRole:'개인 오해를 월드 상태 변화로 확장한다.'}
+    ],
+    brokenGenreAssumption:'퍼즐에서 정답을 찾는 대신 사람들이 어떤 오답을 믿게 만들지를 설계한다.',
+    newPrimaryVerb:'오해를 설득해 현실로 만든다',
+    worldRule:'충분한 사람이 같은 이야기를 믿으면 잠시 그 이야기가 공간 규칙이 된다.',
+    causalFusion:['오해를 퍼뜨리면 증언 합의가 생기고 합의가 맵 규칙을 바꾼다.','바뀐 맵 규칙이 다시 새로운 오해와 선택을 만든다.'],
+    irreducibilityTest:{removeFirstAxis:'오해를 빼면 단순한 투표 퍼즐이 된다.',removeSecondAxis:'합의 현실을 빼면 대화 개그로 끝난다.',verdict:'두 축이 함께 있어야 대화가 월드 편집 행동이 된다.'},
+    storyWorldBindings:{emotionalConflict:'인정받고 싶은 욕망과 들킬까 두려운 마음이 충돌한다.',characterRule:'NPC마다 믿고 싶은 거짓말이 다르다.',monsterRule:'소문에서 태어난 괴물은 믿는 사람이 줄면 약해진다.',regionRule:'지역마다 권위 있는 증언자가 달라 현실 변경 조건이 다르다.',storyRule:'플레이어가 만든 거짓 현실의 후폭풍이 다음 사건 원인이 된다.',plausibility:'도시는 오래전부터 공동 증언을 계약과 법의 근거로 삼아 왔다.'},
+    comicAbsurdity:{enabled:true,setup:'빵집 문이 잠겨 배달을 못 한다.',ruleTwist:'주민들에게 원래 문이 없었다고 믿게 만들면 진짜 벽이 된다.',payoff:'벽 때문에 도둑의 이동로가 바뀌어 다음 사건이 발생한다.'},
+    escalation:{early:'한 사람의 사소한 오해를 이용한다.',mid:'여러 오해를 조합해 작은 공간 규칙을 바꾼다.',late:'구역별 증언 충돌로 도시 동선이 달라진다.',endgame:'어떤 증언 체계를 현실 판정 기준으로 둘지 선택한다.'},
+    expansionVectors:['새 지역은 다른 권위자를 가진다.','새 괴물은 소문 전파 방식을 바꾼다.','새 NPC는 믿음 조건을 거래한다.','새 아이템은 증언을 보존하거나 위조한다.'],
+    culturalAbstractionRule:'고전·역사·철학의 인과 구조만 새 플레이 규칙으로 재해석한다.'
+  };
+  const flowArchitecture=buildGameFlowArchitecture({
+    gameId:'causal-v4-test',genre:seed.GAME_CATEGORY,
+    baseline:{content:{identity:'증언으로 현실을 바꾸는 코믹 퍼즐',playerFantasy:'동네 오해를 이용해 길을 만든다.',coreFun:'설득과 믿음 상태를 조작한다.',coreLoop:seed.CORE_LOOP,progressionDirection:'개인 오해에서 구역 규칙 조작으로 확장한다.',novelGameGrammar:grammar}},
+    inventory:[]
+  });
+  seed.GAMEPLAY_SKETCH={
+    version:4,source:'CAUSAL_V4_TEST',worldModel:'공동 증언이 공간 규칙으로 반영되는 동네.',
+    actors:['플레이어','주민'],interactionChains:['소문 선택 -> 설득 -> 믿음 상태 변화 -> 공간 규칙 변화'],
+    stateMachine:['ENTRY','READ','ACTION','STATE_CHANGE','CHOICE','RISK','GOAL'],
+    firstPlayableCycle:['진입','관찰','소문 선택','설득','현실 변화','후폭풍','다음 목표'],
+    identityCore:{oneLineFantasy:'오해를 현실로 만들어 길을 푸는 코믹 퍼즐.',playerRole:'소문을 다루는 동네 중재자.',representativeAction:'주민에게 이야기를 설득한다.',representativeChoice:'누구에게 어떤 말을 믿게 할지 고른다.',signatureWorldRule:'공동 믿음이 공간 규칙이 된다.',signatureSystemPromise:['증언 합의 현실화'],growthIdentity:'개인 오해에서 구역 규칙 조작으로 성장한다.',identityCoherence:{worldCulture:'증언 중심 동네 문화.',visualLanguage:'믿음 상태가 표식으로 보인다.',audioLanguage:'소문 확산을 소리로 구분한다.',enemyItemNpcCoherence:'괴물과 아이템도 믿음 규칙을 따른다.'},threeSentenceTest:{whatGame:'증언으로 현실을 바꾸는 퍼즐이다.',whatDifferent:'정답보다 믿게 만든 오답이 공간 규칙이 된다.',whatGrowthUnlocks:'여러 사람의 믿음을 조합해 구역 규칙을 바꾼다.'},genreAdaptationRule:'퍼즐의 정보와 상태변화를 우선한다.'},
+    novelGameGrammar:grammar,
+    playerPromise:'믿음과 현실의 인과를 이용해 새로운 해결법을 만든다.',
+    funDrivers:['즉시 변화','오해 선택','규칙 발견'],balanceRules:['지배전략 방지','반작용 존재','복구 가능','정보 비용 존재'],
+    pacingPlan:{first5Minutes:'한 오해',minutes5To15:'첫 현실 변화',minutes15To25:'오해 조합',minutes25To30:'구역 변화',midLateGame:'증언 충돌',replayMotivation:'다른 현실'},
+    progressionLayers:['개인 믿음','집단 합의','구역 규칙'],expansionPlan:['새 증언자','새 지역','새 괴물','새 기록'],
+    longGoalScenario:['개인 설득','구역 변화','현실 기준 선택'],completionCriteria:['첫 변화','중반 조합','후반 규칙','복구 가능'],
+    codingGrowthHooks:['기존 함수 재사용','stable id 유지','권한 보존','저장 마이그레이션'],validationRisks:['개그만 있고 규칙 없는 상태 금지','대사만 다른 복제 금지'],
+    flowArchitecture
+  };
+  const pass=validateGameSeed(seed);
+  assert.equal(pass.pass,true,pass.errors.join(','));
+  const flow=evaluateGameFlowArchitecture(flowArchitecture);
+  assert.equal(flow.pass,true,flow.blockers.join(','));
+  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.depth,'D1_LIGHT_COMIC');
+  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.depthIsQualityRank,false);
+  seed.GAMEPLAY_SKETCH.novelGameGrammar.comicAbsurdity.enabled=false;
+  const fail=validateGameSeed(seed);
+  assert.equal(fail.pass,false);
+  assert.ok(fail.errors.some(error=>error.includes('D1 requires enabled comicAbsurdity')));
+});

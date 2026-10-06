@@ -72,6 +72,24 @@ assert.equal(strong.thirtyMinuteHardGateApplied,false);
 assert.ok(strong.totalScore>=80);
 for(const value of Object.values(strong.evidenceLevels))assert.ok(DESIGN_DIRECT_SCORE_LEVELS.includes(value));
 
+const grammarSeed=structuredClone(seed);
+grammarSeed.GAMEPLAY_SKETCH={version:4,novelGameGrammar:{
+  depth:'D1_LIGHT_COMIC',
+  newPrimaryVerb:'오해를 설득해 현실로 만든다',
+  worldRule:'공동 믿음이 공간 규칙이 된다.',
+  causalDNAs:[{id:'COMEDIC_MISUNDERSTANDING'},{id:'TESTIMONY_CONSENSUS_REALITY'}]
+}};
+const grammarDesign=structuredClone(designRecord);
+grammarDesign.content.identity+=' 오해를 설득해 현실로 만든다 COMEDIC_MISUNDERSTANDING TESTIMONY_CONSENSUS_REALITY';
+const grammarPass=scoreDesignGateV2({seed:grammarSeed,designRecord:grammarDesign,cycleStatus,robloxGenreProfile:profile});
+assert.equal(grammarPass.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'),false);
+assert.equal(grammarPass.grammarCarryEvidence.depth,'D1_LIGHT_COMIC');
+assert.equal(grammarPass.grammarCarryEvidence.depthIsQualityRank,false);
+const grammarDiluted=scoreDesignGateV2({seed:grammarSeed,designRecord,cycleStatus,robloxGenreProfile:profile});
+assert.ok(grammarDiluted.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
+assert.ok(grammarDiluted.rejectionReasons.some(reason=>reason.code==='NOVEL_GRAMMAR_DILUTED'));
+
+
 const weak=structuredClone(designRecord);
 delete weak.content.uxAccessibilityPlan;
 const weakResult=scoreDesignGateV2({seed,designRecord:weak,cycleStatus,robloxGenreProfile:profile});

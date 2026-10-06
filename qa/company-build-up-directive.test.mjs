@@ -133,6 +133,10 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.identityReinforcement.growthIdentity.length>0);
   assert.match(directivePrompt(directive),/IDENTITY_THREE_SENTENCE_TEST:/);
   assert.match(directivePrompt(directive),/IDENTITY_BUILD_UP_RULE:/);
+  assert.match(directivePrompt(directive),/CAUSAL_GRAMMAR_EVIDENCE:/);
+  assert.match(directivePrompt(directive),/CAUSAL_GRAMMAR_BUILD_UP_RULE:/);
+  assert.equal(directive.identityReinforcement.causalGrammarEvidence.depthIsQualityRank,false);
+  assert.equal(directive.identityReinforcement.causalGrammarEvidence.lightComicMayRemainSimple,true);
   assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
   assert.match(directivePrompt(directive),/AUTONOMOUS_CONTENT_EXPANSION:/);
   assert.match(directivePrompt(directive),/CONTENT_BREADTH_LEDGER:/);
