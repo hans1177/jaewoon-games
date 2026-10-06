@@ -645,9 +645,19 @@ for index, action in ipairs(Config.Actions) do
   button.Parent = list
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
-local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
+local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","CurrentDay","DayPhase","ResourceWood","ResourceStone","InventoryItems","EquippedToolTier","RecipeUnlock","SurvivalRecord","EnemyKills","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+  local phase = (player:GetAttribute("DayPhase") or 0) == 1 and "밤" or "낮"
+  status.Text = string.format(
+    "%d일 %s · HP %d · Wave %d · 목재 %d / 돌 %d · 장비 T%d",
+    player:GetAttribute("CurrentDay") or 1,
+    phase,
+    player:GetAttribute("Health") or 100,
+    player:GetAttribute("Wave") or 1,
+    player:GetAttribute("ResourceWood") or 0,
+    player:GetAttribute("ResourceStone") or 0,
+    player:GetAttribute("EquippedToolTier") or 0
+  )
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
