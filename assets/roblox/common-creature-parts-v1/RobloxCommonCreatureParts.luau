@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 생물/몬스터 외형 모듈 24종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 생물/몬스터 외형 모듈 28종 생성
 -- 원칙: 순수 표현 자산만 제공한다. AI/체력/데미지/이동/히트박스/드랍/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonCreatureParts = {}
@@ -60,6 +60,10 @@ local Catalog=table.freeze({
 	CLAW_PAIR=table.freeze({id="CLAW_PAIR",name="발톱 한 쌍",familyRootId="CREATURE_CLAWS",family="CREATURE",subfamily="CLAW_PAIR",creatureRole="APPENDAGE",bodyPlan="MULTI",ecologyRole="PREDATOR",silhouette="CURVED_TWIN_CLAWS",palette=table.freeze({body=c(122,111,91),light=c(177,165,137),dark=c(70,65,57),accent=c(195,173,126)})}),
 	MANDIBLE_PAIR=table.freeze({id="MANDIBLE_PAIR",name="턱 한 쌍",familyRootId="CREATURE_MANDIBLES",family="CREATURE",subfamily="MANDIBLE_PAIR",creatureRole="HEAD_APPENDAGE",bodyPlan="INSECT",ecologyRole="INSECT_PREDATOR",silhouette="CURVED_OPPOSING_MANDIBLES",palette=table.freeze({body=c(74,81,64),light=c(111,121,91),dark=c(42,47,38),accent=c(174,133,62)})}),
 	ELITE_ORNAMENT=table.freeze({id="ELITE_ORNAMENT",name="엘리트 장식",familyRootId="CREATURE_ELITE",family="CREATURE",subfamily="ELITE_ORNAMENT",creatureRole="ELITE_ORNAMENT",bodyPlan="MULTI",ecologyRole="ELITE_VARIANT",silhouette="BACK_SPIKE_SHOULDER_CREST",palette=table.freeze({body=c(93,73,61),light=c(137,105,81),dark=c(52,43,39),accent=c(218,156,67)})}),
+	AMORPHOUS_CORE=table.freeze({id="AMORPHOUS_CORE",name="무정형 점액 코어",familyRootId="CREATURE_AMORPHOUS",family="CREATURE",subfamily="AMORPHOUS_CORE",creatureRole="BODY_CORE",bodyPlan="AMORPHOUS",ecologyRole="AMBUSH_PREDATOR",silhouette="ASYMMETRIC_BLOB_PSEUDOPODS",palette=table.freeze({body=c(80,116,91),light=c(126,160,128),dark=c(45,69,54),accent=c(143,206,170)})}),
+	ARMORED_TORSO_VARIANT=table.freeze({id="ARMORED_TORSO_VARIANT",name="장갑 몸통 변형",familyRootId="CREATURE_TORSO_VARIANT",family="CREATURE",subfamily="ARMORED_TORSO_VARIANT",creatureRole="TORSO_VARIANT",bodyPlan="MULTI",ecologyRole="GENERAL",silhouette="LAYERED_PLATED_TORSO",palette=table.freeze({body=c(92,88,82),light=c(137,132,121),dark=c(53,51,49),accent=c(157,118,70)})}),
+	CRYSTAL_SURFACE_VARIANT=table.freeze({id="CRYSTAL_SURFACE_VARIANT",name="수정 표면 변형",familyRootId="CREATURE_SURFACE_VARIANT",family="CREATURE",subfamily="CRYSTAL_SURFACE_VARIANT",creatureRole="SURFACE_VARIANT",bodyPlan="MULTI",ecologyRole="GENERAL",silhouette="FACETED_CRYSTAL_SURFACE_CLUSTER",palette=table.freeze({body=c(85,102,119),light=c(143,174,190),dark=c(48,61,73),accent=c(119,221,230)})}),
+	BOSS_CROWN_SIGNATURE=table.freeze({id="BOSS_CROWN_SIGNATURE",name="보스 왕관 시그니처",familyRootId="CREATURE_BOSS_SIGNATURE",family="CREATURE",subfamily="BOSS_CROWN_SIGNATURE",creatureRole="BOSS_SIGNATURE",bodyPlan="MULTI",ecologyRole="BOSS_VARIANT",silhouette="CROWNED_BACK_HALO_SIGNATURE",palette=table.freeze({body=c(91,69,63),light=c(151,112,92),dark=c(48,39,39),accent=c(232,184,78)})}),
 })
 
 local function makePart(name,size,color,material,shape)
@@ -285,6 +289,39 @@ local function addCreatureExpansion(model,root,row,level)
 		for _,x in ipairs({-1,1}) do weld(root,wedge("Mandible"..x,Vector3.new(0.55,0.55,1.55),p.body,Enum.Material.SmoothPlastic),CFrame.new(x*0.52,0,-0.65)*CFrame.Angles(math.rad(90),0,math.rad(x*22))) end
 	elseif id=="ELITE_ORNAMENT" then
 		for i=-2,2 do weld(root,wedge("Crest"..i,Vector3.new(0.50,1.05+math.abs(i)*0.15,0.30),i%2==0 and p.accent or p.light,Enum.Material.SmoothPlastic),CFrame.new(i*0.48,0.65,0)*CFrame.Angles(0,0,math.rad(i*6))) end
+	elseif id=="AMORPHOUS_CORE" then
+		weld(root,makePart("Core",Vector3.new(2.35,1.65,2.05),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		local lobes=level==1 and 3 or level==2 and 4 or 5
+		for i=1,lobes do
+			local angle=math.rad((i-1)*(360/lobes))
+			local radius=0.82+(i%2)*0.18
+			local lobe=weld(root,makePart("Lobe"..i,Vector3.new(0.85,0.72,0.85),i%2==0 and p.light or p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new(math.cos(angle)*radius,-0.35,math.sin(angle)*radius))
+			lobe.Transparency=0.05
+		end
+		if detail(level,3) then weld(root,makePart("CoreGlow",Vector3.new(0.62,0.62,0.62),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(0,0.18,-0.92)) end
+	elseif id=="ARMORED_TORSO_VARIANT" then
+		weld(root,makePart("TorsoCore",Vector3.new(2.45,2.65,1.35),p.body,Enum.Material.SmoothPlastic),CFrame.new())
+		for _,y in ipairs({-0.72,0,0.72}) do weld(root,makePart("Plate"..tostring(y),Vector3.new(2.72,0.56,0.34),p.light,Enum.Material.Metal),CFrame.new(0,y,-0.82)) end
+		if detail(level,2) then for _,x in ipairs({-1.52,1.52}) do weld(root,wedge("SideGuard"..x,Vector3.new(0.62,1.65,0.48),p.dark,Enum.Material.Metal),CFrame.new(x,0,-0.18)*CFrame.Angles(0,0,math.rad(x<0 and 12 or -12))) end end
+		if detail(level,3) then weld(root,makePart("CenterEmblem",Vector3.new(0.58,0.58,0.18),p.accent,Enum.Material.Metal,"BALL"),CFrame.new(0,0,-1.02)) end
+	elseif id=="CRYSTAL_SURFACE_VARIANT" then
+		weld(root,makePart("SurfaceBase",Vector3.new(2.35,1.35,1.95),p.body,Enum.Material.Slate,"BALL"),CFrame.new())
+		local shardCount=level==1 and 3 or level==2 and 5 or 7
+		for i=1,shardCount do
+			local x=(i-(shardCount+1)/2)*0.42
+			local height=0.85+(i%3)*0.32
+			local shard=weld(root,wedge("CrystalShard"..i,Vector3.new(0.34,height,0.34),i%2==0 and p.light or p.accent,Enum.Material.Glass),CFrame.new(x,0.62,-0.36)*CFrame.Angles(0,0,math.rad((i%2==0 and 1 or -1)*8)))
+			shard.Transparency=0.12
+		end
+		if detail(level,3) then weld(root,makePart("SurfaceGlow",Vector3.new(1.1,0.18,0.85),p.accent,Enum.Material.Neon),CFrame.new(0,-0.38,-0.92)) end
+	elseif id=="BOSS_CROWN_SIGNATURE" then
+		weld(root,makePart("CrownBase",Vector3.new(2.65,0.42,0.72),p.body,Enum.Material.Metal),CFrame.new(0,0,0))
+		for i=-2,2 do
+			local height=1.15+(2-math.abs(i))*0.28
+			weld(root,wedge("CrownSpike"..i,Vector3.new(0.48,height,0.42),i==0 and p.accent or p.light,Enum.Material.Metal),CFrame.new(i*0.52,0.62,0)*CFrame.Angles(0,0,math.rad(i*4)))
+		end
+		if detail(level,2) then weld(root,makePart("Halo",Vector3.new(3.35,0.18,3.35),p.accent,Enum.Material.Neon,"CYLINDER"),CFrame.new(0,0.75,0)*CFrame.Angles(0,0,math.rad(90))) end
+		if detail(level,3) then weld(root,makePart("BossGem",Vector3.new(0.56,0.56,0.32),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(0,0.15,-0.48)) end
 	end
 end
 
@@ -313,6 +350,10 @@ local BUILDERS=table.freeze({
 	CLAW_PAIR=addCreatureExpansion,
 	MANDIBLE_PAIR=addCreatureExpansion,
 	ELITE_ORNAMENT=addCreatureExpansion,
+	AMORPHOUS_CORE=addCreatureExpansion,
+	ARMORED_TORSO_VARIANT=addCreatureExpansion,
+	CRYSTAL_SURFACE_VARIANT=addCreatureExpansion,
+	BOSS_CROWN_SIGNATURE=addCreatureExpansion,
 })
 
 local function applyModelMetadata(model,row,quality)
