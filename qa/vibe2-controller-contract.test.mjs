@@ -1018,6 +1018,8 @@ test('24H cycle preserves continuity with run-scoped scheduler execution',()=>{
   assert(planStart>=0 && recoveryStart>planStart);
   const planBlock=safetyNetWorkflow.slice(planStart,recoveryStart);
   assert(!planBlock.includes('group: vibe2-control-state-vibe2-unreal-core'));
+  assert(planBlock.includes('group: vibe2-24h-plan-control-v1'));
+  assert(planBlock.includes('cancel-in-progress: false'));
   assert(planBlock.includes('VIBE2_AUTOPLAN_ATTEMPT=$attempt'));
   assert(planBlock.includes('git reset --hard origin/vibe2-unreal-core'));
   assert(planBlock.includes('if git push origin HEAD:vibe2-unreal-core; then'));
