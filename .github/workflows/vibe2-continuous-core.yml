@@ -885,9 +885,10 @@ jobs:
             if [ "$neuron_refill" = '1' ]; then
               refill_lane="${VIBE2_EXECUTION_LANE:-game-primary}"
               refill_title="Vibe2 Continuous Core · vibe2-fanin-refill · $refill_lane"
+              current_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
               refill_active=no
-              if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-neuron-refill-runs.json 2>/dev/null; then
-                refill_active="$(REFILL_TITLE="$refill_title" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
+              if [ -n "$current_main" ] && gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-neuron-refill-runs.json 2>/dev/null; then
+                refill_active="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
               const fs=require('fs');
               const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-neuron-refill-runs.json','utf8'));
               const states=new Set(['queued','pending','in_progress','requested','waiting']);
@@ -895,13 +896,14 @@ jobs:
                 String(run.id||'')!==String(process.env.CURRENT_RUN||'')
                 &&states.has(String(run.status||'').toLowerCase())
                 &&String(run.display_title||'')===String(process.env.REFILL_TITLE||'')
+                &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
               );
               process.stdout.write(found?'yes':'no');
               NODE
                 )"
               fi
               if [ "$refill_active" = yes ]; then
-                echo "VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_ACTIVE:$refill_lane"
+                echo "VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_ACTIVE_EXACT:$refill_lane:$current_main"
               else
                 payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'atomic-task-micro-fanin-complete'}}))")"
                 curl --fail-with-body --silent --show-error \
@@ -2940,7 +2942,7 @@ jobs:
               refill_title='Vibe2 Continuous Core · vibe2-fanin-refill · game-primary'
               refill_active=no
               if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-regression-refill-runs.json 2>/dev/null; then
-                refill_active="$(REFILL_TITLE="$refill_title" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
+                refill_active="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$latest_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
               const fs=require('fs');
               const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-regression-refill-runs.json','utf8'));
               const states=new Set(['queued','pending','in_progress','requested','waiting']);
@@ -2948,13 +2950,14 @@ jobs:
                 String(run.id||'')!==String(process.env.CURRENT_RUN||'')
                 &&states.has(String(run.status||'').toLowerCase())
                 &&String(run.display_title||'')===String(process.env.REFILL_TITLE||'')
+                &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
               );
               process.stdout.write(found?'yes':'no');
               NODE
                 )"
               fi
               if [ "$refill_active" = yes ]; then
-                echo "VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE:$contract_sha:$latest_main"
+                echo "VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE_EXACT:$contract_sha:$latest_main"
               else
                 refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'fan-in-regression-failed-requeued-newer-main'}}))")"
                 if curl --fail-with-body --silent --show-error \
@@ -3288,9 +3291,10 @@ jobs:
           set -euo pipefail
           refill_lane="${VIBE2_EXECUTION_LANE:-game-primary}"
           refill_title="Vibe2 Continuous Core · vibe2-fanin-refill · $refill_lane"
+          current_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
           refill_active=no
-          if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-fanin-refill-runs.json 2>/dev/null; then
-            refill_active="$(REFILL_TITLE="$refill_title" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
+          if [ -n "$current_main" ] && gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-fanin-refill-runs.json 2>/dev/null; then
+            refill_active="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-refill-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested','waiting']);
@@ -3304,7 +3308,7 @@ jobs:
             )"
           fi
           if [ "$refill_active" = yes ]; then
-            echo "VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE:$refill_lane"
+            echo "VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:$refill_lane:$current_main"
             exit 0
           fi
           payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
