@@ -231,7 +231,10 @@ jobs:
               &&(
                 (runtime.authority==='exact-engine-version-awaiting-real-server-boot'&&runtime.serverBootObserved!==true)
                 ||(
-                  runtime.authority==='roblox-open-cloud-exact-server-boot-runtime-sentinel-unavailable'
+                  (
+                    runtime.authority==='roblox-open-cloud-exact-server-boot-runtime-sentinel-unavailable'
+                    ||runtime.authority==='roblox-open-cloud-exact-server-boot-stale-runtime-sentinel'
+                  )
                   &&runtime.serverBootObserved===true
                   &&post.actualServerRuntimeEvidence===true
                   &&post.actualClientRuntimeEvidence===false
