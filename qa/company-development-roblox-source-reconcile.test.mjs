@@ -438,6 +438,34 @@ test('existing Roblox source automatically enters rebind when company library bi
   }
 });
 
+test('existing Roblox source re-enters deterministic asset rebind when v2 family trace is incomplete',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-family-trace-refresh-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const client=fs.readFileSync(clientFile,'utf8')
+      .replace(/local STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}\n/,'');
+    fs.writeFileSync(clientFile,client);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+    assert.ok(rows[0].blockers.includes('ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('existing Roblox client Studio asset binding v1 is upgraded in place to v2',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-client-v1-upgrade-'));
   try{
@@ -477,11 +505,19 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
     assert.match(client,/C\.StudioAssets/);
     assert.match(client,/StudioAssetFramePanel/);
     assert.match(client,/StudioAssetAtoms/);
+    assert.match(client,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+    assert.match(client,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+    for(const family of ['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']){
+      assert.match(client,new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']'));
+    }
+    assert.match(client,/UI\s*=\s*["']APPLIED["']/);
     applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     const configAgain=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
     const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     assert.equal((configAgain.match(/STUDIO_ASSET_BINDING_BEGIN/g)||[]).length,1);
     assert.equal((clientAgain.match(/STUDIO_ASSET_BINDING_CLIENT_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/STUDIO_ASSET_SELECTION\s*=\s*\{/g)||[]).length,1);
+    assert.equal((clientAgain.match(/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/g)||[]).length,1);
     assert.equal((clientAgain.match(/StudioAssetFramePanel/g)||[]).length,1);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
@@ -614,12 +650,21 @@ test('verified learning sweep preserves a newer native binding instead of downgr
   assert.match(sweep,/newerNativeBindingPreserved/);
 });
 
-test('verified APK refresh is owned by one Roblox sweep instead of duplicate per-game source jobs',()=>{
+test('verified APK refresh is owned by one deduped batch sweep instead of duplicate per-game jobs',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(workflow,/existing-source-verified-external-learning-required/);
   assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND/);
   assert.match(workflow,/if\(existingSourceLearningRebind\)\{/);
   assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
+  const start=workflow.indexOf('      - name: Dispatch one verified learning sweep for current refresh debt');
+  const end=workflow.indexOf('      - name: Resolve next Roblox source execution slice from unbounded native queue',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/scope_game="\$\{REQUESTED_GAME_ID:-\}"/);
+  assert.match(block,/Roblox verified learning sweep · '\+scope/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1/);
+  assert.doesNotMatch(block,/while IFS= read -r game_id/);
 });
 
 
