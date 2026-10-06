@@ -4766,6 +4766,15 @@
       "bounded": true,
       "characterContextMayConsumeMembershipAndRelations": true,
       "gameOwnedSavePersistenceRequiredWhenPersistent": true
+    },
+    "causalGameGrammarBridge": {
+      "source": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
+      "consumer": "tools/vibe2-artbook-story-engine.mjs -> tools/vibe2-artbook-story-core.mjs",
+      "existingStoryPipelineOnly": true,
+      "gameplayIdentityAndNarrativeIdentityShareWorldRule": true,
+      "familiarHumanConflictPreserved": true,
+      "characterMonsterRegionStoryUseSameCausalLawWhenApplicable": true,
+      "d1LightComicSupportedWithoutForcedEpicExpansion": true
     }
   },
   "robloxStudioAssetSelectionHandoff": {
@@ -5221,7 +5230,7 @@
       }
     },
     "gameIdentityConcept": {
-      "version": 1,
+      "version": 2,
       "centralContract": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract",
       "existingPipelineOnly": true,
       "gameSeedOwner": "tools/company-game-seed-bootstrap.mjs::normalizeGameplaySketch",
@@ -5241,7 +5250,29 @@
       "newQueue": false,
       "newScheduler": false,
       "wrapperOrShadowPipeline": false,
-      "genreSpecificPrimaryActionPreserved": true
+      "genreSpecificPrimaryActionPreserved": true,
+      "causalGrammarFlow": {
+        "existingPipelineOnly": true,
+        "flow": [
+          "EXISTING_SEED_MATERIAL_POOL_WITH_CAUSAL_DNA_METADATA",
+          "GAMEPLAY_SKETCH.novelGameGrammar",
+          "EXISTING_FLOW_ARCHITECT.systemBlueprint.novelGrammarContract",
+          "EXISTING_DESIGN_FIELDS",
+          "STRICT_DESIGN_GATE_NOVEL_GRAMMAR_DILUTION_CHECK",
+          "EXISTING_STORY_ENGINE_AND_CORE",
+          "EXISTING_BUILD_UP.identityReinforcement.causalGrammarEvidence",
+          "CURRENT_SOURCE_INSPECTION",
+          "EXISTING_RESPONSIBLE_SOURCE_MUTATION",
+          "QA_RUNTIME",
+          "NEXT_BUILD_UP"
+        ],
+        "newWorkflow": false,
+        "newQueue": false,
+        "newScheduler": false,
+        "shadowPipeline": false,
+        "depthIsQualityRank": false,
+        "d1LightComicUsesSameCanonicalFlow": true
+      }
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
