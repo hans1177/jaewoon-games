@@ -25410,14 +25410,14 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T19:20:36.382Z",
+      "updatedAt": "2026-10-06T19:30:21.909Z",
       "robloxSourceCommit": "475635fbfdba5e53d54042bb1aa9cfc9028719ea",
       "robloxSourceBootstrapPassedAt": "2026-10-06T07:33:03.057Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -25426,17 +25426,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "475635fbfdba5e53d54042bb1aa9cfc9028719ea",
       "robloxBuildArtifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
-      "robloxBuildPassedAt": "2026-10-06T19:16:01.269Z",
+      "robloxBuildPassedAt": "2026-10-06T19:30:21.909Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-06T19:16:01.269Z",
+      "robloxBuildPreflightPassedAt": "2026-10-06T19:30:21.909Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-06T19:12:43.844Z",
+        "checkedAt": "2026-10-06T19:27:33.407Z",
         "sourceRevision": "475635fbfdba5e53d54042bb1aa9cfc9028719ea",
         "artifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
         "secondaryOwnerFocus": false,
@@ -25480,19 +25480,19 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-06T19:20:36.382Z",
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": {
         "version": 5,
         "gameId": "seed-casual-realm-weaver",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T19:20:33.976Z",
+        "checkedAt": "2026-10-06T19:27:34.031Z",
         "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "sourceRevision": "475635fbfdba5e53d54042bb1aa9cfc9028719ea",
         "artifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
         "rebuiltArtifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
-        "artifactRunId": 37517754410,
+        "artifactRunId": 37517493351,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
@@ -25503,7 +25503,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -25521,27 +25521,98 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "seed-casual-realm-weaver",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:3",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "INVENTORY",
+            "PROGRESSION",
+            "SAVE",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "INVENTORY": false,
+            "PROGRESSION": false,
+            "SAVE": true,
             "MOBILE_UI": true
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
+              "capabilities": [
+                "SESSION_FLOW"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "step": "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다.",
+              "capabilities": [
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "직조 연결 시스템",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "생태계 복원 게이지",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -25552,10 +25623,10 @@
           "studioQualitySheet": {
             "Core": "MISSING",
             "Content": "N/A",
-            "World": "N/A",
+            "World": "MISSING",
             "Combat": "N/A",
             "AI": "N/A",
-            "Progression": "N/A",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -25576,18 +25647,18 @@
               "pass": true
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
               "rows": [],
@@ -25602,23 +25673,25 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "4412099d66173af30a578660785cad2bfab40254d05de7a744d38b0b8c885575",
           "antiSkeletonPassed": false,
-          "designGenre": null,
+          "designGenre": "Puzzle",
           "sourceGenre": "Puzzle",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
@@ -25626,10 +25699,10 @@
         "studioQualitySheet": {
           "Core": "MISSING",
           "Content": "N/A",
-          "World": "N/A",
+          "World": "MISSING",
           "Combat": "N/A",
           "AI": "N/A",
-          "Progression": "N/A",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -25661,26 +25734,28 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "seed-casual-realm-weaver",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T19:20:33.976Z",
+        "checkedAt": "2026-10-06T19:27:34.031Z",
         "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "sourceRevision": "475635fbfdba5e53d54042bb1aa9cfc9028719ea",
         "artifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
         "rebuiltArtifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
-        "artifactRunId": 37517754410,
+        "artifactRunId": 37517493351,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "36af7c84fe9d6ce828e613c0bf5b51af268e1993e52231578c641222638ea589",
@@ -25691,7 +25766,7 @@
         "playMode": "SINGLE",
         "saveExists": true,
         "multiplayerApplicable": false,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -25709,27 +25784,98 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "seed-casual-realm-weaver",
           "pass": false,
           "blockers": [
             "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:INVENTORY",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:3",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
             "GENERIC_SCOPE_HANDLER_SKELETON"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
+            "SESSION_FLOW",
+            "WORLD",
+            "INVENTORY",
+            "PROGRESSION",
+            "SAVE",
             "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "INVENTORY": false,
+            "PROGRESSION": false,
+            "SAVE": true,
             "MOBILE_UI": true
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
+              "capabilities": [
+                "SESSION_FLOW"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "step": "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다.",
+              "capabilities": [
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "직조 연결 시스템",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "생태계 복원 게이지",
+              "capabilities": [
+                "SESSION_FLOW",
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -25740,10 +25886,10 @@
           "studioQualitySheet": {
             "Core": "MISSING",
             "Content": "N/A",
-            "World": "N/A",
+            "World": "MISSING",
             "Combat": "N/A",
             "AI": "N/A",
-            "Progression": "N/A",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -25764,18 +25910,18 @@
               "pass": true
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 2,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
               "rows": [],
@@ -25790,23 +25936,25 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "4412099d66173af30a578660785cad2bfab40254d05de7a744d38b0b8c885575",
           "antiSkeletonPassed": false,
-          "designGenre": null,
+          "designGenre": "Puzzle",
           "sourceGenre": "Puzzle",
           "designPlayMode": "SINGLE",
           "sourcePlayMode": "SINGLE"
@@ -25814,10 +25962,10 @@
         "studioQualitySheet": {
           "Core": "MISSING",
           "Content": "N/A",
-          "World": "N/A",
+          "World": "MISSING",
           "Combat": "N/A",
           "AI": "N/A",
-          "Progression": "N/A",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -25849,12 +25997,14 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -25889,10 +26039,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -25905,7 +26055,7 @@
       "strictDesignReviewRefreshRequired": true,
       "ownerPreservationPresentationUpgrade": false,
       "presentationFirstPass": null,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-casual-realm-weaver-37341070236",
       "unitySourceCommit": "db2b8a008b8c67434f96f38eb819a41b60be2213",
@@ -26154,8 +26304,8 @@
         "sourceRevision": "475635fbfdba5e53d54042bb1aa9cfc9028719ea",
         "artifactIdentity": "sha256:0ef7b9d2d2efd613ce21d46b3c972c03fb7f016212765e483104ed019fb01e9d",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37516323659,
-        "testedAt": "2026-10-06T19:16:01.269Z",
+        "workflowRunId": 37517493351,
+        "testedAt": "2026-10-06T19:30:21.909Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -33284,7 +33434,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T19:27:09.131Z",
+      "updatedAt": "2026-10-06T19:30:21.909Z",
       "robloxSourceCommit": "37c227ed3e737e74760f8e53e883743520716017",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:57:31.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -33293,17 +33443,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
       "robloxBuildArtifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
-      "robloxBuildPassedAt": "2026-10-06T19:27:09.131Z",
+      "robloxBuildPassedAt": "2026-10-06T19:30:21.909Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-06T19:27:09.131Z",
+      "robloxBuildPreflightPassedAt": "2026-10-06T19:30:21.909Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-06T19:23:12.362Z",
+        "checkedAt": "2026-10-06T19:28:55.203Z",
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "secondaryOwnerFocus": false,
@@ -33354,12 +33504,12 @@
         "gameId": "seed-puzzle-chromatic-cascade",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T19:23:12.998Z",
+        "checkedAt": "2026-10-06T19:28:55.868Z",
         "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "rebuiltArtifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
-        "artifactRunId": 37516853804,
+        "artifactRunId": 37517493351,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "611516b8351c2978c45bb7e546346730fa286f948409042a083e94f2148102e4",
@@ -33607,12 +33757,12 @@
         "gameId": "seed-puzzle-chromatic-cascade",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T19:23:12.998Z",
+        "checkedAt": "2026-10-06T19:28:55.868Z",
         "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "rebuiltArtifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
-        "artifactRunId": 37516853804,
+        "artifactRunId": 37517493351,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "611516b8351c2978c45bb7e546346730fa286f948409042a083e94f2148102e4",
@@ -34151,8 +34301,8 @@
         "sourceRevision": "37c227ed3e737e74760f8e53e883743520716017",
         "artifactIdentity": "sha256:b63b0a3bc930cc1f950471499b432b205e45e14273b8093255ff52cbb365b627",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37516853804,
-        "testedAt": "2026-10-06T19:27:09.131Z",
+        "workflowRunId": 37517493351,
+        "testedAt": "2026-10-06T19:30:21.909Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -38123,7 +38273,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T19:27:09.131Z",
+      "updatedAt": "2026-10-06T19:30:21.909Z",
       "robloxSourceCommit": "07c5e572028b5a35b7781f4c697e533feed8cd31",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:57:31.563Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -38132,17 +38282,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
       "robloxBuildArtifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
-      "robloxBuildPassedAt": "2026-10-06T19:27:09.131Z",
+      "robloxBuildPassedAt": "2026-10-06T19:30:21.909Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-06T19:27:09.131Z",
+      "robloxBuildPreflightPassedAt": "2026-10-06T19:30:21.909Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-06T19:24:07.908Z",
+        "checkedAt": "2026-10-06T19:29:36.060Z",
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "secondaryOwnerFocus": false,
@@ -38193,12 +38343,12 @@
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T19:24:08.561Z",
+        "checkedAt": "2026-10-06T19:29:36.648Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "rebuiltArtifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
-        "artifactRunId": 37516853804,
+        "artifactRunId": 37517493351,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "d970b44e2a8620b5bf8f42a1d6ae700ce406bf72870b8db7f3c9df607a654d85",
@@ -38473,12 +38623,12 @@
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-06T19:24:08.561Z",
+        "checkedAt": "2026-10-06T19:29:36.648Z",
         "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "rebuiltArtifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
-        "artifactRunId": 37516853804,
+        "artifactRunId": 37517493351,
         "buildUpAssetSourceUsageFingerprint": null,
         "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "d970b44e2a8620b5bf8f42a1d6ae700ce406bf72870b8db7f3c9df607a654d85",
@@ -38868,8 +39018,8 @@
         "sourceRevision": "07c5e572028b5a35b7781f4c697e533feed8cd31",
         "artifactIdentity": "sha256:f098086d4388590a3f2297c82f899c1a9ed4d611ac7f34bbeffce43df6b176ff",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37516853804,
-        "testedAt": "2026-10-06T19:27:09.131Z",
+        "workflowRunId": 37517493351,
+        "testedAt": "2026-10-06T19:30:21.909Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:WORLD",
@@ -43724,7 +43874,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T19:30:01.928Z",
+  "updatedAt": "2026-10-06T19:30:21.909Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
