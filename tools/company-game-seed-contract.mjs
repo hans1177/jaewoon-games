@@ -255,27 +255,29 @@ function validateGameplaySketch(sketch,errors){
     if(!isNonEmptyString(narrative.worldConflict))errors.push('GAMEPLAY_SKETCH.narrativeDepth.worldConflict is required for version 3+');
     if(!isNonEmptyString(narrative.mainStoryArc))errors.push('GAMEPLAY_SKETCH.narrativeDepth.mainStoryArc is required for version 3+');
     if(narrative.applicable===true){
+      const weight=String(narrative.storyWeight||'LIGHT').toUpperCase();
       const narrativeArrays=[
         ['narrativeDnaSources',2],
-        ['npcRelationshipWeb',2],
-        ['companionArcs',1],
-        ['mainSubquestLinks',2],
-        ['foreshadowPayoffs',2],
-        ['factionCultureHooks',2],
-        ['historicalMythReinterpretations',2],
-        ['worldbuildingFusion',3],
-        ['storySystemLinks',3],
-        ['contentCausalityLinks',4],
-        ['worldEvolutionHooks',2],
-        ['placeNameLedger',3],
-        ['journalRecordChains',2],
-        ['dialogueJournalLinks',2],
-        ['monsterOpponentLoreEcologyLinks',2],
+        ['npcRelationshipWeb',weight==='LIGHT'?0:2],
+        ['companionArcs',weight==='HEAVY'?1:0],
+        ['mainSubquestLinks',weight==='LIGHT'?1:2],
+        ['foreshadowPayoffs',weight==='LIGHT'?1:2],
+        ['factionCultureHooks',weight==='LIGHT'?1:2],
+        ['historicalMythReinterpretations',1],
+        ['worldbuildingFusion',weight==='LIGHT'?2:3],
+        ['storySystemLinks',weight==='LIGHT'?2:3],
+        ['contentCausalityLinks',weight==='LIGHT'?3:4],
+        ['worldEvolutionHooks',1],
+        ['placeNameLedger',weight==='LIGHT'?2:3],
+        ['journalRecordChains',weight==='LIGHT'?0:2],
+        ['dialogueJournalLinks',weight==='LIGHT'?0:2],
+        ['monsterOpponentLoreEcologyLinks',1],
         ['namingRules',2],
         ['culturalRespectRules',3]
       ];
       for(const [field,min] of narrativeArrays){
-        if(!Array.isArray(narrative[field])||uniq(narrative[field]).length<min)errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} requires at least ${min} meaningful items for version 3+`);
+        if(!Array.isArray(narrative[field]))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} must be an array for version 3+`);
+        else if(uniq(narrative[field]).length<min)errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} requires at least ${min} meaningful items for storyWeight=${weight}`);
       }
       const narrativeFamilySet=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
       for(const family of uniq(narrative.narrativeDnaSources)){
