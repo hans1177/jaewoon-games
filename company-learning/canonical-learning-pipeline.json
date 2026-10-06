@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -494,5 +494,48 @@
     "directRawSourceTraining": false,
     "separatePipelineForbidden": true,
     "separateTrainerForbidden": true
+  },
+  "verifiedStaticKnowledgeMainPromotion": {
+    "version": 1,
+    "enabled": true,
+    "scope": "ALL_TRUSTED_EXTERNAL_AI_DISTILLED_LEARNING_DOMAINS",
+    "sourceStore": ".vibe2/external-ai-distilled-knowledge.json",
+    "runtimeProducer": ".github/workflows/vibe2-24h-runner.yml",
+    "promotionGateWorkflow": ".github/workflows/vibe2-learning-pipeline-contract.yml",
+    "trustedValidator": "tools/vibe2-external-ai-distillation.mjs",
+    "requiredQaWorkflows": [
+      "Company Evolution QA",
+      "Vibe2 Core QA"
+    ],
+    "promotionMode": "PR_SQUASH_MERGE_AFTER_EXACT_HEAD_QA_SUCCESS",
+    "directMainWrite": false,
+    "prOnly": true,
+    "existingCanonicalEntriesImmutable": true,
+    "trustedNewEntryRequired": true,
+    "independentlyVerifiedRequired": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "rawExternalOutputStored": false,
+    "authorityExpansion": false,
+    "allLearningDomainsEligible": true,
+    "domainEligibility": "ANY_DOMAIN_DECLARED_BY_TRUSTED_DISTILLED_ENTRY",
+    "allowedCompanionPaths": [
+      "qa/vibe2-external-ai-distillation.test.mjs",
+      "qa/vibe2-learning-motor.test.mjs",
+      "qa/company-system-ai-learning.test.mjs"
+    ],
+    "excludedRuntimeOrTrainingState": [
+      ".vibe2/experience.json",
+      ".vibe2/code-pattern-library.json",
+      ".vibe2/learning-motor-state.json",
+      ".vibe2/benchmark-ladder.json",
+      ".vibe2/idle-practice-queue.json",
+      "company-learning/training-samples/**",
+      "MODEL_WEIGHT_PROMOTION"
+    ],
+    "trainingThresholdsUnchanged": true,
+    "modelWeightPromotionGateUnchanged": "FIXED_HOLDOUT_AB_THEN_CANARY",
+    "centralPolicyMutationByPromotionForbidden": true,
+    "finalDevelopmentLockMutationForbidden": true,
+    "newWorkflowOrShadowPipelineCreated": false
   }
 }
