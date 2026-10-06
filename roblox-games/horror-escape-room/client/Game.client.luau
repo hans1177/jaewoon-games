@@ -136,6 +136,79 @@ local lastRoundState="WAITING"
 local stepClock=0
 lobbyBgm:Play()
 
+-- 선택된 내부 자산 family를 기존 심야 대탈출 네이티브 표현에 직접 연결한다.
+actionSfx.Volume=table.find(studioAssetFamily("AUDIO"),"UI_CONFIRM")and .32 or .30
+
+local studioHorrorEmitter=nil
+local function bindStudioHorrorCharacter(character)
+ if not character then return end
+ local torso=character:FindFirstChild("UpperTorso")or character:FindFirstChild("Torso")
+ if torso and torso:IsA("BasePart")then
+  torso.Material=table.find(studioAssetFamily("CHARACTER"),"TORSO_CLOTH")and Enum.Material.Fabric or torso.Material
+ end
+ local rootPart=character:FindFirstChild("HumanoidRootPart")or character:WaitForChild("HumanoidRootPart",5)
+ if rootPart and not rootPart:FindFirstChild("StudioHorrorSkillAttachment")then
+  local attachment=Instance.new("Attachment")
+  attachment.Name="StudioHorrorSkillAttachment"
+  attachment.Parent=rootPart
+  local emitter=Instance.new("ParticleEmitter")
+  emitter.Name="StudioHorrorSkillVfx"
+  emitter.Rate=0
+  emitter.Lifetime=NumberRange.new(.16,.32)
+  emitter.Speed=NumberRange.new(4,8)
+  emitter.SpreadAngle=Vector2.new(42,42)
+  emitter.LightEmission=table.find(studioAssetFamily("SKILL"),"IMPACT_SMALL")and .72 or .45
+  emitter.LightInfluence=table.find(studioAssetFamily("VFX"),"STATUS_GLOW")and 0 or 1
+  emitter.Parent=attachment
+  studioHorrorEmitter=emitter
+ end
+end
+if p.Character then task.defer(bindStudioHorrorCharacter,p.Character)end
+p.CharacterAdded:Connect(bindStudioHorrorCharacter)
+
+p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
+ if studioHorrorEmitter and studioHorrorEmitter.Parent then studioHorrorEmitter:Emit(12)end
+end)
+
+task.defer(function()
+ local atmosphere=Lighting:FindFirstChild("StudioMidnightAtmosphere")
+ if not atmosphere then
+  atmosphere=Instance.new("Atmosphere")
+  atmosphere.Name="StudioMidnightAtmosphere"
+  atmosphere.Parent=Lighting
+ end
+ atmosphere.Color=table.find(studioAssetFamily("ENVIRONMENT"),"FOG_LAYER")and Color3.fromRGB(154,163,176)or Color3.fromRGB(166,172,181)
+ atmosphere.Decay=Color3.fromRGB(54,46,62)
+ atmosphere.Density=.18
+ atmosphere.Haze=1.1
+
+ local arena=workspace:FindFirstChild("MidnightArena")or workspace:WaitForChild("MidnightArena",10)
+ if not arena then return end
+ local materialBound=false
+ local function bindStudioArenaPart(descendant)
+  if not descendant:IsA("BasePart")then return end
+  local parent=descendant.Parent
+  if parent and parent:IsA("Model")and parent.Name:match("^AI_MONSTER_")then
+   descendant.Material=table.find(studioAssetFamily("CREATURE"),"FUR_PATCH")and Enum.Material.Fabric or descendant.Material
+  end
+  if descendant.Name=="EmergencyGate"then
+   descendant.Material=table.find(studioAssetFamily("BUILDING"),"DOOR_GATE")and Enum.Material.Metal or descendant.Material
+  end
+  if not materialBound and descendant:GetAttribute("WalkableGround")==true then
+   materialBound=true
+   descendant.Material=table.find(studioAssetFamily("MATERIAL"),"STONE")and Enum.Material.Slate or descendant.Material
+  end
+  if descendant.Name:find("Bench",1,true)or descendant.Name:find("Lamp",1,true)or descendant.Name:find("Chair",1,true)
+   or descendant.Name:find("Table",1,true)or descendant.Name:find("Cabinet",1,true)or descendant.Name:find("Bed",1,true)
+   or descendant.Name:find("Crate",1,true)or descendant.Name:find("Barrel",1,true)or descendant.Name:find("Sign",1,true)
+  then
+   descendant.Material=table.find(studioAssetFamily("PROP"),"LAMP")and Enum.Material.Metal or descendant.Material
+  end
+ end
+ for _,descendant in ipairs(arena:GetDescendants())do bindStudioArenaPart(descendant)end
+ arena.DescendantAdded:Connect(bindStudioArenaPart)
+end)
+
 -- UI 공통
 local gui=Instance.new("ScreenGui")
 gui.Name="MidnightTagHUD"
@@ -247,7 +320,7 @@ end
 local function finishLoading(status,character,sequence)
  if not loadingVisible then return false end
  setLoadingProgress(1,status or"집사가 문을 열었어")
- local tween=TweenService:Create(loadingLayer,TweenInfo.new(.2),{BackgroundTransparency=1});tween:Play();tween.Completed:Wait()
+ local tween=TweenService:Create(loadingLayer,TweenInfo.new(table.find(studioAssetFamily("MOTION"),"START")and .2 or .24),{BackgroundTransparency=1});tween:Play();tween.Completed:Wait()
  -- 페이드 도중 새 캐릭터나 다음 이동이 시작되면 이전 접지 증거를 재사용하지 않는다.
  local root=character:FindFirstChild("HumanoidRootPart");local humanoid=character:FindFirstChildOfClass("Humanoid")
  if p.Character~=character or character:GetAttribute("SpawnGroundingSequence")~=sequence or character:GetAttribute("SpawnGroundedSequence")~=sequence or not root or not humanoid or humanoid.Health<=0 or root.Anchored or humanoid.PlatformStand or humanoid.FloorMaterial==Enum.Material.Air or math.abs(root.AssemblyLinearVelocity.Y)>=2 then
