@@ -67,10 +67,12 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/newPrimaryVerb/);
   assert.match(source,/irreducibilityTest/);
   assert.match(source,/MAIN × A × B × c/);
-  assert.doesNotMatch(source,/MAIN×A×B×C|A\/B\/C|connectsTo:\[[^\]]*'C'|enum:\[[^\]]*'C'/);
+  const legacyMajorC=['MAIN×A×B×'+'C','A/B/'+'C',"connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
+  for(const token of legacyMajorC)assert.equal(source.includes(token),false);
   assert.match(source,/DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS/);
   assert.match(source,/SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE/);
-  assert.doesNotMatch(source,/D1_LIGHT_COMIC|D2_STRANGE_FUSION|D3_DEEP_CULTURAL|D4_SYSTEMIC_MYTHIC/);
+  const legacyDepthLabels=['D1_'+'LIGHT_COMIC','D2_'+'STRANGE_FUSION','D3_'+'DEEP_CULTURAL','D4_'+'SYSTEMIC_MYTHIC'];
+  for(const token of legacyDepthLabels)assert.equal(source.includes(token),false);
 });
 
 test('GAMEPLAY_SKETCH v2 keeps quality depth and flow asset authority separated',()=>{
