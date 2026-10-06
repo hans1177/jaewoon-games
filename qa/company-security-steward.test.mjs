@@ -322,15 +322,16 @@ test('security workflow uses shallow partial checkout and exact comparison fetch
   assert.match(securityWorkflow,/git fetch --no-tags --depth=1 origin "\$base_sha"/);
 });
 
-test('security workflow is limited to sensitive changes plus one daily hygiene scan',()=>{
+test('security workflow is limited to sensitive changed candidates without scheduled duplicate replay',()=>{
   for(const ordinary of [
     "'web-games/**'","'roblox-games/**'","'unity-games/**'","'unreal-games/**'","'godot-games/**'","'assets/**'","'tools/**'","'qa/**'","'company-learning/**'"
   ]) assert.equal(securityWorkflow.includes(ordinary),false);
   for(const sensitive of [
     "'tools/company-security-*.mjs'","'company-learning/security-immune-system.json'","'company-learning/platform-release-roadmap.json'","'package-lock.json'"
   ]) assert.equal(securityWorkflow.includes(sensitive),true);
-  assert.equal((securityWorkflow.match(/cron:/g)||[]).length,1);
-  assert.ok(securityWorkflow.includes("cron: '13 3 * * *'"));
+  assert.match(securityWorkflow,/workflow_dispatch:/);
+  assert.equal((securityWorkflow.match(/cron:/g)||[]).length,0);
+  assert.doesNotMatch(securityWorkflow,/\n  schedule:\n/);
 });
 
 test('Vibe workers skip full security scan for ordinary game candidates and 24h loop does not retest security every cycle',()=>{
@@ -473,12 +474,15 @@ test('specialized verification security allows only final fan-in to mint canonic
 });
 
 
-test('security workflow keeps patch scanning always-on but runs full contract QA only for security-authority changes',()=>{
+test('security workflow scans changed candidates without scheduled duplicate replay',()=>{
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
   assert.match(securityWorkflow,/SECURITY_PATCH_SCAN_ALWAYS=YES/);
   assert.match(securityWorkflow,/contract_changed=NO/);
   assert.match(securityWorkflow,/if: \$\{\{ steps\.scope\.outputs\.contract_changed == 'YES' \}\}/);
   assert.match(securityWorkflow,/Verify immune-system contracts only when security authority changed/);
   assert.match(securityWorkflow,/Scan changed attack surface/);
+  assert.match(securityWorkflow,/workflow_dispatch:/);
+  assert.doesNotMatch(securityWorkflow,/\n  schedule:\n/);
+  assert.doesNotMatch(securityWorkflow,/cron: '13 3 \* \* \*'/);
   assert.doesNotMatch(securityWorkflow,/name: Verify immune-system contracts\n\s+run:/);
 });

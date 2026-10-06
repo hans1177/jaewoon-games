@@ -216,7 +216,48 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 jobs:
+  scope:
+    runs-on: ubuntu-slim
+    timeout-minutes: 2
+    outputs:
+      parallelism_only: ${{ steps.scope.outputs.parallelism_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          fetch-tags: false
+          filter: blob:none
+
+      - name: Resolve impact-scoped Core QA work
+        id: scope
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          parallelism_only=NO
+          if [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
+            base_sha="$PR_BASE"
+          elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
+            base_sha="$PUSH_BEFORE"
+          else
+            echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
+            echo 'VIBE2_CORE_QA_SCOPE=FULL_NON_DIFF_EVENT'
+            exit 0
+          fi
+          git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
+          git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
+          if [ -s /tmp/vibe2-core-qa-files.txt ] && ! grep -Ev '^(\.github/workflows/vibe2-(continuous-core|24h-runner|parallelism-contract-qa)\.yml|qa/vibe2-parallelism-(main|20)-contract\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt | grep -q .; then
+            parallelism_only=YES
+          fi
+          echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CORE_QA_PARALLELISM_ONLY=$parallelism_only"
+
   test:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
@@ -397,6 +438,8 @@ jobs:
           node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
 
   browser-smoke:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     name: Development Web browser startup smoke
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -415,6 +458,8 @@ jobs:
 
 
   practice-runtime:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     name: Practice fault cards runtime
     runs-on: ubuntu-24.04
     timeout-minutes: 15

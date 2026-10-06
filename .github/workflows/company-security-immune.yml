@@ -43,9 +43,8 @@ on:
       - 'package-lock.json'
       - 'pnpm-lock.yaml'
       - 'yarn.lock'
+  # 실제 변경 후보 또는 수동 요청만 검사한다. 같은 최근 커밋을 매일 다시 검사하지 않는다.
   workflow_dispatch:
-  schedule:
-    - cron: '13 3 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
