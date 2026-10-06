@@ -1,5 +1,6 @@
 # 파일명: .github/workflows/vibe2-continuous-core.yml
 name: Vibe2 Continuous Core
+run-name: Vibe2 Continuous Core · ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }} · ${{ github.event.action || github.event_name }}
 
 on:
   workflow_call:
@@ -882,15 +883,36 @@ jobs:
           fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
           NODE
             if [ "$neuron_refill" = '1' ]; then
-              payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'atomic-task-micro-fanin-complete'}}))")"
-              curl --fail-with-body --silent --show-error \
-                --request POST \
-                --header 'Accept: application/vnd.github+json' \
-                --header "Authorization: Bearer $GH_TOKEN" \
-                --header 'X-GitHub-Api-Version: 2022-11-28' \
-                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
-                --data "$payload"
-              echo 'VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'
+              current_main="$(git ls-remote origin refs/heads/main | awk '{print $1}' | head -1)"
+              refill_title="Vibe2 Continuous Core · ${VIBE2_EXECUTION_LANE:-game-primary} · vibe2-fanin-refill"
+              gh api "repos/$GITHUB_REPOSITORY/actions/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-refill-active-runs.json
+              pending_same_lane="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-refill-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','requested']);
+          const title=String(process.env.REFILL_TITLE||'');
+          const head=String(process.env.CURRENT_MAIN||'');
+          const count=(payload.workflow_runs||[]).filter(run=>
+            states.has(String(run.status||'').toLowerCase())
+            &&String(run.display_title||'')===title
+            &&String(run.head_sha||'')===head
+          ).length;
+          process.stdout.write(String(count));
+          NODE
+              )"
+              if [ "${pending_same_lane:-0}" -gt 0 ]; then
+                echo "VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_PENDING_SAME_LANE:${VIBE2_EXECUTION_LANE:-game-primary}:$pending_same_lane"
+              else
+                payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'atomic-task-micro-fanin-complete'}}))")"
+                curl --fail-with-body --silent --show-error \
+                  --request POST \
+                  --header 'Accept: application/vnd.github+json' \
+                  --header "Authorization: Bearer $GH_TOKEN" \
+                  --header 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+                  --data "$payload"
+                echo 'VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'
+              fi
             else
               echo 'VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS'
             fi
@@ -3244,6 +3266,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          current_main="$(git ls-remote origin refs/heads/main | awk '{print $1}' | head -1)"
+          refill_title="Vibe2 Continuous Core · ${VIBE2_EXECUTION_LANE:-game-primary} · vibe2-fanin-refill"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-fanin-refill-active.json
+          pending_same_lane="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-refill-active.json','utf8'));
+          const states=new Set(['queued','pending','requested']);
+          const title=String(process.env.REFILL_TITLE||'');
+          const head=String(process.env.CURRENT_MAIN||'');
+          const count=(payload.workflow_runs||[]).filter(run=>
+            states.has(String(run.status||'').toLowerCase())
+            &&String(run.display_title||'')===title
+            &&String(run.head_sha||'')===head
+          ).length;
+          process.stdout.write(String(count));
+          NODE
+          )"
+          if [ "${pending_same_lane:-0}" -gt 0 ]; then
+            echo "VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_PENDING_SAME_LANE:${VIBE2_EXECUTION_LANE:-game-primary}:$pending_same_lane"
+            exit 0
+          fi
           payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
           curl --fail-with-body --silent --show-error \
             --request POST \
