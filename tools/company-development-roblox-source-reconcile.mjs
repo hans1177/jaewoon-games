@@ -6,7 +6,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,robloxStudioAssetFamilyStatusFromSource,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
@@ -40,19 +40,24 @@ export function hasCurrentRobloxPackageAssetRepair({item={},assetLibrary={},base
   return Object.entries(current).every(([key,value])=>evidence.assetRepairContext?.[key]===value);
 }
 
-function studioAssetRefreshState({root='',assetLibrary={}}={}){
-  const expected=buildRobloxStudioAssetBootstrapPlan({gameId:'library-refresh-probe',profile:{genre:''},assetLibrary});
+function studioAssetRefreshState({root='',assetLibrary={},gameId='',profile=null}={}){
+  const expected=buildRobloxStudioAssetBootstrapPlan({gameId:clean(gameId)||'library-refresh-probe',profile:profile||{},assetLibrary});
   if(expected.applied!==true)return {required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
   const configFile=path.join(root,'shared','GameConfig.luau');
   const clientFile=path.join(root,'client','Game.client.luau');
+  const serverFile=path.join(root,'server','Game.server.luau');
   if(!fs.existsSync(configFile))return {required:true,refreshRequired:true,libraryVersion:Number(expected.libraryVersion||0),reason:'CONFIG_MISSING'};
   if(!fs.existsSync(clientFile))return {required:true,refreshRequired:true,libraryVersion:Number(expected.libraryVersion||0),reason:'CLIENT_MISSING'};
   const config=fs.readFileSync(configFile,'utf8');
   const client=fs.readFileSync(clientFile,'utf8');
+  const server=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
   const libraryVersion=Number(config.match(/LibraryVersion\s*=\s*(\d+)/)?.[1]||0);
   const bindingVersion=Number(config.match(/BindingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const selectionFingerprint=clean(config.match(/SelectionFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const clientBindingVersion=Number(client.match(/STUDIO_ASSET_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
   const expectedBindingVersion=Number(expected.bindingVersion||0);
+  const fingerprintRequired=Boolean(clean(gameId)&&profile);
+  const selectionFingerprintMatches=!fingerprintRequired||selectionFingerprint===clean(expected.selectionFingerprint);
   const applied=/StudioAssets\s*=\s*\{[\s\S]*?Applied\s*=\s*true/.test(config);
   const clientConfigBound=/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(client);
   const clientVisibleBound=/StudioAssetFramePanel/.test(client)
@@ -61,15 +66,29 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const statusBlock=client.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
   const familySelectionTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>new RegExp('\\b'+family+'\\s*=').test(selectionBlock));
   const familyStatusTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(statusBlock));
+  const expectedFamilyStatus=robloxStudioAssetFamilyStatusFromSource({clientSource:client,serverSource:server});
+  const familyStatusMatchesSource=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>{
+    const current=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
+    return current===expectedFamilyStatus[family];
+  });
   const refreshRequired=!applied
     ||bindingVersion!==expectedBindingVersion
     ||libraryVersion!==Number(expected.libraryVersion||0)
+    ||!selectionFingerprintMatches
     ||clientBindingVersion!==expectedBindingVersion
     ||!clientConfigBound
     ||!clientVisibleBound
     ||!familySelectionTraceComplete
-    ||!familyStatusTraceComplete;
-  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,familySelectionTraceComplete,familyStatusTraceComplete,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+    ||!familyStatusTraceComplete
+    ||!familyStatusMatchesSource;
+  return {
+    required:true,refreshRequired,
+    libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,
+    selectionFingerprint:clean(expected.selectionFingerprint)||null,currentSelectionFingerprint:selectionFingerprint||null,selectionFingerprintMatches,
+    bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,
+    familySelectionTraceComplete,familyStatusTraceComplete,familyStatusMatchesSource,expectedFamilyStatus,
+    reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null
+  };
 }
 
 function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
@@ -238,7 +257,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
       continue;
     }
     const learningProfile=baseline?robloxBuildProfileFromBaseline(baseline):null;
-    const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
+    const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     if(learningState.refreshRequired===true){
       results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',verifiedExternalLearningRefreshRequired:true,verifiedExternalLearningExpectedIds:learningState.expectedIds,verifiedExternalLearningCurrentIds:learningState.currentIds||[],verifiedExternalLearningFingerprint:learningState.fingerprint,verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null});

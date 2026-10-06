@@ -385,6 +385,62 @@ test('current Roblox Studio asset binding version does not re-enter refresh fore
   }
 });
 
+test('Roblox source re-enters rebind when family status no longer matches actual source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-family-status-drift-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const current=fs.readFileSync(clientFile,'utf8');
+    assert.match(current,/\bUI\s*=\s*"APPLIED"/);
+    fs.writeFileSync(clientFile,current.replace(/\bUI\s*=\s*"APPLIED"/,'UI = "NOT_APPLICABLE"'));
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox source re-enters rebind when selection fingerprint is stale',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-selection-fingerprint-drift-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const current=fs.readFileSync(configFile,'utf8');
+    assert.match(current,/SelectionFingerprint\s*=\s*"[a-f0-9]{64}"/);
+    fs.writeFileSync(configFile,current.replace(/SelectionFingerprint\s*=\s*"[a-f0-9]{64}"/,'SelectionFingerprint = "'+'0'.repeat(64)+'"'));
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[staleItem()]},
+      repoRoot:tmp,
+      sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('existing Roblox source re-enters rebind when client asset binding is still v1',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-client-v1-detect-'));
   try{

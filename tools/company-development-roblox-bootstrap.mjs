@@ -176,6 +176,91 @@ const ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES=Object.freeze({
   CREATURE:Object.freeze(['HEAD_CANINE','JAW_LONG','CLAW']),
   MOTION:Object.freeze(['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'])
 });
+
+const ROBLOX_STUDIO_ASSET_SYSTEM_PATTERNS=Object.freeze({
+  CHARACTER:/\b(?:HumanoidDescription|avatar|npc|companion|character(?:Model|Visual|Appearance|Skin|Outfit|Rig)|outfit|armor)\b/i,
+  CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
+  BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village|tower|gate)\b/i,
+  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|tree|rock|road|path|water|garden|island)\b/i,
+  WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
+  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
+  MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
+  AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
+  VFX:/\b(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|vfx|effect|burst|flash|particle|telegraph)\b/i,
+  UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient|hud|menu|inventory|quest|shop|button)\b/i,
+  MOTION:/\b(?:Animator|AnimationTrack|AnimationId|Motor6D|Bone|locomotion|idleAnimation|walkAnimation|runAnimation|attackAnimation|hitAnimation|deathAnimation)\b/i,
+  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i
+});
+function stripRobloxStudioAssetManagedSource(text=''){
+  return String(text||'')
+    .replace(/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END/g,' ')
+    .replace(/-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_DYNAMIC_BINDING_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/g,' ')
+    .replace(/-- native-foundation-sentinel-v1 client readiness[\s\S]*?task\.defer\(reportNativeFoundationReady\)/g,' ')
+    .replace(/-- native-foundation-sentinel-v1[\s\S]*?game:BindToClose\(function\(\) end\)/g,' ')
+    .replace(/--[^\n]*/g,' ')
+    .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
+    .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
+}
+export function detectRobloxStudioAssetSystems({sourceText='',clientSource='',serverSource=''}={}){
+  const source=stripRobloxStudioAssetManagedSource([sourceText,clientSource,serverSource].filter(Boolean).join('\n'));
+  return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[
+    family,ROBLOX_STUDIO_ASSET_SYSTEM_PATTERNS[family]?.test(source)===true
+  ])));
+}
+export function robloxStudioAssetFamilyStatusFromSource(source={}){
+  const systems=detectRobloxStudioAssetSystems(source);
+  return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[
+    family,systems[family]===true?'APPLIED':'NOT_APPLICABLE'
+  ])));
+}
+function studioAssetSelectionTraceBlock(familyStatus={}){
+  return `local STUDIO_ASSET_SELECTION = {
+${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = "'+(familyStatus[family]==='APPLIED'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
+}
+`;
+}
+function studioAssetDynamicConsumerBlock(configVar='Config'){
+  return `-- STUDIO_ASSET_DYNAMIC_BINDING_BEGIN
+local function bindStudioAssetSemanticFamily(instance, family)
+  if not instance or STUDIO_ASSET_FAMILY_STATUS[family] ~= "APPLIED" then return end
+  local atoms = STUDIO_ASSET_SELECTION[family] or {}
+  if #atoms == 0 then return end
+  instance:SetAttribute("StudioAssetFamily_" .. family, table.concat(atoms, ","))
+  instance:SetAttribute("StudioAssetSelectionFingerprint", ${configVar}.StudioAssets and ${configVar}.StudioAssets.SelectionFingerprint or "")
+end
+local function syncStudioAssetSemanticInstance(instance)
+  if not instance then return end
+  local name = string.lower(instance.Name or "")
+  if instance:IsA("Humanoid") or instance:IsA("Accessory") or (instance:IsA("Model") and instance:FindFirstChildOfClass("Humanoid")) then bindStudioAssetSemanticFamily(instance, "CHARACTER") end
+  if instance:IsA("Tool") then bindStudioAssetSemanticFamily(instance, "WEAPON") end
+  if instance:IsA("Sound") then bindStudioAssetSemanticFamily(instance, "AUDIO") end
+  if instance:IsA("ParticleEmitter") or instance:IsA("Beam") or instance:IsA("Trail") or instance:IsA("PointLight") or instance:IsA("SpotLight") or instance:IsA("SurfaceLight") then
+    bindStudioAssetSemanticFamily(instance, "VFX")
+    bindStudioAssetSemanticFamily(instance, "SKILL")
+  end
+  if instance:IsA("Animator") or instance:IsA("Animation") or instance:IsA("Motor6D") or instance:IsA("Bone") then bindStudioAssetSemanticFamily(instance, "MOTION") end
+  if instance:IsA("Frame") or instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("ImageLabel") or instance:IsA("ImageButton") then bindStudioAssetSemanticFamily(instance, "UI") end
+  if instance:IsA("BasePart") or instance:IsA("SurfaceAppearance") or instance:IsA("MaterialVariant") then bindStudioAssetSemanticFamily(instance, "MATERIAL") end
+  if instance:IsA("Lighting") or instance:IsA("Terrain") or instance:IsA("Atmosphere") then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
+  if instance:IsA("Model") or instance:IsA("BasePart") then
+    if string.find(name, "enemy", 1, true) or string.find(name, "monster", 1, true) or string.find(name, "boss", 1, true) or string.find(name, "creature", 1, true) or string.find(name, "mob", 1, true) or string.find(name, "wildlife", 1, true) then bindStudioAssetSemanticFamily(instance, "CREATURE") end
+    if string.find(name, "house", 1, true) or string.find(name, "building", 1, true) or string.find(name, "shop", 1, true) or string.find(name, "wall", 1, true) or string.find(name, "roof", 1, true) or string.find(name, "tower", 1, true) or string.find(name, "gate", 1, true) or string.find(name, "foundation", 1, true) or string.find(name, "village", 1, true) or string.find(name, "dungeon", 1, true) or string.find(name, "castle", 1, true) or string.find(name, "school", 1, true) or string.find(name, "temple", 1, true) then bindStudioAssetSemanticFamily(instance, "BUILDING") end
+    if string.find(name, "sword", 1, true) or string.find(name, "blade", 1, true) or string.find(name, "axe", 1, true) or string.find(name, "spear", 1, true) or string.find(name, "hammer", 1, true) or string.find(name, "bow", 1, true) or string.find(name, "gun", 1, true) or string.find(name, "weapon", 1, true) or string.find(name, "staff", 1, true) or string.find(name, "shield", 1, true) then bindStudioAssetSemanticFamily(instance, "WEAPON") end
+    if string.find(name, "ground", 1, true) or string.find(name, "terrain", 1, true) or string.find(name, "world", 1, true) or string.find(name, "garden", 1, true) or string.find(name, "island", 1, true) or string.find(name, "forest", 1, true) or string.find(name, "desert", 1, true) or string.find(name, "snow", 1, true) or string.find(name, "swamp", 1, true) or string.find(name, "cave", 1, true) then bindStudioAssetSemanticFamily(instance, "ENVIRONMENT") end
+    if string.find(name, "chest", 1, true) or string.find(name, "crate", 1, true) or string.find(name, "barrel", 1, true) or string.find(name, "lamp", 1, true) or string.find(name, "tree", 1, true) or string.find(name, "rock", 1, true) or string.find(name, "workbench", 1, true) or string.find(name, "resource", 1, true) or string.find(name, "pickup", 1, true) then bindStudioAssetSemanticFamily(instance, "PROP") end
+  end
+end
+for _, studioAssetInstance in ipairs(game:GetDescendants()) do syncStudioAssetSemanticInstance(studioAssetInstance) end
+game.DescendantAdded:Connect(syncStudioAssetSemanticInstance)
+-- STUDIO_ASSET_DYNAMIC_BINDING_END
+`;
+}
 function stableAssetSeed(value=''){let hash=2166136261;for(const ch of clean(value)){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}return hash>>>0;}
 function studioAssetSelectionFingerprint({gameId='',profile={},libraryVersion=0,families={}}={}){
   const normalized=Object.fromEntries(Object.entries(families||{}).sort(([a],[b])=>a.localeCompare(b)).map(([family,atoms])=>[
@@ -773,8 +858,7 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
   return source.slice(0,closeIndex+1)+block+source.slice(closeIndex+1);
 }
 
-function bindExistingClientStudioAssets(source=''){
-  const requiredFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+function bindExistingClientStudioAssets(source='',familyStatus={}){
   const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n/;
   let output=source.replace(/(STUDIO_ASSET_BINDING_VERSION\s*=\s*)1\b/g,(_match,prefix)=>`${prefix}2`);
   const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
@@ -784,21 +868,16 @@ function bindExistingClientStudioAssets(source=''){
   const outsideManaged=managedCurrent?output.replace(managed,''):output;
   const selectionRe=/local\s+STUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/;
   const statusRe=/local\s+STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/;
-  const preservedSelection=outsideManaged.match(selectionRe)?.[0]||managedCurrent.match(selectionRe)?.[0]||'';
-  const preservedStatus=outsideManaged.match(statusRe)?.[0]||managedCurrent.match(statusRe)?.[0]||'';
-  const externalSelection=selectionRe.test(outsideManaged);
-  const externalStatus=statusRe.test(outsideManaged);
-  const traceBlock=externalSelection&&externalStatus
-    ?''
-    :preservedSelection&&preservedStatus
-      ?preservedSelection+'\n'+preservedStatus+'\n'
-      :`local STUDIO_ASSET_SELECTION = {
-${requiredFamilies.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
-}
-local STUDIO_ASSET_FAMILY_STATUS = {
-${requiredFamilies.map(family=>'  '+family+' = "'+(family==='UI'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
-}
-`;
+  const externalSelectionBlock=outsideManaged.match(selectionRe)?.[0]||'';
+  const externalStatusBlock=outsideManaged.match(statusRe)?.[0]||'';
+  const externalSelection=Boolean(externalSelectionBlock);
+  const externalStatus=Boolean(externalStatusBlock);
+  const canonicalTrace=studioAssetSelectionTraceBlock(familyStatus);
+  const canonicalSelection=canonicalTrace.match(selectionRe)?.[0]||'';
+  const canonicalStatus=canonicalTrace.match(statusRe)?.[0]||'';
+  if(externalSelection)output=output.replace(externalSelectionBlock,canonicalSelection);
+  if(externalStatus)output=output.replace(externalStatusBlock,canonicalStatus);
+  const traceBlock=(externalSelection?'':canonicalSelection+'\n')+(externalStatus?'':canonicalStatus+'\n');
   const block=`-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = ${configVar}.StudioAssets or {}
@@ -813,7 +892,7 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
-${traceBlock}-- STUDIO_ASSET_BINDING_CLIENT_END
+${traceBlock}${studioAssetDynamicConsumerBlock(configVar)}-- STUDIO_ASSET_BINDING_CLIENT_END
 `;
   if(managed.test(output)){
     output=output.replace(managed,block);
@@ -924,8 +1003,9 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   if(foundationRepair===true&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
-  const beforeServer=foundationRepair===true?fs.readFileSync(serverFile,'utf8'):'';
+  const beforeServer=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
   const beforeProject=fs.readFileSync(projectFile,'utf8');
+  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({clientSource:beforeClient,serverSource:beforeServer});
   const project=JSON.parse(beforeProject.replace(/^\uFEFF/,''));
   if(!project.tree||project.tree.$className!=='DataModel')throw new Error('EXISTING_ROBLOX_PROJECT_DATAMODEL_REQUIRED');
   const existingLighting=project.tree.Lighting&&typeof project.tree.Lighting==='object'?project.tree.Lighting:{};
@@ -952,7 +1032,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   }
   const afterProject=`${JSON.stringify(project,null,2)}\n`;
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
-  let afterClient=bindExistingClientStudioAssets(beforeClient);
+  let afterClient=bindExistingClientStudioAssets(beforeClient,studioAssetFamilyStatus);
   let afterServer=beforeServer;
   afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,verifiedLearning);
   afterClient=bindExistingClientVerifiedExternalLearning(afterClient,verifiedLearning);
@@ -1051,7 +1131,11 @@ task.defer(reportNativeFoundationReady)
     new RegExp('\\b'+family+'\\s*=').test(studioSelectionBlock)
     &&new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(studioStatusBlock)
   );
-  if(!studioClientConfigBound||!studioClientVisibleBound||!studioFamilyTraceComplete)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
+  const studioFamilyStatusMatchesSource=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>{
+    const actual=clean(studioStatusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
+    return actual===studioAssetFamilyStatus[family];
+  });
+  if(!studioClientConfigBound||!studioClientVisibleBound||!studioFamilyTraceComplete||!studioFamilyStatusMatchesSource)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)    ||!/ContentComplete\s*=\s*true/.test(afterConfig)    ||!/GameSpecificSemanticMappings\s*=\s*\{/.test(afterConfig)    ||!/LearningDispositions\s*=\s*\{/.test(afterConfig)    ||!afterConfig.includes(`SemanticMappingVersion = ${Number(verifiedLearning.semanticMappingVersion||0)}`)    ||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)    ||!/VerifiedExternalLearningContentComplete/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingVersion/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningSemanticVariant/.test(afterClient)    ||!/VerifiedLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningTouchTarget/.test(afterClient)    ||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)    ||!/FieldOfView/.test(afterClient)    ||Number(afterClient.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0)<ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
@@ -1082,6 +1166,7 @@ task.defer(reportNativeFoundationReady)
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
     studioAssets,
+    studioAssetFamilyStatus,
     verifiedExternalLearningApplied:true,
     verifiedExternalLearningFingerprint:verifiedLearning.verifiedExternalLearningFingerprint||null,
     verifiedExternalLearningIds:Object.freeze([...(verifiedLearning.verifiedExternalLearningIds||[])]),
@@ -1275,15 +1360,9 @@ function serverSource({gameId,saveRequired,actions,profile,learning={}}){
   player:SetAttribute("ActionSequence", 0)\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\ngame:BindToClose(function() end)\n`;
 }
 
-function clientSource({profile,learning={},studioAssets={}}){
+function clientSource({profile,learning={},studioAssets={},studioAssetFamilyStatus={}}){
   requireRobloxVerifiedExternalLearning(learning);
-  const studioAssetTrace=`local STUDIO_ASSET_SELECTION = {
-${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
-}
-local STUDIO_ASSET_FAMILY_STATUS = {
-${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = "'+(family==='UI'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
-}
-`;
+  const studioAssetTrace=studioAssetSelectionTraceBlock(studioAssetFamilyStatus)+studioAssetDynamicConsumerBlock('Config');
   const nativeLearningRuntime=robloxNativeLearningRuntimeBlock({frameVar:'root',configVar:'Config',learning});
   const learnedInput=`local ContextActionService = game:GetService("ContextActionService")\n`;
   const learnedBinding=`\nif #Config.Actions > 0 then\n  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n`;
@@ -1301,10 +1380,14 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   const learning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination}));
   const actions=approvedActions(baseline,profile,learning);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
+  const sharedConfig=sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platformProfile,learning,studioAssets});
+  const generatedServerCode=serverSource({gameId,saveRequired,actions,profile,learning});
+  const generatedClientProbe=clientSource({profile,learning,studioAssets,studioAssetFamilyStatus:{UI:'APPLIED'}});
+  const studioAssetFamilyStatus=robloxStudioAssetFamilyStatusFromSource({clientSource:generatedClientProbe,serverSource:generatedServerCode});
   const result={
-    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platformProfile,learning,studioAssets}),
-    serverCode:serverSource({gameId,saveRequired,actions,profile,learning}),
-    clientCode:clientSource({profile,learning,studioAssets}),
+    sharedConfig,
+    serverCode:generatedServerCode,
+    clientCode:clientSource({profile,learning,studioAssets,studioAssetFamilyStatus}),
     implementationNotes:[
       `approved scope count=${actions.length}`,
       `roblox genre=${profile.genre}${profile.subgenre?`/${profile.subgenre}`:''}`,
@@ -1329,7 +1412,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   };
   const validation=validateRobloxBootstrap({...result,baseline,profile,learning,studioAssets});
   if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
-  return {result,validation,actions,profile,platformProfile,learning,studioAssets,webHandoff:null,handoffValidation,generationMode:'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT',modelUsed:false,attempts:0,failures:[]};
+  return {result,validation,actions,profile,platformProfile,learning,studioAssets,studioAssetFamilyStatus,webHandoff:null,handoffValidation,generationMode:'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT',modelUsed:false,attempts:0,failures:[]};
 }
 
 export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective}){
