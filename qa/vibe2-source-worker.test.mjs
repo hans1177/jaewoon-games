@@ -365,6 +365,80 @@ test('single motion generation sends a required nonempty patch schema through th
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
+test('asset-development Roblox single motion compacts verified learning and uses bounded generation budget',async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'assets/roblox/world-ghosts/motions/test');
+  const source='local pose = 0\nreturn pose\n';
+  write(path.join(sourceRoot,'init.luau'),source);
+  const ids=Array.from({length:7},(_,index)=>'verified-motion-learning-'+(index+1));
+  const rows=[];
+  let principle=0;
+  for(const id of ids){
+    rows.push('[EXTERNAL_LEARNING '+id+']');
+    for(let localIndex=0;localIndex<4;localIndex++){
+      principle+=1;
+      rows.push('DISPOSITION=motion-'+principle+':APPLIED_GAME_SOURCE;GAME=horror-escape-room;TARGET=roblox;DOMAINS=MOTION|PRESENTATION;GENRE_MOOD=horror');
+      rows.push('APPLY=id=motion-'+principle+';lesson='+('preserve source-bound motion timing and visible contact while keeping gameplay authority unchanged '.repeat(32)));
+    }
+    rows.push('[END_EXTERNAL_LEARNING '+id+']');
+  }
+  const learning=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions='+principle+'/'+principle+'; sourcePrinciples='+principle+'; validationOnly=0; truncation=FORBIDDEN',
+    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
+    'HARD SOURCE-WORKER RULE: implement APPLIED_GAME_SOURCE principles without widening authority.',
+    ...rows,
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: roblox',
+    '[SINGLE MOTION WORK UNIT BEGIN]',
+    'objectId=roblox-world-ghost-test; clipId=walk; sourcePath=init.luau',
+    'Keep the exact object and clip binding. Runtime/native quality remains unverified until separate playback evidence exists.',
+    '[SINGLE MOTION WORK UNIT END]',
+    learning,
+    'Allowed edit paths: init.luau',
+    '=== FILE init.luau [EDITABLE] ===',
+    source
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>29000);
+  const compactLearning=compactVerifiedExternalLearningBlockFromPrompt(prompt,{triggerBytes:6000,targetBytes:6000});
+  assert.ok(Buffer.byteLength(compactLearning,'utf8')<=6000);
+  assertVerifiedExternalLearningPromptCoverage(compactLearning,{required:true,ids});
+
+  const response=path.join(cwd,'motion-answer.json');
+  write(response,JSON.stringify({edits:[{path:'init.luau',find:'local pose = 0',replace:'local pose = math.sin(t)'}]}));
+  const previousLane=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const result=await generateCandidateWithRecovery({
+      prompt,
+      target:'roblox',
+      sourceRoot,
+      sourceRootRelative:'assets/roblox/world-ghosts/motions/test',
+      responsibleFiles:['init.luau'],
+      allowFullRewrite:false,
+      singleMotionWorkUnit:true,
+      responseFiles:[response],
+      verifiedExternalLearningContract:{required:true,ids}
+    });
+    assert.equal(result.generation.attempts,1);
+    assert.equal(result.generation.baseAttemptBudget,3);
+    assert.equal(result.generation.effectiveAttemptBudget,3);
+    assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
+    assert.equal(result.generation.maxPredict,1536);
+    assert.equal(result.generation.timeoutMs,120000);
+    assert.equal(result.generation.contextWindow,8192);
+    assert.ok(result.generation.requestPromptBytes<17000);
+    assert.ok(result.generation.requestPromptBytes<Buffer.byteLength(prompt,'utf8'));
+    assert.equal(result.generation.verifiedExternalLearningPromptAllAttempts,true);
+  }finally{
+    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previousLane;
+  }
+});
+
 test('internal motion coaching selects source-hash-bound matching anatomy and never claims learned weights or runtime quality',()=>{
   const make=(id,clipId='walk')=>buildInternalMotionCoaching({order:{source:{internalAssetMotion:true},assetProduction:{motionRepairWorkUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-'+id,clipId}}}});
   const beast=make('bulgasari'),shroud=make('gwisin-bride'),serpent=make('gangcheori');
