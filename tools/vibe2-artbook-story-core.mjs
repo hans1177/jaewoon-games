@@ -172,12 +172,13 @@ export function expandCompactSeed(seed,{gameName='게임',genreText='',minimumPa
     sideQuestHooks,questGraph,
     npcMotivations,characterProfiles,foreshadowingGraph,
     relationshipMemoryContract:{axes:['TRUST','AFFINITY','FEAR','RESPECT','DEBT','BETRAYAL'],memorySourceEventRequired:true,knowledgeBoundaryRequired:true,gameplayAuthority:false},
-    worldNarrativeBindings:{channels:['REGION','LANDMARK','ENVIRONMENT','ITEM','NPC_DIALOGUE','FACTION_STATE','BOSS','QUEST_STATE'],worldStateConsistencyRequired:true,causalGrammarRequired:Boolean(grammar),causalDepth:clean(grammar?.depth)||null,newPrimaryVerb:clean(grammar?.newPrimaryVerb)||null,worldRule:clean(grammar?.worldRule)||null,causalDNA:(grammar?.causalDNAs||[]).map(row=>clean(row?.id)).filter(Boolean)},
+    worldNarrativeBindings:{channels:['REGION','LANDMARK','ENVIRONMENT','ITEM','NPC_DIALOGUE','FACTION_STATE','BOSS','QUEST_STATE'],worldStateConsistencyRequired:true,causalGrammarRequired:Boolean(grammar),grammarFormula:clean(grammar?.emergentGenre?.grammarFormula)||null,emergentGenre:clean(grammar?.emergentGenre?.name)||null,newPrimaryVerb:clean(grammar?.newPrimaryVerb)||null,worldRule:clean(grammar?.worldRule)||null,mainSystem:clean(grammar?.gameplaySystemFusion?.main?.name)||null,majorAxes:(grammar?.gameplaySystemFusion?.majorAxes||[]).map(row=>({key:clean(row?.key),name:clean(row?.name)})),cSubElements:(grammar?.gameplaySystemFusion?.subElements||[]).map(row=>clean(row?.name)).filter(Boolean),delveAtElements:(grammar?.delveLayer?.elements||[]).map(row=>clean(row?.name)).filter(Boolean),causalDNA:(grammar?.causalDNAs||[]).map(row=>clean(row?.id)).filter(Boolean)},
     causalNarrativeContract:grammar?{
-      depth:clean(grammar.depth),toneMode:clean(grammar.toneMode),familiarAnchor:clip(grammar.familiarAnchor,300),newPrimaryVerb:clip(grammar.newPrimaryVerb,220),worldRule:clip(grammar.worldRule,320),
+      toneBlend:grammar.toneBlend||[],familiarAnchor:clip(grammar.familiarAnchor,300),newPrimaryVerb:clip(grammar.newPrimaryVerb,220),worldRule:clip(grammar.worldRule,320),
       causalDNA:(grammar.causalDNAs||[]).map(row=>({id:clean(row?.id),source:clean(row?.source),principle:clip(row?.principle,220)})).filter(row=>row.id),
-      storyWorldBindings:grammar.storyWorldBindings||null,comicAbsurdity:grammar.comicAbsurdity||null,escalation:grammar.escalation||null,
-      depthIsQualityRank:false,lightComicMayRemainSimple:true,familiarHumanConflictRequired:true,characterMonsterRegionStoryShareWorldLaw:true
+      gameplaySystemFusion:grammar.gameplaySystemFusion||null,delveLayer:grammar.delveLayer||null,emergentGenre:grammar.emergentGenre||null,
+      storyWorldBindings:grammar.storyWorldBindings||null,
+      formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',cIsSubElementNotMajorAxis:true,atIsDelveNotGeneralSystem:true,familiarHumanConflictRequired:true,characterMonsterRegionStoryShareWorldLaw:true
     }:null,
     majorBosses:[boss.boss],bossCausality:[boss],gaps,
     proposalAdditions:phasePlans.map(p=>`${p.stage}: ${p.region} / ${p.quest}`),

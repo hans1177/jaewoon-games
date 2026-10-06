@@ -74,21 +74,30 @@ for(const value of Object.values(strong.evidenceLevels))assert.ok(DESIGN_DIRECT_
 
 const grammarSeed=structuredClone(seed);
 grammarSeed.GAMEPLAY_SKETCH={version:4,novelGameGrammar:{
-  depth:'D1_LIGHT_COMIC',
   newPrimaryVerb:'오해를 설득해 현실로 만든다',
   worldRule:'공동 믿음이 공간 규칙이 된다.',
-  causalDNAs:[{id:'COMEDIC_MISUNDERSTANDING'},{id:'TESTIMONY_CONSENSUS_REALITY'}]
+  causalDNAs:[{id:'COMEDIC_MISUNDERSTANDING'},{id:'TESTIMONY_CONSENSUS_REALITY'}],
+  gameplaySystemFusion:{
+    formula:'MAIN × A × B × c',
+    main:{name:'설득'},
+    majorAxes:[{key:'A',name:'증언 네트워크'},{key:'B',name:'공간 퍼즐'}],
+    subElements:[{name:'평판'},{name:'시간대'}]
+  },
+  delveLayer:{elements:[{name:'거짓말 연쇄'},{name:'권위자 역이용'}]},
+  emergentGenre:{name:'합의현실 소문 퍼즐극',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'}
 }};
 const grammarDesign=structuredClone(designRecord);
-grammarDesign.content.identity+=' 오해를 설득해 현실로 만든다 COMEDIC_MISUNDERSTANDING TESTIMONY_CONSENSUS_REALITY';
+grammarDesign.content.identity+=' 합의현실 소문 퍼즐극 오해를 설득해 현실로 만든다 COMEDIC_MISUNDERSTANDING TESTIMONY_CONSENSUS_REALITY 설득 증언 네트워크 공간 퍼즐 평판 거짓말 연쇄';
 const grammarPass=scoreDesignGateV2({seed:grammarSeed,designRecord:grammarDesign,cycleStatus,robloxGenreProfile:profile});
 assert.equal(grammarPass.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'),false);
-assert.equal(grammarPass.grammarCarryEvidence.depth,'D1_LIGHT_COMIC');
-assert.equal(grammarPass.grammarCarryEvidence.depthIsQualityRank,false);
+assert.equal(grammarPass.grammarCarryEvidence.formula,'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @');
+assert.deepEqual(grammarPass.grammarCarryEvidence.carriedMajorAxes,['증언 네트워크','공간 퍼즐']);
+assert.ok(grammarPass.grammarCarryEvidence.carriedSubElements.includes('평판'));
+assert.ok(grammarPass.grammarCarryEvidence.carriedDelveElements.includes('거짓말 연쇄'));
+assert.equal(grammarPass.grammarCarryEvidence.emergentGenreCarried,true);
 const grammarDiluted=scoreDesignGateV2({seed:grammarSeed,designRecord,cycleStatus,robloxGenreProfile:profile});
 assert.ok(grammarDiluted.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
 assert.ok(grammarDiluted.rejectionReasons.some(reason=>reason.code==='NOVEL_GRAMMAR_DILUTED'));
-
 
 const weak=structuredClone(designRecord);
 delete weak.content.uxAccessibilityPlan;

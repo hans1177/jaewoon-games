@@ -86,7 +86,19 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const worldRule=clean(seedGrammar?.worldRule);
   const primaryVerbCarried=!seedGrammar||!primaryVerb||designText.includes(primaryVerb);
   const worldRuleCarried=!seedGrammar||!worldRule||designText.includes(worldRule);
-  const grammarCarryOk=!seedGrammar||(carriedGrammarIds.length>=grammarIdMinimum&&(primaryVerbCarried||worldRuleCarried));
+  const fusion=seedGrammar?.gameplaySystemFusion||{};
+  const mainName=clean(fusion?.main?.name);
+  const majorAxisNames=list(fusion?.majorAxes).map(row=>clean(row?.name)).filter(Boolean);
+  const subElementNames=list(fusion?.subElements).map(row=>clean(row?.name)).filter(Boolean);
+  const delveNames=list(seedGrammar?.delveLayer?.elements).map(row=>clean(row?.name)).filter(Boolean);
+  const emergentGenreName=clean(seedGrammar?.emergentGenre?.name);
+  const mainCarried=!seedGrammar||!mainName||designText.includes(mainName);
+  const carriedMajorAxes=majorAxisNames.filter(name=>designText.includes(name));
+  const carriedSubElements=subElementNames.filter(name=>designText.includes(name));
+  const carriedDelveElements=delveNames.filter(name=>designText.includes(name));
+  const emergentGenreCarried=!seedGrammar||!emergentGenreName||designText.includes(emergentGenreName);
+  const systemFusionCarryOk=!seedGrammar||(mainCarried&&carriedMajorAxes.length>=Math.min(2,majorAxisNames.length)&&carriedSubElements.length>=Math.min(1,subElementNames.length)&&carriedDelveElements.length>=Math.min(1,delveNames.length)&&emergentGenreCarried);
+  const grammarCarryOk=!seedGrammar||(carriedGrammarIds.length>=grammarIdMinimum&&(primaryVerbCarried||worldRuleCarried)&&systemFusionCarryOk);
 
   const ideaBasic=textReady(design.identity,60)&&textReady(design.playerFantasy,40)&&textReady(design.coreFun,40)&&materialContractOk;
   const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=2&&grammarCarryOk;
@@ -169,7 +181,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   }
   if(seedGrammar&&!grammarCarryOk){
     hardFailures.push('NOVEL_GRAMMAR_DILUTED');
-    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{depth:clean(seedGrammar.depth),requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried},requiredAction:'GAMEPLAY_SKETCH v4의 newPrimaryVerb와 causalDNA 인과축을 기존 identity/coreFun/signatureSystems/systemInterconnections/narrativeDialoguePlan/referenceHomagePlan에 다시 연결한다. 깊이를 올리는 것이 목적이 아니라 선택된 D1~D4 문법을 희석하지 않는 것이 목적이다.'}));
+    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v4의 emergentGenre와 MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ 구조를 기존 설계 필드에 다시 연결한다. MAIN은 중심 행동, A/B는 대축, c는 서브요소, @는 파고들기 요소로 구분하고 causalDNA가 이 관계를 실제 상태 변화로 바꾸게 한다.'}));
   }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
@@ -195,6 +207,6 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
-    grammarCarryEvidence:seedGrammar?{depth:clean(seedGrammar.depth),requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried,depthIsQualityRank:false}:null,
+    grammarCarryEvidence:seedGrammar?{formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',requiredCausalIds:grammarIds,carriedCausalIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
   };
 }

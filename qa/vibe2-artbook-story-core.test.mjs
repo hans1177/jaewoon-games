@@ -309,26 +309,30 @@ test('character context supports explicitly declared and public knowledge withou
   assert.equal(context.revealedClues.some(row=>row.id==='other-clue'),false);
 });
 
-
-test('causal grammar stays attached to existing story expansion without a parallel story pipeline',()=>{
+test('causal grammar keeps MAIN×A×B×c + @ roles inside the existing story pipeline',()=>{
   const seed=buildFallbackSeed({gameName:'소문 골목',genreText:'코믹 퍼즐',minimumPages:12});
   const causalGrammar={
-    depth:'D1_LIGHT_COMIC',toneMode:'LIGHT_ABSURD_COMIC',familiarAnchor:'사소한 체면과 거짓말',
+    toneBlend:['COMIC','PHILOSOPHICAL'],familiarAnchor:'사소한 체면과 거짓말',
     newPrimaryVerb:'오해를 설득해 현실로 만든다',worldRule:'공동 믿음이 공간 규칙이 된다.',
     causalDNAs:[{id:'COMEDIC_MISUNDERSTANDING',source:'COMEDY_FARCE',principle:'오해가 결과를 만든다.'},{id:'TESTIMONY_CONSENSUS_REALITY',source:'HISTORY_LAW_EPISTEMOLOGY',principle:'합의가 사실을 만든다.'}],
-    storyWorldBindings:{emotionalConflict:'체면과 들킬 두려움이 충돌한다.',characterRule:'NPC마다 믿고 싶은 말이 다르다.',monsterRule:'소문 괴물은 믿음으로 유지된다.',regionRule:'동네마다 권위자가 다르다.',storyRule:'거짓 현실의 후폭풍이 다음 사건을 만든다.',plausibility:'공동 증언이 오래된 계약 관습이다.'},
-    comicAbsurdity:{enabled:true,setup:'문이 잠겼다.',ruleTwist:'문이 없다고 믿게 하면 벽이 된다.',payoff:'도둑의 길이 바뀐다.'},
-    escalation:{early:'한 오해',mid:'오해 조합',late:'구역 충돌',endgame:'현실 기준 선택'}
+    gameplaySystemFusion:{formula:'MAIN × A × B × c',main:{name:'설득'},majorAxes:[{key:'A',name:'증언 네트워크'},{key:'B',name:'공간 퍼즐'}],subElements:[{name:'평판'},{name:'시간대'}]},
+    delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[{name:'거짓말 연쇄'},{name:'권위자 역이용'},{name:'재방문 재해석'},{name:'합의 붕괴 콤보'}]},
+    emergentGenre:{name:'합의현실 소문 퍼즐극',grammarFormula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @'},
+    storyWorldBindings:{emotionalConflict:'체면과 들킬 두려움이 충돌한다.',characterRule:'NPC마다 믿고 싶은 말이 다르다.',monsterRule:'소문 괴물은 믿음으로 유지된다.',regionRule:'동네마다 권위자가 다르다.',storyRule:'거짓 현실의 후폭풍이 다음 사건을 만든다.',plausibility:'공동 증언이 오래된 계약 관습이다.'}
   };
   const draft=expandCompactSeed(seed,{gameName:'소문 골목',genreText:'코믹 퍼즐',minimumPages:12,evidenceSnippets:['소문 npc puzzle','동네 문'],causalGrammar});
   assert.equal(draft.worldNarrativeBindings.causalGrammarRequired,true);
-  assert.equal(draft.worldNarrativeBindings.causalDepth,'D1_LIGHT_COMIC');
-  assert.equal(draft.causalNarrativeContract.depthIsQualityRank,false);
-  assert.equal(draft.causalNarrativeContract.lightComicMayRemainSimple,true);
-  assert.equal(draft.causalNarrativeContract.characterMonsterRegionStoryShareWorldLaw,true);
-  assert.deepEqual(draft.worldNarrativeBindings.causalDNA,['COMEDIC_MISUNDERSTANDING','TESTIMONY_CONSENSUS_REALITY']);
+  assert.equal(draft.worldNarrativeBindings.grammarFormula,'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @');
+  assert.equal(draft.worldNarrativeBindings.emergentGenre,'합의현실 소문 퍼즐극');
+  assert.equal(draft.worldNarrativeBindings.mainSystem,'설득');
+  assert.deepEqual(draft.worldNarrativeBindings.majorAxes,[{key:'A',name:'증언 네트워크'},{key:'B',name:'공간 퍼즐'}]);
+  assert.deepEqual(draft.worldNarrativeBindings.cSubElements,['평판','시간대']);
+  assert.ok(draft.worldNarrativeBindings.delveAtElements.includes('거짓말 연쇄'));
+  assert.equal(draft.causalNarrativeContract.cIsSubElementNotMajorAxis,true);
+  assert.equal(draft.causalNarrativeContract.atIsDelveNotGeneralSystem,true);
   const engine=fs.readFileSync('tools/vibe2-artbook-story-engine.mjs','utf8');
   assert.match(engine,/seedNovelGameGrammar/);
-  assert.match(engine,/activeSeedForGame\(loadSeedState\(\),gameId\)/);
+  assert.match(engine,/A\/B만 대축, c는 서브요소/);
+  assert.doesNotMatch(engine,/D1_LIGHT_COMIC|D2~D4/);
   assert.doesNotMatch(engine,/new\s+.*StoryPipeline/i);
 });

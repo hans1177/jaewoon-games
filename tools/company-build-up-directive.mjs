@@ -1282,6 +1282,8 @@ export function directivePrompt(d={}){
     `IDENTITY_BUILD_UP_RULE: ${d.identityReinforcement?.buildUpRule||'PRESERVE_AND_STRENGTHEN_GAME_IDENTITY'}`,
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
+    `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
+    'EXISTING_GAME_GRAMMAR_ACTION: 기존게임은 새 장르를 강제로 덮어쓰지 않는다. 현재 설계와 실제 소스에서 MAIN, A/B 대축, c 서브요소, @ 파고들기 근거를 먼저 확인하고 서로 따로 노는 연결을 우선 보강한다. 기존 밸런스·세이브·경제·권한 의미는 보존한다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -1371,6 +1373,32 @@ export function buildGameSpecificBuildUpDirective({
   const identity=design.identity||clean(gameName)||id;
   const firstSignature=design.signatureSystems?.[0]||{};
   const firstConnection=design.systemInterconnections?.[0]||{};
+  const reconstructedMain=clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
+  const reconstructedMajorAxes=Object.freeze([
+    Object.freeze({key:'A',name:clean(design.signatureSystems?.[0]?.name)||secondary,source:'CURRENT_DESIGN_SIGNATURE_SYSTEM'}),
+    Object.freeze({key:'B',name:clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:'CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP'})
+  ]);
+  const confirmedSubElements=uniq([
+    ...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),
+    ...design.systemInterconnections.slice(0,4).map(row=>row.trigger)
+  ]).slice(0,6);
+  const delveEvidence=uniq([
+    ...design.contentExpansionPlan.flatMap(row=>[row.milestone,row.newGameplay]),
+    ...design.narrativeWorldRules,
+    ...design.designIntegrityNotes
+  ]).slice(0,10);
+  const existingGameGrammarMap=Object.freeze({
+    mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
+    formula:'MAIN × A × B × c + @',
+    main:reconstructedMain,
+    majorAxes:reconstructedMajorAxes,
+    cSubElements:Object.freeze(confirmedSubElements),
+    delveAtEvidence:Object.freeze(delveEvidence),
+    sourceTreeFingerprint:source.sourceTreeFingerprint,
+    rule:'PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS',
+    identityRewriteRequired:false,
+    existingBalanceSaveEconomyAndAuthorityPreserved:true
+  });
   const identityReinforcement=Object.freeze({
     appliesToAllGenres:true,
     genre:design.genre||'GAME_SPECIFIC',
@@ -1391,9 +1419,9 @@ export function buildGameSpecificBuildUpDirective({
       systemInterconnections:Object.freeze(design.systemInterconnections||[]),
       expansionPlan:Object.freeze(design.contentExpansionPlan||[]),
       integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
-      rule:'NEW_CONTENT_MUST_MUTATE_OR_DEEPEN_THE_APPROVED_CAUSAL_GAME_GRAMMAR; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
-      depthIsQualityRank:false,
-      lightComicMayRemainSimple:true,
+      formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',
+      existingGameGrammarMap,
+      rule:'NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
       familiarHumanConflictShouldRemainReadable:true
     }),
     buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
@@ -1566,7 +1594,9 @@ export function buildGameSpecificBuildUpDirective({
     'REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED',
     'GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS',
     'APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT',
-    'LIGHT_COMIC_DEPTH_NOT_FORCED_INTO_UNNECESSARY_COMPLEXITY',
+    'MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED',
+    'AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS',
+    'EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION',
     'CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
