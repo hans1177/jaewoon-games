@@ -819,10 +819,13 @@ ${traceBlock}-- STUDIO_ASSET_BINDING_CLIENT_END
     output=output.replace(managed,block);
   }else{
     const existingUnmanagedClientBinding=/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(output)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(output);
-    if(!existingUnmanagedClientBinding){
-      const insertAt=requireMatch.index+requireMatch[0].length;
-      output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
+    if(existingUnmanagedClientBinding){
+      output=output.replace(/^\s*local\s+STUDIO_ASSET_BINDING_VERSION\s*=\s*2\s*\n/m,'');
     }
+    const refreshedRequireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
+    if(!refreshedRequireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
+    const insertAt=refreshedRequireMatch.index+refreshedRequireMatch[0].length;
+    output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
   }
   if(!/StudioAssetBindingVersion/.test(output)){
     const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
