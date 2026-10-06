@@ -1,5 +1,5 @@
 -- 파일명: assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau
--- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 생물/몬스터 외형 모듈 24종 생성
+-- 역할: 여러 Roblox 게임에서 재사용하는 회사 공용 생물/몬스터 외형 모듈 25종 생성
 -- 원칙: 순수 표현 자산만 제공한다. AI/체력/데미지/이동/히트박스/드랍/세이브/네트워크 권한은 소유하지 않는다.
 
 local RobloxCommonCreatureParts = {}
@@ -60,6 +60,7 @@ local Catalog=table.freeze({
 	CLAW_PAIR=table.freeze({id="CLAW_PAIR",name="발톱 한 쌍",familyRootId="CREATURE_CLAWS",family="CREATURE",subfamily="CLAW_PAIR",creatureRole="APPENDAGE",bodyPlan="MULTI",ecologyRole="PREDATOR",silhouette="CURVED_TWIN_CLAWS",palette=table.freeze({body=c(122,111,91),light=c(177,165,137),dark=c(70,65,57),accent=c(195,173,126)})}),
 	MANDIBLE_PAIR=table.freeze({id="MANDIBLE_PAIR",name="턱 한 쌍",familyRootId="CREATURE_MANDIBLES",family="CREATURE",subfamily="MANDIBLE_PAIR",creatureRole="HEAD_APPENDAGE",bodyPlan="INSECT",ecologyRole="INSECT_PREDATOR",silhouette="CURVED_OPPOSING_MANDIBLES",palette=table.freeze({body=c(74,81,64),light=c(111,121,91),dark=c(42,47,38),accent=c(174,133,62)})}),
 	ELITE_ORNAMENT=table.freeze({id="ELITE_ORNAMENT",name="엘리트 장식",familyRootId="CREATURE_ELITE",family="CREATURE",subfamily="ELITE_ORNAMENT",creatureRole="ELITE_ORNAMENT",bodyPlan="MULTI",ecologyRole="ELITE_VARIANT",silhouette="BACK_SPIKE_SHOULDER_CREST",palette=table.freeze({body=c(93,73,61),light=c(137,105,81),dark=c(52,43,39),accent=c(218,156,67)})}),
+	AMORPHOUS_CORE=table.freeze({id="AMORPHOUS_CORE",name="비정형 점액 코어",familyRootId="CREATURE_AMORPHOUS",family="CREATURE",subfamily="AMORPHOUS_CORE",creatureRole="BODY_CORE",bodyPlan="AMORPHOUS",ecologyRole="SCAVENGER",silhouette="LOW_IRREGULAR_BLOB_CORE",palette=table.freeze({body=c(79,118,102),light=c(119,158,135),dark=c(44,70,62),accent=c(131,208,170)})}),
 })
 
 local function makePart(name,size,color,material,shape)
@@ -285,6 +286,12 @@ local function addCreatureExpansion(model,root,row,level)
 		for _,x in ipairs({-1,1}) do weld(root,wedge("Mandible"..x,Vector3.new(0.55,0.55,1.55),p.body,Enum.Material.SmoothPlastic),CFrame.new(x*0.52,0,-0.65)*CFrame.Angles(math.rad(90),0,math.rad(x*22))) end
 	elseif id=="ELITE_ORNAMENT" then
 		for i=-2,2 do weld(root,wedge("Crest"..i,Vector3.new(0.50,1.05+math.abs(i)*0.15,0.30),i%2==0 and p.accent or p.light,Enum.Material.SmoothPlastic),CFrame.new(i*0.48,0.65,0)*CFrame.Angles(0,0,math.rad(i*6))) end
+	elseif id=="AMORPHOUS_CORE" then
+		weld(root,makePart("BlobCore",Vector3.new(2.85,1.55,2.35),p.body,Enum.Material.SmoothPlastic,"BALL"),CFrame.new())
+		local lobes={{Vector3.new(1.35,0.90,1.20),CFrame.new(-1.05,-0.10,0.30)},{Vector3.new(1.20,1.15,1.05),CFrame.new(0.95,0.12,-0.25)},{Vector3.new(0.95,0.78,0.90),CFrame.new(-0.25,0.66,0.55)},{Vector3.new(0.88,0.72,0.82),CFrame.new(0.38,-0.48,-0.82)},{Vector3.new(0.72,0.62,0.68),CFrame.new(-1.18,-0.38,-0.65)},{Vector3.new(0.66,0.58,0.62),CFrame.new(1.18,-0.30,0.62)}}
+		local lobeCount=level==1 and 2 or level==2 and 4 or 6
+		for i=1,lobeCount do local entry=lobes[i]; weld(root,makePart("BlobLobe"..i,entry[1],i%2==0 and p.light or p.body,Enum.Material.SmoothPlastic,"BALL"),entry[2]) end
+		if detail(level,3) then for i,x in ipairs({-0.62,0.62}) do weld(root,makePart("GlowNodule"..i,Vector3.new(0.30,0.30,0.18),p.accent,Enum.Material.Neon,"BALL"),CFrame.new(x,0.24,-1.10)) end end
 	end
 end
 
@@ -313,6 +320,7 @@ local BUILDERS=table.freeze({
 	CLAW_PAIR=addCreatureExpansion,
 	MANDIBLE_PAIR=addCreatureExpansion,
 	ELITE_ORNAMENT=addCreatureExpansion,
+	AMORPHOUS_CORE=addCreatureExpansion,
 })
 
 local function applyModelMetadata(model,row,quality)

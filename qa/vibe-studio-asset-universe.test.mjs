@@ -2509,7 +2509,7 @@ test('expanded common item tool creature and VFX registry mirrors current catalo
     ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
     ['assets/roblox/common-character-gear-v1/catalog.json','roblox-common-character-gear-v1','items','roblox-common-character-gear-',18],
     ['assets/roblox/common-foliage-v1/catalog.json','roblox-common-foliage-v1','items','roblox-common-foliage-',18],
-    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
+    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',25],
     ['assets/roblox/common-skill-v1/catalog.json','roblox-common-skill-v1','atoms','roblox-common-skill-',20],
     ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
     ['assets/roblox/common-materials-v1/catalog.json','roblox-common-materials-v1','atoms','roblox-common-material-',25],
@@ -3015,7 +3015,7 @@ test('generic inventory UI requirement can choose company-common base',()=>{
 });
 
 
-test('company-common creature parts pack provides twenty-four reusable visual modules',()=>{
+test('company-common creature parts pack provides twenty-five reusable visual modules',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const packDir=path.join(root,'assets','roblox','common-creature-parts-v1');
@@ -3023,8 +3023,8 @@ test('company-common creature parts pack provides twenty-four reusable visual mo
   const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
   const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
 
-  const ids=['BIPED_TORSO','QUADRUPED_TORSO','INSECT_THORAX','WING_PAIR','TAIL_LONG','HORN_PAIR','SHELL_BACK','TENTACLE_CLUSTER'];
-  assert.equal(catalog.items.length,24);
+  const ids=['BIPED_TORSO','QUADRUPED_TORSO','INSECT_THORAX','WING_PAIR','TAIL_LONG','HORN_PAIR','SHELL_BACK','TENTACLE_CLUSTER','AMORPHOUS_CORE'];
+  assert.equal(catalog.items.length,25);
   for(const id of ids){
     assert.ok(source.includes(id),id);
     assert.ok(catalog.items.some(row=>row.assetId===id),id+':catalog');

@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "packId": "roblox-common-creature-parts-v1",
-  "title": "Roblox 회사 공용 생물·몬스터 외형 모듈 24종 v3",
+  "title": "Roblox 회사 공용 생물·몬스터 외형 모듈 25종 v4",
   "platform": "ROBLOX",
   "family": "CREATURE",
   "subfamily": "CREATURE_PARTS_PACK",
@@ -227,6 +227,15 @@
       "familyRootId": "CREATURE_ELITE",
       "bodyPlan": "MULTI",
       "ecologyRole": "ELITE_VARIANT"
+    },
+    {
+      "assetId": "AMORPHOUS_CORE",
+      "name": "비정형 점액 코어",
+      "subfamily": "AMORPHOUS_CORE",
+      "creatureRole": "BODY_CORE",
+      "familyRootId": "CREATURE_AMORPHOUS",
+      "bodyPlan": "AMORPHOUS",
+      "ecologyRole": "SCAVENGER"
     }
   ],
   "systemDepthContract": {
@@ -298,10 +307,11 @@
       "FIN_PAIR",
       "CLAW_PAIR",
       "MANDIBLE_PAIR",
-      "ELITE_ORNAMENT"
+      "ELITE_ORNAMENT",
+      "AMORPHOUS_CORE",
+      "AMORPHOUS"
     ],
     "missingComponentCandidates": [
-      "AMORPHOUS",
       "TORSO_VARIANT",
       "SURFACE_VARIANT",
       "BOSS_SIGNATURE",
@@ -314,7 +324,7 @@
     "qualityScoreIsNotUsageGate": true,
     "existingAssetsRemainUsable": true,
     "gameplayAuthority": false,
-    "currentAssetCount": 24
+    "currentAssetCount": 25
   },
   "internalAssetStandard": {
     "version": 1,
