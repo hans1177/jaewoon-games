@@ -466,7 +466,7 @@ test('Roblox product repair emits one batch fan-in wake instead of one wake per 
   assert.match(block,/ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=BATCH/);
   assert.match(block,/ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_DISPATCH_COUNT=1/);
   assert.doesNotMatch(block,/for game_id in "\$\{product_repair_ids\[@\]\}"/);
-  assert.doesNotMatch(block,/source_task:\$game/);
+  assert.match(block,/source_task:\$task/);\n  assert.doesNotMatch(block,/source_task:\$game/);
 });
 
 
