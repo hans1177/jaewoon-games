@@ -1,5 +1,5 @@
 {
-  "version": 323,
+  "version": 324,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -32,6 +32,34 @@
     "VERIFIED_RUNTIME_EVIDENCE",
     "RUNTIME_STATE"
   ],
+  "ownerDirectiveInterruptionResumeTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.ownerDirectiveInterruptionResumeContract",
+    "mode": "PREEMPT_APPLY_REVALIDATE_RESUME_REPEAT",
+    "ownerDirectivePriority": "IMMEDIATE_WITHIN_AFFECTED_GAME_SCOPE",
+    "captureBeforePreempt": [
+      "GAME_ID",
+      "CURRENT_STEP",
+      "CANONICAL_STATE",
+      "SOURCE_REVISION",
+      "ARTIFACT_IDENTITY_WHEN_PRESENT",
+      "PLATFORM",
+      "FAILURE_STAGE_WHEN_PRESENT"
+    ],
+    "resumeAfterChangeRequired": true,
+    "resumeFrom": "FIRST_INVALIDATED_OR_PREEMPTED_CANONICAL_CHECKPOINT",
+    "unchangedPassingEvidenceReuseRequired": true,
+    "fullCycleRestartDefaultForbidden": true,
+    "ownerChangeCompletionCannotBecomeTerminalState": true,
+    "repeatDevelopmentAndAutomaticRefillContinue": true,
+    "nestedOwnerDirectiveBehavior": "REBASE_ON_LATEST_CANONICAL_CHECKPOINT_THEN_RESUME",
+    "explicitOwnerStopHoldKillDeleteOverridesResume": true,
+    "existingQueueRecoveryAndSchedulerOnly": true,
+    "newQueuePipelineWrapperOrShadowFlowForbidden": true,
+    "securityAuthorityUnchanged": true,
+    "releaseGateUnchanged": true,
+    "unrelatedNonconflictingWorkContinues": true
+  },
   "constitutionalEnforcement": {
     "version": 2,
     "source": "company-learning/platform-release-roadmap.json#ownerCanonicalRules",
