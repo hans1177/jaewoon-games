@@ -36,7 +36,7 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  assert.equal(e('assetImage').src,'/assets/monster.png');assert.equal(intervals.length,1);
  e('assetList').scrollTop=73;e('assetList').children[0].focus();
  registry.assets.push({id:'monster-b',title:'자동 추가 몬스터',category:'CREATURE',path:'https://untrusted.invalid/image.png'});
- registry.assets.push({id:'ui-a',title:'시험 UI',category:'UI',platform:'ROBLOX',status:'REPO_ASSET',path:'/assets/ui.svg'});
+ registry.assets.push({id:'ui-a',title:'시험 UI',category:'UI',platform:'ROBLOX',status:'REPO_ASSET',path:'/assets/ui.svg',productionVerified:false,runtimeVerificationState:'PENDING_STUDIO',internalAuditScore:882.2,internalAuditGrade:'COMMERCIAL_READY',consumerGameIds:['game-a']});
  await intervals[0]();await settle();
  assert.equal(e('allCount').textContent,7);assert.equal(e('monsterCount').textContent,2);assert.equal(e('assetList').children.length,2);
  assert.equal(e('selectedTitle').textContent,'시험 몬스터');assert.equal(e('assetList').scrollTop,73);assert.equal(document.activeElement.dataset.id,'monster-a');
@@ -45,7 +45,9 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  e('allTab').listeners.click();await settle();
  assert.equal(e('assetList').children.length,7);
  const uiButton=e('assetList').children.find(row=>row.dataset?.id==='ui-a');assert.ok(uiButton);
- await uiButton.listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'시험 UI');assert.match(e('selectedInfo').textContent,/UI.*ROBLOX.*REPO_ASSET/);
+ await uiButton.listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'시험 UI');assert.match(e('selectedInfo').textContent,/ID ui-a.*카테고리 UI.*플랫폼 ROBLOX.*상태 REPO_ASSET/);
+ assert.match(e('selectedInfo').textContent,/내부 품질 882\.2 \/ COMMERCIAL_READY/);assert.match(e('selectedInfo').textContent,/productionVerified: 미검증/);assert.doesNotMatch(e('selectedInfo').textContent,/productionVerified: 검증됨/);assert.match(e('selectedInfo').textContent,/runtimeVerificationState: PENDING_STUDIO/);assert.match(e('selectedInfo').textContent,/사용 게임: game-a/);
+ e('assetSearch').value='game-a';e('assetSearch').listeners.input();assert.equal(e('assetList').children.length,1);assert.equal(e('assetList').children[0].dataset.id,'ui-a');e('assetSearch').value='';e('assetSearch').listeners.input();
  e('environmentTab').listeners.click();await settle();assert.equal(e('selectedTitle').textContent,'숲');
  e('assetSearch').value='없는 이름';e('assetSearch').listeners.input();assert.match(e('assetList').children[0].textContent,/찾는 자산이 없어/);
  offline=true;await intervals[0]();await settle();assert.match(e('syncStatus').textContent,/이전 목록/);assert.equal(e('environmentCount').textContent,1);
@@ -105,4 +107,9 @@ test('asset homepage all tab exposes every registry family while preserving reti
  }
  assert.match(script,/retiredPreview=retiredPreviews\.has\(asset\.id\)/);
  assert.match(script,/row\.retiredPreview\?'홈 미리보기 제외'/);
+ assert.match(script,/productionVerified: 검증됨/);
+ assert.match(script,/productionVerified: 미검증/);
+ assert.match(script,/runtimeVerificationState:/);
+ assert.match(script,/사용 게임:/);
+ assert.match(script,/internalAuditGrade/);
 });
