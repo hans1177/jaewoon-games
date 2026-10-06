@@ -133,6 +133,11 @@ function presentationPassFromTask(task = {}) {
 }
 export function expandPresentationResponsibleFiles({task={},target='',repoRoot=process.cwd(),fallbackRoot='',assetProduction=null}={}){
   const base=freezeList(task.responsibleFiles||[]);
+  if(task.assetQualityWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY'){
+    const expected=posix(task.assetQualityWorkUnit.sourceFile);
+    if(base.length!==1||base[0]!==expected)throw new Error('INTERNAL_ASSET_QUALITY_EXACT_RESPONSIBILITY_REQUIRED');
+    return base;
+  }
   if(task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'){
     const expected='assets/roblox/world-ghosts/motions/'+task.motionRepairWorkUnit.objectId.slice('roblox-world-ghost-'.length)+'/init.luau';
     if(base.length!==1||base[0]!==expected)throw new Error('INTERNAL_MOTION_EXACT_RESPONSIBILITY_REQUIRED');
@@ -528,7 +533,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const capabilityRecordsExcludedFromGenericLearning=Math.max(0,(fullExperienceMemory.records||[]).length-(genericLearningExperience.records||[]).length);
   const plan = planVibeCoreTask({
     request:task.goal, target:task.target, gameId:task.gameId, file:normalizeResponsibleFile(task),
-    experienceMemory:genericLearningExperience, departments:task.department?[task.department]:[], ownerDirective:task.ownerDirective, motionRepairWorkUnit:task.motionRepairWorkUnit
+    experienceMemory:genericLearningExperience, departments:task.department?[task.department]:[], ownerDirective:task.ownerDirective, motionRepairWorkUnit:task.motionRepairWorkUnit, assetQualityWorkUnit:task.assetQualityWorkUnit
   });
   const gateReasons = [...(plan.executionGate?.reasons || [])];
   const analysisOnlyRead = !requiresWrite && gateReasons.length === 1 && gateReasons[0] === 'source-read-only';
@@ -548,7 +553,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
 
   const adapter = plan.engineAdapter;
   const route = classifyVibeExecutionRoute({ target:plan.target, task, adapter });
-  const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
+  const assetDevelopmentWork=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
+  const maxWorkMinutes = assetDevelopmentWork?60:Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
   const editorConfig = runtime?.engineEditors?.[plan.target] || {};
   const releaseState = clean(task.releaseState) || 'other';
   const supervisedByEvidence=(task?.evidence||[]).map(clean).includes('supervised-web-build:required');
@@ -628,7 +634,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0
     ?Math.floor((verifiedExternalDistilledContentIds.length/verifiedExternalPlaybookReuse.length)*100)
     :0;
-  const externalDisposition=classifyVerifiedExternalBlackBoxPrinciples(verifiedExternalPlaybookRows,{gameId:task.gameId,target:plan.target,sourceScope:adapter.source.internalAssetMotion?'INTERNAL_ASSET_LIBRARY':''});
+  const externalDisposition=classifyVerifiedExternalBlackBoxPrinciples(verifiedExternalPlaybookRows,{gameId:task.gameId,target:plan.target,sourceScope:(adapter.source.internalAssetMotion||adapter.source.internalAssetQuality)?'INTERNAL_ASSET_LIBRARY':''});
   const externalDispositionRows=freeze([...externalDisposition.rows]);
   const externalGameSourceRows=freeze([...externalDisposition.sourceRows]);
   const verifiedExternalLearningApplyAxes=freezeList(externalGameSourceRows.flatMap(row=>row.domains));
@@ -840,7 +846,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     workMode:route.route==='analysis-only'?'analysis-only':route.route==='learning-web-artifact'?'learning-web-artifact':route.route==='engine-editor'?'engine-editor-task':'source-change-candidate',
     executionRoute:route.route, route, goal:executionGoal, originalGoal:task.goal, department:task.department, priority:task.priority, releaseState, maxWorkMinutes,
     source:freeze({
-      root:adapter.source.root, internalAssetMotion:adapter.source.internalAssetMotion===true, writable:adapter.mayWriteSource, maintenanceOnly:adapter.source.maintenanceOnly === true,
+      root:adapter.source.root, internalAssetMotion:adapter.source.internalAssetMotion===true, internalAssetQuality:adapter.source.internalAssetQuality===true, writable:adapter.mayWriteSource, maintenanceOnly:adapter.source.maintenanceOnly === true,
       candidateFiles:freezeList(adapter.source.candidateFiles), textWritablePatterns:freezeList(adapter.source.textWritablePatterns || []),
       editorRequiredPatterns:freezeList(adapter.source.editorRequiredPatterns || []), ignoredPaths:freezeList(adapter.source.ignoredPaths), responsibleFiles
     }),
