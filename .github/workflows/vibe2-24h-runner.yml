@@ -157,14 +157,14 @@ jobs:
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
           echo "VIBE2_24H_GEMINI_LEARNING=FORBIDDEN"
 
-      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning
+      - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          # 중앙 backpressure 계약: Actions 큐가 이미 밀리면 새 production wake를 만들지 않는다.
-          # 기존 5분 safety-net과 fan-in이 continuity를 소유하므로 현재 run은 planning만 계속한다.
+          # GAME_PRIMARY 64슬롯은 논리 용량이며 실제 러너 부족은 GitHub Actions 큐가 흡수한다.
+          # 러너 압력은 관찰하되 GAME_PRIMARY/asset production dispatch 자체를 억제하지 않는다.
           pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
           preplan_pressure='unknown'
           if curl --fail-with-body --silent --show-error \
@@ -187,13 +187,11 @@ jobs:
             )"
           fi
           if [[ "$preplan_pressure" =~ ^[0-9]+$ ]] && [ "$preplan_pressure" -ge "$pressure_threshold" ]; then
-            echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:$preplan_pressure:$pressure_threshold"
-            exit 0
-          fi
-          if [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
-            echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS:$preplan_pressure:$pressure_threshold"
+            echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=QUEUE_ALLOWED:$preplan_pressure:$pressure_threshold"
+          elif [[ "$preplan_pressure" =~ ^[0-9]+$ ]]; then
+            echo "VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=BELOW_THRESHOLD:$preplan_pressure:$pressure_threshold"
           else
-            echo 'VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'
+            echo 'VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=UNAVAILABLE_FAIL_OPEN'
           fi
 
           state="$(node <<'NODE'
@@ -251,7 +249,6 @@ jobs:
             else
               echo 'VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
             fi
-            exit 0
           fi
 
           if [ "$game_queued" -eq 0 ] || [ "$game_free" -eq 0 ]; then
@@ -1195,7 +1192,7 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
@@ -1242,22 +1239,16 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 2
     steps:
-      - name: Dispatch next cycle only when backpressure allows
+      - name: Dispatch next cycle while external runner queue owns physical backpressure
         env:
           GH_TOKEN: ${{ github.token }}
           CONTINUE_REQUIRED: ${{ needs.plan.outputs.continue_required }}
-          RUNNER_PRESSURE: ${{ needs.plan.outputs.runner_pressure }}
         run: |
           set -euo pipefail
           if [ "${CONTINUE_REQUIRED:-NO}" != 'YES' ]; then
             echo 'VIBE2_24H_REFILL=SKIPPED_NO_CONTINUE_REQUIRED'
             exit 0
           fi
-          if [ "${RUNNER_PRESSURE:-YES}" = 'YES' ]; then
-            echo 'VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE'
-            exit 0
-          fi
-
           active_scheduler='0'
           if curl --fail-with-body --silent --show-error \
             --header 'Accept: application/vnd.github+json' \
@@ -1286,7 +1277,7 @@ jobs:
             exit 0
           fi
 
-          echo 'VIBE2_24H_REFILL_PRESSURE_GATE=PASS'
+          echo 'VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE'
           body='{"ref":"main"}'
           for attempt in 1 2 3; do
             code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
