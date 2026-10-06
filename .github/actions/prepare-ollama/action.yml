@@ -24,6 +24,10 @@ inputs:
     description: Opt in to loading the requested local model into memory before the caller starts source generation. Default false keeps other callers unchanged.
     required: false
     default: 'false'
+  preload-context:
+    description: Context window used only by the optional preload request. Default 8192 preserves existing callers.
+    required: false
+    default: '8192'
 runs:
   using: composite
   steps:
@@ -256,10 +260,16 @@ runs:
       shell: bash
       env:
         MODEL: ${{ inputs.model }}
+        PRELOAD_CONTEXT: ${{ inputs.preload-context }}
       run: |
         set -euo pipefail
         preload_started="$(date +%s%3N)"
-        payload="$(jq -nc --arg model "$MODEL" '{model:$model,prompt:"",stream:false,keep_alive:"20m",options:{num_ctx:8192,num_predict:1}}')"
+        preload_context="$PRELOAD_CONTEXT"
+        case "$preload_context" in
+          ''|*[!0-9]*) echo "OLLAMA_MODEL_PRELOAD_CONTEXT_INVALID=$preload_context" >&2; exit 1 ;;
+        esac
+        test "$preload_context" -ge 8192
+        payload="$(jq -nc --arg model "$MODEL" --argjson num_ctx "$preload_context" '{model:$model,prompt:"",stream:false,keep_alive:"20m",options:{num_ctx:$num_ctx,num_predict:1}}')"
         echo "OLLAMA_MODEL_PRELOAD=BEGIN:$MODEL"
         curl -fsS --max-time 300 \
           -H 'content-type: application/json' \
@@ -269,7 +279,7 @@ runs:
         preload_finished="$(date +%s%3N)"
         echo "OLLAMA_MODEL_PRELOAD=PASS:$MODEL:$((preload_finished-preload_started))ms"
         echo 'OLLAMA_MODEL_PRELOAD_SCOPE=OPT_IN_CALLER_ONLY'
-        echo 'OLLAMA_MODEL_PRELOAD_CONTEXT=8192'
+        echo "OLLAMA_MODEL_PRELOAD_CONTEXT=$preload_context"
         echo 'OLLAMA_MODEL_KEEP_ALIVE=20m'
         echo 'EXTERNAL_AI_REQUIRED=NO'
         echo 'PAID_API=NO'
