@@ -152,7 +152,7 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
   assert.match(workflow,/repair_required:/);
   assert.match(workflow,/UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED/);
   assert.match(workflow,/UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW/);
-  assert.match(workflow,/uses: \.\/\.github\/workflows\/vibe2-24h-runner\.yml/);
+  assert.match(workflow,/repair-vibe2:[\s\S]*?permissions:[\s\S]*?contents: write[\s\S]*?actions: write[\s\S]*?pull-requests: write[\s\S]*?uses: \.\/\.github\/workflows\/vibe2-24h-runner\.yml/);
   assert.match(workflow,/needs\.build\.result == 'failure'/);
   assert.match(workflow,/needs\.build\.outputs\.repair_required == 'true'/);
   assert.doesNotMatch(workflow,/gh workflow run vibe2-24h-runner\.yml/);
