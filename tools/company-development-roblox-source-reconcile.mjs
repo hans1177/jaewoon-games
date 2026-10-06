@@ -239,7 +239,7 @@ export function validateExistingRobloxSourceTree({root='',baseline={},assetLibra
   return {pass:blockers.length===0,blockers:[...new Set(blockers)],saveRequired:verdict.saveRequired};
 }
 
-function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
+export function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   try{
     return clean(execFileSync('git',['rev-parse',`HEAD:${sourcePath}`],{cwd:repoRoot,encoding:'utf8'}));
   }catch{
