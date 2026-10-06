@@ -1590,8 +1590,12 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
 });
 
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:13,
+  version:14,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
+  productionDemandScope:'RELEASE_CONFIRMED_GAME_DEMAND_ONLY',
+  productionIdeasRequireReleasedGameIds:true,
+  developmentConfirmedOnlyGameExcludedFromLibraryProduction:true,
+  noReleasedGameProductionAction:'IDLE_WITHOUT_INVENTING_GENERIC_IDEAS',
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
   registry:'company-asset-library.json',
