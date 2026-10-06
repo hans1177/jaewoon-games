@@ -667,6 +667,7 @@ test('runtime sentinel 404 keeps verified Open Cloud server boot and defers only
  assert.match(block,/observedVersionNumber:null/);
  assert.match(block,/exactVersion:true/);
  assert.match(block,/serverBootObserved:true/);
+ assert.match(block,/validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY'/);
  assert.match(block,/actualServerRuntimeEvidence:true/);
  assert.match(block,/actualClientRuntimeEvidence:false/);
  assert.match(block,/ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING/);
