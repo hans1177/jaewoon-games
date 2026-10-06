@@ -153,3 +153,27 @@ test('seeded advanced coding graphics rig material and vfx knowledge stays verif
     assert.ok(row.patterns.length>=6,id);
   }
 });
+
+
+test('animal insect graphics distillation stays advisory-only and independently verified',()=>{
+  const store=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const required=[
+    'external-ai-distilled:openai-insect-morphology-surface-v1',
+    'external-ai-distilled:openai-mammal-fur-anatomy-v1',
+    'external-ai-distilled:openai-reptile-amphibian-surface-v1',
+    'external-ai-distilled:openai-bird-feather-wing-v1',
+    'external-ai-distilled:openai-aquatic-animal-surface-motion-v1'
+  ];
+  for(const id of required){
+    const row=store.entries.find(item=>item.id===id);
+    assert.ok(row,id);
+    assert.equal(isTrustedDistilledExternalAiEntry(row),true,id);
+    assert.equal(row.rawOutputStored,false,id);
+    assert.equal(row.directSourceWrite,false,id);
+    assert.equal(row.directProductionPass,false,id);
+    assert.equal(row.directMasteryCredit,false,id);
+    assert.equal(row.directTrainingSample,false,id);
+    assert.ok(row.patterns.length>=8,id);
+    assert.ok(row.verification.evidence.length>=2,id);
+  }
+});
