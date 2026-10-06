@@ -1966,8 +1966,18 @@ export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
   if(!assetProductionEnabled(repoRoot))return null;
   const responsibleFiles=presentationSourcesForProject(project,repoRoot);
   if(!responsibleFiles.length)return null;
-  const registry=readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]});
   const targetPlatform=engine.toUpperCase(),gameId=clean(project?.gameId);
+  const registry=synchronizeSourceBoundAssetConsumers({
+    repoRoot,
+    registry:readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]}),
+    gameCatalog:{games:[{
+      id:gameId,
+      lifecycleState:'ACTIVE',
+      productionClass:project.releaseState,
+      robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
+      unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
+    }]}
+  }).registry;
   const safeRelative=value=>{
     const normalized=posix(value);
     return Boolean(normalized&&!path.isAbsolute(normalized)&&!normalized.split('/').includes('..'));
@@ -1982,7 +1992,7 @@ export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
   };
   const rows=[];
   for(const asset of Array.isArray(registry?.assets)?registry.assets:[]){
-    if(!(Array.isArray(asset?.intendedConsumerGameIds)?asset.intendedConsumerGameIds:[]).map(clean).includes(gameId))continue;
+    if(!currentAssetConsumerGameIds(asset).includes(gameId))continue;
     if(!licenseAllowed(asset?.license||asset?.policy))continue;
     for(const recipe of Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]){
       const targets=(Array.isArray(recipe?.targetPlatforms)?recipe.targetPlatforms:[]).map(value=>clean(value).toUpperCase()).filter(Boolean);
