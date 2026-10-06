@@ -22,7 +22,7 @@ import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemAr
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
-import {detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -696,27 +696,11 @@ const ROBLOX_INTERNAL_ASSET_SYSTEM_PATTERNS=Object.freeze({
   MOTION:/\b(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|motion|locomotion|idle|walk|run)\b/i,
   PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item)\b/i
 });
-function robloxInternalAssetFamilyRefPattern(family=''){
-  const value=clean(family);
-  return new RegExp('(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']|studioAssetFamilies(?:\\s*\\.\\s*'+value+'|\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\]))','ig');
-}
 function robloxInternalAssetTraceStripped(text=''){
   return String(text||'')
     .replace(/--[^\n]*/g,' ')
     .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
-}
-function robloxInternalAssetFamilyBoundInText(text='',family=''){
-  const raw=String(text||'');
-  const nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
-  if(!nativePattern)return false;
-  const refs=[...raw.matchAll(robloxInternalAssetFamilyRefPattern(family))];
-  for(const ref of refs){
-    const start=Math.max(0,Number(ref.index||0)-3500);
-    const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+3500);
-    if(nativePattern.test(raw.slice(start,end)))return true;
-  }
-  return false;
 }
 function robloxInternalAssetSourceDocuments(sourceRoot=''){
   const root=path.resolve(sourceRoot),documents=new Map(),stack=[root];
@@ -788,7 +772,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     const configFamilyMatch=selectedAtoms.length===configuredAtoms.length&&selectedAtoms.every((atom,index)=>atom===configuredAtoms[index]);
     if(configFamilyMatch)configFamilyMatchCount+=1;
     else blockers.push('ROBLOX_INTERNAL_ASSET_CONFIG_FAMILY_SELECTION_MISMATCH:'+family);
-    const boundFiles=[...result.entries()].filter(([,text])=>robloxInternalAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
+    const boundFiles=[...result.entries()].filter(([,text])=>robloxStudioAssetFamilyBoundInText(text,family)).map(([relative])=>relative);
     const actualBinding=boundFiles.length>0;
     const changedBinding=boundFiles.some(relative=>touched.has(relative));
     if(!status)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_STATUS_MISSING:'+family);
