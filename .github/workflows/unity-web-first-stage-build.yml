@@ -836,5 +836,6 @@ jobs:
     permissions:
       contents: write
       actions: write
+      pull-requests: write
     uses: ./.github/workflows/vibe2-24h-runner.yml
     secrets: inherit
