@@ -1515,7 +1515,15 @@
       "externalSpareBeyond30": "SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_64",
       "repeatDevelopmentFixedSlots": 64,
       "repeatDevelopmentAutomaticRefill": true,
-      "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY"
+      "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY",
+      "gamePrimaryMaxWorkMinutes": 60,
+      "gamePrimaryMinimumWorkMinutes": 0,
+      "gamePrimaryEarlyCompletionAllowed": true,
+      "gamePrimaryWorkBudgetMode": "MAXIMUM_NOT_MINIMUM",
+      "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
+      "gamePrimaryWorkerBudgetSemantics": "ONE_GAME_PRIMARY_WORKER_MAY_USE_UP_TO_60_MINUTES_TO_FINISH_SOURCE_GRAPHICS_UI_AND_IMPACT_SCOPED_QA_THEN_EXIT_IMMEDIATELY_WHEN_COMPLETE",
+      "modelInvocationTimeoutRetryUnchanged": true,
+      "canonicalBuildUpF0ToF9SequenceUnchanged": true
     },
     "liveShadowRepairLoop": {
       "path": [
