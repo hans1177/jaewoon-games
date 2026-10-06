@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
+local RunService = game:GetService("RunService")
 local store = DataStoreService:GetDataStore("survival-development-v1")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
@@ -32,8 +33,6 @@ local function initializePlayer(player)
     player:SetAttribute("ActionSequence", 0)
   end
 end
-
-local RunService = game:GetService("RunService")
 
 local function markAction(player, actionId, learningPattern)
   player:SetAttribute("LastApprovedScope", actionId)
