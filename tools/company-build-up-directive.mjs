@@ -15,7 +15,7 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 
 export const BUILD_UP_DOMAINS=Object.freeze([
   'CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS',
-  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','LIBRARY_LINKAGE',
+  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','NPC_COMPANION_CONCEPT_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','INTERACTION_DISCOVERABILITY',
   'ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION',
   'SESSION_FLOW','FIRST_10_MINUTES','FAILURE_RESPAWN_CHECKPOINTS','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC',
@@ -31,7 +31,7 @@ export const HOLISTIC_CORE_DOMAINS=Object.freeze([
   'CORE_FUN','PLAYER_ACTIONS','PLAYER_AGENCY','PROGRESSION','CONTENT_VARIETY','CONTENT_DENSITY',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','INTERACTION_DISCOVERABILITY',
   'INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','SYSTEM_CONNECTION',
-  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','LIBRARY_LINKAGE','SAVE_COMPLETENESS',
+  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','NPC_COMPANION_CONCEPT_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','SAVE_COMPLETENESS',
   'INPUT','MOBILE_UX','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
   'ANTI_GRIND','CONTENT_DISCOVERY','PERFORMANCE_BUDGET','RUNTIME_STABILITY'
 ]);
@@ -464,6 +464,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     explorationMechanic:tokenCount(joined,/explor|secret|ruin|treasure|discover|map.?unlock|탐험|비밀|유적|보물|발견|지도.?해금/gi),
     craftBuild:tokenCount(joined,/craft|recipe|workbench|build|housing|farm|cook|fish|mine|제작|레시피|제작대|건축|하우징|농사|요리|낚시|채광/gi),
     dialogueWorld:tokenCount(joined,/dialogue|conversation|npc.?line|speech|대화|대사|말풍선|증언|소문/gi),
+    npcCompanionConcept:tokenCount(joined,/npc.*(?:state|goal|memory|relationship|faction|quest|schedule|behavior)|companion.*(?:state|goal|memory|relationship|affinity|party|quest|behavior)|relationship.*(?:dialogue|quest|state)|dialogue.*(?:state|memory|quest|relationship)|동료.*(?:상태|목표|기억|관계|호감|파티|퀘스트|행동)|npc.*(?:상태|목표|기억|관계|세력|퀘스트|행동)|대화.*(?:상태|기억|퀘스트|관계)/gi),
     journalArchive:tokenCount(joined,/journal|record|letter|inscription|codex|lore|archive|저널|기록|편지|비문|도감|문서|아카이브/gi),
     namingContinuity:tokenCount(joined,/place.?name|region.?name|location.?name|signpost|map.?label|지명|지역명|장소명|표지판|지도.?이름/gi),
     oppositionLore:tokenCount(joined,/monster.*(?:region|habitat|lore|faction)|enemy.*(?:region|lore|faction)|opponent.*(?:world|history)|몬스터.*(?:지역|서식|역사|세력)|적.*(?:지역|역사|세력)|상대.*(?:세계|기원)/gi),
@@ -514,6 +515,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       signals.revisit<2?'LEGACY_CONTENT_REVISIT_SPARSE':null,
       signals.worldCausality<3?'WORLD_CAUSALITY_SPARSE':null,
       signals.dialogueWorld<2||signals.journalArchive<2?'DIALOGUE_JOURNAL_CONTINUITY_SPARSE':null,
+      signals.npcCompanionConcept<2?'NPC_COMPANION_CONCEPT_CONTINUITY_SPARSE':null,
       signals.namingContinuity<2?'PLACE_NAME_CONTINUITY_SPARSE':null,
       signals.oppositionLore<2?'OPPOSITION_WORLD_CAUSALITY_SPARSE':null
     ])
@@ -713,28 +715,47 @@ export function deriveWorldbuildingDepthPlan({design={},source={}}={}){
   const placeNameLedger=uniq(narrative.placeNameLedger);
   const journalRecordChains=uniq(narrative.journalRecordChains);
   const dialogueJournalLinks=uniq(narrative.dialogueJournalLinks);
+  const npcRelationshipWeb=uniq(narrative.npcRelationshipWeb);
+  const companionArcs=uniq(narrative.companionArcs);
+  const storySystemLinks=uniq(narrative.storySystemLinks);
+  const sharedConceptAnchor=clean(world.sharedConceptAnchor)||clean(design.identity);
+  const componentConceptLinks=uniq(world.componentConceptLinks);
   const monsterOpponentLoreEcologyLinks=uniq(narrative.monsterOpponentLoreEcologyLinks);
   const causalChains=uniq(world.causalChains?.length?world.causalChains:narrative.contentCausalityLinks);
   const worldStateEvolution=uniq(world.worldStateEvolution?.length?world.worldStateEvolution:narrative.worldEvolutionHooks);
+  const storyWeight=clean(narrative.storyWeight).toUpperCase()||'LIGHT';
+  const mediumNarrative=storyWeight==='MEDIUM'||storyWeight==='HEAVY';
+  const heavyNarrative=storyWeight==='HEAVY';
+  const hasNpcCompanionDesign=npcRelationshipWeb.length>0||companionArcs.length>0||/npc|동료|companion|resident|주민|villager|상인/.test(contentText.toLowerCase());
   const gaps=uniq([
     worldDnaSources.length<3?'WORLD_DNA_FAMILIES_BELOW_3':null,
-    placeNameLedger.length<3?'PLACE_NAME_LEDGER_BELOW_3':null,
-    journalRecordChains.length<2?'JOURNAL_RECORD_CHAINS_BELOW_2':null,
-    dialogueJournalLinks.length<2?'DIALOGUE_JOURNAL_LINKS_BELOW_2':null,
-    monsterOpponentLoreEcologyLinks.length<2?'OPPOSITION_LORE_LINKS_BELOW_2':null,
+    !sharedConceptAnchor?'SHARED_CONCEPT_ANCHOR_MISSING':null,
+    componentConceptLinks.length<6?'COMPONENT_CONCEPT_LINKS_BELOW_6':null,
+    placeNameLedger.length<(storyWeight==='LIGHT'?2:3)?'PLACE_NAME_LEDGER_SHALLOW':null,
+    mediumNarrative&&journalRecordChains.length<2?'JOURNAL_RECORD_CHAINS_BELOW_2':null,
+    mediumNarrative&&dialogueJournalLinks.length<2?'DIALOGUE_JOURNAL_LINKS_BELOW_2':null,
+    hasNpcCompanionDesign&&storySystemLinks.length<2?'NPC_COMPANION_STORY_SYSTEM_LINKS_SPARSE':null,
+    heavyNarrative&&hasNpcCompanionDesign&&Number(source?.signals?.npcCompanionConcept||0)<2?'SOURCE_NPC_COMPANION_CONCEPT_SPARSE':null,
+    monsterOpponentLoreEcologyLinks.length<1?'OPPOSITION_LORE_LINKS_BELOW_1':null,
     causalChains.length<4?'WORLD_CAUSAL_CHAINS_BELOW_4':null,
     worldStateEvolution.length<2?'WORLD_STATE_EVOLUTION_BELOW_2':null,
     Number(source?.signals?.worldCausality||0)<3?'SOURCE_WORLD_CAUSALITY_SPARSE':null,
-    Number(source?.signals?.dialogueWorld||0)<2?'SOURCE_DIALOGUE_SPARSE':null,
-    Number(source?.signals?.journalArchive||0)<2?'SOURCE_JOURNAL_SPARSE':null,
+    mediumNarrative&&Number(source?.signals?.dialogueWorld||0)<2?'SOURCE_DIALOGUE_SPARSE':null,
+    mediumNarrative&&Number(source?.signals?.journalArchive||0)<2?'SOURCE_JOURNAL_SPARSE':null,
     Number(source?.signals?.namingContinuity||0)<2?'SOURCE_PLACE_NAME_SPARSE':null,
     Number(source?.signals?.oppositionLore||0)<2?'SOURCE_OPPOSITION_LORE_SPARSE':null
   ]);
   return Object.freeze({
     version:1,
     allGenres:true,
-    storyWeight:clean(narrative.storyWeight)||'DERIVE_BY_GENRE',
+    storyWeight,
     worldPremise:clean(world.worldPremise)||clean(narrative.worldConflict)||clean(design.identity),
+    sharedConceptAnchor,
+    componentConceptLinks:Object.freeze(componentConceptLinks),
+    npcRelationshipWeb:Object.freeze(npcRelationshipWeb),
+    companionArcs:Object.freeze(companionArcs),
+    storySystemLinks:Object.freeze(storySystemLinks),
+    hasNpcCompanionDesign,
     worldDnaSources:Object.freeze(worldDnaSources),
     civilizationPowerOrder:clean(world.civilizationPowerOrder),
     geographyEcology:clean(world.geographyEcology),
@@ -756,6 +777,7 @@ export function deriveWorldbuildingDepthPlan({design={},source={}}={}){
     sourceEvidence:Object.freeze({
       worldCausality:Number(source?.signals?.worldCausality||0),
       dialogue:Number(source?.signals?.dialogueWorld||0),
+      npcCompanionConcept:Number(source?.signals?.npcCompanionConcept||0),
       journal:Number(source?.signals?.journalArchive||0),
       naming:Number(source?.signals?.namingContinuity||0),
       oppositionLore:Number(source?.signals?.oppositionLore||0)
@@ -922,16 +944,29 @@ function domainState(domain,{design={},source={},worldDepthPlan=null,libraryLink
   }
 
   if(domain==='NARRATIVE_STORY'){
-    if(Number(s.worldCausality||0)>=2&&(Number(s.dialogueWorld||0)+Number(s.journalArchive||0)+Number(s.namingContinuity||0)+Number(s.oppositionLore||0))>=4)return pass('all-genre story/world causality is visible in current source at the genre-appropriate weight');
-    return gap('all genres require at least lightweight story/world causality; current source does not connect enough world, dialogue/journal, naming, or opposition evidence');
+    const weight=clean(worldDepth.storyWeight).toUpperCase()||'LIGHT';
+    const baseEvidence=Number(s.worldCausality||0)+Number(s.namingContinuity||0)+Number(s.oppositionLore||0);
+    const narrativeEvidence=Number(s.dialogueWorld||0)+Number(s.journalArchive||0)+Number(s.npcCompanionConcept||0);
+    const requiredBase=weight==='LIGHT'?4:5;
+    const requiredNarrative=weight==='LIGHT'?0:4;
+    if(baseEvidence>=requiredBase&&narrativeEvidence>=requiredNarrative)return pass('all-genre story/world causality is visible at the configured story weight');
+    return gap('world causality is too shallow for the configured LIGHT/MEDIUM/HEAVY story weight');
   }
   if(domain==='WORLD_BUILDING_FUSION'){
     if(worldDepth.worldDnaSources.length>=3&&worldDepth.causalChains.length>=4&&Number(s.worldCausality||0)>=3)return pass('worldbuilding combines multiple DNA axes and current source exposes causal world-state links');
     return gap('civilization/geography/economy/belief/technology/naming/archive/opposition axes are not yet fused into enough observable world causality');
   }
   if(domain==='DIALOGUE_JOURNAL_CONTINUITY'){
+    const weight=clean(worldDepth.storyWeight).toUpperCase()||'LIGHT';
+    const dialogueApplicable=weight!=='LIGHT'||worldDepth.dialogueJournalLinks.length>0||worldDepth.journalRecordChains.length>0||Number(s.dialogueWorld||0)>0||Number(s.journalArchive||0)>0;
+    if(!dialogueApplicable)return no('LIGHT story-weight game does not currently use dialogue/journal components; world causality is reviewed elsewhere');
     if(worldDepth.dialogueJournalLinks.length>=2&&worldDepth.journalRecordChains.length>=2&&Number(s.dialogueWorld||0)>=2&&Number(s.journalArchive||0)>=2)return pass('dialogue and journal/archive evidence cross-reference the same world events');
-    return gap('NPC/dialogue and journal/record systems do not yet cross-reference the same world facts, discoveries, and quest states');
+    return gap('existing dialogue/journal components do not yet share the same discoveries, quest states, and world facts');
+  }
+  if(domain==='NPC_COMPANION_CONCEPT_CONTINUITY'){
+    if(!worldDepth.hasNpcCompanionDesign&&Number(s.npcCompanionConcept||0)===0)return no('current approved design/source has no NPC or companion system');
+    if(worldDepth.sharedConceptAnchor&&worldDepth.componentConceptLinks.length>=6&&Number(s.npcCompanionConcept||0)>=2)return pass('NPC/companion goals, memory, relationship, dialogue/quest state, and behavior share the same concept/world-state anchor');
+    return gap('existing NPC/companion AI, dialogue, relationship, or quest behavior is not sufficiently tied to the shared game concept and world state');
   }
   if(domain==='PLACE_NAME_CONTINUITY'){
     if(worldDepth.placeNameLedger.length>=3&&Number(s.namingContinuity||0)>=2)return pass('place-name continuity is present across world/map/story surfaces');
@@ -941,11 +976,6 @@ function domainState(domain,{design={},source={},worldDepthPlan=null,libraryLink
     if(worldDepth.monsterOpponentLoreEcologyLinks.length>=2&&Number(s.oppositionLore||0)>=2)return pass('monster/enemy/opponent roles connect to region, ecology/history, and player-facing consequences');
     return gap('monster/enemy/opponent naming, habitat/origin, behavior, and world role are not yet causally connected');
   }
-  if(domain==='LIBRARY_LINKAGE'){
-    if(libraries.allCanonicalLibrariesSearchable===true&&Number(libraries.exposedFamilyCount||0)===CANONICAL_LIBRARY_SPECS.length&&libraries.actualConsumerEvidenceRequired===true&&libraries.noForcedUse===true&&libraries.noShadowPipeline===true)return pass('all canonical library families are dynamically searchable without forcing use or treating candidates as consumers');
-    return gap('canonical library linkage contract is incomplete or does not preserve candidate-vs-actual-consumer separation');
-  }
-
   const weakByDomain={
     ANIMATION:Number(s.animation||0)<2||Number(s.motionStates||0)<5,
     SECONDARY_MOTION:Number(s.animation||0)<2||Number(s.motionStates||0)<4,
@@ -1093,9 +1123,9 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     LEGACY_CONTENT_REVISIT:`성장으로 얻은 이동수단·도구·관계·정보·장비·조합 능력 때문에 초반 지역/NPC/던전/상점/수집품을 다시 방문할 이유가 생기게 한다. 재방문은 새 경로·새 상호작용·새 교환가치·새 조합·숨은 보상 중 최소 하나를 제공하고 단순 일일 반복이나 숫자 파밍만으로 채우지 않는다.`,
     WORLD_BUILDING_FUSION:`모든 장르에서 문명/권력 × 지리/생태 × 경제/생활 × 신앙/금기 × 기술/제도 × 언어/지명 × 기록/소문 × 몬스터/상대 생태 중 최소 3축을 같은 세계사와 현재 게임 상태로 연결한다. 설정집 설명만 늘리지 말고 지역·상점·NPC·적/상대·퀘스트·환경 변화에 실제로 반영한다.`,
     DIALOGUE_JOURNAL_CONTINUITY:`NPC 대화와 저널·편지·비문·도감·보고서가 같은 사건을 서로 다른 관점에서 참조하게 한다. 플레이어가 기록을 읽거나 현장을 확인하면 새 대화/질문/서브퀘/메인 상태가 열리며, NPC 지식범위와 시점을 지켜 거짓 모순을 만들지 않는다.`,
+    NPC_COMPANION_CONCEPT_CONTINUITY:`NPC/동료가 존재하는 게임에서는 shared concept와 현재 world state를 목표·기억·세력·관계·퀘스트 상태·대화·AI 행동이 함께 사용하게 한다. 동료의 말과 실제 지원/전투/탐험 행동, NPC의 주장과 상점/퀘스트/세력 반응이 서로 모순되지 않게 하고 아직 모르는 사실을 미리 말하지 않는다.`,
     PLACE_NAME_CONTINUITY:`지명은 지형·역사·세력·산업·신앙·몬스터 사건 중 근거를 갖고 지도·표지판·NPC 대화·퀘스트·저널에서 동일 표기를 사용한다. 개명/옛 지명이 있으면 세계 변화의 원인과 후반 회수에 연결한다.`,
     OPPOSITION_WORLD_CAUSALITY:`몬스터가 있으면 이름·서식지·먹이/소환·행동·드랍·지역 전설·세력 이용을 연결하고, 몬스터가 없는 장르는 적/상대/장애물의 발생 조건과 세계 역할을 같은 방식으로 연결한다. 도감/저널/NPC 소문과 실제 조우가 대응법 학습으로 이어지게 한다.`,
-    LIBRARY_LINKAGE:`모든 canonical 라이브러리를 현재 게임 문맥으로 동적 검색하되 강제 사용하지 않는다. 자산·검증학습·코드패턴·시드재료·설계기준·카탈로그·라이선스 레퍼런스·오픈소스 카탈로그 후보는 호환성/권리/정체성/현재 필요성을 통과해야 하며, 실제 책임 소스 또는 canonical native consumer가 소비하고 QA가 확인하기 전에는 사용으로 계산하지 않는다. 새 검색/선택 파이프라인을 만들지 않는다.`,
     SESSION_FLOW:`접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.`,
     FIRST_10_MINUTES:`첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.`,
     SAVE_COMPLETENESS:`현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.`,
@@ -1656,11 +1686,12 @@ export function directivePrompt(d={}){
     `WORLD_BUILDING_DEPTH: allGenres=${world.allGenres===true}; storyWeight=${world.storyWeight||'DERIVE'}; dna=${(world.worldDnaSources||[]).join(',')||'MISSING'}; gaps=${(world.gaps||[]).join(',')||'NONE'}`,
     `WORLD_CAUSALITY_CHAIN: ${world.continuityChain||'PLACE_HISTORY→PLACE_NAME→DIALOGUE→JOURNAL→OPPOSITION→SIDE_CONTENT→MAIN_EVENT→WORLD_STATE'}`,
     `WORLD_PLACE_NAMES: ${(world.placeNameLedger||[]).join(' | ')||'MISSING'}`,
-    `WORLD_JOURNAL_DIALOGUE: journals=${(world.journalRecordChains||[]).join(' | ')||'MISSING'}; dialogueLinks=${(world.dialogueJournalLinks||[]).join(' | ')||'MISSING'}`,
+    `WORLD_JOURNAL_DIALOGUE: journals=${(world.journalRecordChains||[]).join(' | ')||'NOT_USED_OR_MISSING'}; dialogueLinks=${(world.dialogueJournalLinks||[]).join(' | ')||'NOT_USED_OR_MISSING'}`,
+    `WORLD_NPC_COMPANION_CONCEPT: applicable=${world.hasNpcCompanionDesign===true}; sharedConcept=${world.sharedConceptAnchor||'MISSING'}; designLinks=${(world.storySystemLinks||[]).join(' | ')||'NONE'}; sourceSignal=${world.sourceEvidence?.npcCompanionConcept||0}`,
     `WORLD_OPPOSITION_LORE: ${(world.monsterOpponentLoreEcologyLinks||[]).join(' | ')||'MISSING'}`,
     `CANONICAL_LIBRARY_LINKAGE: mode=${libraries.searchMode||'DYNAMIC_CURRENT_BUILD_UP_CONTEXT'}; families=${libraries.exposedFamilyCount||0}; available=${libraries.availableFamilyCount||0}; candidateDoesNotEqualConsumer=${libraries.candidateDoesNotEqualConsumer===true}; actualConsumerEvidenceRequired=${libraries.actualConsumerEvidenceRequired===true}; fingerprint=${libraries.searchFingerprint||'NONE'}`,
     `CANONICAL_LIBRARY_MATCHES: ${(libraries.libraries||[]).map(row=>row.family+':'+(row.available?'AVAILABLE':'UNAVAILABLE')+':'+((row.matchedTerms||[]).join(',')||'NO_CONTEXT_MATCH')).join(' | ')}`,
-    'CANONICAL_LIBRARY_RULE: 후보 발견은 실제 사용이 아니다. 호환성·권리·게임 정체성을 먼저 확인하고 기존 책임 소스/canonical consumer에서 실제 소비된 증거와 관련 QA가 있어야 사용으로 인정한다. 호환 후보가 없으면 강제 대입하지 않는다.',
+    'CANONICAL_LIBRARY_RULE: 모든 라이브러리는 참고 후보 풀이다. 모든 family의 개연성·사용을 게임 PASS 조건으로 요구하지 않는다. 실제 선택한 후보에만 호환성·권리·게임 정체성을 확인하고 기존 책임 소스/canonical consumer의 실제 소비와 관련 QA가 있어야 사용으로 인정한다. 후보가 없거나 필요 없으면 사용하지 않는다.',
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
     expansion.dataCapacityBudget?.state==='NORMAL'?'DATA_CAPACITY_ACTION: 새 콘텐츠와 기존 시스템 심화 중 플레이어 가치가 높은 쪽을 선택한다.':'DATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.',
