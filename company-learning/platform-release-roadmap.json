@@ -1,5 +1,5 @@
 {
-  "version": 540,
+  "version": 541,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-03",
@@ -8652,10 +8652,31 @@
     },
     "fixedRepeatDevelopment64_20261006": {
       "authority": "OWNER_DIRECTIVE_2026-10-06",
-      "status": "POLICY_SYNC_IMPLEMENTATION_PENDING_QA",
+      "status": "SUPERSEDED_BY_FIXED_REPEAT_DEVELOPMENT_128_20261006",
       "objective": "KEEP_EXACTLY_64_LOGICAL_GAME_PRIMARY_REPEAT_DEVELOPMENT_SLOTS_CONTINUOUSLY_REFILLED_WITHOUT_ADAPTIVE_RETARGETING",
       "scope": "EXISTING_GAME_PRIMARY_RESERVATION_AND_REFILL_ONLY",
       "fixedSlots": 64,
+      "automaticRepeat": true,
+      "externalProviderBoundary": 256,
+      "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY",
+      "assetDevelopmentSlotsPreserved": 63,
+      "qaReleaseRecoveryLanesUnchanged": true,
+      "responsibleFileConflictSerializationPreserved": true,
+      "exactDuplicateSuppressionPreserved": true,
+      "runnerPressureMayQueueWork": true,
+      "runnerPressureMayChangeFixedTarget": false,
+      "canonicalSequenceChanged": false,
+      "finalDevelopmentLockChanged": false,
+      "newWorkflowQueueSchedulerOrShadowPipeline": false,
+      "supersededBy": "changeRecord.fixedRepeatDevelopment128_20261006"
+    },
+    "fixedRepeatDevelopment128_20261006": {
+      "authority": "OWNER_DIRECTIVE_2026-10-06",
+      "status": "POLICY_SYNC_IMPLEMENTATION_PENDING_QA",
+      "objective": "KEEP_EXACTLY_128_LOGICAL_GAME_PRIMARY_REPEAT_DEVELOPMENT_SLOTS_CONTINUOUSLY_REFILLED_WITHOUT_ADAPTIVE_RETARGETING",
+      "scope": "EXISTING_GAME_PRIMARY_RESERVATION_AND_REFILL_ONLY",
+      "fixedSlots": 128,
+      "supersedes": "changeRecord.fixedRepeatDevelopment64_20261006",
       "automaticRepeat": true,
       "externalProviderBoundary": 256,
       "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY",
@@ -8678,9 +8699,9 @@
     "principle": "GAME_PRIMARY_IS_CONTINUOUS_ATOMIC_NEURON_CIRCULATION; AUXILIARY_LANES_RETURN_CAUSAL_EVIDENCE_WITHOUT_STOPPING_THE_MAIN_ARTERY",
     "gamePrimary": {
       "taskClass": "DEVELOPMENT_IMPLEMENTATION",
-      "activeWorkerBaselineTarget": 64,
-      "activeWorkerAdaptiveMinimum": 64,
-      "activeWorkerInternalCap": 64,
+      "activeWorkerBaselineTarget": 128,
+      "activeWorkerAdaptiveMinimum": 128,
+      "activeWorkerInternalCap": 128,
       "externalProviderBoundary": 256,
       "capacityAwareFreeSlotRefill": true,
       "reserveIndependentFreeSlotsDuringActiveWork": true,
@@ -8692,8 +8713,8 @@
       "taskLocalExplorationRequired": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "adaptiveConcurrencyRole": "FIXED_REPEAT_DEVELOPMENT_64_TELEMETRY_ONLY",
-      "actualReservationLimit": "FIXED_REPEAT_DEVELOPMENT_64",
+      "adaptiveConcurrencyRole": "FIXED_REPEAT_DEVELOPMENT_128_TELEMETRY_ONLY",
+      "actualReservationLimit": "FIXED_REPEAT_DEVELOPMENT_128",
       "speculativeVariantsUseSpareCapacityOnly": true,
       "speculativeVariantsMayBeSuppressedOnRunnerPressure": true,
       "speculativeSuppressionSignals": [
@@ -8726,10 +8747,11 @@
       "automaticImmediateCallbackRecoveryWhenPressureClears": true,
       "taskMicroFanInImmediateDispatchMayCoalesceUnderLiveRunnerPressure": true,
       "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
-      "fixedRepeatDevelopmentSlots": 64,
+      "fixedRepeatDevelopmentSlots": 128,
       "targetMayDownshiftUnderRunnerPressure": false,
-      "targetMayUpshiftAbove64": false,
-      "runnerPressureMayQueueButNotRetargetSlots": true
+      "targetMayUpshiftAbove64": true,
+      "runnerPressureMayQueueButNotRetargetSlots": true,
+      "targetMayUpshiftAbove128": false
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
@@ -14551,8 +14573,8 @@
       "gamePrimaryAdaptiveSteps": [
         64
       ],
-      "gamePrimaryBaselineTarget": 64,
-      "gamePrimaryAdaptiveMinimum": 64,
+      "gamePrimaryBaselineTarget": 128,
+      "gamePrimaryAdaptiveMinimum": 128,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": 64,
       "telemetryDenominator": "FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64",
@@ -14569,12 +14591,12 @@
       "shadowFallbackPreserved": true,
       "responsibleFileConflictProtectionStillRequired": true,
       "sourceRootWideLockForbidden": true,
-      "defaultRequestedParallelism": 64,
+      "defaultRequestedParallelism": 128,
       "recoverToExternalBoundaryAfterPressure": false,
       "defaultStartsAtExternalBoundary": false,
       "verifiedExternalPressureOnlyDownshift": false,
       "staleOrMissingPressureEvidenceRecoversToExternalBoundary": false,
-      "fixedRepeatDevelopmentSlots": 64,
+      "fixedRepeatDevelopmentSlots": 128,
       "externalProviderBoundaryIsPhysicalOnly": true
     },
     "livenessContract": {
@@ -14937,7 +14959,7 @@
         "mergedCommit": "d28e404fbe785dad8c80cdce2636d7e74f26ebe4"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
-        "state": "SUPERSEDED_BY_FIXED_REPEAT_DEVELOPMENT_64_2026_10_06",
+        "state": "SUPERSEDED_BY_FIXED_REPEAT_DEVELOPMENT_128_2026_10_06",
         "sourcePr": 1994,
         "trigger": "OWNER_DIRECTIVE_2026-09-20_SELF_ADAPTIVE",
         "priorConflict": {
@@ -14987,7 +15009,7 @@
         },
         "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS",
         "supersededBy": "fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency",
-        "currentFixedRepeatDevelopmentSlots": 64,
+        "currentFixedRepeatDevelopmentSlots": 128,
         "externalProviderBoundaryStillPhysicalOnly": 256
       },
       "vibeBottleneckCentralCheckpoint": {
@@ -27144,16 +27166,16 @@
       "assistOutcomeMustReturnToExistingVibeLoop": true
     },
     "repeatDevelopmentConcurrency": {
-      "version": 1,
-      "status": "FIXED_REPEAT_DEVELOPMENT_64",
+      "version": 2,
+      "status": "FIXED_REPEAT_DEVELOPMENT_128",
       "scope": "GAME_PRIMARY_REPEAT_DEVELOPMENT_ONLY",
-      "fixedSlots": 64,
+      "fixedSlots": 128,
       "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_REPEAT_DEVELOPMENT_TASKS",
       "automaticRefill": true,
       "refillAfterTaskMicroFanIn": true,
       "eachVerifiedCycleReturnsToNextBuildUp": true,
       "idleSlotAction": "WAIT_FOR_NEXT_REAL_RUNNABLE_DEVELOPMENT_TASK_NO_FAKE_WORK",
-      "runnerShortageBehavior": "KEEP_FIXED_LOGICAL_TARGET_64_AND_ALLOW_GITHUB_QUEUEING",
+      "runnerShortageBehavior": "KEEP_FIXED_LOGICAL_TARGET_128_AND_ALLOW_GITHUB_QUEUEING",
       "adaptiveDownshiftForbidden": true,
       "adaptiveUpshiftForbidden": true,
       "externalProviderBoundaryRemainsPhysicalOnly": 256,
@@ -27163,7 +27185,7 @@
       "exactDuplicateSuppressionPreserved": true,
       "lockedF0F9SequenceChanged": false,
       "newPipelineCreated": false,
-      "ownerDirective": "2026-10-06"
+      "ownerDirective": "2026-10-06_SLOT_INCREASE_TO_128"
     }
   },
   "homepageGameMediaContract": {
