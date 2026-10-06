@@ -106,6 +106,14 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.distinctCovered,1);
   assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
   assert.ok(directive.autonomousContentExpansion.coherentContentBundle.length>=6);
+  assert.equal(directive.worldbuildingDepthPlan.allGenres,true);
+  assert.equal(directive.canonicalLibraryLinkagePlan.allCanonicalLibrariesSearchable,true);
+  assert.equal(directive.canonicalLibraryLinkagePlan.exposedFamilyCount,8);
+  assert.equal(directive.canonicalLibraryLinkagePlan.candidateDoesNotEqualConsumer,true);
+  assert.equal(directive.canonicalLibraryLinkagePlan.actualConsumerEvidenceRequired,true);
+  assert.equal(directive.canonicalLibraryLinkagePlan.noForcedUse,true);
+  assert.equal(directive.canonicalLibraryLinkagePlan.noShadowPipeline,true);
+  assert.equal(directive.qualityGapMap.find(row=>row.domain==='LIBRARY_LINKAGE').state,'PASS');
   assert.equal(directive.robloxNativeExecution.required,true);
   assert.ok(directive.robloxNativeExecution.responsibleFiles.some(file=>/roblox-games\/bug-defense/.test(file)));
   assert.ok(directive.robloxNativeExecution.sourceSymbolsOrStateAnchors.some(row=>row.symbol==='attack'));
@@ -132,6 +140,10 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/ANTI_CLONE:/);
   assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
   assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
+  assert.match(directivePrompt(directive),/WORLD_BUILDING_DEPTH:/);
+  assert.match(directivePrompt(directive),/WORLD_CAUSALITY_CHAIN:/);
+  assert.match(directivePrompt(directive),/CANONICAL_LIBRARY_LINKAGE:/);
+  assert.match(directivePrompt(directive),/후보 발견은 실제 사용이 아니다/);
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
