@@ -67,9 +67,12 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/newPrimaryVerb/);
   assert.match(source,/irreducibilityTest/);
   assert.match(source,/MAIN × A × B × c/);
+  const legacyMajorC=['MAIN×A×B×'+'C','A/B/'+'C',"connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
+  for(const token of legacyMajorC)assert.equal(source.includes(token),false);
   assert.match(source,/DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS/);
   assert.match(source,/SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE/);
-  assert.doesNotMatch(source,/D1_LIGHT_COMIC|D2_STRANGE_FUSION|D3_DEEP_CULTURAL|D4_SYSTEMIC_MYTHIC/);
+  const legacyDepthLabels=['D1_'+'LIGHT_COMIC','D2_'+'STRANGE_FUSION','D3_'+'DEEP_CULTURAL','D4_'+'SYSTEMIC_MYTHIC'];
+  for(const token of legacyDepthLabels)assert.equal(source.includes(token),false);
 });
 
 test('GAMEPLAY_SKETCH v2 keeps quality depth and flow asset authority separated',()=>{
@@ -210,7 +213,7 @@ test('GAMEPLAY_SKETCH v3 identity core is enforced while legacy sketches stay co
 });
 
 
-test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A×B×C + @ delve layer',()=>{
+test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A×B×c + @ delve layer',()=>{
   const seed=legacySeed();
   const grammar={
     toneBlend:['COMIC','PHILOSOPHICAL','ABSURD'],
@@ -240,9 +243,9 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
     },
     delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[
       {name:'거짓말 연쇄',discoveryCondition:'서로 모순되는 두 소문을 다른 집단에 동시에 퍼뜨린다.',masteryOrInsight:'집단마다 다른 현실을 잠시 유지할 수 있음을 발견한다.',gameplayEffect:'같은 지역 안에 서로 다른 통로 상태를 만든다.',connectsTo:['MAIN','A','B']},
-      {name:'권위자 역이용',discoveryCondition:'평판이 낮은 상태에서 권위자의 약점을 먼저 공개한다.',masteryOrInsight:'권위가 신뢰의 절대값이 아니라 네트워크 관계임을 파악한다.',gameplayEffect:'낮은 평판에서도 특정 소문을 빠르게 확산시킨다.',connectsTo:['A','C']},
-      {name:'재방문 재해석',discoveryCondition:'과거에 만든 거짓 현실이 굳어진 뒤 같은 동네로 돌아온다.',masteryOrInsight:'이전 퍼즐 해결이 다음 시대의 상식이 되었음을 발견한다.',gameplayEffect:'예전 벽과 문이 새로운 퀘스트와 지름길이 된다.',connectsTo:['B','C']},
-      {name:'합의 붕괴 콤보',discoveryCondition:'두 집단의 지지율을 동시에 임계값 직전까지 올린 뒤 한 번에 진실을 공개한다.',masteryOrInsight:'현실 규칙의 생성뿐 아니라 붕괴 순서도 조작할 수 있음을 이해한다.',gameplayEffect:'기존에는 만들 수 없던 일시적 빈 공간과 특수 사건을 연다.',connectsTo:['MAIN','A','B','C']}
+      {name:'권위자 역이용',discoveryCondition:'평판이 낮은 상태에서 권위자의 약점을 먼저 공개한다.',masteryOrInsight:'권위가 신뢰의 절대값이 아니라 네트워크 관계임을 파악한다.',gameplayEffect:'낮은 평판에서도 특정 소문을 빠르게 확산시킨다.',connectsTo:['A','c']},
+      {name:'재방문 재해석',discoveryCondition:'과거에 만든 거짓 현실이 굳어진 뒤 같은 동네로 돌아온다.',masteryOrInsight:'이전 퍼즐 해결이 다음 시대의 상식이 되었음을 발견한다.',gameplayEffect:'예전 벽과 문이 새로운 퀘스트와 지름길이 된다.',connectsTo:['B','c']},
+      {name:'합의 붕괴 콤보',discoveryCondition:'두 집단의 지지율을 동시에 임계값 직전까지 올린 뒤 한 번에 진실을 공개한다.',masteryOrInsight:'현실 규칙의 생성뿐 아니라 붕괴 순서도 조작할 수 있음을 이해한다.',gameplayEffect:'기존에는 만들 수 없던 일시적 빈 공간과 특수 사건을 연다.',connectsTo:['MAIN','A','B','c']}
     ]},
     emergentGenre:{name:'합의현실 소문 퍼즐극',definition:'설득을 중심으로 증언 네트워크·공간 퍼즐·평판 후폭풍을 순환시키고 숨은 소문 조합을 파고드는 복합장르.',whyNotSingleConventionalGenre:'대화 퍼즐이나 사회 시뮬레이션 하나로 설명되지 않고 믿음이 실제 공간 규칙이 되는 인과와 시스템 순환이 장르를 만든다.',grammarFormula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
     expansionVectors:['새 지역은 다른 증언 권위 구조를 가진다.','새 괴물은 증언 네트워크를 왜곡한다.','새 NPC는 평판과 공간 규칙 사이를 거래한다.','새 @ 요소는 기존 설득·네트워크·공간·평판을 새로운 순서로 엮는다.'],
@@ -255,8 +258,8 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
     identityCore:{oneLineFantasy:'오해를 현실로 만들어 길을 푸는 소문 퍼즐.',playerRole:'소문을 다루는 동네 중재자.',representativeAction:'주민에게 이야기를 설득한다.',representativeChoice:'누구에게 어떤 말을 믿게 할지 고른다.',signatureWorldRule:'공동 믿음이 공간 규칙이 된다.',signatureSystemPromise:['증언 합의 현실화'],growthIdentity:'개인 오해에서 집단 현실 조작으로 성장한다.',identityCoherence:{worldCulture:'증언 중심 동네 문화.',visualLanguage:'믿음 상태가 표식으로 보인다.',audioLanguage:'소문 확산을 소리로 구분한다.',enemyItemNpcCoherence:'괴물과 아이템도 믿음 규칙을 따른다.'},threeSentenceTest:{whatGame:'소문으로 현실을 바꾸는 퍼즐극이다.',whatDifferent:'정답보다 믿게 만든 이야기가 공간 규칙이 된다.',whatGrowthUnlocks:'여러 집단과 공간 규칙의 조합을 다룬다.'},genreAdaptationRule:'운영 카테고리는 힌트일 뿐 최종 장르는 융복합 결과로 정한다.'},
     novelGameGrammar:grammar,playerPromise:'믿음과 현실의 인과를 이용해 새로운 해결법을 만든다.',funDrivers:['즉시 변화','오해 선택','숨은 조합'],balanceRules:['지배전략 방지','반작용 존재','복구 가능','정보 비용 존재'],
     pacingPlan:{first5Minutes:'첫 설득',minutes5To15:'첫 현실 변화',minutes15To25:'시스템 교차',minutes25To30:'첫 @ 발견',midLateGame:'여러 시스템 순환',replayMotivation:'다른 소문 조합'},
-    progressionLayers:['MAIN 숙련','A/B/C 관계 숙련','@ 발견과 응용'],expansionPlan:['새 시스템 교차','새 지역 규칙','새 후폭풍','새 @ 조합'],longGoalScenario:['첫 설득','현실 변화','복합 규칙 해결'],
-    completionCriteria:['첫 변화','A/B/C 연결','@ 발견','복구 가능'],codingGrowthHooks:['기존 함수 재사용','stable id 유지','권한 보존','저장 마이그레이션'],validationRisks:['병렬 기능 합산 금지','@를 네 번째 일반 시스템으로 오해 금지'],flowArchitecture
+    progressionLayers:['MAIN 숙련','A/B/c 관계 숙련','@ 발견과 응용'],expansionPlan:['새 시스템 교차','새 지역 규칙','새 후폭풍','새 @ 조합'],longGoalScenario:['첫 설득','현실 변화','복합 규칙 해결'],
+    completionCriteria:['첫 변화','A/B/c 연결','@ 발견','복구 가능'],codingGrowthHooks:['기존 함수 재사용','stable id 유지','권한 보존','저장 마이그레이션'],validationRisks:['병렬 기능 합산 금지','@를 네 번째 일반 시스템으로 오해 금지'],flowArchitecture
   };
   const pass=validateGameSeed(seed);
   assert.equal(pass.pass,true,pass.errors.join(','));

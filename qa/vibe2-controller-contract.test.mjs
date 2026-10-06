@@ -918,8 +918,8 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
 });
 
-test('24H asset-first pre-plan scheduler block stays valid Bash',()=>{
-  const stepName='- name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning';
+test('24H production pre-plan scheduler block stays valid Bash',()=>{
+  const stepName='- name: Dispatch queued GAME_PRIMARY and independent asset work before full planning';
   const stepStart=safetyNetWorkflow.indexOf(stepName);
   const stepEnd=safetyNetWorkflow.indexOf('\n      - name:',stepStart+1);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
@@ -947,12 +947,16 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_JOB_QUEUE_PRESSURE='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_JOB_PRESSURE_THRESHOLD='));
   assert.equal(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'),false);
-  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET:'));
-  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS:'));
-  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=QUEUE_ALLOWED:'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=BELOW_THRESHOLD:'));
+  assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=UNAVAILABLE_FAIL_OPEN'));
   assert(safetyNetWorkflow.includes('actions/runs?per_page=100'));
   assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRIORITY_LANE=ASSET_DEVELOPMENT'));
   assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
+  const preplanStep=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('- name: Dispatch queued GAME_PRIMARY and independent asset work before full planning'),safetyNetWorkflow.indexOf('- name: Plan from latest main and persist control queue'));
+  assert(preplanStep.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
+  assert(preplanStep.includes('VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED'));
+  assert.equal(preplanStep.includes("VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED:$asset_burst'\n            fi\n            exit 0"),false);
   assert(safetyNetWorkflow.includes('actions/runs/$run_id/jobs?per_page=100'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_LEARNING_IDLE_DEFERRED='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
@@ -973,7 +977,8 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_64'));
   assert(safetyNetWorkflow.includes("lane_max: '64'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
+  assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0')"));
   assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0'"));
@@ -982,16 +987,16 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_ALWAYS_ON: 'true'"));
   assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, asset_development, learning_idle, game_study]'));
   assert(safetyNetWorkflow.includes('if: ${{ always() }}'));
-  assert(safetyNetWorkflow.includes('name: Dispatch next cycle only when backpressure allows'));
+  assert(safetyNetWorkflow.includes('name: Dispatch next cycle while external runner queue owns physical backpressure'));
   assert(safetyNetWorkflow.includes('CONTINUE_REQUIRED: ${{ needs.plan.outputs.continue_required }}'));
-  assert(safetyNetWorkflow.includes('RUNNER_PRESSURE: ${{ needs.plan.outputs.runner_pressure }}'));
+  assert.equal(safetyNetWorkflow.includes('RUNNER_PRESSURE: ${{ needs.plan.outputs.runner_pressure }}'),false);
   assert.equal(safetyNetWorkflow.includes('VIBE2_24H_REFILL_GLOBAL_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY'),false);
   assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=SKIPPED_NO_CONTINUE_REQUIRED'));
-  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE'));
+  assert.equal(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE'),false);
   assert(safetyNetWorkflow.includes('actions/workflows/vibe2-24h-runner.yml/runs?per_page=100'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL_ACTIVE_SCHEDULER_OBSERVATION=UNAVAILABLE_FAIL_OPEN'));
-  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL_PRESSURE_GATE=PASS'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DISPATCHED'));
   assert(workflow.includes('VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE='));
   assert(workflow.includes('VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'));

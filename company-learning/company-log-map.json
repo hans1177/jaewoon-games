@@ -1321,7 +1321,7 @@
       "genericFeatureCountCannotProveIdentityGrowth": true,
       "causalGameGrammarEvidence": {
         "requiredWhenSeedV4GrammarExists": true,
-        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
         "requiredEvidence": [
           "CAUSAL_GRAMMAR_EVIDENCE",
           "CAUSAL_GRAMMAR_BUILD_UP_RULE",
@@ -1335,7 +1335,14 @@
         "atGeneralSystemAxisEvidenceInvalid": true,
         "decorativeLoreCannotSatisfy": true,
         "parallelFeatureStackCannotSatisfy": true,
-        "designGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED"
+        "designGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED",
+        "aAndBOnlyMajorAxes": true,
+        "cIsSubordinateElements": true,
+        "atIsDelveLayerNotSystem": true,
+        "gameCategoryRoutingHintOnly": true,
+        "emergentGenreFinalIdentity": true,
+        "existingGameDesignAndSourceReconstructionFirst": true,
+        "existingGameIdentityRewriteRequired": false
       }
     }
   },
@@ -3319,7 +3326,9 @@
       "VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=64",
       "VIBE2_LANE_RESERVATION_MAX=64",
       "VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX=64",
-      "VIBE2_GAME_PRIMARY_REFILL_TARGET=64"
+      "VIBE2_GAME_PRIMARY_REFILL_TARGET=64",
+      "VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=QUEUE_ALLOWED",
+      "VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE"
     ],
     "assetDevelopmentSlotsMustRemain": 63,
     "adaptiveTargetMutationForbidden": true,
@@ -3327,6 +3336,10 @@
     "sequenceChangeClaim": false,
     "parallelismControlCurrentMaxRole": "ADVISORY_TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
     "parallelismControlCurrentMaxMayDifferFrom64": true,
-    "actualReservationAuthority": "WORKFLOW_GAME_PRIMARY_MAX_AND_LANE_MAX_FIXED_64"
+    "actualReservationAuthority": "WORKFLOW_GAME_PRIMARY_MAX_AND_LANE_MAX_FIXED_64",
+    "runnerPressureMaySuppressGamePrimaryRefill": false,
+    "runnerPressureMaySuppressNextCycleRefill": false,
+    "externalPublicReleaseOwnerApprovalPreserved": true,
+    "internalAndExternalReleaseAreDevelopmentCheckpoints": true
   }
 }

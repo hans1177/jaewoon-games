@@ -118,7 +118,7 @@ test('repeat development is fixed at 64 while physical provider capacity and con
   assert.match(core,/github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' && inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.match(core,/cancel-in-progress: false/);
-  const fastDispatch=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const fastDispatch=runner.indexOf('      - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning');
   const fullPlan=runner.indexOf('      - name: Plan from latest main and persist control queue');
   assert.ok(fastDispatch>=0&&fullPlan>fastDispatch);
   assert.match(runner,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
@@ -273,7 +273,7 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
 });
 
 test('24H pre-plan priority dispatch block stays valid Bash',()=>{
-  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+  const stepStart=runner.indexOf('      - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
   const step=runner.slice(stepStart,stepEnd);
@@ -512,15 +512,15 @@ test('failed worker releases its exact lock after immutable upload while PASS ho
   assert.match(core,/VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found/);
 });
 
-test('24H pre-plan production dispatch obeys canonical runner backpressure',()=>{
-  const stepStart=runner.indexOf('      - name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning');
+test('24H pre-plan production dispatch observes runner pressure without suppressing production lanes',()=>{
+  const stepStart=runner.indexOf('      - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning');
   const stepEnd=runner.indexOf('\n      - name: Plan from latest main and persist control queue',stepStart);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
   const step=runner.slice(stepStart,stepEnd);
-  assert.doesNotMatch(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DISABLED_EXTERNAL_RUNNER_QUEUE_OWNS_CAPACITY/);
-  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET/);
-  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=PASS/);
-  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=OBSERVATION_UNAVAILABLE_FAIL_OPEN/);
+  assert.doesNotMatch(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_GATE=DEFERRED_TO_FIVE_MINUTE_SAFETY_NET/);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=QUEUE_ALLOWED/);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=BELOW_THRESHOLD/);
+  assert.match(step,/VIBE2_PREPLAN_PRODUCTION_PRESSURE_OBSERVATION=UNAVAILABLE_FAIL_OPEN/);
   assert.match(step,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);

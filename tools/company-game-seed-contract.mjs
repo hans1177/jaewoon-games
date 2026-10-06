@@ -142,7 +142,7 @@ function validateGameplaySketch(sketch,errors){
         if(delve.formulaSuffix!=='+ @'||delve.role!=='DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer must be + @ and not a general system axis');
         if(!Array.isArray(delve.elements)||delve.elements.length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements');
         for(const row of delve.elements||[]){
-          const links=uniq(row?.connectsTo).filter(value=>['MAIN','A','B','C'].includes(value));
+          const links=uniq(row?.connectsTo).filter(value=>['MAIN','A','B','c'].includes(value));
           if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.discoveryCondition)||!isNonEmptyString(row?.masteryOrInsight)||!isNonEmptyString(row?.gameplayEffect)||links.length<2)errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.delveLayer element ${row?.name||'?'} is incomplete`);
         }
       }
