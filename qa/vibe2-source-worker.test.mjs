@@ -702,6 +702,15 @@ test('Roblox internal asset family binding requires actual family use and reject
   assert.equal(pass.notApplicableCount,11);
   assert.equal(pass.changedAppliedFamilyCount,1);
 
+  const genericScaffold=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    sourceRoot:root,expectedFamilies,
+    candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi+'\nlocal camera = workspace.CurrentCamera\nlocal itemCount = 3\nlocal function run() return itemCount end'}]}
+  });
+  assert.equal(genericScaffold.pass,true,genericScaffold.blockers.join(','));
+  assert.equal(genericScaffold.familyResults.find(row=>row.family==='ENVIRONMENT').systemPresent,false);
+  assert.equal(genericScaffold.familyResults.find(row=>row.family==='MOTION').systemPresent,false);
+  assert.equal(genericScaffold.familyResults.find(row=>row.family==='PROP').systemPresent,false);
+
   const falseNotApplicable=evaluateRobloxInternalAssetFamilyBindingCandidate({
     sourceRoot:root,expectedFamilies,
     candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:appliedUi+'\nlocal enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'}]}
