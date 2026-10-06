@@ -114,6 +114,32 @@ export const GAMEPLAY_STYLE_DNA_FAMILIES = Object.freeze([
   'MYSTERY_NOIR'
 ]);
 
+export const GAMEPLAY_WORLDBUILDING_DNA_FAMILIES = Object.freeze([
+  'CIVILIZATION_AND_POWER',
+  'GEOGRAPHY_AND_ECOLOGY',
+  'ECONOMY_AND_DAILY_LIFE',
+  'BELIEF_MYTH_AND_TABOO',
+  'TECHNOLOGY_AND_INSTITUTIONS',
+  'WAR_DIPLOMACY_AND_BORDERS',
+  'LANGUAGE_NAMING_AND_MEMORY',
+  'MONSTER_OPPOSITION_ECOLOGY',
+  'ARCHIVE_JOURNAL_AND_RUMOR',
+  'TRADE_ROUTES_AND_SETTLEMENTS',
+  'DISASTER_RUIN_AND_RECOVERY',
+  'MYSTERY_SECRET_AND_FORBIDDEN_KNOWLEDGE'
+]);
+
+export const GAMEPLAY_CANONICAL_LIBRARY_FAMILIES = Object.freeze([
+  'INTERNAL_ASSET_LIBRARY',
+  'VERIFIED_LEARNING_LIBRARY',
+  'CODE_PATTERN_LIBRARY',
+  'GAME_SEED_MATERIAL_LIBRARY',
+  'DESIGN_BASELINE_LIBRARY',
+  'GAME_CATALOG_LIBRARY',
+  'LICENSED_REFERENCE_LIBRARY',
+  'OPEN_SOURCE_REFERENCE_CATALOG'
+]);
+
 const isNonEmptyString = value => typeof value === 'string' && value.trim().length > 0;
 const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
 const hasMeaningfulValue = value => {
@@ -224,6 +250,7 @@ function validateGameplaySketch(sketch,errors){
     errors.push('GAMEPLAY_SKETCH.narrativeDepth is required for version 3+');
   }else{
     if(typeof narrative.applicable!=='boolean')errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable boolean is required for version 3+');
+    if(narrative.applicable!==true)errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable must be true for every version 3+ game genre; storyWeight controls depth');
     if(!isNonEmptyString(narrative.storyWeight)||!['LIGHT','MEDIUM','HEAVY'].includes(String(narrative.storyWeight).toUpperCase()))errors.push('GAMEPLAY_SKETCH.narrativeDepth.storyWeight must be LIGHT/MEDIUM/HEAVY');
     if(!isNonEmptyString(narrative.worldConflict))errors.push('GAMEPLAY_SKETCH.narrativeDepth.worldConflict is required for version 3+');
     if(!isNonEmptyString(narrative.mainStoryArc))errors.push('GAMEPLAY_SKETCH.narrativeDepth.mainStoryArc is required for version 3+');
@@ -240,6 +267,11 @@ function validateGameplaySketch(sketch,errors){
         ['storySystemLinks',3],
         ['contentCausalityLinks',4],
         ['worldEvolutionHooks',2],
+        ['placeNameLedger',3],
+        ['journalRecordChains',2],
+        ['dialogueJournalLinks',2],
+        ['monsterOpponentLoreEcologyLinks',2],
+        ['namingRules',2],
         ['culturalRespectRules',3]
       ];
       for(const [field,min] of narrativeArrays){
@@ -272,6 +304,34 @@ function validateGameplaySketch(sketch,errors){
       if(!styleFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.styleDnaSources invalid family: ${family}`);
     }
     if(style.assetLibraryExpansionRequired===true)errors.push('GAMEPLAY_SKETCH.styleWorldDepth.assetLibraryExpansionRequired must not be true; libraries are optional references and may expand only when the game needs them');
+  }
+
+  const world=sketch.worldbuildingDepth;
+  if(!world||typeof world!=='object'||Array.isArray(world)){
+    errors.push('GAMEPLAY_SKETCH.worldbuildingDepth is required for version 3+');
+  }else{
+    if(world.allGenreApplicable!==true)errors.push('GAMEPLAY_SKETCH.worldbuildingDepth.allGenreApplicable must be true for every game genre');
+    const worldStrings=['worldPremise','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','genreExpression'];
+    for(const field of worldStrings)if(!isNonEmptyString(world[field]))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} is required for version 3+`);
+    const worldArrays=[['worldDnaSources',3],['causalChains',4],['worldStateEvolution',2],['crossMediaClueLinks',3]];
+    for(const [field,min] of worldArrays)if(!Array.isArray(world[field])||uniq(world[field]).length<min)errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    const worldFamilies=new Set(GAMEPLAY_WORLDBUILDING_DNA_FAMILIES);
+    for(const family of uniq(world.worldDnaSources))if(!worldFamilies.has(family))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.worldDnaSources invalid family: ${family}`);
+  }
+
+  const libraries=sketch.libraryLinkage;
+  if(!libraries||typeof libraries!=='object'||Array.isArray(libraries)){
+    errors.push('GAMEPLAY_SKETCH.libraryLinkage is required for version 3+');
+  }else{
+    if(libraries.allCanonicalLibrariesSearchable!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.allCanonicalLibrariesSearchable must be true');
+    if(libraries.compatibilityRightsAndGameIdentityFirst!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.compatibilityRightsAndGameIdentityFirst must be true');
+    if(libraries.actualConsumerEvidenceRequired!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.actualConsumerEvidenceRequired must be true');
+    if(libraries.noForcedUse!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.noForcedUse must be true');
+    if(libraries.noShadowPipeline!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.noShadowPipeline must be true');
+    for(const field of ['selectionRule','fallbackRule'])if(!isNonEmptyString(libraries[field]))errors.push(`GAMEPLAY_SKETCH.libraryLinkage.${field} is required for version 3+`);
+    if(!Array.isArray(libraries.libraryFamilies)||uniq(libraries.libraryFamilies).length<GAMEPLAY_CANONICAL_LIBRARY_FAMILIES.length)errors.push('GAMEPLAY_SKETCH.libraryLinkage.libraryFamilies must expose all canonical library families');
+    const libraryFamilies=new Set(GAMEPLAY_CANONICAL_LIBRARY_FAMILIES);
+    for(const family of uniq(libraries.libraryFamilies))if(!libraryFamilies.has(family))errors.push(`GAMEPLAY_SKETCH.libraryLinkage.libraryFamilies invalid family: ${family}`);
   }
 }
 
