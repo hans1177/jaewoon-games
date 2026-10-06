@@ -25,6 +25,20 @@ export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
 export const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
+export const ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS=Object.freeze({
+  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|:\s*IsA\(["'](?:Humanoid|Accessory|Model|MeshPart|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
+  CREATURE:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment|Bone|Motor6D)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|Attachment|Bone|Motor6D|Humanoid|AnimationController)["']\)|\bHumanoid\b|\bAnimationController\b)/i,
+  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|Attachment)["']\)|\bClone\s*\()/i,
+  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart|Atmosphere|Sky|Clouds)["']\)|:\s*IsA\(["'](?:Terrain|Atmosphere|Sky|Clouds|Model|BasePart|Part|MeshPart)["']\))/i,
+  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|Part|MeshPart|Attachment|WeldConstraint)["']\)|:\s*IsA\(["'](?:Tool|Model|BasePart|Part|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
+  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\)|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Model)["']\))/i,
+  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=|:\s*IsA\(["'](?:SurfaceAppearance|MaterialVariant|BasePart|Part|MeshPart)["']\))/i,
+  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|:\s*IsA\(["'](?:Sound|SoundGroup)["']\))/i,
+  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight|:\s*IsA\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\))/i,
+  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient|:\s*IsA\(["'](?:GuiObject|LayerCollector|ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)["']\))/i,
+  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|:\s*IsA\(["'](?:Animator|Animation|Motor6D|Bone)["']\))/i,
+  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|:\s*IsA\(["'](?:Model|BasePart|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
+});
 
 function stripManagedRobloxStudioAssetDetectionSource(text=''){
   return String(text||'')
@@ -53,21 +67,20 @@ export function detectRobloxStudioAssetSystems({sourceText='',clientSource='',se
   const source=stripManagedRobloxStudioAssetDetectionSource([sourceText,clientSource,serverSource].filter(Boolean).join('\n'));
   const has=pattern=>pattern.test(source);
   const near=(semantic,native)=>robloxStudioAssetSystemNearby(source,semantic,native);
-  const modelNative=/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Tool|Attachment|WeldConstraint)["']\)|\b(?:assetProp|ppart|part|add|clone)\s*\()/i;
   const systems={
-    CHARACTER:near(/\b(?:HumanoidDescription|avatar|npc|companion|character(?:Model|Visual|Appearance|Skin|Outfit|Rig)|outfit|armor)\b/i,/(?:Humanoid|Accessory|Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\))/i),
-    CREATURE:near(/\b(?:enemy|enemies|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,/(?:Instance\.new\(["'](?:Model|Part|MeshPart)["']\)|\.PrimaryPart\b|AnimationController|MoveTo\s*\(|PivotTo\s*\()/i),
-    BUILDING:near(/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village|tower|gate)\b/i,modelNative),
+    CHARACTER:near(/\b(?:HumanoidDescription|avatar|npc|companion|character(?:Model|Visual|Appearance|Skin|Outfit|Rig)|outfit|armor)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.CHARACTER),
+    CREATURE:near(/\b(?:enemy|enemies|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.CREATURE),
+    BUILDING:near(/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village|tower|gate)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.BUILDING),
     ENVIRONMENT:has(/(?:game:GetService\(["']Lighting["']\)|workspace\.Terrain\b|Instance\.new\(["'](?:Atmosphere|Sky|Clouds)["']\)|\bTerrain:)/i)
-      ||near(/\b(?:biome|forest|desert|snow|swamp|cave|environment|landmark|tree|rock|road|path|water)\b/i,modelNative),
-    WEAPON:near(/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|loadout)\b/i,/(?:Instance\.new\(["'](?:Tool|Model|Part|MeshPart|Attachment|WeldConstraint)["']\)|\b(?:assetProp|ppart|part|add|clone)\s*\()/i),
-    SKILL:near(/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,/(?:ParticleEmitter|Beam|Trail|Animation|RemoteEvent|:FireServer\s*\(|:FireClient\s*\(|:FireAllClients\s*\()/i),
-    MATERIAL:has(/(?:Enum\.Material\.[A-Za-z_]+|\.Material\s*=|SurfaceAppearance|MaterialVariant|TextureID)/i),
-    AUDIO:has(/(?:game:GetService\(["']SoundService["']\)|Instance\.new\(["']Sound["']\)|\.SoundId\s*=)/i),
-    VFX:has(/(?:Instance\.new\(["'](?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\)|\b(?:ParticleEmitter|Beam|Trail)\b)/i),
-    UI:has(/(?:Instance\.new\(["'](?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)["']\)|\bScreenGui\b)/i),
-    MOTION:has(/(?:FindFirstChildOfClass\(["']Animator["']\)|Instance\.new\(["']Animation["']\)|AnimationId\s*=|\bAnimationTrack\b|\bMotor6D\b|\bBone\b)/i),
-    PROP:near(/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i,modelNative),
+      ||near(/\b(?:biome|forest|desert|snow|swamp|cave|environment|landmark|tree|rock|road|path|water)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.ENVIRONMENT),
+    WEAPON:near(/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|loadout)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.WEAPON),
+    SKILL:near(/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.SKILL),
+    MATERIAL:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.MATERIAL),
+    AUDIO:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.AUDIO),
+    VFX:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.VFX),
+    UI:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.UI),
+    MOTION:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.MOTION),
+    PROP:near(/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.PROP),
   };
   return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[family,systems[family]===true])));
 }
