@@ -8667,13 +8667,7 @@
       "runnerPressureMayChangeFixedTarget": false,
       "canonicalSequenceChanged": false,
       "finalDevelopmentLockChanged": false,
-      "newWorkflowQueueSchedulerOrShadowPipeline": false,
-      "gamePrimaryMaxWorkMinutes": 60,
-      "gamePrimaryMinimumWorkMinutes": 0,
-      "gamePrimaryEarlyCompletionAllowed": true,
-      "gamePrimaryWorkBudgetMode": "MAXIMUM_NOT_MINIMUM",
-      "gamePrimaryWorkBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
-      "modelCallTimeoutAndRetryUnchanged": true
+      "newWorkflowQueueSchedulerOrShadowPipeline": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -8735,14 +8729,7 @@
       "fixedRepeatDevelopmentSlots": 64,
       "targetMayDownshiftUnderRunnerPressure": false,
       "targetMayUpshiftAbove64": false,
-      "runnerPressureMayQueueButNotRetargetSlots": true,
-      "maxWorkMinutes": 60,
-      "minimumWorkMinutes": 0,
-      "earlyCompletionAllowed": true,
-      "workBudgetMode": "MAXIMUM_NOT_MINIMUM",
-      "workBudgetAppliesTo": "ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE",
-      "modelCallTimeoutAndRetryUnchanged": true,
-      "canonicalBuildUpAndF0ToF9SequenceUnchanged": true
+      "runnerPressureMayQueueButNotRetargetSlots": true
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
