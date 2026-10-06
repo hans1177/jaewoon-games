@@ -70,7 +70,17 @@ export const GAMEPLAY_NARRATIVE_DNA_FAMILIES = Object.freeze([
   'MEDIEVAL_EUROPEAN_FEUDAL',
   'ISLAMIC_GOLDEN_AGE_TRADE_SCHOLARSHIP',
   'GREEK_EPIC_MYTH',
+  'ROMAN_REPUBLIC_EMPIRE_HISTORY',
   'NORSE_MYTH',
+  'MODERN_INDUSTRIAL_REVOLUTION',
+  'MODERN_REVOLUTION_REPUBLIC',
+  'MODERN_IMPERIAL_COLONIAL_HISTORY',
+  'MODERN_WORLD_WAR_TOTAL_WAR',
+  'MODERN_COLD_WAR_ESPIONAGE',
+  'MODERN_DECOLONIZATION_STATE_BUILDING',
+  'MODERN_MASS_POLITICS_PROPAGANDA',
+  'MODERN_INDUSTRIAL_CAPITAL_URBAN_LABOR',
+  'MODERN_DIPLOMACY_INTERNATIONAL_ORDER',
   'SHAKESPEAREAN_TRAGEDY_INTRIGUE',
   'FAIRYTALE_FOLKLORE',
   'SWASHBUCKLING_ADVENTURE',
@@ -164,30 +174,31 @@ function validateGameplaySketch(sketch,errors){
   }
 
   if(version<3)return;
+
   const composition=sketch.compositionDepth;
   if(!composition||typeof composition!=='object'||Array.isArray(composition)){
     errors.push('GAMEPLAY_SKETCH.compositionDepth is required for version 3+');
-    return;
+  }else{
+    if(!isNonEmptyString(composition.mainContent))errors.push('GAMEPLAY_SKETCH.compositionDepth.mainContent is required for version 3+');
+    const depthArrays=[
+      ['majorSubSystems',3],
+      ['extensionSystems',6],
+      ['crossSystemCombinations',4],
+      ['hiddenCombinations',2],
+      ['growthMutations',2],
+      ['legacyContentRevisitHooks',2],
+      ['mechanicDiversitySources',3]
+    ];
+    for(const [field,min] of depthArrays){
+      if(!Array.isArray(composition[field])||uniq(composition[field]).length<min)errors.push(`GAMEPLAY_SKETCH.compositionDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    }
+    if(!isNonEmptyString(composition.endgameFusion))errors.push('GAMEPLAY_SKETCH.compositionDepth.endgameFusion is required for version 3+');
+    const familySet=new Set(GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES);
+    for(const family of uniq(composition.mechanicDiversitySources)){
+      if(!familySet.has(family))errors.push(`GAMEPLAY_SKETCH.compositionDepth.mechanicDiversitySources invalid family: ${family}`);
+    }
   }
-  if(!isNonEmptyString(composition.mainContent))errors.push('GAMEPLAY_SKETCH.compositionDepth.mainContent is required for version 3+');
-  const depthArrays=[
-    ['majorSubSystems',3],
-    ['extensionSystems',6],
-    ['crossSystemCombinations',4],
-    ['hiddenCombinations',2],
-    ['growthMutations',2],
-    ['legacyContentRevisitHooks',2],
-    ['mechanicDiversitySources',3]
-  ];
-  for(const [field,min] of depthArrays){
-    if(!Array.isArray(composition[field])||uniq(composition[field]).length<min)errors.push(`GAMEPLAY_SKETCH.compositionDepth.${field} requires at least ${min} meaningful items for version 3+`);
-  }
-  if(!isNonEmptyString(composition.endgameFusion))errors.push('GAMEPLAY_SKETCH.compositionDepth.endgameFusion is required for version 3+');
-  const familySet=new Set(GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES);
-  for(const family of uniq(composition.mechanicDiversitySources)){
-    if(!familySet.has(family))errors.push(`GAMEPLAY_SKETCH.compositionDepth.mechanicDiversitySources invalid family: ${family}`);
-  }
-}
+
   const narrative=sketch.narrativeDepth;
   if(!narrative||typeof narrative!=='object'||Array.isArray(narrative)){
     errors.push('GAMEPLAY_SKETCH.narrativeDepth is required for version 3+');
@@ -206,6 +217,8 @@ function validateGameplaySketch(sketch,errors){
       ['foreshadowPayoffs',2],
       ['factionCultureHooks',2],
       ['historicalMythReinterpretations',2],
+      ['worldbuildingFusion',3],
+      ['storySystemLinks',3],
       ['culturalRespectRules',3]
     ];
     for(const [field,min] of narrativeArrays){
@@ -221,7 +234,7 @@ function validateGameplaySketch(sketch,errors){
     }
     if(!Array.isArray(narrative.rightsModes)||uniq(narrative.rightsModes).length<1)errors.push('GAMEPLAY_SKETCH.narrativeDepth.rightsModes requires at least 1 rights mode');
   }
-
+}
 
 function validateMarketNumericClaims(summary, errors) {
   if (!summary || typeof summary !== 'object' || Array.isArray(summary)) return;
