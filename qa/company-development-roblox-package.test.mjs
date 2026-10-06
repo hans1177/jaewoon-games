@@ -7,7 +7,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
@@ -291,6 +291,30 @@ test('Roblox dynamic asset family detection follows actual native systems and ig
   const status=robloxStudioAssetFamilyStatusFromSource({sourceText:'local enemy = Instance.new("Model")\nenemy.Name = "EnemyBoss"'});
   assert.equal(status.CREATURE,'APPLIED');
   assert.equal(status.AUDIO,'NOT_APPLICABLE');
+});
+
+test('Roblox family binding proof requires selected values to reach a native presentation consumer',()=>{
+  const real=[
+    'local studioAssetFamilies={UI={"FRAME_PANEL"}}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local function hasStudioAssetAtom(family, atom) return table.find(studioAssetFamily(family), atom) ~= nil end',
+    'local root=Instance.new("Frame")',
+    'if hasStudioAssetAtom("UI","FRAME_PANEL") then',
+    '  local stroke=Instance.new("UIStroke")',
+    '  stroke.Thickness=2',
+    '  stroke.Parent=root',
+    'end'
+  ].join('\n');
+  assert.equal(robloxStudioAssetFamilyBoundInText(real,'UI'),true);
+
+  const markerOnly=[
+    'local studioAssetFamilies={UI={"FRAME_PANEL"}}',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local atoms=studioAssetFamily("UI")',
+    'local root=Instance.new("Frame")',
+    'root:SetAttribute("StudioAssetAtoms", table.concat(atoms, ","))'
+  ].join('\n');
+  assert.equal(robloxStudioAssetFamilyBoundInText(markerOnly,'UI'),false);
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
