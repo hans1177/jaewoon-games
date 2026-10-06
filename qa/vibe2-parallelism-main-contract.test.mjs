@@ -332,6 +332,8 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/for state_attempt in 1 2 3 4 5/);
   assert.doesNotMatch(core,/VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=\$state_attempt\/5/);
   assert.doesNotMatch(core,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN/);
+  assert.doesNotMatch(core,/VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_BYPASS=YES/);
+  assert.match(core,/VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_GUARD=ENABLED/);
   assert.match(core,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
   assert.match(core,/execution_lane:String\(process\.env\.VIBE2_EXECUTION_LANE\|\|'game-primary'\)/);
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PASS/);

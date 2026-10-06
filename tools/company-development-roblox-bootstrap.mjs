@@ -22,6 +22,9 @@ function luauLearningDispositionRows(dispositions=[],indent='      '){
 }
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
 export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
+export const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES=Object.freeze([
+  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
+]);
 
 const SHA256=/^[a-f0-9]{64}$/i;
 export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={}){
@@ -207,7 +210,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     );
   }
   const selectedAtomCount=Object.values(selected).reduce((n,rows)=>n+rows.length,0);
-  const requiredFamilies=Object.freeze(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
+  const requiredFamilies=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
   const missingFamilies=requiredFamilies.filter(family=>!(selected[family]||[]).length);
   const motionAtoms=Object.freeze([...(selected.MOTION||[])]);
   const selectionFingerprint=studioAssetSelectionFingerprint({
@@ -771,11 +774,31 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
 }
 
 function bindExistingClientStudioAssets(source=''){
+  const requiredFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
   const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n/;
   let output=source.replace(/(STUDIO_ASSET_BINDING_VERSION\s*=\s*)1\b/g,(_match,prefix)=>`${prefix}2`);
   const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
   if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
   const configVar=requireMatch[1];
+  const managedCurrent=output.match(managed)?.[0]||'';
+  const outsideManaged=managedCurrent?output.replace(managed,''):output;
+  const selectionRe=/local\s+STUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/;
+  const statusRe=/local\s+STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/;
+  const preservedSelection=outsideManaged.match(selectionRe)?.[0]||managedCurrent.match(selectionRe)?.[0]||'';
+  const preservedStatus=outsideManaged.match(statusRe)?.[0]||managedCurrent.match(statusRe)?.[0]||'';
+  const externalSelection=selectionRe.test(outsideManaged);
+  const externalStatus=statusRe.test(outsideManaged);
+  const traceBlock=externalSelection&&externalStatus
+    ?''
+    :preservedSelection&&preservedStatus
+      ?preservedSelection+'\n'+preservedStatus+'\n'
+      :`local STUDIO_ASSET_SELECTION = {
+${requiredFamilies.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+${requiredFamilies.map(family=>'  '+family+' = "'+(family==='UI'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
+}
+`;
   const block=`-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = ${configVar}.StudioAssets or {}
@@ -790,16 +813,19 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
--- STUDIO_ASSET_BINDING_CLIENT_END
+${traceBlock}-- STUDIO_ASSET_BINDING_CLIENT_END
 `;
   if(managed.test(output)){
     output=output.replace(managed,block);
   }else{
     const existingUnmanagedClientBinding=/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(output)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(output);
-    if(!existingUnmanagedClientBinding){
-      const insertAt=requireMatch.index+requireMatch[0].length;
-      output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
+    if(existingUnmanagedClientBinding){
+      output=output.replace(/^\s*local\s+STUDIO_ASSET_BINDING_VERSION\s*=\s*2\s*\n/m,'');
     }
+    const refreshedRequireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
+    if(!refreshedRequireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
+    const insertAt=refreshedRequireMatch.index+refreshedRequireMatch[0].length;
+    output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
   }
   if(!/StudioAssetBindingVersion/.test(output)){
     const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
@@ -1019,7 +1045,13 @@ task.defer(reportNativeFoundationReady)
   const studioClientConfigBound=/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(afterClient)&&/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(afterClient);
   const studioClientVisibleBound=/StudioAssetFramePanel/.test(afterClient)
     ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
-  if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
+  const studioSelectionBlock=afterClient.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+  const studioStatusBlock=afterClient.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+  const studioFamilyTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>
+    new RegExp('\\b'+family+'\\s*=').test(studioSelectionBlock)
+    &&new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(studioStatusBlock)
+  );
+  if(!studioClientConfigBound||!studioClientVisibleBound||!studioFamilyTraceComplete)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)    ||!/ContentComplete\s*=\s*true/.test(afterConfig)    ||!/GameSpecificSemanticMappings\s*=\s*\{/.test(afterConfig)    ||!/LearningDispositions\s*=\s*\{/.test(afterConfig)    ||!afterConfig.includes(`SemanticMappingVersion = ${Number(verifiedLearning.semanticMappingVersion||0)}`)    ||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
   if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)    ||!/VerifiedExternalLearningContentComplete/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingVersion/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningSemanticVariant/.test(afterClient)    ||!/VerifiedLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningTouchTarget/.test(afterClient)    ||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)    ||!/FieldOfView/.test(afterClient)    ||Number(afterClient.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0)<ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
@@ -1121,6 +1153,12 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
     if(!/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_BINDING_VERSION_REQUIRED');
     if(!/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_CONFIG_USAGE_REQUIRED');
     if(!/(?:Instance\.new\s*\(\s*["']Frame["']|Color3\.fromRGB|BackgroundColor3)/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_VISIBLE_BINDING_REQUIRED');
+    const selectionBlock=clientCode.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+    const statusBlock=clientCode.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      if(!new RegExp('\\b'+family+'\\s*=').test(selectionBlock))blockers.push('CLIENT_STUDIO_ASSET_SELECTION_REQUIRED:'+family);
+      if(!new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(statusBlock))blockers.push('CLIENT_STUDIO_ASSET_FAMILY_STATUS_REQUIRED:'+family);
+    }
   }
   if(learning?.applied===true){
     if(!/LearningContext\s*=/.test(sharedConfig))blockers.push('CONFIG_VIBE3_LEARNING_CONTEXT_REQUIRED');
@@ -1239,11 +1277,18 @@ function serverSource({gameId,saveRequired,actions,profile,learning={}}){
 
 function clientSource({profile,learning={},studioAssets={}}){
   requireRobloxVerifiedExternalLearning(learning);
+  const studioAssetTrace=`local STUDIO_ASSET_SELECTION = {
+${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = studioAssetFamily("'+family+'"),').join('\n')}
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+${ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>'  '+family+' = "'+(family==='UI'?'APPLIED':'NOT_APPLICABLE')+'",').join('\n')}
+}
+`;
   const nativeLearningRuntime=robloxNativeLearningRuntimeBlock({frameVar:'root',configVar:'Config',learning});
   const learnedInput=`local ContextActionService = game:GetService("ContextActionService")\n`;
   const learnedBinding=`\nif #Config.Actions > 0 then\n  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n`;
   const multiplayerClient=profile.multiplayerRequired?`\nlocal multiplayerStatus = Instance.new("TextLabel")\nmultiplayerStatus.Name = "MultiplayerStatus"\nmultiplayerStatus.Size = UDim2.new(1, -20, 0, 36)\nmultiplayerStatus.Position = UDim2.fromOffset(10, 104)\nmultiplayerStatus.BackgroundTransparency = 1\nmultiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)\nmultiplayerStatus.TextScaled = true\nmultiplayerStatus.Text = "Multiplayer sync ready"\nmultiplayerStatus.Parent = root\nremote.OnClientEvent:Connect(function(kind, payload)\n  if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end\n  multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)\nend)\n`:``;
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n${learnedInput}local STUDIO_ASSET_BINDING_VERSION = 2\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")\nlocal nativeTouchEnabled = UserInputService.TouchEnabled\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild("Humanoid")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    foundationRemote:FireServer("CAMERA_READY")\n  end\n  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")\nend\ntask.defer(reportNativeFoundationReady)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nlocal studioAssetFamilies = Config.StudioAssets and Config.StudioAssets.Families or {}\nlocal function studioAssetFamily(family)\n  local atoms = studioAssetFamilies[family]\n  return type(atoms) == "table" and atoms or {}\nend\nlocal function hasStudioAtom(familyOrAtom, atom)\n  local family = atom == nil and "UI" or familyOrAtom\n  local assetAtom = atom == nil and familyOrAtom or atom\n  return table.find(studioAssetFamily(family), assetAtom) ~= nil\nend\nlocal studioUi = studioAssetFamily("UI")\nroot.BackgroundColor3 = hasStudioAtom("UI", "FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)\nroot:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute("StudioAssetSelectionFingerprint", Config.StudioAssets and Config.StudioAssets.SelectionFingerprint or "")\nroot:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = hasStudioAtom("UI", "BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal healthTrack = Instance.new("Frame")\nhealthTrack.Name = "StudioHealthTrack"\nhealthTrack.Size = UDim2.new(1, -20, 0, 10)\nhealthTrack.Position = UDim2.fromOffset(10, 98)\nhealthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)\nhealthTrack.BorderSizePixel = 0\nhealthTrack.Visible = hasStudioAtom("UI", "BAR_HEALTH")\nhealthTrack.Parent = root\nlocal healthFill = Instance.new("Frame")\nhealthFill.Name = "StudioHealthFill"\nhealthFill.Size = UDim2.fromScale(1, 1)\nhealthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)\nhealthFill.BorderSizePixel = 0\nhealthFill.Parent = healthTrack\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\n  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n${nativeLearningRuntime}\n${learnedBinding}`;
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n${learnedInput}local STUDIO_ASSET_BINDING_VERSION = 2\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")\nlocal nativeTouchEnabled = UserInputService.TouchEnabled\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild("Humanoid")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    foundationRemote:FireServer("CAMERA_READY")\n  end\n  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")\nend\ntask.defer(reportNativeFoundationReady)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nlocal studioAssetFamilies = Config.StudioAssets and Config.StudioAssets.Families or {}\nlocal function studioAssetFamily(family)\n  local atoms = studioAssetFamilies[family]\n  return type(atoms) == "table" and atoms or {}\nend\nlocal function hasStudioAtom(familyOrAtom, atom)\n  local family = atom == nil and "UI" or familyOrAtom\n  local assetAtom = atom == nil and familyOrAtom or atom\n  return table.find(studioAssetFamily(family), assetAtom) ~= nil\nend\n${studioAssetTrace}local studioUi = STUDIO_ASSET_SELECTION.UI\nroot.BackgroundColor3 = hasStudioAtom("UI", "FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)\nroot:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute("StudioAssetSelectionFingerprint", Config.StudioAssets and Config.StudioAssets.SelectionFingerprint or "")\nroot:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = hasStudioAtom("UI", "BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal healthTrack = Instance.new("Frame")\nhealthTrack.Name = "StudioHealthTrack"\nhealthTrack.Size = UDim2.new(1, -20, 0, 10)\nhealthTrack.Position = UDim2.fromOffset(10, 98)\nhealthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)\nhealthTrack.BorderSizePixel = 0\nhealthTrack.Visible = hasStudioAtom("UI", "BAR_HEALTH")\nhealthTrack.Parent = root\nlocal healthFill = Instance.new("Frame")\nhealthFill.Name = "StudioHealthFill"\nhealthFill.Size = UDim2.fromScale(1, 1)\nhealthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)\nhealthFill.BorderSizePixel = 0\nhealthFill.Parent = healthTrack\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\n  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n${nativeLearningRuntime}\n${learnedBinding}`;
 }
 
 export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={},webHandoff={},roadmap={},assetLibrary={},buildUpDirective={}}={}){

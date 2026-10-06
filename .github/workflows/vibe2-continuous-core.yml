@@ -2607,21 +2607,23 @@ jobs:
             exit 0
           fi
 
-          # ASSET_DEVELOPMENT must fan in each completed task immediately.
-          # A slow unrelated worker in the same matrix may not hold the finished asset task,
-          # its Work Lock, or its causal retry behind the cohort barrier.
+          # Asset workers stay parallel, but callback workflow creation is backpressured.
+          # Under queue pressure the immutable result artifact is consumed by the existing cohort fan-in,
+          # so no finished task or causal retry is lost while redundant workflow runs are avoided.
           queue_pressure=0
+          # All auxiliary lanes use the existing immutable artifact + cohort fan-in path when
+          # the Actions queue is already pressured. Asset work stays parallel; only redundant
+          # callback workflow creation is coalesced.
           if [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
-            echo 'VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_BYPASS=YES'
-          else
-            # Other auxiliary lanes may still coalesce under live Actions queue pressure.
-            if curl --fail-with-body --silent --show-error \
-              --header 'Accept: application/vnd.github+json' \
-              --header "Authorization: Bearer $GH_TOKEN" \
-              --header 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
-              --output /tmp/vibe2-live-actions-runs.json; then
-              queue_pressure="$(node <<'NODE'
+            echo 'VIBE2_ASSET_ATOMIC_CALLBACK_PRESSURE_GUARD=ENABLED'
+          fi
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-live-actions-runs.json; then
+            queue_pressure="$(node <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-live-actions-runs.json','utf8'));
           const currentRun=String(process.env.GITHUB_RUN_ID||'');
@@ -2632,20 +2634,19 @@ jobs:
           ).length;
           process.stdout.write(String(pressure));
           NODE
-              )"
-              echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'
-            else
-              echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'
-              queue_pressure=0
-            fi
-            echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
+            )"
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'
+          else
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'
+            queue_pressure=0
+          fi
+          echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
 
-            if [ "${queue_pressure:-0}" -gt 0 ]; then
-              echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
-              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN'
-              echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
-              exit 0
-            fi
+          if [ "${queue_pressure:-0}" -gt 0 ]; then
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
+            echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_DEFER_TO_COHORT_FANIN'
+            echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
+            exit 0
           fi
           payload="$(node <<'NODE'
           const payload={

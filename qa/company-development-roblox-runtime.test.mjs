@@ -1258,19 +1258,23 @@ test('exact duplicate validation deployment coalesces by game stage and control 
   assert.match(publish,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
 });
 
-test('verified learning refresh dispatches per game without a portfolio-wide sweep lock',()=>{
+test('verified learning refresh debt coalesces to one current-main batch sweep',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const sweep=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
-  assert.match(runtime,/Dispatch verified learning sweep per game when reconciliation finds refresh debt/);
-  assert.match(runtime,/gh workflow run company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
-  assert.match(runtime,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=/);
-  assert.match(runtime,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=/);
+  const start=runtime.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
+  const end=runtime.indexOf('      - name: Resolve next Roblox source execution slice',start);
+  assert.ok(start>=0&&end>start);
+  const block=runtime.slice(start,end);
+  assert.match(block,/Roblox verified learning sweep · batch/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.doesNotMatch(block,/-f game_id=/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=/);
   assert.match(sweep,/run-name: Roblox verified learning sweep · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(sweep,/group: roblox-verified-learning-sweep-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(sweep,/cancel-in-progress: false/);
   assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep-[^\n]*github\.sha/);
   assert.match(sweep,/--game-id="\$GAME_ID"/);
-  assert.doesNotMatch(sweep,/group: roblox-verified-learning-sweep\s*\n/);
 });
 
 test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
