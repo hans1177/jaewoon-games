@@ -888,7 +888,7 @@ jobs:
               current_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
               refill_active=no
               if [ -n "$current_main" ] && gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-neuron-refill-runs.json 2>/dev/null; then
-                refill_active="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
+                REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID"node - <<'NODE' > /tmp/vibe2-neuron-refill-active.txt
               const fs=require('fs');
               const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-neuron-refill-runs.json','utf8'));
               const states=new Set(['queued','pending','in_progress','requested','waiting']);
@@ -899,8 +899,8 @@ jobs:
                 &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
               );
               process.stdout.write(found?'yes':'no');
-              NODE
-                )"
+                NODE
+                refill_active="$(cat /tmp/vibe2-neuron-refill-active.txt)"
               fi
               if [ "$refill_active" = yes ]; then
                 echo "VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_ACTIVE_EXACT:$refill_lane:$current_main"
@@ -2943,7 +2943,7 @@ jobs:
               refill_title='Vibe2 Continuous Core · vibe2-fanin-refill · game-primary'
               refill_active=no
               if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-regression-refill-runs.json 2>/dev/null; then
-                refill_active="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$latest_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
+                REFILL_TITLE="$refill_title" CURRENT_MAIN="$latest_main" CURRENT_RUN="$GITHUB_RUN_ID"node - <<'NODE' > /tmp/vibe2-regression-refill-active.txt
               const fs=require('fs');
               const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-regression-refill-runs.json','utf8'));
               const states=new Set(['queued','pending','in_progress','requested','waiting']);
@@ -2954,8 +2954,8 @@ jobs:
                 &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
               );
               process.stdout.write(found?'yes':'no');
-              NODE
-                )"
+                NODE
+                refill_active="$(cat /tmp/vibe2-regression-refill-active.txt)"
               fi
               if [ "$refill_active" = yes ]; then
                 echo "VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE_EXACT:$contract_sha:$latest_main"
@@ -3295,7 +3295,7 @@ jobs:
           current_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
           refill_active=no
           if [ -n "$current_main" ] && gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-fanin-refill-runs.json 2>/dev/null; then
-            refill_active="$(REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID" node - <<'NODE'
+            REFILL_TITLE="$refill_title" CURRENT_MAIN="$current_main" CURRENT_RUN="$GITHUB_RUN_ID"node - <<'NODE' > /tmp/vibe2-fanin-refill-active.txt
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-refill-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested','waiting']);
@@ -3306,8 +3306,8 @@ jobs:
             &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
           );
           process.stdout.write(found?'yes':'no');
-          NODE
-            )"
+            NODE
+            refill_active="$(cat /tmp/vibe2-fanin-refill-active.txt)"
           fi
           if [ "$refill_active" = yes ]; then
             echo "VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:$refill_lane:$current_main"
