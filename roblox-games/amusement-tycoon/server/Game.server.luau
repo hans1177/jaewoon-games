@@ -364,19 +364,79 @@ nativeFoundationSpawn.Parent = workspace
 
 -- 공원 핵심 월드는 buildThemeParkWorld에서 생성하며 foundation은 같은 오브젝트를 재사용한다.
 local function bindNativeFoundationCharacter(character)
-  local humanoid = character:WaitForChild("Humanoid")
-  local rootPart = character:WaitForChild("HumanoidRootPart")
+  local humanoid = character:WaitForChild("Humanoid", 10)
+  local rootPart = character:WaitForChild("HumanoidRootPart", 10)
+  if not humanoid or not rootPart then
+    character:SetAttribute("FoundationFailure", "CHARACTER_FOUNDATION_FAILURE")
+    return
+  end
+
+  character:SetAttribute("GROUND_CONTACT", false)
+  character:SetAttribute("MOVEMENT_CONFIRMED", false)
   rootPart.Anchored = false
   humanoid.PlatformStand = false
+
   local raycastParams = RaycastParams.new()
   raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-  raycastParams.FilterDescendantsInstances = {character}
-  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0), raycastParams)
-  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
-  character:SetAttribute("MOVEMENT_CONFIRMED", false)
+  raycastParams.FilterDescendantsInstances = {character, nativeFoundationSpawn}
+  raycastParams.RespectCanCollide = true
+  raycastParams.IgnoreWater = true
+  raycastParams.CollisionGroup = rootPart.CollisionGroup
+
+  local clearance = humanoid.HipHeight + rootPart.Size.Y * 0.5
+  local groundHit = workspace:Raycast(
+    rootPart.Position + Vector3.new(0, 4, 0),
+    Vector3.new(0, -(clearance + 12), 0),
+    raycastParams
+  )
+  if not groundHit or groundHit.Normal.Y < 0.55 then
+    groundHit = workspace:Raycast(
+      nativeFoundationSpawn.Position + Vector3.new(0, 8, 0),
+      Vector3.new(0, -20, 0),
+      raycastParams
+    )
+  end
+  if not groundHit or groundHit.Normal.Y < 0.55 then
+    character:SetAttribute("FoundationFailure", "SPAWN_GROUND_MISSING")
+    return
+  end
+
+  local target = groundHit.Position + Vector3.new(0, clearance + 0.1, 0)
+  character:PivotTo(character:GetPivot() + (target - rootPart.Position))
+  rootPart.AssemblyLinearVelocity = Vector3.zero
+  rootPart.AssemblyAngularVelocity = Vector3.zero
+
+  local movementOrigin = rootPart.Position
   humanoid.Running:Connect(function(speed)
-    character:SetAttribute("MOVEMENT_CONFIRMED", speed > 0.1 and humanoid.FloorMaterial ~= Enum.Material.Air)
+    if not rootPart.Parent or humanoid.FloorMaterial == Enum.Material.Air then return end
+    local displacement = (rootPart.Position - movementOrigin) * Vector3.new(1, 0, 1)
+    if speed > 0.1 and displacement.Magnitude > 0.5 then
+      character:SetAttribute("MOVEMENT_CONFIRMED", true)
+    end
   end)
+
+  local deadline = os.clock() + 5
+  repeat
+    if not character.Parent or not rootPart.Parent then return end
+    local contact = workspace:Raycast(
+      rootPart.Position,
+      Vector3.new(0, -(clearance + 0.75), 0),
+      raycastParams
+    )
+    if contact
+      and contact.Normal.Y >= 0.55
+      and humanoid.FloorMaterial ~= Enum.Material.Air
+      and math.abs(rootPart.AssemblyLinearVelocity.Y) < 3
+    then
+      character:SetAttribute("GROUND_CONTACT", true)
+      character:SetAttribute("FoundationFailure", nil)
+      character:SetAttribute("NativeFoundationGroundingVersion", 2)
+      return
+    end
+    task.wait(0.1)
+  until os.clock() >= deadline
+
+  character:SetAttribute("FoundationFailure", "GROUND_CONTACT_FAILURE")
 end
 local function bindNativeFoundationPlayer(player)
   if player.Character then task.defer(bindNativeFoundationCharacter, player.Character) end
