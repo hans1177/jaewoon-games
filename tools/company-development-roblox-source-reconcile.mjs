@@ -281,7 +281,20 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         verifiedExternalLearningExpectedSemanticMappingFingerprints:learningState.acceptedSemanticMappingFingerprints||[],
         verifiedExternalLearningCurrentSemanticMappingFingerprint:learningState.currentSemanticMappingFingerprint||null,
         verifiedExternalLearningSourceSubgenreRefinementAllowed:learningState.sourceSubgenreRefinementAllowed===true,
-        verifiedExternalLearningSourceProfile:learningState.sourceProfile||null
+        verifiedExternalLearningSourceProfile:learningState.sourceProfile||null,
+        verifiedExternalLearningDiagnostics:{
+          coverage:learningState.coverage,
+          retrieved:learningState.retrieved,
+          applied:learningState.applied,
+          currentSemanticMappingVersion:learningState.currentSemanticMappingVersion,
+          mappingCount:learningState.mappingCount,
+          gameSpecificMappingsPresent:learningState.gameSpecificMappingsPresent===true,
+          learningDispositionsPresent:learningState.learningDispositionsPresent===true,
+          expectedNativeBindingVersion:learningState.expectedNativeBindingVersion,
+          nativeBindingVersion:learningState.nativeBindingVersion,
+          clientNativeBindingVersion:learningState.clientNativeBindingVersion,
+          fullNativeClient:learningState.fullNativeClient===true,
+        }
       });
       continue;
     }
