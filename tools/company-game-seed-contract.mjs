@@ -36,7 +36,7 @@ export const GAME_SEED_POLICY = Object.freeze({
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
   gameplaySketchRequired: true,
-  advancedGameplaySketchVersion: 3,
+  advancedGameplaySketchVersion: 4,
   advancedGameplaySketchRequiredForNewSeeds: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
@@ -105,6 +105,25 @@ function validateGameplaySketch(sketch,errors){
       const test=identity.threeSentenceTest;
       if(!test||typeof test!=='object'||Array.isArray(test))errors.push('GAMEPLAY_SKETCH.identityCore.threeSentenceTest is required for version 3+');
       else for(const field of ['whatGame','whatDifferent','whatGrowthUnlocks'])if(!isNonEmptyString(test[field]))errors.push(`GAMEPLAY_SKETCH.identityCore.threeSentenceTest.${field} is required for version 3+`);
+    }
+  }
+  if(version>=4){
+    const grammar=sketch.novelGameGrammar;
+    if(!grammar||typeof grammar!=='object'||Array.isArray(grammar))errors.push('GAMEPLAY_SKETCH.novelGameGrammar is required for version 4+');
+    else{
+      if(!['D1_LIGHT_COMIC','D2_STRANGE_FUSION','D3_DEEP_CULTURAL','D4_SYSTEMIC_MYTHIC'].includes(String(grammar.depth||'').toUpperCase()))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.depth is invalid');
+      for(const field of ['familiarAnchor','brokenGenreAssumption','newPrimaryVerb','worldRule','culturalAbstractionRule'])if(!isNonEmptyString(grammar[field]))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.${field} is required for version 4+`);
+      if(!Array.isArray(grammar.causalDNAs)||grammar.causalDNAs.length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.causalDNAs requires at least 2 items');
+      if(!Array.isArray(grammar.causalFusion)||uniq(grammar.causalFusion).length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.causalFusion requires at least 2 items');
+      if(!grammar.irreducibilityTest||!isNonEmptyString(grammar.irreducibilityTest.verdict))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.irreducibilityTest is required');
+      const bindings=grammar.storyWorldBindings;
+      if(!bindings||typeof bindings!=='object'||Array.isArray(bindings))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.storyWorldBindings is required');
+      else for(const field of ['emotionalConflict','characterRule','monsterRule','regionRule','storyRule','plausibility'])if(!isNonEmptyString(bindings[field]))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.storyWorldBindings.${field} is required`);
+      const escalation=grammar.escalation;
+      if(!escalation||typeof escalation!=='object'||Array.isArray(escalation))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.escalation is required');
+      else for(const field of ['early','mid','late','endgame'])if(!isNonEmptyString(escalation[field]))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.escalation.${field} is required`);
+      if(!Array.isArray(grammar.expansionVectors)||uniq(grammar.expansionVectors).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.expansionVectors requires at least 4 items');
+      if(String(grammar.depth||'').toUpperCase()==='D1_LIGHT_COMIC'&&grammar.comicAbsurdity?.enabled!==true)errors.push('GAMEPLAY_SKETCH.novelGameGrammar D1 requires enabled comicAbsurdity');
     }
   }
   const advanced=[['funDrivers',3],['balanceRules',4],['progressionLayers',3],['completionCriteria',4],['codingGrowthHooks',4]];

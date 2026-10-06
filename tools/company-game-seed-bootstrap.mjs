@@ -3,6 +3,8 @@ import {pathToFileURL} from 'node:url';
 import {
   DEFAULT_SEED_CATEGORIES,
   SEED_MATERIAL_DYNAMIC_SIGNALS,
+  CAUSAL_DNA_LIBRARY,
+  CAUSAL_DEPTHS,
   loadSeedState,
   saveSeedState,
   pendingPortfolioSeedRequests,
@@ -91,6 +93,33 @@ const FORCE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_FORC
 
 const TEXT={type:'string',maxLength:1200};
 const SKETCH_ITEM={type:'string',minLength:1,maxLength:360};
+const CAUSAL_DNA_ITEM_SCHEMA={
+  type:'object',
+  required:['id','source','principle','gameplayConversion','fusionRole'],
+  properties:{id:{type:'string',minLength:3,maxLength:120},source:{type:'string',minLength:3,maxLength:180},principle:{type:'string',minLength:10,maxLength:600},gameplayConversion:{type:'string',minLength:10,maxLength:700},fusionRole:{type:'string',minLength:10,maxLength:500}},
+  additionalProperties:false
+};
+const NOVEL_GAME_GRAMMAR_SCHEMA={
+  type:'object',
+  required:['depth','toneMode','familiarAnchor','causalDNAs','brokenGenreAssumption','newPrimaryVerb','worldRule','causalFusion','irreducibilityTest','storyWorldBindings','comicAbsurdity','escalation','expansionVectors','culturalAbstractionRule'],
+  properties:{
+    depth:{type:'string',enum:CAUSAL_DEPTHS},
+    toneMode:{type:'string',enum:['LIGHT_ABSURD_COMIC','PLAYFUL_STRANGE','MIXED','SERIOUS_CAUSAL','EPIC_MYTHIC']},
+    familiarAnchor:{type:'string',minLength:15,maxLength:700},
+    causalDNAs:{type:'array',minItems:2,maxItems:4,items:CAUSAL_DNA_ITEM_SCHEMA},
+    brokenGenreAssumption:{type:'string',minLength:15,maxLength:700},
+    newPrimaryVerb:{type:'string',minLength:8,maxLength:300},
+    worldRule:{type:'string',minLength:15,maxLength:700},
+    causalFusion:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
+    irreducibilityTest:{type:'object',required:['removeFirstAxis','removeSecondAxis','verdict'],properties:{removeFirstAxis:{type:'string',minLength:15,maxLength:600},removeSecondAxis:{type:'string',minLength:15,maxLength:600},verdict:{type:'string',minLength:15,maxLength:600}},additionalProperties:false},
+    storyWorldBindings:{type:'object',required:['emotionalConflict','characterRule','monsterRule','regionRule','storyRule','plausibility'],properties:{emotionalConflict:{type:'string',minLength:15,maxLength:700},characterRule:{type:'string',minLength:15,maxLength:700},monsterRule:{type:'string',minLength:15,maxLength:700},regionRule:{type:'string',minLength:15,maxLength:700},storyRule:{type:'string',minLength:15,maxLength:700},plausibility:{type:'string',minLength:15,maxLength:700}},additionalProperties:false},
+    comicAbsurdity:{type:'object',required:['enabled','setup','ruleTwist','payoff'],properties:{enabled:{type:'boolean'},setup:{type:'string',minLength:8,maxLength:500},ruleTwist:{type:'string',minLength:8,maxLength:500},payoff:{type:'string',minLength:8,maxLength:500}},additionalProperties:false},
+    escalation:{type:'object',required:['early','mid','late','endgame'],properties:{early:{type:'string',minLength:15,maxLength:700},mid:{type:'string',minLength:15,maxLength:700},late:{type:'string',minLength:15,maxLength:700},endgame:{type:'string',minLength:15,maxLength:700}},additionalProperties:false},
+    expansionVectors:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
+    culturalAbstractionRule:{type:'string',minLength:15,maxLength:700}
+  },
+  additionalProperties:false
+};
 const IDENTITY_CORE_SCHEMA={
   type:'object',
   required:['oneLineFantasy','playerRole','representativeAction','representativeChoice','signatureWorldRule','signatureSystemPromise','growthIdentity','identityCoherence','threeSentenceTest','genreAdaptationRule'],
@@ -132,10 +161,11 @@ const PACING_PLAN_SCHEMA={
 };
 const GAMEPLAY_SKETCH_SCHEMA={
   type:'object',
-  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','identityCore','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks'],
+  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','identityCore','novelGameGrammar','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks'],
   properties:{
     worldModel:{type:'string',minLength:1,maxLength:900},
     identityCore:IDENTITY_CORE_SCHEMA,
+    novelGameGrammar:NOVEL_GAME_GRAMMAR_SCHEMA,
     actors:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     interactionChains:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     stateMachine:{type:'array',minItems:5,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
@@ -332,6 +362,40 @@ function sketchArray(values,fallback,min,max){
   for(const value of fallback)if(out.length<min&&!out.includes(value))out.push(value);
   return out.slice(0,max);
 }
+const causalDnaById=new Map(CAUSAL_DNA_LIBRARY.map(row=>[row.id,row]));
+function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
+  const raw=rawGrammar&&typeof rawGrammar==='object'&&!Array.isArray(rawGrammar)?rawGrammar:{};
+  const materialIds=uniq((target.materials||[]).flatMap(row=>Array.isArray(row?.causalDNA)?row.causalDNA:[]));
+  const normalized=[];
+  for(const row of Array.isArray(raw.causalDNAs)?raw.causalDNAs:[]){
+    const id=clean(row?.id).toUpperCase(),known=causalDnaById.get(id);if(!id)continue;
+    normalized.push({id,source:clean(row?.source)||known?.source||'CULTURAL_CAUSAL_ARCHETYPE',principle:clean(row?.principle)||known?.principle||'원인과 결과가 플레이 규칙을 통해 되돌아온다.',gameplayConversion:clean(row?.gameplayConversion)||known?.gameGrammar||'플레이어 선택이 다음 상태 규칙을 바꾼다.',fusionRole:clean(row?.fusionRole)||'다른 인과 DNA와 결합해 새 게임문법을 만든다.'});
+  }
+  for(const id of materialIds){if(normalized.some(row=>row.id===id))continue;const known=causalDnaById.get(id);if(!known)continue;normalized.push({id:known.id,source:known.source,principle:known.principle,gameplayConversion:known.gameGrammar,fusionRole:'선택된 재료의 인과 원리를 핵심 플레이 규칙으로 변환한다.'});if(normalized.length>=4)break;}
+  for(const known of CAUSAL_DNA_LIBRARY){if(normalized.length>=2)break;if(!normalized.some(row=>row.id===known.id))normalized.push({id:known.id,source:known.source,principle:known.principle,gameplayConversion:known.gameGrammar,fusionRole:'보조 인과축으로 단순 장르 공식을 비튼다.'});}
+  const depthCandidate=clean(raw.depth).toUpperCase(),materialDepth=clean((target.materials||[])[0]?.causalDepthAffinity).toUpperCase();
+  const depth=CAUSAL_DEPTHS.includes(depthCandidate)?depthCandidate:(CAUSAL_DEPTHS.includes(materialDepth)?materialDepth:'D2_STRANGE_FUSION');
+  const toneAllowed=['LIGHT_ABSURD_COMIC','PLAYFUL_STRANGE','MIXED','SERIOUS_CAUSAL','EPIC_MYTHIC'];
+  const defaultTone=depth==='D1_LIGHT_COMIC'?'LIGHT_ABSURD_COMIC':depth==='D2_STRANGE_FUSION'?'PLAYFUL_STRANGE':depth==='D3_DEEP_CULTURAL'?'MIXED':'EPIC_MYTHIC';
+  const toneMode=toneAllowed.includes(clean(raw.toneMode).toUpperCase())?clean(raw.toneMode).toUpperCase():defaultTone;
+  const ir=raw.irreducibilityTest&&typeof raw.irreducibilityTest==='object'&&!Array.isArray(raw.irreducibilityTest)?raw.irreducibilityTest:{},sw=raw.storyWorldBindings&&typeof raw.storyWorldBindings==='object'&&!Array.isArray(raw.storyWorldBindings)?raw.storyWorldBindings:{},ca=raw.comicAbsurdity&&typeof raw.comicAbsurdity==='object'&&!Array.isArray(raw.comicAbsurdity)?raw.comicAbsurdity:{},esc=raw.escalation&&typeof raw.escalation==='object'&&!Array.isArray(raw.escalation)?raw.escalation:{};
+  const primary=coreLoop[0]||identityCore.representativeAction||'핵심 행동',second=coreLoop[1]||identityCore.representativeChoice||'다음 선택',dnaA=normalized[0],dnaB=normalized[1];
+  return {
+    depth,toneMode,
+    familiarAnchor:clean(raw.familiarAnchor)||'상실·욕망·경쟁·소속·가족·명예·생존·인정처럼 바로 이해되는 인간 갈등을 감정적 발판으로 사용한다.',
+    causalDNAs:normalized.slice(0,4),
+    brokenGenreAssumption:clean(raw.brokenGenreAssumption)||`보통 이 장르에서 성공으로 취급하는 ${primary}의 결과를 보상으로 끝내지 않고 다음 규칙의 원인으로 되돌린다.`,
+    newPrimaryVerb:clean(raw.newPrimaryVerb)||`${primary}의 결과를 이용해 다음 세계 규칙을 설계한다`,
+    worldRule:clean(raw.worldRule)||identityCore.signatureWorldRule,
+    causalFusion:sketchArray(raw.causalFusion,[`${dnaA.principle} 때문에 ${primary}의 결과가 다음 상태의 비용·권리·위험으로 돌아온다.`,`${dnaB.principle} 때문에 ${second}은 단순 분기가 아니라 적·NPC·지역·보상 규칙을 바꾼다.`,'두 인과축은 동시에 작동해 한쪽만 제거하면 대표 행동의 목적과 결과가 달라진다.'],2,6),
+    irreducibilityTest:{removeFirstAxis:clean(ir.removeFirstAxis)||`${dnaA.id} 인과를 제거하면 핵심 행동의 장기 결과가 사라져 평범한 장르 루프로 돌아간다.`,removeSecondAxis:clean(ir.removeSecondAxis)||`${dnaB.id} 인과를 제거하면 선택이 세계 상태와 연결되지 않아 컨셉의 핵심 긴장이 사라진다.`,verdict:clean(ir.verdict)||'최소 두 인과축이 서로 원인·제약·보상을 교환하므로 단순 기능 합산으로 분리할 수 없다.'},
+    storyWorldBindings:{emotionalConflict:clean(sw.emotionalConflict)||'플레이어가 이해할 수 있는 욕망과 두려움이 새 세계 규칙 때문에 충돌한다.',characterRule:clean(sw.characterRule)||'주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.',monsterRule:clean(sw.monsterRule)||'몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재다.',regionRule:clean(sw.regionRule)||'지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.',storyRule:clean(sw.storyRule)||'스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다.',plausibility:clean(sw.plausibility)||'낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.'},
+    comicAbsurdity:{enabled:typeof ca.enabled==='boolean'?ca.enabled:depth==='D1_LIGHT_COMIC',setup:clean(ca.setup)||'익숙하고 사소한 일상 문제를 바로 이해할 수 있게 제시한다.',ruleTwist:clean(ca.ruleTwist)||'사소한 문제가 터무니없지만 일관된 세계 규칙 때문에 실제 게임 상태를 바꾼다.',payoff:clean(ca.payoff)||'농담이 일회성 대사가 아니라 다음 선택·보상·위험을 만드는 시스템 결과가 된다.'},
+    escalation:{early:clean(esc.early)||'한 가지 낯선 규칙을 짧고 명확한 상황으로 학습한다.',mid:clean(esc.mid)||'두 인과 DNA가 충돌·결합하면서 처음과 다른 선택 구조가 열린다.',late:clean(esc.late)||'캐릭터·몬스터·지역·경제·세력 중 여러 층이 같은 인과법칙으로 서로 영향을 준다.',endgame:clean(esc.endgame)||'플레이어가 규칙을 따르는 단계를 넘어 규칙의 부담·계승·해석·분배 방식 자체를 바꾸는 선택에 도달한다.'},
+    expansionVectors:sketchArray(raw.expansionVectors,['새 지역은 같은 인과법칙을 다른 문화·생태·정치 조건에서 해석해 새로운 공간 사용법을 만든다.','새 몬스터는 체력 배수가 아니라 인과법칙을 먹고·전달하고·왜곡하고·대신 부담하는 역할을 가진다.','새 NPC/세력은 같은 법칙에 대해 다른 욕망·윤리·해석을 가져 협력·배신·거래 규칙을 바꾼다.','새 아이템/능력은 수치보다 원인·대가·기억·권리·정보를 이동·보존·분산·위조하는 새 동사를 연다.','후반 콘텐츠는 기존 규칙 두 개 이상을 충돌시켜 새로운 제3의 해결법을 발견하게 한다.','재방문 지역은 앞선 선택의 결과가 축적되어 새로운 사건·통로·세력·몬스터 상태를 보여준다.'],4,8),
+    culturalAbstractionRule:clean(raw.culturalAbstractionRule)||'동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물은 이름·장면 복제가 아니라 인과구조와 인간 갈등의 추상 DNA로 재해석한다.'
+  };
+}
 function normalizeGameplaySketch(target,p,coreLoop,gameName){
   const raw=p?.gameplaySketch&&typeof p.gameplaySketch==='object'&&!Array.isArray(p.gameplaySketch)?p.gameplaySketch:{};
   const worldModel=clean(raw.worldModel)||`${gameName}의 실제 플레이 공간은 ${target.category} 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.`;
@@ -371,6 +435,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     },
     genreAdaptationRule:clean(identityRaw.genreAdaptationRule)||`${target.category}의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다.`
   };
+  const novelGameGrammar=normalizeNovelGameGrammar(target,raw.novelGameGrammar,coreLoop,identityCore);
   const funDrivers=sketchArray(raw.funDrivers,[
     '핵심 행동은 입력 직후 읽을 수 있는 상태 변화와 피드백을 만든다',
     '안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다',
@@ -429,9 +494,10 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     coreLoop,
     progressionDirection:progressionLayers.join(' '),
     identityCore,
+    novelGameGrammar,
   }};
   const flowArchitecture=buildGameFlowArchitecture({gameId:`seed:${target.requestId}`,genre:target.category,baseline:flowBaseline,inventory:[]});
-  return{version:3,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V3',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,identityCore,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,flowArchitecture};
+  return{version:4,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,identityCore,novelGameGrammar,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,flowArchitecture};
 }
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
@@ -470,7 +536,7 @@ function validateProposal(target,p){
   if(target.lockedPlatform&&normalizeSeedPlatform(p.initialTargetPlatform)!==target.platform)errors.push('lockedPlatform');
   if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(p.multiplayerDesignMode))errors.push('multiplayerDesignMode');
   const sketch=p.gameplaySketch||{};
-  if(Number(sketch.version||0)<3||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.identityCore?.oneLineFantasy)||!clean(sketch.identityCore?.representativeAction)||!clean(sketch.identityCore?.representativeChoice)||!clean(sketch.identityCore?.signatureWorldRule)||!Array.isArray(sketch.identityCore?.signatureSystemPromise)||sketch.identityCore.signatureSystemPromise.length<1||!clean(sketch.identityCore?.growthIdentity)||!clean(sketch.identityCore?.threeSentenceTest?.whatGame)||!clean(sketch.identityCore?.threeSentenceTest?.whatDifferent)||!clean(sketch.identityCore?.threeSentenceTest?.whatGrowthUnlocks)||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2)errors.push('gameplaySketch');
+  if(Number(sketch.version||0)<4||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.identityCore?.oneLineFantasy)||!clean(sketch.identityCore?.representativeAction)||!clean(sketch.identityCore?.representativeChoice)||!clean(sketch.identityCore?.signatureWorldRule)||!Array.isArray(sketch.identityCore?.signatureSystemPromise)||sketch.identityCore.signatureSystemPromise.length<1||!clean(sketch.identityCore?.growthIdentity)||!clean(sketch.identityCore?.threeSentenceTest?.whatGame)||!clean(sketch.identityCore?.threeSentenceTest?.whatDifferent)||!clean(sketch.identityCore?.threeSentenceTest?.whatGrowthUnlocks)||!clean(sketch.novelGameGrammar?.newPrimaryVerb)||!clean(sketch.novelGameGrammar?.brokenGenreAssumption)||!Array.isArray(sketch.novelGameGrammar?.causalDNAs)||sketch.novelGameGrammar.causalDNAs.length<2||!Array.isArray(sketch.novelGameGrammar?.causalFusion)||sketch.novelGameGrammar.causalFusion.length<2||!clean(sketch.novelGameGrammar?.storyWorldBindings?.emotionalConflict)||!clean(sketch.novelGameGrammar?.escalation?.endgame)||!Array.isArray(sketch.novelGameGrammar?.expansionVectors)||sketch.novelGameGrammar.expansionVectors.length<4||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2)errors.push('gameplaySketch');
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
 }
 async function callModelBatch(targets){
@@ -482,13 +548,13 @@ async function callModelBatch(targets){
     platform:t.platform,
     platformLocked:t.lockedPlatform,
     seedMaterialSelection:t.materialSelection,
-    seedMaterials:t.materials.map(m=>({id:m.materialId,sourceFamily:m.sourceFamily,concept:m.concept,mechanic:m.mechanic,setting:m.setting})),
+    seedMaterials:t.materials.map(m=>({id:m.materialId,sourceFamily:m.sourceFamily,concept:m.concept,mechanic:m.mechanic,setting:m.setting,causalDNA:m.causalDNA,causalDepthAffinity:m.causalDepthAffinity})),
     optionalSuccessfulGameReferences:t.benchmarkCandidates,
     targetSessionMinutes:30,
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. novelGameGrammar는 장르에 기능을 더하는 목록이 아니라 새로운 게임문법을 만든다. 선택된 seedMaterials의 causalDNA를 최소 2개 실제 사용한다. 동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물 원형은 장식 세계관이 아니라 인과관계 재료다. 업보는 과거 행동이 미래 규칙으로 돌아오는 구조, 비극적 예언은 피하려는 행동이 조건을 완성하는 구조, 정통성은 점령보다 인정이 권한을 만드는 구조, 희극적 오해는 틀린 믿음이 실제 목표·관계를 바꾸는 구조처럼 플레이 규칙으로 변환한다. 익숙한 인간 갈등을 familiarAnchor로 잡아 공감을 유지하되 brokenGenreAssumption에서 해당 장르의 당연한 전제 하나 이상을 깨고 newPrimaryVerb에는 이 게임에서만 반복할 수 있는 새 동사를 적는다. causalFusion은 인과 DNA들이 서로 원인·제약·보상을 교환해야 하며 단순 전투+무역+동료 병렬 조합은 불충분하다. irreducibilityTest는 주요 인과축 하나를 빼면 게임이 다시 평범한 장르로 돌아가는지 검사한다. storyWorldBindings에서 인간 갈등·캐릭터·몬스터·지역·스토리가 같은 세계법칙을 각자 다르게 증명하게 한다. depth는 D1_LIGHT_COMIC/D2_STRANGE_FUSION/D3_DEEP_CULTURAL/D4_SYSTEMIC_MYTHIC 중 하나이며 깊이는 품질 서열이 아니다. D1은 짧고 엽기적·코믹한 한방 규칙을 끝까지 밀어도 된다. D2는 2~3개 기묘한 인과 결합, D3는 역사·신화·철학과 캐릭터/세계가 깊게 결합, D4는 세대·기억·정통성·업보 등 여러 법칙을 엔드게임에서 재조립한다. comicAbsurdity는 D1에서 반드시 실제 플레이 결과가 있는 시스템 농담으로 쓰고 다른 깊이에서도 필요하면 선택적으로 쓴다. escalation과 expansionVectors는 콘텐츠 수를 늘리는 대신 동일 문법을 새 지역·몬스터·NPC·아이템·세력에서 다른 방식으로 변형해 장기 확장성을 만든다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -496,7 +562,7 @@ async function callModelBatch(targets){
       body:JSON.stringify({
         model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),
         messages:[
-          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 모든 장르에서 먼저 게임 정체성을 한 줄 판타지·대표 행동·대표 선택·시그니처 세계 규칙·시그니처 시스템·성장 정체성·3문장 테스트로 선명하게 만든다. 장르별 핵심 행동은 다르므로 RPG식 시스템을 강제하지 않는다. 퍼즐은 해결 방식, 레이싱은 주행 판단, 타이쿤은 운영 선택, 디펜스는 배치와 대응, 생존은 탐험과 자원 판단, 액션은 전투와 이동 숙련, RPG는 역할·관계·성장, 카드/보드는 손패·위험·영역·거래 판단처럼 해당 장르의 실제 플레이를 정체성 중심에 둔다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다.'},
+          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 목표는 기존 장르 문법을 잘 포장하는 것이 아니라 선택된 재료의 인과 DNA를 서로 충돌·결합시켜 새 대표 동사와 새 게임문법을 발명하는 것이다. 가볍고 단순한 엽기/코믹 문법도 깊은 신화·역사·철학 문법과 동등하게 좋은 결과가 될 수 있다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 모든 장르에서 먼저 게임 정체성을 한 줄 판타지·대표 행동·대표 선택·시그니처 세계 규칙·시그니처 시스템·성장 정체성·3문장 테스트로 선명하게 만든다. 장르별 핵심 행동은 다르므로 RPG식 시스템을 강제하지 않는다. 퍼즐은 해결 방식, 레이싱은 주행 판단, 타이쿤은 운영 선택, 디펜스는 배치와 대응, 생존은 탐험과 자원 판단, 액션은 전투와 이동 숙련, RPG는 역할·관계·성장, 카드/보드는 손패·위험·영역·거래 판단처럼 해당 장르의 실제 플레이를 정체성 중심에 둔다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다.'},
           {role:'user',content:prompt},
         ],
         options:{temperature:0.25,num_ctx:16384,num_predict:7000},

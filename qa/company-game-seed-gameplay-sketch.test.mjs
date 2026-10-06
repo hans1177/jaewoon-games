@@ -61,6 +61,13 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/signatureWorldRule/);
   assert.match(source,/genreAdaptationRule/);
   assert.match(source,/모든 장르/);
+  assert.match(source,/novelGameGrammar:NOVEL_GAME_GRAMMAR_SCHEMA/);
+  assert.match(source,/causalDNA/);
+  assert.match(source,/brokenGenreAssumption/);
+  assert.match(source,/newPrimaryVerb/);
+  assert.match(source,/irreducibilityTest/);
+  assert.match(source,/D1_LIGHT_COMIC/);
+  assert.match(source,/가볍고 단순한 엽기\/코믹/);
 });
 
 test('GAMEPLAY_SKETCH v2 keeps quality depth and flow asset authority separated',()=>{

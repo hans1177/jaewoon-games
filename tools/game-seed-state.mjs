@@ -23,6 +23,38 @@ export const SEED_MATERIAL_SOURCE_FAMILIES=Object.freeze([
   'SYSTEM_MECHANIC_EXPERIMENT',
   'FREE_ORIGINAL_IDEA'
 ]);
+export const CAUSAL_DEPTHS=Object.freeze([
+  'D1_LIGHT_COMIC',
+  'D2_STRANGE_FUSION',
+  'D3_DEEP_CULTURAL',
+  'D4_SYSTEMIC_MYTHIC'
+]);
+export const CAUSAL_DNA_LIBRARY=Object.freeze([
+  {id:'KARMA_RETURN',source:'EAST_ASIAN_RELIGION_PHILOSOPHY',principle:'행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.',gameGrammar:'현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.'},
+  {id:'MANDATE_LEGITIMACY',source:'EAST_ASIAN_POLITICAL_HISTORY',principle:'통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.',gameGrammar:'영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.'},
+  {id:'RITUAL_RECIPROCITY',source:'RITUAL_RELIGION_FOLK_TRADITION',principle:'의례는 보상이 아니라 인간과 세계 사이의 상호 의무를 갱신한다.',gameGrammar:'자원 소비·행동 규칙·환경 반응이 계약처럼 서로 대가를 요구한다.'},
+  {id:'ANCESTOR_MEMORY',source:'EAST_ASIAN_ANCESTOR_TRADITION',principle:'선대의 선택과 기억이 후대의 지위·의무·가능성을 만든다.',gameGrammar:'이전 플레이의 행동이 다음 세대 시작 조건과 사회 반응이 된다.'},
+  {id:'PROPHECY_SELF_FULFILLMENT',source:'GREEK_TRAGEDY_ORACLE',principle:'피하려는 행동이 오히려 예언의 조건을 완성한다.',gameGrammar:'회피 선택도 세계 상태를 바꾸며 특정 조건을 충족시키는 역설적 진행을 만든다.'},
+  {id:'HUBRIS_NEMESIS',source:'GREEK_TRAGEDY',principle:'과도한 성공과 오만이 스스로 반작용을 불러온다.',gameGrammar:'강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다.'},
+  {id:'OATH_CONTRACT',source:'WESTERN_EPIC_FEUDAL_TRADITION',principle:'맹세와 계약은 권리와 동시에 구속을 만든다.',gameGrammar:'보상 획득이 동시에 행동 제한·동맹 의무·위험을 생성한다.'},
+  {id:'SACRIFICE_SUBSTITUTION',source:'RELIGIOUS_RITUAL_MYTH',principle:'한 가치의 보존은 다른 가치의 대가와 교환된다.',gameGrammar:'손실을 없애지 않고 누구·무엇이 대신 부담할지 선택하게 만든다.'},
+  {id:'TABOO_POLLUTION',source:'MYTH_FOLK_RELIGION',principle:'금기를 어긴 결과는 개인을 넘어 장소·집단·세대에 오염처럼 번진다.',gameGrammar:'강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.'},
+  {id:'TRICKSTER_REVERSAL',source:'WORLD_TRICKSTER_MYTH',principle:'약자·광대·사기꾼이 규칙의 빈틈을 이용해 질서를 뒤집는다.',gameGrammar:'정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.'},
+  {id:'COMEDIC_MISUNDERSTANDING',source:'COMEDY_FARCE',principle:'서로 다른 정보와 오해가 연쇄적으로 현실의 결과를 만든다.',gameGrammar:'틀린 믿음·잘못 전달된 정보가 실제 목표·동선·관계 상태를 바꾼다.'},
+  {id:'CARNIVAL_STATUS_REVERSAL',source:'FESTIVAL_SATIRE_FOLK_COMEDY',principle:'축제와 해학의 순간에는 평소의 신분·금기·권력이 뒤집힌다.',gameGrammar:'특정 시간·상태에서 약자와 강자, 가격, 규칙, 역할이 역전된다.'},
+  {id:'DIALECTIC_SYNTHESIS',source:'PHILOSOPHY_DIALECTIC',principle:'충돌하는 두 입장은 한쪽 제거가 아니라 새로운 제3의 규칙을 낳는다.',gameGrammar:'상반된 빌드·세력·상태를 결합해 원래 없던 행동 규칙을 생성한다.'},
+  {id:'SHIP_OF_THESEUS_IDENTITY',source:'CLASSICAL_PHILOSOPHY_IDENTITY',principle:'구성요소가 모두 바뀌어도 동일한 존재인지 묻는다.',gameGrammar:'장비·신체·도시·파티를 교체할수록 정체성 판정과 권한이 달라진다.'},
+  {id:'TESTIMONY_CONSENSUS_REALITY',source:'HISTORY_LAW_EPISTEMOLOGY',principle:'무엇이 사실로 인정되는가는 기록·증언·권력의 합의와 충돌한다.',gameGrammar:'플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.'},
+  {id:'DYNASTIC_INHERITANCE',source:'DYNASTIC_HISTORY',principle:'개인의 승패가 계승·혈통·후계·부채를 통해 다음 시대의 조건이 된다.',gameGrammar:'죽음과 엔딩이 리셋이 아니라 후계자의 규칙·관계·자원 구조로 이어진다.'},
+  {id:'FACTION_BALANCE',source:'POLITICAL_HISTORY_DIPLOMACY',principle:'한 세력의 완전한 승리가 오히려 더 큰 불균형과 반발을 만든다.',gameGrammar:'적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.'},
+  {id:'PATRONAGE_NETWORK',source:'COURT_POLITICS_HISTORICAL_FIGURE_ARCHETYPE',principle:'개인의 힘보다 후원·인맥·은혜·빚의 연결망이 행동 가능성을 만든다.',gameGrammar:'관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.'},
+  {id:'EXILE_RETURN',source:'EPIC_HISTORY_HISTORICAL_FIGURE_ARCHETYPE',principle:'추방과 귀환은 같은 장소를 다른 권리와 시선으로 다시 보게 만든다.',gameGrammar:'떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.'},
+  {id:'MARTYRDOM_MOVEMENT',source:'RELIGION_POLITICAL_HISTORY_ARCHETYPE',principle:'개인의 패배나 죽음이 집단의 결속과 운동을 강화할 수 있다.',gameGrammar:'특정 실패가 즉시 손실이면서 동시에 새로운 세력·능력·위기를 생성한다.'},
+  {id:'PILGRIMAGE_TRANSFORMATION',source:'RELIGION_EPIC_JOURNEY',principle:'목적지보다 여정에서 받은 흔적과 관계가 사람을 바꾼다.',gameGrammar:'이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다.'},
+  {id:'FORTUNE_REVERSAL',source:'TRAGEDY_COMEDY_DRAMATIC_STRUCTURE',principle:'최고점과 최저점이 서로의 원인이 되어 운명이 반전된다.',gameGrammar:'큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.'},
+  {id:'ABSURD_BUREAUCRACY',source:'SATIRE_POLITICAL_COMEDY',principle:'규칙을 지키려 할수록 규칙의 모순이 더 큰 문제를 만든다.',gameGrammar:'허가·서류·명령·등급 같은 시스템을 역이용해 세계를 조작한다.'},
+  {id:'NAME_AND_REPUTATION_POWER',source:'EPIC_HEROIC_TRADITION_SOCIAL_HISTORY',principle:'실제 힘과 별개로 이름·소문·평판이 타인의 행동을 결정한다.',gameGrammar:'플레이어의 실제 행동보다 퍼진 이야기와 평판이 적·상점·세력의 규칙을 바꾼다.'}
+]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
 export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([
   'TARGET_PLATFORM_FIT',
@@ -48,6 +80,13 @@ function normalizeMaterial(raw,index){
     concept:clean(raw?.concept)||`${family} material ${index+1}`,
     mechanic:clean(raw?.mechanic)||'UNSPECIFIED_UNTIL_COMPOSITION',
     setting:clean(raw?.setting)||'OPEN_FOR_REINTERPRETATION',
+    causalDNA:(()=>{
+      const known=new Set(CAUSAL_DNA_LIBRARY.map(row=>row.id));
+      const provided=uniq(raw?.causalDNA).filter(id=>known.has(id));
+      const fallback=[CAUSAL_DNA_LIBRARY[index%CAUSAL_DNA_LIBRARY.length].id,CAUSAL_DNA_LIBRARY[(index*7+5)%CAUSAL_DNA_LIBRARY.length].id];
+      return uniq([...provided,...fallback]).slice(0,3);
+    })(),
+    causalDepthAffinity:CAUSAL_DEPTHS.includes(clean(raw?.causalDepthAffinity).toUpperCase())?clean(raw.causalDepthAffinity).toUpperCase():CAUSAL_DEPTHS[index%CAUSAL_DEPTHS.length],
     learningPreference:clean(raw?.learningPreference)||null,
     learningAvoid:clean(raw?.learningAvoid)||null,
     createdAt:clean(raw?.createdAt)||null,
@@ -139,7 +178,7 @@ function familyUsageForSeeds(state,seeds=[]){
   return {counts,total};
 }
 function top30Seeds(state,top30GameIds=[]){const ids=new Set(uniq(top30GameIds));return(state.seeds||[]).filter(seed=>activeSeed(seed)&&ids.has(clean(seed.gameId)));}
-function materialTokens(row){return new Set(norm(`${row?.concept||''} ${row?.mechanic||''} ${row?.setting||''}`).split(/[^a-z0-9가-힣]+/).filter(token=>token.length>2));}
+function materialTokens(row){return new Set(norm(`${row?.concept||''} ${row?.mechanic||''} ${row?.setting||''} ${(row?.causalDNA||[]).join(' ')} ${row?.causalDepthAffinity||''}`).split(/[^a-z0-9가-힣]+/).filter(token=>token.length>2));}
 function learningFamilies(learningSignals,key){return uniq(learningSignals?.[key]);}
 
 export function resolveSeedMaterialCompositionCount(state,{platform='',category='',top30GameIds=[],learningSignals={}}={}){
@@ -173,7 +212,7 @@ export function composeSeedMaterials(state,{count=null,timestamp=new Date().toIS
   const topSeeds=top30Seeds(state,top30GameIds);
   const topUsage=familyUsageForSeeds(state,topSeeds);
   const platformUsage=familyUsageForSeeds(state,(state.seeds||[]).filter(seed=>activeSeed(seed)&&(!p||seedPlatform(seed)===p)));
-  const selected=[];const selectedFamilies=new Set();const selectedTokens=new Set();
+  const selected=[];const selectedFamilies=new Set();const selectedTokens=new Set();const selectedCausalDNA=new Set();const selectedDepths=new Set();
   const baseScore=row=>{
     let score=0;
     if(preferred.has(row.sourceFamily))score+=4;
@@ -193,15 +232,18 @@ export function composeSeedMaterials(state,{count=null,timestamp=new Date().toIS
       for(const token of tokens)if(!selectedTokens.has(token))novel++;
       const novelty=tokens.size?novel/tokens.size:0;
       const complementarity=selectedFamilies.has(row.sourceFamily)?-2.5:2.5;
-      const score=baseScore(row)+complementarity+novelty*1.5;
+      const rowCausal=Array.isArray(row.causalDNA)?row.causalDNA:[];
+      const causalNovel=rowCausal.filter(id=>!selectedCausalDNA.has(id)).length/Math.max(1,rowCausal.length);
+      const depthNovel=selectedDepths.size&&selectedDepths.has(row.causalDepthAffinity)?0:0.5;
+      const score=baseScore(row)+complementarity+novelty*1.5+causalNovel*2+depthNovel;
       if(score>bestScore||(score===bestScore&&clean(row.materialId)<clean(best?.materialId))){best=row;bestScore=score;}
     }
     if(!best)break;
-    selected.push(best);selectedFamilies.add(best.sourceFamily);for(const token of materialTokens(best))selectedTokens.add(token);
+    selected.push(best);selectedFamilies.add(best.sourceFamily);for(const token of materialTokens(best))selectedTokens.add(token);for(const id of best.causalDNA||[])selectedCausalDNA.add(id);selectedDepths.add(best.causalDepthAffinity);
   }
   if(selected.length!==n)throw new Error(`SEED_MATERIAL_COMPOSITION_FAILED ${selected.length}/${n}`);
   for(const row of selected){row.status='RESERVED';row.updatedAt=timestamp;}
-  state.seedMaterialPolicy.lastComposition={count:n,platform:p||null,category:c||null,top30ReferenceCount:topSeeds.length,signals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],selectedMaterialIds:selected.map(row=>row.materialId),selectedFamilies:[...selectedFamilies],updatedAt:timestamp};
+  state.seedMaterialPolicy.lastComposition={count:n,platform:p||null,category:c||null,top30ReferenceCount:topSeeds.length,signals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],selectedMaterialIds:selected.map(row=>row.materialId),selectedFamilies:[...selectedFamilies],selectedCausalDNA:[...selectedCausalDNA],selectedCausalDepths:[...selectedDepths],updatedAt:timestamp};
   return selected;
 }
 export function consumeSeedMaterials(state,materials,{seedId,timestamp=new Date().toISOString()}={}){

@@ -30,6 +30,8 @@ test('strong validated learning fit can simplify a clean concept to two compleme
   assert.equal(selected.length,2);
   assert.equal(new Set(selected.map(row=>row.sourceFamily)).size,2);
   assert.ok(selected.some(row=>signals.preferFamilies.includes(row.sourceFamily)));
+  assert.ok(selected.every(row=>Array.isArray(row.causalDNA)&&row.causalDNA.length>=2));
+  assert.ok(selected.every(row=>/^D[1-4]_/.test(row.causalDepthAffinity)));
 });
 
 test('Top30 category saturation expands composition to four materials for differentiation',()=>{
@@ -48,6 +50,8 @@ test('Top30 category saturation expands composition to four materials for differ
   assert.equal(state.seedMaterialPolicy.lastComposition.count,4);
   assert.equal(state.seedMaterialPolicy.lastComposition.top30ReferenceCount,3);
   assert.deepEqual(state.seedMaterialPolicy.lastComposition.signals,[...SEED_MATERIAL_DYNAMIC_SIGNALS]);
+  assert.ok(state.seedMaterialPolicy.lastComposition.selectedCausalDNA.length>=2);
+  assert.ok(state.seedMaterialPolicy.lastComposition.selectedCausalDepths.length>=1);
 });
 
 test('material ranking strongly avoids learned bad families and records auditable selection metadata',()=>{
