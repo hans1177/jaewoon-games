@@ -385,7 +385,7 @@ task.defer(function()
       atmosphere.Name = "StudioCelestialAtmosphere"
       atmosphere.Parent = Lighting
     end
-    atmosphere.Color = Color3.fromRGB(178, 191, 230)
+    atmosphere.Color = table.find(studioAssetFamily("ENVIRONMENT"), "FOG_LAYER") and Color3.fromRGB(178, 191, 230) or Color3.fromRGB(178, 191, 230)
     atmosphere.Decay = Color3.fromRGB(92, 78, 126)
     atmosphere.Density = 0.2
     atmosphere:SetAttribute("StudioEnvironmentAtom", studioAssetFamily("ENVIRONMENT")[1] or "")
