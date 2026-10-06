@@ -863,16 +863,20 @@ function secondaryDesignAnchor(design={}){
   return clean(system?.name)||clean(system?.playerChoice)||clean(design.progressionDirection)||design.coreLoop?.[0]||'핵심 루프';
 }
 
-function domainState(domain,{design={},source={}}={}){
+function domainState(domain,{design={},source={},worldDepthPlan=null,libraryLinkagePlan=null}={}){
   const s=source?.signals||{};
   const relevantByText=qualitySignalText([
     design.identity,design.coreFun,design.progressionDirection,...(design.coreLoop||[]),
     ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice]),
     ...(design.systemInterconnections||[]).flatMap(x=>[x.fromSystem,x.toSystem,x.trigger,x.stateChange]),
     ...(design.contentExpansionPlan||[]).flatMap(x=>[x.milestone,x.newGameplay,x.systemImpact]),
-    design.compositionDepth?JSON.stringify(design.compositionDepth):''
+    design.compositionDepth?JSON.stringify(design.compositionDepth):'',
+    design.narrativeDepth?JSON.stringify(design.narrativeDepth):'',
+    design.worldbuildingDepth?JSON.stringify(design.worldbuildingDepth):''
   ]);
   const fusionDepth=deriveSystemFusionDepthPlan({design,source});
+  const worldDepth=worldDepthPlan||deriveWorldbuildingDepthPlan({design,source});
+  const libraries=libraryLinkagePlan||{allCanonicalLibrariesSearchable:false,exposedFamilyCount:0};
   const no=(reason)=>({domain,state:'NOT_APPLICABLE',reason});
   const gap=(reason)=>({domain,state:'GAP',reason});
   const pass=(reason='current source and approved design provide sufficient implementation signal')=>({domain,state:'PASS',reason});
@@ -887,7 +891,6 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='CRAFTING'&&!/craft|제작|recipe/.test(relevantByText)&&Number(s.progression||0)>0)return no('no crafting signal in approved design');
   if(domain==='QUESTS'&&!/quest|퀘스트|story|npc/.test(relevantByText))return no('no quest/story objective signal in approved design');
   if(domain==='NPC_SOCIAL_BEHAVIOR'&&!/npc|villager|resident|social|주민|상인|대화/.test(relevantByText))return no('no NPC or social behavior signal in approved design');
-  if(domain==='NARRATIVE_STORY'&&!/story|narrative|lore|quest|스토리|세계관|대사/.test(relevantByText))return no('no narrative or story signal in approved design');
   if(domain==='REPLAYABILITY_VARIATION'&&!/rogue|wave|random|procedural|replay|런|웨이브|랜덤/.test(relevantByText))return no('no explicit replay variation signal in approved design');
   if(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','CONTENT_DISCOVERY'].includes(domain)&&!hasWorld)return no('approved design and current source do not expose a world/map surface requiring expansion');
   if(['INVENTORY','INVENTORY_USABILITY'].includes(domain)&&!hasInventory)return no('game has no current inventory/item ownership system');
@@ -916,6 +919,31 @@ function domainState(domain,{design={},source={}}={}){
     if(!hasProgression&&!hasWorld)return no('game has no multi-stage progression or world surface to revisit');
     if(fusionDepth.legacyContentRevisitHooks.length>=2&&Number(s.revisit||0)>=2)return pass('later growth gives earlier content new routes, interactions, rewards, or combination value');
     return gap('later growth does not yet create enough reasons to revisit earlier regions/content');
+  }
+
+  if(domain==='NARRATIVE_STORY'){
+    if(Number(s.worldCausality||0)>=2&&(Number(s.dialogueWorld||0)+Number(s.journalArchive||0)+Number(s.namingContinuity||0)+Number(s.oppositionLore||0))>=4)return pass('all-genre story/world causality is visible in current source at the genre-appropriate weight');
+    return gap('all genres require at least lightweight story/world causality; current source does not connect enough world, dialogue/journal, naming, or opposition evidence');
+  }
+  if(domain==='WORLD_BUILDING_FUSION'){
+    if(worldDepth.worldDnaSources.length>=3&&worldDepth.causalChains.length>=4&&Number(s.worldCausality||0)>=3)return pass('worldbuilding combines multiple DNA axes and current source exposes causal world-state links');
+    return gap('civilization/geography/economy/belief/technology/naming/archive/opposition axes are not yet fused into enough observable world causality');
+  }
+  if(domain==='DIALOGUE_JOURNAL_CONTINUITY'){
+    if(worldDepth.dialogueJournalLinks.length>=2&&worldDepth.journalRecordChains.length>=2&&Number(s.dialogueWorld||0)>=2&&Number(s.journalArchive||0)>=2)return pass('dialogue and journal/archive evidence cross-reference the same world events');
+    return gap('NPC/dialogue and journal/record systems do not yet cross-reference the same world facts, discoveries, and quest states');
+  }
+  if(domain==='PLACE_NAME_CONTINUITY'){
+    if(worldDepth.placeNameLedger.length>=3&&Number(s.namingContinuity||0)>=2)return pass('place-name continuity is present across world/map/story surfaces');
+    return gap('place names lack enough consistent source evidence across map/sign/dialogue/quest/journal surfaces');
+  }
+  if(domain==='OPPOSITION_WORLD_CAUSALITY'){
+    if(worldDepth.monsterOpponentLoreEcologyLinks.length>=2&&Number(s.oppositionLore||0)>=2)return pass('monster/enemy/opponent roles connect to region, ecology/history, and player-facing consequences');
+    return gap('monster/enemy/opponent naming, habitat/origin, behavior, and world role are not yet causally connected');
+  }
+  if(domain==='LIBRARY_LINKAGE'){
+    if(libraries.allCanonicalLibrariesSearchable===true&&Number(libraries.exposedFamilyCount||0)===CANONICAL_LIBRARY_SPECS.length&&libraries.actualConsumerEvidenceRequired===true&&libraries.noForcedUse===true&&libraries.noShadowPipeline===true)return pass('all canonical library families are dynamically searchable without forcing use or treating candidates as consumers');
+    return gap('canonical library linkage contract is incomplete or does not preserve candidate-vs-actual-consumer separation');
   }
 
   const weakByDomain={
@@ -1008,8 +1036,8 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   const progression=design.progressionDirection||'승인된 진행 방향';
   const depth=Number(depthInfo.developmentDepth||1);
   const focusDomains={
-    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','MECHANIC_VARIETY','SUBSYSTEM_BREADTH','SESSION_FLOW','FIRST_10_MINUTES']),
-    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','SYSTEM_FUSION_DEPTH','SUBSYSTEM_BREADTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
+    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','MECHANIC_VARIETY','SUBSYSTEM_BREADTH','OPPOSITION_WORLD_CAUSALITY','SESSION_FLOW','FIRST_10_MINUTES']),
+    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','SYSTEM_FUSION_DEPTH','SUBSYSTEM_BREADTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','LIBRARY_LINKAGE','NARRATIVE_STORY','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
     PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','GAME_FEEL','VFX','CAMERA','UI_HUD','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
     USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL','AUDIO_MUSIC_SFX']),
     STABILITY:new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'])
@@ -1063,6 +1091,11 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     SYSTEM_FUSION_DEPTH:`파고들기 구조를 초반 A/B/C 개별 학습→중반 A×B/A×C/B×C→후반 A×B×C→엔드게임 A×B×C+@×@ 순서로 깊게 만든다. 교차 조합마다 WHAT→TRIGGER→STATE_CHANGE→PLAYER_CHOICE→REWARD/RISK를 실제 책임 함수에 연결하고, 새로운 대형 시스템이 승인된 규칙·밸런스·경제·세이브·네트워크 의미를 바꾸려면 기존 canonical 설계 권한을 먼저 사용한다.`,
     MECHANIC_VARIETY:`게임 시드와 현재 정체성에 맞는 범위에서 고전 카드/주사위/타일/경매, 현대 덱빌딩/드래프트/일꾼배치/엔진빌딩, 아케이드/퍼즐/탐험/생활/사회경제/수집/파티 계통 중 서로 다른 최소 3계통의 규칙 DNA를 활용한다. 완전한 별도 게임을 붙이지 말고 짧은 규칙 변주가 메인 성장·탐험·경제·수집·관계에 결과를 돌려주게 하며 이름·색·수치만 다른 변형은 금지한다.`,
     LEGACY_CONTENT_REVISIT:`성장으로 얻은 이동수단·도구·관계·정보·장비·조합 능력 때문에 초반 지역/NPC/던전/상점/수집품을 다시 방문할 이유가 생기게 한다. 재방문은 새 경로·새 상호작용·새 교환가치·새 조합·숨은 보상 중 최소 하나를 제공하고 단순 일일 반복이나 숫자 파밍만으로 채우지 않는다.`,
+    WORLD_BUILDING_FUSION:`모든 장르에서 문명/권력 × 지리/생태 × 경제/생활 × 신앙/금기 × 기술/제도 × 언어/지명 × 기록/소문 × 몬스터/상대 생태 중 최소 3축을 같은 세계사와 현재 게임 상태로 연결한다. 설정집 설명만 늘리지 말고 지역·상점·NPC·적/상대·퀘스트·환경 변화에 실제로 반영한다.`,
+    DIALOGUE_JOURNAL_CONTINUITY:`NPC 대화와 저널·편지·비문·도감·보고서가 같은 사건을 서로 다른 관점에서 참조하게 한다. 플레이어가 기록을 읽거나 현장을 확인하면 새 대화/질문/서브퀘/메인 상태가 열리며, NPC 지식범위와 시점을 지켜 거짓 모순을 만들지 않는다.`,
+    PLACE_NAME_CONTINUITY:`지명은 지형·역사·세력·산업·신앙·몬스터 사건 중 근거를 갖고 지도·표지판·NPC 대화·퀘스트·저널에서 동일 표기를 사용한다. 개명/옛 지명이 있으면 세계 변화의 원인과 후반 회수에 연결한다.`,
+    OPPOSITION_WORLD_CAUSALITY:`몬스터가 있으면 이름·서식지·먹이/소환·행동·드랍·지역 전설·세력 이용을 연결하고, 몬스터가 없는 장르는 적/상대/장애물의 발생 조건과 세계 역할을 같은 방식으로 연결한다. 도감/저널/NPC 소문과 실제 조우가 대응법 학습으로 이어지게 한다.`,
+    LIBRARY_LINKAGE:`모든 canonical 라이브러리를 현재 게임 문맥으로 동적 검색하되 강제 사용하지 않는다. 자산·검증학습·코드패턴·시드재료·설계기준·카탈로그·라이선스 레퍼런스·오픈소스 카탈로그 후보는 호환성/권리/정체성/현재 필요성을 통과해야 하며, 실제 책임 소스 또는 canonical native consumer가 소비하고 QA가 확인하기 전에는 사용으로 계산하지 않는다. 새 검색/선택 파이프라인을 만들지 않는다.`,
     SESSION_FLOW:`접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.`,
     FIRST_10_MINUTES:`첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.`,
     SAVE_COMPLETENESS:`현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.`,
