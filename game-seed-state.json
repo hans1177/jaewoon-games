@@ -3192,8 +3192,8 @@
       "gameId": "insect-survival",
       "gameName": "곤충 생존기",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -3516,9 +3516,9 @@
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -3536,8 +3536,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/insect-survival",
@@ -3606,8 +3606,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
       "version": 2,
@@ -4567,7 +4566,7 @@
       "pausedAt": "2026-10-06T12:05:46.922Z"
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
       "gameId": "crystal-defense",
       "gameName": "수정 디펜스",
@@ -4896,10 +4895,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/crystal-defense",
@@ -4910,9 +4909,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -4969,17 +4968,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
       "version": 2,
@@ -4987,8 +4976,8 @@
       "gameId": "human-go",
       "gameName": "휴먼 GO",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -5327,9 +5316,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -5347,8 +5336,8 @@
         "zero blocking runtime console or invalid-resource errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/human-go",
@@ -5417,11 +5406,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
       "gameId": "island-village",
       "gameName": "무인도 마을",
@@ -5763,10 +5751,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/island-village",
@@ -5777,9 +5765,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5838,20 +5826,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
       "gameId": "egg-heist",
       "gameName": "알 도둑 대작전",
@@ -6193,10 +6171,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/egg-heist",
@@ -6207,9 +6185,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-EGG-HEIST-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6268,20 +6246,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
       "gameId": "chess-battle",
       "gameName": "체스 배틀",
@@ -6631,10 +6599,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/chess-battle",
@@ -6645,9 +6613,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-CHESS-BATTLE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6706,20 +6674,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
       "gameId": "survival2",
       "gameName": "숲의 생존자들",
@@ -7045,10 +7003,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/survival2",
@@ -7059,9 +7017,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-SURVIVAL2-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7120,20 +7078,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
       "gameId": "territory-war",
       "gameName": "영토전쟁",
@@ -7459,10 +7407,10 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "lifecycleState": "DESIGN_ONLY",
       "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
       "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
       "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
@@ -7479,9 +7427,9 @@
         "legacyDirectWebAuthoring": false
       },
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7540,17 +7488,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-10-06T12:05:46.922Z"
+      }
     },
     {
       "version": 2,
@@ -22480,6 +22418,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 1",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "KARMA_RETURN",
+        "HUBRIS_NEMESIS"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22495,6 +22438,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 2",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MANDATE_LEGITIMACY",
+        "DIALECTIC_SYNTHESIS"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22510,6 +22458,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 3",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "RITUAL_RECIPROCITY",
+        "MARTYRDOM_MOVEMENT"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22525,6 +22478,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ANCESTOR_MEMORY",
+        "RITUAL_RECIPROCITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22540,6 +22498,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 5",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PROPHECY_SELF_FULFILLMENT",
+        "TRICKSTER_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22555,6 +22518,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 6",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "HUBRIS_NEMESIS",
+        "FACTION_BALANCE"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22570,6 +22538,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 7",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "OATH_CONTRACT",
+        "NAME_AND_REPUTATION_POWER"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22585,6 +22558,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 8",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SACRIFICE_SUBSTITUTION",
+        "OATH_CONTRACT"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22600,6 +22578,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 9",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TABOO_POLLUTION",
+        "SHIP_OF_THESEUS_IDENTITY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22615,6 +22598,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 10",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TRICKSTER_REVERSAL",
+        "PILGRIMAGE_TRANSFORMATION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22630,6 +22618,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 11",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "COMEDIC_MISUNDERSTANDING",
+        "ANCESTOR_MEMORY"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22645,6 +22638,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 12",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "CARNIVAL_STATUS_REVERSAL",
+        "COMEDIC_MISUNDERSTANDING"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22660,6 +22658,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 13",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DIALECTIC_SYNTHESIS",
+        "PATRONAGE_NETWORK"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22675,6 +22678,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 14",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SHIP_OF_THESEUS_IDENTITY",
+        "KARMA_RETURN"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22690,6 +22698,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 15",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TESTIMONY_CONSENSUS_REALITY",
+        "SACRIFICE_SUBSTITUTION"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22705,6 +22718,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DYNASTIC_INHERITANCE",
+        "TESTIMONY_CONSENSUS_REALITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22720,6 +22738,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 17",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FACTION_BALANCE",
+        "FORTUNE_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22735,6 +22758,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 18",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PATRONAGE_NETWORK",
+        "PROPHECY_SELF_FULFILLMENT"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22750,6 +22778,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 19",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "EXILE_RETURN",
+        "CARNIVAL_STATUS_REVERSAL"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22765,6 +22798,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 20",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MARTYRDOM_MOVEMENT",
+        "EXILE_RETURN"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22780,6 +22818,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 21",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PILGRIMAGE_TRANSFORMATION",
+        "MANDATE_LEGITIMACY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22795,6 +22838,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 22",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FORTUNE_REVERSAL",
+        "TABOO_POLLUTION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22810,6 +22858,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 23",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ABSURD_BUREAUCRACY",
+        "DYNASTIC_INHERITANCE"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22825,6 +22878,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 24",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "NAME_AND_REPUTATION_POWER",
+        "ABSURD_BUREAUCRACY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22840,6 +22898,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 25",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "KARMA_RETURN",
+        "HUBRIS_NEMESIS"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22855,6 +22918,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 26",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MANDATE_LEGITIMACY",
+        "DIALECTIC_SYNTHESIS"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22870,6 +22938,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 27",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "RITUAL_RECIPROCITY",
+        "MARTYRDOM_MOVEMENT"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22885,6 +22958,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 28",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ANCESTOR_MEMORY",
+        "RITUAL_RECIPROCITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22900,6 +22978,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 29",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PROPHECY_SELF_FULFILLMENT",
+        "TRICKSTER_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22915,6 +22998,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 30",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "HUBRIS_NEMESIS",
+        "FACTION_BALANCE"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22930,6 +23018,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 31",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "OATH_CONTRACT",
+        "NAME_AND_REPUTATION_POWER"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22945,6 +23038,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 32",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SACRIFICE_SUBSTITUTION",
+        "OATH_CONTRACT"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22960,6 +23058,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 33",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TABOO_POLLUTION",
+        "SHIP_OF_THESEUS_IDENTITY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22975,6 +23078,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 34",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TRICKSTER_REVERSAL",
+        "PILGRIMAGE_TRANSFORMATION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -22990,6 +23098,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 35",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "COMEDIC_MISUNDERSTANDING",
+        "ANCESTOR_MEMORY"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23005,6 +23118,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 36",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "CARNIVAL_STATUS_REVERSAL",
+        "COMEDIC_MISUNDERSTANDING"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23020,6 +23138,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 37",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DIALECTIC_SYNTHESIS",
+        "PATRONAGE_NETWORK"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23035,6 +23158,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 38",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SHIP_OF_THESEUS_IDENTITY",
+        "KARMA_RETURN"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23050,6 +23178,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 39",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TESTIMONY_CONSENSUS_REALITY",
+        "SACRIFICE_SUBSTITUTION"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23065,6 +23198,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 40",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DYNASTIC_INHERITANCE",
+        "TESTIMONY_CONSENSUS_REALITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23080,6 +23218,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 41",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FACTION_BALANCE",
+        "FORTUNE_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23095,6 +23238,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 42",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PATRONAGE_NETWORK",
+        "PROPHECY_SELF_FULFILLMENT"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23110,6 +23258,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 43",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "EXILE_RETURN",
+        "CARNIVAL_STATUS_REVERSAL"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23125,6 +23278,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 44",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MARTYRDOM_MOVEMENT",
+        "EXILE_RETURN"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23140,6 +23298,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 45",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PILGRIMAGE_TRANSFORMATION",
+        "MANDATE_LEGITIMACY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23155,6 +23318,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 46",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FORTUNE_REVERSAL",
+        "TABOO_POLLUTION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23170,6 +23338,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 47",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ABSURD_BUREAUCRACY",
+        "DYNASTIC_INHERITANCE"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23185,6 +23358,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 48",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "NAME_AND_REPUTATION_POWER",
+        "ABSURD_BUREAUCRACY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23200,6 +23378,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 49",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "KARMA_RETURN",
+        "HUBRIS_NEMESIS"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23215,6 +23398,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 50",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MANDATE_LEGITIMACY",
+        "DIALECTIC_SYNTHESIS"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23230,6 +23418,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 51",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "RITUAL_RECIPROCITY",
+        "MARTYRDOM_MOVEMENT"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23245,6 +23438,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 52",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ANCESTOR_MEMORY",
+        "RITUAL_RECIPROCITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23260,6 +23458,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 53",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PROPHECY_SELF_FULFILLMENT",
+        "TRICKSTER_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23275,6 +23478,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 54",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "HUBRIS_NEMESIS",
+        "FACTION_BALANCE"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23290,6 +23498,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 55",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "OATH_CONTRACT",
+        "NAME_AND_REPUTATION_POWER"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23305,6 +23518,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 56",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SACRIFICE_SUBSTITUTION",
+        "OATH_CONTRACT"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23320,6 +23538,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 57",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TABOO_POLLUTION",
+        "SHIP_OF_THESEUS_IDENTITY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23335,6 +23558,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 58",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TRICKSTER_REVERSAL",
+        "PILGRIMAGE_TRANSFORMATION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23350,6 +23578,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 59",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "COMEDIC_MISUNDERSTANDING",
+        "ANCESTOR_MEMORY"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23365,6 +23598,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 60",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "CARNIVAL_STATUS_REVERSAL",
+        "COMEDIC_MISUNDERSTANDING"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23380,6 +23618,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 61",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DIALECTIC_SYNTHESIS",
+        "PATRONAGE_NETWORK"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23395,6 +23638,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 62",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SHIP_OF_THESEUS_IDENTITY",
+        "KARMA_RETURN"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23410,6 +23658,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 63",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TESTIMONY_CONSENSUS_REALITY",
+        "SACRIFICE_SUBSTITUTION"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23425,6 +23678,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 64",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DYNASTIC_INHERITANCE",
+        "TESTIMONY_CONSENSUS_REALITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23440,6 +23698,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 65",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FACTION_BALANCE",
+        "FORTUNE_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23455,6 +23718,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 66",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PATRONAGE_NETWORK",
+        "PROPHECY_SELF_FULFILLMENT"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23470,6 +23738,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 67",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "EXILE_RETURN",
+        "CARNIVAL_STATUS_REVERSAL"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23485,6 +23758,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 68",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MARTYRDOM_MOVEMENT",
+        "EXILE_RETURN"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23500,6 +23778,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 69",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PILGRIMAGE_TRANSFORMATION",
+        "MANDATE_LEGITIMACY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23515,6 +23798,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 70",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FORTUNE_REVERSAL",
+        "TABOO_POLLUTION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23530,6 +23818,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 71",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ABSURD_BUREAUCRACY",
+        "DYNASTIC_INHERITANCE"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23545,6 +23838,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 72",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "NAME_AND_REPUTATION_POWER",
+        "ABSURD_BUREAUCRACY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23560,6 +23858,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 73",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "KARMA_RETURN",
+        "HUBRIS_NEMESIS"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23575,6 +23878,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 74",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MANDATE_LEGITIMACY",
+        "DIALECTIC_SYNTHESIS"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23590,6 +23898,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 75",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "RITUAL_RECIPROCITY",
+        "MARTYRDOM_MOVEMENT"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23605,6 +23918,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 76",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ANCESTOR_MEMORY",
+        "RITUAL_RECIPROCITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23620,6 +23938,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 77",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PROPHECY_SELF_FULFILLMENT",
+        "TRICKSTER_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23635,6 +23958,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 78",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "HUBRIS_NEMESIS",
+        "FACTION_BALANCE"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23650,6 +23978,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 79",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "OATH_CONTRACT",
+        "NAME_AND_REPUTATION_POWER"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23665,6 +23998,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 80",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SACRIFICE_SUBSTITUTION",
+        "OATH_CONTRACT"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23680,6 +24018,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 81",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TABOO_POLLUTION",
+        "SHIP_OF_THESEUS_IDENTITY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23695,6 +24038,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 82",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TRICKSTER_REVERSAL",
+        "PILGRIMAGE_TRANSFORMATION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23710,6 +24058,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 83",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "COMEDIC_MISUNDERSTANDING",
+        "ANCESTOR_MEMORY"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23725,6 +24078,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 84",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "CARNIVAL_STATUS_REVERSAL",
+        "COMEDIC_MISUNDERSTANDING"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23740,6 +24098,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 85",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DIALECTIC_SYNTHESIS",
+        "PATRONAGE_NETWORK"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23755,6 +24118,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 86",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SHIP_OF_THESEUS_IDENTITY",
+        "KARMA_RETURN"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23770,6 +24138,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 87",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TESTIMONY_CONSENSUS_REALITY",
+        "SACRIFICE_SUBSTITUTION"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23785,6 +24158,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 88",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DYNASTIC_INHERITANCE",
+        "TESTIMONY_CONSENSUS_REALITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23800,6 +24178,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 89",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FACTION_BALANCE",
+        "FORTUNE_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23815,6 +24198,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 90",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PATRONAGE_NETWORK",
+        "PROPHECY_SELF_FULFILLMENT"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23830,6 +24218,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 91",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "EXILE_RETURN",
+        "CARNIVAL_STATUS_REVERSAL"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23845,6 +24238,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 92",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MARTYRDOM_MOVEMENT",
+        "EXILE_RETURN"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23860,6 +24258,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 93",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PILGRIMAGE_TRANSFORMATION",
+        "MANDATE_LEGITIMACY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23875,6 +24278,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 94",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FORTUNE_REVERSAL",
+        "TABOO_POLLUTION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23890,6 +24298,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 95",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ABSURD_BUREAUCRACY",
+        "DYNASTIC_INHERITANCE"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23905,6 +24318,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 96",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "NAME_AND_REPUTATION_POWER",
+        "ABSURD_BUREAUCRACY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23920,6 +24338,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 97",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "KARMA_RETURN",
+        "HUBRIS_NEMESIS"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23935,6 +24358,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 98",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MANDATE_LEGITIMACY",
+        "DIALECTIC_SYNTHESIS"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23950,6 +24378,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 99",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "RITUAL_RECIPROCITY",
+        "MARTYRDOM_MOVEMENT"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23965,6 +24398,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "ANCESTOR_MEMORY",
+        "RITUAL_RECIPROCITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.673Z",
@@ -23980,6 +24418,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 101",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PROPHECY_SELF_FULFILLMENT",
+        "TRICKSTER_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -23995,6 +24438,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 102",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "HUBRIS_NEMESIS",
+        "FACTION_BALANCE"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24010,6 +24458,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 103",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "OATH_CONTRACT",
+        "NAME_AND_REPUTATION_POWER"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24025,6 +24478,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 104",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SACRIFICE_SUBSTITUTION",
+        "OATH_CONTRACT"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24040,6 +24498,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 105",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TABOO_POLLUTION",
+        "SHIP_OF_THESEUS_IDENTITY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24055,6 +24518,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 106",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TRICKSTER_REVERSAL",
+        "PILGRIMAGE_TRANSFORMATION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24070,6 +24538,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 107",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "COMEDIC_MISUNDERSTANDING",
+        "ANCESTOR_MEMORY"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24085,6 +24558,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 108",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "CARNIVAL_STATUS_REVERSAL",
+        "COMEDIC_MISUNDERSTANDING"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24100,6 +24578,11 @@
       "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 109",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DIALECTIC_SYNTHESIS",
+        "PATRONAGE_NETWORK"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24115,6 +24598,11 @@
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 110",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "SHIP_OF_THESEUS_IDENTITY",
+        "KARMA_RETURN"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24130,6 +24618,11 @@
       "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 111",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "TESTIMONY_CONSENSUS_REALITY",
+        "SACRIFICE_SUBSTITUTION"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24145,6 +24638,11 @@
       "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 112",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "DYNASTIC_INHERITANCE",
+        "TESTIMONY_CONSENSUS_REALITY"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24160,6 +24658,11 @@
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 113",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FACTION_BALANCE",
+        "FORTUNE_REVERSAL"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24175,6 +24678,11 @@
       "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 114",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PATRONAGE_NETWORK",
+        "PROPHECY_SELF_FULFILLMENT"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24190,6 +24698,11 @@
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 115",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "EXILE_RETURN",
+        "CARNIVAL_STATUS_REVERSAL"
+      ],
+      "causalDepthAffinity": "D3_DEEP_CULTURAL",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24205,6 +24718,11 @@
       "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 116",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "MARTYRDOM_MOVEMENT",
+        "EXILE_RETURN"
+      ],
+      "causalDepthAffinity": "D4_SYSTEMIC_MYTHIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24220,6 +24738,11 @@
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 117",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "PILGRIMAGE_TRANSFORMATION",
+        "MANDATE_LEGITIMACY"
+      ],
+      "causalDepthAffinity": "D1_LIGHT_COMIC",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24235,6 +24758,11 @@
       "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 118",
       "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "causalDNA": [
+        "FORTUNE_REVERSAL",
+        "TABOO_POLLUTION"
+      ],
+      "causalDepthAffinity": "D2_STRANGE_FUSION",
       "learningPreference": null,
       "learningAvoid": null,
       "createdAt": "2026-09-14T14:23:36.674Z",
@@ -24271,7 +24799,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-10-06T12:00:04.545Z",
+    "lastReplenishedAt": "2026-10-06T12:08:20.814Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
@@ -27618,6 +28146,5 @@
       "fantasy-survival"
     ]
   },
-  "policyAuthority": "company-learning/platform-release-roadmap.json",
-  "policyDocument": "company-learning/platform-release-roadmap.json"
+  "policyAuthority": "company-learning/platform-release-roadmap.json"
 }
