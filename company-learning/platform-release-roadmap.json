@@ -1,8 +1,8 @@
 {
-  "version": 540,
+  "version": 541,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-03",
+  "recordedAt": "2026-10-06",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -2242,6 +2242,76 @@
         "externalAiUnavailableAction": "CONTINUE_SAME_CHECKPOINT_WITH_VIBE2_VIBE3_ONLY",
         "externalAiAvailabilityMayBlockVibeDevelopment": false,
         "externalAiReconnectAction": "OPTIONAL_REJOIN_FUTURE_ELIGIBLE_WORK_WITHOUT_REPLAYING_COMPLETED_VIBE_WORK"
+      }
+    },
+    "ownerDirectiveInterruptionResumeContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-06",
+      "enabled": true,
+      "purpose": "OWNER_CHANGE_REQUEST_MAY_PREEMPT_ACTIVE_DEVELOPMENT_BUT_MUST_NEVER_TERMINATE_THE_EXISTING_CANONICAL_DEVELOPMENT_FLOW_BY_ITSELF",
+      "appliesTo": [
+        "TARGET_PLATFORM_SOURCE_BIND",
+        "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+        "TARGET_PLATFORM_RUNTIME",
+        "TARGET_PLATFORM_INDEPENDENT_QA",
+        "TARGET_PLATFORM_REGRESSION",
+        "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+        "POST_RELEASE_FOCUSED_DEVELOPMENT",
+        "REPAIR_REQUIRED"
+      ],
+      "sequence": [
+        "CAPTURE_CURRENT_GAME_AND_CANONICAL_CHECKPOINT",
+        "APPLY_OWNER_REQUESTED_CHANGE_WITHIN_EXISTING_RESPONSIBLE_SYSTEM",
+        "PRESERVE_UNCHANGED_VALID_EVIDENCE",
+        "INVALIDATE_ONLY_AFFECTED_DOWNSTREAM_EVIDENCE",
+        "REVALIDATE_FROM_FIRST_INVALIDATED_OR_PREEMPTED_CHECKPOINT",
+        "RESUME_EXISTING_CANONICAL_DEVELOPMENT_FLOW",
+        "CONTINUE_REPEAT_DEVELOPMENT_AND_AUTOMATIC_REFILL"
+      ],
+      "rules": {
+        "ownerDirectiveMayPreemptActiveDevelopment": true,
+        "preemptedCheckpointCaptureRequired": true,
+        "ownerRequestedChangeExecutesBeforeRoutineNextWork": true,
+        "ownerRequestedChangeCompletionIsNotDevelopmentCompletion": true,
+        "automaticResumeAfterOwnerChangeRequired": true,
+        "resumeTarget": "FIRST_INVALIDATED_OR_PREEMPTED_CANONICAL_CHECKPOINT",
+        "unchangedPassingEvidenceReuseRequired": true,
+        "fullCycleRestartForbiddenWhenUnaffectedEvidenceRemainsValid": true,
+        "ownerChangeMayNotCreateTerminalWaitState": true,
+        "oneOffManualCompletionWithoutCanonicalResumeForbidden": true,
+        "repeatDevelopmentMustContinueAfterResume": true,
+        "automaticRefillMustContinueAfterResume": true,
+        "nestedOwnerDirectivesRebaseOnLatestCanonicalCheckpoint": true,
+        "repeatedIdenticalOwnerRequestIsNewSignal": true,
+        "newQueuePipelineWrapperOrShadowFlowForbidden": true,
+        "existingLifecycleRecoveryQueueAndRefillOnly": true,
+        "nonconflictingParallelGameWorkContinues": true,
+        "explicitOwnerHoldKillDeleteOrStopStillOverridesAutomaticResume": true
+      },
+      "checkpointIdentity": [
+        "GAME_ID",
+        "CURRENT_STEP",
+        "CANONICAL_STATE",
+        "SOURCE_REVISION",
+        "ARTIFACT_IDENTITY_WHEN_PRESENT",
+        "PLATFORM",
+        "FAILURE_STAGE_WHEN_PRESENT"
+      ],
+      "implementationBinding": {
+        "queueState": "company-runtime:development-queue.json",
+        "existingRecovery": "developmentLifecycleMachine.selfRecoveryAndBottleneckRelief",
+        "existingRepeatDevelopment": "developmentLifecycleMachine.postReleaseFocusedDevelopment",
+        "existingScheduler": ".github/workflows/vibe2-24h-runner.yml",
+        "existingFanIn": "VIBE2_FANIN_REFILL_EVENT_WITH_GAME_PRIMARY_EXECUTION_LANE",
+        "newPipelineCreated": false
+      },
+      "implementationImpactReview": {
+        "existingCheckpointResumeMechanismsReused": true,
+        "existingFailureRepairResumeMechanismsReused": true,
+        "existingRepeatDevelopmentRefillReused": true,
+        "securityAuthorityChanged": false,
+        "releaseGateChanged": false,
+        "gameplayBalanceSaveProgressionEconomyOrNetworkAuthorityChanged": false
       }
     },
     "gameDevelopmentAuthority": {
