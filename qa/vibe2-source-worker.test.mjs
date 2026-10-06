@@ -358,10 +358,13 @@ test('single motion generation sends a required nonempty patch schema through th
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
   t.after(()=>new Promise(resolve=>server.close(resolve)));
   const prompt=buildPrompt({...f.order,target:'web'},{files:[{path:'motion.js',content:f.unit.sourceWindow}]},f.responsibleFiles);
-  const result=await generateCandidateWithRecovery({prompt,model:'test-local-model',target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,singleMotionWorkUnit:true,candidateValidator(candidate){const check=evaluateSingleMotionWorkUnit({...f,candidate});if(!check.pass)throw new Error(check.reason);return check;}});
+  const result=await generateCandidateWithRecovery({prompt,model:'qwen3:4b-instruct',target:'web',sourceRoot:f.sourceRoot,sourceRootRelative:'web-games/demo',responsibleFiles:f.responsibleFiles,allowFullRewrite:false,singleMotionWorkUnit:true,candidateValidator(candidate){const check=evaluateSingleMotionWorkUnit({...f,candidate});if(!check.pass)throw new Error(check.reason);return check;}});
   assert.equal(requests.length,1);
   assert.deepEqual(requests[0].format,singleMotionResponseSchema());
   assert.equal(requests[0].think,false);
+  assert.equal(requests[0].keep_alive,'20m');
+  assert.equal(requests[0].options.num_ctx,32768);
+  assert.equal(result.generation.contextWindow,32768);
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
@@ -4191,6 +4194,8 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=180000/);
   assert.match(workerSource,/MODEL_KEEP_ALIVE=clean\(process\.env\.VIBE2_MODEL_KEEP_ALIVE\|\|'20m'\)/);
   assert.match(workerSource,/keep_alive:MODEL_KEEP_ALIVE/);
+  assert.match(workerSource,/QUALITY_MODEL_CONTEXT_WINDOW=32768/);
+  assert.match(workerSource,/VIBE2_QUALITY_MODEL_CONTEXT_PINNED/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
   assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
