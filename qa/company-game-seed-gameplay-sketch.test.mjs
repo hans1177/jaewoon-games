@@ -178,6 +178,7 @@ test('GAMEPLAY_SKETCH v3 requires diverse cross-system composition depth without
     validationRisks:['수치 배수만으로 깊이를 가장하지 않는다','저장 경제 모바일 소프트락 회귀를 검증한다'],
     compositionDepth:{
       mainContent:'라인 방어의 배치와 경로 판단을 메인으로 유지한다.',
+      conceptFusion:'라인 방어 × 지역 탐험 × 수집 도감 × 교역 경제를 하나의 도시 방어 세계 상태에서 결합해 웨이브 판단과 장기 선택이 서로 영향을 준다.',
       majorSubSystems:['지역 탐험과 비밀 경로','수집 도감과 세트 조합','상인 무역과 지역 경제'],
       extensionSystems:['동료 파티 조합','서브퀘스트 사건','카드 드래프트 미니게임','유물 강화와 합성','펫 소환 수집','경매와 희귀 거래'],
       crossSystemCombinations:[
