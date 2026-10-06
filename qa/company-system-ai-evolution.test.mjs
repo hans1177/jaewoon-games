@@ -10,6 +10,16 @@ import {buildSystemAiLearningContext} from '../tools/company-system-ai-learning-
 
 const policy={version:270,policySource:'company-learning/platform-release-roadmap.json',authority:'MACHINE_EXECUTION_CONTRACT'};
 const securityPolicy={kind:'company-security-immune-system',sourceOfTruth:'company-learning/platform-release-roadmap.json'};
+const systemAiWorkflow=fs.readFileSync(new URL('../.github/workflows/company-system-ai-workers.yml',import.meta.url),'utf8');
+
+test('System AI reserve pressure metrics heredoc closes at shell block base indentation',()=>{
+  const start=systemAiWorkflow.indexOf('workflow_pressure_metrics="$(CURRENT_SHA="$GITHUB_SHA" node <<\'NODE\'');
+  const end=systemAiWorkflow.indexOf('read -r runner_queued_runs',start);
+  assert.ok(start>=0&&end>start);
+  const block=systemAiWorkflow.slice(start,end);
+  assert.match(block,/\n          NODE\n              \)"\n/);
+  assert.doesNotMatch(block,/\n              NODE\n              \)"\n/);
+});
 
 test('failure classifier separates infrastructure, QA drift, security, and implementation routes',()=>{
   const infra=classifySystemAiFailure({task:{id:'a'},result:{outcome:'FAIL',failureClass:'INFRASTRUCTURE_CONTRACT_FAILURE'}});
