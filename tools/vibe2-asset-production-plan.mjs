@@ -948,6 +948,7 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
     gameSummaries:Object.freeze(gameSummaries),
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
     sourceBoundConsumerIsDerivedView:true,
+    unmatchedRelationClassification:'NOT_BOUND',
     sourceOnlyDoesNotGrantRuntimeVerification:true,
     productionVerificationUnchanged:true,
     runtimeVerificationUnchanged:true,
@@ -2976,6 +2977,10 @@ export function buildVibeAssetProductionPlan({
       })
       :[]
   );
+  const primaryVolumeAction=effectiveNextVolumeActions[0]||null;
+  const primaryVolumeDecision=primaryVolumeAction&&(Number(primaryVolumeAction.internalReuseCandidateCount||0)>0||primaryVolumeAction.freeSourceAvailable===true)
+    ?'ADAPT'
+    :'AUTHOR';
   const effectiveAutonomousNextAction=internalLibraryEvolution.nextQualityActions.length>0&&!taskLocalReferenceVolumeActions.length
     ?freeze({
       kind:'ASSET_SUPPLY_DECISION',
@@ -2990,9 +2995,9 @@ export function buildVibeAssetProductionPlan({
     :effectiveNextVolumeActions.length
       ?freeze({
         kind:'ASSET_SUPPLY_DECISION',
-        action:'AUTHOR',
+        action:primaryVolumeDecision,
         phase:'VOLUME_UP',
-        item:effectiveNextVolumeActions[0],
+        item:primaryVolumeAction,
         continueAfterCompletion:true,
         continueWithoutHuman:true
       })
