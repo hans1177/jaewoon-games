@@ -131,20 +131,20 @@ const NARRATIVE_DEPTH_SCHEMA={
     mainStoryArc:{type:'string',minLength:30,maxLength:1000},
     narrativeDnaSources:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_NARRATIVE_DNA_FAMILIES]}},
     rightsModes:{type:'array',minItems:1,maxItems:3,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_NARRATIVE_RIGHTS_MODES]}},
-    npcRelationshipWeb:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    companionArcs:{type:'array',minItems:1,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
-    mainSubquestLinks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    foreshadowPayoffs:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    factionCultureHooks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    historicalMythReinterpretations:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    worldbuildingFusion:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    storySystemLinks:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
-    contentCausalityLinks:{type:'array',minItems:4,maxItems:12,uniqueItems:true,items:SKETCH_ITEM},
-    worldEvolutionHooks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    placeNameLedger:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
-    journalRecordChains:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    dialogueJournalLinks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
-    monsterOpponentLoreEcologyLinks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    npcRelationshipWeb:{type:'array',minItems:0,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    companionArcs:{type:'array',minItems:0,maxItems:6,uniqueItems:true,items:SKETCH_ITEM},
+    mainSubquestLinks:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    foreshadowPayoffs:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    factionCultureHooks:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    historicalMythReinterpretations:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    worldbuildingFusion:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    storySystemLinks:{type:'array',minItems:2,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    contentCausalityLinks:{type:'array',minItems:3,maxItems:12,uniqueItems:true,items:SKETCH_ITEM},
+    worldEvolutionHooks:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    placeNameLedger:{type:'array',minItems:2,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    journalRecordChains:{type:'array',minItems:0,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    dialogueJournalLinks:{type:'array',minItems:0,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    monsterOpponentLoreEcologyLinks:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     namingRules:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     culturalRespectRules:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
   },
@@ -532,6 +532,15 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
   const narrativeRaw=raw.narrativeDepth&&typeof raw.narrativeDepth==='object'&&!Array.isArray(raw.narrativeDepth)?raw.narrativeDepth:{};
   const storyWeight=clean(narrativeRaw.storyWeight).toUpperCase()
     ||(/RPG|ADVENTURE|HORROR|STRATEGY|SIMULATION/i.test(target.category)?'HEAVY':/PUZZLE|CASUAL|ARCADE/i.test(target.category)?'LIGHT':'MEDIUM');
+  const narrativeMinimums={
+    npcRelationshipWeb:storyWeight==='LIGHT'?0:2,
+    companionArcs:storyWeight==='HEAVY'?1:0,
+    mainSubquestLinks:storyWeight==='LIGHT'?1:2,
+    foreshadowPayoffs:storyWeight==='LIGHT'?1:2,
+    factionCultureHooks:storyWeight==='LIGHT'?1:2,
+    journalRecordChains:storyWeight==='LIGHT'?0:2,
+    dialogueJournalLinks:storyWeight==='LIGHT'?0:2,
+  };
   const narrativePool=[...GAMEPLAY_NARRATIVE_DNA_FAMILIES];
   const narrativeSeed=clean(target.requestId||gameName).split('').reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
   const narrativeFallback=[];
@@ -554,24 +563,24 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     '핵심 NPC는 목표·두려움·비밀·소속 세력·플레이어 기억을 가지며 퀘스트 결과에 따라 관계 상태가 바뀐다',
     'NPC끼리 동맹·경쟁·가족·사제·채무·은원 중 하나 이상의 관계를 공유하고 한 인물의 선택이 다른 인물의 태도와 사건 조건에 영향을 준다',
     '상인·장인·정보원·주민 같은 기능 NPC도 경제·제작·탐험·세력 상태와 개인 사연을 연결한다'
-  ],2,8);
+  ],narrativeMinimums.npcRelationshipWeb,8);
   const companionArcs=sketchArray(narrativeRaw.companionArcs,[
     '동료는 영입 계기→개인 갈등→관계 선택→전투/탐험 역할 변화→후반 결단의 단계가 있고 파티 조합이 대사·서브퀘·숨은 사건 조건에 영향을 준다',
     '동료의 개인 목표와 메인 세력 갈등이 충돌하는 순간을 만들어 충성·이탈·화해·전용 능력/정보 해금이 플레이 결과로 이어진다'
-  ],1,6);
+  ],narrativeMinimums.companionArcs,6);
   const mainSubquestLinks=sketchArray(narrativeRaw.mainSubquestLinks,[
     '메인 사건이 여러 NPC 관점의 서브퀘를 만들고 서브퀘 결과가 이후 메인 대사·지원·경로·보스 대응·세력 상태 중 하나 이상을 바꾼다',
     '초반의 작은 부탁이나 수집 단서가 중후반 가문·세력·유적·전쟁·미스터리의 핵심 증거 또는 선택 조건으로 회수된다',
     '서브퀘 완료 보상은 단순 재화만이 아니라 정보·동료 관계·새 거래·탐험 경로·제작법·평판 등 다른 시스템에 연결된다'
-  ],2,8);
+  ],narrativeMinimums.mainSubquestLinks,8);
   const foreshadowPayoffs=sketchArray(narrativeRaw.foreshadowPayoffs,[
     '초반 환경 단서·대사·유물·소문 중 하나를 중반 사건에서 재해석하고 후반 메인 갈등에서 실제 선택 근거로 회수한다',
     '서로 모순되는 NPC 증언이나 기록을 남겨 플레이어가 탐험·수집·관계 정보를 조합하면 숨은 진실과 다른 해결법을 발견하게 한다'
-  ],2,8);
+  ],narrativeMinimums.foreshadowPayoffs,8);
   const factionCultureHooks=sketchArray(narrativeRaw.factionCultureHooks,[
     '세력마다 통치·거래·명예·신앙·기술·전쟁 방식 중 최소 두 축이 달라 지역 구조와 NPC 행동, 상점/퀘스트/적대 규칙에 반영된다',
     '세력 관계는 고정 선악이 아니라 이해관계·역사적 상처·자원·외교 조건으로 설명하고 플레이어 행동에 따라 동맹·중립·갈등이 변화한다'
-  ],2,8);
+  ],narrativeMinimums.factionCultureHooks,8);
   const historicalMythReinterpretations=sketchArray(narrativeRaw.historicalMythReinterpretations,[
     narrativeDnaSources[0]+'의 권력·관계·운명·사회구조를 이름과 사건을 복제하지 않고 게임 세계의 세력/지역/인물 갈등으로 재구성한다',
     narrativeDnaSources[1]+'의 서사 기법을 메인 퀘스트와 동료/서브퀘 구조로 변형하고 원전의 고유 표현·대사·캐릭터·장면 배열은 복제하지 않는다',
