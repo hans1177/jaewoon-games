@@ -2970,9 +2970,17 @@ function bindSharedBuildUpDirective(taskInput,directive){
   const at=rawGoal.indexOf(marker);
   const baseGoal=(at>=0?rawGoal.slice(0,at):rawGoal).trimEnd();
   const presentationFocus=clean(directive.primaryFocus).toUpperCase()==='PRESENTATION';
+  const packageAssetSourceRepair=clean(directive?.playtestRuntimeFindings?.studioQualityFailure?.authority)==='roblox-package-asset-binding-failure'
+    &&clean(directive?.experienceBuildUpContract?.platform).toUpperCase()==='ROBLOX';
+  const inheritedEvidence=(taskInput.evidence||[]).filter(value=>!packageAssetSourceRepair||![
+    'asset-production-parallel:v1',
+    'atomic-neuron-stream:presentation',
+    'atomic-neuron-micro-fanin:per-task',
+    'graphics-atomic-candidate-isolation-required'
+  ].includes(clean(value)));
   return{
     ...taskInput,
-    assetProductionLane:presentationFocus?true:taskInput.assetProductionLane,
+    assetProductionLane:packageAssetSourceRepair?false:(presentationFocus?true:taskInput.assetProductionLane),
     goal:baseGoal+'\n\n'+directivePrompt(directive),
     buildUpDirective:directive,
     buildUpDirectiveId:directive.directiveId,
@@ -2989,7 +2997,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
     buildUpNextActionReason:clean(directive?.nextActionDecision?.reason)||null,
     nextEscalationRequired:true,
     evidence:[...new Set([
-      ...(taskInput.evidence||[]),
+      ...inheritedEvidence,
       'game-specific-build-up-directive:v2',
       'game-specific-build-up-directive:v3',
       'experience-build-up-contract:v1',
@@ -3003,11 +3011,15 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
       'build-up-platform-common-goal:YES',
-      ...(presentationFocus?[
+      ...(presentationFocus&&!packageAssetSourceRepair?[
         'asset-production-parallel:v1',
         'atomic-neuron-stream:presentation',
         'atomic-neuron-micro-fanin:per-task',
         'graphics-atomic-candidate-isolation-required'
+      ]:[]),
+      ...(packageAssetSourceRepair?[
+        'roblox-package-asset-source-repair-lane:GAME_PRIMARY',
+        'roblox-package-asset-repair-authority:GAME_SOURCE_BINDINGS_ONLY'
       ]:[]),
       'experience-build-up-platform:'+clean(directive.experienceBuildUpContract?.platform||'COMMON'),
       ...(directive.experienceBuildUpContract?.platform==='ROBLOX'?['experience-build-up-roblox-extra-attention:YES']:[]),
