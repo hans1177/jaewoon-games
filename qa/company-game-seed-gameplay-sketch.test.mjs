@@ -208,54 +208,61 @@ test('GAMEPLAY_SKETCH v3 identity core is enforced while legacy sketches stay co
 });
 
 
-test('GAMEPLAY_SKETCH v4 causal grammar supports simple comic depth without requiring epic complexity',()=>{
+test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A×B×C + @ delve layer',()=>{
   const seed=legacySeed();
   const grammar={
-    depth:'D1_LIGHT_COMIC',toneMode:'LIGHT_ABSURD_COMIC',
+    toneBlend:['COMIC','PHILOSOPHICAL','ABSURD'],
     familiarAnchor:'체면 때문에 사소한 거짓말을 했다가 동네 전체가 그 말을 믿게 되는 익숙한 인간 갈등.',
     causalDNAs:[
       {id:'COMEDIC_MISUNDERSTANDING',source:'COMEDY_FARCE',principle:'오해가 연쇄적인 현실 결과를 만든다.',gameplayConversion:'NPC가 믿은 오해가 다음 목표와 동선을 실제로 바꾼다.',fusionRole:'사소한 거짓말을 반복 가능한 플레이 원인으로 만든다.'},
       {id:'TESTIMONY_CONSENSUS_REALITY',source:'HISTORY_LAW_EPISTEMOLOGY',principle:'합의된 증언이 사회적 사실로 인정된다.',gameplayConversion:'같은 믿음이 임계치를 넘으면 공간 규칙이 바뀐다.',fusionRole:'개인 오해를 월드 상태 변화로 확장한다.'}
     ],
-    brokenGenreAssumption:'퍼즐에서 정답을 찾는 대신 사람들이 어떤 오답을 믿게 만들지를 설계한다.',
+    brokenGenreAssumption:'퍼즐의 정답을 찾는 대신 사람들이 어떤 오답을 믿게 만들지를 설계한다.',
     newPrimaryVerb:'오해를 설득해 현실로 만든다',
-    worldRule:'충분한 사람이 같은 이야기를 믿으면 잠시 그 이야기가 공간 규칙이 된다.',
-    causalFusion:['오해를 퍼뜨리면 증언 합의가 생기고 합의가 맵 규칙을 바꾼다.','바뀐 맵 규칙이 다시 새로운 오해와 선택을 만든다.'],
-    irreducibilityTest:{removeFirstAxis:'오해를 빼면 단순한 투표 퍼즐이 된다.',removeSecondAxis:'합의 현실을 빼면 대화 개그로 끝난다.',verdict:'두 축이 함께 있어야 대화가 월드 편집 행동이 된다.'},
-    storyWorldBindings:{emotionalConflict:'인정받고 싶은 욕망과 들킬까 두려운 마음이 충돌한다.',characterRule:'NPC마다 믿고 싶은 거짓말이 다르다.',monsterRule:'소문에서 태어난 괴물은 믿는 사람이 줄면 약해진다.',regionRule:'지역마다 권위 있는 증언자가 달라 현실 변경 조건이 다르다.',storyRule:'플레이어가 만든 거짓 현실의 후폭풍이 다음 사건 원인이 된다.',plausibility:'도시는 오래전부터 공동 증언을 계약과 법의 근거로 삼아 왔다.'},
-    comicAbsurdity:{enabled:true,setup:'빵집 문이 잠겨 배달을 못 한다.',ruleTwist:'주민들에게 원래 문이 없었다고 믿게 만들면 진짜 벽이 된다.',payoff:'벽 때문에 도둑의 이동로가 바뀌어 다음 사건이 발생한다.'},
-    escalation:{early:'한 사람의 사소한 오해를 이용한다.',mid:'여러 오해를 조합해 작은 공간 규칙을 바꾼다.',late:'구역별 증언 충돌로 도시 동선이 달라진다.',endgame:'어떤 증언 체계를 현실 판정 기준으로 둘지 선택한다.'},
-    expansionVectors:['새 지역은 다른 권위자를 가진다.','새 괴물은 소문 전파 방식을 바꾼다.','새 NPC는 믿음 조건을 거래한다.','새 아이템은 증언을 보존하거나 위조한다.'],
-    culturalAbstractionRule:'고전·역사·철학의 인과 구조만 새 플레이 규칙으로 재해석한다.'
+    worldRule:'충분한 사람이 같은 이야기를 믿으면 그 이야기가 일시적인 공간 규칙이 된다.',
+    causalFusion:['오해가 증언 합의를 만들고 증언 합의가 맵 규칙을 바꾼다.','바뀐 맵 규칙이 다시 새로운 오해와 선택 조건을 만든다.'],
+    irreducibilityTest:{removeFirstAxis:'오해를 빼면 단순한 투표 퍼즐이 된다.',removeSecondAxis:'합의 현실을 빼면 대화 개그로 끝난다.',verdict:'두 인과축과 시스템 융복합이 함께 있어야 대화가 월드 편집 행동이 된다.'},
+    storyWorldBindings:{emotionalConflict:'인정받고 싶은 욕망과 들킬까 두려운 마음이 충돌한다.',characterRule:'NPC마다 믿고 싶은 이야기가 다르다.',monsterRule:'소문에서 태어난 괴물은 믿는 사람이 줄면 약해진다.',regionRule:'지역마다 권위 있는 증언자가 달라 현실 변경 조건이 다르다.',storyRule:'플레이어가 만든 현실의 후폭풍이 다음 사건 원인이 된다.',plausibility:'도시는 오래전부터 공동 증언을 계약과 법의 근거로 삼아 왔다.'},
+    gameplaySystemFusion:{
+      formula:'MAIN × A × B × C',
+      main:{name:'설득',purpose:'주민의 믿음 상태를 바꾸는 중심 행동.',playerAction:'대상 주민에게 어떤 이야기를 믿게 할지 선택해 설득한다.',stateContribution:'믿음 수치와 이야기별 지지 상태를 만든다.'},
+      axes:[
+        {key:'A',name:'증언 네트워크',purpose:'믿음이 주민 사이에서 전달되는 일반 사회 시스템.',playerChoice:'누구를 먼저 설득해 전파 경로를 만들지 선택한다.',stateContribution:'증언 확산 속도와 신뢰 연결망을 바꾼다.'},
+        {key:'B',name:'공간 퍼즐',purpose:'합의된 믿음을 실제 맵 상태로 변환하는 퍼즐 시스템.',playerChoice:'어떤 현실 변경을 이용해 이동 문제를 풀지 선택한다.',stateContribution:'문·벽·통로·위험 구역 상태를 바꾼다.'},
+        {key:'C',name:'평판과 후폭풍',purpose:'현실 조작의 장기 사회 결과를 누적하는 시스템.',playerChoice:'누구의 평판을 희생하고 어떤 거짓 현실을 유지할지 결정한다.',stateContribution:'다음 사건·NPC 태도·새 소문 조건을 바꾼다.'}
+      ],
+      crossSystemRules:['설득 결과가 증언 네트워크의 전파 확률을 바꾼다.','증언 네트워크가 임계치를 넘으면 공간 퍼즐 상태가 실제로 변한다.','공간 변화로 생긴 피해나 이득이 평판과 후폭풍에 기록된다.','누적된 평판이 다음 설득의 신뢰도와 사용 가능한 이야기를 다시 바꾼다.']
+    },
+    delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[
+      {name:'거짓말 연쇄',discoveryCondition:'서로 모순되는 두 소문을 다른 집단에 동시에 퍼뜨린다.',masteryOrInsight:'집단마다 다른 현실을 잠시 유지할 수 있음을 발견한다.',gameplayEffect:'같은 지역 안에 서로 다른 통로 상태를 만든다.',connectsTo:['MAIN','A','B']},
+      {name:'권위자 역이용',discoveryCondition:'평판이 낮은 상태에서 권위자의 약점을 먼저 공개한다.',masteryOrInsight:'권위가 신뢰의 절대값이 아니라 네트워크 관계임을 파악한다.',gameplayEffect:'낮은 평판에서도 특정 소문을 빠르게 확산시킨다.',connectsTo:['A','C']},
+      {name:'재방문 재해석',discoveryCondition:'과거에 만든 거짓 현실이 굳어진 뒤 같은 동네로 돌아온다.',masteryOrInsight:'이전 퍼즐 해결이 다음 시대의 상식이 되었음을 발견한다.',gameplayEffect:'예전 벽과 문이 새로운 퀘스트와 지름길이 된다.',connectsTo:['B','C']},
+      {name:'합의 붕괴 콤보',discoveryCondition:'두 집단의 지지율을 동시에 임계값 직전까지 올린 뒤 한 번에 진실을 공개한다.',masteryOrInsight:'현실 규칙의 생성뿐 아니라 붕괴 순서도 조작할 수 있음을 이해한다.',gameplayEffect:'기존에는 만들 수 없던 일시적 빈 공간과 특수 사건을 연다.',connectsTo:['MAIN','A','B','C']}
+    ]},
+    emergentGenre:{name:'합의현실 소문 퍼즐극',definition:'설득을 중심으로 증언 네트워크·공간 퍼즐·평판 후폭풍을 순환시키고 숨은 소문 조합을 파고드는 복합장르.',whyNotSingleConventionalGenre:'대화 퍼즐이나 사회 시뮬레이션 하나로 설명되지 않고 믿음이 실제 공간 규칙이 되는 인과와 시스템 순환이 장르를 만든다.',grammarFormula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × C) + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
+    expansionVectors:['새 지역은 다른 증언 권위 구조를 가진다.','새 괴물은 증언 네트워크를 왜곡한다.','새 NPC는 평판과 공간 규칙 사이를 거래한다.','새 @ 요소는 기존 설득·네트워크·공간·평판을 새로운 순서로 엮는다.'],
+    culturalAbstractionRule:'희극·철학·역사 재료는 높낮이 없이 동등하며 고유 표현이 아니라 인과구조만 재해석한다.'
   };
-  const flowArchitecture=buildGameFlowArchitecture({
-    gameId:'causal-v4-test',genre:seed.GAME_CATEGORY,
-    baseline:{content:{identity:'증언으로 현실을 바꾸는 코믹 퍼즐',playerFantasy:'동네 오해를 이용해 길을 만든다.',coreFun:'설득과 믿음 상태를 조작한다.',coreLoop:seed.CORE_LOOP,progressionDirection:'개인 오해에서 구역 규칙 조작으로 확장한다.',novelGameGrammar:grammar}},
-    inventory:[]
-  });
+  const flowArchitecture=buildGameFlowArchitecture({gameId:'emergent-v4-test',genre:seed.GAME_CATEGORY,baseline:{content:{identity:'합의현실 소문 퍼즐극',playerFantasy:'오해를 현실로 만든다.',coreFun:'믿음 상태로 공간을 바꾼다.',coreLoop:seed.CORE_LOOP,progressionDirection:'더 복잡한 집단과 공간 규칙을 조합한다.',novelGameGrammar:grammar}},inventory:[]});
   seed.GAMEPLAY_SKETCH={
-    version:4,source:'CAUSAL_V4_TEST',worldModel:'공동 증언이 공간 규칙으로 반영되는 동네.',
-    actors:['플레이어','주민'],interactionChains:['소문 선택 -> 설득 -> 믿음 상태 변화 -> 공간 규칙 변화'],
-    stateMachine:['ENTRY','READ','ACTION','STATE_CHANGE','CHOICE','RISK','GOAL'],
-    firstPlayableCycle:['진입','관찰','소문 선택','설득','현실 변화','후폭풍','다음 목표'],
-    identityCore:{oneLineFantasy:'오해를 현실로 만들어 길을 푸는 코믹 퍼즐.',playerRole:'소문을 다루는 동네 중재자.',representativeAction:'주민에게 이야기를 설득한다.',representativeChoice:'누구에게 어떤 말을 믿게 할지 고른다.',signatureWorldRule:'공동 믿음이 공간 규칙이 된다.',signatureSystemPromise:['증언 합의 현실화'],growthIdentity:'개인 오해에서 구역 규칙 조작으로 성장한다.',identityCoherence:{worldCulture:'증언 중심 동네 문화.',visualLanguage:'믿음 상태가 표식으로 보인다.',audioLanguage:'소문 확산을 소리로 구분한다.',enemyItemNpcCoherence:'괴물과 아이템도 믿음 규칙을 따른다.'},threeSentenceTest:{whatGame:'증언으로 현실을 바꾸는 퍼즐이다.',whatDifferent:'정답보다 믿게 만든 오답이 공간 규칙이 된다.',whatGrowthUnlocks:'여러 사람의 믿음을 조합해 구역 규칙을 바꾼다.'},genreAdaptationRule:'퍼즐의 정보와 상태변화를 우선한다.'},
-    novelGameGrammar:grammar,
-    playerPromise:'믿음과 현실의 인과를 이용해 새로운 해결법을 만든다.',
-    funDrivers:['즉시 변화','오해 선택','규칙 발견'],balanceRules:['지배전략 방지','반작용 존재','복구 가능','정보 비용 존재'],
-    pacingPlan:{first5Minutes:'한 오해',minutes5To15:'첫 현실 변화',minutes15To25:'오해 조합',minutes25To30:'구역 변화',midLateGame:'증언 충돌',replayMotivation:'다른 현실'},
-    progressionLayers:['개인 믿음','집단 합의','구역 규칙'],expansionPlan:['새 증언자','새 지역','새 괴물','새 기록'],
-    longGoalScenario:['개인 설득','구역 변화','현실 기준 선택'],completionCriteria:['첫 변화','중반 조합','후반 규칙','복구 가능'],
-    codingGrowthHooks:['기존 함수 재사용','stable id 유지','권한 보존','저장 마이그레이션'],validationRisks:['개그만 있고 규칙 없는 상태 금지','대사만 다른 복제 금지'],
-    flowArchitecture
+    version:4,source:'EMERGENT_V4_TEST',worldModel:'공동 증언이 공간 규칙으로 반영되는 동네.',actors:['플레이어','주민'],interactionChains:['설득 -> 증언 확산 -> 공간 변화 -> 후폭풍'],
+    stateMachine:['ENTRY','READ','ACTION','STATE_CHANGE','CHOICE','RISK','GOAL'],firstPlayableCycle:['진입','관찰','설득','확산','현실 변화','후폭풍','다음 목표'],
+    identityCore:{oneLineFantasy:'오해를 현실로 만들어 길을 푸는 소문 퍼즐.',playerRole:'소문을 다루는 동네 중재자.',representativeAction:'주민에게 이야기를 설득한다.',representativeChoice:'누구에게 어떤 말을 믿게 할지 고른다.',signatureWorldRule:'공동 믿음이 공간 규칙이 된다.',signatureSystemPromise:['증언 합의 현실화'],growthIdentity:'개인 오해에서 집단 현실 조작으로 성장한다.',identityCoherence:{worldCulture:'증언 중심 동네 문화.',visualLanguage:'믿음 상태가 표식으로 보인다.',audioLanguage:'소문 확산을 소리로 구분한다.',enemyItemNpcCoherence:'괴물과 아이템도 믿음 규칙을 따른다.'},threeSentenceTest:{whatGame:'소문으로 현실을 바꾸는 퍼즐극이다.',whatDifferent:'정답보다 믿게 만든 이야기가 공간 규칙이 된다.',whatGrowthUnlocks:'여러 집단과 공간 규칙의 조합을 다룬다.'},genreAdaptationRule:'운영 카테고리는 힌트일 뿐 최종 장르는 융복합 결과로 정한다.'},
+    novelGameGrammar:grammar,playerPromise:'믿음과 현실의 인과를 이용해 새로운 해결법을 만든다.',funDrivers:['즉시 변화','오해 선택','숨은 조합'],balanceRules:['지배전략 방지','반작용 존재','복구 가능','정보 비용 존재'],
+    pacingPlan:{first5Minutes:'첫 설득',minutes5To15:'첫 현실 변화',minutes15To25:'시스템 교차',minutes25To30:'첫 @ 발견',midLateGame:'여러 시스템 순환',replayMotivation:'다른 소문 조합'},
+    progressionLayers:['MAIN 숙련','A/B/C 관계 숙련','@ 발견과 응용'],expansionPlan:['새 시스템 교차','새 지역 규칙','새 후폭풍','새 @ 조합'],longGoalScenario:['첫 설득','현실 변화','복합 규칙 해결'],
+    completionCriteria:['첫 변화','A/B/C 연결','@ 발견','복구 가능'],codingGrowthHooks:['기존 함수 재사용','stable id 유지','권한 보존','저장 마이그레이션'],validationRisks:['병렬 기능 합산 금지','@를 네 번째 일반 시스템으로 오해 금지'],flowArchitecture
   };
   const pass=validateGameSeed(seed);
   assert.equal(pass.pass,true,pass.errors.join(','));
   const flow=evaluateGameFlowArchitecture(flowArchitecture);
   assert.equal(flow.pass,true,flow.blockers.join(','));
-  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.depth,'D1_LIGHT_COMIC');
-  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.depthIsQualityRank,false);
-  seed.GAMEPLAY_SKETCH.novelGameGrammar.comicAbsurdity.enabled=false;
-  const fail=validateGameSeed(seed);
+  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.gameplaySystemFusion.formula,'MAIN × A × B × C');
+  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.delveLayer.role,'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS');
+  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.emergentGenre.categoryRole,'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE');
+  const broken=structuredClone(seed);
+  broken.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.role='SYSTEM_AXIS_D';
+  const fail=validateGameSeed(broken);
   assert.equal(fail.pass,false);
-  assert.ok(fail.errors.some(error=>error.includes('D1 requires enabled comicAbsurdity')));
+  assert.ok(fail.errors.some(error=>error.includes('not a general system axis')));
 });

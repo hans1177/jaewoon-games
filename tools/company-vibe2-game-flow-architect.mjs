@@ -181,8 +181,7 @@ function novelGrammarFromBaseline(baseline={}){
   const grammar=content?.novelGameGrammar;
   if(!grammar||typeof grammar!=='object'||Array.isArray(grammar))return null;
   return Object.freeze({
-    depth:clean(grammar.depth).toUpperCase(),
-    toneMode:clean(grammar.toneMode).toUpperCase(),
+    toneBlend:Object.freeze(uniq(grammar.toneBlend||[]).slice(0,4)),
     familiarAnchor:clean(grammar.familiarAnchor),
     newPrimaryVerb:clean(grammar.newPrimaryVerb),
     brokenGenreAssumption:clean(grammar.brokenGenreAssumption),
@@ -190,13 +189,15 @@ function novelGrammarFromBaseline(baseline={}){
     causalDNAs:Object.freeze((grammar.causalDNAs||[]).map(row=>Object.freeze({id:clean(row?.id),source:clean(row?.source),principle:clean(row?.principle),gameplayConversion:clean(row?.gameplayConversion),fusionRole:clean(row?.fusionRole)})).filter(row=>row.id).slice(0,4)),
     causalFusion:Object.freeze(uniq(grammar.causalFusion||[]).slice(0,6)),
     storyWorldBindings:grammar.storyWorldBindings||null,
-    comicAbsurdity:grammar.comicAbsurdity||null,
-    escalation:grammar.escalation||null,
+    gameplaySystemFusion:grammar.gameplaySystemFusion||null,
+    delveLayer:grammar.delveLayer||null,
+    emergentGenre:grammar.emergentGenre||null,
     expansionVectors:Object.freeze(uniq(grammar.expansionVectors||[]).slice(0,8)),
     irreducibilityTest:grammar.irreducibilityTest||null,
     culturalAbstractionRule:clean(grammar.culturalAbstractionRule),
-    rule:'CAUSAL_DNA_MUST_CREATE_GAMEPLAY_CAUSALITY_NOT_DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK',
-    depthIsQualityRank:false
+    rule:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × C) + @ CREATES_THE_EMERGENT_COMPOSITE_GENRE',
+    categoryRole:'SEED_DISCOVERY_AND_ROUTING_HINT_ONLY_NOT_FINAL_GENRE',
+    atRole:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS'
   });
 }
 export function buildConceptSystemBlueprint({genre='',baseline={},architecture={}}={}){
@@ -223,6 +224,7 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
   }
   return Object.freeze({
     version:1,profile:key,
+    routingProfileRole:'SEED_DISCOVERY_AND_COMPATIBILITY_HINT_ONLY_NOT_FINAL_GENRE',
     target:'CONCEPT_MATCHED_INTERCONNECTED_SYSTEM_BUNDLE',
     requiredSystems:Object.freeze(requiredRows),
     expansionSystems:Object.freeze(recommendedRows),
@@ -246,8 +248,9 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
       laterUpdatesMayAddSystemsWithoutRewritingValidatedCore:true,
       causalGrammarMustMutateAcrossExpansion:true,
       expansionShouldChangeHowTheCoreRuleBehavesNotOnlyAddObjects:true,
-      depthIsNotQualityRank:true,
-      lightComicGrammarMayRemainSimpleWhenSystemicallyConsistent:true,
+      mainABCFormulaRequiredWhenNovelGrammarExists:true,
+      atDelveLayerRequiredAndNotAGeneralSystemAxis:true,
+      emergentGenreComesFromCombinedGrammarNotRoutingCategory:true,
       characterMonsterRegionStoryShouldExpressTheSameCausalWorldLawWhenApplicable:true,
     }),
     sourceFlowDNA:Object.freeze(uniq(architecture.flowDNA||[])),
@@ -530,8 +533,10 @@ export function evaluateGameFlowArchitecture(architecture={}){
     if(!clean(grammar.newPrimaryVerb)||!clean(grammar.brokenGenreAssumption)||!clean(grammar.worldRule))blockers.push('FLOW_NOVEL_GAME_GRAMMAR_REQUIRED');
     if((grammar.causalDNAs||[]).length<2||(grammar.causalFusion||[]).length<2)blockers.push('FLOW_CAUSAL_DNA_FUSION_REQUIRED');
     if(!clean(grammar.irreducibilityTest?.verdict))blockers.push('FLOW_GRAMMAR_IRREDUCIBILITY_REQUIRED');
+    if(grammar.gameplaySystemFusion?.formula!=='MAIN × A × B × C'||(grammar.gameplaySystemFusion?.axes||[]).length!==3||(grammar.gameplaySystemFusion?.crossSystemRules||[]).length<4)blockers.push('FLOW_MAIN_A_B_C_SYSTEM_FUSION_REQUIRED');
+    if(grammar.delveLayer?.formulaSuffix!=='+ @'||grammar.delveLayer?.role!=='DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS'||(grammar.delveLayer?.elements||[]).length<4)blockers.push('FLOW_AT_DELVE_LAYER_REQUIRED');
+    if(!clean(grammar.emergentGenre?.name)||grammar.emergentGenre?.grammarFormula!=='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × C) + @')blockers.push('FLOW_EMERGENT_COMPOSITE_GENRE_REQUIRED');
     if((grammar.expansionVectors||[]).length<4)blockers.push('FLOW_GRAMMAR_EXPANSION_VECTORS_REQUIRED');
-    if(grammar.depth==='D1_LIGHT_COMIC'&&grammar.comicAbsurdity?.enabled!==true)blockers.push('FLOW_D1_COMIC_SYSTEM_RULE_REQUIRED');
   }
   const quality=architecture.qualityGrowthContract||{};
   if((quality.funDrivers||[]).length<3)blockers.push('FLOW_FUN_DRIVERS_REQUIRED');

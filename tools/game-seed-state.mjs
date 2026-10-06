@@ -23,12 +23,6 @@ export const SEED_MATERIAL_SOURCE_FAMILIES=Object.freeze([
   'SYSTEM_MECHANIC_EXPERIMENT',
   'FREE_ORIGINAL_IDEA'
 ]);
-export const CAUSAL_DEPTHS=Object.freeze([
-  'D1_LIGHT_COMIC',
-  'D2_STRANGE_FUSION',
-  'D3_DEEP_CULTURAL',
-  'D4_SYSTEMIC_MYTHIC'
-]);
 export const CAUSAL_DNA_LIBRARY=Object.freeze([
   {id:'KARMA_RETURN',source:'EAST_ASIAN_RELIGION_PHILOSOPHY',principle:'행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.',gameGrammar:'현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.'},
   {id:'MANDATE_LEGITIMACY',source:'EAST_ASIAN_POLITICAL_HISTORY',principle:'통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.',gameGrammar:'영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.'},
@@ -86,7 +80,6 @@ function normalizeMaterial(raw,index){
       const fallback=[CAUSAL_DNA_LIBRARY[index%CAUSAL_DNA_LIBRARY.length].id,CAUSAL_DNA_LIBRARY[(index*7+5)%CAUSAL_DNA_LIBRARY.length].id];
       return uniq([...provided,...fallback]).slice(0,3);
     })(),
-    causalDepthAffinity:CAUSAL_DEPTHS.includes(clean(raw?.causalDepthAffinity).toUpperCase())?clean(raw.causalDepthAffinity).toUpperCase():CAUSAL_DEPTHS[index%CAUSAL_DEPTHS.length],
     learningPreference:clean(raw?.learningPreference)||null,
     learningAvoid:clean(raw?.learningAvoid)||null,
     createdAt:clean(raw?.createdAt)||null,
@@ -178,7 +171,7 @@ function familyUsageForSeeds(state,seeds=[]){
   return {counts,total};
 }
 function top30Seeds(state,top30GameIds=[]){const ids=new Set(uniq(top30GameIds));return(state.seeds||[]).filter(seed=>activeSeed(seed)&&ids.has(clean(seed.gameId)));}
-function materialTokens(row){return new Set(norm(`${row?.concept||''} ${row?.mechanic||''} ${row?.setting||''} ${(row?.causalDNA||[]).join(' ')} ${row?.causalDepthAffinity||''}`).split(/[^a-z0-9가-힣]+/).filter(token=>token.length>2));}
+function materialTokens(row){return new Set(norm(`${row?.concept||''} ${row?.mechanic||''} ${row?.setting||''} ${(row?.causalDNA||[]).join(' ')}`).split(/[^a-z0-9가-힣]+/).filter(token=>token.length>2));}
 function learningFamilies(learningSignals,key){return uniq(learningSignals?.[key]);}
 
 export function resolveSeedMaterialCompositionCount(state,{platform='',category='',top30GameIds=[],learningSignals={}}={}){
@@ -212,7 +205,7 @@ export function composeSeedMaterials(state,{count=null,timestamp=new Date().toIS
   const topSeeds=top30Seeds(state,top30GameIds);
   const topUsage=familyUsageForSeeds(state,topSeeds);
   const platformUsage=familyUsageForSeeds(state,(state.seeds||[]).filter(seed=>activeSeed(seed)&&(!p||seedPlatform(seed)===p)));
-  const selected=[];const selectedFamilies=new Set();const selectedTokens=new Set();const selectedCausalDNA=new Set();const selectedDepths=new Set();
+  const selected=[];const selectedFamilies=new Set();const selectedTokens=new Set();const selectedCausalDNA=new Set();
   const baseScore=row=>{
     let score=0;
     if(preferred.has(row.sourceFamily))score+=4;
@@ -234,16 +227,15 @@ export function composeSeedMaterials(state,{count=null,timestamp=new Date().toIS
       const complementarity=selectedFamilies.has(row.sourceFamily)?-2.5:2.5;
       const rowCausal=Array.isArray(row.causalDNA)?row.causalDNA:[];
       const causalNovel=rowCausal.filter(id=>!selectedCausalDNA.has(id)).length/Math.max(1,rowCausal.length);
-      const depthNovel=selectedDepths.size&&selectedDepths.has(row.causalDepthAffinity)?0:0.5;
-      const score=baseScore(row)+complementarity+novelty*1.5+causalNovel*2+depthNovel;
+      const score=baseScore(row)+complementarity+novelty*1.5+causalNovel*2;
       if(score>bestScore||(score===bestScore&&clean(row.materialId)<clean(best?.materialId))){best=row;bestScore=score;}
     }
     if(!best)break;
-    selected.push(best);selectedFamilies.add(best.sourceFamily);for(const token of materialTokens(best))selectedTokens.add(token);for(const id of best.causalDNA||[])selectedCausalDNA.add(id);selectedDepths.add(best.causalDepthAffinity);
+    selected.push(best);selectedFamilies.add(best.sourceFamily);for(const token of materialTokens(best))selectedTokens.add(token);for(const id of best.causalDNA||[])selectedCausalDNA.add(id);
   }
   if(selected.length!==n)throw new Error(`SEED_MATERIAL_COMPOSITION_FAILED ${selected.length}/${n}`);
   for(const row of selected){row.status='RESERVED';row.updatedAt=timestamp;}
-  state.seedMaterialPolicy.lastComposition={count:n,platform:p||null,category:c||null,top30ReferenceCount:topSeeds.length,signals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],selectedMaterialIds:selected.map(row=>row.materialId),selectedFamilies:[...selectedFamilies],selectedCausalDNA:[...selectedCausalDNA],selectedCausalDepths:[...selectedDepths],updatedAt:timestamp};
+  state.seedMaterialPolicy.lastComposition={count:n,platform:p||null,category:c||null,top30ReferenceCount:topSeeds.length,signals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],selectedMaterialIds:selected.map(row=>row.materialId),selectedFamilies:[...selectedFamilies],selectedCausalDNA:[...selectedCausalDNA],updatedAt:timestamp};
   return selected;
 }
 export function consumeSeedMaterials(state,materials,{seedId,timestamp=new Date().toISOString()}={}){
