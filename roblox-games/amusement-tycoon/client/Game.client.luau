@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -340,6 +341,36 @@ root.Size = UDim2.new(1, -24, 0, 360)
 root.BackgroundTransparency = 0.15
 root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
+
+-- 선택된 내부 자산을 기존 공원 월드와 HUD의 실제 Roblox 표현에 연결한다.
+task.defer(function()
+  local parkWorld = workspace:FindFirstChild("AmusementTycoonSeed") or workspace:WaitForChild("AmusementTycoonSeed", 5)
+  if not parkWorld then return end
+
+  if hasStudioAssetAtom("ENVIRONMENT", "ROAD_STONE") then
+    local starterPath = parkWorld:FindFirstChild("StarterPath")
+    if starterPath and starterPath:IsA("BasePart") then
+      starterPath.Material = Enum.Material.Cobblestone
+    end
+  end
+
+  if hasStudioAssetAtom("MATERIAL", "WOOD") then
+    local entranceCounter = parkWorld:FindFirstChild("EntranceCounter")
+    if entranceCounter and entranceCounter:IsA("BasePart") then
+      entranceCounter.Material = Enum.Material.WoodPlanks
+    end
+  end
+
+  if hasStudioAssetAtom("MOTION", "START") then
+    local settledPosition = root.Position
+    root.Position = UDim2.new(settledPosition.X.Scale, settledPosition.X.Offset, 1.03, 0)
+    TweenService:Create(
+      root,
+      TweenInfo.new(0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+      { Position = settledPosition }
+    ):Play()
+  end
+end)
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, -20, 0, 44)
