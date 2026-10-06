@@ -5,7 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree,robloxPackageAssetRepairContext} from './company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const SHA=/^[0-9a-f]{40}$/i;
 const clean=value=>String(value??'').trim();
@@ -173,20 +173,6 @@ function collectRobloxPackageSourceTexts(sourceRoot=''){
   }
   return Object.freeze(rows.sort((a,b)=>a.relative.localeCompare(b.relative)));
 }
-function robloxPackageAssetFamilyRefPattern(family=''){
-  const value=clean(family);
-  return new RegExp('(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']|studioAssetFamilies(?:\\s*\\.\\s*'+value+'|\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\]))','ig');
-}
-function robloxPackageAssetFamilyBoundInText(text='',family=''){
-  const raw=String(text||''),nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
-  if(!nativePattern)return false;
-  for(const ref of raw.matchAll(robloxPackageAssetFamilyRefPattern(family))){
-    const start=Math.max(0,Number(ref.index||0)-3500);
-    const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+3500);
-    if(nativePattern.test(raw.slice(start,end)))return true;
-  }
-  return false;
-}
 function stripRobloxPackageAssetTrace(text=''){
   return String(text||'')
     .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END/g,' ')
@@ -279,7 +265,7 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
   for(const family of ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
     const systemPresent=detectedSystems[family]===true;
-    const boundFiles=sourceRows.filter(row=>robloxPackageAssetFamilyBoundInText(row.text,family)).map(row=>row.relative);
+    const boundFiles=sourceRows.filter(row=>robloxStudioAssetFamilyBoundInText(row.text,family)).map(row=>row.relative);
     const actualBinding=boundFiles.length>0;
     if(!status){
       blockers.push('ROBLOX_PACKAGE_ASSET_FAMILY_STATUS_MISSING:'+family);
