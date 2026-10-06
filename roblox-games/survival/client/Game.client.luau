@@ -626,12 +626,12 @@ task.defer(function()
   if not survivalWorld then return end
 
   local camp = survivalWorld:FindFirstChild("SurvivalLandmarkCamp")
-  if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then
+  if table.find(studioAssetFamily("ENVIRONMENT"), "ROAD_STONE") and camp and camp:IsA("BasePart") then
     camp.Material = Enum.Material.Slate
   end
 
   local workbench = survivalWorld:FindFirstChild("SurvivalObjectiveWorkbench")
-  if #studioAssetFamily("PROP") > 0 and workbench and workbench:IsA("BasePart") then
+  if table.find(studioAssetFamily("PROP"), "WORKBENCH") and workbench and workbench:IsA("BasePart") then
     workbench.Material = Enum.Material.WoodPlanks
   end
   if #studioAssetFamily("MATERIAL") > 0 and workbench and workbench:IsA("BasePart") then
