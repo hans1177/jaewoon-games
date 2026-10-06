@@ -7,6 +7,7 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
+local TweenService=game:GetService("TweenService")
 local CollectionService=game:GetService("CollectionService")
 
 -- 참조
@@ -121,6 +122,65 @@ local victorySfx=sound("CozyVictory",C.Audio.Victory,.3,false)
 local resourceSfx=sound("CozyResource",C.Audio.Resource,.22,false)
 local buildSfx=sound("CozyBuild",C.Audio.Build,.25,false)
 local hitSfx=sound("CozyHit",C.Audio.Hit,.24,false)
+bgm.Volume = table.find(studioAssetFamily("AUDIO"), "ENV_FOREST") and .18 or bgm.Volume
+
+-- 기존 포근섬 월드/야생동물/오디오에 선택된 내부 자산 family를 실제 Roblox 표현으로 연결한다.
+task.defer(function()
+  local cozyWorld = workspace:FindFirstChild("CozyConquestWorld") or workspace:WaitForChild("CozyConquestWorld", 8)
+  if not cozyWorld then return end
+
+  local function bindCreatureModel(model)
+    if not model:IsA("Model") then return end
+    if not (model.Name:find("Bear", 1, true) or model.Name:find("Boar", 1, true) or model.Name:find("Raider", 1, true)) then return end
+    local body = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
+    if body and body:IsA("BasePart") then
+      body.Material = table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") and Enum.Material.Fabric or body.Material
+    end
+  end
+  for _, descendant in ipairs(cozyWorld:GetDescendants()) do bindCreatureModel(descendant) end
+  cozyWorld.DescendantAdded:Connect(bindCreatureModel)
+
+  local lighting = game:GetService("Lighting")
+  local atmosphere = lighting:FindFirstChild("StudioCozyAtmosphere")
+  if not atmosphere then
+    atmosphere = Instance.new("Atmosphere")
+    atmosphere.Name = "StudioCozyAtmosphere"
+    atmosphere.Parent = lighting
+  end
+  atmosphere.Color = table.find(studioAssetFamily("ENVIRONMENT"), "FOG_LAYER") and Color3.fromRGB(210, 229, 220) or atmosphere.Color
+  atmosphere.Density = 0.16
+  atmosphere.Haze = 0.8
+
+  local plaza = cozyWorld:FindFirstChild("VillagePlaza")
+  if plaza and plaza:IsA("BasePart") then
+    plaza.Material = table.find(studioAssetFamily("MATERIAL"), "STONE") and Enum.Material.Cobblestone or plaza.Material
+
+    local vfxAttachment = Instance.new("Attachment")
+    vfxAttachment.Name = "StudioCozyVfxAttachment"
+    vfxAttachment.Position = Vector3.new(0, plaza.Size.Y * 0.5 + 0.2, 0)
+    vfxAttachment.Parent = plaza
+    local emitter = Instance.new("ParticleEmitter")
+    emitter.Name = "StudioCozyVfx"
+    emitter.Rate = 0
+    emitter.Lifetime = NumberRange.new(0.4, 0.75)
+    emitter.Speed = NumberRange.new(0.4, 1.2)
+    emitter.SpreadAngle = Vector2.new(30, 30)
+    emitter.LightEmission = table.find(studioAssetFamily("VFX"), "STATUS_GLOW") and 0.45 or 0
+    emitter.Parent = vfxAttachment
+    emitter:Emit(14)
+  end
+
+  local boat = cozyWorld:FindFirstChild("VillageBoat")
+  if boat and boat:IsA("BasePart") then
+    boat.Material = table.find(studioAssetFamily("PROP"), "LAMP") and Enum.Material.WoodPlanks or boat.Material
+    local baseOrientation = boat.Orientation
+    TweenService:Create(
+      boat,
+      TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+      {Orientation = table.find(studioAssetFamily("MOTION"), "IDLE_RELAXED") and baseOrientation + Vector3.new(0, 2, 1) or baseOrientation}
+    ):Play()
+  end
+end)
 local captureSfx=sound("CozyCapture",C.Audio.Capture,.34,false)
 local lastCaptured=p:GetAttribute("CapturedBases")or 0
 bgm:Play()
