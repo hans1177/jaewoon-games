@@ -56,13 +56,17 @@ function normalizeConcurrencyLimit(value, fallback = DEFAULT_MAX_CONCURRENT_TASK
 }
 
 const UNLIMITED_RETRY_POLICY='UNLIMITED_CAUSAL_REPAIR';
+function isInternalAssetAuthoring(task={}) {
+  return task.assetQualityWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY'
+    ||task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
+}
 function unlimitedRetryEligible(input = {}) {
   const explicit=clean(input.retryPolicy).toUpperCase();
-  if(explicit===UNLIMITED_RETRY_POLICY)return true;
+  if(explicit===UNLIMITED_RETRY_POLICY||(explicit==='UNLIMITED'&&isInternalAssetAuthoring(input)))return true;
   if(explicit==='BOUNDED')return false;
   const department=clean(input.department).toLowerCase();
   const type=clean(input.type||'implementation').toLowerCase();
-  return department==='development'
+  return (department==='development'||isInternalAssetAuthoring(input))
     &&type==='implementation'
     &&input.requiresOwnerDecision!==true
     &&input.protectedChange!==true
@@ -83,7 +87,7 @@ function inferExecutionLane(input = {}) {
   const evidence=(input.evidence||[]).map(clean);
   if(status==='running'&&/candidate-awaiting-runtime-evidence|candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
   if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
-  if(input.assetProductionLane===true||evidence.includes('asset-production-parallel:v1'))return 'ASSET_DEVELOPMENT';
+  if(input.assetProductionLane===true||isInternalAssetAuthoring(input)||evidence.includes('asset-production-parallel:v1'))return 'ASSET_DEVELOPMENT';
   if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
   if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
   if(department==='system-supervision'||department==='system-ai'||['inspect','research','qa'].includes(type))return 'CONTROL_FAST';
@@ -301,10 +305,10 @@ function normalizeTask(input = {}, index = 0) {
   const unlimitedRetry=unlimitedRetryEligible(input);
   const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
   const inputEvidence=normalizeEvidence(input.evidence||[]);
-  const atomicPresentation=Boolean(input.motionRepairWorkUnit)||/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
+  const atomicPresentation=Boolean(input.motionRepairWorkUnit)||isInternalAssetAuthoring(input)||/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
     ||inputEvidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(clean(value)));
   const normalizedEvidence=atomicPresentation
-    ?[...inputEvidence,...(input.motionRepairWorkUnit?['single-object-motion-repair:v1','asset-production-parallel:v1']:[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
+    ?[...inputEvidence,...(input.motionRepairWorkUnit?['single-object-motion-repair:v1','asset-production-parallel:v1']:[]),...(input.assetQualityWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY'?['asset-production-parallel:v1']:[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
     :inputEvidence;
   // 검증 전용 후보 식별자는 큐 재정규화 뒤에도 보존한다. 구형 저장 누락은 대기 증거로만 복구한다.
   let runtimeCandidate=input.runtimeEvidenceCandidate;
@@ -335,10 +339,11 @@ function normalizeTask(input = {}, index = 0) {
     target: clean(input.target) || 'auto',
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
-    assetProductionLane: input.assetProductionLane===true || normalizedEvidence.includes('asset-production-parallel:v1'),
+    assetProductionLane: input.assetProductionLane===true || isInternalAssetAuthoring(input) || normalizedEvidence.includes('asset-production-parallel:v1'),
     presentationPass: clean(input.presentationPass).toUpperCase() || null,
     graphicsReplacementContract: normalizeSourceContract(input.graphicsReplacementContract),
     motionRepairWorkUnit: normalizeSourceContract(input.motionRepairWorkUnit),
+    assetQualityWorkUnit: normalizeSourceContract(input.assetQualityWorkUnit),
     executionLane: inferExecutionLane({...input,evidence:normalizedEvidence}),
     goal: clean(input.goal),
     responsibleFiles: freezeList(input.responsibleFiles || []),
@@ -386,7 +391,7 @@ function normalizeTask(input = {}, index = 0) {
     nextEscalationRequired: input.nextEscalationRequired === true,
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
-    speculativeEligible: atomicPresentation || input.speculativeEligible === true,
+    speculativeEligible: input.assetQualityWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY_QUALITY' ? false : atomicPresentation || input.speculativeEligible === true,
     estimatedRisk: atomicPresentation ? 'high' : (['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low'),
     atomicNeuronMode: atomicPresentation ? 'PER_TASK_MICRO_FANIN' : (clean(input.atomicNeuronMode)||null),
     atomicCompletionRequired: atomicPresentation || input.atomicCompletionRequired === true,
@@ -619,7 +624,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const candidates = [];
   queue.tasks.forEach((task, index) => {
     if (task.status !== 'queued') return;
-    if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
+    if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&!isInternalAssetAuthoring(task))){laneDeferred.push(task);return;}
     const reasons = taskBlockedReasons(task, completed);
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
@@ -703,7 +708,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     ?queue.tasks.filter((task)=>
       task.status==='queued'
       &&taskMatchesExecutionLane(task,'asset-development')
-      &&(!internalAssetOnly||task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')
+      &&(!internalAssetOnly||isInternalAssetAuthoring(task))
       &&taskBlockedReasons(task,completed).length===0
     )
     :[];
@@ -745,6 +750,26 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if(gameId)focusedGameIds.add(gameId);
     postReleaseFocusedTaskIds.push(task.id);
   };
+
+  // 기존 63개 논리 예약 안에서 Unity/Web 후보 2개를 보존한다.
+  // 실제 10+2 러너 상한은 workflow 책임이며 이 예약 수를 실행 증거로 쓰지 않는다.
+  const assetCrossPlatformFloor=demandFirst&&effectiveMax>=3?2:0;
+  const isCrossPlatformTask=(task)=>['unity','web'].includes(platform(task));
+  const crossPlatformUse=()=>[...capacityRunning,...selected].filter(isCrossPlatformTask);
+  if(assetCrossPlatformFloor&&freeSlots>0){
+    for(const row of schedulingCandidates.filter(row=>isCrossPlatformTask(row.task))){
+      if(selected.length>=freeSlots||crossPlatformUse().length>=assetCrossPlatformFloor)break;
+      if(selected.some(task=>task.id===row.task.id))continue;
+      const conflict=reservationConflictFor(row.task);
+      if(conflict){
+        if(!deferredConflicts.some(item=>item.task.id===row.task.id))deferredConflicts.push(freeze({task:row.task,reason:conflict.reason,conflictTaskId:conflict.taskId,conflictExecutionLane:conflict.executionLane,conflictBlocker:conflict.blocker}));
+        continue;
+      }
+      selected.push(row.task);active.push(row.task);
+      shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
+      noteFocusedSelection(row.task);
+    }
+  }
 
   if(webTarget&&freeSlots>0){
     for(const row of schedulingCandidates.filter(row=>platform(row.task)==='web')){
@@ -851,6 +876,12 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   return freeze({
     selected: freeze([...selected].sort((a,b)=>assetDemandRank(b)-assetDemandRank(a)||scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
     lane: laneMode,
+    assetCrossPlatformReservation:freeze({
+      minimumTasks:assetCrossPlatformFloor,
+      activeTaskIds:freezeList(crossPlatformUse().map(task=>task.id)),
+      shortfall:Math.max(0,assetCrossPlatformFloor-crossPlatformUse().length),
+      logicalReservationOnly:true
+    }),
     laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
     robloxFirstMode: robloxCandidateAvailable,
     robloxFirstDeferred: freeze(robloxFirstDeferred),

@@ -183,11 +183,11 @@ export function createVibeEditBrief({request='',target='auto',gameId=null,files=
   return Object.freeze({version:3,request:prompt,target:resolvedTarget,gameId:gameId?clean(gameId):null,responsibleFiles:Object.freeze(paths),engineAdapter,directives:Object.freeze(editDirectives(prompt,resolvedTarget,systems,quality)),protectedTargets:Object.freeze(PROTECTED.filter(x=>!prompt.includes(x))),requiredChecks:Object.freeze(unique(['변경 전 원본 일치','변경 diff 확인','보호 대상 값/키 변경 검사','문법/구조 QA','실행 회귀 QA','모바일 UI QA',...engineChecks,...engineAdapter.qa])),outputContract:Object.freeze({returnCompleteFiles:true,noWrapperPatch:true,noOverridePatch:true,checkpointBeforeWrite:true,atomicApply:true,rollbackOnFailure:true,sourceWriteAllowed:engineAdapter.mayWriteSource})});
 }
 
-export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file=null,knownBroken=false,artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef='',motionRepairWorkUnit=null}={}){
+export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file=null,knownBroken=false,artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef='',motionRepairWorkUnit=null,assetQualityWorkUnit=null}={}){
   const prompt=clean(request);
   if(!prompt)throw new Error('workbench request required');
   const resolvedTarget=targetOf(prompt,target),mode=modeOf(prompt),priority=priorityOf(prompt),systems=detectSystems(prompt),quality=detectQuality(prompt),protectedTargets=PROTECTED.filter(x=>prompt.includes(x));
-  const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||'',motionRepairWorkUnit});
+  const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||'',motionRepairWorkUnit,assetQualityWorkUnit});
   const candidates=unique([...candidateFiles(resolvedTarget,systems,quality),...engineAdapter.source.candidateFiles]);
   const structureStep=resolvedTarget==='roblox'?'roblox-games Luau/Lua/JSON 소스와 place package 구조 확인':resolvedTarget==='unreal'?'.uproject/Content/Config/Source 구조와 Animation Blueprint/Montage/State Machine 확인':resolvedTarget==='unity'?'Unity Assets/Packages/ProjectSettings 구조 확인':resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'Web source root와 승인 baseline을 확인하고 신규 구현이면 index.html bootstrap, 기존 구현이면 책임 소스를 분석';
   const steps=['현재 main 기준 대상 게임/파일 확인',structureStep,'현재 게임 규칙·밸런스·저장 구조 확인'];

@@ -563,7 +563,7 @@ function detectCompanySeedRuleIds(source,rules){
   return uniq(result);
 }
 
-export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[]}={}){
+export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[],scope='ALL_COMPANY_COMMON_SEEDS'}={}){
   const seedRows=[];
   const aggregate=new Map();
   const detectedSignalSet=new Set();
@@ -651,7 +651,7 @@ export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[]}={}){
 
   return Object.freeze({
     version:1,
-    scope:'ALL_COMPANY_COMMON_SEEDS',
+    scope:text(scope)||'ALL_COMPANY_COMMON_SEEDS',
     sourcePattern:COMPANY_COMMON_SEED_ASSET_IDEA_AXES.sourcePattern,
     seedCount:seedRows.length,
     detectedSignals:Object.freeze(detectedSignals),
@@ -1589,9 +1589,48 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
   MATERIAL:Object.freeze(['SURFACE_FAMILY','CLEAN_WORN_DAMAGED','DRY_WET_FROZEN_CORRODED','REGION_CLIMATE','RARITY_ENERGY','LIGHT_RESPONSE','LOD_COST'])
 });
 
+export const INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION=Object.freeze({
+  version:1,
+  scope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+  estimatedModificationMinutes:60,
+  workerTimeoutMinutes:60,
+  budgetMeaning:'MAX_DEEP_ACTIVE_MODIFICATION_WINDOW_NOT_COMPLETION_PROOF',
+  sameAssetUntilReviewResolved:true,
+  singleSmallPatchCompletionForbidden:true,
+  fiveMinutePolishCompletionForbidden:true,
+  noIdlePadding:true,
+  elapsedTimeIsNotQualityEvidence:true,
+  sourceScopePassIsNotQualityPass:true,
+  qualityFamilies:Object.freeze(['CHARACTER','CREATURE','MOTION','WEAPON','SKILL','BUILDING','ENVIRONMENT','WORLD_PROP','ITEM','MATERIAL','VFX','AUDIO','UI','PRESENTATION','FOLIAGE','CHARACTER_GEAR']),
+  stages:Object.freeze([
+    Object.freeze({id:'FORM_IDENTITY_AND_STRUCTURE',minutes:15,focus:Object.freeze(['SILHOUETTE','PROPORTION','STRUCTURE','ROLE_READABILITY','COMPOSITION'])}),
+    Object.freeze({id:'MATERIAL_STATE_AND_DETAIL',minutes:20,focus:Object.freeze(['MATERIAL_RESPONSE','SEAMS_CONTACTS','WEAR_CAUSE','STATE_VARIATION','UI_AUDIO_EQUIVALENT_DETAIL'])}),
+    Object.freeze({id:'MOTION_INTERACTION_AND_FEEDBACK',minutes:15,focus:Object.freeze(['MOTION_CONTACT','TRANSITION','INTERACTION_STATE','VFX_AUDIO_FEEDBACK','UI_RESPONSE'])}),
+    Object.freeze({id:'SAME_CONDITION_RUNTIME_REPAIR',minutes:10,focus:Object.freeze(['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT_OR_STATE','MOBILE_BUDGET'])})
+  ]),
+  familySpecificDepthRequired:true,
+  uiIncludes:Object.freeze(['MENU','HUD','INVENTORY','SHOP','MAP','CODEX','TOOLTIP','TOUCH_CONTROLS','LOADING_ERROR_EMPTY_SELECTED_DISABLED_STATES']),
+  audioIncludes:Object.freeze(['BGM','ADAPTIVE_MUSIC','AMBIENCE','CREATURE_VOCAL','COMBAT_SFX','SKILL_SFX','UI_SFX','DISTANCE_OCCLUSION_REVERB','MOBILE_MIX']),
+  environmentIncludes:Object.freeze(['BACKGROUND','TERRAIN','BUILDING','INTERIOR','PROP','FOLIAGE','MATERIAL','LIGHTING','ATMOSPHERE','LANDMARK','SET_DRESSING']),
+  actorIncludes:Object.freeze(['PLAYER','NPC','MONSTER','BOSS','RIG','MOTION','ACTION','HIT','DEATH','EQUIPMENT','SECONDARY_MOTION']),
+  completionRequires:Object.freeze(['MATERIAL_SOURCE_DIFF_WHEN_REPAIR_REQUIRED','FRESH_SAME_CONDITION_BEFORE_AFTER','NO_STRONG_AXIS_REGRESSION','MOBILE_OR_TARGET_BUDGET_CHECK','RUNTIME_VISUAL_OR_NATIVE_EVIDENCE_WHEN_AVAILABLE']),
+  productionPromotionAutomatic:false,
+  newWorkflow:false,
+  newQueue:false,
+  newScheduler:false,
+  newPipeline:false
+});
+
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
-  version:13,
+  version:14,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
+  productionDemandScope:'ACTIVE_GAME_DEMAND_WITH_RELEASE_PRIORITY',
+  releasedGameIdeasFirst:true,
+  otherRobloxGameIdeasRemainEligible:true,
+  unityAndWebGameIdeasRemainEligible:true,
+  qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+  qualityWorkSession:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION',
+  genericUnboundIdeaProductionForbidden:true,
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
   registry:'company-asset-library.json',
@@ -1859,6 +1898,8 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       id:text(asset?.id||asset?.assetId||asset?.atomId),
       packId:text(asset?.packId),
       family,
+      platform:upper(asset?.platform)||upper((asset?.platforms||[])[0])||null,
+      platforms:Object.freeze(uniq([asset?.platform,...(asset?.platforms||[])].map(upper).filter(Boolean))),
       subfamily:upper(asset?.subfamily||asset?.type),
       roles:Object.freeze(roles),
       consumerGameIds:Object.freeze(currentConsumers),
@@ -1936,7 +1977,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     if(repairKeys.has(repairKey))continue;
     repairKeys.add(repairKey);
     qualityRepairActions.push(Object.freeze({
-      kind,assetId:row.id,packId:row.packId||null,family:row.family,consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
+      kind,assetId:row.id,packId:row.packId||null,family:row.family,platform:row.platform,platforms:row.platforms,consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
       sourceFiles:Object.freeze(sourceFiles),sourceHash:row.sourceHash,
       sourceInspectionRequired:sourceFiles.length===0,
       weakestAxis:measured?weakest?.[0]||null:null,
@@ -1946,7 +1987,12 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       preserveAxes:Object.freeze(axes.filter(([,value])=>value>=.9).map(([axis])=>axis)),
       familyExpectations:INTERNAL_ASSET_FAMILY_EXPECTATIONS[row.family]?.expectations||Object.freeze([]),
       comparisonViews:Object.freeze(row.family==='AUDIO'?['EVENT','LOOP_SEAM','MOBILE_MIX']:['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT_OR_STATE']),
-      completionRequires:Object.freeze(['RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED','FRESH_SAME_CONDITION_COMPARISON','NO_STRONG_AXIS_REGRESSION','MOBILE_BUDGET_CHECK']),
+      estimatedModificationMinutes:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION.estimatedModificationMinutes,
+      workerTimeoutMinutes:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION.workerTimeoutMinutes,
+      qualityWorkSession:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,
+      sameAssetUntilReviewResolved:true,
+      singleSmallPatchCompletionForbidden:true,
+      completionRequires:Object.freeze([...INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION.completionRequires]),
       libraryFreshnessFingerprint:inventoryFingerprint,qualityFreshnessFingerprint:qualityFingerprint,
       productionPromotionAllowed:false,gameplayAuthority:false
     }));
@@ -2065,18 +2111,32 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],productionScopeGameIds=[],priorityGameIds=[],gameDemandScopedProduction=false}={}){
   const inventoryAssets=assets;
+  const scopedGameIds=uniq(productionScopeGameIds).map(text).filter(Boolean);
+  const scopedGameIdSet=new Set(scopedGameIds);
+  const priorityGameIdSet=new Set(uniq(priorityGameIds).map(text).filter(Boolean));
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
     &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
     &&asset?.rightsPass!==false);
   const depth=auditCommonLibrarySystemDepth({assets});
-  const seedIdeas=seedPlan?.ideas||[];
+  const allSeedIdeas=seedPlan?.ideas||[];
+  const seedIdeas=gameDemandScopedProduction
+    ?allSeedIdeas.filter(idea=>(idea?.sourceSeedIds||[]).some(id=>scopedGameIdSet.has(text(id))))
+    :allSeedIdeas;
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
   const audioRoles=uniq(audioRoleIds).map(upper);
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
+  const maintenanceBase=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
+  const maintenance=Object.freeze({
+    ...maintenanceBase,
+    gameDemandScopedProduction:gameDemandScopedProduction===true,
+    productionScopeGameIds:Object.freeze(scopedGameIds),
+    priorityGameIds:Object.freeze([...priorityGameIdSet]),
+    qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+    releasedGameDemandAffectsPriorityNotQualityEligibility:true
+  });
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -2191,48 +2251,57 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       candidates.push(Object.freeze(candidate));
       return true;
     };
-    for(const required of missing){
-      pushCandidate({
-        ideaId:[domain,required,'BASE'].join('_'),
-        source:'SYSTEM_DEPTH_GAP',
-        domain,
-        role:required,
-        priority:300
-      });
+    if(!gameDemandScopedProduction){
+      for(const required of missing){
+        pushCandidate({
+          ideaId:[domain,required,'BASE'].join('_'),
+          source:'SYSTEM_DEPTH_GAP',
+          domain,
+          role:required,
+          priority:300
+        });
+      }
     }
     for(const idea of seedIdeas.filter(row=>row.domain===domain)){
       if(candidates.length>=ideaBudget)break;
       pushCandidate({
         ideaId:idea.ideaId,
-        source:'COMPANY_COMMON_SEED_DEMAND',
+        source:gameDemandScopedProduction?'GAME_DEMAND':'COMPANY_COMMON_SEED_DEMAND',
         domain,
         role:idea.role,
         stateVariants:idea.stateVariants,
-        priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)
+        sourceGameIds:Object.freeze(uniq(idea.sourceSeedIds||[]).filter(id=>!gameDemandScopedProduction||scopedGameIdSet.has(text(id)))),
+        sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),
+        worldThemes:Object.freeze([...(idea.worldThemes||[])]),
+        gameDemandScoped:gameDemandScopedProduction,
+        releasePriority:uniq(idea.sourceSeedIds||[]).some(id=>priorityGameIdSet.has(text(id))),
+        priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)+(uniq(idea.sourceSeedIds||[]).some(id=>priorityGameIdSet.has(text(id)))?120:0)
       });
     }
-    const domainPool=uniq([...(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[]),...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS[domain]||[])]);
-    for(const ideaId of domainPool){
-      if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
-      pushCandidate({
-        ideaId,
-        source:'DOMAIN_IDEA_POOL',
-        domain,
-        role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
-        priority:150
-      });
-    }
-    let slot=1;
-    while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin&&slot<=9999){
-      const ideaId=[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_');
-      slot++;
-      pushCandidate({
-        ideaId,
-        source:'LOOSE_VOLUME_TARGET',
-        domain,
-        role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
-        priority:120
-      });
+    if(!gameDemandScopedProduction){
+      const domainPool=uniq([...(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[]),...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS[domain]||[])]);
+      for(const ideaId of domainPool){
+        if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
+        pushCandidate({
+          ideaId,
+          source:'DOMAIN_IDEA_POOL',
+          domain,
+          role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
+          priority:150
+        });
+      }
+      let slot=1;
+      while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin&&slot<=9999){
+        const ideaId=[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_');
+        slot++;
+        pushCandidate({
+          ideaId,
+          source:'LOOSE_VOLUME_TARGET',
+          domain,
+          role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
+          priority:120
+        });
+      }
     }
     domains.push(Object.freeze({
       domain,
@@ -2262,7 +2331,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const state=currentCount<band.targetMin?'EXPAND_TOWARD_RECOMMENDED_RANGE':
       currentCount<=band.targetMax?'HEALTHY_VOLUME':
       currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
-    const suggestedCount=Math.min(12,Math.max(0,band.targetMin-currentCount));
+    const suggestedCount=gameDemandScopedProduction?0:Math.min(12,Math.max(0,band.targetMin-currentCount));
     const pool=COMMON_UI_SUBSYSTEM_IDEA_POOLS[id]||[];
     const suggestedIdeas=[],candidateKeys=new Set();
     const pushUiIdea=(ideaId,source,priority)=>{
@@ -2317,8 +2386,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,sourceGameIds:Object.freeze([...(idea.sourceGameIds||[])]),sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),worldThemes:Object.freeze([...(idea.worldThemes||[])]),gameDemandScoped:idea.gameDemandScoped===true,releasePriority:idea.releasePriority===true,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
+    ...(!gameDemandScopedProduction?uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))):[])
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96).sort((a,b)=>{
     const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
     const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
@@ -2382,6 +2451,14 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       });
   return Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
+    gameDemandScopedProduction:gameDemandScopedProduction===true,
+    productionScopeGameIds:Object.freeze(scopedGameIds),
+    priorityGameIds:Object.freeze([...priorityGameIdSet]),
+    releasedGameDemandAvailable:priorityGameIdSet.size>0,
+    unscopedGenericIdeaProductionForbidden:gameDemandScopedProduction===true,
+    qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+    qualityWorkSession:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,
+    releasedGameDemandAffectsPriorityNotQualityEligibility:true,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
     domains:Object.freeze(sortedDomains),

@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 176,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2527,7 +2527,10 @@
       "VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=YES",
       "VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=",
       "VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES",
-      "VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES"
+      "VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES",
+      "VIBE2_ASSET_FIXED_RUNNER_SLOTS=12",
+      "VIBE2_ASSET_RUNNER_PARTITION=ROBLOX_RELEASE_PRIORITY_10+UNITY_WEB_2",
+      "VIBE2_RELEASE_GAME_BUILD_UP_SHARE="
     ],
     "taskEligibility": "assetProductionLane=true OR asset-production-parallel:v1 evidence",
     "gamePrimaryCapacityMustRemainIndependent": true,
@@ -2564,7 +2567,19 @@
       "workerModelRepullObserved": true,
       "workerModelRepullBytesApprox": 1400000000,
       "repairTargetCache": "vibe2-ollama-v5-Linux-ARM64-qwen3-1.7b"
-    }
+    },
+    "fixedWorkerSlots": 12,
+    "logicalLaneMax": 63,
+    "workerPartition": {
+      "robloxPrioritySlots": 10,
+      "unityWebReservedSlots": 2,
+      "releasedRobloxFirst": true,
+      "otherRobloxEligible": true,
+      "unityWebEligible": true
+    },
+    "fullLibraryQualitySessionMinutes": 60,
+    "repeatReleasedGameQualityUntilDebtClosed": true,
+    "releasedGameBuildUpShareMarker": "VIBE2_RELEASE_GAME_BUILD_UP_SHARE="
   },
   "assetArmSchedulerEpochEvidence": {
     "version": 3,
@@ -3287,7 +3302,7 @@
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
-    "version": 1,
+    "version": 2,
     "concurrentSlots": 63,
     "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
     "normalOperationsOwner": "VIBE2_VIBE3",
@@ -3316,8 +3331,17 @@
       "RUNNING_ASSET_TASK_COUNT",
       "GAME_AND_ASSET_IDENTITY",
       "SOURCE_DIFF",
-      "NATIVE_BEFORE_AFTER_AND_MOBILE_QA"
-    ]
+      "NATIVE_BEFORE_AFTER_AND_MOBILE_QA",
+      "FULL_RELEASE_GAME_BUILD_UP_SHARE",
+      "SAME_CONDITION_BEFORE_AFTER",
+      "TARGET_RUNTIME_QUALITY_DEBT_STATUS"
+    ],
+    "fullLibraryQualityScope": "ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS",
+    "fullLibraryQualitySessionMinutes": 60,
+    "releasedGameRepeatUntilMaterialQualityDebtClosed": true,
+    "scoreOnlyPassForbidden": true,
+    "elapsedTimeOnlyPassForbidden": true,
+    "designBuildUpShareRequiredBeforeReleasedWork": true
   },
   "fixedRepeatDevelopment64EvidenceContract": {
     "version": 1,

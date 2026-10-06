@@ -1,5 +1,5 @@
 {
-  "version": 78,
+  "version": 79,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -617,7 +617,12 @@
       "styleLockDeviationMayRequireRepair": true,
       "directCrossPlatformBinaryReuseForbidden": true,
       "positiveLearningRequiresVerifiedRuntimePass": true,
-      "rawTelemetryDirectTrainingForbidden": true
+      "rawTelemetryDirectTrainingForbidden": true,
+      "internalAssetQualityWorkRequiresExactRegisteredAssetAndResponsibleSource": true,
+      "internalAssetQualityWorkMayNotExpandToGameBalanceSaveOrNetworkAuthority": true,
+      "releaseGameBuildUpShareCannotInventMissingRuntimeOrDesignEvidence": true,
+      "buildUpShareCannotReplaceExistingQaRuntimeOrReleaseGates": true,
+      "fixedTwelveAssetWorkersDoNotCreateNewQueueSchedulerOrPipeline": true
     },
     "failureAction": "ASSET_REPAIR_REQUIRED_OR_LIBRARY_QUARANTINE_BY_SCOPE"
   },
@@ -1262,7 +1267,7 @@
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
-    "version": 1,
+    "version": 2,
     "concurrentSlots": 63,
     "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
     "normalOperationsOwner": "VIBE2_VIBE3",
@@ -1285,7 +1290,15 @@
     "safeWorkShortageMayLeaveSlotsIdle": true,
     "actualRuntimeAndBeforeAfterRequiredForQualityPass": true,
     "sourceOnlyPassIsNotQualityPass": true,
-    "newWorkflowQueueOrScheduler": false
+    "newWorkflowQueueOrScheduler": false,
+    "fullLibraryQualityScope": "ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS",
+    "qualitySessionMinutes": 60,
+    "fiveMinutePolishCompletionForbidden": true,
+    "scoreOnlyPassForbidden": true,
+    "elapsedTimeOnlyPassForbidden": true,
+    "releasedGameRepeatUntilMaterialQualityDebtClosed": true,
+    "runtimeBeforeAfterRequired": true,
+    "productionVerificationCannotBeInferredFromInternalQuality": true
   },
   "narrativeStorySecurity": {
     "causalGameGrammar": {

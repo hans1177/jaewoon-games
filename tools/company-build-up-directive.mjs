@@ -680,7 +680,7 @@ function escalationDepthInfo({previousDirective=null,previousOutcome='',currentS
   });
 }
 
-function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInfo={}}={}){
+function buildAllDomainDirectives({states=[],design={},source={},platform='COMMON',focus='CORE_FUN',depthInfo={}}={}){
   const identity=design.identity||'현재 게임';
   const anchor=primaryDesignAnchor(design);
   const secondary=secondaryDesignAnchor(design);
@@ -769,6 +769,16 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     RUNTIME_STABILITY:`핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.`,
     ERROR_RECOVERY:`재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.`
   };
+  const combatDomains=new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','GAME_FEEL','SPAWN_ENCOUNTER_DIRECTOR']);
+  const progressionDomains=new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','REPLAYABILITY_VARIATION','ANTI_GRIND']);
+  const worldDomains=new Set(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','LANDMARKS','TRAVERSAL','WORLD_DENSITY','WORLD_NAVIGATION','CONTENT_DENSITY','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ENVIRONMENTAL_MOTION']);
+  const uiDomains=new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_HUD','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','TUTORIAL_ONBOARDING','FIRST_10_MINUTES']);
+  const presentationDomains=new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING']);
+  const reliabilityDomains=new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY']);
+  const multiplayerRequired=/multi|coop|co-op|pvp|player|멀티|협동|대전/i.test(clean(design.multiplayerMode)+' '+clean(design.coreFun)+' '+(design.coreLoop||[]).join(' '));
+  const platformToken=clean(platform).toUpperCase()||'COMMON';
+  const sourceSignals=source?.signals&&typeof source.signals==='object'?source.signals:{};
+  const sourceAnchors=(source?.sourceAnchors||[]).slice(0,12).map(row=>({file:clean(row?.file),line:Number(row?.line||0),kind:clean(row?.kind),text:clean(row?.text).slice(0,240)}));
   return states.map(state=>{
     const notApplicable=state.state==='NOT_APPLICABLE';
     const focusMatch=focusDomains[focus]?.has(state.domain)===true;
@@ -776,13 +786,134 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     const directive=notApplicable
       ?`현재 승인 설계상 ${state.reason}. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.`
       :instructions[state.domain]||`${identity}의 ${state.domain} 영역을 ${anchor}와 연결해 실제 플레이 변화가 생기도록 심화한다.`;
+    const category=combatDomains.has(state.domain)?'INTERACTION_AND_COMBAT'
+      :progressionDomains.has(state.domain)?'PROGRESSION_AND_META'
+      :worldDomains.has(state.domain)?'WORLD_AND_ENVIRONMENT'
+      :uiDomains.has(state.domain)?'INPUT_UI_AND_ONBOARDING'
+      :presentationDomains.has(state.domain)?'PRESENTATION_AND_FEEDBACK'
+      :reliabilityDomains.has(state.domain)?'RELIABILITY_AND_RUNTIME'
+      :'CONNECTED_GAME_SYSTEM';
+    const implementationSpecification=Object.freeze({
+      category,
+      objective:directive,
+      currentEvidence:Object.freeze({
+        sourceTreeFingerprint:clean(source?.sourceTreeFingerprint)||null,
+        sourceSignals:Object.freeze({...sourceSignals}),
+        sourceAnchors:Object.freeze(sourceAnchors.map(row=>Object.freeze({...row}))),
+        evidenceRule:'MISSING_EVIDENCE_STAYS_UNKNOWN; DO_NOT_INVENT_CURRENT_IMPLEMENTATION'
+      }),
+      whatMustExist:notApplicable
+        ?'새 설계 근거 전까지 신규 구현 금지'
+        :`${state.domain}의 플레이어 체감 가능한 실제 구현. 설명문·마커·상수·빈 UI·장식만으로 대체 금지.`,
+      triggerAndPreconditions:notApplicable
+        ?'NOT_APPLICABLE'
+        :`승인 설계의 ${anchor} 또는 ${secondary}와 연결되는 실제 게임 상태/입력/월드 사건에서 시작 조건을 명시한다. 현재 소스에 없는 조건을 임의로 만들지 않는다.`,
+      authoritativeStateChange:notApplicable
+        ?'NOT_APPLICABLE'
+        :combatDomains.has(state.domain)
+          ?'입력/AI 판단→준비·전조→권위 판정→결과 상태→회복/다음 선택을 기존 상태 책임 시스템에 연결한다. 데미지·체력·쿨다운·히트 규칙은 승인 없이 변경 금지.'
+          :progressionDomains.has(state.domain)
+            ?'목표/획득/사용/완료→권위 진행 상태→보상·해금→다음 선택을 기존 저장·경제·인벤토리 책임과 연결한다. 기존 수치 의미는 유지한다.'
+            :worldDomains.has(state.domain)
+              ?'지역/오브젝트/환경 상태가 실제 이동·탐색·전투·상호작용 결과와 연결되게 하며 장식용 배치만으로 완료 처리하지 않는다.'
+              :uiDomains.has(state.domain)
+                ?'표시 상태는 실제 authoritative/gameplay 상태의 읽기 모델을 사용하며 UI가 별도 가짜 상태를 소유하지 않는다.'
+                :presentationDomains.has(state.domain)
+                  ?'시각·모션·오디오 표현은 실제 gameplay/state event에 바인딩하고 판정 권한을 표현 계층으로 이동하지 않는다.'
+                  :'기존 책임 상태를 직접 읽고 수정하며 별도 shadow state를 만들지 않는다.',
+      playerVisibleFeedback:notApplicable
+        ?'NOT_APPLICABLE'
+        :presentationDomains.has(state.domain)
+          ?'게임 카메라에서 시작·진행·성공·실패·회복 상태가 형태/모션/VFX/카메라/오디오/UI 중 적용 가능한 채널로 구별되어야 한다.'
+          :'입력 또는 상태 변화 직후 무엇이 바뀌었는지, 왜 성공/실패했는지, 다음 행동이 무엇인지 실제 플레이 화면에서 확인 가능해야 한다.',
+      systemConnections:notApplicable
+        ?Object.freeze([])
+        :Object.freeze(uniq([
+          anchor,secondary,progression,
+          combatDomains.has(state.domain)?'COMBAT_OR_PRIMARY_INTERACTION':null,
+          progressionDomains.has(state.domain)?'PROGRESSION_SAVE_REWARD':null,
+          worldDomains.has(state.domain)?'WORLD_NAVIGATION_AND_CONTENT':null,
+          uiDomains.has(state.domain)?'INPUT_UI_AUTHORITATIVE_STATE':null,
+          presentationDomains.has(state.domain)?'GAMEPLAY_EVENT_PRESENTATION_TIMELINE':null,
+          reliabilityDomains.has(state.domain)?'RUNTIME_RECOVERY_AND_STATE_INTEGRITY':null
+        ]).filter(Boolean)),
+      failureAndRecovery:notApplicable
+        ?'NOT_APPLICABLE'
+        :reliabilityDomains.has(state.domain)
+          ?'실패/중단/재접속/재시작/중복입력/부분 초기화 경로를 실제로 재현하고 안전 복구한다. 오류를 숨기거나 기본값으로 덮어 PASS하지 않는다.'
+          :'실패 조건·취소 조건·사용 불가 이유·재시도/복귀 경로를 구현하고 진행 막힘이나 무한 대기를 남기지 않는다.',
+      mobileContract:notApplicable
+        ?'NOT_APPLICABLE'
+        :`${platformToken} 대상에서 터치 우선 가독성, safe-area, 화면 잘림, 스크롤, 버튼 중복입력, 전투/이동 중 조작 가림, 저사양 프레임 영향을 확인한다.`,
+      multiplayerContract:notApplicable
+        ?'NOT_APPLICABLE'
+        :multiplayerRequired
+          ?'적용되는 상태는 서버/권위 소유자를 명시하고 2명 이상에서 참가·행동·결과·보상·이탈·재접속 동기화를 검증한다. 클라이언트 표시를 권위 판정으로 사용 금지.'
+          :'설계상 멀티 근거가 없으면 멀티 규칙을 새로 만들지 않는다.',
+      saveContract:notApplicable
+        ?'NOT_APPLICABLE'
+        :progressionDomains.has(state.domain)||['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','INVENTORY','EQUIPMENT_LOADOUT','QUESTS','UNLOCKS'].includes(state.domain)
+          ?'기존 저장 키·버전·의미를 보존하고 변경된 상태가 저장/불러오기/재접속 후 동일하게 복원되는지 검증한다. 구조 변경 필요 시 명시적 마이그레이션만 허용.'
+          :'저장 의미를 건드리지 않는다. 표현/UI 변경이 저장 구조를 새로 소유하지 않는다.',
+      performanceContract:notApplicable
+        ?'NOT_APPLICABLE'
+        :worldDomains.has(state.domain)||presentationDomains.has(state.domain)||['PERFORMANCE','PERFORMANCE_BUDGET'].includes(state.domain)
+          ?'객체/드로우/파티클/오디오 보이스/update 빈도/메모리/스트리밍/LOD 비용을 실제 대상 플랫폼과 모바일 예산에서 확인하고, 품질을 낮추기 전에 불필요한 반복·수명·업데이트 비용부터 줄인다.'
+          :'기존 프레임/메모리/네트워크 비용을 악화시키지 않는지 회귀 확인한다.',
+      assetAndPresentationContract:notApplicable
+        ?'NOT_APPLICABLE'
+        :`현재 라이브러리의 호환 자산을 먼저 평가하고 낮은 내부 점수만으로 사용 금지하지 않는다. 빈 placeholder 대신 안전한 실제 자산을 사용하되 Visual Debt를 열어 두고 ${state.domain}의 실루엣·구조·재질·모션·상태·가독성 약점을 후속 60분 품질 세션에서 반복 개선한다.`,
+      implementationSteps:notApplicable?Object.freeze([]):Object.freeze([
+        '1_CURRENT_SOURCE_AND_RUNTIME_EVIDENCE_READ',
+        '2_EXACT_RESPONSIBLE_STATE_FUNCTION_OR_ASSET_BINDING_IDENTIFIED',
+        '3_EXISTING_BEHAVIOR_AND_PROTECTED_SEMANTICS_LOCKED',
+        '4_TRIGGER_PRECONDITION_AND_FAILURE_PATH_IMPLEMENTED',
+        '5_AUTHORITATIVE_STATE_CHANGE_IMPLEMENTED_IN_EXISTING_OWNER',
+        '6_PLAYER_VISIBLE_FEEDBACK_AND_NEXT_ACTION_CONNECTED',
+        '7_MOBILE_AND_APPLICABLE_MULTIPLAYER_SAVE_PATH_RECHECKED',
+        '8_SAME_SCENARIO_BEFORE_AFTER_CAPTURED',
+        '9_REGRESSION_AND_PERFORMANCE_CHECKED',
+        '10_ONLY_THEN_MARK_CURRENT_SCOPE_VERIFIED'
+      ]),
+      runtimeScenarios:notApplicable?Object.freeze([]):Object.freeze([
+        'HAPPY_PATH_FROM_REAL_PLAYER_INPUT_TO_OBSERVABLE_RESULT',
+        'INVALID_OR_UNAVAILABLE_INPUT_SHOWS_REASON_WITHOUT_STATE_CORRUPTION',
+        'FAILURE_OR_CANCEL_PATH_RECOVERS_WITHOUT_PROGRESS_BLOCKER',
+        'RETRY_OR_RESTART_DOES_NOT_DUPLICATE_EVENT_REWARD_OR_HANDLER',
+        'MOBILE_TOUCH_AND_SMALL_SCREEN_PATH',
+        ...(multiplayerRequired?['TWO_PLUS_PLAYER_STATE_AND_RESULT_CONSISTENCY','LEAVE_REJOIN_OR_LATE_JOIN_RECOVERY']:[]),
+        ...(progressionDomains.has(state.domain)?['SAVE_LOAD_REJOIN_STATE_PRESERVATION']:[]),
+        ...(presentationDomains.has(state.domain)?['GAME_CAMERA_BEFORE_AFTER_READABILITY_AND_TIMING']:[])
+      ]),
+      requiredEvidence:notApplicable?Object.freeze(['DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION']):Object.freeze([
+        'EXACT_RESPONSIBLE_SOURCE_PATH_AND_ANCHOR',
+        'REAL_SOURCE_OR_ASSET_BINDING_DELTA',
+        'SAME_SCENARIO_BEFORE_AFTER',
+        'RELEVANT_INCREMENTAL_QA',
+        'TARGET_RUNTIME_OR_PLAY_EVIDENCE',
+        'NO_PROTECTED_SEMANTIC_REGRESSION',
+        'MOBILE_EVIDENCE',
+        ...(multiplayerRequired?['TWO_PLUS_PLAYER_EVIDENCE']:[]),
+        ...(progressionDomains.has(state.domain)?['SAVE_REJOIN_EVIDENCE_WHEN_STATE_PERSISTS']:[])
+      ]),
+      prohibitedSubstitutes:Object.freeze([
+        'MARKER_OR_COMMENT_ONLY',
+        'SELF_REPORTED_PASS_WITHOUT_RUNTIME',
+        'STATIC_SCREEN_WITHOUT_INTERACTION',
+        'COLOR_OR_NUMBER_ONLY_VARIANT_WHEN_BEHAVIOR_OR_IDENTITY_GAP_EXISTS',
+        'NEW_WRAPPER_OVERRIDE_OR_SHADOW_PIPELINE',
+        'UNVERIFIED_SCORE_ONLY_COMPLETION',
+        'ELAPSED_TIME_ONLY_COMPLETION'
+      ])
+    });
     return Object.freeze({
       domain:state.domain,
       state:state.state,
       priority,
       developmentDepth:depth,
       directive,
-      implementationContract:'WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE',
+      implementationContract:'WHAT→TRIGGER/PRECONDITION→AUTHORITATIVE_STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→FAILURE_RECOVERY→MOBILE/MULTIPLAYER/SAVE→RUNTIME_ACCEPTANCE',
+      implementationSpecification,
       acceptance:notApplicable?'DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION':'REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED'
     });
   });
@@ -1443,7 +1574,7 @@ export function buildGameSpecificBuildUpDirective({
     ?baseStates.map(row=>designlessAllowedDomains.has(row.domain)?row:{domain:row.domain,state:'NOT_APPLICABLE',reason:'designless source-safe BUILD_UP cannot expand gameplay/progression semantics'})
     :baseStates;
   const gaps=states.filter(x=>x.state==='GAP');
-  const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,focus,depthInfo});
+  const allDomainImplementationDirectives=buildAllDomainDirectives({states,design,source,platform,focus,depthInfo});
   const topFiles=uniq([...(responsibleFiles||[]),...(source?.topFiles||[]).map(x=>x.file)]).slice(0,16);
   const primarySourceAnchors=selectPrimarySourceAnchors(source,responsibleFiles,8);
   const exactAnchorLabel=primarySourceAnchors.length?primarySourceAnchors.map(row=>row.file+'::'+row.symbol).join(', '):(topFiles[0]||'CURRENT_GAME_SOURCE');
@@ -1721,6 +1852,93 @@ export function buildGameSpecificBuildUpDirective({
       'wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.'
     ],
     responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:sourceResponsibilities,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true,currentAndIntendedBehaviorRequiredPerPrimaryAnchor:true},
+    ownerBuildUpShare:Object.freeze({
+      version:2,
+      sharingContract:Object.freeze({
+        requiredBeforeReleasedGameWork:true,
+        exactSameObjectMustReachPlannerWorkOrderAndActionsLog:true,
+        requiredSections:Object.freeze(['DESIGN','BUILD_UP','CURRENT_RUNTIME','CURRENT_IMPLEMENTATION','IMPLEMENTATION_SPECIFICATION','QUALITY_GAPS','ASSET_MOTION_UI_AUDIO','RESPONSIBILITY','ACCEPTANCE','NEXT_GENERATION']),
+        terseSummaryCannotReplaceDetailedSpecification:true,
+        hiddenImplementationAssumptionsForbidden:true
+      }),
+      gameId:id,
+      gameName:clean(gameName)||id,
+      platform:productionPlatform,
+      directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
+      generation,
+      developmentDepth:depthInfo.developmentDepth,
+      escalationStage:depthInfo.escalationStage,
+      design:Object.freeze({
+        contextMode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN':'APPROVED_OR_MINIMUM_DESIGN',
+        identity,
+        coreFun:clean(design.coreFun)||null,
+        coreLoop:Object.freeze([...(design.coreLoop||[])]),
+        signatureSystems:Object.freeze((design.signatureSystems||[]).map(row=>Object.freeze({name:clean(row?.name)||null,purpose:clean(row?.purpose)||null,playerChoice:clean(row?.playerChoice)||null}))),
+        progressionDirection:clean(design.progressionDirection)||null,
+        multiplayerMode:clean(design.multiplayerMode)||null,
+        visualDirection:clean(design.visualDirection)||null,
+        playerFantasy:clean(design.playerFantasy)||null,
+        narrativeWorldRules:Object.freeze([...(design.narrativeWorldRules||[])]),
+        contentExpansionPlan:Object.freeze([...(design.contentExpansionPlan||[])])
+      }),
+      buildUp:Object.freeze({
+        primaryFocus:focus,
+        primaryGoal:goal,
+        primaryGoalReason:safeDesignlessMode
+          ?`검증된/최소 디자인이 아직 없어 ${focus}만 기존 실제 소스에서 안전하게 개선한다.`
+          :`현재 검증 신호와 소스에서 ${focus}를 우선한다.`,
+        previousOutcome:depthInfo.previousOutcome,
+        previousGoal:clean(previousDirective?.thisLoopPrimaryGoal)||null,
+        nextAction:clean(nextActionDecision?.action)||null,
+        nextActionReason:clean(nextActionDecision?.reason)||null,
+        nextEscalationCandidates:Object.freeze([...nextCandidates]),
+        automaticNextGeneration:generation+1
+      }),
+      currentRuntime:Object.freeze(runtimeEvidence&&Object.keys(runtimeEvidence).length?{...runtimeEvidence}:{state:'UNKNOWN_NOT_INVENTED'}),
+      currentImplementation:Object.freeze({
+        sourceTreeFingerprint:source.sourceTreeFingerprint,
+        observations:Object.freeze([...(source.observations||[])]),
+        signals:Object.freeze({...((source.signals&&typeof source.signals==='object')?source.signals:{})}),
+        topFiles:Object.freeze([...(source.topFiles||[])]),
+        sourceAnchors:Object.freeze([...(source.sourceAnchors||[])])
+      }),
+      implementationSpecification:Object.freeze({
+        detailLevel:'EXECUTABLE_SYSTEM_SPEC_NOT_SUMMARY',
+        everyApplicableDomainRequiresExplicitImplementationSpecification:true,
+        domains:Object.freeze(allDomainImplementationDirectives.map(row=>Object.freeze({domain:row.domain,state:row.state,priority:row.priority,directive:row.directive,implementationSpecification:row.implementationSpecification,acceptance:row.acceptance}))),
+        selectedNow:Object.freeze(allDomainImplementationDirectives.filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).map(row=>row.domain)),
+        monitorOrConnect:Object.freeze(allDomainImplementationDirectives.filter(row=>row.priority==='MONITOR_OR_CONNECT').map(row=>row.domain)),
+        notApplicable:Object.freeze(allDomainImplementationDirectives.filter(row=>row.priority==='NOT_APPLICABLE').map(row=>row.domain)),
+        noImplicitGapFilling:true,
+        missingEvidenceRemainsUnknown:true,
+        runtimeProofRequired:true
+      }),
+      quality:Object.freeze({
+        detectedGaps:Object.freeze([...gaps]),
+        qualityGapMap:Object.freeze(states.map(row=>Object.freeze({...row}))),
+        allDomainImplementationDirectives:Object.freeze(allDomainImplementationDirectives.map(row=>Object.freeze({...row}))),
+        visualBuildUp:Object.freeze(buildVisualDirective({gameId:id,design,source,focus})),
+        experienceBuildUp:Object.freeze(buildExperienceBuildupContract({platform,design,source,focus})),
+        internalAssetEvolution:Object.freeze({
+          evaluateAllLibrariesAndFamiliesEveryCycle:true,
+          sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists:true,
+          runtimeAndDeploymentEvidenceRequired:true,
+          generationLimit:null
+        })
+      }),
+      responsibility:Object.freeze({
+        files:Object.freeze([...topFiles]),
+        sourceAnchors:Object.freeze([...sourceResponsibilities]),
+        exactSourceAnchorRequired:true
+      }),
+      acceptance:Object.freeze({
+        evidence:Object.freeze([...effectiveAcceptance]),
+        requiredPostChangeEvidence:Object.freeze(['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT']),
+        sourceDeltaAloneDoesNotProvePlayerValueImprovement:true,
+        elapsedTimeAloneDoesNotProveCompletion:true,
+        scoreAloneDoesNotProveCompletion:true
+      })
+    }),
     developmentImpact,
     preMutationDryRun,
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
