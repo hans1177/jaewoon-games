@@ -72,6 +72,9 @@ on:
       - 'tools/vibe2-practice-distillation.mjs'
       - 'tools/vibe2-learning-motor.mjs'
       - 'tools/vibe2-learning-practice-worker.mjs'
+      - 'tools/vibe2-fast-distillation-stage.mjs'
+      - 'tools/vibe2-distillation-status.mjs'
+      - 'tools/vibe2-weight-learning.mjs'
       - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
@@ -117,6 +120,9 @@ on:
       - 'qa/vibe2-code-pattern-ingest.test.mjs'
       - 'qa/vibe2-learning-practice-worker.test.mjs'
       - 'qa/vibe2-external-ai-distillation.test.mjs'
+      - 'qa/vibe2-fast-distillation-stage.test.mjs'
+      - 'qa/vibe2-distillation-status.test.mjs'
+      - 'qa/vibe2-weight-learning.test.mjs'
       - 'qa/vibe2-web-experience-ingest.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
@@ -183,6 +189,9 @@ on:
       - 'tools/vibe2-practice-distillation.mjs'
       - 'tools/vibe2-learning-motor.mjs'
       - 'tools/vibe2-learning-practice-worker.mjs'
+      - 'tools/vibe2-fast-distillation-stage.mjs'
+      - 'tools/vibe2-distillation-status.mjs'
+      - 'tools/vibe2-weight-learning.mjs'
       - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
@@ -268,6 +277,9 @@ jobs:
           node --check tools/vibe2-external-ai-distillation.mjs
           node --check tools/vibe2-practice-distillation.mjs
           node --check tools/vibe2-multisource-learning-collector.mjs
+          node --check tools/vibe2-fast-distillation-stage.mjs
+          node --check tools/vibe2-distillation-status.mjs
+          node --check tools/vibe2-weight-learning.mjs
           node --check qa/vibe2-post-release-focus.test.mjs
           node --check qa/vibe2-release-dispatch-recovery.test.mjs
           node --check qa/vibe2-continuous-release-dispatch.test.mjs
@@ -366,6 +378,7 @@ jobs:
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test qa/vibe2-practice-distillation.test.mjs
           node --test qa/vibe2-external-ai-distillation.test.mjs
+          node --test qa/vibe2-fast-distillation-stage.test.mjs qa/vibe2-distillation-status.test.mjs qa/vibe2-weight-learning.test.mjs
           node --test qa/vibe2-web-experience-ingest.test.mjs
           node --test qa/vibe2-owner-rule1-continuity.test.mjs
           node --test qa/vibe2-owner-rule2-external-ai.test.mjs

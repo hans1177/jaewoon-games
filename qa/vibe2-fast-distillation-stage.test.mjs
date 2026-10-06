@@ -18,6 +18,7 @@ function verifiedSample({ project = 'P0001', index, taskType = 'bugfix', playImp
     difficulty: taskType === 'unity' ? 'unity-build' : 'bug',
     independentQa: 'PASS',
     browserQa: 'PASS',
+    verification: { runtime: 'PASS' },
   };
   if (quality) {
     record.quality = {
