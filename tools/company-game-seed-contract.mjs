@@ -222,57 +222,58 @@ function validateGameplaySketch(sketch,errors){
   const narrative=sketch.narrativeDepth;
   if(!narrative||typeof narrative!=='object'||Array.isArray(narrative)){
     errors.push('GAMEPLAY_SKETCH.narrativeDepth is required for version 3+');
-    return;
+  }else{
+    if(typeof narrative.applicable!=='boolean')errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable boolean is required for version 3+');
+    if(!isNonEmptyString(narrative.storyWeight)||!['LIGHT','MEDIUM','HEAVY'].includes(String(narrative.storyWeight).toUpperCase()))errors.push('GAMEPLAY_SKETCH.narrativeDepth.storyWeight must be LIGHT/MEDIUM/HEAVY');
+    if(!isNonEmptyString(narrative.worldConflict))errors.push('GAMEPLAY_SKETCH.narrativeDepth.worldConflict is required for version 3+');
+    if(!isNonEmptyString(narrative.mainStoryArc))errors.push('GAMEPLAY_SKETCH.narrativeDepth.mainStoryArc is required for version 3+');
+    if(narrative.applicable===true){
+      const narrativeArrays=[
+        ['narrativeDnaSources',2],
+        ['npcRelationshipWeb',2],
+        ['companionArcs',1],
+        ['mainSubquestLinks',2],
+        ['foreshadowPayoffs',2],
+        ['factionCultureHooks',2],
+        ['historicalMythReinterpretations',2],
+        ['worldbuildingFusion',3],
+        ['storySystemLinks',3],
+        ['contentCausalityLinks',4],
+        ['worldEvolutionHooks',2],
+        ['culturalRespectRules',3]
+      ];
+      for(const [field,min] of narrativeArrays){
+        if(!Array.isArray(narrative[field])||uniq(narrative[field]).length<min)errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} requires at least ${min} meaningful items for version 3+`);
+      }
+      const narrativeFamilySet=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
+      for(const family of uniq(narrative.narrativeDnaSources)){
+        if(!narrativeFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.narrativeDnaSources invalid family: ${family}`);
+      }
+      const rightsSet=new Set(GAMEPLAY_NARRATIVE_RIGHTS_MODES);
+      for(const mode of uniq(narrative.rightsModes)){
+        if(!rightsSet.has(mode))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.rightsModes invalid mode: ${mode}`);
+      }
+      if(!Array.isArray(narrative.rightsModes)||uniq(narrative.rightsModes).length<1)errors.push('GAMEPLAY_SKETCH.narrativeDepth.rightsModes requires at least 1 rights mode');
+    }
   }
-  if(typeof narrative.applicable!=='boolean')errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable boolean is required for version 3+');
-  if(!isNonEmptyString(narrative.storyWeight)||!['LIGHT','MEDIUM','HEAVY'].includes(String(narrative.storyWeight).toUpperCase()))errors.push('GAMEPLAY_SKETCH.narrativeDepth.storyWeight must be LIGHT/MEDIUM/HEAVY');
-  if(!isNonEmptyString(narrative.worldConflict))errors.push('GAMEPLAY_SKETCH.narrativeDepth.worldConflict is required for version 3+');
-  if(!isNonEmptyString(narrative.mainStoryArc))errors.push('GAMEPLAY_SKETCH.narrativeDepth.mainStoryArc is required for version 3+');
-  if(narrative.applicable===true){
-    const narrativeArrays=[
-      ['narrativeDnaSources',2],
-      ['npcRelationshipWeb',2],
-      ['companionArcs',1],
-      ['mainSubquestLinks',2],
-      ['foreshadowPayoffs',2],
-      ['factionCultureHooks',2],
-      ['historicalMythReinterpretations',2],
-      ['worldbuildingFusion',3],
-      ['storySystemLinks',3],
-      ['contentCausalityLinks',4],
-      ['worldEvolutionHooks',2],
-      ['culturalRespectRules',3]
-    ];
-    for(const [field,min] of narrativeArrays){
-      if(!Array.isArray(narrative[field])||uniq(narrative[field]).length<min)errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} requires at least ${min} meaningful items for version 3+`);
-    }
-    const narrativeFamilySet=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
-    for(const family of uniq(narrative.narrativeDnaSources)){
-      if(!narrativeFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.narrativeDnaSources invalid family: ${family}`);
-    }
-    const rightsSet=new Set(GAMEPLAY_NARRATIVE_RIGHTS_MODES);
-    for(const mode of uniq(narrative.rightsModes)){
-      if(!rightsSet.has(mode))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.rightsModes invalid mode: ${mode}`);
-    }
-    if(!Array.isArray(narrative.rightsModes)||uniq(narrative.rightsModes).length<1)errors.push('GAMEPLAY_SKETCH.narrativeDepth.rightsModes requires at least 1 rights mode');
-  }
-}
 
   const style=sketch.styleWorldDepth;
   if(!style||typeof style!=='object'||Array.isArray(style)){
     errors.push('GAMEPLAY_SKETCH.styleWorldDepth is required for version 3+');
-    return;
+  }else{
+    const styleRequiredStrings=['styleFusion','architectureSettlement','environmentBiomes','materialPropLanguage','characterCostumeSilhouette','paletteLightingWeather','backgroundStorytelling'];
+    for(const field of styleRequiredStrings)if(!isNonEmptyString(style[field]))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} is required for version 3+`);
+    const styleArrays=[['styleDnaSources',2],['regionalStyleVariation',3],['gameplayReadabilityLinks',3],['styleExpansionHooks',2],['artRightsRules',3]];
+    for(const [field,min] of styleArrays){
+      if(!Array.isArray(style[field])||uniq(style[field]).length<min)errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    }
+    const styleFamilySet=new Set(GAMEPLAY_STYLE_DNA_FAMILIES);
+    for(const family of uniq(style.styleDnaSources)){
+      if(!styleFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.styleDnaSources invalid family: ${family}`);
+    }
+    if(style.assetLibraryExpansionRequired===true)errors.push('GAMEPLAY_SKETCH.styleWorldDepth.assetLibraryExpansionRequired must not be true; libraries are optional references and may expand only when the game needs them');
   }
-  const styleRequiredStrings=['styleFusion','architectureSettlement','environmentBiomes','materialPropLanguage','characterCostumeSilhouette','paletteLightingWeather','backgroundStorytelling'];
-  for(const field of styleRequiredStrings)if(!isNonEmptyString(style[field]))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} is required for version 3+`);
-  const styleArrays=[['styleDnaSources',2],['regionalStyleVariation',3],['gameplayReadabilityLinks',3],['styleExpansionHooks',2],['artRightsRules',3]];
-  for(const [field,min] of styleArrays){
-    if(!Array.isArray(style[field])||uniq(style[field]).length<min)errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} requires at least ${min} meaningful items for version 3+`);
-  }
-  const styleFamilySet=new Set(GAMEPLAY_STYLE_DNA_FAMILIES);
-  for(const family of uniq(style.styleDnaSources)){
-    if(!styleFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.styleDnaSources invalid family: ${family}`);
-  }
+}
 
 function validateMarketNumericClaims(summary, errors) {
   if (!summary || typeof summary !== 'object' || Array.isArray(summary)) return;
