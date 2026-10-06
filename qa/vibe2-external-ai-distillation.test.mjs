@@ -1,7 +1,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { distillExternalAiKnowledge, validateExternalAiCandidate, isTrustedDistilledExternalAiEntry } from '../tools/vibe2-external-ai-distillation.mjs';
+import { distillExternalAiKnowledge, validateExternalAiCandidate, isTrustedDistilledExternalAiEntry, mergeVerifiedExternalAiKnowledgeStores, validateExternalAiMainPromotion } from '../tools/vibe2-external-ai-distillation.mjs';
 import { collectMultiSourceLearningMaterials } from '../tools/vibe2-multisource-learning-collector.mjs';
 
 const verifiedCandidate={
@@ -176,4 +176,81 @@ test('animal insect graphics distillation stays advisory-only and independently 
     assert.ok(row.patterns.length>=8,id);
     assert.ok(row.verification.evidence.length>=2,id);
   }
+});
+
+
+test('verified distilled main promotion accepts trusted append across learning domains',()=>{
+  const base=distillExternalAiKnowledge({records:[verifiedCandidate]},{entries:[]}).knowledge;
+  const incoming=distillExternalAiKnowledge({records:[{
+    ...verifiedCandidate,
+    id:'cross-domain-learning',
+    domains:['security','vfx','camera_language','roblox_replication'],
+    distilledPatterns:['verified cross-domain lesson remains advisory and task relevant']
+  }]},base).knowledge;
+  const gate=validateExternalAiMainPromotion({
+    baseKnowledge:base,
+    candidateKnowledge:incoming,
+    changedFiles:['.vibe2/external-ai-distilled-knowledge.json']
+  });
+  assert.equal(gate.pass,true,gate.reasons.join('|'));
+  assert.equal(gate.newEntryIds.length,1);
+  assert.ok(gate.domains.includes('SECURITY'));
+  assert.ok(gate.domains.includes('VFX'));
+  assert.ok(gate.domains.includes('CAMERA_LANGUAGE'));
+  assert.ok(gate.domains.includes('ROBLOX_REPLICATION'));
+  assert.equal(gate.allLearningDomainsEligible,true);
+  assert.equal(gate.directMainWrite,false);
+  assert.equal(gate.prMergeOnly,true);
+});
+
+test('verified distilled store merge preserves canonical main entries and adds trusted new entries only',()=>{
+  const base=distillExternalAiKnowledge({records:[verifiedCandidate]},{entries:[]}).knowledge;
+  const incoming=distillExternalAiKnowledge({records:[{
+    ...verifiedCandidate,
+    id:'new-verified-lesson',
+    domains:['asset_production'],
+    distilledPatterns:['new verified asset lesson']
+  }]},base).knowledge;
+  incoming.entries[0]={...incoming.entries[0],patterns:['attempted mutation that must not replace main']};
+  const merged=mergeVerifiedExternalAiKnowledgeStores({baseKnowledge:base,incomingKnowledge:incoming});
+  assert.deepEqual(merged.knowledge.entries[0],base.entries[0]);
+  assert.deepEqual(merged.addedEntryIds,['external-ai-distilled:new-verified-lesson']);
+});
+
+test('verified distilled main promotion blocks canonical mutation deletion and unrelated file changes',()=>{
+  const base=distillExternalAiKnowledge({records:[verifiedCandidate]},{entries:[]}).knowledge;
+  const withNew=distillExternalAiKnowledge({records:[{
+    ...verifiedCandidate,
+    id:'safe-new-lesson',
+    domains:['debugging'],
+    distilledPatterns:['safe verified repair lesson']
+  }]},base).knowledge;
+
+  const mutated=structuredClone(withNew);
+  mutated.entries[0].patterns=['mutated existing canonical knowledge'];
+  const mutationGate=validateExternalAiMainPromotion({
+    baseKnowledge:base,
+    candidateKnowledge:mutated,
+    changedFiles:['.vibe2/external-ai-distilled-knowledge.json']
+  });
+  assert.equal(mutationGate.pass,false);
+  assert.ok(mutationGate.reasons.includes('EXISTING_VERIFIED_KNOWLEDGE_MUTATION_OR_DELETION_FORBIDDEN'));
+
+  const deleted=structuredClone(withNew);
+  deleted.entries=deleted.entries.filter(row=>row.id!=='external-ai-distilled:combat-ui-lesson');
+  const deletionGate=validateExternalAiMainPromotion({
+    baseKnowledge:base,
+    candidateKnowledge:deleted,
+    changedFiles:['.vibe2/external-ai-distilled-knowledge.json']
+  });
+  assert.equal(deletionGate.pass,false);
+  assert.ok(deletionGate.reasons.includes('EXISTING_VERIFIED_KNOWLEDGE_MUTATION_OR_DELETION_FORBIDDEN'));
+
+  const pathGate=validateExternalAiMainPromotion({
+    baseKnowledge:base,
+    candidateKnowledge:withNew,
+    changedFiles:['.vibe2/external-ai-distilled-knowledge.json','tools/vibe2-learning-motor.mjs']
+  });
+  assert.equal(pathGate.pass,false);
+  assert.ok(pathGate.reasons.includes('PROMOTION_FILE_NOT_ALLOWED:tools/vibe2-learning-motor.mjs'));
 });

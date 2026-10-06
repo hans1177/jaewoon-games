@@ -11,6 +11,12 @@ const clean=(value)=>String(value??'').trim();
 const unique=(values=[])=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const METHODS=new Set(['runtime','independent-qa','source-backed-review','multi-source-consistency']);
 const SHA256=/^[a-f0-9]{64}$/i;
+export const VERIFIED_EXTERNAL_AI_MAIN_PROMOTION_ALLOWED_FILES=Object.freeze([
+  '.vibe2/external-ai-distilled-knowledge.json',
+  'qa/vibe2-external-ai-distillation.test.mjs',
+  'qa/vibe2-learning-motor.test.mjs',
+  'qa/company-system-ai-learning.test.mjs'
+]);
 
 function safeId(value=''){return clean(value).replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,96)||'external-ai';}
 function parseArgs(argv=process.argv.slice(2)){return Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));}
@@ -68,6 +74,84 @@ export function isTrustedDistilledExternalAiEntry(row={}){
     && row?.directMasteryCredit!==true
     && row?.directTrainingSample!==true
     && row?.authorityExpanded!==true;
+}
+
+function normalizedChangedFiles(values=[]){
+  return unique((Array.isArray(values)?values:clean(values).split(',')).map(value=>clean(value).replaceAll('\\','/')).filter(Boolean));
+}
+
+function exactJson(value){return JSON.stringify(value);}
+
+function assertTrustedStoreMetadata(store={},label='STORE'){
+  if(Number(store?.version)!==1)throw new Error(`${label}_VERSION_INVALID`);
+  if(clean(store?.kind)!=='vibe2-external-ai-distilled-knowledge')throw new Error(`${label}_KIND_INVALID`);
+  if(store?.authorityExpanded!==false)throw new Error(`${label}_AUTHORITY_EXPANSION_FORBIDDEN`);
+  if(!Array.isArray(store?.entries))throw new Error(`${label}_ENTRIES_REQUIRED`);
+  const ids=store.entries.map(row=>clean(row?.id));
+  if(ids.some(id=>!id)||new Set(ids).size!==ids.length)throw new Error(`${label}_ENTRY_ID_DUPLICATE_OR_MISSING`);
+}
+
+export function mergeVerifiedExternalAiKnowledgeStores({baseKnowledge={},incomingKnowledge={}}={}){
+  assertTrustedStoreMetadata(baseKnowledge,'BASE_STORE');
+  assertTrustedStoreMetadata(incomingKnowledge,'INCOMING_STORE');
+  const baseEntries=baseKnowledge.entries||[];
+  for(const row of baseEntries)if(!isTrustedDistilledExternalAiEntry(row))throw new Error('BASE_STORE_UNTRUSTED_ENTRY:'+clean(row?.id));
+  const byId=new Map(baseEntries.map(row=>[clean(row.id),row]));
+  const addedEntryIds=[];
+  for(const row of incomingKnowledge.entries||[]){
+    const id=clean(row?.id);
+    if(byId.has(id))continue;
+    if(!isTrustedDistilledExternalAiEntry(row))throw new Error('INCOMING_STORE_UNTRUSTED_ENTRY:'+id);
+    byId.set(id,row);
+    addedEntryIds.push(id);
+  }
+  return{
+    knowledge:{...baseKnowledge,entries:[...byId.values()]},
+    addedEntryIds,
+    authorityExpanded:false
+  };
+}
+
+export function validateExternalAiMainPromotion({baseKnowledge={},candidateKnowledge={},changedFiles=[]}={}){
+  const reasons=[];
+  const files=normalizedChangedFiles(changedFiles);
+  if(!files.includes('.vibe2/external-ai-distilled-knowledge.json'))reasons.push('DISTILLED_STORE_CHANGE_REQUIRED');
+  for(const file of files)if(!VERIFIED_EXTERNAL_AI_MAIN_PROMOTION_ALLOWED_FILES.includes(file))reasons.push('PROMOTION_FILE_NOT_ALLOWED:'+file);
+  let merged=null;
+  try{
+    assertTrustedStoreMetadata(baseKnowledge,'BASE_STORE');
+    assertTrustedStoreMetadata(candidateKnowledge,'CANDIDATE_STORE');
+    if(exactJson(candidateKnowledge?.policy)!==exactJson(baseKnowledge?.policy))reasons.push('STORE_POLICY_MUTATION_FORBIDDEN');
+    merged=mergeVerifiedExternalAiKnowledgeStores({baseKnowledge,incomingKnowledge:candidateKnowledge});
+    if(exactJson(merged.knowledge)!==exactJson(candidateKnowledge))reasons.push('EXISTING_VERIFIED_KNOWLEDGE_MUTATION_OR_DELETION_FORBIDDEN');
+    if(!merged.addedEntryIds.length)reasons.push('NEW_TRUSTED_DISTILLED_ENTRY_REQUIRED');
+  }catch(error){
+    reasons.push(clean(error?.message||error)||'PROMOTION_VALIDATION_FAILED');
+  }
+  const newEntries=(candidateKnowledge?.entries||[]).filter(row=>merged?.addedEntryIds?.includes(clean(row?.id)));
+  const domains=unique(newEntries.flatMap(row=>Array.isArray(row?.domains)?row.domains:[]).map(value=>clean(value).toUpperCase()));
+  return{
+    pass:reasons.length===0,
+    reasons,
+    changedFiles:files,
+    newEntryIds:merged?.addedEntryIds||[],
+    domains,
+    allLearningDomainsEligible:true,
+    directMainWrite:false,
+    prMergeOnly:true,
+    authorityExpanded:false
+  };
+}
+
+export function runExternalAiKnowledgeStoreMerge({baseFile='',incomingFile='',outputFile=''}={}){
+  if(!clean(baseFile)||!clean(incomingFile)||!clean(outputFile))throw new Error('external AI store merge paths required');
+  const result=mergeVerifiedExternalAiKnowledgeStores({
+    baseKnowledge:readJson(baseFile,{}),
+    incomingKnowledge:readJson(incomingFile,{})
+  });
+  fs.mkdirSync(path.dirname(outputFile),{recursive:true});
+  fs.writeFileSync(outputFile,JSON.stringify(result.knowledge,null,2)+'\n','utf8');
+  return result;
 }
 
 export function distillExternalAiKnowledge(input={},existing={}){
@@ -142,13 +226,36 @@ export function runExternalAiDistillation({inputFile='',outputFile='.vibe2/exter
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
-  const result=runExternalAiDistillation({inputFile:clean(args.input),outputFile:clean(args.output)||'.vibe2/external-ai-distilled-knowledge.json'});
-  console.log('VIBE2_EXTERNAL_AI_DISTILLATION=PASS');
-  console.log(`VIBE2_EXTERNAL_AI_ACCEPTED=${result.accepted.length}`);
-  console.log(`VIBE2_EXTERNAL_AI_REJECTED=${result.rejected.length}`);
-  console.log('VIBE2_EXTERNAL_AI_RAW_DIRECT_USE=NO');
-  console.log('VIBE2_EXTERNAL_AI_SOURCE_WRITE=NO');
-  console.log('VIBE2_EXTERNAL_AI_PRODUCTION_PASS=NO');
-  console.log('VIBE2_EXTERNAL_AI_MASTERY_DIRECT=NO');
-  console.log('VIBE2_EXTERNAL_AI_TRAINING_SAMPLE_DIRECT=NO');
+  if(clean(args['merge-main-store']).toLowerCase()==='true'){
+    const result=runExternalAiKnowledgeStoreMerge({
+      baseFile:clean(args.base),
+      incomingFile:clean(args.incoming),
+      outputFile:clean(args.output)
+    });
+    console.log('VIBE2_EXTERNAL_AI_MAIN_STORE_MERGE=PASS');
+    console.log(`VIBE2_EXTERNAL_AI_MAIN_STORE_ADDED=${result.addedEntryIds.length}`);
+    console.log(`VIBE2_EXTERNAL_AI_MAIN_STORE_ADDED_IDS=${result.addedEntryIds.join(',')||'NONE'}`);
+  }else if(clean(args['verify-main-promotion']).toLowerCase()==='true'){
+    const result=validateExternalAiMainPromotion({
+      baseKnowledge:readJson(clean(args.base),{}),
+      candidateKnowledge:readJson(clean(args.candidate),{}),
+      changedFiles:clean(args['changed-files'])
+    });
+    if(!result.pass)throw new Error('EXTERNAL_AI_MAIN_PROMOTION_BLOCKED:'+result.reasons.join('|'));
+    console.log('VIBE2_EXTERNAL_AI_MAIN_PROMOTION=PASS');
+    console.log(`VIBE2_EXTERNAL_AI_MAIN_PROMOTION_NEW_IDS=${result.newEntryIds.join(',')}`);
+    console.log(`VIBE2_EXTERNAL_AI_MAIN_PROMOTION_DOMAINS=${result.domains.join(',')||'NONE'}`);
+    console.log('VIBE2_EXTERNAL_AI_MAIN_PROMOTION_DIRECT_WRITE=NO');
+    console.log('VIBE2_EXTERNAL_AI_MAIN_PROMOTION_PR_ONLY=YES');
+  }else{
+    const result=runExternalAiDistillation({inputFile:clean(args.input),outputFile:clean(args.output)||'.vibe2/external-ai-distilled-knowledge.json'});
+    console.log('VIBE2_EXTERNAL_AI_DISTILLATION=PASS');
+    console.log(`VIBE2_EXTERNAL_AI_ACCEPTED=${result.accepted.length}`);
+    console.log(`VIBE2_EXTERNAL_AI_REJECTED=${result.rejected.length}`);
+    console.log('VIBE2_EXTERNAL_AI_RAW_DIRECT_USE=NO');
+    console.log('VIBE2_EXTERNAL_AI_SOURCE_WRITE=NO');
+    console.log('VIBE2_EXTERNAL_AI_PRODUCTION_PASS=NO');
+    console.log('VIBE2_EXTERNAL_AI_MASTERY_DIRECT=NO');
+    console.log('VIBE2_EXTERNAL_AI_TRAINING_SAMPLE_DIRECT=NO');
+  }
 }

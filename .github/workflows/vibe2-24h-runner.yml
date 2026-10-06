@@ -77,6 +77,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
@@ -436,7 +437,16 @@ jobs:
               --summary=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
               --experience=.vibe2/experience.json | tee /tmp/vibe2-authorized-source-memory.log
 
-            test -f .vibe2/external-ai-distilled-knowledge.json || printf '%s\n' '{"version":1,"kind":"vibe2-external-ai-distilled-knowledge","entries":[]}' > .vibe2/external-ai-distilled-knowledge.json
+            test -s /tmp/vibe2-main/.vibe2/external-ai-distilled-knowledge.json
+            test -f .vibe2/external-ai-distilled-knowledge.json || cp /tmp/vibe2-main/.vibe2/external-ai-distilled-knowledge.json .vibe2/external-ai-distilled-knowledge.json
+            cp .vibe2/external-ai-distilled-knowledge.json /tmp/vibe2-external-ai-runtime-before-main-sync.json
+            node /tmp/vibe2-main/tools/vibe2-external-ai-distillation.mjs \
+              --merge-main-store=true \
+              --base=/tmp/vibe2-main/.vibe2/external-ai-distilled-knowledge.json \
+              --incoming=/tmp/vibe2-external-ai-runtime-before-main-sync.json \
+              --output=.vibe2/external-ai-distilled-knowledge.json | tee /tmp/vibe2-external-ai-main-store-sync.log
+            grep -q '^VIBE2_EXTERNAL_AI_MAIN_STORE_MERGE=PASS$' /tmp/vibe2-external-ai-main-store-sync.log
+
             node --check /tmp/vibe2-main/tools/company-system-ai-external-learning-feed.mjs
             node --check /tmp/vibe2-main/tools/vibe2-external-ai-distillation.mjs
             node /tmp/vibe2-main/tools/company-system-ai-external-learning-feed.mjs \
@@ -710,6 +720,98 @@ jobs:
             echo "VIBE2_AUTOPLAN_RETRY_BACKOFF_SECONDS=$retry_sleep"
             sleep "$retry_sleep"
           done
+
+      - name: Propose verified distilled knowledge promotion to main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          promotion_branch='vibe2/learning-promotion/external-ai-auto'
+          promote_root='/tmp/vibe2-verified-learning-main-promotion'
+          base_store='/tmp/vibe2-verified-learning-main-base.json'
+          rm -rf "$promote_root"
+          git worktree prune
+          git fetch origin main --quiet
+          git worktree add --detach "$promote_root" origin/main >/dev/null
+
+          test -s "$promote_root/.vibe2/external-ai-distilled-knowledge.json"
+          test -s "$GITHUB_WORKSPACE/.vibe2/external-ai-distilled-knowledge.json"
+          cp "$promote_root/.vibe2/external-ai-distilled-knowledge.json" "$base_store"
+
+          node "$promote_root/tools/vibe2-external-ai-distillation.mjs" \
+            --merge-main-store=true \
+            --base="$base_store" \
+            --incoming="$GITHUB_WORKSPACE/.vibe2/external-ai-distilled-knowledge.json" \
+            --output="$promote_root/.vibe2/external-ai-distilled-knowledge.json" | tee /tmp/vibe2-verified-learning-main-merge.log
+          grep -q '^VIBE2_EXTERNAL_AI_MAIN_STORE_MERGE=PASS$' /tmp/vibe2-verified-learning-main-merge.log
+
+          added="$(sed -n 's/^VIBE2_EXTERNAL_AI_MAIN_STORE_ADDED=//p' /tmp/vibe2-verified-learning-main-merge.log | tail -1)"
+          if [ -z "$added" ] || [ "$added" -eq 0 ]; then
+            echo 'VIBE2_VERIFIED_LEARNING_PROMOTION_PR=NOT_REQUIRED'
+            echo 'PUBLIC_MAIN_WRITE=NO'
+            exit 0
+          fi
+
+          node "$promote_root/tools/vibe2-external-ai-distillation.mjs" \
+            --verify-main-promotion=true \
+            --base="$base_store" \
+            --candidate="$promote_root/.vibe2/external-ai-distilled-knowledge.json" \
+            --changed-files='.vibe2/external-ai-distilled-knowledge.json' | tee /tmp/vibe2-verified-learning-main-gate.log
+          grep -q '^VIBE2_EXTERNAL_AI_MAIN_PROMOTION=PASS$' /tmp/vibe2-verified-learning-main-gate.log
+
+          git -C "$promote_root" config user.name 'jaewoon-vibe2-learning'
+          git -C "$promote_root" config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C "$promote_root" switch -c "$promotion_branch"
+          git -C "$promote_root" add -- .vibe2/external-ai-distilled-knowledge.json
+          git -C "$promote_root" commit -m 'learning: promote verified distilled knowledge'
+
+          remote_ref="refs/heads/$promotion_branch"
+          pushed='NO'
+          for attempt in 1 2 3; do
+            expected="$(git ls-remote --heads origin "$promotion_branch" | awk '{print $1}' | head -1)"
+            if [ -n "$expected" ]; then
+              if git -C "$promote_root" push --force-with-lease="$remote_ref:$expected" origin "HEAD:$remote_ref"; then
+                pushed='YES'
+                break
+              fi
+            else
+              if git -C "$promote_root" push origin "HEAD:$remote_ref"; then
+                pushed='YES'
+                break
+              fi
+            fi
+            echo "VIBE2_VERIFIED_LEARNING_PROMOTION_PUSH_RETRY=$attempt"
+            sleep "$((attempt * 2))"
+          done
+          [ "$pushed" = 'YES' ]
+
+          pr_url="$(gh pr list --repo "$repo" --state open --base main --head "$promotion_branch" --json url --jq '.[0].url // empty')"
+          if [ -z "$pr_url" ]; then
+            promotion_body="$(printf '%s\n' \
+              'Automatic verified static learning promotion from the existing 24H learning chain.' \
+              '' \
+              '- trusted store: .vibe2/external-ai-distilled-knowledge.json' \
+              '- all trusted distilled learning domains eligible' \
+              '- existing canonical entries immutable' \
+              '- independent verification evidence >= 2' \
+              '- raw external output forbidden' \
+              '- direct main write: NO' \
+              '- automatic merge only after Company Evolution QA + Vibe2 Core QA succeed on the exact head' \
+              '- model-weight training promotion remains FIXED_HOLDOUT_AB_THEN_CANARY' \
+              '- central policy / finalDevelopmentLock mutation forbidden')"
+            pr_url="$(gh pr create \
+              --repo "$repo" \
+              --base main \
+              --head "$promotion_branch" \
+              --title 'learning: auto promote verified distilled knowledge' \
+              --body "$promotion_body")"
+          fi
+
+          echo "VIBE2_VERIFIED_LEARNING_PROMOTION_PR=$pr_url"
+          echo "VIBE2_VERIFIED_LEARNING_PROMOTION_ADDED=$added"
+          echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Read queue continuation state
         id: queue_state
