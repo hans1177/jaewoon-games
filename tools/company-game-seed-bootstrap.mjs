@@ -173,10 +173,11 @@ const STYLE_WORLD_DEPTH_SCHEMA={
 };
 const WORLDBUILDING_DEPTH_SCHEMA={
   type:'object',
-  required:['allGenreApplicable','worldPremise','worldDnaSources','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','causalChains','worldStateEvolution','crossMediaClueLinks','genreExpression'],
+  required:['allGenreApplicable','worldPremise','sharedConceptAnchor','worldDnaSources','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','componentConceptLinks','causalChains','worldStateEvolution','crossMediaClueLinks','genreExpression'],
   properties:{
     allGenreApplicable:{type:'boolean'},
     worldPremise:{type:'string',minLength:30,maxLength:1000},
+    sharedConceptAnchor:{type:'string',minLength:30,maxLength:900},
     worldDnaSources:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_WORLDBUILDING_DNA_FAMILIES]}},
     civilizationPowerOrder:{type:'string',minLength:30,maxLength:900},
     geographyEcology:{type:'string',minLength:30,maxLength:900},
@@ -187,6 +188,7 @@ const WORLDBUILDING_DEPTH_SCHEMA={
     journalArchiveLogic:{type:'string',minLength:30,maxLength:900},
     monsterOpponentEcology:{type:'string',minLength:30,maxLength:900},
     dialogueMemoryLogic:{type:'string',minLength:30,maxLength:900},
+    componentConceptLinks:{type:'array',minItems:6,maxItems:14,uniqueItems:true,items:SKETCH_ITEM},
     causalChains:{type:'array',minItems:4,maxItems:12,uniqueItems:true,items:SKETCH_ITEM},
     worldStateEvolution:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     crossMediaClueLinks:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
@@ -196,9 +198,11 @@ const WORLDBUILDING_DEPTH_SCHEMA={
 };
 const LIBRARY_LINKAGE_SCHEMA={
   type:'object',
-  required:['allCanonicalLibrariesSearchable','libraryFamilies','selectionRule','fallbackRule','compatibilityRightsAndGameIdentityFirst','actualConsumerEvidenceRequired','noForcedUse','noShadowPipeline'],
+  required:['allCanonicalLibrariesSearchable','referenceOnly','perLibraryUseOptional','libraryFamilies','selectionRule','fallbackRule','compatibilityRightsAndGameIdentityFirst','actualConsumerEvidenceRequired','noForcedUse','noShadowPipeline'],
   properties:{
     allCanonicalLibrariesSearchable:{type:'boolean'},
+    referenceOnly:{type:'boolean'},
+    perLibraryUseOptional:{type:'boolean'},
     libraryFamilies:{type:'array',minItems:8,maxItems:8,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_CANONICAL_LIBRARY_FAMILIES]}},
     selectionRule:{type:'string',minLength:30,maxLength:900},
     fallbackRule:{type:'string',minLength:30,maxLength:900},
@@ -684,6 +688,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     3,8
   );
   const worldPremise=clean(worldRaw.worldPremise)||(gameName+'의 세계는 '+worldConflict+'라는 현재 갈등과 '+worldDnaSources.join(' × ')+'의 규칙이 한 역사 안에서 결합되어 지역·NPC·몬스터/상대·경제·탐험·퀘스트가 같은 원인망을 공유한다.');
+  const sharedConceptAnchor=clean(worldRaw.sharedConceptAnchor)||(conceptFusion+'의 핵심 컨셉을 세계관·대화·NPC·동료 AI·몬스터/적 AI·퀘스트·아이템·경제·지역 연출이 같은 톤과 원인으로 공유한다.');
   const civilizationPowerOrder=clean(worldRaw.civilizationPowerOrder)||'세력·도시·조직·가문·길드의 권한과 의무가 지역 통치, 거래 조건, NPC 관계, 경비/적대, 퀘스트 발생 원인에 반영된다.';
   const geographyEcology=clean(worldRaw.geographyEcology)||'지형·기후·자원·이동로가 정착지 위치, 생업, 교역, 몬스터/상대의 서식과 이동, 탐험 위험과 보상에 실제로 영향을 준다.';
   const economyDailyLife=clean(worldRaw.economyDailyLife)||'생산·소비·무역·노동·축제·식생활·주거가 상점 가격만이 아니라 NPC 일정, 지역 이벤트, 아이템 출처, 서브퀘와 세력 이해관계를 설명한다.';
@@ -693,6 +698,16 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
   const journalArchiveLogic=clean(worldRaw.journalArchiveLogic)||'저널·편지·비문·지도 주석·신문·보고서는 실제 사건을 서로 다른 관점과 시점에서 기록하고 NPC 증언·환경 흔적·퀘스트 상태와 교차 검증되는 단서를 제공한다.';
   const monsterOpponentEcology=clean(worldRaw.monsterOpponentEcology)||'몬스터가 있는 장르는 서식지·먹이·번식/소환·세력 이용·역사적 사건과 연결하고, 몬스터가 없는 장르는 적/상대/장애물의 발생 조건과 세계 역할을 같은 원칙으로 설명한다.';
   const dialogueMemoryLogic=clean(worldRaw.dialogueMemoryLogic)||'NPC 대화는 지역 지명·저널 단서·세력 관계·최근 사건·플레이어 선택을 기억하고, 아직 알 수 없는 사실을 미리 확정해서 말하지 않으며 상태 변화 후 후속 대사가 바뀐다.';
+  const componentConceptLinks=sketchArray(worldRaw.componentConceptLinks,[
+    '대화 내용은 sharedConceptAnchor의 갈등·톤·지역 정보·플레이어 선택을 반영하고 캐릭터가 알 수 없는 사실을 말하지 않는다',
+    'NPC는 직업·세력·욕구·기억·생활권이 세계 구조와 일치하고 상점/퀘스트/대화 기능이 같은 인물 이유에서 나온다',
+    '동료 AI는 개인 목표·관계·역할과 일치하는 전투/탐험/지원 행동을 하며 대사와 AI 행동이 서로 모순되지 않는다',
+    '몬스터/적/상대 AI는 생태·세력·역사·위협 역할과 일치하는 이동/공격/회피/집단 행동을 보여주고 이름과 보상도 같은 컨셉을 공유한다',
+    '메인/서브퀘스트는 현재 세계 갈등과 NPC/동료의 목표에서 발생하며 결과가 관계·지역·경제·다음 사건 상태로 돌아간다',
+    '아이템·장비·펫·재화·상점은 지역 자원·기술·문화·세력 경제와 연결되고 이름/획득처/효과가 컨셉과 어긋나지 않는다',
+    '지명·건축·배경 소품·날씨·음악은 지역 역사와 기능을 공유해 대사 없이도 같은 세계의 장소로 느껴지게 한다',
+    '저널·도감·지도·UI 명칭은 실제 대화와 월드 오브젝트의 용어를 공유하고 발견한 정보만 단계적으로 공개한다'
+  ],6,14);
   const causalChains=sketchArray(worldRaw.causalChains,[
     '과거 사건 -> 지명/유적/기념물 -> NPC 대화와 저널 단서 -> 현재 서브퀘 -> 메인 사건의 선택 조건',
     '지형/기후 -> 자원/생업 -> 무역/상점/세력 이해관계 -> 지역 갈등 -> 플레이어 성장/탐험 경로',
@@ -709,11 +724,13 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     '저널 단서가 환경 오브젝트나 지명 유래를 가리키고 실제 탐험에서 확인하면 대화/퀘스트 상태가 갱신된다'
   ],3,10);
   const genreExpression=clean(worldRaw.genreExpression)||(target.category+' 장르에서는 세계관을 긴 설명으로 강제하지 않고 핵심 플레이 화면·목표·대화/짧은 기록·적/상대 규칙·지역 상태에 맞는 강도로 표현한다. 퍼즐/아케이드도 LIGHT 서사를 유지하고 모든 장르에서 세계 원인망은 끊지 않는다.');
-  const worldbuildingDepth={allGenreApplicable:true,worldPremise,worldDnaSources,civilizationPowerOrder,geographyEcology,economyDailyLife,beliefMythTaboo,technologyInstitutions,placeNameLogic,journalArchiveLogic,monsterOpponentEcology,dialogueMemoryLogic,causalChains,worldStateEvolution,crossMediaClueLinks,genreExpression};
+  const worldbuildingDepth={allGenreApplicable:true,worldPremise,sharedConceptAnchor,worldDnaSources,civilizationPowerOrder,geographyEcology,economyDailyLife,beliefMythTaboo,technologyInstitutions,placeNameLogic,journalArchiveLogic,monsterOpponentEcology,dialogueMemoryLogic,componentConceptLinks,causalChains,worldStateEvolution,crossMediaClueLinks,genreExpression};
 
   const libraryRaw=raw.libraryLinkage&&typeof raw.libraryLinkage==='object'&&!Array.isArray(raw.libraryLinkage)?raw.libraryLinkage:{};
   const libraryLinkage={
     allCanonicalLibrariesSearchable:true,
+    referenceOnly:true,
+    perLibraryUseOptional:true,
     libraryFamilies:[...GAMEPLAY_CANONICAL_LIBRARY_FAMILIES],
     selectionRule:clean(libraryRaw.selectionRule)||'매 설계/BUILD_UP에서 현재 게임의 장르·플랫폼·세계관·시스템·책임 소스에 맞춰 모든 canonical 라이브러리를 후보로 검색하고 호환성·권리·정체성·품질·현재 필요성을 통과한 항목만 기존 책임 시스템에서 소비한다.',
     fallbackRule:clean(libraryRaw.fallbackRule)||'호환 항목이 없으면 강제 대입하지 않고 기존 게임 소스와 canonical 생성/학습 흐름을 사용하며, 필요 자산/패턴 확장은 기존 라이브러리 생산 경로에서만 수행한다.',
@@ -796,7 +813,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. narrativeDepth는 모든 게임 장르에 applicable=true로 두고 storyWeight만 LIGHT/MEDIUM/HEAVY로 조절한다. 세계관은 별도 소설 설정집이 아니라 지명·지역 역사·세력·NPC 대화·동료·서브퀘·저널/편지/비문·몬스터/적/상대의 생태와 기원·아이템/유물·상점/무역·메인 사건이 서로 같은 인과망을 공유해야 한다. worldbuildingDepth에서는 문명/권력 × 지리/생태 × 경제/생활 × 신앙/금기 × 기술/제도 × 언어/지명 × 기록/소문 × 몬스터/상대 생태를 최소 3계통 이상 융복합하고 퍼즐·아케이드·캐주얼도 LIGHT 방식으로 이 원인망을 유지한다. libraryLinkage는 모든 canonical 라이브러리를 후보로 검색 가능하게 하되 강제 사용하지 않고 호환성·권리·게임 정체성·현재 필요성을 먼저 확인하며 실제 책임 소스 소비 증거 없는 라이브러리 선택은 사용으로 인정하지 않는다. conceptFusion은 장르 이름 나열이 아니라 메인 규칙×플레이 판타지×시대/세계관 DNA×서사 갈등×핵심 시스템을 한 문장으로 합성해 게임의 첫 컨셉부터 독립적인 플레이 약속이 보이게 한다. narrativeDepth는 세계관 형성 자체에도 융복합을 적용한다. 중국 사기/초한지/삼국지/수호지 같은 역사·영웅군상, 로마 공화정·제정의 가문/원로원/군단/속주/시민권/대중정치, 그리스·북유럽·이집트·메소포타미아 신화, 셰익스피어·그림형제·안데르센·뒤마 등 공공영역 고전의 갈등/관계/모험 구조, 일본 전국시대/요괴민담, 중세/교역/학문사, 산업혁명·혁명/공화정·제국주의/식민지 경쟁·세계대전형 총력전·냉전/첩보·탈식민/신생국·대중정치/선전·산업자본/도시노동·국제질서 같은 현대사 구조, 공포신화·미스터리를 2~4개 이상 독자적으로 재조합한다. NPC 관계망·동료 개인서사·세력 문화·메인↔서브퀘 양방향 영향·복선/회수·유물/기록/환경 단서·스토리×게임시스템 연결을 설계한다. contentCausalityLinks에는 지역·보스·던전·아이템·펫·미니게임·무역·하우징·수집 등 실제 콘텐츠별로 세계 원인→관련 NPC/세력/지역→플레이 행동→보상/상태 변화→메인/서브스토리 후속 영향의 인과를 설계한다. worldEvolutionHooks에는 플레이어 선택과 퀘스트 결과 때문에 마을·도시·세력·경제·지역 상태가 실제로 변하고 초기 콘텐츠가 후반에 재해석되는 구조를 넣는다. styleWorldDepth는 게임 컨셉/세계관 DNA를 건축·정착지 구조·지형/기후·의상/실루엣·재질/소품·팔레트/조명/날씨·배경 스토리텔링으로 확장하고, 각 요소가 길찾기·위험·상호작용·세력 상태·퀘스트 인과를 읽게 해야 한다. 자산 라이브러리는 참고/재사용 우선 자원이며 확장 자체는 필수 PASS 조건이 아니다. 현재 스타일·기능을 충족하는 자산이 없을 때만 기존 canonical 자산 생산 흐름에서 필요한 family를 확장한다. 김용·톨킨·오웰 등 현대 보호 작품은 이름/인물/세계관/대사/장면을 복제하지 않고 문파 관계, 감시사회, 원정/동료관계 같은 추상 기법만 참고한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. narrativeDepth는 모든 게임 장르에 applicable=true로 두고 storyWeight만 LIGHT/MEDIUM/HEAVY로 조절한다. 세계관은 별도 소설 설정집이 아니라 지명·지역 역사·세력·NPC 대화·동료·서브퀘·저널/편지/비문·몬스터/적/상대의 생태와 기원·아이템/유물·상점/무역·메인 사건이 서로 같은 인과망을 공유해야 한다. worldbuildingDepth에서는 문명/권력 × 지리/생태 × 경제/생활 × 신앙/금기 × 기술/제도 × 언어/지명 × 기록/소문 × 몬스터/상대 생태를 최소 3계통 이상 융복합하고 퍼즐·아케이드·캐주얼도 LIGHT 방식으로 이 원인망을 유지한다. libraryLinkage는 모든 canonical 라이브러리를 참고 후보로 검색 가능하게 하되 어떤 라이브러리도 게임 개연성의 필수 구성요소로 강제하지 않는다. 개별 라이브러리 사용은 선택사항이며 호환성·권리·게임 정체성·현재 필요성을 먼저 확인하고 실제 책임 소스 소비 증거 없는 라이브러리 선택은 사용으로 인정하지 않는다. 대신 실제 게임 내부의 대화·NPC·동료 AI·몬스터/적 AI·퀘스트·아이템·경제·지명·저널은 sharedConceptAnchor와 componentConceptLinks를 공유해야 한다. conceptFusion은 장르 이름 나열이 아니라 메인 규칙×플레이 판타지×시대/세계관 DNA×서사 갈등×핵심 시스템을 한 문장으로 합성해 게임의 첫 컨셉부터 독립적인 플레이 약속이 보이게 한다. narrativeDepth는 세계관 형성 자체에도 융복합을 적용한다. 중국 사기/초한지/삼국지/수호지 같은 역사·영웅군상, 로마 공화정·제정의 가문/원로원/군단/속주/시민권/대중정치, 그리스·북유럽·이집트·메소포타미아 신화, 셰익스피어·그림형제·안데르센·뒤마 등 공공영역 고전의 갈등/관계/모험 구조, 일본 전국시대/요괴민담, 중세/교역/학문사, 산업혁명·혁명/공화정·제국주의/식민지 경쟁·세계대전형 총력전·냉전/첩보·탈식민/신생국·대중정치/선전·산업자본/도시노동·국제질서 같은 현대사 구조, 공포신화·미스터리를 2~4개 이상 독자적으로 재조합한다. NPC 관계망·동료 개인서사·세력 문화·메인↔서브퀘 양방향 영향·복선/회수·유물/기록/환경 단서·스토리×게임시스템 연결을 설계한다. contentCausalityLinks에는 지역·보스·던전·아이템·펫·미니게임·무역·하우징·수집 등 실제 콘텐츠별로 세계 원인→관련 NPC/세력/지역→플레이 행동→보상/상태 변화→메인/서브스토리 후속 영향의 인과를 설계한다. worldEvolutionHooks에는 플레이어 선택과 퀘스트 결과 때문에 마을·도시·세력·경제·지역 상태가 실제로 변하고 초기 콘텐츠가 후반에 재해석되는 구조를 넣는다. styleWorldDepth는 게임 컨셉/세계관 DNA를 건축·정착지 구조·지형/기후·의상/실루엣·재질/소품·팔레트/조명/날씨·배경 스토리텔링으로 확장하고, 각 요소가 길찾기·위험·상호작용·세력 상태·퀘스트 인과를 읽게 해야 한다. 자산 라이브러리는 참고/재사용 우선 자원이며 확장 자체는 필수 PASS 조건이 아니다. 현재 스타일·기능을 충족하는 자산이 없을 때만 기존 canonical 자산 생산 흐름에서 필요한 family를 확장한다. 김용·톨킨·오웰 등 현대 보호 작품은 이름/인물/세계관/대사/장면을 복제하지 않고 문파 관계, 감시사회, 원정/동료관계 같은 추상 기법만 참고한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
