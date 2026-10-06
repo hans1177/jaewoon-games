@@ -799,7 +799,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
   if(requiredLibraryVersion>0&&observedLibraryVersion!==requiredLibraryVersion){
     blockers.push('ROBLOX_INTERNAL_ASSET_LIBRARY_VERSION_MISMATCH');
   }
-  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,configFamilyMatchCount=0,resolvedFamilyCount=0;
+  let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0,newlyAppliedFamilyCount=0,configFamilyMatchCount=0,resolvedFamilyCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const status=clean(statusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
     const beforeStatus=clean(baseStatusBlock.match(new RegExp('\\b'+family+'\\s*=\\s*["\\\'](APPLIED|NOT_APPLICABLE)["\\\']','i'))?.[1]).toUpperCase();
@@ -831,6 +831,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
       if(!actualBinding)blockers.push('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:'+family);
       if(selectedAtoms.length&&actualBinding){resolved=true;resolvedFamilyCount+=1;}
       if(changedBinding)changedAppliedFamilyCount+=1;
+      if(selectedAtoms.length&&actualBinding&&changedBinding&&!beforeResolved)newlyAppliedFamilyCount+=1;
     }
     if(incrementalRepair&&beforeResolved&&!resolved){
       blockers.push('ROBLOX_INTERNAL_ASSET_INCREMENTAL_REPAIR_REGRESSION:'+family);
@@ -843,11 +844,12 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
     }));
   }
   if(changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
+  if(incrementalRepair&&newlyAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_INCREMENTAL_REPAIR_NO_NEW_GROUNDED_FAMILY');
   const strictAllFamiliesResolved=resolvedFamilyCount===ROBLOX_INTERNAL_ASSET_FAMILIES.length;
   return Object.freeze({
     pass:blockers.length===0&&(incrementalRepair||strictAllFamiliesResolved),
     requiredFamilies:ROBLOX_INTERNAL_ASSET_FAMILIES,
-    appliedCount,notApplicableCount,changedAppliedFamilyCount,configFamilyMatchCount,resolvedFamilyCount,
+    appliedCount,notApplicableCount,changedAppliedFamilyCount,newlyAppliedFamilyCount,configFamilyMatchCount,resolvedFamilyCount,
     strictAllFamiliesResolved,
     incrementalRepair,
     unresolvedFamilies:Object.freeze(unresolvedFamilies),
