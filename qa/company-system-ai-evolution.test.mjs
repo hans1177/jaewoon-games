@@ -175,6 +175,55 @@ test('exact duplicate bottleneck repairs coalesce before reservation without los
   assert.equal(reserved.queue.tasks.find(x=>x.id==='checkpoint-newer').status,'queued');
 });
 
+test('verified completed exact repair is reused only for the same source baseline and failure stage',()=>{
+  const common={
+    priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+    goal:'repair the exact runtime binding failure',responsibleFiles:['tools/demo-runtime.mjs'],
+    sourceMutationRequired:true,sourceMutationBaseline:'source-a',
+    failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'COMMON_RUNTIME_BINDING_FAILURE',
+    acceptanceCriteria:['restore runtime binding'],verificationCommands:['node --test qa/demo-runtime.test.mjs']
+  };
+  const queue={tasks:[
+    {...common,id:'completed-repair',status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',
+      evidence:['primary-ai-review:PASS','source-mutation-sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','changed-file:tools/demo-runtime.mjs'],
+      createdAt:'2026-10-06T00:00:00Z',updatedAt:'2026-10-06T00:10:00Z'},
+    {...common,id:'duplicate-same-baseline',status:'queued',createdAt:'2026-10-06T00:20:00Z'},
+    {...common,id:'new-baseline',status:'queued',sourceMutationBaseline:'source-b',createdAt:'2026-10-06T00:21:00Z'},
+    {...common,id:'different-stage',status:'queued',failureStage:'INDEPENDENT_QA',createdAt:'2026-10-06T00:22:00Z'},
+    {id:'dependent',status:'queued',priority:'normal',taskType:'ordinary',gameId:'demo',
+      goal:'continue after exact repair',responsibleFiles:['tools/demo-runtime.mjs'],
+      dependencies:['duplicate-same-baseline'],blocker:'shared-signature-canary-pending:duplicate-same-baseline',
+      createdAt:'2026-10-06T00:23:00Z'}
+  ]};
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs(queue,{at:Date.parse('2026-10-06T00:30:00Z')});
+  assert.equal(compacted.completedReused,1);
+  assert.equal(compacted.coalesced,1);
+  const duplicate=compacted.queue.tasks.find(x=>x.id==='duplicate-same-baseline');
+  assert.equal(duplicate.status,'cancelled');
+  assert.equal(duplicate.lastOutcome,'SUPERSEDED_VERIFIED_COMPLETED_REPAIR');
+  assert.ok(duplicate.evidence.includes('system-ai-completed-exact-repair-reused:YES'));
+  assert.ok(duplicate.evidence.includes('system-ai-duplicate-repair-superseded-by:completed-repair'));
+  assert.equal(compacted.queue.tasks.find(x=>x.id==='new-baseline').status,'queued');
+  assert.equal(compacted.queue.tasks.find(x=>x.id==='different-stage').status,'queued');
+  const dependent=compacted.queue.tasks.find(x=>x.id==='dependent');
+  assert.deepEqual(dependent.dependencies,['completed-repair']);
+});
+
+test('done repair without verified completion evidence does not suppress a new repair',()=>{
+  const common={
+    priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
+    goal:'repair exact blocker',responsibleFiles:['tools/demo-runtime.mjs'],
+    sourceMutationRequired:true,sourceMutationBaseline:'source-a',
+    failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'COMMON_RUNTIME_BINDING_FAILURE'
+  };
+  const compacted=coalesceQueuedSystemAiDuplicateRepairs({tasks:[
+    {...common,id:'unverified-done',status:'done',lastOutcome:'FAIL',createdAt:'2026-10-06T00:00:00Z'},
+    {...common,id:'new-repair',status:'queued',createdAt:'2026-10-06T00:01:00Z'}
+  ]});
+  assert.equal(compacted.completedReused,0);
+  assert.equal(compacted.queue.tasks.find(x=>x.id==='new-repair').status,'queued');
+});
+
 test('duplicate repair coalescing keeps different known-good revisions separate',()=>{
   const common={
     status:'queued',priority:'critical',taskType:'bottleneck-repair',gameId:'demo',
