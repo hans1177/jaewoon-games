@@ -253,7 +253,7 @@ jobs:
               const joblessOrphanQueuedRuns=[...joblessOrphanIds].length;
               const joblessOrphanPrimaryRuns=primary.filter(r=>joblessOrphanIds.has(Number(r.id))).length;
               process.stdout.write([runnerQueuedRuns,runnerInProgressRuns,primaryGameQueuedRuns,duplicateWorkflowRuns,stalePrimaryRuns,joblessOrphanQueuedRuns,joblessOrphanPrimaryRuns].join(' '));
-              NODE
+          NODE
               )"
               read -r runner_queued_runs runner_in_progress_runs primary_game_queued_runs duplicate_workflow_runs stale_primary_runs jobless_orphan_queued_runs jobless_orphan_primary_runs <<< "$workflow_pressure_metrics"
               reservation_wait_ms="$(node -e "const q=require('/tmp/system-ai-control/.vibe2/system-ai-queue.json');const now=Date.now(),tasks=q.tasks||[],byId=new Map(tasks.map(x=>[String(x.id||''),x]));const terminal=s=>['done','completed','verified'].includes(String(s||'').toLowerCase());const waits=[];for(const x of tasks){if(String(x.status||'').toLowerCase()!=='queued')continue;const deps=(x.dependencies||[]).map(id=>byId.get(String(id)));if(deps.some(d=>!d||!terminal(d.status)))continue;const m=String(x.blocker||'').match(/^shared-signature-canary-pending:(.+)$/i);if(m&&!terminal(byId.get(m[1])?.status))continue;const stamps=[x.updatedAt||x.createdAt,...deps.map(d=>d?.updatedAt||d?.createdAt)].map(Date.parse).filter(Number.isFinite);if(stamps.length)waits.push(Math.max(0,now-Math.max(...stamps)));}console.log(waits.length?Math.max(...waits):0)")"
