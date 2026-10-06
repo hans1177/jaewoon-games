@@ -557,15 +557,24 @@ function sourceConsumerManagedTokens(source=''){
   }
   return byFamily;
 }
+function sourceConsumerUsageSource(source=''){
+  let out=source.replace(/-- STUDIO_ASSET_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_BINDING_END/g,' ');
+  if(out===source){
+    const start=out.indexOf('StudioAssets');
+    const end=start>=0?out.indexOf('-- STUDIO_ASSET_BINDING_END',start):-1;
+    if(start>=0&&end>start)out=out.slice(0,start)+' '+out.slice(end+'-- STUDIO_ASSET_BINDING_END'.length);
+  }
+  return out;
+}
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={},useCache=true}={}){
   const gameId=clean(game.id||game.gameId),cacheKey=path.resolve(repoRoot)+'|'+gameId;
   if(useCache&&SOURCE_CONSUMER_GAME_CACHE.has(cacheKey))return SOURCE_CONSUMER_GAME_CACHE.get(cacheKey);
   const roots=sourceConsumerRoots({repoRoot,game});
-  const assetPaths=new Map(),tokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
-  const addToken=(token,file)=>{
+  const addToken=(target,token,file)=>{
     const normalized=clean(token).toLowerCase();
-    if(normalized&&!tokens.has(normalized))tokens.set(normalized,file);
+    if(normalized&&!target.has(normalized))target.set(normalized,file);
   };
   const addAssetPath=(assetPath,file)=>{
     if(assetPath&&!assetPaths.has(assetPath))assetPaths.set(assetPath,file);
@@ -588,7 +597,9 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={},useCache=true}={
         scannedFileCount+=1;scannedBytes+=stat.size;
         const relative=sourceConsumerPath(path.relative(repoRoot,file));
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
-        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(match[1],relative);
+        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(tokens,match[1],relative);
+        const usageSource=sourceConsumerUsageSource(source);
+        for(const match of usageSource.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(usageTokens,match[1],relative);
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*assets\/[A-Za-z0-9._\/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
@@ -613,7 +624,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={},useCache=true}={
   }
   fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
   const snapshot=Object.freeze({
-    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,managedByFamily,managedFiles,
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,managedByFamily,managedFiles,
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
@@ -656,8 +667,8 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
       const gameId=clean(game.id||game.gameId);
       if(!snapshot.roots.length)continue;
       const directPaths=sourceConsumerAssetPaths(asset).filter(assetPath=>snapshot.assetPaths.has(assetPath));
-      const literalIds=identities.filter(value=>snapshot.tokens.has(value.toLowerCase()));
-      const managed=identities.filter(value=>snapshot.managedByFamily.get(family)?.has(value.toLowerCase()));
+      const literalIds=identities.filter(value=>snapshot.usageTokens.has(value.toLowerCase()));
+      const managed=identities.filter(value=>snapshot.managedByFamily.get(family)?.has(value.toLowerCase())&&snapshot.usageTokens.has(value.toLowerCase()));
       const linkedPack=packId&&!isPack?packLinks.get(gameId)?.get(packId)||[]:[];
       let mode='',evidenceFiles=[],matchedIds=[];
       if((!packId||isPack)&&directPaths.length){
@@ -668,12 +679,13 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
         evidenceFiles=[
           ...linkedPack.map(assetPath=>snapshot.assetPaths.get(assetPath)),
           ...directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath)),
-          ...literalIds.map(value=>snapshot.tokens.get(value.toLowerCase()))
+          ...literalIds.map(value=>snapshot.usageTokens.get(value.toLowerCase()))
         ];
       }else if(managed.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
         mode='MANAGED_LIBRARY_IDENTITY';matchedIds=managed;
         evidenceFiles=[
           ...managed.map(value=>snapshot.managedByFamily.get(family)?.get(value.toLowerCase())),
+          ...managed.map(value=>snapshot.usageTokens.get(value.toLowerCase())),
           ...snapshot.managedFiles
         ];
       }
