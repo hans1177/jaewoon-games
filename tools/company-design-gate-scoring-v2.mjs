@@ -77,19 +77,131 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const platformKnown=['ROBLOX','UNITY'].includes(platform);
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
+  const sketchVersion=Math.max(1,Number(seed?.GAMEPLAY_SKETCH?.version||1));
+  const fusionRequired=sketchVersion>=3;
+  const requiredSignatureSystemCount=fusionRequired?4:2;
+  const requiredSystemConnectionCount=fusionRequired?4:3;
+  const requiredExpansionCount=fusionRequired?4:3;
+  const fusionExpansionText=list(design.contentExpansionPlan)
+    .flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
+    .map(clean).join(' ');
+  const fusionExpansionSemantics=!fusionRequired||[
+    /숨|비밀|hidden|secret/i,
+    /재방문|다시|옛|이전|revisit|return|legacy|old content/i,
+    /엔드|최종|융합|fusion|endgame|A.?[×x].?B.?[×x].?C|복수.*조합/i,
+    /성장.*변|변이|mutation|초반.*중반|중반.*후반|early.*mid|mid.*late/i
+  ].every(re=>re.test(fusionExpansionText));
+  const interconnectedSystemNames=distinct(list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem]));
+  const fusionConnectionSemantics=!fusionRequired||interconnectedSystemNames.length>=4;
+  const narrativePlan=design?.narrativeDialoguePlan||{};
+  const homagePlan=design?.referenceHomagePlan||{};
+  const contentVariety=design?.contentVarietyPlan||{};
+  const narrativeSeed=seed?.GAMEPLAY_SKETCH?.narrativeDepth||{};
+  const storyWeight=clean(narrativeSeed.storyWeight).toUpperCase()||'LIGHT';
+  const narrativeRequired=fusionRequired;
+  const npcCompanionRequired=storyWeight==='HEAVY';
+  const mediumNarrativeRequired=storyWeight==='MEDIUM'||storyWeight==='HEAVY';
+  const narrativeConnected=!narrativeRequired||(
+    narrativePlan.applicable===true
+    &&distinct(list(narrativePlan.worldRules)).length>=2
+    &&distinct(list(narrativePlan.plotBeats)).length>=(storyWeight==='LIGHT'?1:3)
+    &&distinct(list(narrativePlan.questStates)).length>=(storyWeight==='LIGHT'?1:2)
+    &&distinct(list(narrativePlan.foreshadowing)).length>=(storyWeight==='LIGHT'?1:2)
+    &&distinct(list(narrativePlan.payoffs)).length>=(storyWeight==='LIGHT'?1:2)
+    &&distinct(list(narrativePlan.placeNameContinuity)).length>=(storyWeight==='LIGHT'?2:3)
+    &&distinct(list(narrativePlan.oppositionLoreLinks)).length>=1
+    &&distinct(list(narrativePlan.worldStateCallbacks)).length>=1
+    &&list(homagePlan.inspirations).length>=2
+    &&(!mediumNarrativeRequired||(
+      distinct(list(narrativePlan.characterGoals)).length>=2
+      &&list(narrativePlan.sceneBeats).length>=2
+    ))
+    &&(!npcCompanionRequired||list(narrativePlan.characterVoiceProfiles).length>=1)
+    &&(storyWeight==='LIGHT'||(
+      distinct(list(narrativePlan.journalRecordLinks)).length>=2
+      &&distinct(list(narrativePlan.dialogueJournalLinks)).length>=2
+    ))
+  );
+  const narrativeSystemText=[
+    ...list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem,row?.trigger,row?.stateChange]),
+    ...list(design.contentExpansionPlan).flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
+  ].map(clean).join(' ');
+  const narrativeSystemCausality=!narrativeRequired||(
+    /(지역|region|월드|world|상점|shop|무역|trade|탐험|explor|보스|boss|아이템|item|퀘스트|quest|목표|objective)/i.test(narrativeSystemText)
+    &&/(변화|state|unlock|해금|영향|effect|후속|follow|분기|branch|보상|reward)/i.test(narrativeSystemText)
+    &&(!mediumNarrativeRequired||/(npc|동료|companion|세력|faction|관계|relationship)/i.test(narrativeSystemText))
+  );
+  const contentCausalityText=list(design.contentExpansionPlan).flatMap(row=>[row?.newGameplay,row?.systemImpact]).map(clean).join(' ');
+  const contentCausalityConnected=!narrativeRequired||(
+    /(지역|던전|보스|아이템|펫|미니게임|무역|하우징|수집|region|dungeon|boss|item|pet|minigame|trade|housing|collection)/i.test(contentCausalityText)
+    &&/(npc|세력|faction|역사|history|세계|world|기원|origin|이유|reason)/i.test(contentCausalityText)
+    &&/(후속|follow|상태|state|관계|relationship|평판|reputation|퀘스트|quest)/i.test(contentCausalityText)
+  );
+  const styleRequired=fusionRequired&&Boolean(seed?.GAMEPLAY_SKETCH?.styleWorldDepth);
+  const styleRegions=list(contentVariety.regions);
+  const styleConnected=!styleRequired||(
+    textReady(design.visualDirection,60)
+    &&objectReady(design.artAudioDirection||{},['visualIdentity','audioIdentity','gameplayFeedbackSync'],16)
+    &&styleRegions.length>=2
+    &&styleRegions.filter(row=>textReady(row?.storyContext,16)&&textReady(row?.landmark,16)).length>=2
+    &&/(건축|지형|의상|실루엣|재질|팔레트|조명|날씨|배경|architecture|terrain|costume|silhouette|material|palette|lighting|weather|background)/i.test(clean(design.visualDirection)+' '+clean(design.artAudioDirection?.visualIdentity))
+  );
+
+  const worldSeed=seed?.GAMEPLAY_SKETCH?.worldbuildingDepth||{};
+  const worldbuildingRequired=fusionRequired;
+  const worldDesignText=[
+    ...list(narrativePlan.worldRules),
+    ...list(narrativePlan.dialogueRules),
+    ...list(narrativePlan.plotBeats),
+    ...list(narrativePlan.questStates),
+    ...list(narrativePlan.foreshadowing),
+    ...list(narrativePlan.payoffs),
+    ...list(narrativePlan.sceneBeats).flatMap(row=>[row?.scene,row?.purpose,row?.conflict,row?.informationAsymmetry,row?.stateChange]),
+    ...list(narrativePlan.placeNameContinuity),
+    ...list(narrativePlan.journalRecordLinks),
+    ...list(narrativePlan.dialogueJournalLinks),
+    ...list(narrativePlan.oppositionLoreLinks),
+    ...list(narrativePlan.worldStateCallbacks),
+    ...styleRegions.flatMap(row=>[row?.name,row?.landmark,row?.storyContext,row?.encounterPattern]),
+    ...list(contentVariety.enemiesOrChallenges).flatMap(row=>[row?.name,row?.behavior,row?.identity,row?.rewardMeaning]),
+    ...list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem,row?.trigger,row?.stateChange]),
+    ...list(design.contentExpansionPlan).flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
+  ].map(clean).join(' ');
+  const worldComponentLinks=list(worldSeed.componentConceptLinks);
+  const worldbuildingConnected=!worldbuildingRequired||(
+    worldSeed.allGenreApplicable===true
+    &&textReady(worldSeed.sharedConceptAnchor,30)
+    &&worldComponentLinks.length>=6
+    &&narrativePlan.applicable===true
+    &&/(지명|place.?name|지도|map|지역명|표지판|landmark)/i.test(worldDesignText)
+    &&/(몬스터|monster|enemy|opponent|상대|위협|challenge|생태|ecology)/i.test(worldDesignText)
+    &&/(역사|history|세력|faction|문명|civilization|경제|economy|신앙|belief|기술|technology|제도|institution)/i.test(worldDesignText)
+    &&/(상태|state|후속|follow|변화|change|해금|unlock|분기|branch|보상|reward)/i.test(worldDesignText)
+    &&(storyWeight==='LIGHT'||/(저널|journal|기록|record|편지|letter|비문|inscription|소문|rumor)/i.test(worldDesignText))
+    &&(!mediumNarrativeRequired||/(대화|dialogue|npc|동료|companion|관계|relationship)/i.test(worldDesignText))
+  );
+  const librarySeed=seed?.GAMEPLAY_SKETCH?.libraryLinkage||{};
+  const libraryReferenceContractReady=!fusionRequired||(
+    librarySeed.referenceOnly===true
+    &&librarySeed.perLibraryUseOptional===true
+    &&librarySeed.noForcedUse===true
+    &&librarySeed.noShadowPipeline===true
+    &&textReady(librarySeed.selectionRule,30)
+    &&textReady(librarySeed.fallbackRule,30)
+  );
 
   const ideaBasic=textReady(design.identity,60)&&textReady(design.playerFantasy,40)&&textReady(design.coreFun,40)&&materialContractOk;
-  const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=2;
+  const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=requiredSignatureSystemCount;
   const categoryBasic=textReady(seed.GAME_CATEGORY,3)&&clean(robloxGenreProfile?.genre).length>0;
   const categoryConnected=categoryBasic&&clean(robloxGenreProfile?.genre)!=='Utility & other'&&playModeKnown;
   const coreBasic=loops.length>=3;
-  const coreConnected=coreBasic&&signatureSystems.length>=2&&signatureSystems.every(row=>textReady(row?.name,2)&&textReady(row?.purpose,20)&&textReady(row?.playerChoice,20));
+  const coreConnected=coreBasic&&signatureSystems.length>=requiredSignatureSystemCount&&signatureSystems.every(row=>textReady(row?.name,2)&&textReady(row?.purpose,20)&&textReady(row?.playerChoice,20));
   const systemsBasic=list(design.systemInterconnections).length>0;
-  const systemsConnected=objectListReady(design.systemInterconnections,['fromSystem','toSystem','trigger','stateChange'],3,8);
+  const systemsConnected=objectListReady(design.systemInterconnections,['fromSystem','toSystem','trigger','stateChange'],requiredSystemConnectionCount,8)&&fusionConnectionSemantics&&narrativeConnected&&narrativeSystemCausality&&worldbuildingConnected;
   const progressionBasic=Boolean(design.progressionEconomyBalance)&&textReady(design.progressionDirection,24);
   const progressionConnected=progressionBasic&&objectReady(design.progressionEconomyBalance,['progressionLoop','resourceFlow','balanceRules'],20);
   const expansionBasic=list(design.contentExpansionPlan).length>0;
-  const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],3,12);
+  const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],requiredExpansionCount,12)&&fusionExpansionSemantics&&contentCausalityConnected&&worldbuildingConnected;
   const failureBasic=Boolean(design.failureRetryRisk);
   const failureConnected=failureBasic&&Array.isArray(design.failureRetryRisk?.failureStates)&&distinct(design.failureRetryRisk.failureStates).length>=2&&textReady(design.failureRetryRisk?.retryFlow,20)&&textReady(design.failureRetryRisk?.riskPressure,20)&&textReady(design.failureRetryRisk?.recoveryRules,20);
   const platformProfileFields=['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'];
@@ -108,7 +220,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const uxBasic=Boolean(design.uxAccessibilityPlan)&&textReady(design.mobileUx,20);
   const uxConnected=uxBasic&&objectReady(design.uxAccessibilityPlan,['hudPriorities','touchAndInput','readability','accessibility'],16);
   const artBasic=Boolean(design.artAudioDirection)&&textReady(design.visualDirection,20);
-  const artConnected=artBasic&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16);
+  const artConnected=artBasic&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16)&&styleConnected;
   const traceBasic=list(design.implementationTraceability).length>0;
   const traceConnected=objectListReady(design.implementationTraceability,['designElement','responsibleSystem','validationEvidence'],3,10)&&distinct(list(design.technicalAssumptions)).length>=2&&distinct(list(design.validationQuestions)).length>=2;
 
@@ -159,7 +271,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
-    rejectionReasons.push(rejectionReason({code:'CORE_FUN_WEAK',axis:'CORE_LOOP_DESIGN',evidenceLevel:Math.min(Number(evidenceLevels.IDEA_AND_DISTINCTNESS||0),Number(evidenceLevels.CORE_LOOP_DESIGN||0)),minimumRequired:60,evidence:{ideaAndDistinctness:evidenceLevels.IDEA_AND_DISTINCTNESS,coreLoopDesign:evidenceLevels.CORE_LOOP_DESIGN,coreLoopCount:loops.length,signatureSystemCount:signatureSystems.length},requiredAction:'핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.'}));
+    rejectionReasons.push(rejectionReason({code:'CORE_FUN_WEAK',axis:'CORE_LOOP_DESIGN',evidenceLevel:Math.min(Number(evidenceLevels.IDEA_AND_DISTINCTNESS||0),Number(evidenceLevels.CORE_LOOP_DESIGN||0)),minimumRequired:60,evidence:{ideaAndDistinctness:evidenceLevels.IDEA_AND_DISTINCTNESS,coreLoopDesign:evidenceLevels.CORE_LOOP_DESIGN,coreLoopCount:loops.length,signatureSystemCount:signatureSystems.length,requiredSignatureSystemCount,fusionRequired},requiredAction:fusionRequired?'메인 핵심과 역할이 다른 대형 서브축 최소 3개를 signatureSystems에 구체화하고 실제 선택·상태변화로 연결한다.':'핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.'}));
   }
   if(criticalAxisFailures.length){
     hardFailures.push('CRITICAL_AXIS_MINIMUM_FAIL');
@@ -181,5 +293,35 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
+    systemFusionDepth:Object.freeze({
+      required:fusionRequired,
+      sketchVersion,
+      requiredSignatureSystemCount,
+      requiredSystemConnectionCount,
+      requiredExpansionCount,
+      observedSignatureSystemCount:signatureSystems.length,
+      observedSystemConnectionCount:list(design.systemInterconnections).length,
+      observedExpansionCount:list(design.contentExpansionPlan).length,
+      interconnectedSystemCount:interconnectedSystemNames.length,
+      fusionConnectionSemantics,
+      fusionExpansionSemantics,
+      narrativeRequired,
+      narrativeConnected,
+      narrativeSystemCausality,
+      contentCausalityConnected,
+      styleRequired,
+      styleConnected,
+      worldbuildingRequired,
+      worldbuildingConnected,
+      narrativePlaceNameCount:distinct(list(narrativePlan.placeNameContinuity)).length,
+      narrativeJournalRecordCount:distinct(list(narrativePlan.journalRecordLinks)).length,
+      narrativeDialogueJournalCount:distinct(list(narrativePlan.dialogueJournalLinks)).length,
+      narrativeOppositionLoreCount:distinct(list(narrativePlan.oppositionLoreLinks)).length,
+      narrativeWorldStateCallbackCount:distinct(list(narrativePlan.worldStateCallbacks)).length,
+      libraryReferenceContractReady,
+      libraryUsageHardGate:false,
+      perLibraryCoherenceRequiredOnlyWhenSelected:true,
+      assetLibraryExpansionRequired:false
+    }),
   };
 }

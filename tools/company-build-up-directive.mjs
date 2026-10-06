@@ -15,7 +15,7 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 
 export const BUILD_UP_DOMAINS=Object.freeze([
   'CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS',
-  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH',
+  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','NPC_COMPANION_CONCEPT_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','INTERACTION_DISCOVERABILITY',
   'ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION',
   'SESSION_FLOW','FIRST_10_MINUTES','FAILURE_RESPAWN_CHECKPOINTS','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC',
@@ -31,7 +31,7 @@ export const HOLISTIC_CORE_DOMAINS=Object.freeze([
   'CORE_FUN','PLAYER_ACTIONS','PLAYER_AGENCY','PROGRESSION','CONTENT_VARIETY','CONTENT_DENSITY',
   'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','INTERACTION_DISCOVERABILITY',
   'INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','SYSTEM_CONNECTION',
-  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SAVE_COMPLETENESS',
+  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','NPC_COMPANION_CONCEPT_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','SAVE_COMPLETENESS',
   'INPUT','MOBILE_UX','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
   'ANTI_GRIND','CONTENT_DISCOVERY','PERFORMANCE_BUDGET','RUNTIME_STABILITY'
 ]);
@@ -79,7 +79,7 @@ const IMPACT_DOMAINS=Object.freeze({
   GRAPHICS:Object.freeze(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION']),
   MAP:Object.freeze(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','SPAWN_ENCOUNTER_DIRECTOR','ENVIRONMENT','TERRAIN']),
   UI:Object.freeze(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','UI_HUD']),
-  GAMEPLAY:Object.freeze(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','EQUIPMENT_LOADOUT','CRAFTING','DIFFICULTY_PACING','GAME_FEEL']),
+  GAMEPLAY:Object.freeze(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','EQUIPMENT_LOADOUT','CRAFTING','DIFFICULTY_PACING','GAME_FEEL','SUBSYSTEM_BREADTH','SYSTEM_FUSION_DEPTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT']),
   SAVE:Object.freeze(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY']),
   MULTIPLAYER_SERVER:Object.freeze(['MULTIPLAYER_AND_SYNC'])
 });
@@ -200,6 +200,17 @@ export const PLATFORM_EXPERIENCE_PROFILES=Object.freeze({
     mobileRuntimeEvidenceRequired:true
   })
 });
+
+const CANONICAL_LIBRARY_SPECS=Object.freeze([
+  Object.freeze({family:'INTERNAL_ASSET_LIBRARY',paths:Object.freeze(['company-asset-library.json'])}),
+  Object.freeze({family:'VERIFIED_LEARNING_LIBRARY',paths:Object.freeze(['company-learning/vibe3-memory-index.json','company-learning/canonical-learning-pipeline.json'])}),
+  Object.freeze({family:'CODE_PATTERN_LIBRARY',paths:Object.freeze(['company-learning/vibe2-code-pattern-library.json'])}),
+  Object.freeze({family:'GAME_SEED_MATERIAL_LIBRARY',paths:Object.freeze(['game-seed-state.json'])}),
+  Object.freeze({family:'DESIGN_BASELINE_LIBRARY',paths:Object.freeze([])}),
+  Object.freeze({family:'GAME_CATALOG_LIBRARY',paths:Object.freeze(['game-catalog.json'])}),
+  Object.freeze({family:'LICENSED_REFERENCE_LIBRARY',paths:Object.freeze(['tools/vibe2-licensed-reference-samples.mjs','company-learning/external-game-design-principles.json'])}),
+  Object.freeze({family:'OPEN_SOURCE_REFERENCE_CATALOG',paths:Object.freeze(['company-learning/rpg-open-source-catalog.json'])})
+]);
 
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
@@ -441,8 +452,28 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     lighting:tokenCount(joined,/lighting|light\b|colorcorrection|postprocess|ambient|shadow/gi),
     primitive:tokenCount(joined,/createprimitive|primitivetype|instance\.new\(["']Part["']|shape\s*=|capsule|sphere|cube/gi),
     todo:tokenCount(joined,/TODO|FIXME|NotImplementedException/g),
-    errorRecovery:tokenCount(joined,/try\s*\{|catch\s*\(|pcall|xpcall|fallback|retry|recover/gi)
+    errorRecovery:tokenCount(joined,/try\s*\{|catch\s*\(|pcall|xpcall|fallback|retry|recover/gi),
+    fusion:tokenCount(joined,/system.?connect|interconnect|synerg|combo|combine|fusion|craft.*equip|equip.*combat|quest.*reward|reward.*unlock|trade.*upgrade|collection.*bonus|party.*skill|companion.*combat|pet.*combat|resource.*build|build.*unlock|연결|연계|조합|융합|시너지/gi),
+    revisit:tokenCount(joined,/revisit|backtrack|return.?reason|old.?region|legacy.?content|previous.?area|unlock.*path|new.?route|재방문|다시.*지역|이전.*지역|옛.*지역|새.*경로|숨은.*경로/gi),
+    classicCard:tokenCount(joined,/card|deck|hand|draw.?card|poker|blackjack|trick.?taking|카드|덱|패|포커|블랙잭/gi),
+    boardMechanic:tokenCount(joined,/dice|tile|auction|worker.?placement|engine.?build|draft|board.?game|주사위|타일|경매|일꾼.?배치|엔진.?빌딩|드래프트|보드게임/gi),
+    arcadeMechanic:tokenCount(joined,/arcade|rhythm|timing|racing|minigame|mini.?game|아케이드|리듬|타이밍|레이싱|미니게임/gi),
+    socialEconomy:tokenCount(joined,/trade|market|shop|sell|merchant|auction|economy|reputation|guild|resident|villager|무역|시장|상점|판매|상인|경제|평판|길드|주민/gi),
+    collectionMeta:tokenCount(joined,/collection|catalog|codex|set.?bonus|merge|evol|relic|pet|summon|수집|도감|세트|합성|진화|유물|펫|소환/gi),
+    companionParty:tokenCount(joined,/companion|party|ally|affinity|relationship|formation|동료|파티|호감|관계|진형/gi),
+    explorationMechanic:tokenCount(joined,/explor|secret|ruin|treasure|discover|map.?unlock|탐험|비밀|유적|보물|발견|지도.?해금/gi),
+    craftBuild:tokenCount(joined,/craft|recipe|workbench|build|housing|farm|cook|fish|mine|제작|레시피|제작대|건축|하우징|농사|요리|낚시|채광/gi),
+    dialogueWorld:tokenCount(joined,/dialogue|conversation|npc.?line|speech|대화|대사|말풍선|증언|소문/gi),
+    npcCompanionConcept:tokenCount(joined,/npc.*(?:state|goal|memory|relationship|faction|quest|schedule|behavior)|companion.*(?:state|goal|memory|relationship|affinity|party|quest|behavior)|relationship.*(?:dialogue|quest|state)|dialogue.*(?:state|memory|quest|relationship)|동료.*(?:상태|목표|기억|관계|호감|파티|퀘스트|행동)|npc.*(?:상태|목표|기억|관계|세력|퀘스트|행동)|대화.*(?:상태|기억|퀘스트|관계)/gi),
+    journalArchive:tokenCount(joined,/journal|record|letter|inscription|codex|lore|archive|저널|기록|편지|비문|도감|문서|아카이브/gi),
+    namingContinuity:tokenCount(joined,/place.?name|region.?name|location.?name|signpost|map.?label|지명|지역명|장소명|표지판|지도.?이름/gi),
+    oppositionLore:tokenCount(joined,/monster.*(?:region|habitat|lore|faction)|enemy.*(?:region|lore|faction)|opponent.*(?:world|history)|몬스터.*(?:지역|서식|역사|세력)|적.*(?:지역|역사|세력)|상대.*(?:세계|기원)/gi),
+    worldCausality:tokenCount(joined,/world.?state|faction.?state|region.?state|quest.*dialogue|journal.*quest|lore.*unlock|history.*region|place.*journal|세계.*상태|세력.*상태|지역.*상태|퀘스트.*대화|저널.*퀘스트|역사.*지역|지명.*기록/gi),
+    libraryReference:tokenCount(joined,/company-asset-library|vibe2-code-pattern-library|game-seed-state|rpg-open-source-catalog|licensed.?reference|internal.?asset|library.?selection|라이브러리|자산.?선택/gi)
   };
+  signals.mechanicFamilyCount=[
+    'classicCard','boardMechanic','arcadeMechanic','socialEconomy','collectionMeta','companionParty','explorationMechanic','craftBuild'
+  ].filter(key=>Number(signals[key]||0)>0).length;
   const topFiles=rows.map(row=>({
     file:row.file,
     score:
@@ -478,7 +509,15 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       signals.session<2?'SESSION_FLOW_SPARSE':null,
       signals.settings<1?'SETTINGS_ACCESSIBILITY_SPARSE':null,
       signals.performance<2?'PERFORMANCE_BUDGET_SPARSE':null,
-      signals.todo>0?'EXPLICIT_TODO_OR_NOT_IMPLEMENTED_PRESENT':null
+      signals.todo>0?'EXPLICIT_TODO_OR_NOT_IMPLEMENTED_PRESENT':null,
+      signals.fusion<3?'SYSTEM_FUSION_DEPTH_SPARSE':null,
+      signals.mechanicFamilyCount<3?'MECHANIC_VARIETY_SPARSE':null,
+      signals.revisit<2?'LEGACY_CONTENT_REVISIT_SPARSE':null,
+      signals.worldCausality<3?'WORLD_CAUSALITY_SPARSE':null,
+      signals.dialogueWorld<2||signals.journalArchive<2?'DIALOGUE_JOURNAL_CONTINUITY_SPARSE':null,
+      signals.npcCompanionConcept<2?'NPC_COMPANION_CONCEPT_CONTINUITY_SPARSE':null,
+      signals.namingContinuity<2?'PLACE_NAME_CONTINUITY_SPARSE':null,
+      signals.oppositionLore<2?'OPPOSITION_WORLD_CAUSALITY_SPARSE':null
     ])
   });
 }
@@ -524,9 +563,293 @@ export function extractDesignContext(record={}){
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
+    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({
+      fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)
+    })).filter(row=>row.fromSystem||row.toSystem||row.trigger||row.stateChange).slice(0,16),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({
+      milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)
+    })).filter(row=>row.milestone||row.newGameplay||row.systemImpact).slice(0,16),
+    compositionDepth:(
+      record?.gameplaySketch?.compositionDepth&&typeof record.gameplaySketch.compositionDepth==='object'
+        ?record.gameplaySketch.compositionDepth
+        :d?.gameplaySketch?.compositionDepth&&typeof d.gameplaySketch.compositionDepth==='object'
+          ?d.gameplaySketch.compositionDepth
+          :d?.compositionDepth&&typeof d.compositionDepth==='object'?d.compositionDepth:null
+    ),
+    narrativeDepth:(
+      record?.gameplaySketch?.narrativeDepth&&typeof record.gameplaySketch.narrativeDepth==='object'
+        ?record.gameplaySketch.narrativeDepth
+        :d?.gameplaySketch?.narrativeDepth&&typeof d.gameplaySketch.narrativeDepth==='object'
+          ?d.gameplaySketch.narrativeDepth
+          :d?.narrativeDepth&&typeof d.narrativeDepth==='object'?d.narrativeDepth:null
+    ),
+    styleWorldDepth:(
+      record?.gameplaySketch?.styleWorldDepth&&typeof record.gameplaySketch.styleWorldDepth==='object'
+        ?record.gameplaySketch.styleWorldDepth
+        :d?.gameplaySketch?.styleWorldDepth&&typeof d.gameplaySketch.styleWorldDepth==='object'
+          ?d.gameplaySketch.styleWorldDepth
+          :d?.styleWorldDepth&&typeof d.styleWorldDepth==='object'?d.styleWorldDepth:null
+    ),
+    worldbuildingDepth:(
+      record?.gameplaySketch?.worldbuildingDepth&&typeof record.gameplaySketch.worldbuildingDepth==='object'
+        ?record.gameplaySketch.worldbuildingDepth
+        :d?.gameplaySketch?.worldbuildingDepth&&typeof d.gameplaySketch.worldbuildingDepth==='object'
+          ?d.gameplaySketch.worldbuildingDepth
+          :d?.worldbuildingDepth&&typeof d.worldbuildingDepth==='object'?d.worldbuildingDepth:null
+    ),
+    libraryLinkage:(
+      record?.gameplaySketch?.libraryLinkage&&typeof record.gameplaySketch.libraryLinkage==='object'
+        ?record.gameplaySketch.libraryLinkage
+        :d?.gameplaySketch?.libraryLinkage&&typeof d.gameplaySketch.libraryLinkage==='object'
+          ?d.gameplaySketch.libraryLinkage
+          :d?.libraryLinkage&&typeof d.libraryLinkage==='object'?d.libraryLinkage:null
+    ),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
+  });
+}
+function inferMechanicFamilies({design={},source={}}={}){
+  const explicit=uniq(design?.compositionDepth?.mechanicDiversitySources);
+  if(explicit.length)return explicit;
+  const text=qualitySignalText([
+    design.identity,design.coreFun,design.progressionDirection,
+    ...(design.coreLoop||[]),
+    ...(design.signatureSystems||[]).flatMap(row=>[row.name,row.purpose,row.playerChoice]),
+    ...(design.contentExpansionPlan||[]).flatMap(row=>[row.milestone,row.newGameplay,row.systemImpact])
+  ]);
+  const signals=source?.signals||{};
+  return uniq([
+    (/card|deck|poker|blackjack|카드|덱|포커/.test(text)||Number(signals.classicCard||0)>0)?'CLASSIC_CARD':null,
+    (/dice|tile|auction|주사위|타일|경매/.test(text))?'CLASSIC_BOARD':null,
+    (/draft|worker.?placement|engine.?build|드래프트|일꾼.?배치|엔진.?빌딩/.test(text)||Number(signals.boardMechanic||0)>1)?'MODERN_BOARD':null,
+    (/arcade|rhythm|timing|racing|minigame|아케이드|리듬|레이싱|미니게임/.test(text)||Number(signals.arcadeMechanic||0)>0)?'ARCADE':null,
+    (/puzzle|match|connect|퍼즐|매치|연결/.test(text))?'PUZZLE':null,
+    (/explor|secret|ruin|treasure|탐험|비밀|유적|보물/.test(text)||Number(signals.explorationMechanic||0)>0)?'EXPLORATION':null,
+    (/strategy|tactic|defen[cs]e|territory|전략|전술|디펜스|영토/.test(text))?'TACTICAL_STRATEGY':null,
+    (/farm|cook|fish|housing|life.?sim|농사|요리|낚시|하우징|생활/.test(text))?'LIFE_SIM':null,
+    (/trade|market|shop|merchant|reputation|guild|무역|시장|상점|평판|길드/.test(text)||Number(signals.socialEconomy||0)>0)?'SOCIAL_ECONOMY':null,
+    (/collection|catalog|codex|relic|pet|summon|수집|도감|유물|펫|소환/.test(text)||Number(signals.collectionMeta||0)>0)?'COLLECTION_META':null,
+    (/craft|build|workbench|recipe|제작|건축|제작대|레시피/.test(text)||Number(signals.craftBuild||0)>0)?'CRAFT_BUILD':null,
+    (/companion|party|ally|affinity|동료|파티|호감/.test(text)||Number(signals.companionParty||0)>0)?'COMPANION_PARTY':null
+  ]);
+}
+export function deriveSystemFusionDepthPlan({design={},source={}}={}){
+  const explicit=design?.compositionDepth&&typeof design.compositionDepth==='object'?design.compositionDepth:null;
+  const majorSubSystems=uniq(explicit?.majorSubSystems?.length
+    ?explicit.majorSubSystems
+    :(design.signatureSystems||[]).map(row=>row.name||row.purpose));
+  const extensionSystems=uniq(explicit?.extensionSystems?.length
+    ?explicit.extensionSystems
+    :(design.contentExpansionPlan||[]).flatMap(row=>[row.milestone,row.newGameplay]));
+  const crossSystemCombinations=uniq(explicit?.crossSystemCombinations?.length
+    ?explicit.crossSystemCombinations
+    :(design.systemInterconnections||[]).map(row=>row.fromSystem+' × '+row.toSystem+': '+row.trigger+' -> '+row.stateChange));
+  const expansionText=(design.contentExpansionPlan||[]).map(row=>[row.milestone,row.newGameplay,row.systemImpact].join(' | '));
+  const hiddenCombinations=uniq(explicit?.hiddenCombinations?.length?explicit.hiddenCombinations:expansionText.filter(row=>/숨|비밀|hidden|secret/i.test(row)));
+  const growthMutations=uniq(explicit?.growthMutations?.length?explicit.growthMutations:expansionText.filter(row=>/변이|변화|성장|중반|후반|mutation|evol|early|mid|late/i.test(row)));
+  const legacyContentRevisitHooks=uniq(explicit?.legacyContentRevisitHooks?.length?explicit.legacyContentRevisitHooks:expansionText.filter(row=>/재방문|다시|옛|이전|revisit|return|legacy|old/i.test(row)));
+  const endgameFusion=clean(explicit?.endgameFusion)||clean(expansionText.find(row=>/엔드|최종|융합|endgame|fusion|A.?[×x].?B.?[×x].?C/i.test(row)));
+  const mechanicDiversitySources=inferMechanicFamilies({design,source});
+  const gaps=uniq([
+    majorSubSystems.length<3?'MAJOR_SUBSYSTEMS_BELOW_3':null,
+    extensionSystems.length<6?'EXTENSION_SYSTEM_POOL_BELOW_6':null,
+    crossSystemCombinations.length<4?'CROSS_SYSTEM_COMBINATIONS_BELOW_4':null,
+    hiddenCombinations.length<2?'HIDDEN_COMBINATIONS_BELOW_2':null,
+    growthMutations.length<2?'GROWTH_MUTATIONS_BELOW_2':null,
+    legacyContentRevisitHooks.length<2?'LEGACY_REVISIT_HOOKS_BELOW_2':null,
+    mechanicDiversitySources.length<3?'MECHANIC_FAMILIES_BELOW_3':null,
+    !endgameFusion?'ENDGAME_FUSION_MISSING':null,
+    Number(source?.signals?.fusion||0)<3?'SOURCE_FUSION_SIGNAL_SPARSE':null,
+    Number(source?.signals?.revisit||0)<2?'SOURCE_REVISIT_SIGNAL_SPARSE':null
+  ]);
+  return Object.freeze({
+    version:1,
+    mode:explicit?'DESIGN_EXPLICIT_V3_OR_LATER':'DERIVED_FROM_APPROVED_DESIGN_AND_CURRENT_SOURCE',
+    mainContent:clean(explicit?.mainContent)||clean(design.coreFun)||clean(design.identity),
+    majorSubSystems:Object.freeze(majorSubSystems),
+    extensionSystems:Object.freeze(extensionSystems),
+    crossSystemCombinations:Object.freeze(crossSystemCombinations),
+    hiddenCombinations:Object.freeze(hiddenCombinations),
+    growthMutations:Object.freeze(growthMutations),
+    legacyContentRevisitHooks:Object.freeze(legacyContentRevisitHooks),
+    endgameFusion:endgameFusion||null,
+    mechanicDiversitySources:Object.freeze(mechanicDiversitySources),
+    stageModel:Object.freeze([
+      'EARLY=A|B|C_INDIVIDUAL_LEARNING',
+      'MID=A×B|A×C|B×C',
+      'LATE=A×B×C',
+      'ENDGAME=A×B×C+@×@'
+    ]),
+    sourceEvidence:Object.freeze({
+      fusionSignals:Number(source?.signals?.fusion||0),
+      revisitSignals:Number(source?.signals?.revisit||0),
+      mechanicFamilySignals:Number(source?.signals?.mechanicFamilyCount||0)
+    }),
+    gaps:Object.freeze(gaps),
+    implementationBoundary:'USE_APPROVED_DESIGN_AND_EXISTING_RESPONSIBLE_SOURCE; A NEW MAJOR SYSTEM MAY NOT CHANGE PROTECTED RULE_BALANCE_ECONOMY_SAVE_NETWORK MEANING WITHOUT CANONICAL DESIGN AUTHORITY',
+    disconnectedSubsystemOrMinigameDumpForbidden:true,
+    legacyContentMustGainReturnReasonAsGrowthDeepens:true
+  });
+}
+
+export function deriveWorldbuildingDepthPlan({design={},source={}}={}){
+  const world=design?.worldbuildingDepth&&typeof design.worldbuildingDepth==='object'?design.worldbuildingDepth:{};
+  const narrative=design?.narrativeDepth&&typeof design.narrativeDepth==='object'?design.narrativeDepth:{};
+  const contentText=[
+    design.identity,design.coreFun,design.progressionDirection,
+    ...(design.coreLoop||[]),
+    ...(design.signatureSystems||[]).flatMap(row=>[row.name,row.purpose,row.playerChoice]),
+    ...(design.systemInterconnections||[]).flatMap(row=>[row.fromSystem,row.toSystem,row.trigger,row.stateChange]),
+    ...(design.contentExpansionPlan||[]).flatMap(row=>[row.milestone,row.newGameplay,row.systemImpact])
+  ].map(clean).join(' ');
+  const worldDnaSources=uniq(world.worldDnaSources?.length?world.worldDnaSources:[
+    /faction|세력|권력|guild|kingdom|state/i.test(contentText)?'CIVILIZATION_AND_POWER':null,
+    /region|map|biome|지역|지형|생태|탐험/i.test(contentText)?'GEOGRAPHY_AND_ECOLOGY':null,
+    /trade|shop|econom|무역|상점|경제|생활/i.test(contentText)?'ECONOMY_AND_DAILY_LIFE':null,
+    /myth|belief|ritual|신화|신앙|금기|의식/i.test(contentText)?'BELIEF_MYTH_AND_TABOO':null,
+    /technology|research|institution|기술|연구|제도/i.test(contentText)?'TECHNOLOGY_AND_INSTITUTIONS':null,
+    /journal|record|dialogue|저널|기록|대화|소문/i.test(contentText)?'ARCHIVE_JOURNAL_AND_RUMOR':null,
+    /monster|enemy|opponent|몬스터|적|상대/i.test(contentText)?'MONSTER_OPPOSITION_ECOLOGY':null
+  ]);
+  const placeNameLedger=uniq(narrative.placeNameLedger);
+  const journalRecordChains=uniq(narrative.journalRecordChains);
+  const dialogueJournalLinks=uniq(narrative.dialogueJournalLinks);
+  const npcRelationshipWeb=uniq(narrative.npcRelationshipWeb);
+  const companionArcs=uniq(narrative.companionArcs);
+  const storySystemLinks=uniq(narrative.storySystemLinks);
+  const sharedConceptAnchor=clean(world.sharedConceptAnchor)||clean(design.identity);
+  const componentConceptLinks=uniq(world.componentConceptLinks);
+  const monsterOpponentLoreEcologyLinks=uniq(narrative.monsterOpponentLoreEcologyLinks);
+  const causalChains=uniq(world.causalChains?.length?world.causalChains:narrative.contentCausalityLinks);
+  const worldStateEvolution=uniq(world.worldStateEvolution?.length?world.worldStateEvolution:narrative.worldEvolutionHooks);
+  const storyWeight=clean(narrative.storyWeight).toUpperCase()||'LIGHT';
+  const mediumNarrative=storyWeight==='MEDIUM'||storyWeight==='HEAVY';
+  const heavyNarrative=storyWeight==='HEAVY';
+  const hasNpcCompanionDesign=npcRelationshipWeb.length>0||companionArcs.length>0||/npc|동료|companion|resident|주민|villager|상인/.test(contentText.toLowerCase());
+  const gaps=uniq([
+    worldDnaSources.length<3?'WORLD_DNA_FAMILIES_BELOW_3':null,
+    !sharedConceptAnchor?'SHARED_CONCEPT_ANCHOR_MISSING':null,
+    componentConceptLinks.length<6?'COMPONENT_CONCEPT_LINKS_BELOW_6':null,
+    placeNameLedger.length<(storyWeight==='LIGHT'?2:3)?'PLACE_NAME_LEDGER_SHALLOW':null,
+    mediumNarrative&&journalRecordChains.length<2?'JOURNAL_RECORD_CHAINS_BELOW_2':null,
+    mediumNarrative&&dialogueJournalLinks.length<2?'DIALOGUE_JOURNAL_LINKS_BELOW_2':null,
+    hasNpcCompanionDesign&&storySystemLinks.length<2?'NPC_COMPANION_STORY_SYSTEM_LINKS_SPARSE':null,
+    heavyNarrative&&hasNpcCompanionDesign&&Number(source?.signals?.npcCompanionConcept||0)<2?'SOURCE_NPC_COMPANION_CONCEPT_SPARSE':null,
+    monsterOpponentLoreEcologyLinks.length<1?'OPPOSITION_LORE_LINKS_BELOW_1':null,
+    causalChains.length<4?'WORLD_CAUSAL_CHAINS_BELOW_4':null,
+    worldStateEvolution.length<2?'WORLD_STATE_EVOLUTION_BELOW_2':null,
+    Number(source?.signals?.worldCausality||0)<3?'SOURCE_WORLD_CAUSALITY_SPARSE':null,
+    mediumNarrative&&Number(source?.signals?.dialogueWorld||0)<2?'SOURCE_DIALOGUE_SPARSE':null,
+    mediumNarrative&&Number(source?.signals?.journalArchive||0)<2?'SOURCE_JOURNAL_SPARSE':null,
+    Number(source?.signals?.namingContinuity||0)<2?'SOURCE_PLACE_NAME_SPARSE':null,
+    Number(source?.signals?.oppositionLore||0)<2?'SOURCE_OPPOSITION_LORE_SPARSE':null
+  ]);
+  return Object.freeze({
+    version:1,
+    allGenres:true,
+    storyWeight,
+    worldPremise:clean(world.worldPremise)||clean(narrative.worldConflict)||clean(design.identity),
+    sharedConceptAnchor,
+    componentConceptLinks:Object.freeze(componentConceptLinks),
+    npcRelationshipWeb:Object.freeze(npcRelationshipWeb),
+    companionArcs:Object.freeze(companionArcs),
+    storySystemLinks:Object.freeze(storySystemLinks),
+    hasNpcCompanionDesign,
+    worldDnaSources:Object.freeze(worldDnaSources),
+    civilizationPowerOrder:clean(world.civilizationPowerOrder),
+    geographyEcology:clean(world.geographyEcology),
+    economyDailyLife:clean(world.economyDailyLife),
+    beliefMythTaboo:clean(world.beliefMythTaboo),
+    technologyInstitutions:clean(world.technologyInstitutions),
+    placeNameLogic:clean(world.placeNameLogic),
+    journalArchiveLogic:clean(world.journalArchiveLogic),
+    monsterOpponentEcology:clean(world.monsterOpponentEcology),
+    dialogueMemoryLogic:clean(world.dialogueMemoryLogic),
+    placeNameLedger:Object.freeze(placeNameLedger),
+    journalRecordChains:Object.freeze(journalRecordChains),
+    dialogueJournalLinks:Object.freeze(dialogueJournalLinks),
+    monsterOpponentLoreEcologyLinks:Object.freeze(monsterOpponentLoreEcologyLinks),
+    causalChains:Object.freeze(causalChains),
+    worldStateEvolution:Object.freeze(worldStateEvolution),
+    crossMediaClueLinks:Object.freeze(uniq(world.crossMediaClueLinks)),
+    genreExpression:clean(world.genreExpression),
+    sourceEvidence:Object.freeze({
+      worldCausality:Number(source?.signals?.worldCausality||0),
+      dialogue:Number(source?.signals?.dialogueWorld||0),
+      npcCompanionConcept:Number(source?.signals?.npcCompanionConcept||0),
+      journal:Number(source?.signals?.journalArchive||0),
+      naming:Number(source?.signals?.namingContinuity||0),
+      oppositionLore:Number(source?.signals?.oppositionLore||0)
+    }),
+    gaps:Object.freeze(gaps),
+    continuityChain:'PLACE_HISTORY→PLACE_NAME→DIALOGUE→JOURNAL_OR_RECORD→MONSTER_OR_OPPOSITION_ECOLOGY→SIDE_CONTENT→MAIN_EVENT→WORLD_STATE'
+  });
+}
+
+function librarySearchTerms({design={},worldPlan={}}={}){
+  const text=[
+    design.identity,design.coreFun,design.progressionDirection,
+    ...(design.coreLoop||[]),
+    ...(design.signatureSystems||[]).flatMap(row=>[row.name,row.purpose,row.playerChoice]),
+    ...(worldPlan.worldDnaSources||[]),worldPlan.worldPremise,
+    ...(worldPlan.placeNameLedger||[]),...(worldPlan.monsterOpponentLoreEcologyLinks||[])
+  ].map(clean).join(' ').toLowerCase();
+  const stop=new Set(['game','system','player','current','world','게임','시스템','플레이어','현재','세계','콘텐츠','content','사용','연결','build']);
+  return uniq(text.split(/[^a-z0-9가-힣_]+/i).filter(token=>token.length>=3&&!stop.has(token))).slice(0,32);
+}
+function searchLibraryFile({repoRoot,file,terms=[]}={}){
+  const absolute=path.resolve(repoRoot,file);
+  let source='';
+  try{
+    const stat=fs.statSync(absolute);
+    if(!stat.isFile()||stat.size<=0||stat.size>12*1024*1024)return{available:false,matchedTerms:[]};
+    source=fs.readFileSync(absolute,'utf8').toLowerCase();
+  }catch{return{available:false,matchedTerms:[]};}
+  const matched=terms.filter(term=>source.includes(term)).slice(0,12);
+  return{available:true,matchedTerms:matched};
+}
+export function deriveCanonicalLibraryLinkagePlan({repoRoot=process.cwd(),gameId='',design={},source={},worldPlan={}}={}){
+  const terms=librarySearchTerms({design,worldPlan});
+  const rows=CANONICAL_LIBRARY_SPECS.map(spec=>{
+    if(spec.family==='DESIGN_BASELINE_LIBRARY'){
+      return Object.freeze({
+        family:spec.family,
+        available:Boolean(clean(design.identity)||clean(design.coreFun)),
+        sourcePaths:Object.freeze(['CURRENT_VERIFIED_OR_MINIMUM_DESIGN_RECORD']),
+        matchedTerms:Object.freeze(terms.slice(0,8)),
+        candidateOnly:true
+      });
+    }
+    const evidence=spec.paths.map(file=>({file,...searchLibraryFile({repoRoot,file,terms})}));
+    return Object.freeze({
+      family:spec.family,
+      available:evidence.some(row=>row.available),
+      sourcePaths:Object.freeze(spec.paths),
+      matchedTerms:Object.freeze(uniq(evidence.flatMap(row=>row.matchedTerms)).slice(0,12)),
+      candidateOnly:true
+    });
+  });
+  const fingerprint=sha(JSON.stringify(rows.map(row=>({family:row.family,available:row.available,matchedTerms:row.matchedTerms}))));
+  return Object.freeze({
+    version:1,
+    gameId:clean(gameId),
+    searchMode:'DYNAMIC_CURRENT_BUILD_UP_CONTEXT',
+    allCanonicalLibrariesSearchable:true,
+    exposedFamilyCount:rows.length,
+    availableFamilyCount:rows.filter(row=>row.available).length,
+    libraries:Object.freeze(rows),
+    searchTerms:Object.freeze(terms),
+    searchFingerprint:fingerprint,
+    candidateDoesNotEqualConsumer:true,
+    compatibilityRightsAndGameIdentityFirst:true,
+    actualConsumerEvidenceRequired:true,
+    noForcedUse:true,
+    noShadowPipeline:true,
+    selectionRule:'search all canonical libraries, then select only compatible rights-safe game-specific candidates; reuse existing canonical asset/learning/pattern consumers rather than creating a new pipeline',
+    consumerRule:'a candidate becomes used only when the existing responsible game source or canonical native consumer actually references/consumes it and downstream QA confirms the changed behavior',
+    fallbackRule:'when no compatible candidate exists, keep the current game source/design and use the existing canonical generation or library-production path only when a verified gap requires it',
+    sourceSignals:Object.freeze({libraryReference:Number(source?.signals?.libraryReference||0)})
   });
 }
 
@@ -535,7 +858,7 @@ function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
   if(/crash|runtime|error|softlock|save|desync|broken|exception/.test(text))return'STABILITY';
   if(/combat|core.?fun|interaction|enemy|boss|gameplay|feel|decision/.test(text))return'CORE_FUN';
-  if(/progress|reward|unlock|quest|goal|economy|content/.test(text))return'PROGRESSION';
+  if(/progress|reward|unlock|quest|goal|economy|content|fusion|subsystem|mechanic|revisit|융합|서브|재방문/.test(text))return'PROGRESSION';
   if(/mobile|touch|input|ui|hud|inventory|equipment|equip|menu|readability|navigation|accessib/.test(text))return'USABILITY';
   if(/visual|graphic|render|animation|motion|vfx|camera|lighting|material|silhouette|environment|placeholder|audio|music|bgm|sfx|sound|game.?feel/.test(text))return'PRESENTATION';
   const s=source?.signals||{};
@@ -562,12 +885,20 @@ function secondaryDesignAnchor(design={}){
   return clean(system?.name)||clean(system?.playerChoice)||clean(design.progressionDirection)||design.coreLoop?.[0]||'핵심 루프';
 }
 
-function domainState(domain,{design={},source={}}={}){
+function domainState(domain,{design={},source={},worldDepthPlan=null,libraryLinkagePlan=null}={}){
   const s=source?.signals||{};
   const relevantByText=qualitySignalText([
     design.identity,design.coreFun,design.progressionDirection,...(design.coreLoop||[]),
-    ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice])
+    ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice]),
+    ...(design.systemInterconnections||[]).flatMap(x=>[x.fromSystem,x.toSystem,x.trigger,x.stateChange]),
+    ...(design.contentExpansionPlan||[]).flatMap(x=>[x.milestone,x.newGameplay,x.systemImpact]),
+    design.compositionDepth?JSON.stringify(design.compositionDepth):'',
+    design.narrativeDepth?JSON.stringify(design.narrativeDepth):'',
+    design.worldbuildingDepth?JSON.stringify(design.worldbuildingDepth):''
   ]);
+  const fusionDepth=deriveSystemFusionDepthPlan({design,source});
+  const worldDepth=worldDepthPlan||deriveWorldbuildingDepthPlan({design,source});
+  const libraries=libraryLinkagePlan||{allCanonicalLibrariesSearchable:false,exposedFamilyCount:0};
   const no=(reason)=>({domain,state:'NOT_APPLICABLE',reason});
   const gap=(reason)=>({domain,state:'GAP',reason});
   const pass=(reason='current source and approved design provide sufficient implementation signal')=>({domain,state:'PASS',reason});
@@ -582,7 +913,6 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='CRAFTING'&&!/craft|제작|recipe/.test(relevantByText)&&Number(s.progression||0)>0)return no('no crafting signal in approved design');
   if(domain==='QUESTS'&&!/quest|퀘스트|story|npc/.test(relevantByText))return no('no quest/story objective signal in approved design');
   if(domain==='NPC_SOCIAL_BEHAVIOR'&&!/npc|villager|resident|social|주민|상인|대화/.test(relevantByText))return no('no NPC or social behavior signal in approved design');
-  if(domain==='NARRATIVE_STORY'&&!/story|narrative|lore|quest|스토리|세계관|대사/.test(relevantByText))return no('no narrative or story signal in approved design');
   if(domain==='REPLAYABILITY_VARIATION'&&!/rogue|wave|random|procedural|replay|런|웨이브|랜덤/.test(relevantByText))return no('no explicit replay variation signal in approved design');
   if(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','CONTENT_DISCOVERY'].includes(domain)&&!hasWorld)return no('approved design and current source do not expose a world/map surface requiring expansion');
   if(['INVENTORY','INVENTORY_USABILITY'].includes(domain)&&!hasInventory)return no('game has no current inventory/item ownership system');
@@ -590,7 +920,62 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='RECONNECT_RECOVERY'&&!hasMultiplayer&&!hasSave)return no('game has no multiplayer or persistent reconnect state');
   if(domain==='SAVE_COMPLETENESS'&&!hasSave)return no('game has no persistent save system yet');
   if(domain==='MID_LATE_GAME_DEPTH'&&!hasProgression)return no('approved design has no multi-stage progression direction');
+  if(domain==='SUBSYSTEM_BREADTH'){
+    if(fusionDepth.majorSubSystems.length>=3&&fusionDepth.extensionSystems.length>=6)return pass('main content has at least three major sub-system axes and a reusable extension-system pool');
+    return gap('main content lacks three connected major sub-system axes or the @ extension-system pool is too narrow');
+  }
+  if(domain==='SYSTEM_FUSION_DEPTH'){
+    if(fusionDepth.majorSubSystems.length>=3
+      &&fusionDepth.crossSystemCombinations.length>=4
+      &&fusionDepth.growthMutations.length>=2
+      &&Boolean(fusionDepth.endgameFusion)
+      &&Number(s.fusion||0)>=3
+    )return pass('approved design and current source show pairwise/triple system fusion with growth depth');
+    return gap('A×B/A×C/B×C -> A×B×C -> A×B×C+@ fusion depth is missing or not implemented in current source');
+  }
+  if(domain==='MECHANIC_VARIETY'){
+    if(fusionDepth.mechanicDiversitySources.length>=3&&Number(s.mechanicFamilyCount||0)>=2)return pass('design draws from multiple mechanic families and current source implements more than one family');
+    return gap('mechanic family diversity is too narrow; vary rule families without creating disconnected minigame dumps');
+  }
+  if(domain==='LEGACY_CONTENT_REVISIT'){
+    if(!hasProgression&&!hasWorld)return no('game has no multi-stage progression or world surface to revisit');
+    if(fusionDepth.legacyContentRevisitHooks.length>=2&&Number(s.revisit||0)>=2)return pass('later growth gives earlier content new routes, interactions, rewards, or combination value');
+    return gap('later growth does not yet create enough reasons to revisit earlier regions/content');
+  }
 
+  if(domain==='NARRATIVE_STORY'){
+    const weight=clean(worldDepth.storyWeight).toUpperCase()||'LIGHT';
+    const baseEvidence=Number(s.worldCausality||0)+Number(s.namingContinuity||0)+Number(s.oppositionLore||0);
+    const narrativeEvidence=Number(s.dialogueWorld||0)+Number(s.journalArchive||0)+Number(s.npcCompanionConcept||0);
+    const requiredBase=weight==='LIGHT'?4:5;
+    const requiredNarrative=weight==='LIGHT'?0:4;
+    if(baseEvidence>=requiredBase&&narrativeEvidence>=requiredNarrative)return pass('all-genre story/world causality is visible at the configured story weight');
+    return gap('world causality is too shallow for the configured LIGHT/MEDIUM/HEAVY story weight');
+  }
+  if(domain==='WORLD_BUILDING_FUSION'){
+    if(worldDepth.worldDnaSources.length>=3&&worldDepth.causalChains.length>=4&&Number(s.worldCausality||0)>=3)return pass('worldbuilding combines multiple DNA axes and current source exposes causal world-state links');
+    return gap('civilization/geography/economy/belief/technology/naming/archive/opposition axes are not yet fused into enough observable world causality');
+  }
+  if(domain==='DIALOGUE_JOURNAL_CONTINUITY'){
+    const weight=clean(worldDepth.storyWeight).toUpperCase()||'LIGHT';
+    const dialogueApplicable=weight!=='LIGHT'||worldDepth.dialogueJournalLinks.length>0||worldDepth.journalRecordChains.length>0||Number(s.dialogueWorld||0)>0||Number(s.journalArchive||0)>0;
+    if(!dialogueApplicable)return no('LIGHT story-weight game does not currently use dialogue/journal components; world causality is reviewed elsewhere');
+    if(worldDepth.dialogueJournalLinks.length>=2&&worldDepth.journalRecordChains.length>=2&&Number(s.dialogueWorld||0)>=2&&Number(s.journalArchive||0)>=2)return pass('dialogue and journal/archive evidence cross-reference the same world events');
+    return gap('existing dialogue/journal components do not yet share the same discoveries, quest states, and world facts');
+  }
+  if(domain==='NPC_COMPANION_CONCEPT_CONTINUITY'){
+    if(!worldDepth.hasNpcCompanionDesign&&Number(s.npcCompanionConcept||0)===0)return no('current approved design/source has no NPC or companion system');
+    if(worldDepth.sharedConceptAnchor&&worldDepth.componentConceptLinks.length>=6&&Number(s.npcCompanionConcept||0)>=2)return pass('NPC/companion goals, memory, relationship, dialogue/quest state, and behavior share the same concept/world-state anchor');
+    return gap('existing NPC/companion AI, dialogue, relationship, or quest behavior is not sufficiently tied to the shared game concept and world state');
+  }
+  if(domain==='PLACE_NAME_CONTINUITY'){
+    if(worldDepth.placeNameLedger.length>=3&&Number(s.namingContinuity||0)>=2)return pass('place-name continuity is present across world/map/story surfaces');
+    return gap('place names lack enough consistent source evidence across map/sign/dialogue/quest/journal surfaces');
+  }
+  if(domain==='OPPOSITION_WORLD_CAUSALITY'){
+    if(worldDepth.monsterOpponentLoreEcologyLinks.length>=2&&Number(s.oppositionLore||0)>=2)return pass('monster/enemy/opponent roles connect to region, ecology/history, and player-facing consequences');
+    return gap('monster/enemy/opponent naming, habitat/origin, behavior, and world role are not yet causally connected');
+  }
   const weakByDomain={
     ANIMATION:Number(s.animation||0)<2||Number(s.motionStates||0)<5,
     SECONDARY_MOTION:Number(s.animation||0)<2||Number(s.motionStates||0)<4,
@@ -618,7 +1003,7 @@ function domainState(domain,{design={},source={}}={}){
     SYSTEM_CONNECTION:(hasInventory||hasWorld||hasProgression)&&Number(s.connection||0)<2,
     SESSION_FLOW:Number(s.session||0)<4,
     FIRST_10_MINUTES:Number(s.session||0)<3||Number(s.progression||0)<3||Number(s.interaction||0)<2,
-    MID_LATE_GAME_DEPTH:hasProgression&&(Number(s.progression||0)<8||Number(s.content||0)<10),
+    MID_LATE_GAME_DEPTH:hasProgression&&(Number(s.progression||0)<8||Number(s.content||0)<10||Number(s.fusion||0)<3),
     SAVE_AND_RECOVERY:hasSave&&Number(s.save||0)<3,
     SAVE_COMPLETENESS:hasSave&&(Number(s.save||0)<5||(hasInventory&&Number(s.inventory||0)<3)),
     RECONNECT_RECOVERY:(hasMultiplayer||hasSave)&&Number(s.errorRecovery||0)<2,
@@ -681,8 +1066,8 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   const progression=design.progressionDirection||'승인된 진행 방향';
   const depth=Number(depthInfo.developmentDepth||1);
   const focusDomains={
-    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','SESSION_FLOW','FIRST_10_MINUTES']),
-    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
+    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','MECHANIC_VARIETY','SUBSYSTEM_BREADTH','OPPOSITION_WORLD_CAUSALITY','SESSION_FLOW','FIRST_10_MINUTES']),
+    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','SYSTEM_FUSION_DEPTH','SUBSYSTEM_BREADTH','MECHANIC_VARIETY','LEGACY_CONTENT_REVISIT','WORLD_BUILDING_FUSION','DIALOGUE_JOURNAL_CONTINUITY','PLACE_NAME_CONTINUITY','OPPOSITION_WORLD_CAUSALITY','LIBRARY_LINKAGE','NARRATIVE_STORY','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
     PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','GAME_FEEL','VFX','CAMERA','UI_HUD','MENU_FLOW','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','AUDIO_MUSIC_SFX','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
     USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL','AUDIO_MUSIC_SFX']),
     STABILITY:new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'])
@@ -731,7 +1116,16 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     INTERACTION_DISCOVERABILITY:`줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.`,
     INVENTORY_USABILITY:`인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.`,
     EQUIPMENT_LOADOUT:`장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.`,
-    SYSTEM_CONNECTION:`드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.`,
+    SYSTEM_CONNECTION:`드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 한다. 단순 메뉴 이동이나 같은 재화 숫자 공유만 연결로 계산하지 않고 한 시스템의 결과가 다른 시스템의 조건·선택·월드 상태를 바꾸게 한다.`,
+    SUBSYSTEM_BREADTH:`메인 콘텐츠 ${anchor}를 약화하지 말고 역할이 다른 대형 서브축을 최소 3개 확보한다. 탐험·하우징/건축·수집·관계/파티·경제/무역·제작·보드/카드 규칙 등은 현재 승인 설계와 소스에 맞는 것만 선택하며, 각 축은 메인 보상·위험·해금·목표 중 하나 이상과 실제 상태를 주고받게 한다. @ 확장요소는 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 등에서 게임 정체성에 맞게 폭을 확보하되 고립된 기능 나열을 금지한다.`,
+    SYSTEM_FUSION_DEPTH:`파고들기 구조를 초반 A/B/C 개별 학습→중반 A×B/A×C/B×C→후반 A×B×C→엔드게임 A×B×C+@×@ 순서로 깊게 만든다. 교차 조합마다 WHAT→TRIGGER→STATE_CHANGE→PLAYER_CHOICE→REWARD/RISK를 실제 책임 함수에 연결하고, 새로운 대형 시스템이 승인된 규칙·밸런스·경제·세이브·네트워크 의미를 바꾸려면 기존 canonical 설계 권한을 먼저 사용한다.`,
+    MECHANIC_VARIETY:`게임 시드와 현재 정체성에 맞는 범위에서 고전 카드/주사위/타일/경매, 현대 덱빌딩/드래프트/일꾼배치/엔진빌딩, 아케이드/퍼즐/탐험/생활/사회경제/수집/파티 계통 중 서로 다른 최소 3계통의 규칙 DNA를 활용한다. 완전한 별도 게임을 붙이지 말고 짧은 규칙 변주가 메인 성장·탐험·경제·수집·관계에 결과를 돌려주게 하며 이름·색·수치만 다른 변형은 금지한다.`,
+    LEGACY_CONTENT_REVISIT:`성장으로 얻은 이동수단·도구·관계·정보·장비·조합 능력 때문에 초반 지역/NPC/던전/상점/수집품을 다시 방문할 이유가 생기게 한다. 재방문은 새 경로·새 상호작용·새 교환가치·새 조합·숨은 보상 중 최소 하나를 제공하고 단순 일일 반복이나 숫자 파밍만으로 채우지 않는다.`,
+    WORLD_BUILDING_FUSION:`모든 장르에서 문명/권력 × 지리/생태 × 경제/생활 × 신앙/금기 × 기술/제도 × 언어/지명 × 기록/소문 × 몬스터/상대 생태 중 최소 3축을 같은 세계사와 현재 게임 상태로 연결한다. 설정집 설명만 늘리지 말고 지역·상점·NPC·적/상대·퀘스트·환경 변화에 실제로 반영한다.`,
+    DIALOGUE_JOURNAL_CONTINUITY:`NPC 대화와 저널·편지·비문·도감·보고서가 같은 사건을 서로 다른 관점에서 참조하게 한다. 플레이어가 기록을 읽거나 현장을 확인하면 새 대화/질문/서브퀘/메인 상태가 열리며, NPC 지식범위와 시점을 지켜 거짓 모순을 만들지 않는다.`,
+    NPC_COMPANION_CONCEPT_CONTINUITY:`NPC/동료가 존재하는 게임에서는 shared concept와 현재 world state를 목표·기억·세력·관계·퀘스트 상태·대화·AI 행동이 함께 사용하게 한다. 동료의 말과 실제 지원/전투/탐험 행동, NPC의 주장과 상점/퀘스트/세력 반응이 서로 모순되지 않게 하고 아직 모르는 사실을 미리 말하지 않는다.`,
+    PLACE_NAME_CONTINUITY:`지명은 지형·역사·세력·산업·신앙·몬스터 사건 중 근거를 갖고 지도·표지판·NPC 대화·퀘스트·저널에서 동일 표기를 사용한다. 개명/옛 지명이 있으면 세계 변화의 원인과 후반 회수에 연결한다.`,
+    OPPOSITION_WORLD_CAUSALITY:`몬스터가 있으면 이름·서식지·먹이/소환·행동·드랍·지역 전설·세력 이용을 연결하고, 몬스터가 없는 장르는 적/상대/장애물의 발생 조건과 세계 역할을 같은 방식으로 연결한다. 도감/저널/NPC 소문과 실제 조우가 대응법 학습으로 이어지게 한다.`,
     SESSION_FLOW:`접속→준비→첫 행동→목표/실패→결과/보상→재시도→다음 선택을 연결한다. 확인된 실패 수리 후 첫 플레이·재도전·적용 가능한 친구 참가·연출 순으로 한 흐름씩 구현·검수한다. 결과는 달성 내용·실제 실패 원인/성공 선택·재도전/다음 단계/로비를 보여주고 서버 확정 보상만 표시한다. 재도전 연타도 한 번만 시작되며 입력·판정·상태·피드백·실패 복귀가 연결되어야 한다.`,
     FIRST_10_MINUTES:`첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.`,
     SAVE_COMPLETENESS:`현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.`,
@@ -1259,6 +1653,9 @@ export function directivePrompt(d={}){
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   const expansion=d.autonomousContentExpansion||{};
+  const fusion=d.systemFusionDepthPlan||{};
+  const world=d.worldbuildingDepthPlan||{};
+  const libraries=d.canonicalLibraryLinkagePlan||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
   const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
@@ -1279,6 +1676,22 @@ export function directivePrompt(d={}){
     `PREVIOUS_EFFECT: ${d.effectivenessMeasurement?.previousGeneration?.classification||'NO_PREVIOUS_GENERATION'} - ${d.effectivenessMeasurement?.previousGeneration?.reason||''}`,
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
     `AUTONOMOUS_CONTENT_EXPANSION: mode=${expansion.executionMode||'AUTONOMOUS_CONTENT_BUILD_UP'}; theme=${expansion.selectedTheme||'AUTO'}; themeDepth=${expansion.themeDepth||1}; decisionOwner=${expansion.autonomousDecisionOwner||'VIBE'}; boundary=${expansion.executionBoundary||'EXISTING_BUILD_UP_ONLY'}`,
+    `SYSTEM_FUSION_DEPTH: mode=${fusion.mode||'DERIVED'}; main=${fusion.mainContent||'CURRENT_CORE_FUN'}; major=${(fusion.majorSubSystems||[]).join(' / ')||'MISSING'}; mechanicFamilies=${(fusion.mechanicDiversitySources||[]).join(',')||'MISSING'}; gaps=${(fusion.gaps||[]).join(',')||'NONE'}`,
+    `SYSTEM_FUSION_STAGES: ${(fusion.stageModel||[]).join(' -> ')}`,
+    `SYSTEM_FUSION_COMBINATIONS: ${(fusion.crossSystemCombinations||[]).join(' | ')||'BUILD_FROM_APPROVED_DESIGN_AND_CURRENT_SOURCE'}`,
+    `SYSTEM_FUSION_HIDDEN: ${(fusion.hiddenCombinations||[]).join(' | ')||'MISSING'}`,
+    `SYSTEM_FUSION_GROWTH_MUTATION: ${(fusion.growthMutations||[]).join(' | ')||'MISSING'}`,
+    `SYSTEM_FUSION_LEGACY_REVISIT: ${(fusion.legacyContentRevisitHooks||[]).join(' | ')||'MISSING'}`,
+    `SYSTEM_FUSION_ENDGAME: ${fusion.endgameFusion||'MISSING'}`,
+    `WORLD_BUILDING_DEPTH: allGenres=${world.allGenres===true}; storyWeight=${world.storyWeight||'DERIVE'}; dna=${(world.worldDnaSources||[]).join(',')||'MISSING'}; gaps=${(world.gaps||[]).join(',')||'NONE'}`,
+    `WORLD_CAUSALITY_CHAIN: ${world.continuityChain||'PLACE_HISTORY→PLACE_NAME→DIALOGUE→JOURNAL→OPPOSITION→SIDE_CONTENT→MAIN_EVENT→WORLD_STATE'}`,
+    `WORLD_PLACE_NAMES: ${(world.placeNameLedger||[]).join(' | ')||'MISSING'}`,
+    `WORLD_JOURNAL_DIALOGUE: journals=${(world.journalRecordChains||[]).join(' | ')||'NOT_USED_OR_MISSING'}; dialogueLinks=${(world.dialogueJournalLinks||[]).join(' | ')||'NOT_USED_OR_MISSING'}`,
+    `WORLD_NPC_COMPANION_CONCEPT: applicable=${world.hasNpcCompanionDesign===true}; sharedConcept=${world.sharedConceptAnchor||'MISSING'}; designLinks=${(world.storySystemLinks||[]).join(' | ')||'NONE'}; sourceSignal=${world.sourceEvidence?.npcCompanionConcept||0}`,
+    `WORLD_OPPOSITION_LORE: ${(world.monsterOpponentLoreEcologyLinks||[]).join(' | ')||'MISSING'}`,
+    `CANONICAL_LIBRARY_LINKAGE: mode=${libraries.searchMode||'DYNAMIC_CURRENT_BUILD_UP_CONTEXT'}; families=${libraries.exposedFamilyCount||0}; available=${libraries.availableFamilyCount||0}; candidateDoesNotEqualConsumer=${libraries.candidateDoesNotEqualConsumer===true}; actualConsumerEvidenceRequired=${libraries.actualConsumerEvidenceRequired===true}; fingerprint=${libraries.searchFingerprint||'NONE'}`,
+    `CANONICAL_LIBRARY_MATCHES: ${(libraries.libraries||[]).map(row=>row.family+':'+(row.available?'AVAILABLE':'UNAVAILABLE')+':'+((row.matchedTerms||[]).join(',')||'NO_CONTEXT_MATCH')).join(' | ')}`,
+    'CANONICAL_LIBRARY_RULE: 모든 라이브러리는 참고 후보 풀이다. 모든 family의 개연성·사용을 게임 PASS 조건으로 요구하지 않는다. 실제 선택한 후보에만 호환성·권리·게임 정체성을 확인하고 기존 책임 소스/canonical consumer의 실제 소비와 관련 QA가 있어야 사용으로 인정한다. 후보가 없거나 필요 없으면 사용하지 않는다.',
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
     expansion.dataCapacityBudget?.state==='NORMAL'?'DATA_CAPACITY_ACTION: 새 콘텐츠와 기존 시스템 심화 중 플레이어 가치가 높은 쪽을 선택한다.':'DATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.',
@@ -1320,6 +1733,9 @@ export function buildGameSpecificBuildUpDirective({
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
+  const systemFusionDepthPlan=deriveSystemFusionDepthPlan({design,source});
+  const worldbuildingDepthPlan=deriveWorldbuildingDepthPlan({design,source});
+  const canonicalLibraryLinkagePlan=deriveCanonicalLibraryLinkagePlan({repoRoot,gameId:id,design,source,worldPlan:worldbuildingDepthPlan});
   const signals=uniq([
     ...qualitySignals,
     ...(source?.observations||[]),
@@ -1362,8 +1778,8 @@ export function buildGameSpecificBuildUpDirective({
   };
   const goal=goalByFocus[focus]||goalByFocus.CORE_FUN;
   const previousFingerprint=clean(previousDirective?.directiveFingerprint);
-  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode}));
-  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source}));
+  const fingerprint=sha(JSON.stringify({id,generation,focus,goal,source:source.sourceTreeFingerprint,design,worldbuildingDepthPlan,librarySearchFingerprint:canonicalLibraryLinkagePlan.searchFingerprint,previousDirectiveOutcome:clean(previousDirectiveOutcome),previousEffectiveness,qualitySignals:signals,runtimeEvidence,safeDesignlessMode}));
+  const baseStates=BUILD_UP_DOMAINS.map(domain=>domainState(domain,{design,source,worldDepthPlan:worldbuildingDepthPlan,libraryLinkagePlan:canonicalLibraryLinkagePlan}));
   const designlessAllowedDomains=new Set(safeDesignlessMode?(DESIGNLESS_SAFE_BUILD_UP_DOMAINS[focus]||[]):BUILD_UP_DOMAINS);
   const states=safeDesignlessMode
     ?baseStates.map(row=>designlessAllowedDomains.has(row.domain)?row:{domain:row.domain,state:'NOT_APPLICABLE',reason:'designless source-safe BUILD_UP cannot expand gameplay/progression semantics'})
@@ -1514,6 +1930,10 @@ export function buildGameSpecificBuildUpDirective({
     'ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION',
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
+    'ALL_GENRES_WORLD_CAUSALITY_REVIEWED_AT_GENRE_APPROPRIATE_WEIGHT',
+    'PLACE_NAME_DIALOGUE_JOURNAL_OPPOSITION_AND_WORLD_STATE_CONTINUITY_REVIEWED',
+    'ALL_CANONICAL_LIBRARY_FAMILIES_SEARCHABLE_WITHOUT_FORCED_USE',
+    'LIBRARY_CANDIDATE_IS_NOT_ACTUAL_CONSUMER_WITHOUT_SOURCE_AND_QA_EVIDENCE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
@@ -1544,6 +1964,7 @@ export function buildGameSpecificBuildUpDirective({
       focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
       focus==='PRESENTATION'?'CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY':'RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE',
       'CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST',
+      'DEEPEN_SYSTEM_FUSION_HIDDEN_COMBINATIONS_AND_LEGACY_REVISIT_WHEN_APPROVED',
       'OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED'
     ]);
   const developmentImpact=classifyDevelopmentImpact({
@@ -1601,6 +2022,9 @@ export function buildGameSpecificBuildUpDirective({
     gameplayImplementationDirectives:effectiveGameplay,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
+    systemFusionDepthPlan,
+    worldbuildingDepthPlan,
+    canonicalLibraryLinkagePlan,
     internalAssetEvolution:{
       required:true,
       generation,

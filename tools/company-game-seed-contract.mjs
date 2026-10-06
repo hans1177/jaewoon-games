@@ -36,12 +36,109 @@ export const GAME_SEED_POLICY = Object.freeze({
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
   gameplaySketchRequired: true,
-  advancedGameplaySketchVersion: 2,
+  advancedGameplaySketchVersion: 3,
   advancedGameplaySketchRequiredForNewSeeds: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
   marketEvidenceHardPassFailGate: false
 });
+
+export const GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES = Object.freeze([
+  'CLASSIC_CARD',
+  'CLASSIC_BOARD',
+  'MODERN_BOARD',
+  'ARCADE',
+  'PUZZLE',
+  'EXPLORATION',
+  'TACTICAL_STRATEGY',
+  'LIFE_SIM',
+  'SOCIAL_ECONOMY',
+  'COLLECTION_META',
+  'CRAFT_BUILD',
+  'COMPANION_PARTY'
+]);
+
+export const GAMEPLAY_NARRATIVE_DNA_FAMILIES = Object.freeze([
+  'CHINESE_CLASSICAL_HISTORY',
+  'CHINESE_HEROIC_ROMANCE',
+  'EAST_ASIAN_MARTIAL_SECT_ABSTRACT',
+  'JAPANESE_SENGOKU_SAMURAI',
+  'JAPANESE_FOLKLORE_YOKAI',
+  'ANCIENT_EGYPT',
+  'SUMER_MESOPOTAMIA',
+  'BIBLICAL_ANCIENT_NEAR_EAST',
+  'MEDIEVAL_EUROPEAN_FEUDAL',
+  'ISLAMIC_GOLDEN_AGE_TRADE_SCHOLARSHIP',
+  'GREEK_EPIC_MYTH',
+  'ROMAN_REPUBLIC_EMPIRE_HISTORY',
+  'NORSE_MYTH',
+  'MODERN_INDUSTRIAL_REVOLUTION',
+  'MODERN_REVOLUTION_REPUBLIC',
+  'MODERN_IMPERIAL_COLONIAL_HISTORY',
+  'MODERN_WORLD_WAR_TOTAL_WAR',
+  'MODERN_COLD_WAR_ESPIONAGE',
+  'MODERN_DECOLONIZATION_STATE_BUILDING',
+  'MODERN_MASS_POLITICS_PROPAGANDA',
+  'MODERN_INDUSTRIAL_CAPITAL_URBAN_LABOR',
+  'MODERN_DIPLOMACY_INTERNATIONAL_ORDER',
+  'SHAKESPEAREAN_TRAGEDY_INTRIGUE',
+  'FAIRYTALE_FOLKLORE',
+  'SWASHBUCKLING_ADVENTURE',
+  'DYSTOPIAN_POLITICAL_ABSTRACT',
+  'HORROR_MYTH_MYSTERY',
+  'DETECTIVE_MYSTERY'
+]);
+
+export const GAMEPLAY_NARRATIVE_RIGHTS_MODES = Object.freeze([
+  'PUBLIC_DOMAIN_OR_HISTORICAL_STRUCTURE',
+  'ABSTRACT_TECHNIQUE_ONLY',
+  'ORIGINAL_SYNTHESIS'
+]);
+
+export const GAMEPLAY_STYLE_DNA_FAMILIES = Object.freeze([
+  'EAST_ASIAN_CLASSICAL',
+  'MEDITERRANEAN_CLASSICAL',
+  'ROMAN_CIVIC_MILITARY',
+  'MEDIEVAL_FORTRESS_TOWN',
+  'FAIRYTALE_HANDCRAFTED',
+  'GOTHIC_HORROR',
+  'MYTHIC_MONUMENTAL',
+  'INDUSTRIAL_REVOLUTION_URBAN',
+  'MODERNIST_DYSTOPIAN',
+  'WAR_TORN_MODERN',
+  'MARITIME_TRADE_PORT',
+  'FRONTIER_SETTLEMENT',
+  'NATURAL_BIOREGIONAL',
+  'ARCANE_SCHOLARLY',
+  'SCIENCE_TECHNOLOGICAL',
+  'MYSTERY_NOIR'
+]);
+
+export const GAMEPLAY_WORLDBUILDING_DNA_FAMILIES = Object.freeze([
+  'CIVILIZATION_AND_POWER',
+  'GEOGRAPHY_AND_ECOLOGY',
+  'ECONOMY_AND_DAILY_LIFE',
+  'BELIEF_MYTH_AND_TABOO',
+  'TECHNOLOGY_AND_INSTITUTIONS',
+  'WAR_DIPLOMACY_AND_BORDERS',
+  'LANGUAGE_NAMING_AND_MEMORY',
+  'MONSTER_OPPOSITION_ECOLOGY',
+  'ARCHIVE_JOURNAL_AND_RUMOR',
+  'TRADE_ROUTES_AND_SETTLEMENTS',
+  'DISASTER_RUIN_AND_RECOVERY',
+  'MYSTERY_SECRET_AND_FORBIDDEN_KNOWLEDGE'
+]);
+
+export const GAMEPLAY_CANONICAL_LIBRARY_FAMILIES = Object.freeze([
+  'INTERNAL_ASSET_LIBRARY',
+  'VERIFIED_LEARNING_LIBRARY',
+  'CODE_PATTERN_LIBRARY',
+  'GAME_SEED_MATERIAL_LIBRARY',
+  'DESIGN_BASELINE_LIBRARY',
+  'GAME_CATALOG_LIBRARY',
+  'LICENSED_REFERENCE_LIBRARY',
+  'OPEN_SOURCE_REFERENCE_CATALOG'
+]);
 
 const isNonEmptyString = value => typeof value === 'string' && value.trim().length > 0;
 const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
@@ -119,6 +216,126 @@ function validateGameplaySketch(sketch,errors){
       if(row?.gameplayAuthority===true||row?.balanceAuthority===true||row?.saveAuthority===true||row?.networkingAuthority===true)errors.push('GAMEPLAY_SKETCH flow asset requirements may not own gameplay/balance/save/network authority');
       if(row?.resolution&&String(row.resolution)!=='LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME')errors.push('GAMEPLAY_SKETCH flow asset requirement resolution must use latest compatible internal asset at execution time');
     }
+  }
+
+  if(version<3)return;
+
+  const composition=sketch.compositionDepth;
+  if(!composition||typeof composition!=='object'||Array.isArray(composition)){
+    errors.push('GAMEPLAY_SKETCH.compositionDepth is required for version 3+');
+  }else{
+    if(!isNonEmptyString(composition.mainContent))errors.push('GAMEPLAY_SKETCH.compositionDepth.mainContent is required for version 3+');
+    if(!isNonEmptyString(composition.conceptFusion))errors.push('GAMEPLAY_SKETCH.compositionDepth.conceptFusion is required for version 3+');
+    const depthArrays=[
+      ['majorSubSystems',3],
+      ['extensionSystems',6],
+      ['crossSystemCombinations',4],
+      ['hiddenCombinations',2],
+      ['growthMutations',2],
+      ['legacyContentRevisitHooks',2],
+      ['mechanicDiversitySources',3]
+    ];
+    for(const [field,min] of depthArrays){
+      if(!Array.isArray(composition[field])||uniq(composition[field]).length<min)errors.push(`GAMEPLAY_SKETCH.compositionDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    }
+    if(!isNonEmptyString(composition.endgameFusion))errors.push('GAMEPLAY_SKETCH.compositionDepth.endgameFusion is required for version 3+');
+    const familySet=new Set(GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES);
+    for(const family of uniq(composition.mechanicDiversitySources)){
+      if(!familySet.has(family))errors.push(`GAMEPLAY_SKETCH.compositionDepth.mechanicDiversitySources invalid family: ${family}`);
+    }
+  }
+
+  const narrative=sketch.narrativeDepth;
+  if(!narrative||typeof narrative!=='object'||Array.isArray(narrative)){
+    errors.push('GAMEPLAY_SKETCH.narrativeDepth is required for version 3+');
+  }else{
+    if(typeof narrative.applicable!=='boolean')errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable boolean is required for version 3+');
+    if(narrative.applicable!==true)errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable must be true for every version 3+ game genre; storyWeight controls depth');
+    if(!isNonEmptyString(narrative.storyWeight)||!['LIGHT','MEDIUM','HEAVY'].includes(String(narrative.storyWeight).toUpperCase()))errors.push('GAMEPLAY_SKETCH.narrativeDepth.storyWeight must be LIGHT/MEDIUM/HEAVY');
+    if(!isNonEmptyString(narrative.worldConflict))errors.push('GAMEPLAY_SKETCH.narrativeDepth.worldConflict is required for version 3+');
+    if(!isNonEmptyString(narrative.mainStoryArc))errors.push('GAMEPLAY_SKETCH.narrativeDepth.mainStoryArc is required for version 3+');
+    if(narrative.applicable===true){
+      const weight=String(narrative.storyWeight||'LIGHT').toUpperCase();
+      const narrativeArrays=[
+        ['narrativeDnaSources',2],
+        ['npcRelationshipWeb',weight==='LIGHT'?0:2],
+        ['companionArcs',weight==='HEAVY'?1:0],
+        ['mainSubquestLinks',weight==='LIGHT'?1:2],
+        ['foreshadowPayoffs',weight==='LIGHT'?1:2],
+        ['factionCultureHooks',weight==='LIGHT'?1:2],
+        ['historicalMythReinterpretations',1],
+        ['worldbuildingFusion',weight==='LIGHT'?2:3],
+        ['storySystemLinks',weight==='LIGHT'?2:3],
+        ['contentCausalityLinks',weight==='LIGHT'?3:4],
+        ['worldEvolutionHooks',1],
+        ['placeNameLedger',weight==='LIGHT'?2:3],
+        ['journalRecordChains',weight==='LIGHT'?0:2],
+        ['dialogueJournalLinks',weight==='LIGHT'?0:2],
+        ['monsterOpponentLoreEcologyLinks',1],
+        ['namingRules',2],
+        ['culturalRespectRules',3]
+      ];
+      for(const [field,min] of narrativeArrays){
+        if(!Array.isArray(narrative[field]))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} must be an array for version 3+`);
+        else if(uniq(narrative[field]).length<min)errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} requires at least ${min} meaningful items for storyWeight=${weight}`);
+      }
+      const narrativeFamilySet=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
+      for(const family of uniq(narrative.narrativeDnaSources)){
+        if(!narrativeFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.narrativeDnaSources invalid family: ${family}`);
+      }
+      const rightsSet=new Set(GAMEPLAY_NARRATIVE_RIGHTS_MODES);
+      for(const mode of uniq(narrative.rightsModes)){
+        if(!rightsSet.has(mode))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.rightsModes invalid mode: ${mode}`);
+      }
+      if(!Array.isArray(narrative.rightsModes)||uniq(narrative.rightsModes).length<1)errors.push('GAMEPLAY_SKETCH.narrativeDepth.rightsModes requires at least 1 rights mode');
+    }
+  }
+
+  const style=sketch.styleWorldDepth;
+  if(!style||typeof style!=='object'||Array.isArray(style)){
+    errors.push('GAMEPLAY_SKETCH.styleWorldDepth is required for version 3+');
+  }else{
+    const styleRequiredStrings=['styleFusion','architectureSettlement','environmentBiomes','materialPropLanguage','characterCostumeSilhouette','paletteLightingWeather','backgroundStorytelling','sceneStagingLanguage'];
+    for(const field of styleRequiredStrings)if(!isNonEmptyString(style[field]))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} is required for version 3+`);
+    const styleArrays=[['styleDnaSources',2],['regionalStyleVariation',3],['gameplayReadabilityLinks',3],['styleExpansionHooks',2],['sceneStoryBeats',3],['transitionSetpieces',2],['ambientWorldCues',2],['monsterOpponentSceneLinks',2],['artRightsRules',3]];
+    for(const [field,min] of styleArrays){
+      if(!Array.isArray(style[field])||uniq(style[field]).length<min)errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    }
+    const styleFamilySet=new Set(GAMEPLAY_STYLE_DNA_FAMILIES);
+    for(const family of uniq(style.styleDnaSources)){
+      if(!styleFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.styleDnaSources invalid family: ${family}`);
+    }
+    if(style.assetLibraryExpansionRequired===true)errors.push('GAMEPLAY_SKETCH.styleWorldDepth.assetLibraryExpansionRequired must not be true; libraries are optional references and may expand only when the game needs them');
+  }
+
+  const world=sketch.worldbuildingDepth;
+  if(!world||typeof world!=='object'||Array.isArray(world)){
+    errors.push('GAMEPLAY_SKETCH.worldbuildingDepth is required for version 3+');
+  }else{
+    if(world.allGenreApplicable!==true)errors.push('GAMEPLAY_SKETCH.worldbuildingDepth.allGenreApplicable must be true for every game genre');
+    const worldStrings=['worldPremise','sharedConceptAnchor','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','genreExpression'];
+    for(const field of worldStrings)if(!isNonEmptyString(world[field]))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} is required for version 3+`);
+    const worldArrays=[['worldDnaSources',3],['componentConceptLinks',6],['causalChains',4],['worldStateEvolution',2],['crossMediaClueLinks',3],['regionalOppositionCausality',3],['bossWorldLinks',1],['oppositionStateChanges',2]];
+    for(const [field,min] of worldArrays)if(!Array.isArray(world[field])||uniq(world[field]).length<min)errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    const worldFamilies=new Set(GAMEPLAY_WORLDBUILDING_DNA_FAMILIES);
+    for(const family of uniq(world.worldDnaSources))if(!worldFamilies.has(family))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.worldDnaSources invalid family: ${family}`);
+  }
+
+  const libraries=sketch.libraryLinkage;
+  if(!libraries||typeof libraries!=='object'||Array.isArray(libraries)){
+    errors.push('GAMEPLAY_SKETCH.libraryLinkage is required for version 3+');
+  }else{
+    if(libraries.allCanonicalLibrariesSearchable!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.allCanonicalLibrariesSearchable must be true');
+    if(libraries.referenceOnly!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.referenceOnly must be true');
+    if(libraries.perLibraryUseOptional!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.perLibraryUseOptional must be true');
+    if(libraries.compatibilityRightsAndGameIdentityFirst!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.compatibilityRightsAndGameIdentityFirst must be true');
+    if(libraries.actualConsumerEvidenceRequired!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.actualConsumerEvidenceRequired must be true');
+    if(libraries.noForcedUse!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.noForcedUse must be true');
+    if(libraries.noShadowPipeline!==true)errors.push('GAMEPLAY_SKETCH.libraryLinkage.noShadowPipeline must be true');
+    for(const field of ['selectionRule','fallbackRule'])if(!isNonEmptyString(libraries[field]))errors.push(`GAMEPLAY_SKETCH.libraryLinkage.${field} is required for version 3+`);
+    if(!Array.isArray(libraries.libraryFamilies)||uniq(libraries.libraryFamilies).length<GAMEPLAY_CANONICAL_LIBRARY_FAMILIES.length)errors.push('GAMEPLAY_SKETCH.libraryLinkage.libraryFamilies must expose all canonical library families');
+    const libraryFamilies=new Set(GAMEPLAY_CANONICAL_LIBRARY_FAMILIES);
+    for(const family of uniq(libraries.libraryFamilies))if(!libraryFamilies.has(family))errors.push(`GAMEPLAY_SKETCH.libraryLinkage.libraryFamilies invalid family: ${family}`);
   }
 }
 
