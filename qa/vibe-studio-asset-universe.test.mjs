@@ -4556,6 +4556,9 @@ test('catalog-driven company asset registry synchronization is persistent only w
     fs.writeFileSync(path.join(root,'artbook-submissions','seed-demo','current.json'),JSON.stringify({
       gameId:'seed-demo',gameName:'Demo',designCore:{coreFun:'combat survival',coreLoop:['combat','upgrade','boss'],signatureSystems:['action']}
     },null,2)+'\n');
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
+      id:'seed-demo',name:'Demo',description:'combat survival boss run',genre:['survival','action'],lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'
+    }]},null,2)+'\n');
 
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
     assert.equal(first.changed,true);
@@ -4572,6 +4575,12 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
     assert.equal(first.registry.internalAssetLibraryAutomation.version,13);
+    assert.equal(first.registry.internalAssetLibraryAutomation.releaseScopedProduction,true);
+    assert.deepEqual(first.registry.internalAssetLibraryAutomation.productionScopeGameIds,['seed-demo']);
+    assert.equal(first.registry.internalAssetLibraryAutomation.unscopedGenericIdeaProductionForbidden,true);
+    assert.equal(first.registry.companyCommonSeedAssetIdeation.scope,'RELEASE_CONFIRMED_GAME_DEMAND_ONLY');
+    assert.deepEqual(first.registry.companyCommonSeedAssetIdeation.releasedGameIds,['seed-demo']);
+    assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.every(row=>row.releaseGameScoped===true&&row.sourceGameIds.includes('seed-demo')));
     assert.equal(first.registry.internalAssetLibraryAutomation.autoRegistrySync,true);
     assert.ok(Array.isArray(first.registry.internalAssetLibraryAutomation.nextVolumeActions));
     assert.ok(first.registry.internalAssetLibraryAutomation.nextVolumeActions.length>0);
@@ -4626,7 +4635,8 @@ test('maintenance refresh uses current evidence file axes before cached registry
   try{
     fs.mkdirSync(path.join(root,'assets'),{recursive:true});
     fs.writeFileSync(path.join(root,'assets/evidence.json'),JSON.stringify({sourceAudit:{axes:{DETAIL_FINISH:0}}}));
-    const registry={version:1,assets:[{id:'box',family:'PROP',platform:'ROBLOX',path:'assets/box.luau',internalAuditAxes:['DETAIL_FINISH'],internalAuditScore:1000,internalAuditEvidence:{DETAIL_FINISH:100},internalAuditEvidenceRef:'assets/evidence.json'}]};
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{id:'live',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'}]}));
+    const registry={version:1,assets:[{id:'box',family:'PROP',platform:'ROBLOX',path:'assets/box.luau',consumerGameIds:['live'],internalAuditAxes:['DETAIL_FINISH'],internalAuditScore:1000,internalAuditEvidence:{DETAIL_FINISH:100},internalAuditEvidenceRef:'assets/evidence.json'}]};
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
     const action=first.registry.internalAssetLibraryAutomation.nextQualityActions.find(row=>row.assetId==='box');
     assert.equal(action.weakestAxis,'DETAIL_FINISH');
@@ -4651,6 +4661,11 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   assert.equal(result.registry.internalAssetLibraryAutomation.version,13);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
+  assert.equal(result.registry.internalAssetLibraryAutomation.releaseScopedProduction,true);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.productionScopeGameIds,[]);
+  assert.equal(result.registry.internalAssetLibraryAutomation.unscopedGenericIdeaProductionForbidden,true);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,[]);
+  assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextQualityActions,[]);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.roleTargetMin,180);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
@@ -4688,19 +4703,63 @@ test('canonical company asset registry becomes dry-run idempotent after current 
 });
 
 // 실제 출시 게임 수요가 미사용 자산의 점수나 권장 수량보다 우선한다.
-test('quality-first repairs current released Roblox assets before unused volume even below target counts',()=>{
+test('quality-first repairs only assets consumed by released games and never fills generic library volume',()=>{
  const assets=[
   {id:'unused',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/unused.luau'],intendedConsumerGameIds:['live'],internalAuditScore:1},
+  {id:'dev-used',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/dev.luau'],consumerGameIds:['dev'],internalAuditScore:100},
   {id:'used',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/used.luau'],consumerGameIds:['live'],internalAuditScore:900}
  ];
- const plan=buildInternalAssetLibraryAutomationPlan({assets,consumerGames:[{id:'live',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'}]});
- assert.equal(plan.volumeReady,false);assert.equal(plan.focusPhase,'QUALITY_UP_1000');
+ const seedPlan=createCompanySeedAssetIdeationPlan({
+   scope:'RELEASE_CONFIRMED_GAME_DEMAND_ONLY',
+   seeds:[{gameId:'live',gameName:'Live',genre:'survival action',coreFun:'boss combat',coreLoop:['fight','upgrade','boss']}],
+   assets
+ });
+ const plan=buildInternalAssetLibraryAutomationPlan({
+   assets,seedPlan,
+   consumerGames:[{id:'live',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'}],
+   productionScopeGameIds:['live'],releaseScopedProduction:true
+ });
+ assert.equal(plan.releaseScopedProduction,true);
+ assert.deepEqual(plan.productionScopeGameIds,['live']);
+ assert.equal(plan.focusPhase,'QUALITY_UP_1000');
  assert.equal(plan.autonomousNextAction.action.assetId,'used');
- assert.equal(plan.nextQualityActions.find(row=>row.assetId==='unused').consumerPriority,0);
+ assert.deepEqual(plan.nextQualityActions.map(row=>row.assetId),['used']);
+ assert.equal(plan.nextVolumeActions.every(row=>row.releaseGameScoped===true&&row.sourceGameIds.includes('live')),true);
+ assert.equal(plan.nextVolumeActions.some(row=>['SYSTEM_DEPTH_GAP','DOMAIN_IDEA_POOL','LOOSE_VOLUME_TARGET','UI_SUBSYSTEM_DEPTH','UI_SUBSYSTEM_IDEA_POOL'].includes(row.source)),false);
  assert.equal(plan.productionPromotionAutomatic,false);
- assert.equal(buildInternalAssetLibraryAutomationPlan({assets:[]}).focusPhase,'VOLUME_UP');
+ const none=buildInternalAssetLibraryAutomationPlan({assets,seedPlan:{ideas:[]},consumerGames:[],productionScopeGameIds:[],releaseScopedProduction:true});
+ assert.deepEqual(none.nextQualityActions,[]);
+ assert.deepEqual(none.nextVolumeActions,[]);
 });
 
+
+test('released-game library ideas retain real game ids while development-game ideas are excluded',()=>{
+ const assets=[
+  {id:'live-prop',family:'PROP',platform:'ROBLOX',sourceFiles:['assets/live.luau'],consumerGameIds:['live'],internalAuditScore:500},
+  {id:'dev-prop',family:'PROP',platform:'ROBLOX',sourceFiles:['assets/dev.luau'],consumerGameIds:['dev'],internalAuditScore:500}
+ ];
+ const seedPlan=createCompanySeedAssetIdeationPlan({
+   scope:'RELEASE_CONFIRMED_GAME_DEMAND_ONLY',
+   seeds:[
+     {gameId:'live',gameName:'Live Defense',genre:'defense survival',coreFun:'wave boss defense',coreLoop:['build','defend','boss']},
+     {gameId:'dev',gameName:'Dev RPG',genre:'rpg',coreFun:'quest dungeon',coreLoop:['quest','dungeon']}
+   ],
+   assets
+ });
+ const plan=buildInternalAssetLibraryAutomationPlan({
+   assets,seedPlan,
+   consumerGames:[{id:'live',lifecycleState:'ACTIVE',productionClass:'RELEASE_CONFIRMED'}],
+   productionScopeGameIds:['live'],releaseScopedProduction:true
+ });
+ assert.equal(plan.releaseScopedProduction,true);
+ assert.ok(plan.nextVolumeActions.length>0);
+ assert.ok(plan.nextVolumeActions.every(row=>row.source==='RELEASE_CONFIRMED_GAME_DEMAND'));
+ assert.ok(plan.nextVolumeActions.every(row=>row.sourceGameIds.length>0&&row.sourceGameIds.every(id=>id==='live')));
+ assert.ok(plan.nextVolumeActions.every(row=>row.releaseGameScoped===true));
+ assert.ok(plan.nextVolumeActions.some(row=>row.sourceSignals.includes('DEFENSE')||row.sourceSignals.includes('SURVIVAL')));
+ assert.equal(plan.nextVolumeActions.some(row=>row.sourceGameIds.includes('dev')),false);
+ assert.deepEqual(plan.nextQualityActions.map(row=>row.assetId),['live-prop']);
+});
 
 test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
@@ -4808,8 +4867,10 @@ test('dynamic source consumers stay outside registry identity and refresh on the
     assert.deepEqual(first.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['demo']);
     const staticAction=first.automationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
     const dynamicAction=first.executionAutomationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
-    assert.equal(staticAction.consumerPriority,0);
-    assert.equal(dynamicAction.consumerPriority,2);
+    assert.equal(staticAction,undefined);
+    assert.equal(dynamicAction,undefined);
+    assert.deepEqual(first.automationPlan.productionScopeGameIds,[]);
+    assert.equal(first.automationPlan.releaseScopedProduction,true);
 
     fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
       tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-b.luau'}}}
