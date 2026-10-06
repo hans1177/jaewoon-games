@@ -322,15 +322,16 @@ test('security workflow uses shallow partial checkout and exact comparison fetch
   assert.match(securityWorkflow,/git fetch --no-tags --depth=1 origin "\$base_sha"/);
 });
 
-test('security workflow is limited to sensitive changes plus one daily hygiene scan',()=>{
+test('security workflow is limited to sensitive changed candidates without scheduled duplicate replay',()=>{
   for(const ordinary of [
     "'web-games/**'","'roblox-games/**'","'unity-games/**'","'unreal-games/**'","'godot-games/**'","'assets/**'","'tools/**'","'qa/**'","'company-learning/**'"
   ]) assert.equal(securityWorkflow.includes(ordinary),false);
   for(const sensitive of [
     "'tools/company-security-*.mjs'","'company-learning/security-immune-system.json'","'company-learning/platform-release-roadmap.json'","'package-lock.json'"
   ]) assert.equal(securityWorkflow.includes(sensitive),true);
-  assert.equal((securityWorkflow.match(/cron:/g)||[]).length,1);
-  assert.ok(securityWorkflow.includes("cron: '13 3 * * *'"));
+  assert.match(securityWorkflow,/workflow_dispatch:/);
+  assert.equal((securityWorkflow.match(/cron:/g)||[]).length,0);
+  assert.doesNotMatch(securityWorkflow,/\n  schedule:\n/);
 });
 
 test('Vibe workers skip full security scan for ordinary game candidates and 24h loop does not retest security every cycle',()=>{
