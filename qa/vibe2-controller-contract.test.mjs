@@ -288,6 +288,27 @@ test('asset and recovery reserve retries stay lane-local instead of rerunning gl
   assert.match(workflow,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
 });
 
+test('game-primary BUILD_UP workers have a 60 minute maximum budget with immediate early completion',()=>{
+  assert.equal(runtime.continuous.maxWorkMinutes,22);
+  assert.equal(runtime.continuous.gamePrimaryMaxWorkMinutes,60);
+  assert.equal(runtime.continuous.gamePrimaryMinimumWorkMinutes,0);
+  assert.equal(runtime.continuous.gamePrimaryEarlyCompletionAllowed,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetMode,'MAXIMUM_NOT_MINIMUM');
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetScope,'EXISTING_GAME_PRIMARY_BUILD_UP_WORKER_ONLY');
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.modelTimeoutAndRetry,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.fixedLogicalSlots64,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.workLockSemantics,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.incrementalQa,true);
+  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.canonicalF0ThroughF9,true);
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES: '60'"));
+  assert(workflow.includes('VIBE2_GAME_PRIMARY_WORK_BUDGET_MODE=MAXIMUM_NOT_MINIMUM'));
+  assert(workflow.includes('VIBE2_GAME_PRIMARY_EARLY_COMPLETION=YES'));
+  assert.match(workflow,/timeout-minutes: \${\{ \(\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' \|\| \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'game-primary'\) && 60 \|\| 22 \}\}/);
+  assert(continuousRunnerSource.includes("lane === 'game-primary'"));
+  assert(continuousRunnerSource.includes('runtime?.continuous?.gamePrimaryMaxWorkMinutes'));
+  assert.equal((continuousRunnerSource.match(/currentLaneMaxWorkMinutes\(runtime\)/g)||[]).length,2);
+});
+
 test('controller reserves repeat-development batches at the fixed 64-slot target',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
