@@ -354,7 +354,7 @@ test('System AI consumes Roblox distributed services v3 without authority expans
   assert.ok(context.exactKnowledgeIds.includes(id));
   assert.match(context.guidance,/openai-roblox-distributed-services-v3/);
   assert.match(context.guidance,/MemoryStore queue items can reappear/i);
-  assert.match(context.guidance,/MessagingService is best-effort/i);
+  assert.match(context.guidance,/Do not make MessagingService delivery a prerequisite/i);
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.advisoryOnly,true);
   assert.equal(context.authorityExpanded,false);
