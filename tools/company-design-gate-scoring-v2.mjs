@@ -93,6 +93,46 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   ].every(re=>re.test(fusionExpansionText));
   const interconnectedSystemNames=distinct(list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem]));
   const fusionConnectionSemantics=!fusionRequired||interconnectedSystemNames.length>=4;
+  const narrativePlan=design?.narrativeDialoguePlan||{};
+  const homagePlan=design?.referenceHomagePlan||{};
+  const contentVariety=design?.contentVarietyPlan||{};
+  const narrativeRequired=fusionRequired&&seed?.GAMEPLAY_SKETCH?.narrativeDepth?.applicable===true;
+  const narrativeConnected=!narrativeRequired||(
+    narrativePlan.applicable===true
+    &&distinct(list(narrativePlan.worldRules)).length>=2
+    &&distinct(list(narrativePlan.characterGoals)).length>=2
+    &&distinct(list(narrativePlan.plotBeats)).length>=3
+    &&distinct(list(narrativePlan.questStates)).length>=2
+    &&distinct(list(narrativePlan.foreshadowing)).length>=2
+    &&distinct(list(narrativePlan.payoffs)).length>=2
+    &&list(narrativePlan.characterVoiceProfiles).length>=1
+    &&list(narrativePlan.sceneBeats).length>=2
+    &&list(homagePlan.inspirations).length>=2
+  );
+  const narrativeSystemText=[
+    ...list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem,row?.trigger,row?.stateChange]),
+    ...list(design.contentExpansionPlan).flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
+  ].map(clean).join(' ');
+  const narrativeSystemCausality=!narrativeRequired||(
+    /(npc|동료|companion|세력|faction|퀘스트|quest|관계|relationship)/i.test(narrativeSystemText)
+    &&/(지역|region|월드|world|상점|shop|무역|trade|탐험|explor|보스|boss|아이템|item)/i.test(narrativeSystemText)
+    &&/(변화|state|unlock|해금|영향|effect|후속|follow|분기|branch)/i.test(narrativeSystemText)
+  );
+  const contentCausalityText=list(design.contentExpansionPlan).flatMap(row=>[row?.newGameplay,row?.systemImpact]).map(clean).join(' ');
+  const contentCausalityConnected=!narrativeRequired||(
+    /(지역|던전|보스|아이템|펫|미니게임|무역|하우징|수집|region|dungeon|boss|item|pet|minigame|trade|housing|collection)/i.test(contentCausalityText)
+    &&/(npc|세력|faction|역사|history|세계|world|기원|origin|이유|reason)/i.test(contentCausalityText)
+    &&/(후속|follow|상태|state|관계|relationship|평판|reputation|퀘스트|quest)/i.test(contentCausalityText)
+  );
+  const styleRequired=fusionRequired&&Boolean(seed?.GAMEPLAY_SKETCH?.styleWorldDepth);
+  const styleRegions=list(contentVariety.regions);
+  const styleConnected=!styleRequired||(
+    textReady(design.visualDirection,60)
+    &&objectReady(design.artAudioDirection||{},['visualIdentity','audioIdentity','gameplayFeedbackSync'],16)
+    &&styleRegions.length>=2
+    &&styleRegions.filter(row=>textReady(row?.storyContext,16)&&textReady(row?.landmark,16)).length>=2
+    &&/(건축|지형|의상|실루엣|재질|팔레트|조명|날씨|배경|architecture|terrain|costume|silhouette|material|palette|lighting|weather|background)/i.test(clean(design.visualDirection)+' '+clean(design.artAudioDirection?.visualIdentity))
+  );
 
   const ideaBasic=textReady(design.identity,60)&&textReady(design.playerFantasy,40)&&textReady(design.coreFun,40)&&materialContractOk;
   const ideaConnected=ideaBasic&&loops.length>=3&&signatureSystems.length>=requiredSignatureSystemCount;
@@ -101,11 +141,11 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const coreBasic=loops.length>=3;
   const coreConnected=coreBasic&&signatureSystems.length>=requiredSignatureSystemCount&&signatureSystems.every(row=>textReady(row?.name,2)&&textReady(row?.purpose,20)&&textReady(row?.playerChoice,20));
   const systemsBasic=list(design.systemInterconnections).length>0;
-  const systemsConnected=objectListReady(design.systemInterconnections,['fromSystem','toSystem','trigger','stateChange'],requiredSystemConnectionCount,8)&&fusionConnectionSemantics;
+  const systemsConnected=objectListReady(design.systemInterconnections,['fromSystem','toSystem','trigger','stateChange'],requiredSystemConnectionCount,8)&&fusionConnectionSemantics&&narrativeConnected&&narrativeSystemCausality;
   const progressionBasic=Boolean(design.progressionEconomyBalance)&&textReady(design.progressionDirection,24);
   const progressionConnected=progressionBasic&&objectReady(design.progressionEconomyBalance,['progressionLoop','resourceFlow','balanceRules'],20);
   const expansionBasic=list(design.contentExpansionPlan).length>0;
-  const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],requiredExpansionCount,12)&&fusionExpansionSemantics;
+  const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],requiredExpansionCount,12)&&fusionExpansionSemantics&&contentCausalityConnected;
   const failureBasic=Boolean(design.failureRetryRisk);
   const failureConnected=failureBasic&&Array.isArray(design.failureRetryRisk?.failureStates)&&distinct(design.failureRetryRisk.failureStates).length>=2&&textReady(design.failureRetryRisk?.retryFlow,20)&&textReady(design.failureRetryRisk?.riskPressure,20)&&textReady(design.failureRetryRisk?.recoveryRules,20);
   const platformProfileFields=['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'];
@@ -124,7 +164,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const uxBasic=Boolean(design.uxAccessibilityPlan)&&textReady(design.mobileUx,20);
   const uxConnected=uxBasic&&objectReady(design.uxAccessibilityPlan,['hudPriorities','touchAndInput','readability','accessibility'],16);
   const artBasic=Boolean(design.artAudioDirection)&&textReady(design.visualDirection,20);
-  const artConnected=artBasic&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16);
+  const artConnected=artBasic&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16)&&styleConnected;
   const traceBasic=list(design.implementationTraceability).length>0;
   const traceConnected=objectListReady(design.implementationTraceability,['designElement','responsibleSystem','validationEvidence'],3,10)&&distinct(list(design.technicalAssumptions)).length>=2&&distinct(list(design.validationQuestions)).length>=2;
 
@@ -208,7 +248,14 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
       observedExpansionCount:list(design.contentExpansionPlan).length,
       interconnectedSystemCount:interconnectedSystemNames.length,
       fusionConnectionSemantics,
-      fusionExpansionSemantics
+      fusionExpansionSemantics,
+      narrativeRequired,
+      narrativeConnected,
+      narrativeSystemCausality,
+      contentCausalityConnected,
+      styleRequired,
+      styleConnected,
+      assetLibraryExpansionRequired:false
     }),
   };
 }
