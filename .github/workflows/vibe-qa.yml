@@ -31,6 +31,8 @@ on:
       - 'tools/game-catalog-normalization.mjs'
       - 'tools/company-roblox-source-drift-sync.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-package.mjs'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - 'qa/vibe-regression.mjs'
       - 'qa/vibe-*.mjs'
@@ -39,6 +41,7 @@ on:
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
+      - 'qa/company-development-roblox-package.test.mjs'
       - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
@@ -73,6 +76,8 @@ on:
       - 'tools/game-catalog-normalization.mjs'
       - 'tools/company-roblox-source-drift-sync.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-package.mjs'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - 'qa/vibe-regression.mjs'
       - 'qa/vibe-*.mjs'
@@ -81,6 +86,7 @@ on:
       - 'qa/horror-escape-room-release.test.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
+      - 'qa/company-development-roblox-package.test.mjs'
       - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
@@ -293,11 +299,13 @@ jobs:
       - name: Validate horror escape room release gates
         run: node --test qa/horror-escape-room-release.test.mjs
 
-      - name: Validate changed Roblox source synchronization
+      - name: Validate changed Roblox source synchronization and package binding
         run: |
           node --check tools/company-roblox-source-drift-sync.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
-          node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs
+          node --check tools/company-development-roblox-bootstrap.mjs
+          node --check tools/company-development-roblox-package.mjs
+          node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs
 
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
