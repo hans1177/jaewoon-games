@@ -14,7 +14,7 @@ import {
   releaseSeedMaterialReservations,
   seedPlatform,
 } from './game-seed-state.mjs';
-import {assertGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES,GAMEPLAY_NARRATIVE_DNA_FAMILIES,GAMEPLAY_NARRATIVE_RIGHTS_MODES,GAMEPLAY_STYLE_DNA_FAMILIES} from './company-game-seed-contract.mjs';
+import {assertGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES,GAMEPLAY_NARRATIVE_DNA_FAMILIES,GAMEPLAY_NARRATIVE_RIGHTS_MODES,GAMEPLAY_STYLE_DNA_FAMILIES,GAMEPLAY_WORLDBUILDING_DNA_FAMILIES,GAMEPLAY_CANONICAL_LIBRARY_FAMILIES} from './company-game-seed-contract.mjs';
 import {
   categorySeedProfile,
   loadPlatformProfiles,
@@ -123,7 +123,7 @@ const COMPOSITION_DEPTH_SCHEMA={
 };
 const NARRATIVE_DEPTH_SCHEMA={
   type:'object',
-  required:['applicable','storyWeight','worldConflict','mainStoryArc','narrativeDnaSources','rightsModes','npcRelationshipWeb','companionArcs','mainSubquestLinks','foreshadowPayoffs','factionCultureHooks','historicalMythReinterpretations','worldbuildingFusion','storySystemLinks','contentCausalityLinks','worldEvolutionHooks','culturalRespectRules'],
+  required:['applicable','storyWeight','worldConflict','mainStoryArc','narrativeDnaSources','rightsModes','npcRelationshipWeb','companionArcs','mainSubquestLinks','foreshadowPayoffs','factionCultureHooks','historicalMythReinterpretations','worldbuildingFusion','storySystemLinks','contentCausalityLinks','worldEvolutionHooks','placeNameLedger','journalRecordChains','dialogueJournalLinks','monsterOpponentLoreEcologyLinks','namingRules','culturalRespectRules'],
   properties:{
     applicable:{type:'boolean'},
     storyWeight:{type:'string',enum:['LIGHT','MEDIUM','HEAVY']},
@@ -141,6 +141,11 @@ const NARRATIVE_DEPTH_SCHEMA={
     storySystemLinks:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
     contentCausalityLinks:{type:'array',minItems:4,maxItems:12,uniqueItems:true,items:SKETCH_ITEM},
     worldEvolutionHooks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    placeNameLedger:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    journalRecordChains:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    dialogueJournalLinks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    monsterOpponentLoreEcologyLinks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    namingRules:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
     culturalRespectRules:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
   },
   additionalProperties:false,
@@ -166,9 +171,47 @@ const STYLE_WORLD_DEPTH_SCHEMA={
   },
   additionalProperties:false,
 };
+const WORLDBUILDING_DEPTH_SCHEMA={
+  type:'object',
+  required:['allGenreApplicable','worldPremise','worldDnaSources','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','causalChains','worldStateEvolution','crossMediaClueLinks','genreExpression'],
+  properties:{
+    allGenreApplicable:{type:'boolean'},
+    worldPremise:{type:'string',minLength:30,maxLength:1000},
+    worldDnaSources:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_WORLDBUILDING_DNA_FAMILIES]}},
+    civilizationPowerOrder:{type:'string',minLength:30,maxLength:900},
+    geographyEcology:{type:'string',minLength:30,maxLength:900},
+    economyDailyLife:{type:'string',minLength:30,maxLength:900},
+    beliefMythTaboo:{type:'string',minLength:30,maxLength:900},
+    technologyInstitutions:{type:'string',minLength:30,maxLength:900},
+    placeNameLogic:{type:'string',minLength:30,maxLength:900},
+    journalArchiveLogic:{type:'string',minLength:30,maxLength:900},
+    monsterOpponentEcology:{type:'string',minLength:30,maxLength:900},
+    dialogueMemoryLogic:{type:'string',minLength:30,maxLength:900},
+    causalChains:{type:'array',minItems:4,maxItems:12,uniqueItems:true,items:SKETCH_ITEM},
+    worldStateEvolution:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    crossMediaClueLinks:{type:'array',minItems:3,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    genreExpression:{type:'string',minLength:20,maxLength:700},
+  },
+  additionalProperties:false,
+};
+const LIBRARY_LINKAGE_SCHEMA={
+  type:'object',
+  required:['allCanonicalLibrariesSearchable','libraryFamilies','selectionRule','fallbackRule','compatibilityRightsAndGameIdentityFirst','actualConsumerEvidenceRequired','noForcedUse','noShadowPipeline'],
+  properties:{
+    allCanonicalLibrariesSearchable:{type:'boolean'},
+    libraryFamilies:{type:'array',minItems:8,maxItems:8,uniqueItems:true,items:{type:'string',enum:[...GAMEPLAY_CANONICAL_LIBRARY_FAMILIES]}},
+    selectionRule:{type:'string',minLength:30,maxLength:900},
+    fallbackRule:{type:'string',minLength:30,maxLength:900},
+    compatibilityRightsAndGameIdentityFirst:{type:'boolean'},
+    actualConsumerEvidenceRequired:{type:'boolean'},
+    noForcedUse:{type:'boolean'},
+    noShadowPipeline:{type:'boolean'},
+  },
+  additionalProperties:false,
+};
 const GAMEPLAY_SKETCH_SCHEMA={
   type:'object',
-  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks','compositionDepth','narrativeDepth','styleWorldDepth'],
+  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','playerPromise','funDrivers','balanceRules','pacingPlan','progressionLayers','expansionPlan','longGoalScenario','completionCriteria','codingGrowthHooks','validationRisks','compositionDepth','narrativeDepth','styleWorldDepth','worldbuildingDepth','libraryLinkage'],
   properties:{
     worldModel:{type:'string',minLength:1,maxLength:900},
     actors:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
@@ -188,6 +231,8 @@ const GAMEPLAY_SKETCH_SCHEMA={
     compositionDepth:COMPOSITION_DEPTH_SCHEMA,
     narrativeDepth:NARRATIVE_DEPTH_SCHEMA,
     styleWorldDepth:STYLE_WORLD_DEPTH_SCHEMA,
+    worldbuildingDepth:WORLDBUILDING_DEPTH_SCHEMA,
+    libraryLinkage:LIBRARY_LINKAGE_SCHEMA,
   },
   additionalProperties:false,
 };
@@ -558,7 +603,28 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     '김용·톨킨·오웰 등 현대 보호 작품은 고유 캐릭터·세계관·명칭·대사·장면을 복제하지 않고 문파 관계·권력 감시·원정 구조 같은 추상 기법만 변형한다',
     '공공영역 고전과 역사 소재도 원문 복제가 아니라 세계관·시스템·인물관계에 맞는 독자적 재구성을 우선한다'
   ],3,8);
-  const narrativeDepth={applicable:true,storyWeight,worldConflict,mainStoryArc,narrativeDnaSources,rightsModes,npcRelationshipWeb,companionArcs,mainSubquestLinks,foreshadowPayoffs,factionCultureHooks,historicalMythReinterpretations,worldbuildingFusion,storySystemLinks,contentCausalityLinks,worldEvolutionHooks,culturalRespectRules};
+  const placeNameLedger=sketchArray(narrativeRaw.placeNameLedger,[
+    '중심 지역의 지명은 지형/역사/세력 기원을 한 문장으로 설명하고 지도·NPC 대화·퀘스트·저널에서 같은 이름을 사용한다',
+    '변방/위험 지역 지명은 과거 사건이나 몬스터/재난/산업 흔적과 연결해 이름만 들어도 역할과 위험을 추론할 수 있게 한다',
+    '옛 지명과 현재 지명이 다른 장소는 개명 원인을 세력 변화·전쟁·복원·신앙 변화와 연결하고 후반 단서로 회수한다'
+  ],3,10);
+  const journalRecordChains=sketchArray(narrativeRaw.journalRecordChains,[
+    '현장 저널/편지/비문 하나가 지역 사건의 한 관점만 제공하고 다른 기록·NPC 증언·환경 흔적을 조합해야 전체 원인을 알 수 있다',
+    '저널에서 발견한 지명·인물·몬스터/상대·유물 단서가 실제 지도 표식·대화 선택·서브퀘·도감 갱신으로 이어진다'
+  ],2,8);
+  const dialogueJournalLinks=sketchArray(narrativeRaw.dialogueJournalLinks,[
+    'NPC 대화가 플레이어가 읽은 저널/기록 여부를 반영해 같은 사건의 새 질문·반박·추가 정보를 열고 메인/서브퀘 상태를 갱신한다',
+    'NPC의 주장과 기록이 충돌할 수 있지만 누가 무엇을 언제 알았는지 지식범위를 유지해 모순이 아닌 미스터리 단서로 작동한다'
+  ],2,8);
+  const monsterOpponentLoreEcologyLinks=sketchArray(narrativeRaw.monsterOpponentLoreEcologyLinks,[
+    '몬스터/적/상대의 이름·서식/활동지역·행동 패턴·드랍/보상은 지역 생태와 역사적 사건 또는 세력 이용 방식과 연결된다',
+    'NPC 소문·저널 기록·도감 관찰·실제 전투/조우가 같은 위협을 서로 다른 관점에서 설명하고 플레이어가 대응법을 학습하게 한다'
+  ],2,8);
+  const namingRules=sketchArray(narrativeRaw.namingRules,[
+    '같은 문화권의 인명·지명·조직·몬스터 명칭은 공통 어형/음절/접미 규칙을 사용하되 실제 문화 고유명을 무단 복제하지 않는다',
+    '이름은 기능만 나열하지 않고 역사·지형·직업·신앙·사건 중 하나 이상의 세계 근거를 가지며 UI에서 구분 가능한 길이와 발음을 유지한다'
+  ],2,8);
+  const narrativeDepth={applicable:true,storyWeight,worldConflict,mainStoryArc,narrativeDnaSources,rightsModes,npcRelationshipWeb,companionArcs,mainSubquestLinks,foreshadowPayoffs,factionCultureHooks,historicalMythReinterpretations,worldbuildingFusion,storySystemLinks,contentCausalityLinks,worldEvolutionHooks,placeNameLedger,journalRecordChains,dialogueJournalLinks,monsterOpponentLoreEcologyLinks,namingRules,culturalRespectRules};
   const styleRaw=raw.styleWorldDepth&&typeof raw.styleWorldDepth==='object'&&!Array.isArray(raw.styleWorldDepth)?raw.styleWorldDepth:{};
   const allowedStyleFamilies=new Set(GAMEPLAY_STYLE_DNA_FAMILIES);
   const styleSeed=(narrativeSeed*3)+clean(target.category).length*11;
@@ -610,6 +676,52 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     assetLibraryExpansionRequired:false,
     assetLibraryReferenceHints
   };
+  const worldRaw=raw.worldbuildingDepth&&typeof raw.worldbuildingDepth==='object'&&!Array.isArray(raw.worldbuildingDepth)?raw.worldbuildingDepth:{};
+  const allowedWorldFamilies=new Set(GAMEPLAY_WORLDBUILDING_DNA_FAMILIES);
+  const worldDnaSources=sketchArray(
+    (Array.isArray(worldRaw.worldDnaSources)?worldRaw.worldDnaSources:[]).filter(value=>allowedWorldFamilies.has(clean(value))),
+    ['CIVILIZATION_AND_POWER','GEOGRAPHY_AND_ECOLOGY','ECONOMY_AND_DAILY_LIFE','LANGUAGE_NAMING_AND_MEMORY','MONSTER_OPPOSITION_ECOLOGY','ARCHIVE_JOURNAL_AND_RUMOR'],
+    3,8
+  );
+  const worldPremise=clean(worldRaw.worldPremise)||(gameName+'의 세계는 '+worldConflict+'라는 현재 갈등과 '+worldDnaSources.join(' × ')+'의 규칙이 한 역사 안에서 결합되어 지역·NPC·몬스터/상대·경제·탐험·퀘스트가 같은 원인망을 공유한다.');
+  const civilizationPowerOrder=clean(worldRaw.civilizationPowerOrder)||'세력·도시·조직·가문·길드의 권한과 의무가 지역 통치, 거래 조건, NPC 관계, 경비/적대, 퀘스트 발생 원인에 반영된다.';
+  const geographyEcology=clean(worldRaw.geographyEcology)||'지형·기후·자원·이동로가 정착지 위치, 생업, 교역, 몬스터/상대의 서식과 이동, 탐험 위험과 보상에 실제로 영향을 준다.';
+  const economyDailyLife=clean(worldRaw.economyDailyLife)||'생산·소비·무역·노동·축제·식생활·주거가 상점 가격만이 아니라 NPC 일정, 지역 이벤트, 아이템 출처, 서브퀘와 세력 이해관계를 설명한다.';
+  const beliefMythTaboo=clean(worldRaw.beliefMythTaboo)||'신앙·전승·금기·장례·축제·괴담은 지역 문화와 행동 규칙을 만들고 유물·몬스터·의식·비밀 장소·미스터리의 기원과 연결된다.';
+  const technologyInstitutions=clean(worldRaw.technologyInstitutions)||'기술·교육·군사·행정·의료·마법/연구 기관은 시대와 지역의 생활 수준, 장비/제작 방식, 이동수단, 정보 유통과 세력 능력을 결정한다.';
+  const placeNameLogic=clean(worldRaw.placeNameLogic)||'지명은 지형·창건자·전쟁·산업·신앙·몬스터 사건·옛 언어 중 근거를 갖고, 같은 지역권에서는 어형 규칙을 공유하며 NPC 대화·지도·저널에서 동일 표기를 사용한다.';
+  const journalArchiveLogic=clean(worldRaw.journalArchiveLogic)||'저널·편지·비문·지도 주석·신문·보고서는 실제 사건을 서로 다른 관점과 시점에서 기록하고 NPC 증언·환경 흔적·퀘스트 상태와 교차 검증되는 단서를 제공한다.';
+  const monsterOpponentEcology=clean(worldRaw.monsterOpponentEcology)||'몬스터가 있는 장르는 서식지·먹이·번식/소환·세력 이용·역사적 사건과 연결하고, 몬스터가 없는 장르는 적/상대/장애물의 발생 조건과 세계 역할을 같은 원칙으로 설명한다.';
+  const dialogueMemoryLogic=clean(worldRaw.dialogueMemoryLogic)||'NPC 대화는 지역 지명·저널 단서·세력 관계·최근 사건·플레이어 선택을 기억하고, 아직 알 수 없는 사실을 미리 확정해서 말하지 않으며 상태 변화 후 후속 대사가 바뀐다.';
+  const causalChains=sketchArray(worldRaw.causalChains,[
+    '과거 사건 -> 지명/유적/기념물 -> NPC 대화와 저널 단서 -> 현재 서브퀘 -> 메인 사건의 선택 조건',
+    '지형/기후 -> 자원/생업 -> 무역/상점/세력 이해관계 -> 지역 갈등 -> 플레이어 성장/탐험 경로',
+    '신화/금기 -> 의식/유물 -> 몬스터 또는 위협 생태 -> 조사/전투/퍼즐 -> 지역 상태와 주민 반응 변화',
+    '기술/제도 -> 장비/이동/정보 접근 -> 새 지역/옛 지역 재방문 -> 숨은 기록/동료 사건 -> 후반 세계 재해석'
+  ],4,12);
+  const worldStateEvolution=sketchArray(worldRaw.worldStateEvolution,[
+    '퀘스트·세력·경제·보스 결과가 지도 표기, NPC 배치/대화, 상점, 위험도, 몬스터/상대 출현, 환경 흔적 중 실제 장면 상태를 바꾼다',
+    '후반 정보와 성장으로 초반 지명·기록·몬스터/상대·NPC 발언의 의미가 재해석되고 새로운 상호작용과 서브퀘가 열린다'
+  ],2,8);
+  const crossMediaClueLinks=sketchArray(worldRaw.crossMediaClueLinks,[
+    '같은 장소 이름이 지도/표지판/NPC 대화/저널에서 일관되고 각 매체가 서로 다른 단서를 보충한다',
+    '몬스터/상대 도감 또는 관찰 기록이 서식지·지역 전설·NPC 피해 사례·전투 대응법을 하나의 인과로 연결한다',
+    '저널 단서가 환경 오브젝트나 지명 유래를 가리키고 실제 탐험에서 확인하면 대화/퀘스트 상태가 갱신된다'
+  ],3,10);
+  const genreExpression=clean(worldRaw.genreExpression)||(target.category+' 장르에서는 세계관을 긴 설명으로 강제하지 않고 핵심 플레이 화면·목표·대화/짧은 기록·적/상대 규칙·지역 상태에 맞는 강도로 표현한다. 퍼즐/아케이드도 LIGHT 서사를 유지하고 모든 장르에서 세계 원인망은 끊지 않는다.');
+  const worldbuildingDepth={allGenreApplicable:true,worldPremise,worldDnaSources,civilizationPowerOrder,geographyEcology,economyDailyLife,beliefMythTaboo,technologyInstitutions,placeNameLogic,journalArchiveLogic,monsterOpponentEcology,dialogueMemoryLogic,causalChains,worldStateEvolution,crossMediaClueLinks,genreExpression};
+
+  const libraryRaw=raw.libraryLinkage&&typeof raw.libraryLinkage==='object'&&!Array.isArray(raw.libraryLinkage)?raw.libraryLinkage:{};
+  const libraryLinkage={
+    allCanonicalLibrariesSearchable:true,
+    libraryFamilies:[...GAMEPLAY_CANONICAL_LIBRARY_FAMILIES],
+    selectionRule:clean(libraryRaw.selectionRule)||'매 설계/BUILD_UP에서 현재 게임의 장르·플랫폼·세계관·시스템·책임 소스에 맞춰 모든 canonical 라이브러리를 후보로 검색하고 호환성·권리·정체성·품질·현재 필요성을 통과한 항목만 기존 책임 시스템에서 소비한다.',
+    fallbackRule:clean(libraryRaw.fallbackRule)||'호환 항목이 없으면 강제 대입하지 않고 기존 게임 소스와 canonical 생성/학습 흐름을 사용하며, 필요 자산/패턴 확장은 기존 라이브러리 생산 경로에서만 수행한다.',
+    compatibilityRightsAndGameIdentityFirst:true,
+    actualConsumerEvidenceRequired:true,
+    noForcedUse:true,
+    noShadowPipeline:true
+  };
   const flowBaseline={content:{
     identity:clean(p?.distinctIdentity)||gameName,
     playerFantasy:playerPromise,
@@ -618,7 +730,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     progressionDirection:progressionLayers.join(' '),
   }};
   const flowArchitecture=buildGameFlowArchitecture({gameId:`seed:${target.requestId}`,genre:target.category,baseline:flowBaseline,inventory:[]});
-  return{version:3,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V3',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,compositionDepth,narrativeDepth,styleWorldDepth,flowArchitecture};
+  return{version:3,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V3',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,compositionDepth,narrativeDepth,styleWorldDepth,worldbuildingDepth,libraryLinkage,flowArchitecture};
 }
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
@@ -658,6 +770,15 @@ function validateProposal(target,p){
   if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(p.multiplayerDesignMode))errors.push('multiplayerDesignMode');
   const sketch=p.gameplaySketch||{};
   if(Number(sketch.version||0)<3||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2||!sketch.compositionDepth||!clean(sketch.compositionDepth.mainContent)||!Array.isArray(sketch.compositionDepth.majorSubSystems)||sketch.compositionDepth.majorSubSystems.length<3||!Array.isArray(sketch.compositionDepth.extensionSystems)||sketch.compositionDepth.extensionSystems.length<6||!Array.isArray(sketch.compositionDepth.crossSystemCombinations)||sketch.compositionDepth.crossSystemCombinations.length<4||!Array.isArray(sketch.compositionDepth.hiddenCombinations)||sketch.compositionDepth.hiddenCombinations.length<2||!Array.isArray(sketch.compositionDepth.growthMutations)||sketch.compositionDepth.growthMutations.length<2||!Array.isArray(sketch.compositionDepth.legacyContentRevisitHooks)||sketch.compositionDepth.legacyContentRevisitHooks.length<2||!clean(sketch.compositionDepth.endgameFusion)||!clean(sketch.compositionDepth.conceptFusion)||!Array.isArray(sketch.compositionDepth.mechanicDiversitySources)||sketch.compositionDepth.mechanicDiversitySources.length<3||!sketch.narrativeDepth||sketch.narrativeDepth.applicable!==true||!clean(sketch.narrativeDepth.worldConflict)||!clean(sketch.narrativeDepth.mainStoryArc)||!Array.isArray(sketch.narrativeDepth.narrativeDnaSources)||sketch.narrativeDepth.narrativeDnaSources.length<2||!Array.isArray(sketch.narrativeDepth.npcRelationshipWeb)||sketch.narrativeDepth.npcRelationshipWeb.length<2||!Array.isArray(sketch.narrativeDepth.mainSubquestLinks)||sketch.narrativeDepth.mainSubquestLinks.length<2||!Array.isArray(sketch.narrativeDepth.worldbuildingFusion)||sketch.narrativeDepth.worldbuildingFusion.length<3||!Array.isArray(sketch.narrativeDepth.storySystemLinks)||sketch.narrativeDepth.storySystemLinks.length<3||!Array.isArray(sketch.narrativeDepth.contentCausalityLinks)||sketch.narrativeDepth.contentCausalityLinks.length<4||!Array.isArray(sketch.narrativeDepth.worldEvolutionHooks)||sketch.narrativeDepth.worldEvolutionHooks.length<2||!sketch.styleWorldDepth||!clean(sketch.styleWorldDepth.styleFusion)||!Array.isArray(sketch.styleWorldDepth.styleDnaSources)||sketch.styleWorldDepth.styleDnaSources.length<2||!clean(sketch.styleWorldDepth.architectureSettlement)||!clean(sketch.styleWorldDepth.environmentBiomes)||!clean(sketch.styleWorldDepth.backgroundStorytelling)||!Array.isArray(sketch.styleWorldDepth.regionalStyleVariation)||sketch.styleWorldDepth.regionalStyleVariation.length<3||!Array.isArray(sketch.styleWorldDepth.gameplayReadabilityLinks)||sketch.styleWorldDepth.gameplayReadabilityLinks.length<3||sketch.styleWorldDepth.assetLibraryExpansionRequired===true)errors.push('gameplaySketch');
+  if(Number(sketch.version||0)>=3){
+    if(sketch.narrativeDepth?.applicable!==true)errors.push('narrativeDepthAllGenres');
+    if(!Array.isArray(sketch.narrativeDepth?.placeNameLedger)||sketch.narrativeDepth.placeNameLedger.length<3)errors.push('placeNameLedger');
+    if(!Array.isArray(sketch.narrativeDepth?.journalRecordChains)||sketch.narrativeDepth.journalRecordChains.length<2)errors.push('journalRecordChains');
+    if(!Array.isArray(sketch.narrativeDepth?.dialogueJournalLinks)||sketch.narrativeDepth.dialogueJournalLinks.length<2)errors.push('dialogueJournalLinks');
+    if(!Array.isArray(sketch.narrativeDepth?.monsterOpponentLoreEcologyLinks)||sketch.narrativeDepth.monsterOpponentLoreEcologyLinks.length<2)errors.push('monsterOpponentLoreEcologyLinks');
+    if(!sketch.worldbuildingDepth||sketch.worldbuildingDepth.allGenreApplicable!==true||!Array.isArray(sketch.worldbuildingDepth.worldDnaSources)||sketch.worldbuildingDepth.worldDnaSources.length<3||!Array.isArray(sketch.worldbuildingDepth.causalChains)||sketch.worldbuildingDepth.causalChains.length<4)errors.push('worldbuildingDepth');
+    if(!sketch.libraryLinkage||sketch.libraryLinkage.allCanonicalLibrariesSearchable!==true||!Array.isArray(sketch.libraryLinkage.libraryFamilies)||sketch.libraryLinkage.libraryFamilies.length!==GAMEPLAY_CANONICAL_LIBRARY_FAMILIES.length||sketch.libraryLinkage.actualConsumerEvidenceRequired!==true||sketch.libraryLinkage.noForcedUse!==true||sketch.libraryLinkage.noShadowPipeline!==true)errors.push('libraryLinkage');
+  }
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
 }
 async function callModelBatch(targets){
@@ -675,7 +796,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. conceptFusion은 장르 이름 나열이 아니라 메인 규칙×플레이 판타지×시대/세계관 DNA×서사 갈등×핵심 시스템을 한 문장으로 합성해 게임의 첫 컨셉부터 독립적인 플레이 약속이 보이게 한다. narrativeDepth는 세계관 형성 자체에도 융복합을 적용한다. 중국 사기/초한지/삼국지/수호지 같은 역사·영웅군상, 로마 공화정·제정의 가문/원로원/군단/속주/시민권/대중정치, 그리스·북유럽·이집트·메소포타미아 신화, 셰익스피어·그림형제·안데르센·뒤마 등 공공영역 고전의 갈등/관계/모험 구조, 일본 전국시대/요괴민담, 중세/교역/학문사, 산업혁명·혁명/공화정·제국주의/식민지 경쟁·세계대전형 총력전·냉전/첩보·탈식민/신생국·대중정치/선전·산업자본/도시노동·국제질서 같은 현대사 구조, 공포신화·미스터리를 2~4개 이상 독자적으로 재조합한다. NPC 관계망·동료 개인서사·세력 문화·메인↔서브퀘 양방향 영향·복선/회수·유물/기록/환경 단서·스토리×게임시스템 연결을 설계한다. contentCausalityLinks에는 지역·보스·던전·아이템·펫·미니게임·무역·하우징·수집 등 실제 콘텐츠별로 세계 원인→관련 NPC/세력/지역→플레이 행동→보상/상태 변화→메인/서브스토리 후속 영향의 인과를 설계한다. worldEvolutionHooks에는 플레이어 선택과 퀘스트 결과 때문에 마을·도시·세력·경제·지역 상태가 실제로 변하고 초기 콘텐츠가 후반에 재해석되는 구조를 넣는다. styleWorldDepth는 게임 컨셉/세계관 DNA를 건축·정착지 구조·지형/기후·의상/실루엣·재질/소품·팔레트/조명/날씨·배경 스토리텔링으로 확장하고, 각 요소가 길찾기·위험·상호작용·세력 상태·퀘스트 인과를 읽게 해야 한다. 자산 라이브러리는 참고/재사용 우선 자원이며 확장 자체는 필수 PASS 조건이 아니다. 현재 스타일·기능을 충족하는 자산이 없을 때만 기존 canonical 자산 생산 흐름에서 필요한 family를 확장한다. 김용·톨킨·오웰 등 현대 보호 작품은 이름/인물/세계관/대사/장면을 복제하지 않고 문파 관계, 감시사회, 원정/동료관계 같은 추상 기법만 참고한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. compositionDepth는 메인 콘텐츠 1개를 중심으로 실제 대형 서브시스템을 최소 3개 설계하고, 판매·동료·서브퀘·미니게임·무역·수집·강화·펫/소환·아이템 조합·파티 조합 같은 @ 확장요소를 게임 정체성에 맞게 최소 6개 풀로 구성한다. 고전 카드/주사위/타일/경매 같은 고전 규칙부터 덱빌딩·드래프트·일꾼배치·엔진빌딩 같은 현대 보드 규칙, 아케이드·생활·사회경제·수집 메타까지 mechanicDiversitySources에서 최소 3개 서로 다른 계통을 사용한다. crossSystemCombinations는 A×B, A×C, B×C, A×B×C+@처럼 최소 4개 실제 상태 연결을 만들고 hiddenCombinations는 조건형 숨은 조합, growthMutations는 성장에 따라 단독 시스템이 융복합으로 변하는 과정, legacyContentRevisitHooks는 성장 후 옛 지역/콘텐츠에 돌아올 이유, endgameFusion은 최종 파고들기 구조를 구체적으로 적는다. 서브 시스템과 미니게임은 독립 메뉴로 던져놓지 말고 메인 성장·탐험·경제·수집·관계 중 하나 이상과 실제 상태를 주고받게 한다. narrativeDepth는 모든 게임 장르에 applicable=true로 두고 storyWeight만 LIGHT/MEDIUM/HEAVY로 조절한다. 세계관은 별도 소설 설정집이 아니라 지명·지역 역사·세력·NPC 대화·동료·서브퀘·저널/편지/비문·몬스터/적/상대의 생태와 기원·아이템/유물·상점/무역·메인 사건이 서로 같은 인과망을 공유해야 한다. worldbuildingDepth에서는 문명/권력 × 지리/생태 × 경제/생활 × 신앙/금기 × 기술/제도 × 언어/지명 × 기록/소문 × 몬스터/상대 생태를 최소 3계통 이상 융복합하고 퍼즐·아케이드·캐주얼도 LIGHT 방식으로 이 원인망을 유지한다. libraryLinkage는 모든 canonical 라이브러리를 후보로 검색 가능하게 하되 강제 사용하지 않고 호환성·권리·게임 정체성·현재 필요성을 먼저 확인하며 실제 책임 소스 소비 증거 없는 라이브러리 선택은 사용으로 인정하지 않는다. conceptFusion은 장르 이름 나열이 아니라 메인 규칙×플레이 판타지×시대/세계관 DNA×서사 갈등×핵심 시스템을 한 문장으로 합성해 게임의 첫 컨셉부터 독립적인 플레이 약속이 보이게 한다. narrativeDepth는 세계관 형성 자체에도 융복합을 적용한다. 중국 사기/초한지/삼국지/수호지 같은 역사·영웅군상, 로마 공화정·제정의 가문/원로원/군단/속주/시민권/대중정치, 그리스·북유럽·이집트·메소포타미아 신화, 셰익스피어·그림형제·안데르센·뒤마 등 공공영역 고전의 갈등/관계/모험 구조, 일본 전국시대/요괴민담, 중세/교역/학문사, 산업혁명·혁명/공화정·제국주의/식민지 경쟁·세계대전형 총력전·냉전/첩보·탈식민/신생국·대중정치/선전·산업자본/도시노동·국제질서 같은 현대사 구조, 공포신화·미스터리를 2~4개 이상 독자적으로 재조합한다. NPC 관계망·동료 개인서사·세력 문화·메인↔서브퀘 양방향 영향·복선/회수·유물/기록/환경 단서·스토리×게임시스템 연결을 설계한다. contentCausalityLinks에는 지역·보스·던전·아이템·펫·미니게임·무역·하우징·수집 등 실제 콘텐츠별로 세계 원인→관련 NPC/세력/지역→플레이 행동→보상/상태 변화→메인/서브스토리 후속 영향의 인과를 설계한다. worldEvolutionHooks에는 플레이어 선택과 퀘스트 결과 때문에 마을·도시·세력·경제·지역 상태가 실제로 변하고 초기 콘텐츠가 후반에 재해석되는 구조를 넣는다. styleWorldDepth는 게임 컨셉/세계관 DNA를 건축·정착지 구조·지형/기후·의상/실루엣·재질/소품·팔레트/조명/날씨·배경 스토리텔링으로 확장하고, 각 요소가 길찾기·위험·상호작용·세력 상태·퀘스트 인과를 읽게 해야 한다. 자산 라이브러리는 참고/재사용 우선 자원이며 확장 자체는 필수 PASS 조건이 아니다. 현재 스타일·기능을 충족하는 자산이 없을 때만 기존 canonical 자산 생산 흐름에서 필요한 family를 확장한다. 김용·톨킨·오웰 등 현대 보호 작품은 이름/인물/세계관/대사/장면을 복제하지 않고 문파 관계, 감시사회, 원정/동료관계 같은 추상 기법만 참고한다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -683,7 +804,7 @@ async function callModelBatch(targets){
       body:JSON.stringify({
         model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),
         messages:[
-          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다. GAMEPLAY_SKETCH v3에서는 메인 장르만 바꾸는 반복을 피하고 고전 카드·보드·아케이드부터 현대 보드/수집/생활/사회경제 규칙까지 다른 계통의 메커니즘을 재조합해 메인×서브×서브×서브+@의 후반 파고들기 구조를 만든다. 세계관도 단일 레퍼런스 복제가 아니라 역사·신화·고전문학·민담·미스터리·공포·세력정치·관계극 DNA를 융합하고, 그 결과를 NPC/동료/서브퀘/세력/지역/경제/수집/탐험 상태와 연결한다. 스타일과 배경도 단일 시대 스킨이 아니라 서로 다른 시각 DNA를 세계관·플레이 기능에 맞게 융합하며, 기존 자산 라이브러리는 선택적 참고 자원으로만 사용한다.'},
+          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다. GAMEPLAY_SKETCH v3에서는 메인 장르만 바꾸는 반복을 피하고 고전 카드·보드·아케이드부터 현대 보드/수집/생활/사회경제 규칙까지 다른 계통의 메커니즘을 재조합해 메인×서브×서브×서브+@의 후반 파고들기 구조를 만든다. 모든 장르에서 세계관 융복합을 사용하며 지명·대화·저널·NPC/동료·몬스터/상대·지역·퀘스트·경제·환경 흔적의 명칭과 인과를 하나의 세계 상태로 연결한다. 모든 canonical 라이브러리는 동적 후보이지만 적합하지 않으면 쓰지 않는다. 세계관도 단일 레퍼런스 복제가 아니라 역사·신화·고전문학·민담·미스터리·공포·세력정치·관계극 DNA를 융합하고, 그 결과를 NPC/동료/서브퀘/세력/지역/경제/수집/탐험 상태와 연결한다. 스타일과 배경도 단일 시대 스킨이 아니라 서로 다른 시각 DNA를 세계관·플레이 기능에 맞게 융합하며, 기존 자산 라이브러리는 선택적 참고 자원으로만 사용한다.'},
           {role:'user',content:prompt},
         ],
         options:{temperature:0.25,num_ctx:16384,num_predict:7000},
