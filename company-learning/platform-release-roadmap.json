@@ -26474,7 +26474,7 @@
         "newQueueForbidden": true,
         "newSchedulerForbidden": true,
         "shadowOrWrapperPipelineForbidden": true,
-        "canonicalFormula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_GAME_GRAMMAR = COMPOSITE_GENRE",
+        "canonicalFormula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
         "materialGrammar": {
           "allMaterialsPeerLevel": true,
           "depthHierarchyForbidden": true,
@@ -26555,7 +26555,13 @@
             "rule": "c_MUTATES_OR_CONNECTS_MAIN_A_B_CONTEXTUALLY_BUT_DOES_NOT_OWN_AN_EQUAL_MAJOR_LOOP"
           },
           "crossSystemRule": "MAIN_A_B_MUST_EXCHANGE_CAUSE_COST_RISK_REWARD_INFORMATION_OR_WORLD_STATE; c_VARIATES_THE_RELATIONSHIP",
-          "parallelFeatureStackingDoesNotCount": true
+          "parallelFeatureStackingDoesNotCount": true,
+          "majorAxesExactlyTwo": true,
+          "onlyMajorAxes": [
+            "A",
+            "B"
+          ],
+          "cIsSubordinateElements": true
         },
         "delveLayer": {
           "symbol": "@",
@@ -26574,15 +26580,18 @@
             "RARE_CAUSAL_COMBINATION"
           ],
           "connectionRule": "EACH_@_ELEMENT_CONNECTS_TO_AT_LEAST_TWO_OF_MAIN_A_B_OR_THEIR_c_SUB_ELEMENTS",
-          "rewardRule": "@_SHOULD_OPEN_NEW_USE_INTERPRETATION_ROUTE_COMBINATION_OR_STATE_CONTROL_NOT_ONLY_MORE_STATS"
+          "rewardRule": "@_SHOULD_OPEN_NEW_USE_INTERPRETATION_ROUTE_COMBINATION_OR_STATE_CONTROL_NOT_ONLY_MORE_STATS",
+          "isFourthSystem": false,
+          "isSubElement": false
         },
         "emergentGenre": {
           "finalGenrePredetermined": false,
           "gameCategoryRole": "SEED_DISCOVERY_OPERATIONAL_ROUTING_AND_COMPATIBILITY_HINT_ONLY_NOT_FINAL_GENRE",
-          "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
+          "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
           "namingRule": "NAME_AND_DEFINE_THE_GENRE_AFTER_THE_COMBINED_GRAMMAR_EXISTS",
           "singleConventionalGenreMayBeInsufficient": true,
-          "identityRule": "THE_NEW_GAME_GRAMMAR_ITSELF_IS_THE_COMPOSITE_GENRE"
+          "identityRule": "THE_NEW_GAME_GRAMMAR_ITSELF_IS_THE_COMPOSITE_GENRE",
+          "finalCompositeGenreIdentity": true
         },
         "causalWorldAndStory": {
           "familiarHumanConflictMustRemainReadable": true,
@@ -26613,7 +26622,9 @@
           "missingConnectionFirst": true,
           "unrelatedFeatureInjectionDeprioritized": true,
           "identityRewriteRequired": false,
-          "rule": "DO_NOT_FORCE_A_NEW_GENRE_LABEL_OR_REWRITE_WORKING_GAME_MEANING; DISCOVER_EXISTING_RELATIONSHIPS_AND_STRENGTHEN_THEM"
+          "rule": "DO_NOT_FORCE_A_NEW_GENRE_LABEL_OR_REWRITE_WORKING_GAME_MEANING; DISCOVER_EXISTING_RELATIONSHIPS_AND_STRENGTHEN_THEM",
+          "reconstructFromCurrentDesignAndSourceFirst": true,
+          "noIdentityRewriteRequired": true
         },
         "designAndGate": {
           "existingDesignFieldsRemainCanonical": true,
@@ -27485,7 +27496,21 @@
       "exactDuplicateSuppressionPreserved": true,
       "lockedF0F9SequenceChanged": false,
       "newPipelineCreated": false,
-      "ownerDirective": "2026-10-06"
+      "ownerDirective": "2026-10-06",
+      "runnerPressurePolicy": "EXTERNAL_GITHUB_ACTIONS_QUEUE_OWNS_PHYSICAL_BACKPRESSURE",
+      "runnerPressureMayReduceLogicalSlots": false,
+      "runnerPressureMaySuppressGamePrimaryDispatch": false,
+      "runnerPressureMaySuppressNextCycleRefill": false,
+      "auxiliaryLearningMayYieldUnderRunnerPressure": true,
+      "internalReleaseIsCheckpointNotTerminal": true,
+      "externalPublicReleaseIsCheckpointNotTerminal": true,
+      "externalPublicReleaseRequiresExplicitOwnerApproval": true,
+      "postReleaseRepeatDevelopmentContinues": true,
+      "supportedBoundPlatformLoops": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ]
     }
   },
   "homepageGameMediaContract": {
