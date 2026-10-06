@@ -23,6 +23,7 @@ import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from '.
 import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
+import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -31,6 +32,7 @@ const RELEASE_RANK=Object.freeze({'release-confirmed':0,'development-confirmed':
 const ENGINE_RANK=Object.freeze({web:0,roblox:1,unity:1,unreal:3,godot:4});
 const SEVERITY_PRIORITY=Object.freeze({critical:'critical',high:'high',medium:'normal',low:'low'});
 const EXISTING_HOLISTIC_BACKFILL_PILLARS=Object.freeze(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']);
+const currentAssetConsumerGameIds=asset=>[...new Set([...(asset?.consumerGameIds||[]),...(asset?.sourceBoundConsumerGameIds||[])].map(clean).filter(Boolean))];
 
 function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
@@ -3369,10 +3371,14 @@ export function findSafeTasks(project,repoRoot,queue){
   const focus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
     const motionRoot='assets/roblox/world-ghosts/motions';
-    const registry=readJson(path.join(repoRoot,'company-asset-library.json'),{});
+    const registry=synchronizeSourceBoundAssetConsumers({
+      repoRoot,
+      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{})
+    }).registry;
     const tasks=[];
     for(const asset of registry.assets||[]){
-      if(!/^roblox-world-ghost-[a-z0-9-]+$/.test(asset.id)||(focus.requireCurrentGameUse===true?asset.consumerGameIds||[]:asset.intendedConsumerGameIds||[]).includes(project.gameId)!==true)continue;
+      const currentConsumers=currentAssetConsumerGameIds(asset);
+      if(!/^roblox-world-ghost-[a-z0-9-]+$/.test(asset.id)||(focus.requireCurrentGameUse===true?currentConsumers:asset.intendedConsumerGameIds||[]).includes(project.gameId)!==true)continue;
       const object=asset.id.slice('roblox-world-ghost-'.length),sourcePath='init.luau',sourceRoot=motionRoot+'/'+object;
       const taskId='internal-motion-'+object+'-walk-v1';
       if((queue.tasks||[]).some(row=>row.id===taskId))continue;
@@ -3396,7 +3402,7 @@ export function findSafeTasks(project,repoRoot,queue){
           sourceHash:crypto.createHash('sha256').update(source).digest('hex'),sourceWindow,
           objectBindingEvidence,clipBindingEvidence,objectCount:1,motionCount:1,estimatedModificationMinutes:60,
           lockedSource:[objectBindingEvidence,clipBindingEvidence,'local state="walk"'],preservedAxes:{}},
-        evidence:[...((asset.consumerGameIds||[]).includes(project.gameId)?['asset-current-consumer:'+project.gameId]:[]),'asset-production-parallel:v1','single-object-motion-repair:v1','internal-asset-only:v1','owner-motion-depth-request:2026-10-05','native-before-after-qa:required']});
+        evidence:[...(currentConsumers.includes(project.gameId)?['asset-current-consumer:'+project.gameId]:[]),'asset-production-parallel:v1','single-object-motion-repair:v1','internal-asset-only:v1','owner-motion-depth-request:2026-10-05','native-before-after-qa:required']});
     }
     if(tasks.length)return tasks;
   }

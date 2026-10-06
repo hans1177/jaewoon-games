@@ -478,15 +478,254 @@ function collectCommonCatalogAudioRoles(catalogRows=[]){
   return [...roles].sort();
 }
 
+
+const SOURCE_CONSUMER_EXTENSIONS=new Set(['.lua','.luau','.json','.js','.mjs','.cjs','.ts','.tsx','.cs','.html','.css','.xml','.toml','.yaml','.yml']);
+const SOURCE_CONSUMER_SKIP_DIRS=new Set(['.git','node_modules','Library','Temp','obj','bin','build','dist','Logs','UserSettings','.cache']);
+const SOURCE_CONSUMER_GAME_CACHE=new Map();
+
+function sourceConsumerPath(value=''){
+  return clean(value).replaceAll('\\','/').replace(/^\/+/,'').replace(/^\.\//,'').replace(/\/+/g,'/');
+}
+function currentAssetConsumerIds(asset={}){
+  return unique([...(asset.consumerGameIds||[]),...(asset.sourceBoundConsumerGameIds||[])]);
+}
+function sourceConsumerEligibleGame(game={}){
+  const lifecycle=clean(game.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
+  const production=clean(game.productionClass||game?.canonical?.production?.class||game.homepageCategory).toUpperCase().replaceAll('-','_');
+  return lifecycle==='ACTIVE'&&['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(production);
+}
+function sourceConsumerRoots({repoRoot,game}={}){
+  const id=clean(game?.id||game?.gameId);
+  const targets=game?.targetSourcePaths&&typeof game.targetSourcePaths==='object'?Object.values(game.targetSourcePaths):[];
+  const candidates=unique([
+    game?.targetSourcePath,...targets,game?.robloxProjectPath,game?.unityProjectPath,game?.projectPath,
+    game?.canonical?.sources?.roblox?.projectPath,game?.canonical?.sources?.unity?.projectPath,
+    id?'roblox-games/'+id:'',id?'unity-games/'+id:''
+  ].map(sourceConsumerPath).filter(Boolean));
+  const out=[];
+  for(const relative of candidates){
+    if(!/^(?:roblox-games|unity-games)\/[A-Za-z0-9._-]+(?:\/.*)?$/.test(relative))continue;
+    const absolute=path.resolve(repoRoot,relative);
+    const resolved=sourceConsumerPath(path.relative(repoRoot,absolute));
+    if(resolved.startsWith('../'))continue;
+    try{if(fs.statSync(absolute).isDirectory())out.push({relative:resolved,absolute});}catch{}
+  }
+  return out.filter((row,index,list)=>list.findIndex(other=>other.relative===row.relative)===index)
+    .sort((a,b)=>a.relative.localeCompare(b.relative));
+}
+function sourceConsumerAssetReference({repoRoot,file,raw}={}){
+  const value=clean(raw).replaceAll('\\','/');
+  let absolute='';
+  if(value.startsWith('/assets/'))absolute=path.resolve(repoRoot,value.slice(1));
+  else if(value.startsWith('assets/'))absolute=path.resolve(repoRoot,value);
+  else if(/^(?:\.\.\/|\.\/)+assets\//.test(value))absolute=path.resolve(path.dirname(file),value);
+  if(!absolute)return'';
+  const relative=sourceConsumerPath(path.relative(repoRoot,absolute));
+  if(relative.startsWith('../')||!relative.startsWith('assets/'))return'';
+  try{return fs.statSync(absolute).isFile()?relative:'';}catch{return'';}
+}
+function collectSourceConsumerJsonPaths(value,{repoRoot,file,out}={}){
+  if(Array.isArray(value)){for(const child of value)collectSourceConsumerJsonPaths(child,{repoRoot,file,out});return;}
+  if(!value||typeof value!=='object')return;
+  for(const [key,child] of Object.entries(value)){
+    if(key==='$path'&&typeof child==='string'){
+      const relative=sourceConsumerAssetReference({repoRoot,file,raw:child});
+      if(relative)out.add(relative);
+    }
+    if(child&&typeof child==='object')collectSourceConsumerJsonPaths(child,{repoRoot,file,out});
+  }
+}
+function sourceConsumerManagedTokens(source=''){
+  const byFamily=new Map();
+  let cursor=0;
+  while(cursor<source.length){
+    const start=source.indexOf('StudioAssets',cursor);
+    if(start<0)break;
+    const endMarker=source.indexOf('-- STUDIO_ASSET_BINDING_END',start);
+    const end=endMarker>=0?endMarker:Math.min(source.length,start+60000);
+    const block=source.slice(start,end);
+    for(const match of block.matchAll(/\b([A-Z][A-Z0-9_]*)\s*=\s*\{([^{}]{0,30000})\}/g)){
+      const family=clean(match[1]).toUpperCase();
+      if(family==='FAMILIES')continue;
+      const set=byFamily.get(family)||new Set();
+      for(const tokenMatch of match[2].matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g)){
+        set.add(clean(tokenMatch[1]).toLowerCase());
+      }
+      if(set.size)byFamily.set(family,set);
+    }
+    cursor=end;
+  }
+  return byFamily;
+}
+function sourceConsumerSnapshot({repoRoot=process.cwd(),game={},useCache=true}={}){
+  const gameId=clean(game.id||game.gameId),cacheKey=path.resolve(repoRoot)+'|'+gameId;
+  if(useCache&&SOURCE_CONSUMER_GAME_CACHE.has(cacheKey))return SOURCE_CONSUMER_GAME_CACHE.get(cacheKey);
+  const roots=sourceConsumerRoots({repoRoot,game});
+  const assetPaths=new Map(),tokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  let scannedFileCount=0,scannedBytes=0;
+  const addToken=(token,file)=>{
+    const normalized=clean(token).toLowerCase();
+    if(normalized&&!tokens.has(normalized))tokens.set(normalized,file);
+  };
+  const addAssetPath=(assetPath,file)=>{
+    if(assetPath&&!assetPaths.has(assetPath))assetPaths.set(assetPath,file);
+  };
+  for(const root of roots){
+    const stack=[root.absolute];
+    while(stack.length&&scannedFileCount<768&&scannedBytes<24*1024*1024){
+      const dir=stack.pop();
+      let entries=[];try{entries=fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name));}catch{continue;}
+      for(let i=entries.length-1;i>=0;i--){
+        const entry=entries[i],file=path.join(dir,entry.name);
+        if(entry.isDirectory()){
+          if(!SOURCE_CONSUMER_SKIP_DIRS.has(entry.name))stack.push(file);
+          continue;
+        }
+        if(!entry.isFile()||!SOURCE_CONSUMER_EXTENSIONS.has(path.extname(entry.name).toLowerCase()))continue;
+        let stat;try{stat=fs.statSync(file);}catch{continue;}
+        if(stat.size<=0||stat.size>2*1024*1024||scannedBytes+stat.size>24*1024*1024)continue;
+        let source='';try{source=fs.readFileSync(file,'utf8');}catch{continue;}
+        scannedFileCount+=1;scannedBytes+=stat.size;
+        const relative=sourceConsumerPath(path.relative(repoRoot,file));
+        fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
+        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(match[1],relative);
+        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*assets\/[A-Za-z0-9._\/-]+)/g)){
+          addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
+        }
+        if(path.extname(entry.name).toLowerCase()==='.json'){
+          try{
+            const found=new Set();
+            collectSourceConsumerJsonPaths(JSON.parse(source),{repoRoot,file,out:found});
+            for(const assetPath of found)addAssetPath(assetPath,relative);
+          }catch{}
+        }
+        if(/STUDIO_ASSET_BINDING_(?:BEGIN|VERSION)|\bStudioAssets\s*=/.test(source)){
+          managedFiles.add(relative);
+          for(const [family,set] of sourceConsumerManagedTokens(source)){
+            const target=managedByFamily.get(family)||new Map();
+            for(const token of set)if(!target.has(token))target.set(token,relative);
+            managedByFamily.set(family,target);
+          }
+        }
+        if(scannedFileCount>=768||scannedBytes>=24*1024*1024)break;
+      }
+    }
+  }
+  fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
+  const snapshot=Object.freeze({
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,managedByFamily,managedFiles,
+    scannedFileCount,scannedBytes,
+    sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
+  });
+  if(useCache)SOURCE_CONSUMER_GAME_CACHE.set(cacheKey,snapshot);
+  return snapshot;
+}
+function sourceConsumerAssetPaths(asset={}){
+  return unique([
+    ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),...(asset.nativeArtifacts||[])
+  ].map(sourceConsumerPath).filter(value=>value.startsWith('assets/')));
+}
+function sourceConsumerIdentityTokens(asset={}){
+  return unique([
+    asset.skinId,asset.atomId,asset.assetId,
+    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId
+  ].map(clean).filter(value=>value.length>=2));
+}
+export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null,useCache=true}={}){
+  const original=registry&&typeof registry==='object'?registry:{};
+  const catalog=gameCatalog||readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
+  const games=(catalog.games||[]).filter(sourceConsumerEligibleGame).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
+  const next=JSON.parse(JSON.stringify(original));next.assets=Array.isArray(next.assets)?next.assets:[];
+  const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game,useCache})}));
+  const packLinks=new Map();
+  for(const {game,snapshot} of snapshots){
+    const gameId=clean(game.id||game.gameId),linked=new Map();
+    for(const asset of next.assets){
+      if(clean(asset.packId)!==clean(asset.id))continue;
+      const matches=sourceConsumerAssetPaths(asset).filter(assetPath=>snapshot.assetPaths.has(assetPath));
+      if(matches.length)linked.set(clean(asset.id),matches);
+    }
+    packLinks.set(gameId,linked);
+  }
+  const bindings=[];
+  for(const asset of next.assets){
+    const assetBindings=[],packId=clean(asset.packId),isPack=Boolean(packId&&packId===clean(asset.id));
+    const family=clean(asset.family||asset.category).toUpperCase();
+    const identities=sourceConsumerIdentityTokens(asset);
+    for(const {game,snapshot} of snapshots){
+      const gameId=clean(game.id||game.gameId);
+      if(!snapshot.roots.length)continue;
+      const directPaths=sourceConsumerAssetPaths(asset).filter(assetPath=>snapshot.assetPaths.has(assetPath));
+      const literalIds=identities.filter(value=>snapshot.tokens.has(value.toLowerCase()));
+      const managed=identities.filter(value=>snapshot.managedByFamily.get(family)?.has(value.toLowerCase()));
+      const linkedPack=packId&&!isPack?packLinks.get(gameId)?.get(packId)||[]:[];
+      let mode='',evidenceFiles=[],matchedIds=[];
+      if((!packId||isPack)&&directPaths.length){
+        mode='PROJECT_ASSET_PATH';
+        evidenceFiles=directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath));
+      }else if(packId&&!isPack&&(linkedPack.length||directPaths.length)&&literalIds.length){
+        mode='PACK_PATH_AND_IDENTITY';matchedIds=literalIds;
+        evidenceFiles=[
+          ...linkedPack.map(assetPath=>snapshot.assetPaths.get(assetPath)),
+          ...directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath)),
+          ...literalIds.map(value=>snapshot.tokens.get(value.toLowerCase()))
+        ];
+      }else if(managed.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
+        mode='MANAGED_LIBRARY_IDENTITY';matchedIds=managed;
+        evidenceFiles=[
+          ...managed.map(value=>snapshot.managedByFamily.get(family)?.get(value.toLowerCase())),
+          ...snapshot.managedFiles
+        ];
+      }
+      if(!mode)continue;
+      const binding=Object.freeze({
+        gameId,classification:'ACTUAL_SOURCE_BOUND',mode,
+        identities:Object.freeze(unique(matchedIds)),
+        evidenceFiles:Object.freeze(unique(evidenceFiles).sort().slice(0,8)),
+        sourceFingerprint:snapshot.sourceFingerprint,
+        runtimeVerified:false,productionVerified:false
+      });
+      assetBindings.push(binding);bindings.push(Object.freeze({assetId:clean(asset.id),...binding}));
+    }
+    if(assetBindings.length){
+      asset.sourceBoundConsumerGameIds=unique(assetBindings.map(row=>row.gameId)).sort();
+      asset.sourceConsumerBindings=assetBindings.sort((a,b)=>a.gameId.localeCompare(b.gameId)||a.mode.localeCompare(b.mode));
+      asset.sourceConsumerState='ACTUAL_SOURCE_BOUND';
+    }else{
+      delete asset.sourceBoundConsumerGameIds;
+      delete asset.sourceConsumerBindings;
+      delete asset.sourceConsumerState;
+    }
+  }
+  const modes={};for(const row of bindings)modes[row.mode]=(modes[row.mode]||0)+1;
+  const summary=Object.freeze({
+    version:1,status:'SOURCE_BOUND_CONSUMER_SYNC',dynamicSourceSearch:true,
+    scannedGameCount:snapshots.length,
+    scannedFileCount:snapshots.reduce((sum,row)=>sum+row.snapshot.scannedFileCount,0),
+    scannedBytes:snapshots.reduce((sum,row)=>sum+row.snapshot.scannedBytes,0),
+    boundAssetCount:new Set(bindings.map(row=>row.assetId)).size,
+    bindingCount:bindings.length,
+    intendedOnlyAssetCount:next.assets.filter(asset=>(asset.intendedConsumerGameIds||[]).length&&currentAssetConsumerIds(asset).length===0).length,
+    modes:Object.freeze(modes),
+    currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
+    sourceOnlyDoesNotGrantRuntimeVerification:true,
+    productionVerificationUnchanged:true,
+    newWorkflowCreated:false,newQueueCreated:false,newSchedulerCreated:false,newPipelineCreated:false
+  });
+  return Object.freeze({registry:next,bindings:Object.freeze(bindings),summary});
+}
+
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
   const next=JSON.parse(JSON.stringify(original));
   next.assets=Array.isArray(next.assets)?next.assets:[];
+  const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
-  // 품질 입력: 집계 점수보다 현재 원본 파일의 축별 감사를 사용한다. 런타임 승격 권한은 없다.
+  const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog});
+  // source-bound 소비자는 현재 소스의 동적 overlay다. canonical library version/fingerprint는 바꾸지 않는다.
   const qualityInputs=new Map();
   const planningAssets=next.assets.map(asset=>{
     const evidenceRef=clean(asset.internalAuditEvidenceRef);
@@ -514,7 +753,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
     externalSources:next.externalSources||[],
-    consumerGames:readJson(path.join(repoRoot,'game-catalog.json'),{}).games||[],
+    consumerGames:gameCatalog.games||[],
     previousMaintenance
   });
   const transientMaintenanceReasons=new Set(['INVENTORY_CHANGED','TYPE_OR_ROLE_CHANGED','QUALITY_METADATA_CHANGED']);
@@ -757,6 +996,8 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     maintenance:next.internalAssetLibraryAutomation?.maintenance||null,
     discoveredCatalogCount:catalogs.length,
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
+    sourceConsumerSync:consumerSync.summary,
+    sourceConsumerBindings:consumerSync.bindings,
     seedCount:seedPlan.seedCount,
     automationPlan:libraryPlan
   });
@@ -2145,7 +2386,7 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
-  const companyRegistry=librarySync.registry;
+  const companyRegistry=synchronizeSourceBoundAssetConsumers({repoRoot,registry:librarySync.registry}).registry;
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionLibraryPlan=librarySync.automationPlan;
   const persistedWorklistFresh=
