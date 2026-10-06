@@ -1,7 +1,7 @@
 {
-  "version": 4,
+  "version": 5,
   "packId": "roblox-common-creature-parts-v1",
-  "recordedAt": "2026-10-05",
+  "recordedAt": "2026-10-06",
   "productionVerified": false,
   "runtimeVerificationState": "PENDING_STUDIO",
   "rigBindingState": "AUTHORING_REQUIRED",
@@ -79,17 +79,13 @@
       "MOTION_RIG:58<84"
     ],
     "evidenceBasis": {
-      "sourceAssetCount": 24,
-      "sourceLineCount": 405,
+      "sourceAssetCount": 28,
+      "sourceLineCount": 446,
       "sourceFunctionCount": 22,
       "nativeInstanceConstructionCount": 8,
       "bodyPlanCompatibilityRequired": true,
       "rigBindingState": "AUTHORING_REQUIRED",
       "missingSystemComponents": [
-        "AMORPHOUS",
-        "TORSO_VARIANT",
-        "SURFACE_VARIANT",
-        "BOSS_SIGNATURE",
         "RIG_PROFILE",
         "LOCOMOTION_SET",
         "ATTACK_SET",
@@ -105,8 +101,7 @@
     "limitations": [
       "NATIVE_RIG_BINDING_AUTHORING_REQUIRED",
       "LOCOMOTION_ATTACK_HIT_DEATH_SETS_MISSING",
-      "BOSS_SIGNATURE_AND_SURFACE_VARIANT_GAPS_REMAIN",
-      "NATIVE_RUNTIME_VERIFICATION_PENDING"
+      "LOD_AUTHORING_AND_NATIVE_RUNTIME_VERIFICATION_PENDING"
     ],
     "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
   },
@@ -166,11 +161,7 @@
       "LOCOMOTION_SET_AUTHORING",
       "ATTACK_SET_AUTHORING",
       "HIT_DEATH_SET_AUTHORING",
-      "BOSS_SIGNATURE_AUTHORING",
-      "SURFACE_VARIANT_AUTHORING",
-      "LOD_AUTHORING",
-      "AMORPHOUS_BODY_PLAN_AUTHORING",
-      "TORSO_VARIANT_AUTHORING"
+      "LOD_AUTHORING"
     ],
     "verificationRequiredAfterAuthoring": [
       "RECALCULATE_SOURCE_AUDIT",
@@ -184,7 +175,7 @@
   "volumeExpansionPlan": {
     "version": 1,
     "status": "GAP_DRIVEN_VOLUME_EXPANSION_OPEN",
-    "currentAssetCount": 24,
+    "currentAssetCount": 28,
     "recommendedTargetMin": 180,
     "noHardVolumeCap": true,
     "newAuthoringAllowed": true,
