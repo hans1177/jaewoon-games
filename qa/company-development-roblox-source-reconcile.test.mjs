@@ -927,6 +927,19 @@ test('stale Roblox technical workers drop before Rojo model and F0 without poiso
 
 
 
+test('Roblox bootstrap no-op does not create timestamp-only source PR churn',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(bootstrap,/semanticEvidenceUnchanged=Array\.isArray\(applied\.changedFiles\)&&applied\.changedFiles\.length===0/);
+  assert.match(bootstrap,/ROBLOX_SOURCE_BOOTSTRAP_REPO_EVIDENCE=PRESERVED_NO_SOURCE_DELTA/);
+  assert.match(workflow,/echo "no_change=true" >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflow,/steps\.generate\.outputs\.no_change != 'true'/);
+  assert.match(workflow,/const noChange=process\.env\.NO_CHANGE==='true'/);
+  assert.match(workflow,/if\(result\.noChange===true\)\{/);
+  assert.match(workflow,/ROBLOX_SOURCE_NO_CHANGE_DOWNSTREAM_EVIDENCE_PRESERVED=/);
+  assert.doesNotMatch(workflow,/no Roblox source change: \$GAME_ID" >&2; exit 1/);
+});
+
 test('runtime reconciliation preserves downstream evidence for unchanged game bytes',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const marker=workflow.indexOf('if(result.pass===true&&result.preserveDownstreamEvidence===true)');
