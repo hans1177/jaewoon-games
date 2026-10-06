@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
 
 import {classifySystemAiFailure} from '../tools/company-system-ai-failure-classifier.mjs';
 import {analyzeSystemAiBottlenecks} from '../tools/company-system-ai-bottleneck-sensor.mjs';
@@ -19,6 +20,18 @@ test('System AI reserve pressure metrics heredoc closes at shell block base inde
   const block=systemAiWorkflow.slice(start,end);
   assert.match(block,/\n          NODE\n              \)"\n/);
   assert.doesNotMatch(block,/\n              NODE\n              \)"\n/);
+});
+
+test('System AI reserve workflow shell parses as Bash',()=>{
+  const step='      - name: Reserve disjoint supervised assignments\n';
+  const stepAt=systemAiWorkflow.indexOf(step);
+  const runAt=systemAiWorkflow.indexOf('        run: |\n',stepAt);
+  const nextStep=systemAiWorkflow.indexOf('\n      - name:',runAt+1);
+  assert.ok(stepAt>=0&&runAt>stepAt&&nextStep>runAt);
+  const raw=systemAiWorkflow.slice(runAt+'        run: |\n'.length,nextStep);
+  const script=raw.split('\n').map(line=>line.startsWith('          ')?line.slice(10):line).join('\n')+'\n';
+  const parsed=spawnSync('bash',['-n'],{input:script,encoding:'utf8'});
+  assert.equal(parsed.status,0,parsed.stderr||parsed.stdout);
 });
 
 test('failure classifier separates infrastructure, QA drift, security, and implementation routes',()=>{
