@@ -58,6 +58,33 @@ export const GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES = Object.freeze([
   'COMPANION_PARTY'
 ]);
 
+export const GAMEPLAY_NARRATIVE_DNA_FAMILIES = Object.freeze([
+  'CHINESE_CLASSICAL_HISTORY',
+  'CHINESE_HEROIC_ROMANCE',
+  'EAST_ASIAN_MARTIAL_SECT_ABSTRACT',
+  'JAPANESE_SENGOKU_SAMURAI',
+  'JAPANESE_FOLKLORE_YOKAI',
+  'ANCIENT_EGYPT',
+  'SUMER_MESOPOTAMIA',
+  'BIBLICAL_ANCIENT_NEAR_EAST',
+  'MEDIEVAL_EUROPEAN_FEUDAL',
+  'ISLAMIC_GOLDEN_AGE_TRADE_SCHOLARSHIP',
+  'GREEK_EPIC_MYTH',
+  'NORSE_MYTH',
+  'SHAKESPEAREAN_TRAGEDY_INTRIGUE',
+  'FAIRYTALE_FOLKLORE',
+  'SWASHBUCKLING_ADVENTURE',
+  'DYSTOPIAN_POLITICAL_ABSTRACT',
+  'HORROR_MYTH_MYSTERY',
+  'DETECTIVE_MYSTERY'
+]);
+
+export const GAMEPLAY_NARRATIVE_RIGHTS_MODES = Object.freeze([
+  'PUBLIC_DOMAIN_OR_HISTORICAL_STRUCTURE',
+  'ABSTRACT_TECHNIQUE_ONLY',
+  'ORIGINAL_SYNTHESIS'
+]);
+
 const isNonEmptyString = value => typeof value === 'string' && value.trim().length > 0;
 const isNonEmptyArray = value => Array.isArray(value) && value.length > 0;
 const hasMeaningfulValue = value => {
@@ -161,6 +188,40 @@ function validateGameplaySketch(sketch,errors){
     if(!familySet.has(family))errors.push(`GAMEPLAY_SKETCH.compositionDepth.mechanicDiversitySources invalid family: ${family}`);
   }
 }
+  const narrative=sketch.narrativeDepth;
+  if(!narrative||typeof narrative!=='object'||Array.isArray(narrative)){
+    errors.push('GAMEPLAY_SKETCH.narrativeDepth is required for version 3+');
+    return;
+  }
+  if(typeof narrative.applicable!=='boolean')errors.push('GAMEPLAY_SKETCH.narrativeDepth.applicable boolean is required for version 3+');
+  if(!isNonEmptyString(narrative.storyWeight)||!['LIGHT','MEDIUM','HEAVY'].includes(String(narrative.storyWeight).toUpperCase()))errors.push('GAMEPLAY_SKETCH.narrativeDepth.storyWeight must be LIGHT/MEDIUM/HEAVY');
+  if(!isNonEmptyString(narrative.worldConflict))errors.push('GAMEPLAY_SKETCH.narrativeDepth.worldConflict is required for version 3+');
+  if(!isNonEmptyString(narrative.mainStoryArc))errors.push('GAMEPLAY_SKETCH.narrativeDepth.mainStoryArc is required for version 3+');
+  if(narrative.applicable===true){
+    const narrativeArrays=[
+      ['narrativeDnaSources',2],
+      ['npcRelationshipWeb',2],
+      ['companionArcs',1],
+      ['mainSubquestLinks',2],
+      ['foreshadowPayoffs',2],
+      ['factionCultureHooks',2],
+      ['historicalMythReinterpretations',2],
+      ['culturalRespectRules',3]
+    ];
+    for(const [field,min] of narrativeArrays){
+      if(!Array.isArray(narrative[field])||uniq(narrative[field]).length<min)errors.push(`GAMEPLAY_SKETCH.narrativeDepth.${field} requires at least ${min} meaningful items for version 3+`);
+    }
+    const narrativeFamilySet=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
+    for(const family of uniq(narrative.narrativeDnaSources)){
+      if(!narrativeFamilySet.has(family))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.narrativeDnaSources invalid family: ${family}`);
+    }
+    const rightsSet=new Set(GAMEPLAY_NARRATIVE_RIGHTS_MODES);
+    for(const mode of uniq(narrative.rightsModes)){
+      if(!rightsSet.has(mode))errors.push(`GAMEPLAY_SKETCH.narrativeDepth.rightsModes invalid mode: ${mode}`);
+    }
+    if(!Array.isArray(narrative.rightsModes)||uniq(narrative.rightsModes).length<1)errors.push('GAMEPLAY_SKETCH.narrativeDepth.rightsModes requires at least 1 rights mode');
+  }
+
 
 function validateMarketNumericClaims(summary, errors) {
   if (!summary || typeof summary !== 'object' || Array.isArray(summary)) return;
