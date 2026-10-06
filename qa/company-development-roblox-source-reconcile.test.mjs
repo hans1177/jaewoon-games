@@ -603,6 +603,8 @@ test('source reconciliation accepts a more specific source subgenre only when de
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),compiled.result.sharedConfig);
     fs.writeFileSync(path.join(root,'server','Game.server.luau'),compiled.result.serverCode);
     fs.writeFileSync(path.join(root,'client','Game.client.luau'),compiled.result.clientCode);
+    const sourceLearning=createRobloxVibe3LearningContext({gameId,profile:sourceProfile,playbooks:verifiedPlaybooks});
+    applyVerifiedExternalLearningToExistingRobloxSource({root,learning:sourceLearning});
     initGitRepo(tmp);
     const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
     const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
