@@ -14,12 +14,12 @@
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
-  "foundationRepairApplied": true,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
     "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -548,24 +548,24 @@
   },
   "studioAssetFamilyStatus": {
     "CHARACTER": "NOT_APPLICABLE",
-    "CREATURE": "NOT_APPLICABLE",
+    "CREATURE": "APPLIED",
     "BUILDING": "NOT_APPLICABLE",
-    "ENVIRONMENT": "NOT_APPLICABLE",
+    "ENVIRONMENT": "APPLIED",
     "WEAPON": "NOT_APPLICABLE",
     "SKILL": "NOT_APPLICABLE",
-    "MATERIAL": "NOT_APPLICABLE",
+    "MATERIAL": "APPLIED",
     "AUDIO": "NOT_APPLICABLE",
     "VFX": "NOT_APPLICABLE",
     "UI": "APPLIED",
-    "MOTION": "NOT_APPLICABLE",
-    "PROP": "NOT_APPLICABLE"
+    "MOTION": "APPLIED",
+    "PROP": "APPLIED"
   },
   "studioAssetBindingApplied": true,
   "studioAssetRuntimeVerified": false,
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": "survival-build-up-g9-afc3b9f479b5",
@@ -575,5 +575,5 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-06T07:34:36.285Z"
+  "createdAt": "2026-10-06T08:20:56.077Z"
 }
