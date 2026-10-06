@@ -874,14 +874,24 @@ test('runtime reconciliation preserves downstream evidence for unchanged game by
   assert.doesNotMatch(block,/robloxF9ReleaseRegressionPassed:false/);
 });
 
-test('source reconciliation and sweep derive verified learning from the same build profile',()=>{
+test('source reconciliation and sweep derive verified learning from the same runtime-bound build profile',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
   const sweep=fs.readFileSync(new URL('../tools/company-roblox-verified-learning-sweep.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-roblox-verified-learning-sweep.yml',import.meta.url),'utf8');
   assert.match(source,/robloxBuildProfileFromBaseline/);
   assert.match(source,/const learningProfile=baseline\?robloxBuildProfileFromBaseline\(baseline\):null/);
+  assert.match(source,/export function verifiedExternalLearningRefreshState/);
   assert.match(source,/verifiedExternalLearningRefreshState\(\{root,playbooks,gameId:item\.gameId,profile:learningProfile\}\)/);
-  assert.match(sweep,/robloxBuildProfileFromBaseline/);
-  assert.match(sweep,/const designProfile=designContext\?\.record\?robloxBuildProfileFromBaseline\(designContext\.record\):null/);
+  assert.match(sweep,/verifiedExternalLearningRefreshState/);
+  assert.match(sweep,/const runtimeRef=String\(args\['runtime-ref'\]\|\|''\)\.trim\(\)/);
+  assert.match(sweep,/const runtimeBaseline=runtimeBaselineForGame\(gameId\)/);
+  assert.match(sweep,/learningProfileSource=runtimeBaseline\?'COMPANY_RUNTIME_BOUND_BASELINE'/);
+  assert.match(sweep,/const postApplyRefresh=verifiedExternalLearningRefreshState\(\{root:gameRoot,playbooks,gameId,profile:learningProfile\}\)/);
+  assert.match(sweep,/ROBLOX_LEARNING_SWEEP_POST_APPLY_REFRESH_REQUIRED/);
+  assert.match(workflow,/COMPANY_RUNTIME_BRANCH: company-runtime/);
+  assert.match(workflow,/development-queue\.json/);
+  assert.match(workflow,/--queue=\/tmp\/development-queue\.json/);
+  assert.match(workflow,/--runtime-ref="origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.doesNotMatch(sweep,/robloxDesignProfileFromBaseline/);
 });
 
