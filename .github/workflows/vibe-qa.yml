@@ -156,6 +156,7 @@ jobs:
         run: node --test qa/vibe-motion-director.test.mjs
 
       - name: Validate studio asset universe
+        id: studio_assets
         run: node --test qa/vibe-studio-asset-universe.test.mjs
 
       - name: Validate narrative story quest persona and memory
@@ -329,3 +330,57 @@ jobs:
           if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
           print('PASS repository hygiene')
           PY
+
+
+      # 실패한 동일 커밋의 자산 검사를 재현할 때만 읽기 전용 증거를 남긴다.
+      - name: Preserve exact asset QA reproduction inputs
+        if: failure() && steps.studio_assets.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY_REPRO'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          root = Path('/tmp/vibe-asset-qa-evidence')
+          root.mkdir(parents=True, exist_ok=True)
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          extensions = {'.js', '.mjs', '.cjs', '.ts', '.tsx', '.json', '.yml', '.yaml', '.html', '.css', '.svg', '.luau', '.lua', '.cs', '.asmdef', '.uxml', '.uss', '.unity', '.prefab', '.asset', '.gd', '.godot', '.tscn', '.tres', '.py', '.sh', '.md', '.txt', '.toml', '.lock'}
+          roots = {'.github', 'assets', 'tools', 'qa', 'company-learning', 'roblox-games', 'unity-games', 'web-games', 'godot-games', 'artbook-submissions'}
+          entries = subprocess.check_output(['git', 'ls-tree', '-r', '-l', '-z', '--full-tree', head]).split(b'\0')
+          files, identities, total = [], [], 0
+          for entry in entries:
+              if not entry:
+                  continue
+              meta, raw_path = entry.split(b'\t', 1)
+              mode, kind, oid, raw_size = meta.split()
+              name = raw_path.decode('utf-8')
+              item = Path(name)
+              if mode not in {b'100644', b'100755'} or kind != b'blob':
+                  continue
+              if item.suffix.lower() not in extensions or (len(item.parts) > 1 and item.parts[0] not in roots):
+                  continue
+              size = int(raw_size)
+              if size > 8 * 1024 * 1024 or total + size > 128 * 1024 * 1024:
+                  raise SystemExit('ASSET_QA_REPRODUCTION_INPUT_BUDGET_EXCEEDED')
+              total += size
+              files.append(name)
+              identities.append({'path': name, 'gitBlobSha': oid.decode(), 'bytes': size})
+          if not files:
+              raise SystemExit('ASSET_QA_REPRODUCTION_INPUTS_EMPTY')
+          archive = root / 'source.tar.gz'
+          subprocess.run(['git', 'archive', '--format=tar.gz', '--output=' + str(archive), head, '--', *files], check=True, env={**os.environ, 'GIT_LITERAL_PATHSPECS': '1'})
+          manifest = {'version': 1, 'kind': 'FAILED_ASSET_QA_REPRODUCTION_INPUTS', 'sourceCommit': head, 'sourceTree': tree, 'runId': os.environ.get('GITHUB_RUN_ID'), 'runAttempt': os.environ.get('GITHUB_RUN_ATTEMPT'), 'failedCommand': 'node --test qa/vibe-studio-asset-universe.test.mjs', 'trackedTextInputsOnly': True, 'untrackedFilesIncluded': False, 'runtimeVerified': False, 'rawLogsDuplicated': False, 'retentionDays': 1, 'inputBytes': total, 'archiveSha256': hashlib.sha256(archive.read_bytes()).hexdigest(), 'files': identities}
+          (root / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print('VIBE_ASSET_QA_REPRODUCTION_SOURCE=' + head)
+          print('VIBE_ASSET_QA_REPRODUCTION_FILE_COUNT=' + str(len(files)))
+          PY_REPRO
+
+      - name: Upload failed asset QA reproduction evidence
+        if: failure() && steps.studio_assets.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe-asset-qa-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/vibe-asset-qa-evidence/
+          if-no-files-found: error
+          retention-days: 1
