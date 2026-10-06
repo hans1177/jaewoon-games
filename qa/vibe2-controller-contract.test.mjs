@@ -1119,12 +1119,17 @@ test('worker model cache is architecture-aware while runtime preparation reuses 
   assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
   assert(prepareOllamaAction.includes('preload-model:'));
   assert(prepareOllamaAction.includes("default: 'false'"));
+  assert(prepareOllamaAction.includes('preload-context:'));
+  assert(prepareOllamaAction.includes("default: '8192'"));
   assert(prepareOllamaAction.includes('- name: Preload requested local model'));
   assert(prepareOllamaAction.includes('inputs.preload-model == \'true\''));
+  assert(prepareOllamaAction.includes('PRELOAD_CONTEXT: ${{ inputs.preload-context }}'));
+  assert(prepareOllamaAction.includes('--argjson num_ctx "$preload_context"'));
+  assert(prepareOllamaAction.includes('num_ctx:$num_ctx'));
   assert(prepareOllamaAction.includes('keep_alive:"20m"'));
-  assert(prepareOllamaAction.includes('num_ctx:8192'));
   assert(prepareOllamaAction.includes('EXTERNAL_AI_REQUIRED=NO'));
   assert(workerPart.includes("preload-model: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && 'true' || 'false' }}"));
+  assert(workerPart.includes("preload-context: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && '12288' || '8192' }}"));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
 });
 
