@@ -433,7 +433,9 @@ test('stale main push wake rebases to latest main before expensive reserve work 
 });
 
 
-test('24h runner defers new asset lane launch under repository-wide runner pressure',()=>{
+test('24h runner keeps asset lane independent from generic repository runner pressure',()=>{
+  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerCapacityIndependentFromGamePrimary,true);
+  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentPhysicalRunnerPoolSeparated,true);
   assert.match(runner,/asset_development_active/);
   assert.match(runner,/asset_development_queued/);
   assert.match(runner,/asset_development_refill_ready/);
@@ -441,7 +443,10 @@ test('24h runner defers new asset lane launch under repository-wide runner press
   const assetEnd=runner.indexOf('\n  learning_idle:',assetStart);
   assert.ok(assetStart>=0&&assetEnd>assetStart);
   const assetBlock=runner.slice(assetStart,assetEnd);
-  assert.match(assetBlock,/needs\.plan\.outputs\.runner_pressure != 'YES' && needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
+  assert.doesNotMatch(assetBlock,/runner_pressure/);
+  assert.match(assetBlock,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
+  assert.match(assetBlock,/execution_lane: asset-development/);
+  assert.match(assetBlock,/lane_max: '63'/);
 });
 
 test('24h runner does not treat many workflow runs as runner saturation when queued jobs are zero',()=>{

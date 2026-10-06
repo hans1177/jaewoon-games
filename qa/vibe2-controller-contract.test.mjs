@@ -971,7 +971,8 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("lane_max: '64'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready == 'YES'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0')"));
+  assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0'"));
   assert(safetyNetWorkflow.includes("new Set(['queued','pending','requested'])"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'"));

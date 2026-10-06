@@ -1010,7 +1010,8 @@ jobs:
 
   asset_development:
     needs: plan
-    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
+    # Asset capacity is policy-independent from GAME_PRIMARY; provider scarcity may queue this job but may not suppress the lane.
+    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
