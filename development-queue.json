@@ -70,7 +70,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T06:23:56.491Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "64f18bc1210fffe9f39ad9a06f254bd1af5e3c2e",
       "robloxSourceBootstrapPassedAt": "2026-10-06T04:14:13.390Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -80,7 +80,7 @@
       "robloxBuildSourceRevision": "64f18bc1210fffe9f39ad9a06f254bd1af5e3c2e",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T06:23:56.491Z",
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -213,8 +213,8 @@
         "sourceRevision": "64f18bc1210fffe9f39ad9a06f254bd1af5e3c2e",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37421742420,
-        "testedAt": "2026-10-06T06:23:56.491Z",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:ENVIRONMENT",
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:MATERIAL",
@@ -738,7 +738,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "4514dd7d4ce4a8df51b107e692f9e3a9696eba03f8bae2f629b0e3a35d7336c7",
-          "validatorFingerprint": "8fd489f132edfef9a58fb6b304ec9948df975a69306e3bd9e732d0bea753c7ae"
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
         },
         "repairSurfaces": [
           "INTERNAL_ASSET_SOURCE_BINDING"
@@ -1564,17 +1564,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T06:28:47.957Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "89e35d1d904b2bcdc22ed45697446f432c67f689",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:28:47.957Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "89e35d1d904b2bcdc22ed45697446f432c67f689",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -1616,10 +1616,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1838,10 +1838,625 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityFailureClass": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "89e35d1d904b2bcdc22ed45697446f432c67f689",
+      "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "bug-defense",
+        "sourceRevision": "89e35d1d904b2bcdc22ed45697446f432c67f689",
+        "artifactIdentity": null,
+        "authority": "roblox-package-asset-binding-failure",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
+        "qualityFailureKinds": [
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CHARACTER",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+        ],
+        "assetThreshold": {
+          "pass": false,
+          "blockers": [
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CHARACTER",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+          ],
+          "requiredFamilies": [
+            "CHARACTER",
+            "CREATURE",
+            "BUILDING",
+            "ENVIRONMENT",
+            "WEAPON",
+            "SKILL",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI",
+            "MOTION",
+            "PROP"
+          ],
+          "familyCoverageCount": 12,
+          "requiredFamilyCount": 12,
+          "selectedAtomCount": 360,
+          "libraryVersion": 113,
+          "selectionFingerprint": "84250bb92c10812894144a44fbe7c2f3bb83c38d6a3fbbc171bb98962ec59821",
+          "allFamiliesAutoSelected": true,
+          "primitiveOnlyOrColorOnlyForbidden": true,
+          "visibleAssetBindingPass": true,
+          "sourceBindingTracePass": true,
+          "familyBindingPassCount": 1,
+          "appliedFamilyCount": 5,
+          "notApplicableFamilyCount": 7,
+          "resolvedFamilyCount": 8,
+          "allFamiliesResolved": false,
+          "familyResults": [
+            {
+              "family": "CHARACTER",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "CREATURE",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "BUILDING",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "ENVIRONMENT",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "WEAPON",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "SKILL",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "MATERIAL",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "AUDIO",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "VFX",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "UI",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
+            },
+            {
+              "family": "MOTION",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "PROP",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            }
+          ],
+          "selectedFamilies": {
+            "CHARACTER": [
+              "TORSO_CLOTH",
+              "SHOULDER_LIGHT",
+              "BACK_CAPE",
+              "HAIR_SPIKED",
+              "HAND_BARE",
+              "HAND_GLOVE",
+              "FOOT_BOOT",
+              "FOOT_SHOE",
+              "TORSO_LEATHER",
+              "TORSO_PLATE",
+              "TORSO_ROBE",
+              "SHOULDER_HEAVY",
+              "BACK_PACK",
+              "ACCESSORY_POUCH",
+              "ACCESSORY_CHARM",
+              "BODY_STANDARD",
+              "BODY_SMALL",
+              "BODY_HEAVY",
+              "BODY_SLENDER",
+              "HEAD_ROUND",
+              "HEAD_ANGULAR",
+              "HEAD_BROAD",
+              "HEAD_LONG",
+              "FACE_NEUTRAL",
+              "FACE_HEROIC",
+              "FACE_ROUGH",
+              "FACE_CUTE",
+              "HAIR_SHORT",
+              "HAIR_LONG",
+              "HAIR_TIED"
+            ],
+            "CREATURE": [
+              "HEAD_CANINE",
+              "JAW_LONG",
+              "CLAW",
+              "EAR_ROUND",
+              "EYE_PAIR",
+              "EYE_CLUSTER",
+              "WING_FEATHER",
+              "WING_LEATHER",
+              "WING_INSECT",
+              "TAIL_SHORT",
+              "TAIL_LONG",
+              "TAIL_BLADE",
+              "TAIL_STINGER",
+              "PAW",
+              "HOOF",
+              "TALON",
+              "CARAPACE",
+              "FUR_PATCH",
+              "SCALE_PLATE",
+              "FIN",
+              "TENTACLE",
+              "ROOT_LIMB",
+              "CRYSTAL_CORE",
+              "MECH_PLATE",
+              "HEAD_FELINE",
+              "HEAD_REPTILE",
+              "HEAD_INSECT",
+              "HEAD_SKULL",
+              "HEAD_DEMON",
+              "HEAD_GOLEM",
+              "JAW_SHORT",
+              "MANDIBLE",
+              "BEAK",
+              "HORN_SHORT",
+              "HORN_LONG",
+              "HORN_CURVED",
+              "ANTLER",
+              "ANTENNA",
+              "EAR_POINTED"
+            ],
+            "BUILDING": [
+              "FOUNDATION_RECT",
+              "WALL_SOLID",
+              "DOOR_SINGLE",
+              "ROOF_GABLE",
+              "ROOF_HIP",
+              "ROOF_DOME",
+              "STAIR_STRAIGHT",
+              "STAIR_CORNER",
+              "STAIR_SPIRAL",
+              "BALCONY",
+              "PILLAR",
+              "FENCE",
+              "SIGN",
+              "FLOOR_TILE",
+              "CEILING",
+              "INTERIOR_WALL",
+              "SOCKET_WALL",
+              "SOCKET_FLOOR",
+              "SOCKET_CEILING",
+              "FOUNDATION_SQUARE",
+              "FOUNDATION_ROUND",
+              "WALL_WINDOW",
+              "WALL_ARCH",
+              "CORNER_INNER",
+              "CORNER_OUTER",
+              "DOOR_DOUBLE",
+              "DOOR_GATE",
+              "WINDOW_SMALL",
+              "WINDOW_LARGE",
+              "ROOF_FLAT"
+            ],
+            "ENVIRONMENT": [
+              "TREE_TRUNK_THICK",
+              "TREE_CROWN_ROUND",
+              "ROCK_MEDIUM",
+              "ROAD_DIRT",
+              "CLIFF_HIGH",
+              "ROCK_SMALL",
+              "ROCK_LARGE",
+              "TREE_TRUNK_THIN",
+              "TREE_CROWN_TALL",
+              "TREE_CROWN_SPARSE",
+              "GRASS_PATCH",
+              "BUSH",
+              "FLOWER_PATCH",
+              "MUSHROOM_PATCH",
+              "DEAD_BRANCH",
+              "LOG",
+              "STUMP",
+              "ROAD_STONE",
+              "ROAD_SNOW",
+              "PATH_NARROW",
+              "BRIDGE_WOOD",
+              "BRIDGE_STONE",
+              "WATER_SHALLOW",
+              "WATER_DEEP",
+              "RUIN_WALL",
+              "RUIN_PILLAR",
+              "LANDMARK_TOWER",
+              "LANDMARK_SHRINE",
+              "LANDMARK_TREE",
+              "FOG_LAYER",
+              "SKY_LAYER",
+              "TERRAIN_FLAT",
+              "TERRAIN_SLOPE",
+              "TERRAIN_RIDGE",
+              "TERRAIN_VALLEY",
+              "CLIFF_LOW"
+            ],
+            "WEAPON": [
+              "BLADE_LONG",
+              "GUARD_CROSS",
+              "GRIP_LONG",
+              "FIREARM_BARREL",
+              "FIREARM_STOCK",
+              "STAFF_SHAFT",
+              "WAND_SHAFT",
+              "MAGIC_CORE",
+              "SHIELD_ROUND",
+              "SHIELD_KITE",
+              "SHIELD_TOWER",
+              "THROWN_BLADE",
+              "THROWN_ORB",
+              "BLADE_SHORT",
+              "BLADE_CURVED",
+              "BLADE_HEAVY",
+              "BLADE_DOUBLE",
+              "GUARD_ROUND",
+              "GUARD_WIDE",
+              "GRIP_SHORT",
+              "POMMEL_SIMPLE",
+              "POMMEL_ORNATE",
+              "SPEAR_HEAD",
+              "AXE_HEAD",
+              "HAMMER_HEAD",
+              "MACE_HEAD",
+              "BOW_LIMB",
+              "BOW_GRIP",
+              "CROSSBOW_BODY",
+              "FIREARM_RECEIVER"
+            ],
+            "SKILL": [
+              "CAST_HAND",
+              "TELEGRAPH_CIRCLE",
+              "IMPACT_SMALL",
+              "IMPACT_AOE",
+              "AURA_BODY",
+              "AURA_WEAPON",
+              "STATUS_RING",
+              "STATUS_MARK",
+              "REACTION_LIGHT",
+              "REACTION_HEAVY",
+              "CAMERA_KICK",
+              "CAMERA_SHAKE",
+              "CAST_WEAPON",
+              "CAST_GROUND",
+              "CAST_CHANNEL",
+              "TELEGRAPH_CONE",
+              "TELEGRAPH_LINE",
+              "PROJECTILE_ORB",
+              "PROJECTILE_BOLT",
+              "PROJECTILE_WAVE",
+              "PROJECTILE_ARC",
+              "IMPACT_HEAVY"
+            ],
+            "MATERIAL": [
+              "WOOD",
+              "STONE",
+              "METAL",
+              "CLOTH",
+              "FUR",
+              "SCALE",
+              "ICE",
+              "LAVA",
+              "CRYSTAL",
+              "SLIME",
+              "BONE",
+              "MOD_CLEAN",
+              "MOD_WORN",
+              "MOD_DIRTY",
+              "MOD_WET",
+              "MOD_BURNT",
+              "MOD_FROSTED",
+              "MOD_RUSTED",
+              "MOD_CRACKED",
+              "MOD_GLOWING",
+              "MOD_POISONED",
+              "LEATHER",
+              "SKIN"
+            ],
+            "AUDIO": [
+              "ENV_WIND",
+              "ENV_WATER",
+              "UI_CONFIRM",
+              "ATTACK_SWING_LIGHT",
+              "ATTACK_SWING_HEAVY",
+              "HIT_FLESH",
+              "HIT_ARMOR",
+              "HIT_STONE",
+              "WEAPON_METAL",
+              "WEAPON_WOOD",
+              "ENV_FOREST",
+              "ENV_CAVE",
+              "UI_CANCEL",
+              "UI_WARNING",
+              "MAGIC_CAST",
+              "MAGIC_IMPACT",
+              "BOSS_STINGER",
+              "BUILDING_DOOR",
+              "BUILDING_BREAK",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW",
+              "WEATHER_STORM",
+              "FOOTSTEP_SOFT",
+              "FOOTSTEP_HARD",
+              "FOOTSTEP_WET",
+              "CREATURE_SMALL",
+              "CREATURE_HEAVY",
+              "CREATURE_HISS",
+              "CREATURE_ROAR"
+            ],
+            "VFX": [
+              "IMPACT_FLASH",
+              "TRAIL_SHORT",
+              "SHAPE_BURST",
+              "STATUS_GLOW",
+              "STATUS_SMOKE",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW",
+              "WEATHER_FOG",
+              "DESTRUCTION_WOOD",
+              "DESTRUCTION_STONE",
+              "DESTRUCTION_METAL",
+              "SHAPE_ORB",
+              "SHAPE_RING",
+              "SHAPE_CONE",
+              "SHAPE_LINE",
+              "SHAPE_SHOCKWAVE",
+              "TRAIL_LONG",
+              "ELEMENT_FIRE",
+              "ELEMENT_ICE",
+              "ELEMENT_ELECTRIC",
+              "ELEMENT_POISON",
+              "ELEMENT_MAGIC",
+              "ELEMENT_DUST",
+              "ELEMENT_WATER",
+              "IMPACT_SPARK",
+              "IMPACT_DEBRIS"
+            ],
+            "UI": [
+              "FRAME_PANEL",
+              "BUTTON_PRIMARY",
+              "BAR_HEALTH",
+              "MARKER_QUEST",
+              "TOUCH_JOYSTICK",
+              "TOUCH_ACTION",
+              "TOUCH_DODGE",
+              "FRAME_MODAL",
+              "FRAME_TOOLTIP",
+              "BUTTON_SECONDARY",
+              "BUTTON_ICON",
+              "ICON_ITEM",
+              "ICON_SKILL",
+              "ICON_STATUS",
+              "BAR_MANA",
+              "BAR_PROGRESS",
+              "SLOT_INVENTORY",
+              "SLOT_EQUIPMENT",
+              "SLOT_SKILL",
+              "HUD_OBJECTIVE",
+              "HUD_CURRENCY",
+              "HUD_WAVE",
+              "MAP_FRAME",
+              "MINIMAP_FRAME",
+              "MARKER_PLAYER",
+              "MARKER_ENEMY"
+            ],
+            "MOTION": [
+              "IDLE_RELAXED",
+              "WALK",
+              "JOG",
+              "RUN",
+              "START",
+              "STOP",
+              "TURN_90",
+              "JUMP_START",
+              "LAND",
+              "HIT_FRONT",
+              "DEATH_FRONT",
+              "STRAFE_L",
+              "STRAFE_R",
+              "BACKSTEP",
+              "TURN_45",
+              "TURN_180",
+              "JUMP_AIR",
+              "DODGE_L",
+              "DODGE_R",
+              "ATTACK_LIGHT_1",
+              "ATTACK_LIGHT_2",
+              "ATTACK_LIGHT_3",
+              "ATTACK_HEAVY",
+              "BLOCK",
+              "PARRY",
+              "HIT_BACK",
+              "HIT_LEFT",
+              "HIT_RIGHT",
+              "KNOCKDOWN",
+              "GETUP",
+              "DEATH_SIDE",
+              "DEATH_BACK",
+              "CAST_PREPARE",
+              "CAST_RELEASE",
+              "RECOVERY",
+              "TAUNT",
+              "LOOK_AROUND",
+              "IDLE_ALERT",
+              "SPRINT"
+            ],
+            "PROP": [
+              "CHEST",
+              "CRATE",
+              "LAMP",
+              "WORKBENCH",
+              "BARREL",
+              "SACK",
+              "CART",
+              "ANVIL",
+              "FURNACE",
+              "COOKING_POT",
+              "RESOURCE_WOOD",
+              "RESOURCE_STONE",
+              "RESOURCE_ORE",
+              "RESOURCE_HERB",
+              "SIGNPOST",
+              "TORCH",
+              "ROPE",
+              "CHAIN",
+              "BANNER",
+              "RUG",
+              "BOTTLE",
+              "BOOK",
+              "WEAPON_RACK",
+              "ARMOR_STAND",
+              "CHAIR",
+              "TABLE",
+              "BED",
+              "SHELF",
+              "BENCH",
+              "LANTERN"
+            ]
+          },
+          "runtimeVerified": false,
+          "productionVerified": false,
+          "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
+          "authority": "roblox-package-universal-asset-threshold"
+        },
+        "sourceTreeSha": "4653aaa4d50df753e7ff4f9c1c37894df73a0748",
+        "assetRepairContext": {
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
+          "baselineFingerprint": "6b43f0f2ba6c66141175ac447aef0b851176a38aa7ca0a899193997b83e59dcd",
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
+        },
+        "repairSurfaces": [
+          "INTERNAL_ASSET_SOURCE_BINDING"
+        ],
+        "assetRepairPolicy": {
+          "mode": "GAME_SOURCE_BINDINGS_ONLY",
+          "preserveInternalAssetLibrary": true,
+          "preserveAssetFiles": true,
+          "allowAssetLibraryWrites": false,
+          "requireActualNativeConsumption": true
+        },
+        "qualityFailureDetails": [
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CHARACTER",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "84250bb92c10812894144a44fbe7c2f3bb83c38d6a3fbbc171bb98962ec59821",
+              "familyResult": {
+                "family": "CHARACTER",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          },
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "84250bb92c10812894144a44fbe7c2f3bb83c38d6a3fbbc171bb98962ec59821",
+              "familyResult": {
+                "family": "CREATURE",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          },
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "84250bb92c10812894144a44fbe7c2f3bb83c38d6a3fbbc171bb98962ec59821",
+              "familyResult": {
+                "family": "BUILDING",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          },
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "84250bb92c10812894144a44fbe7c2f3bb83c38d6a3fbbc171bb98962ec59821",
+              "familyResult": {
+                "family": "MATERIAL",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          }
+        ]
+      },
       "robloxHeadlessPassedAt": null,
       "robloxInternalReleasePublished": false,
       "robloxFastMvpPublished": false,
@@ -2451,7 +3066,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-06T06:23:56.491Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "27f44a884940e79e0fd070fe9ce092f76ada6d5e",
       "robloxSourceBootstrapPassedAt": "2026-10-06T04:14:13.390Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2461,7 +3076,7 @@
       "robloxBuildSourceRevision": "27f44a884940e79e0fd070fe9ce092f76ada6d5e",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T06:23:56.491Z",
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -2929,8 +3544,8 @@
         "sourceRevision": "27f44a884940e79e0fd070fe9ce092f76ada6d5e",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37421742420,
-        "testedAt": "2026-10-06T06:23:56.491Z",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CHARACTER",
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CREATURE",
@@ -3470,7 +4085,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "d9ee813f8ff9bfeeb587bfb8758c32cbc698f0d265bc266cf48b09c233afe7d8",
-          "validatorFingerprint": "8fd489f132edfef9a58fb6b304ec9948df975a69306e3bd9e732d0bea753c7ae"
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
         },
         "repairSurfaces": [
           "INTERNAL_ASSET_SOURCE_BINDING"
@@ -4264,7 +4879,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-06T06:23:56.491Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "09e4724e16def93de9207f18b28a3c7036fc5bae",
       "robloxSourceBootstrapPassedAt": "2026-10-06T04:14:13.390Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4274,7 +4889,7 @@
       "robloxBuildSourceRevision": "09e4724e16def93de9207f18b28a3c7036fc5bae",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T06:23:56.491Z",
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -5366,8 +5981,8 @@
         "sourceRevision": "09e4724e16def93de9207f18b28a3c7036fc5bae",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37421742420,
-        "testedAt": "2026-10-06T06:23:56.491Z",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CHARACTER",
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CREATURE",
@@ -5905,7 +6520,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "034466f9d42fcfc0e83b376bb4ec43c7fef3304b77619de668cf02cf88c1e480",
-          "validatorFingerprint": "8fd489f132edfef9a58fb6b304ec9948df975a69306e3bd9e732d0bea753c7ae"
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
         },
         "repairSurfaces": [
           "INTERNAL_ASSET_SOURCE_BINDING"
@@ -6160,17 +6775,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T06:28:47.957Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "4c08a27eb6a90cdb6def98331e3b0621c951027a",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:28:47.957Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "4c08a27eb6a90cdb6def98331e3b0621c951027a",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -6212,10 +6827,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -6497,10 +7112,625 @@
       },
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-10-03T10:31:30.422Z",
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityFailureClass": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "4c08a27eb6a90cdb6def98331e3b0621c951027a",
+      "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "line-defense",
+        "sourceRevision": "4c08a27eb6a90cdb6def98331e3b0621c951027a",
+        "artifactIdentity": null,
+        "authority": "roblox-package-asset-binding-failure",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
+        "qualityFailureKinds": [
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:SKILL",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+        ],
+        "assetThreshold": {
+          "pass": false,
+          "blockers": [
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:SKILL",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+          ],
+          "requiredFamilies": [
+            "CHARACTER",
+            "CREATURE",
+            "BUILDING",
+            "ENVIRONMENT",
+            "WEAPON",
+            "SKILL",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI",
+            "MOTION",
+            "PROP"
+          ],
+          "familyCoverageCount": 12,
+          "requiredFamilyCount": 12,
+          "selectedAtomCount": 360,
+          "libraryVersion": 113,
+          "selectionFingerprint": "4b6d59996a5d02a53690e0bd82318ff1df23a14ff3365dc54d75d8eca95835c8",
+          "allFamiliesAutoSelected": true,
+          "primitiveOnlyOrColorOnlyForbidden": true,
+          "visibleAssetBindingPass": true,
+          "sourceBindingTracePass": true,
+          "familyBindingPassCount": 1,
+          "appliedFamilyCount": 5,
+          "notApplicableFamilyCount": 7,
+          "resolvedFamilyCount": 8,
+          "allFamiliesResolved": false,
+          "familyResults": [
+            {
+              "family": "CHARACTER",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "CREATURE",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "BUILDING",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "ENVIRONMENT",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "WEAPON",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "SKILL",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "MATERIAL",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "AUDIO",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "VFX",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "UI",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
+            },
+            {
+              "family": "MOTION",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "PROP",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            }
+          ],
+          "selectedFamilies": {
+            "CHARACTER": [
+              "TORSO_CLOTH",
+              "SHOULDER_LIGHT",
+              "BACK_CAPE",
+              "ACCESSORY_POUCH",
+              "ACCESSORY_CHARM",
+              "BODY_STANDARD",
+              "BODY_SMALL",
+              "BODY_HEAVY",
+              "BODY_SLENDER",
+              "HEAD_ROUND",
+              "HEAD_ANGULAR",
+              "HEAD_BROAD",
+              "HEAD_LONG",
+              "FACE_NEUTRAL",
+              "FACE_HEROIC",
+              "FACE_ROUGH",
+              "FACE_CUTE",
+              "HAIR_SHORT",
+              "HAIR_LONG",
+              "HAIR_TIED",
+              "HAIR_SPIKED",
+              "HAND_BARE",
+              "HAND_GLOVE",
+              "FOOT_BOOT",
+              "FOOT_SHOE",
+              "TORSO_LEATHER",
+              "TORSO_PLATE",
+              "TORSO_ROBE",
+              "SHOULDER_HEAVY",
+              "BACK_PACK"
+            ],
+            "CREATURE": [
+              "HEAD_CANINE",
+              "JAW_LONG",
+              "CLAW",
+              "EAR_POINTED",
+              "EAR_ROUND",
+              "EYE_PAIR",
+              "EYE_CLUSTER",
+              "WING_FEATHER",
+              "WING_LEATHER",
+              "WING_INSECT",
+              "TAIL_SHORT",
+              "TAIL_LONG",
+              "TAIL_BLADE",
+              "TAIL_STINGER",
+              "PAW",
+              "HOOF",
+              "TALON",
+              "CARAPACE",
+              "FUR_PATCH",
+              "SCALE_PLATE",
+              "FIN",
+              "TENTACLE",
+              "ROOT_LIMB",
+              "CRYSTAL_CORE",
+              "MECH_PLATE",
+              "HEAD_FELINE",
+              "HEAD_REPTILE",
+              "HEAD_INSECT",
+              "HEAD_SKULL",
+              "HEAD_DEMON",
+              "HEAD_GOLEM",
+              "JAW_SHORT",
+              "MANDIBLE",
+              "BEAK",
+              "HORN_SHORT",
+              "HORN_LONG",
+              "HORN_CURVED",
+              "ANTLER",
+              "ANTENNA"
+            ],
+            "BUILDING": [
+              "FOUNDATION_RECT",
+              "WALL_SOLID",
+              "DOOR_SINGLE",
+              "ROOF_GABLE",
+              "SOCKET_FLOOR",
+              "SOCKET_CEILING",
+              "FOUNDATION_SQUARE",
+              "FOUNDATION_ROUND",
+              "WALL_WINDOW",
+              "WALL_ARCH",
+              "CORNER_INNER",
+              "CORNER_OUTER",
+              "DOOR_DOUBLE",
+              "DOOR_GATE",
+              "WINDOW_SMALL",
+              "WINDOW_LARGE",
+              "ROOF_FLAT",
+              "ROOF_HIP",
+              "ROOF_DOME",
+              "STAIR_STRAIGHT",
+              "STAIR_CORNER",
+              "STAIR_SPIRAL",
+              "BALCONY",
+              "PILLAR",
+              "FENCE",
+              "SIGN",
+              "FLOOR_TILE",
+              "CEILING",
+              "INTERIOR_WALL",
+              "SOCKET_WALL"
+            ],
+            "ENVIRONMENT": [
+              "TREE_TRUNK_THICK",
+              "TREE_CROWN_ROUND",
+              "ROCK_MEDIUM",
+              "ROAD_DIRT",
+              "TERRAIN_VALLEY",
+              "CLIFF_LOW",
+              "CLIFF_HIGH",
+              "ROCK_SMALL",
+              "ROCK_LARGE",
+              "TREE_TRUNK_THIN",
+              "TREE_CROWN_TALL",
+              "TREE_CROWN_SPARSE",
+              "GRASS_PATCH",
+              "BUSH",
+              "FLOWER_PATCH",
+              "MUSHROOM_PATCH",
+              "DEAD_BRANCH",
+              "LOG",
+              "STUMP",
+              "ROAD_STONE",
+              "ROAD_SNOW",
+              "PATH_NARROW",
+              "BRIDGE_WOOD",
+              "BRIDGE_STONE",
+              "WATER_SHALLOW",
+              "WATER_DEEP",
+              "RUIN_WALL",
+              "RUIN_PILLAR",
+              "LANDMARK_TOWER",
+              "LANDMARK_SHRINE",
+              "LANDMARK_TREE",
+              "FOG_LAYER",
+              "SKY_LAYER",
+              "TERRAIN_FLAT",
+              "TERRAIN_SLOPE",
+              "TERRAIN_RIDGE"
+            ],
+            "WEAPON": [
+              "BLADE_LONG",
+              "GUARD_CROSS",
+              "GRIP_LONG",
+              "BLADE_DOUBLE",
+              "GUARD_ROUND",
+              "GUARD_WIDE",
+              "GRIP_SHORT",
+              "POMMEL_SIMPLE",
+              "POMMEL_ORNATE",
+              "SPEAR_HEAD",
+              "AXE_HEAD",
+              "HAMMER_HEAD",
+              "MACE_HEAD",
+              "BOW_LIMB",
+              "BOW_GRIP",
+              "CROSSBOW_BODY",
+              "FIREARM_RECEIVER",
+              "FIREARM_BARREL",
+              "FIREARM_STOCK",
+              "STAFF_SHAFT",
+              "WAND_SHAFT",
+              "MAGIC_CORE",
+              "SHIELD_ROUND",
+              "SHIELD_KITE",
+              "SHIELD_TOWER",
+              "THROWN_BLADE",
+              "THROWN_ORB",
+              "BLADE_SHORT",
+              "BLADE_CURVED",
+              "BLADE_HEAVY"
+            ],
+            "SKILL": [
+              "CAST_HAND",
+              "TELEGRAPH_CIRCLE",
+              "IMPACT_SMALL",
+              "REACTION_HEAVY",
+              "CAMERA_KICK",
+              "CAMERA_SHAKE",
+              "CAST_WEAPON",
+              "CAST_GROUND",
+              "CAST_CHANNEL",
+              "TELEGRAPH_CONE",
+              "TELEGRAPH_LINE",
+              "PROJECTILE_ORB",
+              "PROJECTILE_BOLT",
+              "PROJECTILE_WAVE",
+              "PROJECTILE_ARC",
+              "IMPACT_HEAVY",
+              "IMPACT_AOE",
+              "AURA_BODY",
+              "AURA_WEAPON",
+              "STATUS_RING",
+              "STATUS_MARK",
+              "REACTION_LIGHT"
+            ],
+            "MATERIAL": [
+              "WOOD",
+              "STONE",
+              "METAL",
+              "CLOTH",
+              "LAVA",
+              "CRYSTAL",
+              "SLIME",
+              "BONE",
+              "MOD_CLEAN",
+              "MOD_WORN",
+              "MOD_DIRTY",
+              "MOD_WET",
+              "MOD_BURNT",
+              "MOD_FROSTED",
+              "MOD_RUSTED",
+              "MOD_CRACKED",
+              "MOD_GLOWING",
+              "MOD_POISONED",
+              "LEATHER",
+              "SKIN",
+              "FUR",
+              "SCALE",
+              "ICE"
+            ],
+            "AUDIO": [
+              "ENV_WIND",
+              "ENV_WATER",
+              "UI_CONFIRM",
+              "ATTACK_SWING_LIGHT",
+              "FOOTSTEP_SOFT",
+              "FOOTSTEP_HARD",
+              "FOOTSTEP_WET",
+              "CREATURE_SMALL",
+              "CREATURE_HEAVY",
+              "CREATURE_HISS",
+              "CREATURE_ROAR",
+              "ATTACK_SWING_HEAVY",
+              "HIT_FLESH",
+              "HIT_ARMOR",
+              "HIT_STONE",
+              "WEAPON_METAL",
+              "WEAPON_WOOD",
+              "ENV_FOREST",
+              "ENV_CAVE",
+              "UI_CANCEL",
+              "UI_WARNING",
+              "MAGIC_CAST",
+              "MAGIC_IMPACT",
+              "BOSS_STINGER",
+              "BUILDING_DOOR",
+              "BUILDING_BREAK",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW",
+              "WEATHER_STORM"
+            ],
+            "VFX": [
+              "IMPACT_FLASH",
+              "TRAIL_SHORT",
+              "SHAPE_BURST",
+              "WEATHER_FOG",
+              "DESTRUCTION_WOOD",
+              "DESTRUCTION_STONE",
+              "DESTRUCTION_METAL",
+              "SHAPE_ORB",
+              "SHAPE_RING",
+              "SHAPE_CONE",
+              "SHAPE_LINE",
+              "SHAPE_SHOCKWAVE",
+              "TRAIL_LONG",
+              "ELEMENT_FIRE",
+              "ELEMENT_ICE",
+              "ELEMENT_ELECTRIC",
+              "ELEMENT_POISON",
+              "ELEMENT_MAGIC",
+              "ELEMENT_DUST",
+              "ELEMENT_WATER",
+              "IMPACT_SPARK",
+              "IMPACT_DEBRIS",
+              "STATUS_GLOW",
+              "STATUS_SMOKE",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW"
+            ],
+            "UI": [
+              "FRAME_PANEL",
+              "BUTTON_PRIMARY",
+              "BAR_HEALTH",
+              "FRAME_MODAL",
+              "FRAME_TOOLTIP",
+              "BUTTON_SECONDARY",
+              "BUTTON_ICON",
+              "ICON_ITEM",
+              "ICON_SKILL",
+              "ICON_STATUS",
+              "BAR_MANA",
+              "BAR_PROGRESS",
+              "SLOT_INVENTORY",
+              "SLOT_EQUIPMENT",
+              "SLOT_SKILL",
+              "HUD_OBJECTIVE",
+              "HUD_CURRENCY",
+              "HUD_WAVE",
+              "MAP_FRAME",
+              "MINIMAP_FRAME",
+              "MARKER_PLAYER",
+              "MARKER_ENEMY",
+              "MARKER_QUEST",
+              "TOUCH_JOYSTICK",
+              "TOUCH_ACTION",
+              "TOUCH_DODGE"
+            ],
+            "MOTION": [
+              "IDLE_RELAXED",
+              "WALK",
+              "JOG",
+              "RUN",
+              "START",
+              "STOP",
+              "TURN_90",
+              "JUMP_START",
+              "LAND",
+              "HIT_FRONT",
+              "DEATH_FRONT",
+              "CAST_PREPARE",
+              "CAST_RELEASE",
+              "RECOVERY",
+              "TAUNT",
+              "LOOK_AROUND",
+              "IDLE_ALERT",
+              "SPRINT",
+              "STRAFE_L",
+              "STRAFE_R",
+              "BACKSTEP",
+              "TURN_45",
+              "TURN_180",
+              "JUMP_AIR",
+              "DODGE_L",
+              "DODGE_R",
+              "ATTACK_LIGHT_1",
+              "ATTACK_LIGHT_2",
+              "ATTACK_LIGHT_3",
+              "ATTACK_HEAVY",
+              "BLOCK",
+              "PARRY",
+              "HIT_BACK",
+              "HIT_LEFT",
+              "HIT_RIGHT",
+              "KNOCKDOWN",
+              "GETUP",
+              "DEATH_SIDE",
+              "DEATH_BACK"
+            ],
+            "PROP": [
+              "CHEST",
+              "CRATE",
+              "LAMP",
+              "WORKBENCH",
+              "SHELF",
+              "BENCH",
+              "LANTERN",
+              "BARREL",
+              "SACK",
+              "CART",
+              "ANVIL",
+              "FURNACE",
+              "COOKING_POT",
+              "RESOURCE_WOOD",
+              "RESOURCE_STONE",
+              "RESOURCE_ORE",
+              "RESOURCE_HERB",
+              "SIGNPOST",
+              "TORCH",
+              "ROPE",
+              "CHAIN",
+              "BANNER",
+              "RUG",
+              "BOTTLE",
+              "BOOK",
+              "WEAPON_RACK",
+              "ARMOR_STAND",
+              "CHAIR",
+              "TABLE",
+              "BED"
+            ]
+          },
+          "runtimeVerified": false,
+          "productionVerified": false,
+          "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
+          "authority": "roblox-package-universal-asset-threshold"
+        },
+        "sourceTreeSha": "225ef54ed58909818669fd279d88d9dd3a2dff5a",
+        "assetRepairContext": {
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
+          "baselineFingerprint": "0f3db9fbb428ebbdf3a470f005e3aadc5d7e6c41cc10f2d08d0d8a46b317af09",
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
+        },
+        "repairSurfaces": [
+          "INTERNAL_ASSET_SOURCE_BINDING"
+        ],
+        "assetRepairPolicy": {
+          "mode": "GAME_SOURCE_BINDINGS_ONLY",
+          "preserveInternalAssetLibrary": true,
+          "preserveAssetFiles": true,
+          "allowAssetLibraryWrites": false,
+          "requireActualNativeConsumption": true
+        },
+        "qualityFailureDetails": [
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "4b6d59996a5d02a53690e0bd82318ff1df23a14ff3365dc54d75d8eca95835c8",
+              "familyResult": {
+                "family": "CREATURE",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          },
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "4b6d59996a5d02a53690e0bd82318ff1df23a14ff3365dc54d75d8eca95835c8",
+              "familyResult": {
+                "family": "BUILDING",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          },
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:SKILL",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "4b6d59996a5d02a53690e0bd82318ff1df23a14ff3365dc54d75d8eca95835c8",
+              "familyResult": {
+                "family": "SKILL",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          },
+          {
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
+            "observed": {
+              "libraryVersion": 113,
+              "selectionFingerprint": "4b6d59996a5d02a53690e0bd82318ff1df23a14ff3365dc54d75d8eca95835c8",
+              "familyResult": {
+                "family": "MATERIAL",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
+            }
+          }
+        ]
+      },
       "unityMobilePerformancePassed": true,
       "unityMobilePerformanceEvidence": {
         "state": "PASS",
@@ -7085,7 +8315,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T06:23:56.491Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "ca658e90f857c1b08a93d49be24b60b12b62f73e",
       "robloxSourceBootstrapPassedAt": "2026-10-06T04:14:13.390Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -7095,7 +8325,7 @@
       "robloxBuildSourceRevision": "ca658e90f857c1b08a93d49be24b60b12b62f73e",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T06:23:56.491Z",
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -7192,8 +8422,8 @@
         "sourceRevision": "ca658e90f857c1b08a93d49be24b60b12b62f73e",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37421742420,
-        "testedAt": "2026-10-06T06:23:56.491Z",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CREATURE",
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:BUILDING",
@@ -7719,7 +8949,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "838045e95bffd406106710dc8088fcc5ad4cce93d16acd1aa78bbef9bd6c2bf6",
-          "validatorFingerprint": "8fd489f132edfef9a58fb6b304ec9948df975a69306e3bd9e732d0bea753c7ae"
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
         },
         "repairSurfaces": [
           "INTERNAL_ASSET_SOURCE_BINDING"
@@ -8587,7 +9817,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-06T06:23:56.491Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "896d8fe8fd79d8526d1810511046ef669f6c3fc8",
       "robloxSourceBootstrapPassedAt": "2026-10-06T04:14:13.390Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -8597,7 +9827,7 @@
       "robloxBuildSourceRevision": "896d8fe8fd79d8526d1810511046ef669f6c3fc8",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T06:23:56.491Z",
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -9088,8 +10318,8 @@
         "sourceRevision": "896d8fe8fd79d8526d1810511046ef669f6c3fc8",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37421742420,
-        "testedAt": "2026-10-06T06:23:56.491Z",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:CREATURE",
           "ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:ENVIRONMENT",
@@ -9621,7 +10851,7 @@
         "assetRepairContext": {
           "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "1f7f26be12f2e88a13cf4ca355a2aaadcdc36bfb8f4d5582390e9669796ac8d5",
-          "validatorFingerprint": "8fd489f132edfef9a58fb6b304ec9948df975a69306e3bd9e732d0bea753c7ae"
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
         },
         "repairSurfaces": [
           "INTERNAL_ASSET_SOURCE_BINDING"
@@ -36591,17 +37821,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T06:28:47.957Z",
+      "updatedAt": "2026-10-06T06:31:45.371Z",
       "robloxSourceCommit": "b18c8dba7d5fde9058d161be744c2effaf3b8cf8",
       "robloxSourceBootstrapPassedAt": "2026-10-06T06:28:47.957Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "b18c8dba7d5fde9058d161be744c2effaf3b8cf8",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-06T06:31:45.371Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -36643,10 +37873,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -36900,2963 +38130,620 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "8f5400e3b5550276327db614dfdaf04c694d5b14",
-      "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
+      "robloxQualityBuildUpSourceRevision": "b18c8dba7d5fde9058d161be744c2effaf3b8cf8",
+      "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-single-defense-strat-celestial-bastion",
-        "sourceRevision": "8f5400e3b5550276327db614dfdaf04c694d5b14",
-        "artifactIdentity": "sha256:122d43bd8d1f2343630fba09d0d3580422f77be839e46d32597ed8cbfdd36707",
-        "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 37177563153,
-        "testedAt": "2026-10-04T05:20:17.386Z",
+        "sourceRevision": "b18c8dba7d5fde9058d161be744c2effaf3b8cf8",
+        "artifactIdentity": null,
+        "authority": "roblox-package-asset-binding-failure",
+        "workflowRunId": 37423283583,
+        "testedAt": "2026-10-06T06:31:45.371Z",
         "qualityFailureKinds": [
-          "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-          "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-          "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-          "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "GENERIC_SCOPE_HANDLER_SKELETON"
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
+        "assetThreshold": {
+          "pass": false,
+          "blockers": [
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+          ],
+          "requiredFamilies": [
+            "CHARACTER",
+            "CREATURE",
+            "BUILDING",
+            "ENVIRONMENT",
+            "WEAPON",
+            "SKILL",
+            "MATERIAL",
+            "AUDIO",
+            "VFX",
+            "UI",
+            "MOTION",
+            "PROP"
+          ],
+          "familyCoverageCount": 12,
+          "requiredFamilyCount": 12,
+          "selectedAtomCount": 360,
+          "libraryVersion": 113,
+          "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
+          "allFamiliesAutoSelected": true,
+          "primitiveOnlyOrColorOnlyForbidden": true,
+          "visibleAssetBindingPass": true,
+          "sourceBindingTracePass": true,
+          "familyBindingPassCount": 1,
+          "appliedFamilyCount": 5,
+          "notApplicableFamilyCount": 7,
+          "resolvedFamilyCount": 8,
+          "allFamiliesResolved": false,
+          "familyResults": [
+            {
+              "family": "CHARACTER",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "CREATURE",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "BUILDING",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "ENVIRONMENT",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "WEAPON",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "SKILL",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "MATERIAL",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "AUDIO",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "VFX",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "UI",
+              "status": "APPLIED",
+              "systemPresent": true,
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
+            },
+            {
+              "family": "MOTION",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            },
+            {
+              "family": "PROP",
+              "status": "NOT_APPLICABLE",
+              "systemPresent": false,
+              "actualBinding": false,
+              "boundFiles": []
+            }
+          ],
+          "selectedFamilies": {
+            "CHARACTER": [
+              "TORSO_CLOTH",
+              "SHOULDER_LIGHT",
+              "BACK_CAPE",
+              "TORSO_LEATHER",
+              "TORSO_PLATE",
+              "TORSO_ROBE",
+              "SHOULDER_HEAVY",
+              "BACK_PACK",
+              "ACCESSORY_POUCH",
+              "ACCESSORY_CHARM",
+              "BODY_STANDARD",
+              "BODY_SMALL",
+              "BODY_HEAVY",
+              "BODY_SLENDER",
+              "HEAD_ROUND",
+              "HEAD_ANGULAR",
+              "HEAD_BROAD",
+              "HEAD_LONG",
+              "FACE_NEUTRAL",
+              "FACE_HEROIC",
+              "FACE_ROUGH",
+              "FACE_CUTE",
+              "HAIR_SHORT",
+              "HAIR_LONG",
+              "HAIR_TIED",
+              "HAIR_SPIKED",
+              "HAND_BARE",
+              "HAND_GLOVE",
+              "FOOT_BOOT",
+              "FOOT_SHOE"
+            ],
+            "CREATURE": [
+              "HEAD_CANINE",
+              "JAW_LONG",
+              "CLAW",
+              "EYE_CLUSTER",
+              "WING_FEATHER",
+              "WING_LEATHER",
+              "WING_INSECT",
+              "TAIL_SHORT",
+              "TAIL_LONG",
+              "TAIL_BLADE",
+              "TAIL_STINGER",
+              "PAW",
+              "HOOF",
+              "TALON",
+              "CARAPACE",
+              "FUR_PATCH",
+              "SCALE_PLATE",
+              "FIN",
+              "TENTACLE",
+              "ROOT_LIMB",
+              "CRYSTAL_CORE",
+              "MECH_PLATE",
+              "HEAD_FELINE",
+              "HEAD_REPTILE",
+              "HEAD_INSECT",
+              "HEAD_SKULL",
+              "HEAD_DEMON",
+              "HEAD_GOLEM",
+              "JAW_SHORT",
+              "MANDIBLE",
+              "BEAK",
+              "HORN_SHORT",
+              "HORN_LONG",
+              "HORN_CURVED",
+              "ANTLER",
+              "ANTENNA",
+              "EAR_POINTED",
+              "EAR_ROUND",
+              "EYE_PAIR"
+            ],
+            "BUILDING": [
+              "FOUNDATION_RECT",
+              "WALL_SOLID",
+              "DOOR_SINGLE",
+              "ROOF_GABLE",
+              "SIGN",
+              "FLOOR_TILE",
+              "CEILING",
+              "INTERIOR_WALL",
+              "SOCKET_WALL",
+              "SOCKET_FLOOR",
+              "SOCKET_CEILING",
+              "FOUNDATION_SQUARE",
+              "FOUNDATION_ROUND",
+              "WALL_WINDOW",
+              "WALL_ARCH",
+              "CORNER_INNER",
+              "CORNER_OUTER",
+              "DOOR_DOUBLE",
+              "DOOR_GATE",
+              "WINDOW_SMALL",
+              "WINDOW_LARGE",
+              "ROOF_FLAT",
+              "ROOF_HIP",
+              "ROOF_DOME",
+              "STAIR_STRAIGHT",
+              "STAIR_CORNER",
+              "STAIR_SPIRAL",
+              "BALCONY",
+              "PILLAR",
+              "FENCE"
+            ],
+            "ENVIRONMENT": [
+              "TREE_TRUNK_THICK",
+              "TREE_CROWN_ROUND",
+              "ROCK_MEDIUM",
+              "ROAD_DIRT",
+              "TREE_CROWN_TALL",
+              "TREE_CROWN_SPARSE",
+              "GRASS_PATCH",
+              "BUSH",
+              "FLOWER_PATCH",
+              "MUSHROOM_PATCH",
+              "DEAD_BRANCH",
+              "LOG",
+              "STUMP",
+              "ROAD_STONE",
+              "ROAD_SNOW",
+              "PATH_NARROW",
+              "BRIDGE_WOOD",
+              "BRIDGE_STONE",
+              "WATER_SHALLOW",
+              "WATER_DEEP",
+              "RUIN_WALL",
+              "RUIN_PILLAR",
+              "LANDMARK_TOWER",
+              "LANDMARK_SHRINE",
+              "LANDMARK_TREE",
+              "FOG_LAYER",
+              "SKY_LAYER",
+              "TERRAIN_FLAT",
+              "TERRAIN_SLOPE",
+              "TERRAIN_RIDGE",
+              "TERRAIN_VALLEY",
+              "CLIFF_LOW",
+              "CLIFF_HIGH",
+              "ROCK_SMALL",
+              "ROCK_LARGE",
+              "TREE_TRUNK_THIN"
+            ],
+            "WEAPON": [
+              "BLADE_LONG",
+              "GUARD_CROSS",
+              "GRIP_LONG",
+              "GUARD_WIDE",
+              "GRIP_SHORT",
+              "POMMEL_SIMPLE",
+              "POMMEL_ORNATE",
+              "SPEAR_HEAD",
+              "AXE_HEAD",
+              "HAMMER_HEAD",
+              "MACE_HEAD",
+              "BOW_LIMB",
+              "BOW_GRIP",
+              "CROSSBOW_BODY",
+              "FIREARM_RECEIVER",
+              "FIREARM_BARREL",
+              "FIREARM_STOCK",
+              "STAFF_SHAFT",
+              "WAND_SHAFT",
+              "MAGIC_CORE",
+              "SHIELD_ROUND",
+              "SHIELD_KITE",
+              "SHIELD_TOWER",
+              "THROWN_BLADE",
+              "THROWN_ORB",
+              "BLADE_SHORT",
+              "BLADE_CURVED",
+              "BLADE_HEAVY",
+              "BLADE_DOUBLE",
+              "GUARD_ROUND"
+            ],
+            "SKILL": [
+              "CAST_HAND",
+              "TELEGRAPH_CIRCLE",
+              "IMPACT_SMALL",
+              "TELEGRAPH_LINE",
+              "PROJECTILE_ORB",
+              "PROJECTILE_BOLT",
+              "PROJECTILE_WAVE",
+              "PROJECTILE_ARC",
+              "IMPACT_HEAVY",
+              "IMPACT_AOE",
+              "AURA_BODY",
+              "AURA_WEAPON",
+              "STATUS_RING",
+              "STATUS_MARK",
+              "REACTION_LIGHT",
+              "REACTION_HEAVY",
+              "CAMERA_KICK",
+              "CAMERA_SHAKE",
+              "CAST_WEAPON",
+              "CAST_GROUND",
+              "CAST_CHANNEL",
+              "TELEGRAPH_CONE"
+            ],
+            "MATERIAL": [
+              "WOOD",
+              "STONE",
+              "METAL",
+              "CLOTH",
+              "MOD_GLOWING",
+              "MOD_POISONED",
+              "LEATHER",
+              "SKIN",
+              "FUR",
+              "SCALE",
+              "ICE",
+              "LAVA",
+              "CRYSTAL",
+              "SLIME",
+              "BONE",
+              "MOD_CLEAN",
+              "MOD_WORN",
+              "MOD_DIRTY",
+              "MOD_WET",
+              "MOD_BURNT",
+              "MOD_FROSTED",
+              "MOD_RUSTED",
+              "MOD_CRACKED"
+            ],
+            "AUDIO": [
+              "ENV_WIND",
+              "ENV_WATER",
+              "UI_CONFIRM",
+              "ATTACK_SWING_LIGHT",
+              "MAGIC_CAST",
+              "MAGIC_IMPACT",
+              "BOSS_STINGER",
+              "BUILDING_DOOR",
+              "BUILDING_BREAK",
+              "WEATHER_RAIN",
+              "WEATHER_SNOW",
+              "WEATHER_STORM",
+              "FOOTSTEP_SOFT",
+              "FOOTSTEP_HARD",
+              "FOOTSTEP_WET",
+              "CREATURE_SMALL",
+              "CREATURE_HEAVY",
+              "CREATURE_HISS",
+              "CREATURE_ROAR",
+              "ATTACK_SWING_HEAVY",
+              "HIT_FLESH",
+              "HIT_ARMOR",
+              "HIT_STONE",
+              "WEAPON_METAL",
+              "WEAPON_WOOD",
+              "ENV_FOREST",
+              "ENV_CAVE",
+              "UI_CANCEL",
+              "UI_WARNING"
+            ],
+            "VFX": [
+              "IMPACT_FLASH",
+              "TRAIL_SHORT",
+              "SHAPE_BURST",
+              "WEATHER_SNOW",
+              "WEATHER_FOG",
+              "DESTRUCTION_WOOD",
+              "DESTRUCTION_STONE",
+              "DESTRUCTION_METAL",
+              "SHAPE_ORB",
+              "SHAPE_RING",
+              "SHAPE_CONE",
+              "SHAPE_LINE",
+              "SHAPE_SHOCKWAVE",
+              "TRAIL_LONG",
+              "ELEMENT_FIRE",
+              "ELEMENT_ICE",
+              "ELEMENT_ELECTRIC",
+              "ELEMENT_POISON",
+              "ELEMENT_MAGIC",
+              "ELEMENT_DUST",
+              "ELEMENT_WATER",
+              "IMPACT_SPARK",
+              "IMPACT_DEBRIS",
+              "STATUS_GLOW",
+              "STATUS_SMOKE",
+              "WEATHER_RAIN"
+            ],
+            "UI": [
+              "FRAME_PANEL",
+              "BUTTON_PRIMARY",
+              "BAR_HEALTH",
+              "BUTTON_SECONDARY",
+              "BUTTON_ICON",
+              "ICON_ITEM",
+              "ICON_SKILL",
+              "ICON_STATUS",
+              "BAR_MANA",
+              "BAR_PROGRESS",
+              "SLOT_INVENTORY",
+              "SLOT_EQUIPMENT",
+              "SLOT_SKILL",
+              "HUD_OBJECTIVE",
+              "HUD_CURRENCY",
+              "HUD_WAVE",
+              "MAP_FRAME",
+              "MINIMAP_FRAME",
+              "MARKER_PLAYER",
+              "MARKER_ENEMY",
+              "MARKER_QUEST",
+              "TOUCH_JOYSTICK",
+              "TOUCH_ACTION",
+              "TOUCH_DODGE",
+              "FRAME_MODAL",
+              "FRAME_TOOLTIP"
+            ],
+            "MOTION": [
+              "IDLE_RELAXED",
+              "WALK",
+              "JOG",
+              "RUN",
+              "START",
+              "STOP",
+              "TURN_90",
+              "JUMP_START",
+              "LAND",
+              "HIT_FRONT",
+              "DEATH_FRONT",
+              "RECOVERY",
+              "TAUNT",
+              "LOOK_AROUND",
+              "IDLE_ALERT",
+              "SPRINT",
+              "STRAFE_L",
+              "STRAFE_R",
+              "BACKSTEP",
+              "TURN_45",
+              "TURN_180",
+              "JUMP_AIR",
+              "DODGE_L",
+              "DODGE_R",
+              "ATTACK_LIGHT_1",
+              "ATTACK_LIGHT_2",
+              "ATTACK_LIGHT_3",
+              "ATTACK_HEAVY",
+              "BLOCK",
+              "PARRY",
+              "HIT_BACK",
+              "HIT_LEFT",
+              "HIT_RIGHT",
+              "KNOCKDOWN",
+              "GETUP",
+              "DEATH_SIDE",
+              "DEATH_BACK",
+              "CAST_PREPARE",
+              "CAST_RELEASE"
+            ],
+            "PROP": [
+              "CHEST",
+              "CRATE",
+              "LAMP",
+              "WORKBENCH",
+              "RESOURCE_WOOD",
+              "RESOURCE_STONE",
+              "RESOURCE_ORE",
+              "RESOURCE_HERB",
+              "SIGNPOST",
+              "TORCH",
+              "ROPE",
+              "CHAIN",
+              "BANNER",
+              "RUG",
+              "BOTTLE",
+              "BOOK",
+              "WEAPON_RACK",
+              "ARMOR_STAND",
+              "CHAIR",
+              "TABLE",
+              "BED",
+              "SHELF",
+              "BENCH",
+              "LANTERN",
+              "BARREL",
+              "SACK",
+              "CART",
+              "ANVIL",
+              "FURNACE",
+              "COOKING_POT"
+            ]
+          },
+          "runtimeVerified": false,
+          "productionVerified": false,
+          "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
+          "authority": "roblox-package-universal-asset-threshold"
+        },
+        "sourceTreeSha": "58b8740908893456279b625d556b8d5e4a3e7f4f",
+        "assetRepairContext": {
+          "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
+          "baselineFingerprint": "de7a4ab6415d6577127eeb3e57f1541e3c3701de3bbc1aaa78a87756fa48020a",
+          "validatorFingerprint": "e68bc690b0414da24b89524f6b5c1a2aa897c57166c8e23487dc97c37e76210c"
+        },
         "repairSurfaces": [
-          "CORE_GAMEPLAY",
-          "WORLD_MAP",
-          "COMBAT_FEEL",
-          "PROGRESSION_CONTENT"
+          "INTERNAL_ASSET_SOURCE_BINDING"
         ],
+        "assetRepairPolicy": {
+          "mode": "GAME_SOURCE_BINDINGS_ONLY",
+          "preserveInternalAssetLibrary": true,
+          "preserveAssetFiles": true,
+          "allowAssetLibraryWrites": false,
+          "requireActualNativeConsumption": true
+        },
         "qualityFailureDetails": [
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
             "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
+              "libraryVersion": 113,
+              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
+              "familyResult": {
+                "family": "CREATURE",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
             }
           },
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
             "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
+              "libraryVersion": 113,
+              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
+              "familyResult": {
+                "family": "BUILDING",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
             }
           },
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
             "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
+              "libraryVersion": 113,
+              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
+              "familyResult": {
+                "family": "ENVIRONMENT",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
             }
           },
           {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
+            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
+            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
+            "priority": "P0",
+            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
             "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
-            }
-          },
-          {
-            "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "seed-single-defense-strat-celestial-bastion",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": false,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "전투 중 적을 처치하여 획득한 에너지를 사용하여 타워를 강화하거나, 전장의 지형을 추가로 변형하여 방어 효율을 극대화합니다.",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "웨이브 종료 후 획득한 보상으로 새로운 타워 기술을 연구하거나 기존 타워의 속성을 강화하여 다음 단계의 더 강력한 적에 대비합니다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WAVE",
-                    "PROGRESSION",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "지형 변형 시스템",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "속성 공명 시스템",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 6,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "MISSING",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 0,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "firstTenMinutes": {
-                  "signalCount": 3,
-                  "pass": false
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 6,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "WORLD_TOPOLOGY_AND_LANDMARKS",
-                  "FIRST_10_MINUTES_FLOW",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "13b6c0bdb43a2c8d6619dceb72e417713daadfadf8b4cd3f2556ee836e8dc88b",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "SINGLE",
-              "sourcePlayMode": "SINGLE"
+              "libraryVersion": 113,
+              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
+              "familyResult": {
+                "family": "MATERIAL",
+                "status": "APPLIED",
+                "systemPresent": true,
+                "actualBinding": false,
+                "boundFiles": []
+              }
             }
           }
         ]
@@ -51045,7 +49932,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T06:28:47.957Z",
+  "updatedAt": "2026-10-06T06:31:45.371Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
