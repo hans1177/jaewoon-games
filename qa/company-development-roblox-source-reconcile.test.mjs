@@ -901,3 +901,17 @@ test('unchanged package asset failure cannot be turned into a new source PASS by
     assert.notEqual(evaluate()[0]?.sourceRepairPending,true,'changed game tree must run source validation');
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
+
+test('verified learning refresh debt uses one deduped batch sweep instead of per-game workflow fanout',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('      - name: Dispatch one verified learning sweep batch when reconciliation finds refresh debt\n');
+  const end=workflow.indexOf('\n      - name: Resolve next Roblox source execution slice from unbounded native queue',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/Roblox verified learning sweep · batch/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=BATCH/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_BATCH/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.doesNotMatch(block,/while IFS= read -r game_id/);
+  assert.doesNotMatch(block,/-f game_id=/);
+});
