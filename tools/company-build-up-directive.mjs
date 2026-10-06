@@ -1286,6 +1286,14 @@ export function directivePrompt(d={}){
     'EXISTING_GAME_GRAMMAR_ACTION: 기존게임은 새 장르를 강제로 덮어쓰지 않는다. 현재 설계와 실제 소스에서 MAIN, A/B 대축, c 서브요소, @ 파고들기 근거를 먼저 확인하고 서로 따로 노는 연결을 우선 보강한다. 기존 밸런스·세이브·경제·권한 의미는 보존한다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
+    `BUILD_READY_IMPLEMENTATION_BLUEPRINT: status=${d.implementationBlueprint?.status||'MISSING'}; mode=${d.implementationBlueprint?.mode||'UNKNOWN'}; foundationRepairFirst=${d.implementationBlueprint?.foundationRepairFirst===true}`,
+    `VERTICAL_SLICE: ${JSON.stringify(d.implementationBlueprint?.verticalSlice||{})}`,
+    `STATE_TRANSITIONS: ${JSON.stringify(d.implementationBlueprint?.stateTransitions||[])}`,
+    `SYSTEM_CONTRACTS: ${JSON.stringify(d.implementationBlueprint?.systemContracts||[])}`,
+    `RESPONSIBLE_SOURCE_PLAN: ${JSON.stringify(d.implementationBlueprint?.responsibleSourcePlan||[])}`,
+    `PRESENTATION_PLAN: ${JSON.stringify(d.implementationBlueprint?.presentationPlan||{})}`,
+    `RUNTIME_ACCEPTANCE: ${JSON.stringify(d.implementationBlueprint?.runtimeAcceptance||[])}`,
+    `BUILD_COMPLETION_GATE: ${JSON.stringify(d.implementationBlueprint?.completionGate||{})}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
     d.playtestRuntimeFindings?.studioQualityFailure
       ?'STUDIO_OBSERVED_FAILURES: '+JSON.stringify(d.playtestRuntimeFindings.studioQualityFailure)
@@ -1328,6 +1336,130 @@ export function directivePrompt(d={}){
     `ACCEPTANCE: ${d.acceptanceEvidence.join(' | ')}`,
     `NEXT_ESCALATION: ${d.nextEscalationCandidates.join(' | ')}`
   ].join('\n');
+}
+
+
+function buildImplementationBlueprint({
+  design={},source={},focus='CORE_FUN',goal='',expectedEffect='',sourceResponsibilities=[],topFiles=[],
+  runtimeEvidence={},platform='COMMON'
+}={}){
+  const coreLoop=Array.isArray(design.coreLoop)?design.coreLoop.map(clean).filter(Boolean):[];
+  const signatureSystems=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
+  const failureStage=clean(runtimeEvidence?.failureStage).toUpperCase();
+  const failureSignature=clean(runtimeEvidence?.failureSignature);
+  const runtimeObserved=runtimeEvidence?.runtimeObserved===true;
+  const runtimePassed=runtimeEvidence?.runtimePassed===true;
+  const blockerText=uniq([
+    ...(Array.isArray(runtimeEvidence?.blockers)?runtimeEvidence.blockers:[]),
+    failureStage,
+    failureSignature
+  ]).join(' ');
+  const foundationRepairFirst=(runtimeObserved&&!runtimePassed)
+    ||/(?:^|[^A-Z])F[0-8](?:[^A-Z]|$)|TARGET_PLATFORM|SERVER_BOOT|STARTUP|INPUT|MOVEMENT|CORE_LOOP|WORLD_FOUNDATION|CHARACTER_FOUNDATION|PHYSICS/.test(blockerText.toUpperCase());
+  const firstStep=coreLoop[0]||clean(design.coreFun)||'핵심 행동 시작';
+  const secondStep=coreLoop[1]||'상태 변화 확인';
+  const thirdStep=coreLoop[2]||'결과와 피드백 확인';
+  const nextStep=coreLoop[3]||design.progressionDirection||'다음 선택으로 연결';
+
+  const verticalSlice=Object.freeze({
+    name:foundationRepairFirst?'FOUNDATION_REPAIR_VERTICAL_SLICE':'PRIMARY_BUILD_UP_VERTICAL_SLICE',
+    entryCondition:`플레이어가 "${firstStep}"를 실제 입력으로 시작할 수 있는 상태`,
+    playerAction:firstStep,
+    playerDecision:clean(signatureSystems[0]?.playerChoice)||secondStep,
+    validatedStateChange:clean(signatureSystems[0]?.purpose)||`"${firstStep}" 결과가 게임 상태를 실제로 바꾼다.`,
+    feedbackAndReadability:`"${thirdStep}"가 UI/월드/모션/VFX/카메라/오디오 중 적용 가능한 실제 피드백으로 보인다.`,
+    successResult:expectedEffect||goal,
+    failureAndRetry:`실패·무효 입력·대상 부재·재시도 시 상태가 꼬이지 않고 "${firstStep}"를 다시 수행할 수 있다.`,
+    nextLoopConnection:nextStep,
+    completeChainRequired:true
+  });
+
+  const stateTransitions=Object.freeze([
+    Object.freeze({from:'READY',trigger:firstStep,to:'ACTION_REQUESTED',proof:'실제 입력 또는 플랫폼 네이티브 상호작용'}),
+    Object.freeze({from:'ACTION_REQUESTED',trigger:'검증된 조건과 게임 규칙',to:'AUTHORITATIVE_STATE_CHANGED',proof:'실제 게임 상태 변경'}),
+    Object.freeze({from:'AUTHORITATIVE_STATE_CHANGED',trigger:'상태 변경 이벤트',to:'PLAYER_FEEDBACK_VISIBLE',proof:'UI/월드/모션/VFX/카메라/오디오 중 적용 가능한 피드백'}),
+    Object.freeze({from:'PLAYER_FEEDBACK_VISIBLE',trigger:'성공/실패 결과',to:'NEXT_CHOICE_OR_RETRY',proof:nextStep})
+  ]);
+
+  const systemContracts=Object.freeze(signatureSystems.slice(0,6).map((system,index)=>Object.freeze({
+    order:index+1,
+    name:clean(system?.name)||`SIGNATURE_SYSTEM_${index+1}`,
+    purpose:clean(system?.purpose)||'approved design purpose',
+    playerChoice:clean(system?.playerChoice)||'현재 플레이 상태에 맞는 선택',
+    mustAffectRealGameState:true,
+    markerOrDescriptionOnlyForbidden:true,
+    requiredProof:`입력/조건 → ${clean(system?.name)||'system'} 상태 변화 → 플레이어가 구별 가능한 결과`
+  })));
+
+  const responsibleSourcePlan=Object.freeze(
+    (sourceResponsibilities.length?sourceResponsibilities:topFiles.slice(0,6).map(file=>({file,symbol:'EXACT_SYMBOL_TO_INSPECT'})))
+      .slice(0,8)
+      .map((row,index)=>Object.freeze({
+        order:index+1,
+        file:clean(row.file),
+        symbol:clean(row.symbol)||'EXACT_SYMBOL_TO_INSPECT',
+        currentBehavior:clean(row.currentBehavior||row.context)||'현재 구현을 실제 소스에서 먼저 확인',
+        intendedBehavior:clean(row.intendedBehavior)||goal,
+        dependencies:'같은 플레이 흐름에 필요한 server/client/shared/UI/asset 연결만 함께 수정',
+        observableAcceptance:clean(row.observableAcceptance)||expectedEffect,
+        realSourceDeltaRequired:true
+      }))
+  );
+
+  const presentationPlan=Object.freeze({
+    worldAndMap:'플레이 동선·스폰·목표·랜드마크가 실제 이동과 진행에 맞게 읽혀야 한다.',
+    actorsAndEnemies:'캐릭터/NPC/몬스터의 역할·위험·상태가 실루엣·모션·피격/행동 피드백에서 구별되어야 한다.',
+    uiHud:'입력 가능 행동·현재 상태·목표·보상·실패 이유가 실제 게임 상태와 동기화되어야 한다.',
+    motionVfxCameraAudio:'행동 전조→판정/상태변화→impact→recovery 타이밍을 실제 상태 이벤트에 맞춘다.',
+    actualRenderedOrAudibleDeltaRequired:true,
+    materialOrMarkerOnlyCannotCloseGraphicsBuildUp:true
+  });
+
+  const runtimeAcceptance=Object.freeze([
+    'EXACT_CHANGED_SOURCE_OR_ARTIFACT',
+    'ACTUAL_PLAYER_INPUT_OR_PLATFORM_NATIVE_INTERACTION',
+    'EXPECTED_STATE_TRANSITION_OBSERVED',
+    'VISIBLE_OR_AUDIBLE_PLAYER_FEEDBACK_OBSERVED',
+    'SUCCESS_RESULT_AND_FAILURE_RETRY_BOTH_REACHABLE_WHEN_APPLICABLE',
+    'NEXT_CORE_LOOP_CHOICE_REACHABLE',
+    'NO_NEW_SCRIPT_OR_RUNTIME_ERROR',
+    'BEFORE_AFTER_RUNTIME_EVIDENCE_WHEN_PRESENTATION_CHANGED'
+  ]);
+
+  return Object.freeze({
+    version:1,
+    status:'BUILD_READY_IMPLEMENTATION_BLUEPRINT',
+    platform:clean(platform).toUpperCase()||'COMMON',
+    mode:foundationRepairFirst?'FOUNDATION_REPAIR_FIRST':'VERTICAL_SLICE_BUILD_UP',
+    foundationRepairFirst,
+    newContentMayPreemptFoundationRepair:false,
+    designMustResolveToExecutableBehavior:true,
+    verticalSlice,
+    stateTransitions,
+    systemContracts,
+    responsibleSourcePlan,
+    presentationPlan,
+    dataAndStateContract:Object.freeze({
+      authoritativeStateMustRemainInExistingOwner:true,
+      saveMeaningPreserved:true,
+      balanceEconomyRewardMeaningPreservedUnlessExplicitlyAuthorized:true,
+      clientPresentationCannotInventAuthoritativeResult:true,
+      multiplayerSyncMustUseExistingServerOrSessionOwnerWhenApplicable:true
+    }),
+    runtimeAcceptance,
+    completionGate:Object.freeze({
+      realGameplaySourceDeltaRequired:true,
+      bootstrapOnlyCompletionForbidden:true,
+      statusOrMarkerOnlyCompletionForbidden:true,
+      configOnlyCompletionForbiddenWhenBehaviorGapExists:true,
+      assetRegistryOnlyCompletionForbiddenWhenVisualBindingGapExists:true,
+      basicPlayabilityFailureBlocksDecorativeExpansion:true,
+      sameVerticalSliceMustReachInputStateFeedbackResult:true
+    }),
+    sourceObservationFingerprint:clean(source?.sourceTreeFingerprint)||null,
+    primaryGoal:goal,
+    expectedPlayerEffect:expectedEffect
+  });
 }
 
 export function buildGameSpecificBuildUpDirective({
@@ -1455,6 +1587,9 @@ export function buildGameSpecificBuildUpDirective({
     whyThisAnchor:`${row.file}::${row.symbol||'UNKNOWN'}이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨`,
     observableAcceptance:`${row.file}에 실제 source delta가 있고 관련 QA/runtime에서 ${focus} 상태 변화와 expected player effect가 관찰되어야 함`
   }));
+  const implementationBlueprint=buildImplementationBlueprint({
+    design,source,focus,goal,expectedEffect,sourceResponsibilities,topFiles,runtimeEvidence,platform
+  });
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1686,6 +1821,7 @@ export function buildGameSpecificBuildUpDirective({
     gameplayImplementationDirectives:effectiveGameplay,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
+    implementationBlueprint,
     internalAssetEvolution:{
       required:true,
       generation,
