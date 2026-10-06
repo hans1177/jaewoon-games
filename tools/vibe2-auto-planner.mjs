@@ -21,6 +21,7 @@ import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
 import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
+import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -448,21 +449,31 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     const runtimeObserved=(executionEvidenceMatchesRoblox&&executionRuntimeObserved)||item?.robloxRuntimePassed===true;
     const queueRobloxSourceCommit=clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:''));
     const queueRobloxQualityBuildUpSourceRevision=clean(item?.robloxQualityBuildUpSourceRevision);
-    const queueRobloxQualityBuildUpRequired=Boolean(
+    const queueRobloxQualityBuildUpRequested=Boolean(
       item?.robloxQualityBuildUpRequired===true
       &&queueRobloxQualityBuildUpSourceRevision
       &&queueRobloxQualityBuildUpSourceRevision===queueRobloxSourceCommit
     );
-    // 패키징 전 자산 검수 실패에는 새 artifact가 없다. 현재 게임·소스의 실제 실패만 전달한다.
+    // 패키징 전 자산 검수 실패에는 새 artifact가 없다.
+    // source-reconcile의 canonical exact 판정을 그대로 사용해 이미 바뀐 게임 트리에 옛 수리를 재발행하지 않는다.
     const packageAssetFailure=item?.robloxQualityBuildUpEvidence;
-    const currentPackageAssetFailure=queueRobloxQualityBuildUpRequired
-      &&clean(packageAssetFailure?.gameId)===id
-      &&clean(packageAssetFailure?.sourceRevision)===queueRobloxSourceCommit
-      &&clean(packageAssetFailure?.authority)==='roblox-package-asset-binding-failure'
-      &&!clean(packageAssetFailure?.artifactIdentity)
-      &&packageAssetFailure?.assetThreshold?.pass===false
-      &&Array.isArray(packageAssetFailure?.assetThreshold?.blockers)
-      &&packageAssetFailure.assetThreshold.blockers.some(value=>clean(value));
+    const packageAssetFailureRequested=queueRobloxQualityBuildUpRequested
+      &&clean(packageAssetFailure?.authority)==='roblox-package-asset-binding-failure';
+    const liveRobloxSourceTreeSha=currentSourceTreeSha({repoRoot,sourcePath:root});
+    const currentPackageAssetFailure=Boolean(
+      packageAssetFailureRequested
+      &&minimumDesign?.record
+      &&liveRobloxSourceTreeSha
+      &&hasCurrentRobloxPackageAssetRepair({
+        item,
+        assetLibrary:readJson(path.join(repoRoot,COMPANY_ASSET_LIBRARY_PATH),{}),
+        baseline:minimumDesign.record,
+        sourceTreeSha:liveRobloxSourceTreeSha
+      })
+    );
+    const queueRobloxQualityBuildUpRequired=packageAssetFailureRequested
+      ?currentPackageAssetFailure
+      :queueRobloxQualityBuildUpRequested;
     const queuePatch={
       ...queueRuntimePatch,
       queueCurrentStep:clean(item?.currentStep),

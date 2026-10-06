@@ -5,9 +5,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
+import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
@@ -4627,13 +4629,24 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local state = {}\nfunction resolvePrimaryAction(player) state.last=player end\n');
   fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'function dispatchPrimaryAction() return true end\n');
   fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {RoundSeconds=90}\n');
-  writeStudioDesign(root,gameId);
+  const designFile=writeStudioDesign(root,gameId);
+  const baseline=JSON.parse(fs.readFileSync(designFile,'utf8'));
+  const assetLibrary={version:1,assets:[]};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(assetLibrary,null,2)+'\n');
+  execFileSync('git',['init'],{cwd:root,stdio:'ignore'});
+  execFileSync('git',['config','user.email','test@example.com'],{cwd:root});
+  execFileSync('git',['config','user.name','test'],{cwd:root});
+  execFileSync('git',['add','.'],{cwd:root});
+  execFileSync('git',['commit','-m','package repair fixture'],{cwd:root,stdio:'ignore'});
+  const sourceTreeSha=execFileSync('git',['rev-parse',`HEAD:roblox-games/${gameId}`],{cwd:root,encoding:'utf8'}).trim();
+  const assetRepairContext=robloxPackageAssetRepairContext({assetLibrary,baseline});
   const catalog={games:[{id:gameId,name:'Package Asset Repair',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:'roblox-games/'+gameId}]};
   const hint='Repair game-side bindings only; preserve the internal asset library and all asset files.';
   const fallback={mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true};
   const evidence={
     gameId,sourceRevision:source,artifactIdentity:null,authority:'roblox-package-asset-binding-failure',
     assetThreshold:{pass:false,blockers:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],runtimeVerified:false,productionVerified:false},
+    sourceTreeSha,assetRepairContext,
     assetRepairPolicy:fallback,repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
     qualityFailureKinds:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],
     qualityFailureDetails:[{id:'ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED',repairSurface:'INTERNAL_ASSET_SOURCE_BINDING',priority:'P0',hint}]
@@ -4654,6 +4667,14 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   const stale=collectProjects({projects:[]},catalog,root,{items:[{...item,robloxSourceCommit:'d'.repeat(40)}]}).find(row=>row.gameId===gameId&&row.engine==='roblox');
   assert.equal(stale.queueRobloxQualityBuildUpRequired,false);
   assert.equal(stale.queueRobloxQualityBuildUpEvidence,null);
+
+  fs.writeFileSync(path.join(root,'UNRELATED.md'),'unrelated main advance\n');
+  execFileSync('git',['add','UNRELATED.md'],{cwd:root});
+  execFileSync('git',['commit','-m','unrelated main advance'],{cwd:root,stdio:'ignore'});
+  const unrelated=collectProjects({projects:[]},catalog,root,{items:[item]}).find(row=>row.gameId===gameId&&row.engine==='roblox');
+  assert.equal(unrelated.queueRobloxQualityBuildUpRequired,true,'unrelated main movement must not clear an exact game-tree repair');
+  assert.equal(unrelated.queueRobloxQualityBuildUpEvidence?.authority,evidence.authority);
+
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},catalog,developmentQueue:{items:[item]},queue:{maxConcurrentTasks:20,tasks:[]},
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0
@@ -4674,4 +4695,21 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
+
+  fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
+  execFileSync('git',['add',`roblox-games/${gameId}/server/Game.server.luau`],{cwd:root});
+  execFileSync('git',['commit','-m','complete exact package repair'],{cwd:root,stdio:'ignore'});
+  const repaired=collectProjects({projects:[]},catalog,root,{items:[item]}).find(row=>row.gameId===gameId&&row.engine==='roblox');
+  assert.equal(repaired.queueRobloxQualityBuildUpRequired,false,'old package repair identity must expire after the exact game source tree changes');
+  assert.equal(repaired.queueRobloxQualityBuildUpEvidence,null);
+  const repairedPlan=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[item]},queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0
+  });
+  assert.equal(
+    repairedPlan.tasks.some(row=>row.gameId===gameId&&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===evidence.authority),
+    false,
+    'a completed exact package repair must not be scheduled a second time from stale runtime evidence'
+  );
 });
+
