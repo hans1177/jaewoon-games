@@ -96,32 +96,40 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const narrativePlan=design?.narrativeDialoguePlan||{};
   const homagePlan=design?.referenceHomagePlan||{};
   const contentVariety=design?.contentVarietyPlan||{};
+  const narrativeSeed=seed?.GAMEPLAY_SKETCH?.narrativeDepth||{};
+  const storyWeight=clean(narrativeSeed.storyWeight).toUpperCase()||'LIGHT';
   const narrativeRequired=fusionRequired;
+  const npcCompanionRequired=storyWeight==='HEAVY';
+  const mediumNarrativeRequired=storyWeight==='MEDIUM'||storyWeight==='HEAVY';
   const narrativeConnected=!narrativeRequired||(
     narrativePlan.applicable===true
     &&distinct(list(narrativePlan.worldRules)).length>=2
-    &&distinct(list(narrativePlan.characterGoals)).length>=2
-    &&distinct(list(narrativePlan.plotBeats)).length>=3
-    &&distinct(list(narrativePlan.questStates)).length>=2
-    &&distinct(list(narrativePlan.foreshadowing)).length>=2
-    &&distinct(list(narrativePlan.payoffs)).length>=2
-    &&list(narrativePlan.characterVoiceProfiles).length>=1
-    &&list(narrativePlan.sceneBeats).length>=2
-    &&distinct(list(narrativePlan.placeNameContinuity)).length>=3
-    &&distinct(list(narrativePlan.journalRecordLinks)).length>=2
-    &&distinct(list(narrativePlan.dialogueJournalLinks)).length>=2
-    &&distinct(list(narrativePlan.oppositionLoreLinks)).length>=2
-    &&distinct(list(narrativePlan.worldStateCallbacks)).length>=2
+    &&distinct(list(narrativePlan.plotBeats)).length>=(storyWeight==='LIGHT'?1:3)
+    &&distinct(list(narrativePlan.questStates)).length>=(storyWeight==='LIGHT'?1:2)
+    &&distinct(list(narrativePlan.foreshadowing)).length>=(storyWeight==='LIGHT'?1:2)
+    &&distinct(list(narrativePlan.payoffs)).length>=(storyWeight==='LIGHT'?1:2)
+    &&distinct(list(narrativePlan.placeNameContinuity)).length>=(storyWeight==='LIGHT'?2:3)
+    &&distinct(list(narrativePlan.oppositionLoreLinks)).length>=1
+    &&distinct(list(narrativePlan.worldStateCallbacks)).length>=1
     &&list(homagePlan.inspirations).length>=2
+    &&(!mediumNarrativeRequired||(
+      distinct(list(narrativePlan.characterGoals)).length>=2
+      &&list(narrativePlan.sceneBeats).length>=2
+    ))
+    &&(!npcCompanionRequired||list(narrativePlan.characterVoiceProfiles).length>=1)
+    &&(storyWeight==='LIGHT'||(
+      distinct(list(narrativePlan.journalRecordLinks)).length>=2
+      &&distinct(list(narrativePlan.dialogueJournalLinks)).length>=2
+    ))
   );
   const narrativeSystemText=[
     ...list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem,row?.trigger,row?.stateChange]),
     ...list(design.contentExpansionPlan).flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
   ].map(clean).join(' ');
   const narrativeSystemCausality=!narrativeRequired||(
-    /(npc|동료|companion|세력|faction|퀘스트|quest|관계|relationship)/i.test(narrativeSystemText)
-    &&/(지역|region|월드|world|상점|shop|무역|trade|탐험|explor|보스|boss|아이템|item)/i.test(narrativeSystemText)
-    &&/(변화|state|unlock|해금|영향|effect|후속|follow|분기|branch)/i.test(narrativeSystemText)
+    /(지역|region|월드|world|상점|shop|무역|trade|탐험|explor|보스|boss|아이템|item|퀘스트|quest|목표|objective)/i.test(narrativeSystemText)
+    &&/(변화|state|unlock|해금|영향|effect|후속|follow|분기|branch|보상|reward)/i.test(narrativeSystemText)
+    &&(!mediumNarrativeRequired||/(npc|동료|companion|세력|faction|관계|relationship)/i.test(narrativeSystemText))
   );
   const contentCausalityText=list(design.contentExpansionPlan).flatMap(row=>[row?.newGameplay,row?.systemImpact]).map(clean).join(' ');
   const contentCausalityConnected=!narrativeRequired||(
@@ -159,22 +167,23 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     ...list(design.systemInterconnections).flatMap(row=>[row?.fromSystem,row?.toSystem,row?.trigger,row?.stateChange]),
     ...list(design.contentExpansionPlan).flatMap(row=>[row?.milestone,row?.newGameplay,row?.systemImpact])
   ].map(clean).join(' ');
+  const worldComponentLinks=list(worldSeed.componentConceptLinks);
   const worldbuildingConnected=!worldbuildingRequired||(
     worldSeed.allGenreApplicable===true
+    &&textReady(worldSeed.sharedConceptAnchor,30)
+    &&worldComponentLinks.length>=6
     &&narrativePlan.applicable===true
     &&/(지명|place.?name|지도|map|지역명|표지판|landmark)/i.test(worldDesignText)
-    &&/(저널|journal|기록|record|편지|letter|비문|inscription|소문|rumor)/i.test(worldDesignText)
-    &&/(대화|dialogue|npc|동료|companion|관계|relationship)/i.test(worldDesignText)
     &&/(몬스터|monster|enemy|opponent|상대|위협|challenge|생태|ecology)/i.test(worldDesignText)
     &&/(역사|history|세력|faction|문명|civilization|경제|economy|신앙|belief|기술|technology|제도|institution)/i.test(worldDesignText)
-    &&/(상태|state|후속|follow|변화|change|해금|unlock|분기|branch)/i.test(worldDesignText)
+    &&/(상태|state|후속|follow|변화|change|해금|unlock|분기|branch|보상|reward)/i.test(worldDesignText)
+    &&(storyWeight==='LIGHT'||/(저널|journal|기록|record|편지|letter|비문|inscription|소문|rumor)/i.test(worldDesignText))
+    &&(!mediumNarrativeRequired||/(대화|dialogue|npc|동료|companion|관계|relationship)/i.test(worldDesignText))
   );
   const librarySeed=seed?.GAMEPLAY_SKETCH?.libraryLinkage||{};
-  const libraryContractReady=!fusionRequired||(
-    librarySeed.allCanonicalLibrariesSearchable===true
-    &&Array.isArray(librarySeed.libraryFamilies)&&librarySeed.libraryFamilies.length>=8
-    &&librarySeed.compatibilityRightsAndGameIdentityFirst===true
-    &&librarySeed.actualConsumerEvidenceRequired===true
+  const libraryReferenceContractReady=!fusionRequired||(
+    librarySeed.referenceOnly===true
+    &&librarySeed.perLibraryUseOptional===true
     &&librarySeed.noForcedUse===true
     &&librarySeed.noShadowPipeline===true
     &&textReady(librarySeed.selectionRule,30)
@@ -213,7 +222,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const artBasic=Boolean(design.artAudioDirection)&&textReady(design.visualDirection,20);
   const artConnected=artBasic&&objectReady(design.artAudioDirection,['visualIdentity','audioIdentity','gameplayFeedbackSync'],16)&&styleConnected;
   const traceBasic=list(design.implementationTraceability).length>0;
-  const traceConnected=objectListReady(design.implementationTraceability,['designElement','responsibleSystem','validationEvidence'],3,10)&&distinct(list(design.technicalAssumptions)).length>=2&&distinct(list(design.validationQuestions)).length>=2&&libraryContractReady;
+  const traceConnected=objectListReady(design.implementationTraceability,['designElement','responsibleSystem','validationEvidence'],3,10)&&distinct(list(design.technicalAssumptions)).length>=2&&distinct(list(design.validationQuestions)).length>=2;
 
   const evidenceLevels={
     IDEA_AND_DISTINCTNESS:level(ideaBasic,ideaConnected,revalidated&&textReady(design.identity,100)),
@@ -309,7 +318,9 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
       narrativeDialogueJournalCount:distinct(list(narrativePlan.dialogueJournalLinks)).length,
       narrativeOppositionLoreCount:distinct(list(narrativePlan.oppositionLoreLinks)).length,
       narrativeWorldStateCallbackCount:distinct(list(narrativePlan.worldStateCallbacks)).length,
-      libraryContractReady,
+      libraryReferenceContractReady,
+      libraryUsageHardGate:false,
+      perLibraryCoherenceRequiredOnlyWhenSelected:true,
       assetLibraryExpansionRequired:false
     }),
   };
