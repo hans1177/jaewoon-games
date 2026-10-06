@@ -550,6 +550,8 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
     const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     assert.equal((configAgain.match(/STUDIO_ASSET_BINDING_BEGIN/g)||[]).length,1);
     assert.equal((clientAgain.match(/STUDIO_ASSET_BINDING_CLIENT_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/STUDIO_ASSET_DYNAMIC_BINDING_BEGIN/g)||[]).length,1);
+    assert.equal((clientAgain.match(/STUDIO_ASSET_DYNAMIC_BINDING_END/g)||[]).length,1);
     assert.equal((clientAgain.match(/StudioAssetFramePanel/g)||[]).length,1);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
