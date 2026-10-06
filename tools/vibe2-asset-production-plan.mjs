@@ -725,8 +725,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
   const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog});
-  next.assets=consumerSync.registry.assets;
-  // 품질 입력: 집계 점수보다 현재 원본 파일의 축별 감사를 사용한다. 런타임 승격 권한은 없다.
+  // source-bound 소비자는 현재 소스의 동적 overlay다. canonical library version/fingerprint는 바꾸지 않는다.
   const qualityInputs=new Map();
   const planningAssets=next.assets.map(asset=>{
     const evidenceRef=clean(asset.internalAuditEvidenceRef);
@@ -885,7 +884,6 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     autonomousOperatingContract:libraryPlan.autonomousOperatingContract,
     autonomousMaintenanceContract:libraryPlan.autonomousMaintenanceContract,
     maintenance:maintenanceState,
-    sourceConsumerSync:consumerSync.summary,
     studioVariationAxes:libraryPlan.studioVariationAxes,
     autonomousNextAction:libraryPlan.autonomousNextAction,
     autonomousContinuationRequired:true,
@@ -2388,7 +2386,7 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
-  const companyRegistry=librarySync.registry;
+  const companyRegistry=synchronizeSourceBoundAssetConsumers({repoRoot,registry:librarySync.registry}).registry;
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionLibraryPlan=librarySync.automationPlan;
   const persistedWorklistFresh=
