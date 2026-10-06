@@ -1117,6 +1117,14 @@ test('worker model cache is architecture-aware while runtime preparation reuses 
   assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-${ollama_arch}.tar.zst?version='));
   assert(prepareOllamaAction.includes("grep -qx 'lib/ollama/llama-server'"));
   assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
+  assert(prepareOllamaAction.includes('preload-model:'));
+  assert(prepareOllamaAction.includes("default: 'false'"));
+  assert(prepareOllamaAction.includes('- name: Preload requested local model'));
+  assert(prepareOllamaAction.includes('inputs.preload-model == \'true\''));
+  assert(prepareOllamaAction.includes('keep_alive:"20m"'));
+  assert(prepareOllamaAction.includes('num_ctx:8192'));
+  assert(prepareOllamaAction.includes('EXTERNAL_AI_REQUIRED=NO'));
+  assert(workerPart.includes("preload-model: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && 'true' || 'false' }}"));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
 });
 

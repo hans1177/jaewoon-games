@@ -20,6 +20,10 @@ inputs:
     description: Opt in to the shared GitHub Actions cache for the requested Ollama model store. Default false preserves callers with their own model cache.
     required: false
     default: 'false'
+  preload-model:
+    description: Opt in to loading the requested local model into memory before the caller starts source generation. Default false keeps other callers unchanged.
+    required: false
+    default: 'false'
 runs:
   using: composite
   steps:
@@ -245,6 +249,29 @@ runs:
         test "$pulled" = 1
         ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"
         echo 'OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES'
+        echo 'PAID_API=NO'
+
+    - name: Preload requested local model
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.preload-model == 'true'
+      shell: bash
+      env:
+        MODEL: ${{ inputs.model }}
+      run: |
+        set -euo pipefail
+        preload_started="$(date +%s%3N)"
+        payload="$(jq -nc --arg model "$MODEL" '{model:$model,prompt:"",stream:false,keep_alive:"20m",options:{num_ctx:8192,num_predict:1}}')"
+        echo "OLLAMA_MODEL_PRELOAD=BEGIN:$MODEL"
+        curl -fsS --max-time 300 \
+          -H 'content-type: application/json' \
+          -d "$payload" \
+          http://127.0.0.1:11434/api/generate > /tmp/ollama-model-preload.json
+        jq -e '.done == true' /tmp/ollama-model-preload.json >/dev/null
+        preload_finished="$(date +%s%3N)"
+        echo "OLLAMA_MODEL_PRELOAD=PASS:$MODEL:$((preload_finished-preload_started))ms"
+        echo 'OLLAMA_MODEL_PRELOAD_SCOPE=OPT_IN_CALLER_ONLY'
+        echo 'OLLAMA_MODEL_PRELOAD_CONTEXT=8192'
+        echo 'OLLAMA_MODEL_KEEP_ALIVE=20m'
+        echo 'EXTERNAL_AI_REQUIRED=NO'
         echo 'PAID_API=NO'
 
     - name: Save requested Ollama model cache immediately

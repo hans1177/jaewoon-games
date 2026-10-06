@@ -1392,6 +1392,7 @@ jobs:
         with:
           model: ${{ steps.order.outputs.local_model }}
           pull-model: 'true'
+          preload-model: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && 'true' || 'false' }}
 
       - name: Measure worker Ollama preparation
         id: worker_ollama_metrics
