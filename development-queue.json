@@ -35727,17 +35727,17 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T08:33:24.549Z",
+      "updatedAt": "2026-10-06T08:34:48.634Z",
       "robloxSourceCommit": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
       "robloxSourceBootstrapPassedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-06T08:34:48.634Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -35780,9 +35780,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -36036,29 +36036,23 @@
       "robloxPromotionBlockers": [],
       "robloxPublicReleaseEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "0e0e007e8fe66f32d3e626e4404671797da0a010",
+      "robloxQualityBuildUpSourceRevision": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-single-defense-strat-celestial-bastion",
-        "sourceRevision": "0e0e007e8fe66f32d3e626e4404671797da0a010",
+        "sourceRevision": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 37429537013,
-        "testedAt": "2026-10-06T07:35:48.858Z",
+        "workflowRunId": 37436374046,
+        "testedAt": "2026-10-06T08:34:48.634Z",
         "qualityFailureKinds": [
-          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
-          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
-          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
-          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT"
         ],
         "assetThreshold": {
           "pass": false,
           "blockers": [
-            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
-            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
-            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
-            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
+            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT"
           ],
           "requiredFamilies": [
             "CHARACTER",
@@ -36083,10 +36077,10 @@
           "primitiveOnlyOrColorOnlyForbidden": true,
           "visibleAssetBindingPass": true,
           "sourceBindingTracePass": true,
-          "familyBindingPassCount": 1,
+          "familyBindingPassCount": 4,
           "appliedFamilyCount": 5,
           "notApplicableFamilyCount": 7,
-          "resolvedFamilyCount": 8,
+          "resolvedFamilyCount": 11,
           "allFamiliesResolved": false,
           "familyResults": [
             {
@@ -36100,15 +36094,19 @@
               "family": "CREATURE",
               "status": "APPLIED",
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "BUILDING",
               "status": "APPLIED",
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "ENVIRONMENT",
@@ -36135,8 +36133,10 @@
               "family": "MATERIAL",
               "status": "APPLIED",
               "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": []
+              "actualBinding": true,
+              "boundFiles": [
+                "client/Game.client.luau"
+              ]
             },
             {
               "family": "AUDIO",
@@ -36567,7 +36567,7 @@
           "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "7a1b88765d47b07c46362b846e78499c0066a0b3",
+        "sourceTreeSha": "a60d35697a37df5989fd45648a5ffabe56f61a54",
         "assetRepairContext": {
           "libraryFingerprint": "c669f55a98f4411ed85a50c6d963737ee784dcded76c9a1de3c2ee8a7b9c9b91",
           "baselineFingerprint": "de7a4ab6415d6577127eeb3e57f1541e3c3701de3bbc1aaa78a87756fa48020a",
@@ -36585,40 +36585,6 @@
         },
         "qualityFailureDetails": [
           {
-            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:CREATURE",
-            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
-            "priority": "P0",
-            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
-            "observed": {
-              "libraryVersion": 113,
-              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
-              "familyResult": {
-                "family": "CREATURE",
-                "status": "APPLIED",
-                "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
-              }
-            }
-          },
-          {
-            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING",
-            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
-            "priority": "P0",
-            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
-            "observed": {
-              "libraryVersion": 113,
-              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
-              "familyResult": {
-                "family": "BUILDING",
-                "status": "APPLIED",
-                "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
-              }
-            }
-          },
-          {
             "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:ENVIRONMENT",
             "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
             "priority": "P0",
@@ -36628,23 +36594,6 @@
               "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
               "familyResult": {
                 "family": "ENVIRONMENT",
-                "status": "APPLIED",
-                "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": []
-              }
-            }
-          },
-          {
-            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
-            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
-            "priority": "P0",
-            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
-            "observed": {
-              "libraryVersion": 113,
-              "selectionFingerprint": "939969827a89b7aa762eff27e391fe7b7439b764e73fae93a78bbf6723bb512f",
-              "familyResult": {
-                "family": "MATERIAL",
                 "status": "APPLIED",
                 "systemPresent": true,
                 "actualBinding": false,
@@ -46948,7 +46897,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T08:33:24.549Z",
+  "updatedAt": "2026-10-06T08:34:48.634Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
