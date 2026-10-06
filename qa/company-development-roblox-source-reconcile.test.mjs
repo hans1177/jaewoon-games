@@ -927,15 +927,18 @@ test('unchanged package asset failure cannot be turned into a new source PASS by
 });
 
 
-test('verified learning refresh debt coalesces into one existing batch sweep',()=>{
+test('verified learning refresh debt coalesces into one exact existing batch sweep',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const start=workflow.indexOf('      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt');
   const end=workflow.indexOf('      - name: Resolve next Roblox source execution slice',start);
   assert.ok(start>=0&&end>start);
   const block=workflow.slice(start,end);
-  assert.match(block,/Roblox verified learning sweep · batch/);
+  assert.match(block,/scope_key="batch-\$scope_hash"/);
+  assert.match(block,/const title='Roblox verified learning sweep · '\+String\(process\.env\.SCOPE_KEY\|\|''\)/);
   assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH/);
-  assert.match(block,/company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(block,/gh workflow run company-roblox-verified-learning-sweep\.yml/);
+  assert.match(block,/-f game_ids="\$game_ids"/);
+  assert.match(block,/-f scope_key="\$scope_key"/);
   assert.doesNotMatch(block,/while IFS= read -r game_id/);
   assert.doesNotMatch(block,/-f game_id=/);
 });
