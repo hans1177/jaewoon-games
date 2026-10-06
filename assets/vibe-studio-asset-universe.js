@@ -2086,14 +2086,13 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
   const maintenanceBase=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
-  const maintenance=releaseScopedProduction
-    ?Object.freeze({
-      ...maintenanceBase,
-      nextQualityActions:Object.freeze((maintenanceBase.nextQualityActions||[]).filter(action=>(action?.consumerGameIds||[]).some(id=>scopedGameIdSet.has(text(id))))),
-      releaseScopedProduction:true,
-      productionScopeGameIds:Object.freeze(scopedGameIds)
-    })
-    :maintenanceBase;
+  const maintenance=Object.freeze({
+    ...maintenanceBase,
+    releaseScopedProduction:releaseScopedProduction===true,
+    productionScopeGameIds:Object.freeze(scopedGameIds),
+    qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+    releasedGameDemandAffectsPriorityNotQualityEligibility:true
+  });
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -2411,6 +2410,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     productionScopeGameIds:Object.freeze(scopedGameIds),
     releasedGameDemandAvailable:scopedGameIds.length>0,
     unscopedGenericIdeaProductionForbidden:releaseScopedProduction===true,
+    qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+    releasedGameDemandAffectsPriorityNotQualityEligibility:true,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
     domains:Object.freeze(sortedDomains),
