@@ -135,7 +135,8 @@ test('seeded advanced coding graphics rig material and vfx knowledge stays verif
     'external-ai-distilled:openai-visual-aesthetic-v1',
     'external-ai-distilled:openai-rig-joint-motion-v1',
     'external-ai-distilled:openai-material-lighting-v1',
-    'external-ai-distilled:openai-vfx-camera-readability-v1'
+    'external-ai-distilled:openai-vfx-camera-readability-v1',
+    'external-ai-distilled:openai-roblox-cloud-coding-v1'
   ];
   for(const id of required){
     const row=store.entries.find(item=>item.id===id);

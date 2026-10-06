@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "authority": "CENTRAL_POLICY_SUBORDINATE_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
   "ownerDirectiveRecordedAt": "2026-09-18",
@@ -352,7 +352,7 @@
     "verifiedProjectOutcomeRequiredForPositiveLearning": true,
     "existingThresholdsHoldoutCanaryUnchanged": true
   },
-  "updatedAt": "2026-09-25",
+  "updatedAt": "2026-10-06",
   "verifiedSpecializedQueueEvidenceIngress": {
     "enabled": true,
     "authority": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
@@ -453,6 +453,46 @@
     "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true,
     "studioEvidenceCannotPublishOrDiscoverPublicationTarget": true,
     "supersededSharedTargetEvidenceRejected": true,
-    "publishedCandidateMustBeCurrentWhenShared": true
+    "publishedCandidateMustBeCurrentWhenShared": true,
+    "role": "LEGACY_OPTIONAL_DIAGNOSTIC_REUSE",
+    "cloudProductionRuntimeAuthority": false
+  },
+  "robloxOpenCloudVerifiedLearning": {
+    "version": 1,
+    "enabled": true,
+    "authority": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.validationProviderContract",
+    "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
+    "sourceState": "company-runtime:development-queue.json",
+    "exactCandidateRequired": true,
+    "exactIdentityFields": [
+      "sourceRevision",
+      "artifactIdentity",
+      "universeId",
+      "placeId",
+      "versionNumber"
+    ],
+    "requiredOutcomeGates": [
+      "ROBLOX_RUNTIME_FOUNDATION_PASS",
+      "ROBLOX_RUNTIME_PASS",
+      "SERVER_CLIENT_AUTHORITY_AND_REMOTE_SECURITY_PASS",
+      "MOBILE_INPUT_UI_PASS",
+      "INDEPENDENT_QA_PASS",
+      "REGRESSION_PASS"
+    ],
+    "conditionalOutcomeGates": [
+      "DATASTORE_REJOIN_PASS_WHEN_SAVE_REQUIRED",
+      "MULTIPLAYER_PASS_WHEN_REQUIRED"
+    ],
+    "cachedLocalEvidenceCannotSatisfyCloudRuntime": true,
+    "studioLocalEvidenceCannotSatisfyCloudRuntime": true,
+    "canonicalIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxCloudRuntimeExperience",
+    "canonicalExperienceStore": ".vibe2/experience.json",
+    "canonicalRetrieval": "tools/vibe2-learning-motor.mjs#retrieveUnifiedLearning",
+    "productionMasteryRequiresCloudRuntime": true,
+    "feedsCanonicalTrainingSamplesOnlyThroughExistingVerifiedDistillationChain": true,
+    "directRawTelemetryTraining": false,
+    "directRawSourceTraining": false,
+    "separatePipelineForbidden": true,
+    "separateTrainerForbidden": true
   }
 }
