@@ -5,7 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree,robloxPackageAssetRepairContext} from './company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 
 const SHA=/^[0-9a-f]{40}$/i;
 const clean=value=>String(value??'').trim();
@@ -152,23 +152,21 @@ export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',pr
   return Object.freeze({pass:true,technology,lightingStyle,prioritizeLightingQuality,expectsRetro,...checks});
 }
 
-export const ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES=Object.freeze([
-  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
-]);
+export const ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
 
 const ROBLOX_PACKAGE_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  CHARACTER:/\b(?:Players|LocalPlayer|CharacterAdded|Humanoid|character|avatar|npc)\b/i,
+  CHARACTER:/\b(?:HumanoidDescription|avatar|npc|companion|character(?:Model|Visual|Appearance|Skin|Outfit|Rig)|outfit|armor)\b/i,
   CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
   BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|world|workspace)\b/i,
+  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|tree|rock|road|path|water)\b/i,
   WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
   SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
   MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
   AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
   VFX:/\b(?:ParticleEmitter|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
   UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|motion|locomotion|idle|walk|run)\b/i,
-  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item)\b/i
+  MOTION:/\b(?:Animator|AnimationTrack|AnimationId|Motor6D|Bone|locomotion|idleAnimation|walkAnimation|runAnimation|attackAnimation|hitAnimation|deathAnimation)\b/i,
+  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i
 });
 const ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS=Object.freeze({
   CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
@@ -219,6 +217,11 @@ function robloxPackageAssetFamilyBoundInText(text='',family=''){
 }
 function stripRobloxPackageAssetTrace(text=''){
   return String(text||'')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/g,' ')
+    .replace(/-- native-foundation-sentinel-v1 client readiness[\s\S]*$/g,' ')
+    .replace(/-- native-foundation-sentinel-v1[\s\S]*$/g,' ')
     .replace(/--[^\n]*/g,' ')
     .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
