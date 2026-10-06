@@ -3373,7 +3373,13 @@ export function findSafeTasks(project,repoRoot,queue){
     const motionRoot='assets/roblox/world-ghosts/motions';
     const registry=synchronizeSourceBoundAssetConsumers({
       repoRoot,
-      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{})
+      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{}),
+      gameCatalog:{games:[{
+        id:project.gameId,
+        lifecycleState:'ACTIVE',
+        productionClass:project.releaseState,
+        robloxProjectPath:project.projectPath||('roblox-games/'+project.gameId)
+      }]}
     }).registry;
     const tasks=[];
     for(const asset of registry.assets||[]){
