@@ -154,20 +154,6 @@ export function validateRobloxArtifactLightingMigrationGuard({artifactPath='',pr
 
 export const ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
 
-const ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS=Object.freeze({
-  CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
-  CREATURE:/(?:Instance\.new\(["'](?:Model|MeshPart|Attachment|Bone|Motor6D)["']\)|\bHumanoid\b|\bAnimationController\b)/i,
-  BUILDING:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|Attachment)["']\)|\bClone\s*\()/i,
-  ENVIRONMENT:/(?:\bTerrain\b|\bLighting\b|\bAtmosphere\b|Instance\.new\(["'](?:Model|Part|MeshPart)["']\))/i,
-  WEAPON:/(?:Instance\.new\(["'](?:Tool|Model|MeshPart|Attachment|WeldConstraint)["']\)|\bWeldConstraint\b)/i,
-  SKILL:/(?:ParticleEmitter|Beam|Trail|Attachment|PointLight|SpotLight|SurfaceLight|Instance\.new\(["']Model["']\))/i,
-  MATERIAL:/(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
-  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\))/i,
-  VFX:/(?:ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)/i,
-  UI:/(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|UIStroke|UICorner|UIGradient)/i,
-  MOTION:/(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat)/i,
-  PROP:/(?:Instance\.new\(["'](?:Model|Part|MeshPart|ProximityPrompt|Attachment)["']\)|\bClone\s*\()/i
-});
 function collectRobloxPackageSourceTexts(sourceRoot=''){
   const root=path.resolve(sourceRoot),rows=[],stack=[root];
   while(stack.length){
@@ -192,7 +178,7 @@ function robloxPackageAssetFamilyRefPattern(family=''){
   return new RegExp('(?:studioAssetFamily\\s*\\(\\s*["\\\']'+value+'["\\\']|hasStudio(?:Asset)?Atom\\s*\\(\\s*["\\\']'+value+'["\\\']|studioAssetFamilies(?:\\s*\\.\\s*'+value+'|\\s*\\[\\s*["\\\']'+value+'["\\\']\\s*\\]))','ig');
 }
 function robloxPackageAssetFamilyBoundInText(text='',family=''){
-  const raw=String(text||''),nativePattern=ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS[family];
+  const raw=String(text||''),nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
   if(!nativePattern)return false;
   for(const ref of raw.matchAll(robloxPackageAssetFamilyRefPattern(family))){
     const start=Math.max(0,Number(ref.index||0)-3500);
