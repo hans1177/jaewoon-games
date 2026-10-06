@@ -538,8 +538,15 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     mainSubquestLinks:storyWeight==='LIGHT'?1:2,
     foreshadowPayoffs:storyWeight==='LIGHT'?1:2,
     factionCultureHooks:storyWeight==='LIGHT'?1:2,
+    historicalMythReinterpretations:1,
+    worldbuildingFusion:storyWeight==='LIGHT'?2:3,
+    storySystemLinks:storyWeight==='LIGHT'?2:3,
+    contentCausalityLinks:storyWeight==='LIGHT'?3:4,
+    worldEvolutionHooks:1,
+    placeNameLedger:storyWeight==='LIGHT'?2:3,
     journalRecordChains:storyWeight==='LIGHT'?0:2,
     dialogueJournalLinks:storyWeight==='LIGHT'?0:2,
+    monsterOpponentLoreEcologyLinks:1,
   };
   const narrativePool=[...GAMEPLAY_NARRATIVE_DNA_FAMILIES];
   const narrativeSeed=clean(target.requestId||gameName).split('').reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
@@ -558,7 +565,9 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
   const worldConflict=clean(narrativeRaw.worldConflict)
     ||(gameName+'의 세계는 서로 다른 세력·지역·가치관이 '+mainContent+'의 자원과 목표를 두고 충돌하며 플레이어 선택으로 관계와 지역 상태가 달라진다.');
   const mainStoryArc=clean(narrativeRaw.mainStoryArc)
-    ||'초반에는 지역 사건과 NPC 관계를 통해 갈등을 발견하고, 중반에는 동료·세력·서브퀘의 선택 결과가 메인 갈등에 합류하며, 후반에는 과거의 복선과 역사·신화 재해석이 현재 세계의 진실과 최종 선택을 바꾼다.';
+    ||(storyWeight==='LIGHT'
+      ?'초반에는 공간·규칙·상대/장애물·보상에서 세계의 현재 상태를 보여주고, 중반에는 발견한 지명·유물·기록 또는 환경 변화가 다음 목표의 이유를 설명하며, 후반에는 이전 단서와 성장 결과가 새 경로·상태·최종 도전의 의미를 바꾼다.'
+      :'초반에는 지역 사건과 NPC 관계를 통해 갈등을 발견하고, 중반에는 동료·세력·서브퀘의 선택 결과가 메인 갈등에 합류하며, 후반에는 과거의 복선과 역사·신화 재해석이 현재 세계의 진실과 최종 선택을 바꾼다.');
   const npcRelationshipWeb=sketchArray(narrativeRaw.npcRelationshipWeb,[
     '핵심 NPC는 목표·두려움·비밀·소속 세력·플레이어 기억을 가지며 퀘스트 결과에 따라 관계 상태가 바뀐다',
     'NPC끼리 동맹·경쟁·가족·사제·채무·은원 중 하나 이상의 관계를 공유하고 한 인물의 선택이 다른 인물의 태도와 사건 조건에 영향을 준다',
@@ -585,31 +594,31 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     narrativeDnaSources[0]+'의 권력·관계·운명·사회구조를 이름과 사건을 복제하지 않고 게임 세계의 세력/지역/인물 갈등으로 재구성한다',
     narrativeDnaSources[1]+'의 서사 기법을 메인 퀘스트와 동료/서브퀘 구조로 변형하고 원전의 고유 표현·대사·캐릭터·장면 배열은 복제하지 않는다',
     '로마 공화정/제정의 원로원·가문 경쟁·군단·속주·시민권·대중정치·무역 구조와 현대사의 산업화·도시화·혁명·총력전·냉전/첩보·탈식민·국제질서 구조를 필요할 때 세계관 시스템으로 재해석한다'
-  ],2,8);
+  ],narrativeMinimums.historicalMythReinterpretations,8);
   const worldbuildingFusion=sketchArray(narrativeRaw.worldbuildingFusion,[
     '역사적 권력 구조 × 신화적 세계 규칙을 결합해 세력 제도·지역 신앙·금기·유물의 기원을 한 세계사로 연결한다',
     '경제/무역/기술 변화 × NPC 관계망을 결합해 도시·마을·상점·직업·세력의 생활상이 메인 갈등의 원인이자 결과가 되게 한다',
     '전쟁/정치 갈등 × 탐험/미스터리를 결합해 폐허·기록·국경·유적이 과거 사건의 증거이자 현재 플레이 경로가 되게 한다',
     '민담/공포/신화 × 일상 문화 요소를 결합해 괴이·축제·의식·금기·지역 전설이 퀘스트와 환경 상호작용으로 드러나게 한다'
-  ],3,8);
+  ],narrativeMinimums.worldbuildingFusion,8);
   const storySystemLinks=sketchArray(narrativeRaw.storySystemLinks,[
     'NPC 관계/평판 변화가 동료 영입·상점·무역·서브퀘·지역 접근 중 실제 시스템 상태를 바꾼다',
     '탐험에서 발견한 기록·유물·증거가 메인/서브퀘 분기와 제작·수집·숨은 보스/지역 조건으로 연결된다',
     '세력 선택과 동료 조합이 파티 시너지·지원군·가격·경로·보스 대응 방식 중 하나 이상을 변화시킨다',
     '하우징/거점/박물관/기록실 같은 적합한 시스템이 수집한 서사 자산을 보관·해석하고 새 사건·제작·탐험 목표를 연다'
-  ],3,10);
+  ],narrativeMinimums.storySystemLinks,10);
   const contentCausalityLinks=sketchArray(narrativeRaw.contentCausalityLinks,[
     '새 지역/던전은 과거 사건·세력 이해관계·자원/지형 조건 중 하나 이상의 세계 원인으로 존재하고 진입 이유가 현재 메인/서브퀘와 연결된다',
     '보스/적은 해당 지역과 세력의 역사·생태·정치·신화 규칙 때문에 등장하며 처치 결과가 지역/NPC/세력/경제 상태 중 하나 이상을 바꾼다',
     '아이템/유물/펫/장비는 획득 출처와 문화·기술·신화적 기원이 있고 수집·강화·조합 결과가 다음 탐험/전투/퀘스트 선택으로 이어진다',
     '미니게임/무역/하우징/생산 콘텐츠는 세계의 직업·축제·경제·사회관계와 연결되고 결과가 재화 외에도 평판·정보·NPC 관계·지역 발전 중 하나를 변화시킨다',
     '콘텐츠 완료는 보상 지급으로 끝나지 않고 대사·세력 관계·지도·상점·동료·후속 사건 중 적어도 하나에 관찰 가능한 후속 변화를 남긴다'
-  ],4,12);
+  ],narrativeMinimums.contentCausalityLinks,12);
   const worldEvolutionHooks=sketchArray(narrativeRaw.worldEvolutionHooks,[
     '메인/서브퀘와 세력 선택의 누적 결과로 마을·도시·지역의 점유·상점·NPC 배치·안전도·이벤트가 단계적으로 변한다',
     '후반 성장과 새 역사/신화 정보가 초기 지역의 의미를 재해석하고 과거 콘텐츠에 새 경로·대화·거래·숨은 사건을 만든다',
     '큰 사건 이후 세계가 원상복귀하지 않고 플레이어 선택에 맞는 시각·경제·관계 상태를 유지하거나 다음 단계로 전환된다'
-  ],2,8);
+  ],narrativeMinimums.worldEvolutionHooks,8);
   const culturalRespectRules=sketchArray(narrativeRaw.culturalRespectRules,[
     '역사·신화·민담은 단일 민족/문화의 고정 관념이나 우열 서열로 단순화하지 않고 내부의 다양한 역할과 이해관계를 구분한다',
     '실제 비극·전쟁·식민지배·박해·학살을 가벼운 보상 장치나 희화화로 사용하지 않고 필요하면 허구화·거리두기·맥락화를 적용한다',
@@ -620,19 +629,19 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     '중심 지역의 지명은 지형/역사/세력 기원을 한 문장으로 설명하고 지도·NPC 대화·퀘스트·저널에서 같은 이름을 사용한다',
     '변방/위험 지역 지명은 과거 사건이나 몬스터/재난/산업 흔적과 연결해 이름만 들어도 역할과 위험을 추론할 수 있게 한다',
     '옛 지명과 현재 지명이 다른 장소는 개명 원인을 세력 변화·전쟁·복원·신앙 변화와 연결하고 후반 단서로 회수한다'
-  ],3,10);
+  ],narrativeMinimums.placeNameLedger,10);
   const journalRecordChains=sketchArray(narrativeRaw.journalRecordChains,[
     '현장 저널/편지/비문 하나가 지역 사건의 한 관점만 제공하고 다른 기록·NPC 증언·환경 흔적을 조합해야 전체 원인을 알 수 있다',
     '저널에서 발견한 지명·인물·몬스터/상대·유물 단서가 실제 지도 표식·대화 선택·서브퀘·도감 갱신으로 이어진다'
-  ],2,8);
+  ],narrativeMinimums.journalRecordChains,8);
   const dialogueJournalLinks=sketchArray(narrativeRaw.dialogueJournalLinks,[
     'NPC 대화가 플레이어가 읽은 저널/기록 여부를 반영해 같은 사건의 새 질문·반박·추가 정보를 열고 메인/서브퀘 상태를 갱신한다',
     'NPC의 주장과 기록이 충돌할 수 있지만 누가 무엇을 언제 알았는지 지식범위를 유지해 모순이 아닌 미스터리 단서로 작동한다'
-  ],2,8);
+  ],narrativeMinimums.dialogueJournalLinks,8);
   const monsterOpponentLoreEcologyLinks=sketchArray(narrativeRaw.monsterOpponentLoreEcologyLinks,[
     '몬스터/적/상대의 이름·서식/활동지역·행동 패턴·드랍/보상은 지역 생태와 역사적 사건 또는 세력 이용 방식과 연결된다',
     'NPC 소문·저널 기록·도감 관찰·실제 전투/조우가 같은 위협을 서로 다른 관점에서 설명하고 플레이어가 대응법을 학습하게 한다'
-  ],2,8);
+  ],narrativeMinimums.monsterOpponentLoreEcologyLinks,8);
   const namingRules=sketchArray(narrativeRaw.namingRules,[
     '같은 문화권의 인명·지명·조직·몬스터 명칭은 공통 어형/음절/접미 규칙을 사용하되 실제 문화 고유명을 무단 복제하지 않는다',
     '이름은 기능만 나열하지 않고 역사·지형·직업·신앙·사건 중 하나 이상의 세계 근거를 가지며 UI에서 구분 가능한 길이와 발음을 유지한다'
@@ -741,7 +750,7 @@ function normalizeGameplaySketch(target,p,coreLoop,gameName){
     referenceOnly:true,
     perLibraryUseOptional:true,
     libraryFamilies:[...GAMEPLAY_CANONICAL_LIBRARY_FAMILIES],
-    selectionRule:clean(libraryRaw.selectionRule)||'매 설계/BUILD_UP에서 현재 게임의 장르·플랫폼·세계관·시스템·책임 소스에 맞춰 모든 canonical 라이브러리를 후보로 검색하고 호환성·권리·정체성·품질·현재 필요성을 통과한 항목만 기존 책임 시스템에서 소비한다.',
+    selectionRule:clean(libraryRaw.selectionRule)||'canonical 라이브러리는 참고 후보 풀로 검색 가능하게 두되 모든 family를 사용할 필요는 없다. 현재 게임의 장르·플랫폼·컨셉·권리·정체성·현재 필요성에 맞는 후보만 선택하고 실제 선택한 후보만 기존 책임 시스템에서 소비한다.',
     fallbackRule:clean(libraryRaw.fallbackRule)||'호환 항목이 없으면 강제 대입하지 않고 기존 게임 소스와 canonical 생성/학습 흐름을 사용하며, 필요 자산/패턴 확장은 기존 라이브러리 생산 경로에서만 수행한다.',
     compatibilityRightsAndGameIdentityFirst:true,
     actualConsumerEvidenceRequired:true,
