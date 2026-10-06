@@ -953,7 +953,10 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('actions/runs?per_page=100'));
   assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_PRIORITY_LANE=ASSET_DEVELOPMENT'));
   assert(safetyNetWorkflow.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
-  assert.equal(safetyNetWorkflow.includes("VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED:$asset_burst\n            else"),false);
+  const preplanStep=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('- name: Dispatch queued GAME_PRIMARY and independent asset work before full planning'),safetyNetWorkflow.indexOf('- name: Plan from latest main and persist control queue'));
+  assert(preplanStep.includes('VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED'));
+  assert(preplanStep.includes('VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED'));
+  assert.equal(preplanStep.includes("VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED:$asset_burst'\n            fi\n            exit 0"),false);
   assert(safetyNetWorkflow.includes('actions/runs/$run_id/jobs?per_page=100'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_LEARNING_IDLE_DEFERRED='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
