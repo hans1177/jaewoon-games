@@ -481,7 +481,6 @@ function collectCommonCatalogAudioRoles(catalogRows=[]){
 
 const SOURCE_CONSUMER_EXTENSIONS=new Set(['.lua','.luau','.json','.js','.mjs','.cjs','.ts','.tsx','.cs','.html','.css','.xml','.toml','.yaml','.yml']);
 const SOURCE_CONSUMER_SKIP_DIRS=new Set(['.git','node_modules','Library','Temp','obj','bin','build','dist','Logs','UserSettings','.cache']);
-const SOURCE_CONSUMER_GAME_CACHE=new Map();
 
 function sourceConsumerPath(value=''){
   return clean(value).replaceAll('\\','/').replace(/^\/+/,'').replace(/^\.\//,'').replace(/\/+/g,'/');
@@ -557,9 +556,8 @@ function sourceConsumerManagedTokens(source=''){
   }
   return byFamily;
 }
-function sourceConsumerSnapshot({repoRoot=process.cwd(),game={},useCache=true}={}){
-  const gameId=clean(game.id||game.gameId),cacheKey=path.resolve(repoRoot)+'|'+gameId;
-  if(useCache&&SOURCE_CONSUMER_GAME_CACHE.has(cacheKey))return SOURCE_CONSUMER_GAME_CACHE.get(cacheKey);
+function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
+  const gameId=clean(game.id||game.gameId);
   const roots=sourceConsumerRoots({repoRoot,game});
   const assetPaths=new Map(),tokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
@@ -617,7 +615,6 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={},useCache=true}={
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
-  if(useCache)SOURCE_CONSUMER_GAME_CACHE.set(cacheKey,snapshot);
   return snapshot;
 }
 function sourceConsumerAssetPaths(asset={}){
@@ -631,12 +628,12 @@ function sourceConsumerIdentityTokens(asset={}){
     asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId
   ].map(clean).filter(value=>value.length>=2));
 }
-export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null,useCache=true}={}){
+export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null}={}){
   const original=registry&&typeof registry==='object'?registry:{};
   const catalog=gameCatalog||readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
   const games=(catalog.games||[]).filter(sourceConsumerEligibleGame).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
   const next=JSON.parse(JSON.stringify(original));next.assets=Array.isArray(next.assets)?next.assets:[];
-  const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game,useCache})}));
+  const snapshots=games.map(game=>({game,snapshot:sourceConsumerSnapshot({repoRoot,game})}));
   const packLinks=new Map();
   for(const {game,snapshot} of snapshots){
     const gameId=clean(game.id||game.gameId),linked=new Map();
@@ -749,6 +746,21 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const previousMaintenance=original?.internalAssetLibraryAutomation?.maintenance||null;
   const libraryPlan=buildInternalAssetLibraryAutomationPlan({
     assets:planningAssets,
+    seedPlan,
+    uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
+    audioRoleIds,
+    externalSources:next.externalSources||[],
+    consumerGames:gameCatalog.games||[],
+    previousMaintenance
+  });
+  const dynamicPlanningAssets=consumerSync.registry.assets.map(asset=>{
+    const evidenceRef=clean(asset.internalAuditEvidenceRef);
+    if(!evidenceRef.startsWith('assets/')||evidenceRef.split('/').includes('..'))return asset;
+    const axes=qualityInputs.get(evidenceRef);
+    return axes?{...asset,internalAuditEvidence:{...(asset.internalAuditEvidence||{}),...axes}}:asset;
+  });
+  const executionAutomationPlan=buildInternalAssetLibraryAutomationPlan({
+    assets:dynamicPlanningAssets,
     seedPlan,
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
@@ -998,8 +1010,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     synchronizedPackIds:freezeList(syncRows.map(row=>row.packId)),
     sourceConsumerSync:consumerSync.summary,
     sourceConsumerBindings:consumerSync.bindings,
+    sourceConsumerRegistry:consumerSync.registry,
     seedCount:seedPlan.seedCount,
-    automationPlan:libraryPlan
+    automationPlan:libraryPlan,
+    executionAutomationPlan
   });
 }
 
@@ -2386,9 +2400,9 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:!process.env.NODE_TEST_CONTEXT});
-  const companyRegistry=synchronizeSourceBoundAssetConsumers({repoRoot,registry:librarySync.registry}).registry;
-  const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
-  const executionLibraryPlan=librarySync.automationPlan;
+  const companyRegistry=librarySync.sourceConsumerRegistry||librarySync.registry;
+  const libraryAutomation=librarySync.registry?.internalAssetLibraryAutomation||{};
+  const executionLibraryPlan=librarySync.executionAutomationPlan||librarySync.automationPlan;
   const persistedWorklistFresh=
     Number(libraryAutomation.lastCatalogSynchronizedVersion)===Number(companyRegistry?.version)
     &&Number(libraryAutomation.version)===INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version
