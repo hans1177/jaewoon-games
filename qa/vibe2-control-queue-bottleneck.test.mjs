@@ -30,5 +30,11 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.doesNotMatch(workflow,/queue_pressure:-0\}" -gt 0[^\n]+game_micro_fanin/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
   assert.match(workflow,/VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE/);
+  assert.match(workflow,/run-name: Vibe2 Continuous Core · \$\{\{ github\.event\.action \|\| github\.event_name \}\} ·/);
+  assert.match(workflow,/runs\?event=repository_dispatch&per_page=100/);
+  assert.match(workflow,/VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/String\(run\.id\|\|''\)!==String\(process\.env\.CURRENT_RUN\|\|''\)/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
