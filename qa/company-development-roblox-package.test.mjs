@@ -454,3 +454,75 @@ test('actual technical selectors stop unchanged proven asset-failure replay and 
   }
   assert.equal(hasCurrentRobloxPackageAssetRepair({item:held,assetLibrary:library,baseline,sourceTreeSha:'c'.repeat(40)}),false);
 });
+
+
+test('Roblox package applicability ignores managed learning and foundation scaffolds',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-scaffold-applicability-'));
+  try{
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    fs.mkdirSync(path.join(root,'server'),{recursive:true});
+    const baseline={content:{robloxBuildProfile:{
+      version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',genre:'Adventure',subgenre:null,playMode:'SINGLE',
+      multiplayerRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,
+      networkingRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,displayLabelKo:'Adventure'
+    }}};
+    const assetLibrary={version:209,baseMaterialLibrary:{
+      status:'PREPARED_SEMANTIC_ATOM_LIBRARY',
+      families:Object.fromEntries(ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>[family,[family+'_ATOM']]))
+    }};
+    const profile=robloxBuildProfileFromBaseline(baseline);
+    const plan=buildRobloxStudioAssetBootstrapPlan({gameId:'scaffold-demo',profile,assetLibrary});
+    const familyRows=ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>`      ${family} = { "${family}_ATOM" },`).join('\n');
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),`return {
+  StudioAssets = {
+    Applied = true,
+    BindingVersion = 2,
+    LibraryVersion = ${plan.libraryVersion},
+    SelectionFingerprint = "${plan.selectionFingerprint}",
+    Families = {
+${familyRows}
+    },
+  },
+}
+`);
+    const selectionRows=ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>`  ${family} = studioAssetFamily("${family}"),`).join('\n');
+    const statusRows=ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`).join('\n');
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),[
+      'local C = require(game.ReplicatedStorage.Shared.GameConfig)',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
+      'local studioAssetFamilies = C.StudioAssets.Families',
+      'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+      'local STUDIO_ASSET_SELECTION = {',
+      selectionRows,
+      '}',
+      'local STUDIO_ASSET_FAMILY_STATUS = {',
+      statusRows,
+      '}',
+      'local root = Instance.new("Frame")',
+      'local stroke = Instance.new("UIStroke")',
+      'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
+      'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
+      '-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN',
+      'local humanoid = character:FindFirstChildOfClass("Humanoid")',
+      'local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")',
+      'local particles = Instance.new("ParticleEmitter")',
+      '-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END',
+    ].join('\n'));
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),[
+      '-- native-foundation-sentinel-v1',
+      'local humanoid = character:WaitForChild("Humanoid")',
+      'local ground = workspace:Raycast(Vector3.zero, Vector3.new(0,-10,0))',
+    ].join('\n'));
+    const result=validateRobloxPackageAssetThreshold({root,gameId:'scaffold-demo',baseline,assetLibrary});
+    assert.equal(result.pass,true,result.blockers.join(','));
+    for(const family of ['CHARACTER','MOTION','VFX']){
+      const row=result.familyResults.find(item=>item.family===family);
+      assert.equal(row.systemPresent,false,family);
+      assert.equal(row.status,'NOT_APPLICABLE',family);
+    }
+    assert.equal(result.familyResults.find(item=>item.family==='UI')?.actualBinding,true);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
