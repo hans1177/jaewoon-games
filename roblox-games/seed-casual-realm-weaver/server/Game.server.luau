@@ -179,7 +179,6 @@ local function syncPuzzleSession(player, session)
   setNumber(player, "CurrentStage", session.stage)
   setNumber(player, "TurnsRemaining", session.turns)
   setNumber(player, "NextPiece", session.nextPiece)
-  setNumber(player, "BoardPlaced", 9 - table.find(session.board, 0) and 0 or readNumber(player, "BoardPlaced", 0))
   player:SetAttribute("PuzzleSessionActive", session.active)
   renderPuzzleBoard(player, session.board)
 end
