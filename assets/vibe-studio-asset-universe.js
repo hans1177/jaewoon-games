@@ -1589,6 +1589,38 @@ export const INTERNAL_ASSET_STUDIO_VARIATION_AXES=Object.freeze({
   MATERIAL:Object.freeze(['SURFACE_FAMILY','CLEAN_WORN_DAMAGED','DRY_WET_FROZEN_CORRODED','REGION_CLIMATE','RARITY_ENERGY','LIGHT_RESPONSE','LOD_COST'])
 });
 
+export const INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION=Object.freeze({
+  version:1,
+  scope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+  estimatedModificationMinutes:60,
+  workerTimeoutMinutes:60,
+  budgetMeaning:'MAX_DEEP_ACTIVE_MODIFICATION_WINDOW_NOT_COMPLETION_PROOF',
+  sameAssetUntilReviewResolved:true,
+  singleSmallPatchCompletionForbidden:true,
+  fiveMinutePolishCompletionForbidden:true,
+  noIdlePadding:true,
+  elapsedTimeIsNotQualityEvidence:true,
+  sourceScopePassIsNotQualityPass:true,
+  qualityFamilies:Object.freeze(['CHARACTER','CREATURE','MOTION','WEAPON','SKILL','BUILDING','ENVIRONMENT','WORLD_PROP','ITEM','MATERIAL','VFX','AUDIO','UI','PRESENTATION','FOLIAGE','CHARACTER_GEAR']),
+  stages:Object.freeze([
+    Object.freeze({id:'FORM_IDENTITY_AND_STRUCTURE',minutes:15,focus:Object.freeze(['SILHOUETTE','PROPORTION','STRUCTURE','ROLE_READABILITY','COMPOSITION'])}),
+    Object.freeze({id:'MATERIAL_STATE_AND_DETAIL',minutes:20,focus:Object.freeze(['MATERIAL_RESPONSE','SEAMS_CONTACTS','WEAR_CAUSE','STATE_VARIATION','UI_AUDIO_EQUIVALENT_DETAIL'])}),
+    Object.freeze({id:'MOTION_INTERACTION_AND_FEEDBACK',minutes:15,focus:Object.freeze(['MOTION_CONTACT','TRANSITION','INTERACTION_STATE','VFX_AUDIO_FEEDBACK','UI_RESPONSE'])}),
+    Object.freeze({id:'SAME_CONDITION_RUNTIME_REPAIR',minutes:10,focus:Object.freeze(['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT_OR_STATE','MOBILE_BUDGET'])})
+  ]),
+  familySpecificDepthRequired:true,
+  uiIncludes:Object.freeze(['MENU','HUD','INVENTORY','SHOP','MAP','CODEX','TOOLTIP','TOUCH_CONTROLS','LOADING_ERROR_EMPTY_SELECTED_DISABLED_STATES']),
+  audioIncludes:Object.freeze(['BGM','ADAPTIVE_MUSIC','AMBIENCE','CREATURE_VOCAL','COMBAT_SFX','SKILL_SFX','UI_SFX','DISTANCE_OCCLUSION_REVERB','MOBILE_MIX']),
+  environmentIncludes:Object.freeze(['BACKGROUND','TERRAIN','BUILDING','INTERIOR','PROP','FOLIAGE','MATERIAL','LIGHTING','ATMOSPHERE','LANDMARK','SET_DRESSING']),
+  actorIncludes:Object.freeze(['PLAYER','NPC','MONSTER','BOSS','RIG','MOTION','ACTION','HIT','DEATH','EQUIPMENT','SECONDARY_MOTION']),
+  completionRequires:Object.freeze(['MATERIAL_SOURCE_DIFF_WHEN_REPAIR_REQUIRED','FRESH_SAME_CONDITION_BEFORE_AFTER','NO_STRONG_AXIS_REGRESSION','MOBILE_OR_TARGET_BUDGET_CHECK','RUNTIME_VISUAL_OR_NATIVE_EVIDENCE_WHEN_AVAILABLE']),
+  productionPromotionAutomatic:false,
+  newWorkflow:false,
+  newQueue:false,
+  newScheduler:false,
+  newPipeline:false
+});
+
 export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   version:14,
   scope:'ALL_INTERNAL_COMMON_LIBRARIES',
@@ -1597,6 +1629,7 @@ export const INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT=Object.freeze({
   otherRobloxGameIdeasRemainEligible:true,
   unityAndWebGameIdeasRemainEligible:true,
   qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+  qualityWorkSession:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION',
   genericUnboundIdeaProductionForbidden:true,
   catalogDiscovery:'assets/roblox/common-*/catalog.json',
   seedDiscovery:'artbook-submissions/seed-*/current.json',
@@ -1952,7 +1985,12 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       preserveAxes:Object.freeze(axes.filter(([,value])=>value>=.9).map(([axis])=>axis)),
       familyExpectations:INTERNAL_ASSET_FAMILY_EXPECTATIONS[row.family]?.expectations||Object.freeze([]),
       comparisonViews:Object.freeze(row.family==='AUDIO'?['EVENT','LOOP_SEAM','MOBILE_MIX']:['GAME_CAMERA','MID_RANGE','CLOSEUP','CONTACT_OR_STATE']),
-      completionRequires:Object.freeze(['RESPONSIBLE_SOURCE_DIFF_WHEN_REPAIR_REQUIRED','FRESH_SAME_CONDITION_COMPARISON','NO_STRONG_AXIS_REGRESSION','MOBILE_BUDGET_CHECK']),
+      estimatedModificationMinutes:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION.estimatedModificationMinutes,
+      workerTimeoutMinutes:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION.workerTimeoutMinutes,
+      qualityWorkSession:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,
+      sameAssetUntilReviewResolved:true,
+      singleSmallPatchCompletionForbidden:true,
+      completionRequires:Object.freeze([...INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION.completionRequires]),
       libraryFreshnessFingerprint:inventoryFingerprint,qualityFreshnessFingerprint:qualityFingerprint,
       productionPromotionAllowed:false,gameplayAuthority:false
     }));
@@ -2417,6 +2455,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     releasedGameDemandAvailable:priorityGameIdSet.size>0,
     unscopedGenericIdeaProductionForbidden:gameDemandScopedProduction===true,
     qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
+    qualityWorkSession:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,
     releasedGameDemandAffectsPriorityNotQualityEligibility:true,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
