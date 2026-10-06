@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g16-33cb8d6f672f",
-  "directiveFingerprint": "33cb8d6f672f97aca245eb4391761f4419726b8e71c0d12ee7275398294cdc3e",
-  "previousDirectiveFingerprint": "380b371f8f70f392e00d15436bd5ac26a6295c9bcad1b01911ee4af94a35cee5",
-  "forbiddenRepeatFingerprint": "380b371f8f70f392e00d15436bd5ac26a6295c9bcad1b01911ee4af94a35cee5",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g17-7c04d603b1cf",
+  "directiveFingerprint": "7c04d603b1cf9ce7667f4d61b3f4d01dad8a25841127b895098309b91b471559",
+  "previousDirectiveFingerprint": "33cb8d6f672f97aca245eb4391761f4419726b8e71c0d12ee7275398294cdc3e",
+  "forbiddenRepeatFingerprint": "33cb8d6f672f97aca245eb4391761f4419726b8e71c0d12ee7275398294cdc3e",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 16,
+  "generation": 17,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "cancelled",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
+  "sourceTreeFingerprint": "4d2355a531a4869aea93df0415e9480bb18de832a6b2c6dea88ed5b643b8e77a",
   "designFingerprint": "652a5301beebec96ac192d06830fb9af5897a13030b7fb144fb021ef64b33ceb",
   "gameIdentityAndNonNegotiables": {
     "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
@@ -51,44 +51,42 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 172,
-      "progression": 191,
+      "combat": 185,
+      "progression": 183,
       "ai": 40,
       "save": 66,
       "multiplayer": 30,
-      "animation": 28,
-      "motionStates": 162,
-      "gameFeel": 26,
-      "vfx": 19,
-      "camera": 31,
-      "audio": 1,
+      "animation": 29,
+      "motionStates": 183,
+      "gameFeel": 33,
+      "vfx": 24,
+      "camera": 33,
+      "audio": 4,
       "audioDynamics": 17,
-      "ui": 56,
-      "uiFlow": 38,
+      "ui": 61,
+      "uiFlow": 39,
       "entryFlow": 10,
       "loadingFlow": 0,
-      "input": 59,
-      "map": 152,
-      "landmark": 79,
+      "input": 62,
+      "map": 165,
+      "landmark": 81,
       "interaction": 29,
-      "inventory": 2,
-      "equipment": 0,
-      "settings": 1,
-      "feedback": 69,
+      "inventory": 6,
+      "equipment": 3,
+      "settings": 2,
+      "feedback": 70,
       "session": 120,
-      "content": 140,
-      "choice": 22,
-      "connection": 0,
-      "performance": 22,
-      "lighting": 37,
+      "content": 162,
+      "choice": 32,
+      "connection": 2,
+      "performance": 23,
+      "lighting": 39,
       "primitive": 16,
       "todo": 0,
-      "errorRecovery": 18
+      "errorRecovery": 19
     },
     "topFiles": [
       {
@@ -97,11 +95,11 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 252
+        "score": 284
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "score": 148
+        "score": 161
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json",
@@ -127,7 +125,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 357,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -167,7 +165,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 386,
+        "line": 419,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -263,7 +261,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 177,
+        "line": 210,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -327,15 +325,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 23,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(atom)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 254,
+        "line": 287,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -343,21 +333,37 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 107,
+        "line": 140,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
         "score": 42
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "line": 27,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "line": 23,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 15,
+    "previousGeneration": 16,
     "previousSourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
-    "currentSourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
-    "sourceChanged": false,
+    "currentSourceTreeFingerprint": "4d2355a531a4869aea93df0415e9480bb18de832a6b2c6dea88ed5b643b8e77a",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -499,18 +505,18 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "NOT_APPLICABLE",
-      "reason": "game has no current equipment/loadout system"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CRAFTING",
@@ -519,8 +525,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -544,8 +550,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
@@ -574,8 +580,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -634,8 +640,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -971,8 +977,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -980,8 +986,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -989,12 +995,12 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 game has no current equipment/loadout system. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CRAFTING",
@@ -1007,8 +1013,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1052,8 +1058,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1106,8 +1112,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1214,8 +1220,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1413,37 +1419,12 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
+      "domain": "EQUIPMENT_LOADOUT",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "MENU_FLOW",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_MUSIC_SFX",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1526,8 +1507,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 128800,
-        "largestFileBytes": 43705,
+        "sourceBytes": 113869,
+        "largestFileBytes": 48319,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1559,22 +1540,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 2,
-    "selectedThemeReason": "3 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=4.",
+    "themeDepth": 3,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=4.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1585,6 +1565,7 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
       ],
@@ -1617,18 +1598,9 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 196,
+        "score": 156,
         "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 34,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
+          "EQUIPMENT_LOADOUT"
         ]
       },
       {
@@ -1637,6 +1609,11 @@
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 22,
+        "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
@@ -1737,10 +1714,10 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 16,
-    "previousGeneration": 15,
+    "generation": 17,
+    "previousGeneration": 16,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
+    "sourceFingerprint": "4d2355a531a4869aea93df0415e9480bb18de832a6b2c6dea88ed5b643b8e77a",
     "priorSourceFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -1825,11 +1802,11 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1859,10 +1836,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -2015,7 +1989,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 357,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2060,7 +2034,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 386,
+        "line": 419,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -2204,7 +2178,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
+    "sourceTreeFingerprint": "4d2355a531a4869aea93df0415e9480bb18de832a6b2c6dea88ed5b643b8e77a",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2294,7 +2268,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
+    "sourceTreeFingerprint": "4d2355a531a4869aea93df0415e9480bb18de832a6b2c6dea88ed5b643b8e77a",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2363,7 +2337,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 357,
+        "line": 390,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2423,7 +2397,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "line": 386,
+        "line": 419,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -2445,8 +2419,7 @@
       "GRAPHICS",
       "MAP",
       "UI",
-      "GAMEPLAY",
-      "SAVE"
+      "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2454,15 +2427,13 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
+    "securityRelevant": false,
     "openCloudWorldChecks": [
       "SERVER_BOOT",
       "FINITE_WORLD_BOUNDS",
@@ -2492,8 +2463,7 @@
         "GRAPHICS",
         "MAP",
         "UI",
-        "GAMEPLAY",
-        "SAVE"
+        "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
@@ -2501,15 +2471,13 @@
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
         "GAMEPLAY_STATE_DELTA_QA",
-        "SAVE_LOAD_MIGRATION_QA",
-        "SECURITY_AUTHORITY_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
+      "securityRelevant": false,
       "openCloudWorldChecks": [
         "SERVER_BOOT",
         "FINITE_WORLD_BOUNDS",
@@ -2535,8 +2503,6 @@
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
       "GAMEPLAY_STATE_DELTA_QA",
-      "SAVE_LOAD_MIGRATION_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2565,7 +2531,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "1dbbaff9a6efa57462e56548abb79365260444320b88337e572ee1551b36396f",
+      "sourceTreeFingerprint": "4d2355a531a4869aea93df0415e9480bb18de832a6b2c6dea88ed5b643b8e77a",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2612,12 +2578,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 17,
+    "nextGeneration": 18,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2669,20 +2635,15 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
-      "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
-      "SETTINGS_ACCESSIBILITY",
+      "EQUIPMENT_LOADOUT",
       "MENU_FLOW"
     ],
     "notApplicable": [
       "QUESTS",
-      "EQUIPMENT_LOADOUT",
       "CRAFTING",
       "NARRATIVE_STORY"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:34:17.389Z"
+  "generatedAt": "2026-10-06T06:35:20.745Z"
 }

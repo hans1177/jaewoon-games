@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g17-3d75c7d84bb8",
-  "directiveFingerprint": "3d75c7d84bb87cdcc89d58bcae50524da09ffb2bee76e5d15a7ac60a5108d5ef",
-  "previousDirectiveFingerprint": "0c8a7979d4570f591148ae4bbbde4d7ff4a5aa2ea7221896e2a1aba2ba7872c1",
-  "forbiddenRepeatFingerprint": "0c8a7979d4570f591148ae4bbbde4d7ff4a5aa2ea7221896e2a1aba2ba7872c1",
+  "directiveId": "line-defense-build-up-g18-b245c4b3c79c",
+  "directiveFingerprint": "b245c4b3c79c29fc0bed2f2434a58e9ce227ef77f9dd7d5f6ccee6fe0d5e5219",
+  "previousDirectiveFingerprint": "3d75c7d84bb87cdcc89d58bcae50524da09ffb2bee76e5d15a7ac60a5108d5ef",
+  "forbiddenRepeatFingerprint": "3d75c7d84bb87cdcc89d58bcae50524da09ffb2bee76e5d15a7ac60a5108d5ef",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "cancelled",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
+  "sourceTreeFingerprint": "b4db03445f0272e578fda544150b84d4f60ca54431c17d21db3a498cfffa367c",
   "designFingerprint": "ebfb40167f7e57c31f17afe2015166060622fc50925b275145409324ad51f708",
   "gameIdentityAndNonNegotiables": {
     "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
@@ -51,43 +51,42 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 205,
-      "progression": 252,
+      "combat": 218,
+      "progression": 245,
       "ai": 49,
       "save": 57,
       "multiplayer": 31,
-      "animation": 28,
-      "motionStates": 159,
-      "gameFeel": 26,
-      "vfx": 19,
-      "camera": 31,
-      "audio": 1,
+      "animation": 29,
+      "motionStates": 181,
+      "gameFeel": 33,
+      "vfx": 24,
+      "camera": 33,
+      "audio": 4,
       "audioDynamics": 16,
-      "ui": 57,
-      "uiFlow": 40,
+      "ui": 62,
+      "uiFlow": 44,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 59,
-      "map": 147,
-      "landmark": 63,
+      "input": 62,
+      "map": 160,
+      "landmark": 65,
       "interaction": 31,
-      "inventory": 29,
-      "equipment": 2,
-      "settings": 1,
-      "feedback": 69,
+      "inventory": 33,
+      "equipment": 5,
+      "settings": 2,
+      "feedback": 70,
       "session": 112,
-      "content": 190,
-      "choice": 14,
-      "connection": 0,
-      "performance": 22,
-      "lighting": 37,
+      "content": 212,
+      "choice": 24,
+      "connection": 2,
+      "performance": 23,
+      "lighting": 39,
       "primitive": 16,
       "todo": 0,
-      "errorRecovery": 18
+      "errorRecovery": 19
     },
     "topFiles": [
       {
@@ -96,11 +95,11 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 251
+        "score": 283
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "score": 148
+        "score": 166
       },
       {
         "file": "roblox-games/line-defense/default.project.json",
@@ -134,7 +133,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 358,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -214,7 +213,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 388,
+        "line": 439,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -294,7 +293,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 169,
+        "line": 220,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -326,7 +325,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 246,
+        "line": 297,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -334,7 +333,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 291,
+        "line": 342,
         "kind": "FUNCTION",
         "symbol": "hasStudioAtom",
         "context": "local function hasStudioAtom(atom)",
@@ -342,21 +341,37 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 99,
+        "line": 150,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
         "score": 42
+      },
+      {
+        "file": "roblox-games/line-defense/client/Game.client.luau",
+        "line": 28,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/line-defense/client/Game.client.luau",
+        "line": 24,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 16,
+    "previousGeneration": 17,
     "previousSourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
-    "currentSourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
-    "sourceChanged": false,
+    "currentSourceTreeFingerprint": "b4db03445f0272e578fda544150b84d4f60ca54431c17d21db3a498cfffa367c",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -508,8 +523,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CRAFTING",
@@ -518,8 +533,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -573,8 +588,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -633,8 +648,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -988,8 +1003,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1006,8 +1021,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1105,8 +1120,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1213,8 +1228,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1412,27 +1427,7 @@
   ],
   "detectedGaps": [
     {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_MUSIC_SFX",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1515,8 +1510,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 128581,
-        "largestFileBytes": 43338,
+        "sourceBytes": 114292,
+        "largestFileBytes": 47952,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1548,8 +1543,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 11,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
+    "themeDepth": 12,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1559,12 +1554,12 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 11
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1608,7 +1603,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 48,
+        "score": 30,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -1617,18 +1612,16 @@
         ]
       },
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 34,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 22,
+        "gapDomains": []
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
@@ -1647,11 +1640,8 @@
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -100,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
-        ]
+        "score": -124,
+        "gapDomains": []
       }
     ],
     "coherentContentBundle": [
@@ -1727,10 +1717,10 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
+    "sourceFingerprint": "b4db03445f0272e578fda544150b84d4f60ca54431c17d21db3a498cfffa367c",
     "priorSourceFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -1819,7 +1809,7 @@
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -1849,9 +1839,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -2013,7 +2001,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 358,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2193,7 +2181,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
+    "sourceTreeFingerprint": "b4db03445f0272e578fda544150b84d4f60ca54431c17d21db3a498cfffa367c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2283,7 +2271,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
+    "sourceTreeFingerprint": "b4db03445f0272e578fda544150b84d4f60ca54431c17d21db3a498cfffa367c",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2364,7 +2352,7 @@
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
-        "line": 358,
+        "line": 409,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2433,15 +2421,13 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI",
-      "GAMEPLAY"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2477,15 +2463,13 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI",
-        "GAMEPLAY"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
@@ -2517,7 +2501,6 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -2546,7 +2529,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "83043997464e62d4a02db0786d53f0002cbe1ee4d8bb101662bb05fc52c3b37b",
+      "sourceTreeFingerprint": "b4db03445f0272e578fda544150b84d4f60ca54431c17d21db3a498cfffa367c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2593,12 +2576,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -2650,9 +2633,6 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "EQUIPMENT_LOADOUT",
-      "SYSTEM_CONNECTION",
-      "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
     "notApplicable": [
@@ -2662,5 +2642,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-05T17:34:17.579Z"
+  "generatedAt": "2026-10-06T06:35:20.834Z"
 }
