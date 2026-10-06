@@ -174,11 +174,13 @@ task.defer(function()
   if boat and boat:IsA("BasePart") then
     boat.Material = table.find(studioAssetFamily("PROP"), "LAMP") and Enum.Material.WoodPlanks or boat.Material
     local baseOrientation = boat.Orientation
-    TweenService:Create(
-      boat,
-      TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-      {Orientation = table.find(studioAssetFamily("MOTION"), "IDLE_RELAXED") and baseOrientation + Vector3.new(0, 2, 1) or baseOrientation}
-    ):Play()
+    if table.find(studioAssetFamily("MOTION"), "IDLE_RELAXED") then
+      TweenService:Create(
+        boat,
+        TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+        {Orientation = baseOrientation + Vector3.new(0, 2, 1)}
+      ):Play()
+    end
   end
 end)
 local captureSfx=sound("CozyCapture",C.Audio.Capture,.34,false)
