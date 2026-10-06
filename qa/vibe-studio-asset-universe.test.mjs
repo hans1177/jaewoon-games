@@ -4778,3 +4778,42 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
     assert.ok(result.bindings.some(row=>row.assetId==='roblox-common-motion-walk'&&row.mode==='MANAGED_LIBRARY_IDENTITY'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('dynamic source consumers stay outside registry identity and refresh on the next planning cycle',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-overlay-'));
+  try{
+    fs.mkdirSync(path.join(root,'roblox-games','demo'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets','shared-a.luau'),'return {}');
+    fs.writeFileSync(path.join(root,'assets','shared-b.luau'),'return {}');
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
+      id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxProjectPath:'roblox-games/demo'
+    }]}));
+    const baseRegistry={version:7,assets:[
+      {id:'shared-a',family:'PROP',platform:'ROBLOX',path:'assets/shared-a.luau',sourceFiles:['assets/shared-a.luau'],license:'project-original',internalAuditScore:700},
+      {id:'shared-b',family:'PROP',platform:'ROBLOX',path:'assets/shared-b.luau',sourceFiles:['assets/shared-b.luau'],license:'project-original',internalAuditScore:700}
+    ]};
+    const baseline=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseRegistry,persist:false});
+    fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-a.luau'}}}
+    }));
+    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseline.registry,persist:false});
+    assert.equal(first.changed,false,JSON.stringify(first.changedSections));
+    assert.equal(first.registry.version,baseline.registry.version);
+    assert.equal(first.registry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
+    assert.deepEqual(first.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['demo']);
+    const staticAction=first.automationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
+    const dynamicAction=first.executionAutomationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
+    assert.equal(staticAction.consumerPriority,0);
+    assert.equal(dynamicAction.consumerPriority,2);
+
+    fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-b.luau'}}}
+    }));
+    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseline.registry,persist:false});
+    assert.equal(second.changed,false,JSON.stringify(second.changedSections));
+    assert.equal(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
+    assert.deepEqual(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['demo']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
