@@ -265,7 +265,7 @@ jobs:
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Dispatch verified learning sweep per game when reconciliation finds refresh debt
+      - name: Dispatch one verified learning sweep batch when reconciliation finds refresh debt
         if: steps.freshness.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -283,7 +283,9 @@ jobs:
           if(ids.length)console.error('ROBLOX_VERIFIED_LEARNING_REBIND_IDS='+ids.join(','));
           NODE
           learning_debt="$(grep -cve '^$' /tmp/roblox-learning-rebind-ids || true)"
+          learning_ids="$(paste -sd, /tmp/roblox-learning-rebind-ids)"
           echo "ROBLOX_VERIFIED_LEARNING_REBIND_COUNT=$learning_debt"
+          echo "ROBLOX_VERIFIED_LEARNING_REBIND_IDS=${learning_ids:-NONE}"
           if [ "$learning_debt" -eq 0 ]; then
             echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=NOT_REQUIRED'
             exit 0
@@ -291,36 +293,32 @@ jobs:
 
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-roblox-verified-learning-sweep.yml/runs?per_page=100" > /tmp/roblox-learning-sweep-runs.json
           current_main="$(git rev-parse origin/main)"
-          dispatched=0
-          deduped=0
-          while IFS= read -r game_id; do
-            [ -n "$game_id" ] || continue
-            active="$(GAME_ID="$game_id" CURRENT_MAIN="$current_main" node - <<'NODE'
+          active="$(CURRENT_MAIN="$current_main" node - <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-learning-sweep-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
-          const title='Roblox verified learning sweep · '+String(process.env.GAME_ID||'');
           const currentMain=String(process.env.CURRENT_MAIN||'');
           const found=(payload.workflow_runs||[]).some(run=>
             states.has(String(run.status||'').toLowerCase())
-            &&String(run.display_title||'')===title
+            &&String(run.display_title||'')==='Roblox verified learning sweep · batch'
             &&String(run.head_sha||'')===currentMain
           );
           process.stdout.write(found?'yes':'no');
           NODE
-            )"
-            if [ "$active" = 'yes' ]; then
-              deduped=$((deduped+1))
-              echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED:$game_id:$current_main"
-              continue
-            fi
-            gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
-            dispatched=$((dispatched+1))
-            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES:$game_id:$current_main"
-          done < /tmp/roblox-learning-rebind-ids
-          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=$dispatched"
-          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=$deduped"
+          )"
+          if [ "$active" = 'yes' ]; then
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=DEDUPED_BATCH:$current_main"
+            echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=0'
+            echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=$learning_debt"
+            exit 0
+          fi
 
+          gh workflow run company-roblox-verified-learning-sweep.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=BATCH:$current_main:$learning_debt"
+          echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH_COUNT=1'
+          echo 'ROBLOX_VERIFIED_LEARNING_SWEEP_DEDUPED_COUNT=0'
+
+      - name: Resolve next Roblox source execution slice from unbounded native queue
       - name: Resolve next Roblox source execution slice from unbounded native queue
         if: steps.freshness.outputs.run == 'true'
         id: targets
@@ -1923,14 +1921,15 @@ jobs:
           }
           NODE
           )
-          product_refill_count=0
-          for game_id in "${product_repair_ids[@]}"; do
-            [ -n "$game_id" ] || continue
+          product_refill_count="${#product_repair_ids[@]}"
+          if [ "$product_refill_count" -gt 0 ]; then
+            product_repair_csv="$(IFS=,; echo "${product_repair_ids[*]}")"
             payload="$(jq -nc \
               --arg run "${GITHUB_RUN_ID:-}" \
               --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
-              --arg game "$game_id" \
-              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"FAILED",execution_lane:"game-primary",reason:"roblox-f0-gameplay-product-repair"}}')"
+              --arg tasks "$product_repair_csv" \
+              --arg count "$product_refill_count" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_tasks:$tasks,source_task_count:$count,source_outcome:"FAILED",execution_lane:"game-primary",reason:"roblox-f0-gameplay-product-repair-batch"}}')"
             curl --fail-with-body --silent --show-error \
               --request POST \
               --header 'Accept: application/vnd.github+json' \
@@ -1938,9 +1937,12 @@ jobs:
               --header 'X-GitHub-Api-Version: 2022-11-28' \
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
               --data "$payload"
-            product_refill_count=$((product_refill_count+1))
-            echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=$game_id"
-          done
+            echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=BATCH:$product_repair_csv"
+            echo 'ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_DISPATCH_COUNT=1'
+          else
+            echo 'ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL=NOT_REQUIRED'
+            echo 'ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_DISPATCH_COUNT=0'
+          fi
           echo "ROBLOX_F0_GAMEPLAY_PRODUCT_VIBE_REFILL_COUNT=$product_refill_count"
           echo "ROBLOX_F0_SOURCE_REPAIR_COUNT=$repair_count"
           if [[ "$repair_count" =~ ^[1-9][0-9]*$ ]]; then
