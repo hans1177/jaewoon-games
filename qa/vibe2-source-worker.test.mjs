@@ -4256,6 +4256,8 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=12288/);
   assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
+  assert.match(workerSource,/VIBE2_MODEL_FIRST_OUTPUT_MS=/);
+  assert.match(workerSource,/VIBE2_MODEL_GENERATION_DURATION_MS=/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
   assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_CIRCUIT_OPEN/);
