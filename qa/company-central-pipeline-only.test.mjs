@@ -256,6 +256,7 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/DIRECTOR_GAME_PRIMARY_CURRENT_MAIN=/);
   assert.match(director,/JSON\.stringify\(j\)\+'\\\\n'/);
   assert.match(director,/director-run-drain\.ndjson/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-runtime-continuation\.yml',true\)/);
   assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
   assert.match(director,/dedupeByTitle\('\.github\/workflows\/vibe2-24h-runner\.yml',true\)/);
   assert.match(director,/CENTRAL_DEVELOPMENT_STALE_HEAD_REPLACED_BY_CURRENT_RUN/);
