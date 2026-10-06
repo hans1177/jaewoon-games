@@ -228,10 +228,17 @@ jobs:
             const internalRuntimeObservationDeferred=
               item.robloxRuntimeFoundationInternalReleaseException===true
               &&item.robloxPublicReleaseRuntimeObservationPending===true
-              &&runtime.authority==='exact-engine-version-awaiting-real-server-boot'
+              &&(
+                (runtime.authority==='exact-engine-version-awaiting-real-server-boot'&&runtime.serverBootObserved!==true)
+                ||(
+                  runtime.authority==='roblox-open-cloud-exact-server-boot-runtime-sentinel-unavailable'
+                  &&runtime.serverBootObserved===true
+                  &&post.actualServerRuntimeEvidence===true
+                  &&post.actualClientRuntimeEvidence===false
+                )
+              )
               &&runtime.exactEngineVersion===true
               &&runtime.engineExecuted===true
-              &&runtime.serverBootObserved!==true
               &&runtime.sourceRevision===sourceRevision
               &&runtime.artifactIdentity===artifactIdentity
               &&Number(runtime.candidateVersionNumber||runtime.expectedVersionNumber)===Number(candidate.versionNumber)

@@ -380,7 +380,7 @@ test('batch scan cancels stale queued foundation runs and preserves active valid
   const cleanup=dedupe.slice(dedupe.indexOf('Cancel stale queued foundation runs before batch scan'),dedupe.indexOf('Select newest same-identity runtime foundation run'));
   assert.match(head,/group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}/);
   assert.match(dedupe,/runs-on: ubuntu-slim/);
-  assert.match(dedupe,/concurrency:\n\s+group: roblox-runtime-foundation-dedupe-\$\{\{ github\.sha \}\}-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
+  assert.match(dedupe,/concurrency:\n\s+group: roblox-runtime-foundation-dedupe-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: true/);
   assert.match(cleanup,/Cancel stale queued foundation runs before batch scan/);
   assert.match(cleanup,/github\.event_name != 'workflow_dispatch' \|\| inputs\.game_id == ''/);
   assert.match(cleanup,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
