@@ -4594,7 +4594,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
-    const firstOutputTimeoutMs=assetDevelopmentSingleMotion?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS);
+    let firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS;
+    if(assetDevelopmentSingleMotion)firstOutputTimeoutMs=ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS;
     console.log(`VIBE2_GENERATION_BUDGET=${attempt}:promptBytes=${attemptPromptBytes}:maxPredict=${maxPredict}:contextWindow=${contextWindow}:timeoutMs=${timeoutMs}:firstOutputTimeoutMs=${firstOutputTimeoutMs}`);
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     if(focusedReplaceOnly){

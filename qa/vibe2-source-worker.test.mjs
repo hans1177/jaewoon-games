@@ -5340,7 +5340,8 @@ test('internal Roblox single-motion asset work enforces the central focused gene
   assert.match(source,/if\(assetDevelopmentSingleMotion\)maxPredict=Math\.min\(maxPredict,ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT\)/);
   assert.match(source,/const timeoutMs=assetDevelopmentSingleMotion\?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS/);
   assert.match(source,/const baseContextWindow=assetDevelopmentSingleMotion[\s\S]*?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW/);
-  assert.match(source,/const firstOutputTimeoutMs=assetDevelopmentSingleMotion\?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS/);
+  assert.match(source,/let firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:MODEL_FIRST_OUTPUT_TIMEOUT_MS/);
+  assert.match(source,/if\(assetDevelopmentSingleMotion\)firstOutputTimeoutMs=ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS/);
   assert.match(source,/attempt>=maxAttempts&&!truncatedOutputCreditUsed&&!assetDevelopmentSingleMotion/);
   assert.match(source,/const robloxStructuralRetry=!allowFullRewrite&&target==='roblox'[\s\S]*?&&!assetDevelopmentSingleMotion/);
   assert.match(source,/VIBE2_ASSET_SINGLE_MOTION_ATTEMPT_CAP/);
