@@ -1288,8 +1288,8 @@ test('core QA cancels superseded main regressions while preserving non-main acti
   assert.equal(historical?.browserSmoke?.realBrowserRequired,true);
   assert.equal(historical?.browserSmoke?.browserGatePreserved,true);
   assert.equal(historical?.browserSmoke?.gamePrimaryUbuntuLatestLabelUsed,false);
-  assert.match(coreQaWorkflow,/\n  browser-smoke:\n\s+name: Development Web browser startup smoke\n\s+runs-on: ubuntu-24\.04/);
-  assert.doesNotMatch(coreQaWorkflow,/\n  browser-smoke:\n[\s\S]{0,120}?needs:\s*test/);
+  assert.match(coreQaWorkflow,/\n  browser-smoke:\n\s+needs:\s*scope\n\s+if:\s*\$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}\n\s+name: Development Web browser startup smoke\n\s+runs-on: ubuntu-24\.04/);
+  assert.doesNotMatch(coreQaWorkflow,/\n  browser-smoke:\n[\s\S]{0,160}?needs:\s*test/);
 });
 
 test('focused retry history reuse stays evidence-gated without weakening QA',()=>{
