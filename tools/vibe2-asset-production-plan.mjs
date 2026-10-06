@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
-import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS} from '../assets/vibe-studio-asset-universe.js';
+import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
@@ -963,6 +963,23 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   const next=JSON.parse(JSON.stringify(original));
   next.assets=Array.isArray(next.assets)?next.assets:[];
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
+  const homepageExposure=readJson(path.join(repoRoot,'homepage-platform-exposure.json'),{games:[]});
+  const publicReleaseIds=new Set((homepageExposure.games||[]).filter(row=>
+    clean(row?.externalPublicReleaseState).toUpperCase()==='PUBLIC_RELEASE'
+    ||(row?.platforms||[]).some(platform=>platform?.publicRelease===true||clean(platform?.publicReleaseState).toUpperCase()==='PUBLIC_RELEASE')
+  ).map(row=>clean(row?.gameId)).filter(Boolean));
+  const productionGames=(gameCatalog.games||[]).filter(game=>{
+    const id=clean(game?.id||game?.gameId);
+    const lifecycle=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
+    const production=clean(game?.productionClass||game?.canonical?.production?.class||game?.homepageCategory).toUpperCase().replaceAll('-','_');
+    return Boolean(id)&&lifecycle==='ACTIVE'&&['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(production);
+  }).sort((a,b)=>clean(a.id||a.gameId).localeCompare(clean(b.id||b.gameId)));
+  const releasedGameIds=new Set(productionGames.filter(game=>{
+    const id=clean(game.id||game.gameId);
+    const production=clean(game?.productionClass||game?.canonical?.production?.class||game?.homepageCategory).toUpperCase().replaceAll('-','_');
+    return production==='RELEASE_CONFIRMED'||publicReleaseIds.has(id);
+  }).map(game=>clean(game.id||game.gameId)).filter(Boolean));
+  const productionGameIds=new Set(productionGames.map(game=>clean(game.id||game.gameId)).filter(Boolean));
   const catalogs=commonCatalogFiles(repoRoot).map(file=>({path:path.relative(repoRoot,file).replaceAll('\\','/'),catalog:readJson(file,{})})).filter(row=>row.catalog?.packId);
   const fingerprint=catalogFingerprint(catalogs);
   const syncRows=catalogs.map(row=>synchronizeCatalogRows({registry:next,catalog:row.catalog}));
@@ -984,8 +1001,26 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const row=syncRows.find(item=>item.packId===packId);
     return row?Number(row.count||0):Number(fallback||0);
   };
-  const seeds=companySeedRows(repoRoot);
-  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets});
+  const seedRowsByGameId=new Map(companySeedRows(repoRoot).map(row=>[clean(row.gameId),row]));
+  const seeds=productionGames.map(game=>{
+    const gameId=clean(game.id||game.gameId),existing=seedRowsByGameId.get(gameId);
+    if(existing)return existing;
+    const identity=game?.canonical?.identity||{},homepage=game?.canonical?.homepage||{};
+    const genres=Array.isArray(identity.genres)?identity.genres:Array.isArray(game.genre)?game.genre:[game.genre].filter(Boolean);
+    return{
+      gameId,
+      gameName:clean(game.name||identity.name)||gameId,
+      identity:clean(identity.description||game.description||identity.name||game.name)||gameId,
+      genre:genres.join(' '),
+      coreFun:clean(homepage.recentWork||game.homepageRecentWork||game.description),
+      coreLoop:[clean(game.description),clean(homepage.recentWork||game.homepageRecentWork)].filter(Boolean),
+      signatureSystems:[],
+      progressionDirection:clean(game.homepageStage||game?.canonical?.production?.stage),
+      visualDirection:clean(game?.canonical?.marketing?.homepageMedia?.style||game.homepageInfo?.marketing?.homepageMedia?.style),
+      mobileUx:'MOBILE_FIRST_GAME'
+    };
+  });
+  const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:next.assets,scope:'ACTIVE_GAME_DEMAND_RELEASE_PRIORITY'});
   const uiCatalog=catalogs.find(row=>row.catalog.packId==='roblox-common-ui-v1')?.catalog||{};
   const audioRoleIds=collectCommonCatalogAudioRoles(catalogs);
   const previousMaintenance=original?.internalAssetLibraryAutomation?.maintenance||null;
@@ -995,7 +1030,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
     externalSources:next.externalSources||[],
-    consumerGames:gameCatalog.games||[],
+    consumerGames:productionGames,
+    productionScopeGameIds:[...productionGameIds],
+    priorityGameIds:[...releasedGameIds],
+    gameDemandScopedProduction:true,
     previousMaintenance
   });
   const dynamicPlanningAssets=consumerSync.registry.assets.map(asset=>{
@@ -1010,7 +1048,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     uiAtomIds:(uiCatalog.atoms||[]).map(row=>row.atomId),
     audioRoleIds,
     externalSources:next.externalSources||[],
-    consumerGames:gameCatalog.games||[],
+    consumerGames:productionGames,
+    productionScopeGameIds:[...productionGameIds],
+    priorityGameIds:[...releasedGameIds],
+    gameDemandScopedProduction:true,
     previousMaintenance
   });
   const transientMaintenanceReasons=new Set(['INVENTORY_CHANGED','TYPE_OR_ROLE_CHANGED','QUALITY_METADATA_CHANGED']);
@@ -1077,10 +1118,16 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     ...(next.companyCommonSeedAssetIdeation||{}),
     version:Math.max(1,Number(next.companyCommonSeedAssetIdeation?.version)||1),
     status:'ACTIVE_MACHINE_READABLE_INTERNAL_ASSET_IDEATION',
-    scope:'ALL_COMPANY_COMMON_SEEDS',
-    sourcePattern:'artbook-submissions/seed-*/current.json',
+    scope:'ACTIVE_GAME_DEMAND_RELEASE_PRIORITY',
+    sourcePattern:'game-catalog.json + homepage-platform-exposure.json + matching artbook-submissions/seed-*/current.json',
+    releasedGameIdeasFirst:true,
+    otherRobloxGameIdeasRemainEligible:true,
+    unityAndWebGameIdeasRemainEligible:true,
+    genericUnscopedIdeaProductionForbidden:true,
     currentSeedCount:seedPlan.seedCount,
     currentSeedIds:seedPlan.seeds.map(row=>row.gameId),
+    productionGameIds:[...productionGameIds].sort(),
+    releasedGameIds:[...releasedGameIds].sort(),
     planBuilder:'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan'
   };
 
@@ -1109,6 +1156,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
     contract:'assets/vibe-studio-asset-universe.js#INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT',
     catalogDiscovery:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.catalogDiscovery,
+    gameDemandScopedProduction:libraryPlan.gameDemandScopedProduction===true,
+    productionScopeGameIds:libraryPlan.productionScopeGameIds,
+    priorityGameIds:libraryPlan.priorityGameIds,
+    releasedGameDemandAvailable:libraryPlan.releasedGameDemandAvailable===true,
+    qualityScope:libraryPlan.qualityScope,
+    releasedGameDemandAffectsPriorityNotQualityEligibility:libraryPlan.releasedGameDemandAffectsPriorityNotQualityEligibility===true,
+    unscopedGenericIdeaProductionForbidden:libraryPlan.unscopedGenericIdeaProductionForbidden===true,
     countPolicy:libraryPlan.countPolicy,
     hardMaximum:null,
     overSoftLimitAction:libraryPlan.overSoftLimitAction,
@@ -2664,9 +2718,9 @@ export function buildVibeAssetProductionPlan({
     assetDomainFamilies(row?.domain).some(family=>currentDemandFamilies.includes(family))
   );
   const currentGameId=clean(task.gameId);
+  const qualityAssetId=clean(task?.assetQualityWorkUnit?.assetId);
   const activeQualityActions=(executionLibraryPlan.nextQualityActions||[]).filter(row=>
-    Number(row?.consumerPriority||0)>0
-    &&(!currentGameId||(row?.consumerGameIds||[]).map(clean).includes(currentGameId))
+    qualityAssetId?clean(row?.assetId)===qualityAssetId:(!currentGameId||(row?.consumerGameIds||[]).map(clean).includes(currentGameId))
   );
   const currentExecutionPhase=activeQualityActions.length?'QUALITY_UP_1000':activeNextVolumeActions.length?'VOLUME_UP':'HOLD';
   const internalLibraryEvolution=freeze({
@@ -2696,6 +2750,7 @@ export function buildVibeAssetProductionPlan({
     freeSourceCatalogReady:executionLibraryPlan.freeSourceCatalogReady===true,
     freeSourceCatalogExpansionMode:clean(executionLibraryPlan.freeSourceCatalogExpansionMode||libraryAutomation.freeSourceCatalogExpansionMode)||'TARGETED_GAP_ONLY',
     primaryAttention:clean(executionLibraryPlan.primaryAttention||libraryAutomation.primaryAttention)||'TARGETED_SOURCE_GAP_AND_QUALITY',
+    qualityWorkSession:freeze({...INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,...executionLibraryPlan.qualityWorkSession}),
     qualityUpPolicy:freeze({
       ...(libraryAutomation.qualityUpPolicy||{}),
       ...(executionLibraryPlan.qualityUpPolicy||{}),
@@ -3409,6 +3464,7 @@ export function buildVibeAssetProductionPlan({
     runtimeVisualRepair,
     engineMeasurementCapture,
     motionRepairWorkUnit:task.motionRepairWorkUnit?freeze({...task.motionRepairWorkUnit,required:true,estimatedModificationMinutes:60,objectCount:task.motionRepairWorkUnit.objectCount??1,motionCount:task.motionRepairWorkUnit.motionCount??1,runtimeVerified:false}):null,
+    assetQualityWorkUnit:task.assetQualityWorkUnit?freeze({...task.assetQualityWorkUnit,required:true,scope:'INTERNAL_ASSET_LIBRARY_QUALITY',estimatedModificationMinutes:60,qualityWorkSession:INTERNAL_ASSET_FULL_QUALITY_WORK_SESSION,runtimeVerified:false}):null,
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
     imageAssetCreation:freeze({
@@ -3872,7 +3928,7 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
     plan.companyGraphicsLibrary?.baseMotionQualityWorkSession?.defaultMinutes?`[BASE MOTION QUALITY WORK] ${JSON.stringify(plan.companyGraphicsLibrary.baseMotionQualityWorkSession)}. 현재 승인된 내부 자산 모션 수정 1회차는 기존 오브젝트 1개와 기존 동작 1개만 선택한다. task.motionRepairWorkUnit에 실제 objectId/clipId/책임 sourcePath/현재 sourceHash/정확한 sourceWindow와 원본 바인딩 근거를 고정한다. 약 60분은 준비·검수·보고를 제외한 실제 수정 작업량의 추정치다. 같은 동작 안에서 자세·체중 15분, 관절 곡선·접촉 20분, 후행·반동·복귀·루프 15분, 남은 디테일 재수정 10분 분량을 계획한다. 여러 오브젝트나 여러 동작의 수정량을 합산하지 않는다. 같은 대상을 검토가 끝날 때까지 유지하고 별도 워커나 큐를 만들지 않는다. 기존 책임 경로 밖 원본이나 지원하지 않는 authoring 도구가 필요하면 정확한 단계로 남기며 새 권한을 만들지 않는다. 대기나 호출 반복으로 시간을 채우지 않는다. 준비→중심 이동→접촉→반동→회복을 기존 책임 함수에서 수정하고 클립 길이와 기존 판정 이벤트 시점은 보존한다. owner나 ChatGPT를 기다리지 않고 같은 ASSET_DEVELOPMENT 작업을 진행한다. 경과시간·키프레임 수는 품질 증거가 아니며 같은 조건의 전후 비교와 실제 native 재생 전에는 품질 통과나 제작 완료를 주장하지 않는다.`:'',
-    plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
+    plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] ${JSON.stringify(plan.internalLibraryEvolution.qualityWorkSession||{})}. 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 모든 라이브러리 자산 품질 작업은 최대 60분의 깊은 실제 수정 창을 사용하며 5분짜리 미세 패치, 한 줄 변경, 시간 경과, 점수 변화만으로 완료 처리하지 않는다. 같은 자산을 검토가 끝날 때까지 유지하고 FORM_IDENTITY_AND_STRUCTURE → MATERIAL_STATE_AND_DETAIL → MOTION_INTERACTION_AND_FEEDBACK → SAME_CONDITION_RUNTIME_REPAIR 순으로 약한 축을 실제로 고친다. 캐릭터·몬스터·보스·모션·액션·무기·스킬·배경·지형·건물·인테리어·소품·식생·재질·VFX·오디오·BGM·메뉴·HUD·인벤토리·상점·맵·툴팁·터치 UI를 모두 같은 품질 세션 대상으로 본다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(plan.internalLibraryEvolution)}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 기존 안전 자산의 품질 작업이 있으면 권장 수량과 무관하게 QUALITY_UP_1000을 우선한다. 현재 로블록스 출시·출시 준비 게임에서 실제 사용하는 자산의 최약 축부터 개선하며 신규 수량은 현재 게임에 필요한 결손을 기존 자산 재사용으로 해결할 수 없을 때만 늘린다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 기존 자산 품질 작업이 생기면 즉시 QUALITY_UP_1000 최약 축 개선으로 돌아간다. 작업 수나 내부 점수는 실제 게임 품질 통과 증거가 아니다.`:'',
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',

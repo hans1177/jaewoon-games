@@ -23,7 +23,7 @@ import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from '.
 import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
-import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
+import { synchronizeSourceBoundAssetConsumers, synchronizeCompanyCommonAssetRegistry } from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -3378,6 +3378,122 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
 }
 
 export function findSafeTasks(project,repoRoot,queue){
+  const librarySync=synchronizeCompanyCommonAssetRegistry({repoRoot,persist:false});
+  const qualityActions=[...(librarySync.executionAutomationPlan?.nextQualityActions||[])];
+  const internalAssetQualityTasks=[];
+  const targetExtensions={
+    roblox:new Set(['.luau','.lua','.json']),
+    unity:new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']),
+    web:new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg'])
+  };
+  const taskTargetFor=(action,file)=>{
+    const declared=[clean(action?.platform),...(action?.platforms||[]).map(clean)].map(value=>value.toLowerCase()).filter(Boolean);
+    for(const value of declared)if(['roblox','unity','web'].includes(value))return value;
+    const relative=posix(file),ext=path.extname(relative).toLowerCase();
+    if(relative.startsWith('assets/roblox/')||['.luau','.lua'].includes(ext))return'roblox';
+    if(relative.startsWith('assets/unity/')||ext==='.cs'||ext==='.asmdef'||ext==='.uxml'||ext==='.uss')return'unity';
+    if(relative.startsWith('assets/web/')||['.html','.htm','.css','.js','.mjs','.cjs','.svg'].includes(ext))return'web';
+    return'';
+  };
+  for(const action of qualityActions){
+    const assetId=clean(action?.assetId);
+    if(!assetId)continue;
+    const consumers=(action?.consumerGameIds||[]).map(clean).filter(Boolean);
+    const currentConsumer=consumers.includes(clean(project.gameId));
+    const files=(action?.sourceFiles||[]).map(posix).filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..'));
+    if(!files.length)continue;
+    const candidateFiles=files.map(file=>({file,target:taskTargetFor(action,file)})).filter(row=>row.target&&targetExtensions[row.target]?.has(path.extname(row.file).toLowerCase()));
+    if(!candidateFiles.length)continue;
+    const preferredTarget=currentConsumer?clean(project.engine).toLowerCase():'';
+    const eligible=candidateFiles.filter(row=>!preferredTarget||row.target===preferredTarget);
+    if(!eligible.length)continue;
+    const safeAssetId=assetId.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,72)||'asset';
+    const prefix='internal-asset-quality-'+safeAssetId+'-g';
+    const history=(queue.tasks||[]).filter(row=>clean(row.id).startsWith(prefix)).sort((a,b)=>{
+      const ag=Number(/-g(\d+)$/.exec(clean(a.id))?.[1]||0),bg=Number(/-g(\d+)$/.exec(clean(b.id))?.[1]||0);
+      return bg-ag;
+    });
+    const latest=history[0]||null;
+    if(latest&&!['verified','cancelled','superseded'].includes(clean(latest.status).toLowerCase()))continue;
+    const generation=Math.max(1,Number(/-g(\d+)$/.exec(clean(latest?.id))?.[1]||0)+1);
+    const selected=eligible[(generation-1)%eligible.length];
+    if(selected.target!==clean(project.engine).toLowerCase())continue;
+    const absolute=path.join(repoRoot,selected.file);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
+    const sourceRoot=posix(path.dirname(selected.file)),sourcePath=posix(path.relative(sourceRoot,selected.file));
+    const source=fs.readFileSync(absolute,'utf8');
+    const sourceHash=crypto.createHash('sha256').update(source).digest('hex');
+    const releaseBound=currentConsumer&&clean(project.releaseState).toLowerCase()==='release-confirmed';
+    const qualitySession=action?.qualityWorkSession||librarySync.executionAutomationPlan?.qualityWorkSession||{};
+    const ideaAlternatives=[
+      `FIX_WEAKEST_AXIS:${clean(action?.weakestAxis)||'UNMEASURED'}`,
+      'COMPARE_STRONGEST_COMPATIBLE_LIBRARY_DONOR_WITHOUT_IDENTITY_LOSS',
+      'REBUILD_CAUSAL_DETAIL_OR_INTERACTION_FEEDBACK_FROM_CURRENT_RUNTIME_FINDING'
+    ];
+    const id=prefix+generation;
+    if(hasTask(queue,id))continue;
+    internalAssetQualityTasks.push({
+      id,gameId:project.gameId,target:selected.target,department:'graphics',type:'implementation',
+      sourceRoot,responsibleFiles:[selected.file],ownerDirective:false,
+      priority:releaseBound?'critical':Number(action?.consumerPriority||0)>=2?'high':'normal',
+      releaseState:currentConsumer?project.releaseState:'other',
+      assetProductionLane:true,speculativeEligible:false,status:'queued',retries:0,retryPolicy:'UNLIMITED',
+      estimatedRisk:'high',taskWorkUnits:7,
+      packageLongWorkProtected:releaseBound||undefined,
+      packageRole:releaseBound?'implementation-owner':undefined,
+      atomicNeuronMode:'PER_TASK_MICRO_FANIN',atomicCompletionRequired:true,
+      goal:[
+        '[INTERNAL ASSET LIBRARY QUALITY SESSION]',
+        `assetId=${assetId}; family=${clean(action?.family)||'UNKNOWN'}; target=${selected.target}; generation=${generation}; exactSource=${selected.file}; sourceHash=${sourceHash}`,
+        `weakestAxis=${clean(action?.weakestAxis)||'UNMEASURED'}; currentAxisScore=${action?.currentAxisScore??'UNMEASURED'}; targetAxisScore=${action?.targetAxisScore??100}`,
+        `qualitySession=${JSON.stringify(qualitySession)}`,
+        `detailSteps=${JSON.stringify(action?.detailSteps||[])}`,
+        `preserveAxes=${JSON.stringify(action?.preserveAxes||[])}`,
+        `familyExpectations=${JSON.stringify(action?.familyExpectations||[])}`,
+        `ideaAlternatives=${JSON.stringify(ideaAlternatives)}`,
+        '최대 60분의 실제 수정 창에서 같은 자산의 가장 큰 플레이어 체감 결함을 깊게 수리한다. 5분 미세 패치, 마커/주석/점수 변화, 시간 경과만으로 완료 처리하지 않는다.',
+        '먼저 현재 소스와 최신 동일조건 런타임/캡처 근거를 읽고 최소 3개 개선 접근을 비교한 뒤 정체성 보존·예상 개선폭·회귀위험을 기준으로 하나를 선택한다.',
+        'FORM_IDENTITY_AND_STRUCTURE → MATERIAL_STATE_AND_DETAIL → MOTION_INTERACTION_AND_FEEDBACK → SAME_CONDITION_RUNTIME_REPAIR 순서에서 실제 해당되는 축을 끝까지 확인한다.',
+        releaseBound?'이 자산은 출시 게임 현재 소비 자산이다. 치명/높은 시각 품질 부채가 남아 있으면 다음 60분 세대를 자동 생성하고 현재 품질 완료를 주장하지 않는다.':'공용/개발 자산도 동일 품질 기준으로 개선하되 productionVerified는 실제 소비 게임 런타임 승격 전까지 변경하지 않는다.',
+        '게임 밸런스·체력·데미지·쿨다운·보상·저장 의미·네트워크 권한은 변경하지 않는다.'
+      ].join('\n'),
+      completionCriteria:[
+        'EXACT_REGISTERED_ASSET_AND_SOURCE_HASH',
+        'SIXTY_MINUTE_DEEP_QUALITY_WINDOW',
+        'THREE_ALTERNATIVES_REVIEWED',
+        'SAME_ASSET_UNTIL_REVIEW_RESOLVED',
+        'REAL_SOURCE_OR_BINDING_DELTA_WHEN_REPAIR_REQUIRED',
+        'SAME_CONDITION_BEFORE_AFTER_REQUIRED',
+        'NO_STRONG_AXIS_REGRESSION',
+        'MOBILE_OR_TARGET_BUDGET_REQUIRED',
+        ...(releaseBound?['RELEASE_GAME_NO_OPEN_CRITICAL_OR_HIGH_PLAYER_VISIBLE_QUALITY_DEBT','TARGET_RUNTIME_EVIDENCE_REQUIRED_BEFORE_CURRENT_QUALITY_COMPLETE']:[])
+      ],
+      assetQualityWorkUnit:{
+        scope:'INTERNAL_ASSET_LIBRARY_QUALITY',
+        assetId,family:clean(action?.family)||null,platform:selected.target.toUpperCase(),
+        sourceRoot,sourcePath,sourceFile:selected.file,sourceHash,
+        generation,estimatedModificationMinutes:60,workerTimeoutMinutes:60,
+        weakestAxis:clean(action?.weakestAxis)||null,currentAxisScore:action?.currentAxisScore??null,targetAxisScore:action?.targetAxisScore??100,
+        detailSteps:[...(action?.detailSteps||[])],preserveAxes:[...(action?.preserveAxes||[])],
+        comparisonViews:[...(action?.comparisonViews||[])],completionRequires:[...(action?.completionRequires||[])],
+        releasedGameCurrentConsumer:releaseBound,
+        repeatUntilMaterialQualityDebtClosed:releaseBound,
+        minimumAlternativeIdeas:3,
+        ideaAlternatives,
+        runtimeVerified:false
+      },
+      evidence:[
+        ...(currentConsumer?['asset-current-consumer:'+project.gameId]:['asset-library-quality-unbound:v1']),
+        'asset-production-parallel:v1',
+        'internal-asset-quality-work-unit:v1',
+        'internal-asset-quality-session-minutes:60',
+        'internal-asset-quality-five-minute-completion:FORBIDDEN',
+        'internal-asset-quality-score-only-completion:FORBIDDEN',
+        'native-before-after-qa:required',
+        ...(releaseBound?['released-game-quality-repeat-until-debt-closed:YES','released-game-quality-alternatives-minimum:3']:[])
+      ]
+    });
+  }
   const focus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
     const motionRoot='assets/roblox/world-ghosts/motions';
@@ -3422,6 +3538,7 @@ export function findSafeTasks(project,repoRoot,queue){
     }
     if(tasks.length)return tasks;
   }
+  if(internalAssetQualityTasks.length)return uniqueTaskCandidates(internalAssetQualityTasks);
   const pilot=isAssetProductionPilot(project,repoRoot);
   const weatherPilot=isWeatherPresentationPilot(project,repoRoot);
   const studioTasks=findStudioContinuousImprovementTasks(project,repoRoot,queue);
