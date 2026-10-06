@@ -86,6 +86,8 @@ env:
   VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'
   VIBE2_ASSET_FIXED_RUNNER_SLOTS: '12'
+  VIBE2_ASSET_ROBLOX_PRIORITY_SLOTS: '10'
+  VIBE2_ASSET_CROSS_PLATFORM_SLOTS: '2'
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
@@ -934,7 +936,30 @@ jobs:
           const workers=[];
           let suppressedSpeculativeWorkers=0;
           const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
-          for(const row of batch.matrix||[]){
+          const assetMatrixOrder=(rows=[])=>{
+            if(!assetLane)return rows;
+            const roblox=rows.filter(row=>String(row?.target||'').toLowerCase()==='roblox');
+            const cross=rows.filter(row=>['unity','web'].includes(String(row?.target||'').toLowerCase()));
+            const other=rows.filter(row=>!roblox.includes(row)&&!cross.includes(row));
+            const ordered=[];
+            const robloxSlots=Math.max(1,Number(process.env.VIBE2_ASSET_ROBLOX_PRIORITY_SLOTS||10));
+            const crossSlots=Math.max(0,Number(process.env.VIBE2_ASSET_CROSS_PLATFORM_SLOTS||2));
+            const fixedSlots=Math.max(1,Number(process.env.VIBE2_ASSET_FIXED_RUNNER_SLOTS||12));
+            while(roblox.length||cross.length||other.length){
+              const group=[];
+              while(group.length<robloxSlots&&roblox.length)group.push(roblox.shift());
+              while(group.length<robloxSlots+crossSlots&&cross.length)group.push(cross.shift());
+              while(group.length<fixedSlots&&(roblox.length||cross.length||other.length)){
+                if(roblox.length)group.push(roblox.shift());
+                else if(cross.length)group.push(cross.shift());
+                else group.push(other.shift());
+              }
+              ordered.push(...group);
+            }
+            return ordered;
+          };
+          const matrixRows=assetMatrixOrder([...(batch.matrix||[])]);
+          for(const row of matrixRows){
             const safeTask=workerArtifactTaskKey(row.taskId);
             const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
@@ -953,6 +978,11 @@ jobs:
           console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
           console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length))}`);
           console.log(`VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=${assetLane?'YES':'NO'}`);
+          if(assetLane){
+            console.log(`VIBE2_ASSET_FIXED_RUNNER_SLOTS=${process.env.VIBE2_ASSET_FIXED_RUNNER_SLOTS||12}`);
+            console.log(`VIBE2_ASSET_RUNNER_PARTITION=ROBLOX_RELEASE_PRIORITY_${process.env.VIBE2_ASSET_ROBLOX_PRIORITY_SLOTS||10}+UNITY_WEB_${process.env.VIBE2_ASSET_CROSS_PLATFORM_SLOTS||2}`);
+            console.log('VIBE2_ASSET_OTHER_ROBLOX_ELIGIBLE=YES');
+          }
           console.log(`VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=${suppressedSpeculativeWorkers}`);
           console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
           console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
@@ -1163,7 +1193,8 @@ jobs:
     timeout-minutes: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 60 || 22 }}
     strategy:
       fail-fast: false
-      # Asset lane keeps 63 logical reservations while GitHub continuously rolls exactly five workers.
+      # Asset lane keeps 63 logical reservations while GitHub continuously rolls exactly twelve workers.
+      # Matrix order repeats a 10 Roblox (release-first) + 2 Unity/Web target; supply shortages may be filled by other eligible asset work.
       # As one matrix worker finishes, the next reserved asset starts automatically on the same canonical lane.
       max-parallel: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 12 || 256 }}
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
