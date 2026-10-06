@@ -419,6 +419,7 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/fetch_runs 'per_page=100'\n/);
   assert.match(director,/fetch_runs 'status=in_progress&per_page=100' true/);
   assert.match(director,/fetch_runs 'status=queued&per_page=100' true/);
+  assert.match(director,/fetch_runs 'status=pending&per_page=100' true/);
   assert.match(director,/fetch_runs 'status=requested&per_page=100' true \|\| true/);
   assert.match(director,/fetch_runs 'status=waiting&per_page=100' true \|\| true/);
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
@@ -429,6 +430,17 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
 
+
+test('director paginates pending candidate-release backlog beyond the mixed recent page',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const start=director.indexOf("fetch_runs 'per_page=100'");
+  const end=director.indexOf('current_main=',start);
+  assert.ok(start>=0&&end>start);
+  const fetchBlock=director.slice(start,end);
+  assert.match(fetchBlock,/fetch_runs 'status=pending&per_page=100' true/);
+  assert.match(director,/String\(run\.path\|\|''\)!=='\.github\/workflows\/vibe2-candidate-release\.yml'/);
+  assert.match(director,/ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY/);
+});
 
 test('director cancellation cleanup does not recursively wake another drain while success and failure wakes remain eligible',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
