@@ -93,6 +93,10 @@ const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1
 const advancedSeedDesignDepth=seedGameplaySketchVersion>=2;
 const seedSystemFusionDepth=seedGameplaySketchVersion>=3&&seedGameplaySketch?.compositionDepth&&typeof seedGameplaySketch.compositionDepth==='object'&&!Array.isArray(seedGameplaySketch.compositionDepth)
   ?seedGameplaySketch.compositionDepth:null;
+const seedNarrativeDepth=seedGameplaySketchVersion>=3&&seedGameplaySketch?.narrativeDepth&&typeof seedGameplaySketch.narrativeDepth==='object'&&!Array.isArray(seedGameplaySketch.narrativeDepth)
+  ?seedGameplaySketch.narrativeDepth:null;
+const seedStyleWorldDepth=seedGameplaySketchVersion>=3&&seedGameplaySketch?.styleWorldDepth&&typeof seedGameplaySketch.styleWorldDepth==='object'&&!Array.isArray(seedGameplaySketch.styleWorldDepth)
+  ?seedGameplaySketch.styleWorldDepth:null;
 const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
 const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
 const seedFlowAssetRequirements=Array.isArray(seedFlowArchitecture?.assetFlow?.requirements)?seedFlowArchitecture.assetFlow.requirements:[];
@@ -110,6 +114,7 @@ const seedDesignDepthContext={
   codingGrowthHooks:Array.isArray(seedGameplaySketch?.codingGrowthHooks)?seedGameplaySketch.codingGrowthHooks:[],
   compositionDepth:seedSystemFusionDepth?{
     mainContent:clean(seedSystemFusionDepth.mainContent),
+    conceptFusion:clean(seedSystemFusionDepth.conceptFusion),
     majorSubSystems:Array.isArray(seedSystemFusionDepth.majorSubSystems)?seedSystemFusionDepth.majorSubSystems:[],
     extensionSystems:Array.isArray(seedSystemFusionDepth.extensionSystems)?seedSystemFusionDepth.extensionSystems:[],
     crossSystemCombinations:Array.isArray(seedSystemFusionDepth.crossSystemCombinations)?seedSystemFusionDepth.crossSystemCombinations:[],
@@ -118,6 +123,40 @@ const seedDesignDepthContext={
     legacyContentRevisitHooks:Array.isArray(seedSystemFusionDepth.legacyContentRevisitHooks)?seedSystemFusionDepth.legacyContentRevisitHooks:[],
     endgameFusion:clean(seedSystemFusionDepth.endgameFusion),
     mechanicDiversitySources:Array.isArray(seedSystemFusionDepth.mechanicDiversitySources)?seedSystemFusionDepth.mechanicDiversitySources:[]
+  }:null,
+  narrativeDepth:seedNarrativeDepth?{
+    storyWeight:clean(seedNarrativeDepth.storyWeight),
+    worldConflict:clean(seedNarrativeDepth.worldConflict),
+    mainStoryArc:clean(seedNarrativeDepth.mainStoryArc),
+    narrativeDnaSources:Array.isArray(seedNarrativeDepth.narrativeDnaSources)?seedNarrativeDepth.narrativeDnaSources:[],
+    rightsModes:Array.isArray(seedNarrativeDepth.rightsModes)?seedNarrativeDepth.rightsModes:[],
+    npcRelationshipWeb:Array.isArray(seedNarrativeDepth.npcRelationshipWeb)?seedNarrativeDepth.npcRelationshipWeb:[],
+    companionArcs:Array.isArray(seedNarrativeDepth.companionArcs)?seedNarrativeDepth.companionArcs:[],
+    mainSubquestLinks:Array.isArray(seedNarrativeDepth.mainSubquestLinks)?seedNarrativeDepth.mainSubquestLinks:[],
+    foreshadowPayoffs:Array.isArray(seedNarrativeDepth.foreshadowPayoffs)?seedNarrativeDepth.foreshadowPayoffs:[],
+    factionCultureHooks:Array.isArray(seedNarrativeDepth.factionCultureHooks)?seedNarrativeDepth.factionCultureHooks:[],
+    historicalMythReinterpretations:Array.isArray(seedNarrativeDepth.historicalMythReinterpretations)?seedNarrativeDepth.historicalMythReinterpretations:[],
+    worldbuildingFusion:Array.isArray(seedNarrativeDepth.worldbuildingFusion)?seedNarrativeDepth.worldbuildingFusion:[],
+    storySystemLinks:Array.isArray(seedNarrativeDepth.storySystemLinks)?seedNarrativeDepth.storySystemLinks:[],
+    contentCausalityLinks:Array.isArray(seedNarrativeDepth.contentCausalityLinks)?seedNarrativeDepth.contentCausalityLinks:[],
+    worldEvolutionHooks:Array.isArray(seedNarrativeDepth.worldEvolutionHooks)?seedNarrativeDepth.worldEvolutionHooks:[],
+    culturalRespectRules:Array.isArray(seedNarrativeDepth.culturalRespectRules)?seedNarrativeDepth.culturalRespectRules:[]
+  }:null,
+  styleWorldDepth:seedStyleWorldDepth?{
+    styleFusion:clean(seedStyleWorldDepth.styleFusion),
+    styleDnaSources:Array.isArray(seedStyleWorldDepth.styleDnaSources)?seedStyleWorldDepth.styleDnaSources:[],
+    architectureSettlement:clean(seedStyleWorldDepth.architectureSettlement),
+    environmentBiomes:clean(seedStyleWorldDepth.environmentBiomes),
+    materialPropLanguage:clean(seedStyleWorldDepth.materialPropLanguage),
+    characterCostumeSilhouette:clean(seedStyleWorldDepth.characterCostumeSilhouette),
+    paletteLightingWeather:clean(seedStyleWorldDepth.paletteLightingWeather),
+    backgroundStorytelling:clean(seedStyleWorldDepth.backgroundStorytelling),
+    regionalStyleVariation:Array.isArray(seedStyleWorldDepth.regionalStyleVariation)?seedStyleWorldDepth.regionalStyleVariation:[],
+    gameplayReadabilityLinks:Array.isArray(seedStyleWorldDepth.gameplayReadabilityLinks)?seedStyleWorldDepth.gameplayReadabilityLinks:[],
+    styleExpansionHooks:Array.isArray(seedStyleWorldDepth.styleExpansionHooks)?seedStyleWorldDepth.styleExpansionHooks:[],
+    artRightsRules:Array.isArray(seedStyleWorldDepth.artRightsRules)?seedStyleWorldDepth.artRightsRules:[],
+    assetLibraryExpansionRequired:false,
+    assetLibraryReferenceHints:Array.isArray(seedStyleWorldDepth.assetLibraryReferenceHints)?seedStyleWorldDepth.assetLibraryReferenceHints:[]
   }:null,
   flowArchitecture:seedFlowArchitecture?{
     version:Number(seedFlowArchitecture.version||1),
@@ -576,6 +615,10 @@ function repairStructureContract(fields){
   if(fields.includes('contentExpansionPlan'))rules.push(seedGameplaySketchVersion>=3
     ?'contentExpansionPlan: v3 시드는 최소 4개 단계. 성장 변이, 숨은 조합, 기존 지역/콘텐츠 재방문 이유, A×B×C+@ 엔드게임 융합을 실제 새 플레이와 기존 시스템 영향으로 설명한다.'
     :'contentExpansionPlan: 최소 3개 서로 다른 객체. JS String.length 기준 각 milestone은 최소 20자, newGameplay/systemImpact는 각각 최소 30자 이상으로 실제 새 플레이와 기존 시스템 영향을 구체적으로 설명.');
+  if(fields.includes('narrativeDialoguePlan')&&seedGameplaySketchVersion>=3)rules.push('narrativeDialoguePlan: NPC 관계망·동료 개인서사·메인/서브퀘 양방향 영향·복선/회수·세력 문화·세계 변화가 실제 퀘스트 상태와 연결되게 작성한다.');
+  if(fields.includes('referenceHomagePlan')&&seedGameplaySketchVersion>=3)rules.push('referenceHomagePlan: 역사·공공영역 고전은 재해석 가능하되 현대 보호 작품은 ABSTRACT_TECHNIQUE_ONLY로 고유 표현을 복제하지 않는다.');
+  if(fields.includes('contentVarietyPlan')&&seedGameplaySketchVersion>=3)rules.push('contentVarietyPlan: 지역/적/목표의 역할 차이뿐 아니라 세계 원인·세력·역사·배경 상태가 콘텐츠 존재 이유와 후속 결과를 설명해야 한다.');
+  if(fields.includes('artAudioDirection')&&seedGameplaySketchVersion>=3)rules.push('artAudioDirection/visualDirection: styleWorldDepth의 건축·지형·의상·재질·팔레트·조명·날씨·배경 서사를 게임플레이 가독성과 연결하고 자산 라이브러리 확장은 필수 조건으로 두지 않는다.');
   if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. JS String.length 기준 각 designElement/responsibleSystem은 최소 20자, validationEvidence는 최소 30자 이상으로 검증 방법까지 구체적으로 작성.');
   if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
@@ -1061,8 +1104,8 @@ async function callDesignerModel(system,user,schema,options={}){
 
 async function generateDesignerDraft(){
   const preservationDirective=ownerPreservationDesign?' 이 seed는 기존 게임 보존형 표현 업그레이드다. 기존 세계관·지역·스토리·퀘스트·전투·제작·진행·밸런스·드랍·세이브·hit/cooldown 의미를 절대 재설계하지 않는다. 새 스킬·게이지·패널티·보상·자원·해금 규칙을 추가하지 않고 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→AUDIO_FEEL→CAMERA_LANGUAGE→POLISH_MOBILE 표현 패스만 설계한다.':'';
-  const system=`너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하되 기본 컨셉을 감옥처럼 고정하지 않는다. GAMEPLAY_SKETCH v2가 있으면 playerPromise·funDrivers·balanceRules·pacingPlan·progressionLayers·expansionPlan·completionCriteria·codingGrowthHooks·flowArchitecture를 설계 깊이 기준으로 실제 소비한다. GAMEPLAY_SKETCH v3 compositionDepth가 있으면 mainContent는 메인 정체성/coreFun에 고정하고 majorSubSystems 최소 3개를 서로 다른 signatureSystems 역할로 구체화한다. crossSystemCombinations는 systemInterconnections의 실제 trigger→stateChange로 옮기고, hiddenCombinations·growthMutations·legacyContentRevisitHooks·endgameFusion은 contentExpansionPlan과 progressionDirection에 단계적으로 녹인다. 초반에는 각 축을 학습시키고 중반에는 A×B/A×C/B×C, 후반에는 A×B×C, 엔드게임에는 A×B×C+@를 요구하되 서브 콘텐츠를 독립 메뉴로 던져놓지 않는다. 설계는 이 기준을 구체화할 수 있지만 수치 뻥튀기나 단순 반복으로 약화하지 않으며, flowArchitecture의 자산 요구는 그래픽 역할 요구일 뿐 gameplay·balance·save·network 권한으로 승격하지 않는다. 먼저 진행막힘·이동불능·세이브·입력·동기화·크래시 등 안정성 신호를 원인별로 분류하고, 구현 버그를 설계 결함으로 오인해 중복 수정하지 않는다. 물질적 설계 변경은 최소 PLAN_A/PLAN_B를 만들고 필요하면 장르 전환 challenger도 허용하되 검증 전 기존 passing baseline을 지우지 않는다. 맵·지역·몹·퀘스트는 색/수치만 다른 복제 구성을 피하고 역할·동선·위험보상·대응법·리듬이 달라야 한다. 스토리/대화가 필요한 게임은 캐릭터별 문법·존대/격식·어휘·문장 리듬·관계·감정·지식범위·서브텍스트와 장면 목적·정보 비대칭·복선·회수·반전을 설계한다. 공공영역 고전은 모티프·구조·주제·원형을 오마주/재해석할 수 있고, 현대 보호 작품은 추상적 기법만 참고하며 표현·캐릭터·대사·장면 배열을 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.${preservationDirective}`;
-  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. STABILIZE→UNDERSTAND→OBSERVE→DIAGNOSE→PRIORITIZE→BLUEPRINT→PROPOSE→COMPARE→REVISE→VALIDATE→LEARN→REPLAN→EXPAND 순서를 따른다. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. v3 compositionDepth가 있으면 메인 콘텐츠 1개 + 대형 서브축 최소 3개 + @ 확장요소를 실제 설계에 반영한다. 고전 카드/주사위/타일/경매부터 현대 덱빌딩/드래프트/일꾼배치/엔진빌딩, 아케이드/탐험/생활/사회경제/수집/파티 계통을 게임 정체성에 맞게 섞되 단순 미니게임 모음으로 만들지 않는다. signatureSystems에는 메인과 서브축의 역할 차이를, systemInterconnections에는 최소 4개 교차 상태 연결을, contentExpansionPlan에는 성장 변이·숨은 조합·옛 콘텐츠 재방문·엔드게임 융합을 구체적으로 포함한다. designAlternatives에는 최소 PLAN_A와 PLAN_B를 실제로 다른 접근으로 작성하고 각 안마다 컨셉/플레이어 판타지·핵심루프/세션리듬·맵 토폴로지/지역역할·랜드마크/이동·적 생태계/대응법·보스/시그니처 순간·성장/경제·퀘스트/스토리/이벤트·실패/재시도/복구·플랫폼 적응·구현범위·검증계획을 빠짐없이 구체화한다. selectedDesignPlan에서 선택 이유·정체성 보존·창작적 일탈·장르변경 여부·되돌림 가능성을 설명한다. contentVarietyPlan에서 맵/지역·적/도전·목표가 같은 템플릿 반복이 되지 않게 역할 차이를 설계한다. narrativeDialoguePlan은 해당 게임에서 스토리/대화가 필요하면 캐릭터별 말투와 장면·복선·회수·반전을 구체화하고 필요 없으면 applicable=false와 빈 배열을 사용한다. referenceHomagePlan은 공공영역 또는 추상기법/독자창작만 사용하고 그대로 베끼지 않는다. designIntegrityPlan은 이동·첫 행동·진행·퀘스트 선행조건·종료·회복·맵 목표·경제·대응법·보스 페이즈 전환·멀티 입장/이탈/재입장/동기화·세이브/마이그레이션·서사 인물지식/인과/복선회수 일관성을 실제 규칙 기준으로 검사하며 불확실한 걸 거짓 PASS로 쓰지 않는다. stabilityPriorityPlan은 알려진 증상을 구현/설계/혼합/미확정으로 분류한다. UNITY platformProfiles는 네이티브와 별개 게임을 설계하지 말고 같은 canonical Unity 프로젝트가 Unity Web/WebGL 검증 표면에서도 동작하도록 터치 입력·모바일 UI·브라우저 성능·WebGL 호환성을 포함한다. Unity Web은 릴리스 플랫폼이나 별도 게임 규칙이 아니며 핵심 규칙·밸런스를 바꾸지 않는다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,12000)}\nEVIDENCE=${clip(evidence,10500)}`;
+  const system=`너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하되 기본 컨셉을 감옥처럼 고정하지 않는다. GAMEPLAY_SKETCH v2가 있으면 playerPromise·funDrivers·balanceRules·pacingPlan·progressionLayers·expansionPlan·completionCriteria·codingGrowthHooks·flowArchitecture를 설계 깊이 기준으로 실제 소비한다. GAMEPLAY_SKETCH v3 compositionDepth가 있으면 mainContent는 메인 정체성/coreFun에 고정하고 majorSubSystems 최소 3개를 서로 다른 signatureSystems 역할로 구체화한다. crossSystemCombinations는 systemInterconnections의 실제 trigger→stateChange로 옮기고, hiddenCombinations·growthMutations·legacyContentRevisitHooks·endgameFusion은 contentExpansionPlan과 progressionDirection에 단계적으로 녹인다. 초반에는 각 축을 학습시키고 중반에는 A×B/A×C/B×C, 후반에는 A×B×C, 엔드게임에는 A×B×C+@를 요구하되 서브 콘텐츠를 독립 메뉴로 던져놓지 않는다. narrativeDepth는 narrativeDialoguePlan·referenceHomagePlan·contentVarietyPlan·systemInterconnections에 실제로 소비한다. NPC/동료/세력/메인↔서브퀘/복선회수/콘텐츠 인과/세계 변화가 플레이 상태와 연결되어야 하며 로마·고전사·현대사·신화·고전문학 DNA는 독자 세계로 재해석한다. styleWorldDepth는 visualDirection·artAudioDirection·contentVarietyPlan·platform profile에 반영해 건축·지형·의상·재질·팔레트·조명·날씨·배경 스토리텔링이 플레이 가독성과 세계 인과를 동시에 설명하게 한다. 자산 라이브러리는 참고·재사용 우선이며 확장 자체를 설계 PASS 조건으로 만들지 않는다. 설계는 이 기준을 구체화할 수 있지만 수치 뻥튀기나 단순 반복으로 약화하지 않으며, flowArchitecture의 자산 요구는 그래픽 역할 요구일 뿐 gameplay·balance·save·network 권한으로 승격하지 않는다. 먼저 진행막힘·이동불능·세이브·입력·동기화·크래시 등 안정성 신호를 원인별로 분류하고, 구현 버그를 설계 결함으로 오인해 중복 수정하지 않는다. 물질적 설계 변경은 최소 PLAN_A/PLAN_B를 만들고 필요하면 장르 전환 challenger도 허용하되 검증 전 기존 passing baseline을 지우지 않는다. 맵·지역·몹·퀘스트는 색/수치만 다른 복제 구성을 피하고 역할·동선·위험보상·대응법·리듬이 달라야 한다. 스토리/대화가 필요한 게임은 캐릭터별 문법·존대/격식·어휘·문장 리듬·관계·감정·지식범위·서브텍스트와 장면 목적·정보 비대칭·복선·회수·반전을 설계한다. 공공영역 고전은 모티프·구조·주제·원형을 오마주/재해석할 수 있고, 현대 보호 작품은 추상적 기법만 참고하며 표현·캐릭터·대사·장면 배열을 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.${preservationDirective}`;
+  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. STABILIZE→UNDERSTAND→OBSERVE→DIAGNOSE→PRIORITIZE→BLUEPRINT→PROPOSE→COMPARE→REVISE→VALIDATE→LEARN→REPLAN→EXPAND 순서를 따른다. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. v3 compositionDepth가 있으면 메인 콘텐츠 1개 + 대형 서브축 최소 3개 + @ 확장요소를 실제 설계에 반영한다. v3 narrativeDepth/styleWorldDepth도 반드시 실제 설계 필드에 반영한다. 콘텐츠마다 세계 원인→관련 NPC/세력/지역→플레이 행동→보상/상태변화→후속 메인/서브스토리 영향을 연결하고, 세계 선택 결과는 지역·상점·NPC·세력·배경 상태에 누적된다. 컨셉은 장르×플레이 판타지×시대/세계관×규칙 DNA×서사 갈등의 융합으로 잡고, 스타일은 시대/문화×건축×지형×의상×재질×조명/날씨×배경 스토리텔링으로 확장한다. 고전 카드/주사위/타일/경매부터 현대 덱빌딩/드래프트/일꾼배치/엔진빌딩, 아케이드/탐험/생활/사회경제/수집/파티 계통을 게임 정체성에 맞게 섞되 단순 미니게임 모음으로 만들지 않는다. signatureSystems에는 메인과 서브축의 역할 차이를, systemInterconnections에는 최소 4개 교차 상태 연결을, contentExpansionPlan에는 성장 변이·숨은 조합·옛 콘텐츠 재방문·엔드게임 융합을 구체적으로 포함한다. designAlternatives에는 최소 PLAN_A와 PLAN_B를 실제로 다른 접근으로 작성하고 각 안마다 컨셉/플레이어 판타지·핵심루프/세션리듬·맵 토폴로지/지역역할·랜드마크/이동·적 생태계/대응법·보스/시그니처 순간·성장/경제·퀘스트/스토리/이벤트·실패/재시도/복구·플랫폼 적응·구현범위·검증계획을 빠짐없이 구체화한다. selectedDesignPlan에서 선택 이유·정체성 보존·창작적 일탈·장르변경 여부·되돌림 가능성을 설명한다. contentVarietyPlan에서 맵/지역·적/도전·목표가 같은 템플릿 반복이 되지 않게 역할 차이를 설계한다. narrativeDialoguePlan은 해당 게임에서 스토리/대화가 필요하면 캐릭터별 말투와 장면·복선·회수·반전을 구체화하고 필요 없으면 applicable=false와 빈 배열을 사용한다. referenceHomagePlan은 공공영역 또는 추상기법/독자창작만 사용하고 그대로 베끼지 않는다. designIntegrityPlan은 이동·첫 행동·진행·퀘스트 선행조건·종료·회복·맵 목표·경제·대응법·보스 페이즈 전환·멀티 입장/이탈/재입장/동기화·세이브/마이그레이션·서사 인물지식/인과/복선회수 일관성을 실제 규칙 기준으로 검사하며 불확실한 걸 거짓 PASS로 쓰지 않는다. stabilityPriorityPlan은 알려진 증상을 구현/설계/혼합/미확정으로 분류한다. UNITY platformProfiles는 네이티브와 별개 게임을 설계하지 말고 같은 canonical Unity 프로젝트가 Unity Web/WebGL 검증 표면에서도 동작하도록 터치 입력·모바일 UI·브라우저 성능·WebGL 호환성을 포함한다. Unity Web은 릴리스 플랫폼이나 별도 게임 규칙이 아니며 핵심 규칙·밸런스를 바꾸지 않는다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,12000)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
     const full=await callDesignerModel(system,user,DESIGN,{predict:5600,temperature:0.28,numCtx:12288,timeoutMs:120000,maxAttempts:2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
