@@ -1337,7 +1337,7 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
     prompt:[
       'You are the Vibe2 causal diagnostic source repair worker. Return JSON only.',
       goal,
-      verifiedExternalLearningBlockFromPrompt(raw),
+      compactVerifiedExternalLearningBlockFromPrompt(raw),
       `Reproduced diagnostic: ${spec.diagnosticType}:${spec.path}; line=${spec.diagnosticLine??'UNKNOWN'}; needle=${spec.diagnosticNeedle||'UNKNOWN'}`,
       spec.diagnosticMicroTask?`Required repair: ${spec.diagnosticMicroTask}`:'',
       hardRule,
@@ -3301,7 +3301,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       'You are the Vibe2 source worker. Implement the assigned existing motion. Return JSON only; instructions or plans without edits are invalid.',
       'Engine: '+order.target+'; allowed edit path: '+allowed,
       compactUnit,
-      learningContract.block,
+      compactVerifiedExternalLearningBlockFromPrompt(learningContract.block),
       motionCoaching?.block||'',
       assetTeachingBlock,
       outsideWindow?'READ-ONLY TARGET MODULE CONTEXT (do not edit):\n'+outsideWindow:'',
@@ -4378,6 +4378,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   let repeatedFailureShiftKey='';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
+  const assetDevelopmentSingleMotion=assetDevelopmentLane&&target==='roblox'&&singleMotionWorkUnit;
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
@@ -4413,7 +4414,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
-  const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
+  const baseMaxAttempts=assetDevelopmentLane&&target==='roblox'&&(robloxGraphicsInitial||singleMotionWorkUnit)
     ?Math.min(ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS,configuredBaseMaxAttempts)
     :(studioExpansion&&!allowFullRewrite
       ?Math.min(3,configuredBaseMaxAttempts)
@@ -4515,7 +4516,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       :expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
-    let maxPredict=expansionMode
+    let maxPredict=assetDevelopmentSingleMotion
+      ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT
+      :expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
@@ -4530,15 +4533,23 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       recoveredOutputBudget=Math.min(JSON_OUTPUT_RECOVERY_MAX_PREDICT,Math.max(recoveredOutputBudget,Number(lastError.vibe2MaxPredict||maxPredict)*2));
       console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
     }
-    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
-    const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
+    if(!allowFullRewrite){
+      maxPredict=assetDevelopmentSingleMotion
+        ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT
+        :Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
+    }
+    const timeoutMs=assetDevelopmentSingleMotion
+      ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS
+      :priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
       ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
       :(expansionMode
         ?FULL_WEB_EXPANSION_TIMEOUT_MS
         :(allowFullRewrite
           ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
           :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
-    const baseContextWindow=expansionMode
+    const baseContextWindow=assetDevelopmentSingleMotion
+      ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW
+      :expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
