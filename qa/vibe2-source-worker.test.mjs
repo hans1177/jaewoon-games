@@ -365,80 +365,6 @@ test('single motion generation sends a required nonempty patch schema through th
   assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(result.candidateValidation.runtimeVerified,false);
 });
-test('asset-development Roblox single motion compacts verified learning and uses bounded generation budget',async t=>{
-  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
-  const sourceRoot=path.join(cwd,'assets/roblox/world-ghosts/motions/test');
-  const source='local pose = 0\nreturn pose\n';
-  write(path.join(sourceRoot,'init.luau'),source);
-  const ids=Array.from({length:7},(_,index)=>'verified-motion-learning-'+(index+1));
-  const rows=[];
-  let principle=0;
-  for(const id of ids){
-    rows.push('[EXTERNAL_LEARNING '+id+']');
-    for(let localIndex=0;localIndex<4;localIndex++){
-      principle+=1;
-      rows.push('DISPOSITION=motion-'+principle+':APPLIED_GAME_SOURCE;GAME=horror-escape-room;TARGET=roblox;DOMAINS=MOTION|PRESENTATION;GENRE_MOOD=horror');
-      rows.push('APPLY=id=motion-'+principle+';lesson='+('preserve source-bound motion timing and visible contact while keeping gameplay authority unchanged '.repeat(32)));
-    }
-    rows.push('[END_EXTERNAL_LEARNING '+id+']');
-  }
-  const learning=[
-    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
-    'dispositions='+principle+'/'+principle+'; sourcePrinciples='+principle+'; validationOnly=0; truncation=FORBIDDEN',
-    'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
-    'HARD SOURCE-WORKER RULE: implement APPLIED_GAME_SOURCE principles without widening authority.',
-    ...rows,
-    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
-  ].join('\n');
-  const prompt=[
-    'You are the Vibe2 game source worker. Return JSON only.',
-    'Engine: roblox',
-    '[SINGLE MOTION WORK UNIT BEGIN]',
-    'objectId=roblox-world-ghost-test; clipId=walk; sourcePath=init.luau',
-    'Keep the exact object and clip binding. Runtime/native quality remains unverified until separate playback evidence exists.',
-    '[SINGLE MOTION WORK UNIT END]',
-    learning,
-    'Allowed edit paths: init.luau',
-    '=== FILE init.luau [EDITABLE] ===',
-    source
-  ].join('\n');
-  assert.ok(Buffer.byteLength(prompt,'utf8')>29000);
-  const compactLearning=compactVerifiedExternalLearningBlockFromPrompt(prompt,{triggerBytes:6000,targetBytes:6000});
-  assert.ok(Buffer.byteLength(compactLearning,'utf8')<=6000);
-  assertVerifiedExternalLearningPromptCoverage(compactLearning,{required:true,ids});
-
-  const response=path.join(cwd,'motion-answer.json');
-  write(response,JSON.stringify({edits:[{path:'init.luau',find:'local pose = 0',replace:'local pose = math.sin(t)'}]}));
-  const previousLane=process.env.VIBE2_EXECUTION_LANE;
-  process.env.VIBE2_EXECUTION_LANE='asset-development';
-  try{
-    const result=await generateCandidateWithRecovery({
-      prompt,
-      target:'roblox',
-      sourceRoot,
-      sourceRootRelative:'assets/roblox/world-ghosts/motions/test',
-      responsibleFiles:['init.luau'],
-      allowFullRewrite:false,
-      singleMotionWorkUnit:true,
-      responseFiles:[response],
-      verifiedExternalLearningContract:{required:true,ids}
-    });
-    assert.equal(result.generation.attempts,1);
-    assert.equal(result.generation.baseAttemptBudget,3);
-    assert.equal(result.generation.effectiveAttemptBudget,3);
-    assert.equal(result.generation.completionMode,'JSON_SINGLE_MOTION');
-    assert.equal(result.generation.maxPredict,1536);
-    assert.equal(result.generation.timeoutMs,120000);
-    assert.equal(result.generation.contextWindow,8192);
-    assert.ok(result.generation.requestPromptBytes<17000);
-    assert.ok(result.generation.requestPromptBytes<Buffer.byteLength(prompt,'utf8'));
-    assert.equal(result.generation.verifiedExternalLearningPromptAllAttempts,true);
-  }finally{
-    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
-    else process.env.VIBE2_EXECUTION_LANE=previousLane;
-  }
-});
-
 test('large non-full source request is compacted before local model generation without widening scope',async t=>{
   const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
   const sourceRoot=path.join(cwd,'unity-games/demo');
@@ -467,6 +393,39 @@ test('large non-full source request is compacted before local model generation w
   assert.equal(result.generation.contextWindow,12288);
   assert.equal(result.candidate.edits.length,1);
   assert.equal(result.candidate.edits[0].path,relative);
+});
+
+test('source candidate prompt compaction never applies to asset-development lane',async t=>{
+  const cwd=tempRoot();t.after(()=>fs.rmSync(cwd,{recursive:true,force:true}));
+  const sourceRoot=path.join(cwd,'unity-games/demo');
+  const relative='Assets/Scripts/GameCore.cs';
+  const source='public sealed class GameCore { public int State = 1; }\n';
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: preserve full asset-development context while editing the exact responsible source',
+    'OVERSIZED_ASSET_CONTEXT='+('asset quality context '.repeat(1800)),
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    source
+  ].join('\n');
+  assert.ok(Buffer.byteLength(prompt,'utf8')>16000);
+  const response=path.join(cwd,'answer.json');
+  write(response,JSON.stringify({edits:[{path:relative,find:'public int State = 1;',replace:'public int State = 2;'}]}));
+  const previousLane=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const result=await generateCandidateWithRecovery({
+      prompt,target:'unity',sourceRoot,sourceRootRelative:'unity-games/demo',
+      responsibleFiles:[relative],allowFullRewrite:false,responseFiles:[response]
+    });
+    assert.equal(result.generation.requestPromptBytes,Buffer.byteLength(prompt,'utf8'));
+    assert.ok(result.generation.contextWindow>=24576);
+  }finally{
+    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previousLane;
+  }
 });
 
 test('internal motion coaching selects source-hash-bound matching anatomy and never claims learned weights or runtime quality',()=>{
@@ -4281,13 +4240,6 @@ test('zero-output focused Roblox Studio recovery bounds oversized build-up guida
   assert.equal(sourcePromptContextWindow(focused.prompt,{baseContextWindow:8192,maxPredict:768}),8192);
 });
 
-test('source prompt context window chooses the smallest sufficient tier for compact focused prompts',()=>{
-  assert.equal(sourcePromptContextWindow('x'.repeat(18000),{baseContextWindow:8192,maxPredict:768}),8192);
-  assert.equal(sourcePromptContextWindow('x'.repeat(21000),{baseContextWindow:8192,maxPredict:768}),12288);
-  assert.equal(sourcePromptContextWindow('x'.repeat(30000),{baseContextWindow:8192,maxPredict:768}),12288);
-  assert.equal(sourcePromptContextWindow('x'.repeat(36000),{baseContextWindow:8192,maxPredict:768}),16384);
-});
-
 test('zero-output timeout keeps focused recovery enabled for studio build-up',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
@@ -4302,7 +4254,7 @@ test('zero-output model stalls use first-output deadline and stop after two empt
   assert.match(workerSource,/ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000/);
   assert.match(workerSource,/SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=16000/);
   assert.match(workerSource,/SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=12288/);
-  assert.match(workerSource,/ASSET_DEVELOPMENT_ROBLOX_MOTION_MAX_PREDICT=1536/);
+  assert.match(workerSource,/sourceCandidatePressureInitial=!allowFullRewrite[\s\S]*?&&!assetDevelopmentLane/);
   assert.match(workerSource,/Ollama 첫 출력 시간 초과/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK/);
   assert.match(workerSource,/consecutiveZeroOutputTimeouts>=2/);
