@@ -1721,6 +1721,75 @@ export function buildGameSpecificBuildUpDirective({
       'wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.'
     ],
     responsibleSystemsAndFiles:{files:topFiles,sourceAnchors:sourceResponsibilities,selectionRule:'DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST',exactSourceAnchorRequired:true,currentAndIntendedBehaviorRequiredPerPrimaryAnchor:true},
+    ownerBuildUpShare:Object.freeze({
+      version:1,
+      gameId:id,
+      gameName:clean(gameName)||id,
+      platform:productionPlatform,
+      directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
+      generation,
+      developmentDepth:depthInfo.developmentDepth,
+      escalationStage:depthInfo.escalationStage,
+      design:Object.freeze({
+        contextMode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN':'APPROVED_OR_MINIMUM_DESIGN',
+        identity,
+        coreFun:clean(design.coreFun)||null,
+        coreLoop:Object.freeze([...(design.coreLoop||[])]),
+        signatureSystems:Object.freeze((design.signatureSystems||[]).map(row=>Object.freeze({name:clean(row?.name)||null,purpose:clean(row?.purpose)||null,playerChoice:clean(row?.playerChoice)||null}))),
+        progressionDirection:clean(design.progressionDirection)||null,
+        multiplayerMode:clean(design.multiplayerMode)||null,
+        visualDirection:clean(design.visualDirection)||null,
+        playerFantasy:clean(design.playerFantasy)||null,
+        narrativeWorldRules:Object.freeze([...(design.narrativeWorldRules||[])]),
+        contentExpansionPlan:Object.freeze([...(design.contentExpansionPlan||[])])
+      }),
+      buildUp:Object.freeze({
+        primaryFocus:focus,
+        primaryGoal:goal,
+        primaryGoalReason:safeDesignlessMode
+          ?`검증된/최소 디자인이 아직 없어 ${focus}만 기존 실제 소스에서 안전하게 개선한다.`
+          :`현재 검증 신호와 소스에서 ${focus}를 우선한다.`,
+        previousOutcome:depthInfo.previousOutcome,
+        previousGoal:clean(previousDirective?.thisLoopPrimaryGoal)||null,
+        nextAction:clean(nextActionDecision?.action)||null,
+        nextActionReason:clean(nextActionDecision?.reason)||null,
+        nextEscalationCandidates:Object.freeze([...nextCandidates]),
+        automaticNextGeneration:generation+1
+      }),
+      currentRuntime:Object.freeze(runtimeEvidence&&Object.keys(runtimeEvidence).length?{...runtimeEvidence}:{state:'UNKNOWN_NOT_INVENTED'}),
+      currentImplementation:Object.freeze({
+        sourceTreeFingerprint:source.sourceTreeFingerprint,
+        observations:Object.freeze([...(source.observations||[])]),
+        signals:Object.freeze([...(source.signals||[])]),
+        topFiles:Object.freeze([...(source.topFiles||[])]),
+        sourceAnchors:Object.freeze([...(source.sourceAnchors||[])])
+      }),
+      quality:Object.freeze({
+        detectedGaps:Object.freeze([...gaps]),
+        qualityGapMap:Object.freeze(states.map(row=>Object.freeze({...row}))),
+        allDomainImplementationDirectives:Object.freeze(allDomainImplementationDirectives.map(row=>Object.freeze({...row}))),
+        visualBuildUp:Object.freeze(buildVisualDirective({gameId:id,design,source,focus})),
+        experienceBuildUp:Object.freeze(buildExperienceBuildupContract({platform,design,source,focus})),
+        internalAssetEvolution:Object.freeze({
+          evaluateAllLibrariesAndFamiliesEveryCycle:true,
+          sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists:true,
+          runtimeAndDeploymentEvidenceRequired:true,
+          generationLimit:null
+        })
+      }),
+      responsibility:Object.freeze({
+        files:Object.freeze([...topFiles]),
+        sourceAnchors:Object.freeze([...sourceResponsibilities]),
+        exactSourceAnchorRequired:true
+      }),
+      acceptance:Object.freeze({
+        evidence:Object.freeze([...effectiveAcceptance]),
+        requiredPostChangeEvidence:Object.freeze(['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT']),
+        sourceDeltaAloneDoesNotProvePlayerValueImprovement:true,
+        elapsedTimeAloneDoesNotProveCompletion:true,
+        scoreAloneDoesNotProveCompletion:true
+      })
+    }),
     developmentImpact,
     preMutationDryRun,
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
