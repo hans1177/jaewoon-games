@@ -9806,17 +9806,17 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-06T07:35:48.858Z",
-      "robloxSourceCommit": "f0983c7eae62b2de5ec69d5b227483bbdb1a8c30",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T07:25:04.956Z",
+      "updatedAt": "2026-10-06T08:44:19.805Z",
+      "robloxSourceCommit": "e5e04312c7d4890401c18914ce89cea09b70e627",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T08:44:19.805Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "f0983c7eae62b2de5ec69d5b227483bbdb1a8c30",
+      "robloxBuildSourceRevision": null,
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-06T07:35:48.858Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -9859,11 +9859,11 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-asset-binding-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-build-package-revalidation-pending"
       ],
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "cozy-island",
@@ -10249,9 +10249,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "22c6ebfc5b8f9ff2b23e4c92cbd4ab9da47a3eb2",
-        "newSourceRevision": "1cc0bb542ad1c545b2c28660b5425d0df24175b1",
-        "invalidatedAt": "2026-10-04T00:05:02.720Z"
+        "previousSourceRevision": "f0983c7eae62b2de5ec69d5b227483bbdb1a8c30",
+        "newSourceRevision": "e5e04312c7d4890401c18914ce89cea09b70e627",
+        "invalidatedAt": "2026-10-06T08:44:19.805Z"
       },
       "robloxDedicatedExperience": {
         "version": 2,
@@ -47482,7 +47482,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T08:42:51.007Z",
+  "updatedAt": "2026-10-06T08:44:19.805Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
