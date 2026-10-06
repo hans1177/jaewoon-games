@@ -19,12 +19,45 @@ local verifiedExternalLearningDispositions = verifiedExternalLearningContext.Lea
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = Config.StudioAssets or {}
 local studioAssetFamilies = studioAssetConfig.Families or {}
-local studioUi = studioAssetFamilies.UI or {}
-local function hasStudioAssetAtom(atom)
-  return table.find(studioUi, atom) ~= nil
+local studioAssetSelectionFingerprint = studioAssetConfig.SelectionFingerprint or ""
+local function studioAssetFamily(family)
+  local atoms = studioAssetFamilies[family]
+  return type(atoms) == "table" and atoms or {}
 end
+local function hasStudioAssetAtom(familyOrAtom, atom)
+  local family = atom == nil and "UI" or familyOrAtom
+  local assetAtom = atom == nil and familyOrAtom or atom
+  return table.find(studioAssetFamily(family), assetAtom) ~= nil
+end
+local STUDIO_ASSET_SELECTION = {
+  CHARACTER = studioAssetFamily("CHARACTER"),
+  CREATURE = studioAssetFamily("CREATURE"),
+  BUILDING = studioAssetFamily("BUILDING"),
+  ENVIRONMENT = studioAssetFamily("ENVIRONMENT"),
+  WEAPON = studioAssetFamily("WEAPON"),
+  SKILL = studioAssetFamily("SKILL"),
+  MATERIAL = studioAssetFamily("MATERIAL"),
+  AUDIO = studioAssetFamily("AUDIO"),
+  VFX = studioAssetFamily("VFX"),
+  UI = studioAssetFamily("UI"),
+  MOTION = studioAssetFamily("MOTION"),
+  PROP = studioAssetFamily("PROP"),
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+  CHARACTER = "NOT_APPLICABLE",
+  CREATURE = "APPLIED",
+  BUILDING = "APPLIED",
+  ENVIRONMENT = "APPLIED",
+  WEAPON = "NOT_APPLICABLE",
+  SKILL = "NOT_APPLICABLE",
+  MATERIAL = "APPLIED",
+  AUDIO = "NOT_APPLICABLE",
+  VFX = "NOT_APPLICABLE",
+  UI = "APPLIED",
+  MOTION = "NOT_APPLICABLE",
+  PROP = "NOT_APPLICABLE",
+}
 -- STUDIO_ASSET_BINDING_CLIENT_END
-
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 local participantCount = 1
 
@@ -43,10 +76,10 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = gui
-local verifiedLearningSemanticVariant = "DEFENSE_WAVE"
+local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(255, 148, 74)
-local verifiedLearningSemanticMood = "TACTICAL_WAVE"
+local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
+local verifiedLearningSemanticMood = "READABLE_EXPLORATION"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
@@ -65,9 +98,9 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0.03
-verifiedLearningColorGrade.Contrast = 0.11
-verifiedLearningColorGrade.Brightness = 0
+verifiedLearningColorGrade.Saturation = 0.07
+verifiedLearningColorGrade.Contrast = 0.05
+verifiedLearningColorGrade.Brightness = 0.01
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Survival alone receives atmospheric depth and threat haze.
@@ -299,7 +332,7 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Parent = root
 end
 root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
-root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+root:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
