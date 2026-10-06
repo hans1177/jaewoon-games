@@ -1,5 +1,5 @@
 {
-  "version": 175,
+  "version": 176,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -617,6 +617,38 @@
       "BASELINE_REVIEW_AT",
       "DEEP_REVIEW_DUE"
     ]
+  },
+  "ownerDirectiveInterruptionResumeLogContract": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.ownerDirectiveInterruptionResumeContract",
+    "role": "LOG_FORMAT_AND_CORRELATION_ONLY",
+    "policyAuthority": false,
+    "scope": "WHEN_OWNER_CHANGE_REQUEST_PREEMPTS_ACTIVE_GAME_DEVELOPMENT",
+    "requiredMarkers": [
+      "OWNER_DIRECTIVE_INTERRUPT_RECEIVED",
+      "OWNER_DIRECTIVE_GAME_ID",
+      "OWNER_DIRECTIVE_PREEMPTED_STEP",
+      "OWNER_DIRECTIVE_PREEMPTED_CANONICAL_STATE",
+      "OWNER_DIRECTIVE_SOURCE_REVISION",
+      "OWNER_DIRECTIVE_CHANGE_APPLIED=YES|NO",
+      "OWNER_DIRECTIVE_FIRST_INVALIDATED_STAGE",
+      "OWNER_DIRECTIVE_UNCHANGED_EVIDENCE_REUSED=YES|NO",
+      "OWNER_DIRECTIVE_RESUME_STEP",
+      "OWNER_DIRECTIVE_CANONICAL_FLOW_RESUMED=YES|NO",
+      "OWNER_DIRECTIVE_REPEAT_DEVELOPMENT=CONTINUE",
+      "OWNER_DIRECTIVE_AUTOMATIC_REFILL=CONTINUE",
+      "OWNER_DIRECTIVE_TERMINAL_STOP=NO"
+    ],
+    "correlationKeys": [
+      "GAME_ID",
+      "TASK_ID",
+      "SOURCE_REVISION",
+      "CANDIDATE_SHA",
+      "FAILURE_STAGE"
+    ],
+    "repeatedIdenticalOwnerRequestIsNewSignal": true,
+    "resumeEvidenceRequiredBeforeInterruptionClosure": true,
+    "rawPrivateReasoningLogged": false
   },
   "gameErrorRepairLogContract": {
     "version": 2,
