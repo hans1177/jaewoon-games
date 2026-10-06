@@ -921,7 +921,8 @@ function bindExistingClientStudioAssets(source='',familyStatus={}){
   const configVar=requireMatch[1];
   const block=studioAssetDynamicBindingBlock({familyStatus,configVar});
   const insertAt=requireMatch.index+requireMatch[0].length;
-  output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
+  const tail=output.slice(insertAt).replace(/^\n*/,'');
+  output=output.slice(0,insertAt)+'\n'+block+tail;
   const studioUiVisualMissing=!/StudioAssetFramePanel/.test(output);
   const studioUiTraceMissing=!/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']/.test(output);
   if(studioUiVisualMissing||studioUiTraceMissing){
