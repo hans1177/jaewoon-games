@@ -509,13 +509,45 @@ export function inspectGameSources({repoRoot=process.cwd(),sourceRoots=[]}={}){
 }
 
 
-export function extractDesignContext(record={}){
+export function cloneDesignDetail(value,fallback=null){
+  try{
+    if(value===undefined||value===null)return fallback;
+    return JSON.parse(JSON.stringify(value));
+  }catch{return fallback;}
+}
+
+function extractDesignContext(record={}){
   const d=record?.content&&typeof record.content==='object'?record.content:record;
   const systems=(Array.isArray(d?.signatureSystems)?d.signatureSystems:[]).map(system=>({
     name:clean(system?.name),
     purpose:clean(system?.purpose),
     playerChoice:clean(system?.playerChoice)
-  })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
+  })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,24);
+  const implementationDetails=Object.freeze({
+    mobileUx:clean(d?.mobileUx),
+    technicalAssumptions:Object.freeze(uniq(d?.technicalAssumptions).slice(0,64)),
+    visualDirection:clean(d?.visualDirection),
+    artAudioDirection:cloneDesignDetail(d?.artAudioDirection,{}),
+    failureRetryRisk:cloneDesignDetail(d?.failureRetryRisk,{}),
+    mvpScope:cloneDesignDetail(d?.mvpScope,{}),
+    monsterRoster:cloneDesignDetail(d?.monsterRoster,[]),
+    monsterSelection:cloneDesignDetail(d?.monsterSelection,{}),
+    humanRoster:cloneDesignDetail(d?.humanRoster,[]),
+    equipment:cloneDesignDetail(d?.equipment,{}),
+    balanceContract:cloneDesignDetail(d?.balanceContract,{}),
+    tacticalCommands:cloneDesignDetail(d?.tacticalCommands,[]),
+    startingClasses:cloneDesignDetail(d?.startingClasses,[]),
+    launchCompanions:cloneDesignDetail(d?.launchCompanions,[]),
+    firstAdvancements:cloneDesignDetail(d?.firstAdvancements,[]),
+    robloxBuildProfile:cloneDesignDetail(d?.robloxBuildProfile,{}),
+    graphicsConcept:cloneDesignDetail(d?.graphicsConcept,{}),
+    implementationSync:cloneDesignDetail(d?.implementationSync,{}),
+    systemImplementation:cloneDesignDetail(d?.systemImplementation,{}),
+    monsterRosterCount:Array.isArray(d?.monsterRoster)?d.monsterRoster.length:0,
+    humanRosterCount:Array.isArray(d?.humanRoster)?d.humanRoster.length:0,
+    startingClassCount:Array.isArray(d?.startingClasses)?d.startingClasses.length:0,
+    companionCount:Array.isArray(d?.launchCompanions)?d.launchCompanions.length:0
+  });
   return Object.freeze({
     identity:clean(d?.identity),
     playerFantasy:clean(d?.playerFantasy),
@@ -523,16 +555,17 @@ export function extractDesignContext(record={}){
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     coreFun:clean(d?.coreFun),
-    coreLoop:uniq(d?.coreLoop).slice(0,10),
+    coreLoop:uniq(d?.coreLoop).slice(0,20),
     signatureSystems:systems,
-    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,12),
-    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
-    narrativeWorldRules:uniq(d?.narrativeDialoguePlan?.worldRules).slice(0,8),
-    referenceCausalInspirations:(Array.isArray(d?.referenceHomagePlan?.inspirations)?d.referenceHomagePlan.inspirations:[]).map(row=>({titleOrTradition:clean(row?.titleOrTradition),rightsBasis:clean(row?.rightsBasis),borrowedTechnique:clean(row?.borrowedTechnique),transformation:clean(row?.transformation)})).slice(0,8),
-    designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
+    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,24),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,16),
+    narrativeWorldRules:uniq(d?.narrativeDialoguePlan?.worldRules).slice(0,16),
+    referenceCausalInspirations:(Array.isArray(d?.referenceHomagePlan?.inspirations)?d.referenceHomagePlan.inspirations:[]).map(row=>({titleOrTradition:clean(row?.titleOrTradition),rightsBasis:clean(row?.rightsBasis),borrowedTechnique:clean(row?.borrowedTechnique),transformation:clean(row?.transformation)})).slice(0,12),
+    designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,24),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
-    platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
+    platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?cloneDesignDetail(d.platformProfiles,{}):{},
+    implementationDetails
   });
 }
 
