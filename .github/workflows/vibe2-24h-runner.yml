@@ -375,7 +375,7 @@ jobs:
             # A saturated asset lane can otherwise suppress the reserve run that owns
             # completed-reservation recovery. Probe exact terminal reservation runs only
             # when asset backlog exists and all logical asset slots are occupied.
-            asset_saturation_state="$(node - "$control_root/.vibe2/queue.json" <<'NODE'
+            asset_saturation_json="$(node - "$control_root/.vibe2/queue.json" <<'NODE'
             const fs=require('fs');
             const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
             const isAsset=task=>task.assetProductionLane===true||(task.evidence||[]).map(String).includes('asset-production-parallel:v1');
@@ -388,10 +388,61 @@ jobs:
             const queued=tasks.filter(task=>String(task.status||'').toLowerCase()==='queued').length;
             const max=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||63));
             const runIds=[...new Set(active.map(task=>String(task.reservationRunId).trim()))].slice(0,64);
-            process.stdout.write([queued,active.length,max,runIds.join(',')].join('\t'));
+            process.stdout.write(JSON.stringify({queued,active:active.length,max,runIds}));
             NODE
             )"
-            IFS=
+            asset_queued_before="$(jq -r '.queued // 0' <<< "$asset_saturation_json")"
+            asset_active_before="$(jq -r '.active // 0' <<< "$asset_saturation_json")"
+            asset_max="$(jq -r '.max // 63' <<< "$asset_saturation_json")"
+            asset_reservation_runs="$(jq -r '.runIds // [] | join(\",\")' <<< "$asset_saturation_json")"
+            if [ "${asset_queued_before:-0}" -gt 0 ] && [ "${asset_active_before:-0}" -ge "${asset_max:-63}" ] && [ -n "${asset_reservation_runs:-}" ]; then
+              echo "VIBE2_24H_ASSET_SATURATION_RECOVERY=PROBE:queued=$asset_queued_before:active=$asset_active_before:max=$asset_max:runs=$asset_reservation_runs"
+              rm -f /tmp/vibe2-24h-asset-run-*.completed /tmp/vibe2-24h-asset-run-*.error
+              IFS=',' read -r -a saturation_run_ids <<< "$asset_reservation_runs"
+              saturation_probe_pids=()
+              for reservation_run_id in "${saturation_run_ids[@]}"; do
+                [ -n "$reservation_run_id" ] || continue
+                (
+                  if reservation_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status // \"\"' 2>/dev/null)"; then
+                    if [ "$reservation_status" = 'completed' ]; then
+                      printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-24h-asset-run-${reservation_run_id}.completed"
+                    fi
+                  else
+                    : > "/tmp/vibe2-24h-asset-run-${reservation_run_id}.error"
+                  fi
+                ) &
+                saturation_probe_pids+=("$!")
+                if [ "${#saturation_probe_pids[@]}" -ge 16 ]; then
+                  for probe_pid in "${saturation_probe_pids[@]}"; do wait "$probe_pid" || true; done
+                  saturation_probe_pids=()
+                fi
+              done
+              for probe_pid in "${saturation_probe_pids[@]}"; do wait "$probe_pid" || true; done
+              mapfile -t completed_asset_run_ids < <(
+                while IFS= read -r probe_file; do cat "$probe_file"; done < <(
+                  find /tmp -maxdepth 1 -type f -name 'vibe2-24h-asset-run-*.completed' | sort
+                )
+              )
+              saturation_probe_failures="$(find /tmp -maxdepth 1 -type f -name 'vibe2-24h-asset-run-*.error' | wc -l | tr -d ' ')"
+              if [ "${#completed_asset_run_ids[@]}" -gt 0 ]; then
+                completed_asset_runs="$(IFS=,; echo "${completed_asset_run_ids[*]}")"
+                node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
+                  --queue="$control_root/.vibe2/queue.json" \
+                  --completed-runs="$completed_asset_runs" | tee /tmp/vibe2-24h-asset-saturation-recovery.log
+                echo "VIBE2_24H_ASSET_SATURATION_RECOVERED_RUNS=$completed_asset_runs"
+              else
+                echo 'VIBE2_24H_ASSET_SATURATION_RECOVERED_RUNS=NONE'
+              fi
+              if [ "${saturation_probe_failures:-0}" -eq 0 ]; then
+                echo 'VIBE2_24H_ASSET_SATURATION_OBSERVATION=PASS'
+              else
+                echo "VIBE2_24H_ASSET_SATURATION_OBSERVATION=PARTIAL_FAIL_OPEN:$saturation_probe_failures"
+              fi
+            else
+              echo "VIBE2_24H_ASSET_SATURATION_RECOVERY=SKIPPED:queued=${asset_queued_before:-0}:active=${asset_active_before:-0}:max=${asset_max:-63}"
+            fi
+
+            node --check /tmp/vibe2-main/tools/vibe2-handoff.mjs
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
               --runtime=/tmp/vibe2-main/vibe2-runtime.json \
               --queue="$control_root/.vibe2/queue.json" \
