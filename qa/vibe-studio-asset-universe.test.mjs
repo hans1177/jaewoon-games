@@ -4665,7 +4665,8 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.productionScopeGameIds,[]);
   assert.equal(result.registry.internalAssetLibraryAutomation.unscopedGenericIdeaProductionForbidden,true);
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,[]);
-  assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextQualityActions,[]);
+  assert.equal(result.registry.internalAssetLibraryAutomation.qualityScope,'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS');
+  assert.ok(result.registry.internalAssetLibraryAutomation.nextQualityActions.length>0);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.status,'ACTIVE_STUDIO_AUDIO_BREADTH');
   assert.equal(result.registry.internalAssetLibraryAutomation.audioStudioBreadth.roleTargetMin,180);
   assert.equal(result.registry.internalAssetLibraryAutomation.audioRoleContractCount,65);
@@ -4703,7 +4704,7 @@ test('canonical company asset registry becomes dry-run idempotent after current 
 });
 
 // 실제 출시 게임 수요가 미사용 자산의 점수나 권장 수량보다 우선한다.
-test('quality-first repairs only assets consumed by released games and never fills generic library volume',()=>{
+test('quality-first improves the full library while released games drive priority and new ideas',()=>{
  const assets=[
   {id:'unused',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/unused.luau'],intendedConsumerGameIds:['live'],internalAuditScore:1},
   {id:'dev-used',family:'CREATURE',platform:'ROBLOX',sourceFiles:['assets/dev.luau'],consumerGameIds:['dev'],internalAuditScore:100},
@@ -4723,13 +4724,17 @@ test('quality-first repairs only assets consumed by released games and never fil
  assert.deepEqual(plan.productionScopeGameIds,['live']);
  assert.equal(plan.focusPhase,'QUALITY_UP_1000');
  assert.equal(plan.autonomousNextAction.action.assetId,'used');
- assert.deepEqual(plan.nextQualityActions.map(row=>row.assetId),['used']);
+ assert.equal(plan.nextQualityActions[0].assetId,'used');
+ assert.deepEqual(new Set(plan.nextQualityActions.map(row=>row.assetId)),new Set(['unused','dev-used','used']));
+ assert.equal(plan.qualityScope,'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS');
+ assert.equal(plan.releasedGameDemandAffectsPriorityNotQualityEligibility,true);
  assert.equal(plan.nextVolumeActions.every(row=>row.releaseGameScoped===true&&row.sourceGameIds.includes('live')),true);
  assert.equal(plan.nextVolumeActions.some(row=>['SYSTEM_DEPTH_GAP','DOMAIN_IDEA_POOL','LOOSE_VOLUME_TARGET','UI_SUBSYSTEM_DEPTH','UI_SUBSYSTEM_IDEA_POOL'].includes(row.source)),false);
  assert.equal(plan.productionPromotionAutomatic,false);
  const none=buildInternalAssetLibraryAutomationPlan({assets,seedPlan:{ideas:[]},consumerGames:[],productionScopeGameIds:[],releaseScopedProduction:true});
- assert.deepEqual(none.nextQualityActions,[]);
  assert.deepEqual(none.nextVolumeActions,[]);
+ assert.deepEqual(new Set(none.nextQualityActions.map(row=>row.assetId)),new Set(['unused','dev-used','used']));
+ assert.equal(none.qualityScope,'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS');
 });
 
 
@@ -4758,7 +4763,8 @@ test('released-game library ideas retain real game ids while development-game id
  assert.ok(plan.nextVolumeActions.every(row=>row.releaseGameScoped===true));
  assert.ok(plan.nextVolumeActions.some(row=>row.sourceSignals.includes('DEFENSE')||row.sourceSignals.includes('SURVIVAL')));
  assert.equal(plan.nextVolumeActions.some(row=>row.sourceGameIds.includes('dev')),false);
- assert.deepEqual(plan.nextQualityActions.map(row=>row.assetId),['live-prop']);
+ assert.equal(plan.nextQualityActions[0].assetId,'live-prop');
+ assert.deepEqual(new Set(plan.nextQualityActions.map(row=>row.assetId)),new Set(['live-prop','dev-prop']));
 });
 
 test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
@@ -4867,9 +4873,10 @@ test('dynamic source consumers stay outside registry identity and refresh on the
     assert.deepEqual(first.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['demo']);
     const staticAction=first.automationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
     const dynamicAction=first.executionAutomationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
-    assert.equal(staticAction,undefined);
-    assert.equal(dynamicAction,undefined);
+    assert.equal(staticAction.consumerPriority,0);
+    assert.equal(dynamicAction.consumerPriority,0);
     assert.deepEqual(first.automationPlan.productionScopeGameIds,[]);
+    assert.equal(first.automationPlan.qualityScope,'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS');
     assert.equal(first.automationPlan.releaseScopedProduction,true);
 
     fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
