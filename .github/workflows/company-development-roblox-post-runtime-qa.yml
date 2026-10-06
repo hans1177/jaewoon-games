@@ -1190,6 +1190,7 @@ jobs:
                     exactVersion:true,
                     exactEngineVersion:true,
                     engineExecuted:true,
+                    validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY',
                     simulationRunning:engineProbe?.simulationRunning===true,
                     serverBootObserved:true,
                     serverBootEvidence:engineProbe?.serverBootEvidence||null,
