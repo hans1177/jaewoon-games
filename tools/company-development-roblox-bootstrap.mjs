@@ -22,6 +22,9 @@ function luauLearningDispositionRows(dispositions=[],indent='      '){
 }
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
 export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
+export const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES=Object.freeze([
+  'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
+]);
 
 const SHA256=/^[a-f0-9]{64}$/i;
 export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={}){
@@ -207,7 +210,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     );
   }
   const selectedAtomCount=Object.values(selected).reduce((n,rows)=>n+rows.length,0);
-  const requiredFamilies=Object.freeze(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
+  const requiredFamilies=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES;
   const missingFamilies=requiredFamilies.filter(family=>!(selected[family]||[]).length);
   const motionAtoms=Object.freeze([...(selected.MOTION||[])]);
   const selectionFingerprint=studioAssetSelectionFingerprint({
@@ -770,12 +773,42 @@ function replaceOrInsertStudioAssetConfig(source='',studioAssets={}){
   return source.slice(0,closeIndex+1)+block+source.slice(closeIndex+1);
 }
 
+function studioAssetClientTraceBlock({appliedFamilies=['UI']}={}){
+  const applied=new Set((appliedFamilies||[]).map(value=>clean(value).toUpperCase()).filter(Boolean));
+  const selectionRows=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES
+    .map(family=>'  '+family+' = studioAssetFamily("'+family+'"),')
+    .join('\n');
+  const statusRows=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES
+    .map(family=>'  '+family+' = "'+(applied.has(family)?'APPLIED':'NOT_APPLICABLE')+'",')
+    .join('\n');
+  return `local STUDIO_ASSET_SELECTION = {
+${selectionRows}
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+${statusRows}
+}
+`;
+}
+
 function bindExistingClientStudioAssets(source=''){
   const managed=/-- STUDIO_ASSET_BINDING_CLIENT_BEGIN\n[\s\S]*?-- STUDIO_ASSET_BINDING_CLIENT_END\n/;
   let output=source.replace(/(STUDIO_ASSET_BINDING_VERSION\s*=\s*)1\b/g,(_match,prefix)=>`${prefix}2`);
   const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
   if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
   const configVar=requireMatch[1];
+  const managedCurrent=output.match(managed)?.[0]||'';
+  const outsideManaged=managedCurrent?output.replace(managed,''):output;
+  const selectionRe=/local\s+STUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/;
+  const statusRe=/local\s+STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\n\}/;
+  const preservedSelection=outsideManaged.match(selectionRe)?.[0]||managedCurrent.match(selectionRe)?.[0]||'';
+  const preservedStatus=outsideManaged.match(statusRe)?.[0]||managedCurrent.match(statusRe)?.[0]||'';
+  const externalSelection=selectionRe.test(outsideManaged);
+  const externalStatus=statusRe.test(outsideManaged);
+  const traceBlock=externalSelection&&externalStatus
+    ?''
+    :preservedSelection&&preservedStatus
+      ?preservedSelection+'\n'+preservedStatus+'\n'
+      :studioAssetClientTraceBlock({appliedFamilies:['UI']});
   const block=`-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = ${configVar}.StudioAssets or {}
@@ -790,7 +823,7 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
--- STUDIO_ASSET_BINDING_CLIENT_END
+${traceBlock}-- STUDIO_ASSET_BINDING_CLIENT_END
 `;
   if(managed.test(output)){
     output=output.replace(managed,block);
