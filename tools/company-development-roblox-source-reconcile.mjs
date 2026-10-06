@@ -6,7 +6,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
@@ -57,13 +57,19 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const clientConfigBound=/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(client);
   const clientVisibleBound=/StudioAssetFramePanel/.test(client)
     ||(/StudioAssetBindingVersion/.test(client)&&/StudioAssetAtoms/.test(client)&&/FRAME_PANEL/.test(client)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(client));
+  const selectionBlock=client.match(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+  const statusBlock=client.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\n\}/)?.[1]||'';
+  const familySelectionTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>new RegExp('\\b'+family+'\\s*=').test(selectionBlock));
+  const familyStatusTraceComplete=ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.every(family=>new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']','i').test(statusBlock));
   const refreshRequired=!applied
     ||bindingVersion!==expectedBindingVersion
     ||libraryVersion!==Number(expected.libraryVersion||0)
     ||clientBindingVersion!==expectedBindingVersion
     ||!clientConfigBound
-    ||!clientVisibleBound;
-  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+    ||!clientVisibleBound
+    ||!familySelectionTraceComplete
+    ||!familyStatusTraceComplete;
+  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,familySelectionTraceComplete,familyStatusTraceComplete,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
 function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
