@@ -71,6 +71,9 @@ local Config = {
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
+    -- 기존 저장은 그대로 읽고, 없는 직조 퍼즐 상태만 기본값으로 채운다.
+    CurrentStage = 1, TurnsRemaining = 8, RestorationGauge = 0, NextPiece = 1,
+    InventoryThemeShards = 0, ThemeUnlockLevel = 0, GardenDecorCount = 0, BoardPlaced = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "Puzzle core gameplay", Kind = "PUZZLE", Order = 1, LearningPattern = "board-grid-placement" },
