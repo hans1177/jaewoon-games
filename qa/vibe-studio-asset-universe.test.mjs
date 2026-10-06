@@ -4817,3 +4817,22 @@ test('dynamic source consumers stay outside registry identity and refresh on the
     assert.deepEqual(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['demo']);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('asset-development keeps external black-box learning optional while game production keeps the existing requirement',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const repoRoot=path.resolve(here,'..');
+  const common={task:{gameId:'external-learning-optionality-test',goal:'existing internal asset quality work'},target:'roblox',repoRoot,verifiedLearning:{exactKnowledgeIds:[],playbookReuse:[]}};
+  const assetLane=buildVibeAssetProductionPlan({...common,executionLane:'asset-development'});
+  assert.equal(assetLane.commercialDistillation.required,false);
+  assert.equal(assetLane.commercialDistillation.ready,true);
+  assert.equal(assetLane.commercialDistillation.verifiedExternalBlackBoxRequired,false);
+  assert.equal(assetLane.commercialDistillation.externalLearningMode,'OPTIONAL_ASSET_DEVELOPMENT');
+  assert.equal(assetLane.commercialDistillation.mandatoryApplicationCoveragePct,null);
+  const gamePrimary=buildVibeAssetProductionPlan({...common,executionLane:'game-primary'});
+  assert.equal(gamePrimary.commercialDistillation.required,true);
+  assert.equal(gamePrimary.commercialDistillation.verifiedExternalBlackBoxRequired,true);
+  assert.equal(gamePrimary.commercialDistillation.externalLearningMode,'REQUIRED_GAME_PRODUCTION');
+  assert.equal(gamePrimary.commercialDistillation.ready,false);
+  assert.equal(gamePrimary.commercialDistillation.mandatoryApplicationCoveragePct,100);
+});

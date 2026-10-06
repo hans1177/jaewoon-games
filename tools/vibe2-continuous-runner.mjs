@@ -616,8 +616,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
   ]);
   const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
-  const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning;
-  const verifiedExternalPlaybookRows=freeze([...(unifiedLearning?.playbookReuse||[])
+  // External AI/black-box learning is optional on the dedicated asset lane.
+  // Game-primary keeps the existing verified-learning requirement unchanged.
+  const mandatoryVerifiedKnowledgeApplication=!assetDevelopmentLearning&&['roblox','unity','web'].includes(plan.target);
+  const verifiedExternalPlaybookRows=freeze(assetDevelopmentLearning?[]:[...(unifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))]);
   const verifiedExternalPlaybookReuse=freezeList(verifiedExternalPlaybookRows.map(row=>row.id));
   const verifiedExternalDistilledContentIds=freezeList(verifiedExternalPlaybookRows
@@ -638,6 +640,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     primaryDomains:freezeList(unifiedLearning?.domainClassification?.primary||[]),
     secondaryDomains:freezeList(unifiedLearning?.domainClassification?.secondary||[]),
     mandatoryForGameTarget:mandatoryVerifiedKnowledgeApplication,
+    externalLearningMode:assetDevelopmentLearning?'OPTIONAL_ASSET_DEVELOPMENT':'REQUIRED_GAME_TARGET',
     retrievedKnowledgeCount:exactInjectedKnowledgeIds.length,
     appliedKnowledgeCount:exactInjectedKnowledgeIds.length,
     applicationCoveragePct:100,
