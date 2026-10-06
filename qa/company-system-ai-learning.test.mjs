@@ -286,3 +286,56 @@ test('verified external AI graphics findings distill into visual rig motion mate
   assert.equal(result.rawOutputStored,false);
   assert.equal(result.verifiedOnly,true);
 });
+
+test('System AI Roblox coding task consumes verified Roblox cloud coding distillation from canonical main knowledge',()=>{
+  const external=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'roblox-remote-datastore-repair',
+      target:'roblox',
+      taskType:'bottleneck-repair',
+      goal:'repair RemoteEvent server authority replay idempotency replication datastore rejoin and mobile UI state',
+      blocker:'runtime-failure:REPLICATION_DESYNC',
+      responsibleFiles:['roblox-games/demo/src/ServerScriptService/State.server.lua','roblox-games/demo/src/StarterGui/State.client.lua']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[]},
+    masteryInput:{},
+    externalAiDistilledInput:external
+  });
+  const id='EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-roblox-cloud-coding-v1';
+  assert.equal(context.resolvedTarget,'roblox');
+  assert.ok(context.exactKnowledgeIds.includes(id));
+  assert.match(context.guidance,/openai-roblox-cloud-coding-v1/);
+  assert.match(context.guidance,/authoritative gameplay state on the server/i);
+  assert.equal(context.rawModelOutputIncluded,false);
+  assert.equal(context.advisoryOnly,true);
+  assert.equal(context.authorityExpanded,false);
+});
+
+test('System AI engine-specific distilled knowledge does not leak Roblox coding guidance into Unity work',()=>{
+  const external=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'unity-save-replication-repair',
+      target:'unity',
+      goal:'repair server replication save retry and mobile UI state',
+      responsibleFiles:['unity-games/demo/Assets/Scripts/State.cs']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[]},
+    masteryInput:{},
+    externalAiDistilledInput:external
+  });
+  assert.equal(context.resolvedTarget,'unity');
+  assert.ok(!context.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-roblox-cloud-coding-v1'));
+  assert.ok(!context.guidance.includes('openai-roblox-cloud-coding-v1'));
+});
+
+test('System AI workflow binds canonical distilled advisory knowledge into every supervised worker context',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(workflow,/test -s \.vibe2\/external-ai-distilled-knowledge\.json/);
+  assert.match(workflow,/--external-ai-distilled=\.vibe2\/external-ai-distilled-knowledge\.json/);
+  assert.match(workflow,/--learning-context=\/tmp\/system-ai-learning-context\.json/);
+});
+
