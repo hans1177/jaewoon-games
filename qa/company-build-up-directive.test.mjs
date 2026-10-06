@@ -119,7 +119,11 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.currentBehavior||'').length>5));
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.intendedBehavior||'').includes('primary goal')));
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.every(row=>String(row.observableAcceptance||'').includes(row.file)));
-  assert.equal(directive.implementationBlueprint.status,'BUILD_READY_IMPLEMENTATION_BLUEPRINT');
+  assert.equal(directive.implementationBlueprint.status,'DETAILED_BUILD_READY_IMPLEMENTATION_SPEC');
+  assert.equal(directive.implementationBlueprint.version,2);
+  assert.equal(directive.implementationBlueprint.detailLevel,'SOURCE_IMPLEMENTATION_EXPLICIT');
+  assert.equal(directive.implementationBlueprint.approximateOrGenericDesignSummaryCannotCloseBuildUp,true);
+  assert.equal(directive.implementationBlueprint.everyApplicableSurfaceMustNameImplementationAndRuntimeProof,true);
   assert.equal(directive.implementationBlueprint.mode,'VERTICAL_SLICE_BUILD_UP');
   assert.equal(directive.implementationBlueprint.foundationRepairFirst,false);
   assert.equal(directive.implementationBlueprint.newContentMayPreemptFoundationRepair,false);
@@ -159,7 +163,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/ANTI_CLONE:/);
   assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
   assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
-  assert.match(directivePrompt(directive),/BUILD_READY_IMPLEMENTATION_BLUEPRINT:/);
+  assert.match(directivePrompt(directive),/DETAILED_BUILD_READY_IMPLEMENTATION_SPEC:/);
   assert.match(directivePrompt(directive),/VERTICAL_SLICE:/);
   assert.match(directivePrompt(directive),/STATE_TRANSITIONS:/);
   assert.match(directivePrompt(directive),/RESPONSIBLE_SOURCE_PLAN:/);
@@ -409,6 +413,79 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
 });
 
+
+test('detailed approved design facts become explicit source implementation contracts',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'detailed-rpg',
+    gameName:'상세 RPG',
+    platform:'ROBLOX',
+    designRecord:{
+      content:{
+        identity:'마을에서 준비하고 포탈 사냥터에서 보스와 싸우는 액션 RPG',
+        coreFun:'직접 전투와 패링, 장비/동료 선택',
+        coreLoop:['마을 준비','포탈 이동','몬스터 전투','보상 획득','장비/동료 변경','다음 지역 도전'],
+        progressionDirection:'레벨과 전직, 보스 동료 해금으로 전투 선택 확장',
+        multiplayerMode:'COOP',
+        signatureSystems:[
+          {name:'완벽 패링',purpose:'전조를 읽고 공격을 되받아친다',playerChoice:'막기 또는 패링 타이밍 선택'},
+          {name:'보스 동료',purpose:'격파한 보스를 동료로 편성한다',playerChoice:'최대 3명 동료 조합 선택'}
+        ],
+        mobileUx:'이동·공격·회피·막기/패링을 큰 버튼으로 제공하고 HUD는 체력·가드·스킬 상태를 실제 서버 상태와 동기화한다.',
+        technicalAssumptions:['전투/보상 서버 authoritative','DataStore 저장','Lv60 레벨캡','전투 중 마을 귀환 금지','완벽 패링 판정은 서버 권위'],
+        failureRetryRisk:{failureStates:['전투 패배'],retryFlow:'마을 귀환 후 장비·동료 구성을 바꾸고 재도전'},
+        mvpScope:{launch:['마을','포탈','보스','장비','패링','저장'],deferred:['추가 포탈'],forbidden:['자동전투가 직접 전투 대체']},
+        equipment:{slots:['Weapon','Armor','Relic'],weaponArmorTiers:5},
+        balanceContract:{universalBestInSlot:false,itemDependency:'직업/동료 조합 > 플레이 실력 > 아이템'},
+        tacticalCommands:['집중공격','후퇴'],
+        startingClasses:[{id:'BREAKER',name:'파쇄기사',identity:'대검·방어파괴'}],
+        launchCompanions:[{id:'GOLDEN_ANTLER',name:'금빛 큰뿔',route:'보스 첫 처치',role:'돌진·균형파괴'}],
+        firstAdvancements:[{from:'BREAKER',branches:[{id:'IRON_BREAKER',name:'철벽파쇄자'}]}],
+        visualDirection:'장난감·피규어풍 R15 직업 실루엣과 보스 동료의 원본 보스 실루엣을 구별한다.',
+        artAudioDirection:{audioIdentity:'8비트가 아닌 판타지 어드벤처 BGM'},
+        graphicsConcept:{id:'RPG_STYLIZED',rules:['직업과 보스 실루엣 구분'],forbidden:['색만 바꾼 동일 캐릭터']},
+        implementationSync:{sourceRevision:'abc',codePaths:{config:'shared/GameConfig.luau',server:'server/Game.server.luau',client:'client/Game.client.luau'},syncRule:'DESIGN_EQUALS_IMPLEMENTED_CODE'},
+        platformProfiles:{ROBLOX:{inputModel:'모바일 이동·공격·회피·스킬',sessionModel:'마을→포탈→보스→귀환',multiplayerRuntime:'서버가 동료·전투·보상을 authoritative하게 관리',performanceBudget:'AI와 파티클 수 제한',uiUx:'전투 HUD와 파티 화면 분리',saveAndNetwork:'레벨·장비·동료 해금 저장'}}
+      }
+    },
+    sourceObservation:{
+      sourceRoot:'roblox-games/detailed-rpg',
+      sourceTreeFingerprint:'d'.repeat(64),
+      fileCount:3,
+      topFiles:[{file:'roblox-games/detailed-rpg/server/Game.server.luau',score:30},{file:'roblox-games/detailed-rpg/client/Game.client.luau',score:20}],
+      sourceAnchors:[
+        {file:'roblox-games/detailed-rpg/server/Game.server.luau',line:20,kind:'FUNCTION',symbol:'resolveAttack',context:'function resolveAttack(player,target)',score:60},
+        {file:'roblox-games/detailed-rpg/client/Game.client.luau',line:30,kind:'FUNCTION',symbol:'renderCombatHud',context:'function renderCombatHud(state)',score:50}
+      ],
+      signals:{combat:8,progression:8,ai:4,save:4,multiplayer:3,animation:3,motionStates:6,gameFeel:3,vfx:2,camera:1,audio:2,audioDynamics:2,ui:5,uiFlow:3,entryFlow:1,loadingFlow:1,input:4,map:5,landmark:2,interaction:4,inventory:5,equipment:4,settings:2,feedback:4,session:4,content:10,choice:3,connection:3,performance:3,lighting:2,primitive:1,todo:0,errorRecovery:2},
+      observations:['CURRENT_SOURCE_FILES=3']
+    },
+    responsibleFiles:['roblox-games/detailed-rpg/server/Game.server.luau','roblox-games/detailed-rpg/client/Game.client.luau']
+  });
+  const spec=directive.implementationBlueprint;
+  assert.equal(spec.status,'DETAILED_BUILD_READY_IMPLEMENTATION_SPEC');
+  assert.equal(spec.implementationFacts.mobileUx.includes('패링'),true);
+  assert.ok(spec.implementationFacts.technicalAssumptions.includes('전투/보상 서버 authoritative'));
+  assert.equal(spec.implementationFacts.forbiddenScope.includes('자동전투가 직접 전투 대체'),true);
+  assert.equal(spec.implementationFacts.exactCodePaths.server,'server/Game.server.luau');
+  assert.equal(spec.coreLoopExecutionPlan.length,6);
+  assert.equal(spec.rosterContracts.classes[0].design.id,'BREAKER');
+  assert.equal(spec.rosterContracts.companions[0].design.id,'GOLDEN_ANTLER');
+  assert.ok(spec.interactionCombatContract.exactApprovedRules.some(x=>x.includes('패링')));
+  assert.equal(spec.inputUiContract.touchFirstRequired,true);
+  assert.match(spec.networkContract.multiplayerRuntime,/authoritative/);
+  assert.match(spec.persistenceContract.saveAndNetwork,/저장/);
+  assert.equal(spec.progressionEconomyContract.equipment.slots.length,3);
+  assert.equal(spec.presentationContract.graphicsConcept.id,'RPG_STYLIZED');
+  assert.ok(spec.presentationContract.forbidden.includes('색만 바꾼 동일 캐릭터'));
+  assert.equal(spec.sourceImplementationContract.approvedCodePaths.server,'server/Game.server.luau');
+  assert.equal(spec.sourceImplementationContract.wrapperShadowTemporaryOverrideForbidden,true);
+  assert.equal(spec.orderedImplementationSteps.length,8);
+  assert.ok(spec.acceptanceScenarios.some(row=>row.id==='MULTIPLAYER_SYNC'&&row.required===true));
+  assert.ok(spec.acceptanceScenarios.some(row=>row.id==='SAVE_REJOIN'&&row.required===true));
+  assert.ok(spec.antiShallowImplementationContract.forbiddenAsCompletion.includes('BOOTSTRAP_JSON_ONLY'));
+  assert.ok(spec.antiShallowImplementationContract.forbiddenAsCompletion.includes('BUTTON_LABEL_OR_UI_SHELL_WITHOUT_STATE_BINDING'));
+  assert.equal(spec.completionGate.bootstrapOnlyCompletionForbidden,true);
+});
 
 test('runtime failure forces implementation blueprint into foundation repair first and blocks decorative preemption',()=>{
   const directive=buildGameSpecificBuildUpDirective({
