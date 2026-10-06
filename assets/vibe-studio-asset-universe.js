@@ -1898,6 +1898,8 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
       id:text(asset?.id||asset?.assetId||asset?.atomId),
       packId:text(asset?.packId),
       family,
+      platform:upper(asset?.platform)||upper((asset?.platforms||[])[0])||null,
+      platforms:Object.freeze(uniq([asset?.platform,...(asset?.platforms||[])].map(upper).filter(Boolean))),
       subfamily:upper(asset?.subfamily||asset?.type),
       roles:Object.freeze(roles),
       consumerGameIds:Object.freeze(currentConsumers),
@@ -1975,7 +1977,7 @@ export function buildInternalAssetMaintenanceSnapshot({assets=[],uiAtomIds=[],au
     if(repairKeys.has(repairKey))continue;
     repairKeys.add(repairKey);
     qualityRepairActions.push(Object.freeze({
-      kind,assetId:row.id,packId:row.packId||null,family:row.family,consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
+      kind,assetId:row.id,packId:row.packId||null,family:row.family,platform:row.platform,platforms:row.platforms,consumerGameIds:row.consumerGameIds,consumerPriority:row.consumerPriority,
       sourceFiles:Object.freeze(sourceFiles),sourceHash:row.sourceHash,
       sourceInspectionRequired:sourceFiles.length===0,
       weakestAxis:measured?weakest?.[0]||null:null,
