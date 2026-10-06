@@ -2012,3 +2012,24 @@ test('platform fault cards enter existing practice queue with executable route c
   }
   assert(idle.drills.some(row=>row.robloxPracticeDrill==='late-join'));
 });
+
+
+test('animal and insect visual knowledge is retrieved by matching graphics tasks',()=>{
+  const distilled=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const cases=[
+    ['external-ai-distilled:openai-insect-morphology-surface-v1','insect exoskeleton chitin sclerites segmented legs antenna mandible setae wing membrane texture locomotion'],
+    ['external-ai-distilled:openai-mammal-fur-anatomy-v1','mammal fur guard hair underfur muscle shoulder pelvis paws skin texture locomotion'],
+    ['external-ai-distilled:openai-reptile-amphibian-surface-v1','reptile scales amphibian wet skin folds joints roughness texture locomotion'],
+    ['external-ai-distilled:openai-bird-feather-wing-v1','bird feather wing flight feathers contour feathers rachis barb barbule beak claws animation'],
+    ['external-ai-distilled:openai-aquatic-animal-surface-motion-v1','fish scales mucus fins shark denticles aquatic skin texture swimming animation']
+  ];
+  for(const [id,goal] of cases){
+    const ctx=retrieveUnifiedLearning({
+      task:{gameId:'bio-graphics-demo',target:'roblox',taskType:'graphics',goal},
+      experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},
+      practiceDistilledInput:{entries:[]},externalAiDistilledInput:distilled,masteryInput:{}
+    });
+    assert.ok(ctx.externalAiDistilled.some(row=>row.id===id),id);
+    assert.ok(ctx.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:'+id),id);
+  }
+});

@@ -307,6 +307,256 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-insect-morphology-surface-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "patterns": [
+        "Build insects from functional regions first: head, thorax, abdomen, then segment appendages from their real attachment regions instead of placing decorative limbs arbitrarily.",
+        "Treat the exoskeleton as overlapping hardened plates separated by softer flexible membranes; show seams, sutures, and compression at joints rather than bending one rigid shell.",
+        "Leg design should preserve the coxa-trochanter-femur-tibia-tarsus hierarchy and exaggerate only the functionally dominant segment for running, jumping, digging, grasping, or swimming.",
+        "Use setae, spines, wax, powder, scales, and surface microtexture selectively by species and function; do not cover every insect with the same glossy chitin material.",
+        "Differentiate hard sclerotized plates, translucent membranes, eyes, mouthparts, antennae, and claws with separate material response and scale-appropriate roughness.",
+        "For multi-leg motion, phase-stagger contacts so the body stays supported; avoid moving every leg in mirrored synchrony unless the species and action justify it.",
+        "Keep antennae, palps, wings, cerci, and hairs as lighter secondary-motion systems with faster damping than the heavy thorax and abdomen.",
+        "At gameplay distance preserve species identity through body ratio, leg specialization, antenna shape, wing silhouette, mandible shape, and color blocking before microdetail."
+      ],
+      "cautions": [
+        "Do not model insect joints like mammalian elbows or knees; the visible exoskeletal segmentation and membrane gaps must drive the bend.",
+        "Avoid universal black glossy shells: many insects are matte, dusty, hairy, waxy, iridescent, translucent, patterned, or scale-covered."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "5b69c5fd9d88e118d7f4a9f22fbca8d861d61b9eff1133acd69a8b0fd5fb1bf5",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:entomology-chitin-sclerites-body-segments-leg-specialization-reference",
+          "source:assets/roblox/world-ghosts/GhostSkinMotion.luau#multi-leg-phase-stagger-and-form-specific-gait",
+          "qa:qa/roblox-world-ghost-skins.test.mjs#multi-leg-visible-joint-and-gait-tests"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-mammal-fur-anatomy-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION"
+      ],
+      "patterns": [
+        "Block mammals from skeleton and major muscle masses before fur; shoulder, ribcage, pelvis, elbows, knees, hocks, and paws must read through the coat.",
+        "Layer fur by function and length: dense underfur forms soft volume while fewer longer guard hairs break the silhouette and catch highlights.",
+        "Comb fur flow along body growth directions and surface curvature; change direction around joints, face landmarks, mane regions, tails, and friction zones.",
+        "Use clumping at medium scale and sparse flyaway hairs at silhouette edges; uniform strand density produces synthetic carpet-like fur.",
+        "Compress fur at planted paws, folded joints, harness contact, and body overlap while allowing stretch and separation on exposed convex surfaces.",
+        "Drive locomotion from scapula and pelvis rhythm with spine flexion, head stabilization, tail counterbalance, and foot contact rather than rotating legs from isolated sockets.",
+        "Use skin and fur color variation at larger anatomical regions first; micro-speckle should support, not replace, readable markings and form.",
+        "For wet, dirty, injured, winter, or juvenile variants change clump size, sheen, length, and exposed skin logically instead of only shifting hue."
+      ],
+      "cautions": [
+        "Do not hide broken anatomy under long fur; silhouette and joint motion should remain structurally believable.",
+        "Avoid equally long fur everywhere, uniform noise, and perfectly smooth fur normals."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "0142ef70aa6f56f3e82c82af514cb9a2270df09f7620bd88b234df31e091e2ae",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:mammalian-fur-guard-hair-underfur-layering-reference",
+          "source:tools/vibe2-asset-production-plan.mjs#silhouette-topology-material-boundary-workflow"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-reptile-amphibian-surface-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION"
+      ],
+      "patterns": [
+        "Treat reptile scales as region-specific structures: large protective plates, smaller flexible scales near joints, and specialized ventral or facial scales should not share one tiling pattern.",
+        "Align overlapping scales with growth direction and body flow; preserve softer folds around neck, armpit, groin, jaw, and limb flexion so deformation does not look like rubber armor.",
+        "Use roughness and normal variation to distinguish dry keratin, polished scutes, wet skin, mucus, horn, claw, and eye surfaces instead of relying on color alone.",
+        "For amphibians emphasize soft continuous skin, local folds, moisture response, glandular or granular texture, and strong contact deformation rather than hard reptile plating.",
+        "Snake and long-body motion should propagate curvature through the body in phase, preserving a coherent spine arc and ground contact instead of translating a rigid tube.",
+        "Reptile limbs usually carry clear weight and body mass; animate toe spread, belly clearance, tail counterbalance, and shoulder or pelvic rotation according to gait.",
+        "Pattern design should follow body topology and anatomy so stripes, spots, and bands wrap forms consistently across motion.",
+        "Use subsurface or translucent response sparingly for thin membranes and amphibian skin, with mobile performance limits preserved."
+      ],
+      "cautions": [
+        "Do not tile one scale texture uniformly over joints, eyes, lips, claws, belly, and flexible skin.",
+        "Avoid making amphibians look lacquered; wetness needs broad controlled highlights plus underlying skin variation."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "6da37ae17d9fb98cab193b9e2c8804439a442e7dd60b8c82aa1acf7c156f48b1",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:tools/vibe2-asset-production-plan.mjs#uv-normals-material-separation-and-deformation-review",
+          "qa:qa/vibe2-native-asset-production.test.mjs#native-material-and-runtime-visual-quality-gates"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-bird-feather-wing-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL"
+      ],
+      "patterns": [
+        "Build feather hierarchy from feather groups before strands: body contour masses, downy soft regions, wing coverts, flight feathers, and tail feathers each need different shape and stiffness.",
+        "Represent a feather as shaft and vane hierarchy rather than a flat leaf; large feathers need readable rachis direction, barb flow, and controlled separation at damaged or soft edges.",
+        "Overlap feathers in growth order like layered shingles so roots are hidden and tips define silhouette; random floating cards break anatomical flow.",
+        "Wing motion must respect shoulder, elbow, wrist, and finger-supported feather fan structure; primary feathers rotate and spread differently from body contour feathers.",
+        "During flapping, compress and fold feather groups on recovery while opening the aerodynamic surface on the power stroke; preserve plausible inertia and delayed settling.",
+        "Use specular response anisotropically and sparingly: feather sheen follows structure, while downy regions scatter light softly and should not share one plastic highlight.",
+        "Keep beak, cere, claws, bare skin, eye, and feathers as separate material families with different roughness and microstructure.",
+        "At mobile distance prioritize head shape, beak, wing planform, tail silhouette, major plumage blocks, and posture before individual barb detail."
+      ],
+      "cautions": [
+        "Do not animate wings as one rigid board hinged at the shoulder.",
+        "Do not use identical card density, size, or stiffness for down, contour, flight, and tail feathers."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "983d219410b7ed87f9d81a8cf4a804dd2077a339273fa5148d8b53d33bfefdf9",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:peer-reviewed-feather-rachis-barb-barbule-and-flight-feather-hierarchy",
+          "source:tools/vibe2-asset-production-plan.mjs#rig-morph-action-and-silhouette-review"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-aquatic-animal-surface-motion-v1",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "VISUAL_IDENTITY",
+        "LIVING_MOTION",
+        "ASSET_ADAPTATION"
+      ],
+      "patterns": [
+        "Build fish and aquatic animals around body section, fin placement, propulsion mode, and silhouette before scale or skin detail.",
+        "Use scale or denticle direction to reinforce flow along the body; avoid random normal noise that contradicts hydrodynamic surface direction.",
+        "Treat mucus or wet skin as a broad surface layer with controlled sheen over underlying scales, denticles, or skin rather than turning the whole animal into a mirror.",
+        "Different fins have different jobs: caudal propulsion, pectoral steering and braking, dorsal or anal stabilization; animate them with distinct amplitudes and timing.",
+        "Propagate swimming curvature through the body according to propulsion style, keeping the head, trunk, tail, and fins phase-related instead of oscillating every segment equally.",
+        "For crustacean-like aquatic forms separate rigid shell plates from flexible joints and membranes, preserving appendage segmentation and local material changes.",
+        "Use color and reflectance with depth and habitat logic: countershading, disruptive bands, translucency, bioluminescence, and iridescence should serve ecology or readability.",
+        "Preserve a lower-detail mobile variant where body plan, fins, eyes, mouth, major markings, and motion remain readable without dense surface microgeometry."
+      ],
+      "cautions": [
+        "Do not infer realism from maximum gloss; underwater readability still depends on value grouping, silhouette, and controlled highlights.",
+        "Avoid identical sine-wave swimming for eel-like, tuna-like, ray-like, crustacean, and cephalopod body plans."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "0b1b6f70ae46c0c12315193c328e1f0cf74fd63255a5a4703ca9c5abc901236c",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "multi-source:fish-scale-skin-mucus-fin-and-shark-denticle-surface-reference",
+          "source:tools/vibe2-asset-production-plan.mjs#material-surface-and-platform-runtime-review"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
