@@ -265,7 +265,7 @@ jobs:
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Dispatch verified learning sweep per game when reconciliation finds refresh debt
+      - name: Dispatch verified learning batch sweep when reconciliation finds refresh debt
         if: steps.freshness.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
