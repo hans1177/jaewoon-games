@@ -652,7 +652,8 @@ test('exact engine preboot with matching sentinel continues F9 while real server
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/externalServerBootRequired:false/);
  assert.match(block,/officialStudioMcpActualPlayPassed:exactStudioInternalValidation/);
- assert.match(workflow,/item\.robloxRuntimePassed=false;[\s\S]{0,1800}if\(exactEngineVersionAwaitingRealServerBoot\)\{/);
+ const runtimeResetAt=workflow.lastIndexOf('item.robloxRuntimePassed=false;',start);
+ assert.ok(runtimeResetAt>0&&start-runtimeResetAt<6000);
  assert.match(block,/f9Ids\.push\(item\.gameId\)/);
  assert.doesNotMatch(block,/queueStudioFollowupIfEligible\(item\)/);
 });
@@ -679,6 +680,27 @@ test('runtime sentinel 404 keeps verified Open Cloud server boot and defers only
  assert.match(block,/internalRuntimeObservationDeferred:true/);
  assert.match(block,/ROBLOX_OPEN_CLOUD_SERVER_BOOT_PASS_CLIENT_RUNTIME_PENDING=/);
  assert.doesNotMatch(block,/STUDIO_FOLLOWUP|queueStudioFollowupIfEligible/);
+});
+
+
+test('stale runtime sentinel keeps only exact current Open Cloud server boot and defers client runtime',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const start=workflow.indexOf("const exactEngineServerBootObserved=");
+ const end=workflow.indexOf("}else if(exactEngineVersionAwaitingRealServerBoot){",start);
+ assert.ok(start>0&&end>start);
+ const block=workflow.slice(start,end);
+ assert.match(block,/engineProbe\?\.exactPlace===true/);
+ assert.match(block,/engineProbe\?\.exactVersion===true/);
+ assert.match(block,/engineProbe\?\.serverBootObserved===true/);
+ assert.match(block,/const staleSentinelWithVerifiedServerBoot=result\.exactVersion!==true&&exactEngineServerBootObserved/);
+ assert.match(block,/authority:staleSentinelWithVerifiedServerBoot[\s\S]*?'roblox-open-cloud-exact-server-boot-stale-runtime-sentinel'/);
+ assert.match(block,/sentinelExactVersion:result\.exactVersion===true/);
+ assert.match(block,/validationProvider:'ROBLOX_OFFICIAL_CLOUD_API_ONLY'/);
+ assert.match(block,/actualServerRuntimeEvidence:true/);
+ assert.match(block,/actualClientRuntimeEvidence:false/);
+ assert.match(block,/ROBLOX_PUBLIC_RELEASE_CLIENT_RUNTIME_OBSERVATION_PENDING/);
+ assert.match(block,/ROBLOX_OPEN_CLOUD_SERVER_BOOT_PASS_STALE_CLIENT_RUNTIME_PENDING=/);
+ assert.doesNotMatch(block,/roblox-public-release-awaiting-real-server-boot/);
 });
 
 
@@ -715,6 +737,8 @@ test('F9 consumes exact deferred engine evidence without requiring Studio actual
  assert.ok(start>0&&end>start);
  const block=f9.slice(start,end);
  assert.match(block,/runtime\.authority==='exact-engine-version-awaiting-real-server-boot'/);
+ assert.match(block,/runtime\.authority==='roblox-open-cloud-exact-server-boot-runtime-sentinel-unavailable'/);
+ assert.match(block,/runtime\.authority==='roblox-open-cloud-exact-server-boot-stale-runtime-sentinel'/);
  assert.match(block,/runtime\.exactEngineVersion===true/);
  assert.match(block,/runtime\.engineExecuted===true/);
  assert.match(block,/runtime\.serverBootObserved!==true/);
@@ -1161,6 +1185,27 @@ test('Open Cloud requested game is isolated while empty game_id keeps bounded cr
   assert.doesNotMatch(probeBlock,/ACTIVE_SERIAL|ACTIVE_MIN4_PARALLEL/);
 });
 
+
+test('Open Cloud server boot rejects an older place version even when server context executes',async()=>{
+ const responses=[
+  {path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'COMPLETE'},
+  {luauExecutionSessionTaskLogs:[{messages:[
+    'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2',
+    'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=19',
+    'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'
+  ]}]}
+ ];
+ const result=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',
+  fetchImpl:async()=>({ok:true,status:200,text:async()=>JSON.stringify(responses.shift())})
+ });
+ assert.equal(result.engineExecuted,true);
+ assert.equal(result.exactPlace,true);
+ assert.equal(result.exactVersion,false);
+ assert.equal(result.serverContextExecuted,true);
+ assert.equal(result.serverBootObserved,false);
+ assert.equal(result.serverBootEvidence.observed,false);
+});
 
 test('cloud place and version checks reject numeric prefix collisions',async()=>{
  const result=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,networkRetryAttempts:1,fetchImpl:async url=>new Response(JSON.stringify(url.includes('/logs?')?{luauExecutionSessionTaskLogs:[{messages:['JAEWOON_OPEN_CLOUD_ENGINE_PLACE=200','JAEWOON_OPEN_CLOUD_ENGINE_VERSION=200']}]}:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'COMPLETE'}))});
