@@ -38,31 +38,32 @@ test('verified task completion is stored as checkpoint evidence rather than done
   assert.ok(task.evidence.includes('signal-continuity:NEXT_CAUSAL_INPUT'));
 });
 
-test('empty queue and failed subjobs preserve next-cycle continuity through canonical backpressure',()=>{
-  const pressure=roadmap.changeRecord?.runnerBackpressureBottleneckRelief20261001;
-  assert.equal(pressure?.queuePressureThreshold,4);
-  assert.equal(pressure?.scheduler?.refillUnderPressure,'DEFER_TO_FIVE_MINUTE_SAFETY_NET');
-  assert.equal(pressure?.scheduler?.duplicateSchedulerDispatch,'SKIP_WHEN_ANOTHER_24H_RUN_IS_ACTIVE');
+test('empty queue and failed subjobs preserve next-cycle continuity while external runner queue owns physical backpressure',()=>{
+  const repeat=roadmap.fixedAutonomousDevelopmentOperatingContract?.repeatDevelopmentConcurrency;
+  assert.equal(repeat?.fixedSlots,64);
+  assert.equal(repeat?.runnerPressurePolicy,'EXTERNAL_GITHUB_ACTIONS_QUEUE_OWNS_PHYSICAL_BACKPRESSURE');
+  assert.equal(repeat?.runnerPressureMaySuppressGamePrimaryDispatch,false);
+  assert.equal(repeat?.runnerPressureMaySuppressNextCycleRefill,false);
 
   assert.match(runner,/refill:\s*\n\s*needs: \[plan, recovery_fast, continuous, asset_development, learning_idle, game_study\]/);
   assert.match(runner,/if: \$\{\{ always\(\) \}\}/);
-  assert.match(runner,/Dispatch next cycle only when backpressure allows/);
+  assert.match(runner,/Dispatch next cycle while external runner queue owns physical backpressure/);
   assert.match(runner,/CONTINUE_REQUIRED: \$\{\{ needs\.plan\.outputs\.continue_required \}\}/);
-  assert.match(runner,/RUNNER_PRESSURE: \$\{\{ needs\.plan\.outputs\.runner_pressure \}\}/);
+  assert.doesNotMatch(runner,/RUNNER_PRESSURE: \$\{\{ needs\.plan\.outputs\.runner_pressure \}\}/);
   assert.match(runner,/VIBE2_24H_REFILL=SKIPPED_NO_CONTINUE_REQUIRED/);
-  assert.match(runner,/VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE/);
+  assert.doesNotMatch(runner,/VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE/);
   assert.match(runner,/VIBE2_24H_REFILL_ACTIVE_SCHEDULER_OBSERVATION=UNAVAILABLE_FAIL_OPEN/);
   assert.match(runner,/VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:/);
-  assert.match(runner,/VIBE2_24H_REFILL_PRESSURE_GATE=PASS/);
+  assert.match(runner,/VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE/);
   assert.match(runner,/actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
   assert.match(runner,/VIBE2_24H_REFILL=DISPATCHED/);
   assert.doesNotMatch(runner,/VIBE2_24H_DONE/);
 });
 
-test('24h scheduler wakes remain run-scoped while refill obeys the five-minute safety-net pressure contract',()=>{
+test('24h scheduler wakes remain run-scoped while fixed repeat development may queue on provider pressure',()=>{
   assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
   assert.match(runner,/cancel-in-progress:\s*false/);
   assert.doesNotMatch(runner,/group: vibe2-24h-cycle-singleton-v9/);
   assert.match(runner,/cron: '\*\/5 \* \* \* \*'/);
-  assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*VIBE2_24H_REFILL=DEFERRED_TO_SCHEDULE_RUNNER_PRESSURE[\s\S]*VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
+  assert.match(runner,/if: \$\{\{ always\(\) \}\}[\s\S]*VIBE2_24H_REFILL_RUNNER_PRESSURE_POLICY=EXTERNAL_QUEUE_OWNS_PHYSICAL_BACKPRESSURE[\s\S]*VIBE2_24H_REFILL=SKIPPED_EXISTING_SCHEDULER:[\s\S]*actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
 });
