@@ -154,7 +154,7 @@ test('build-up directive persistence keeps platform currents independent and com
   assert.equal(rows[0].compatibilityWinner.directiveId,currentWeb.directiveId);
 });
 
-test('declared DCC planner emits one existing-lane Blender task for the intended native consumer only',()=>{
+test('declared DCC planner emits one existing-lane Blender task for the actual source-bound native consumer only',()=>{
   const root=tempRepo();
   try{
     fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
@@ -167,6 +167,9 @@ test('declared DCC planner emits one existing-lane Blender task for the intended
     fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
     fs.mkdirSync(path.join(root,'assets','roblox','world-ghosts'),{recursive:true});
     fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local presentation = true\n','utf8');
+    fs.writeFileSync(path.join(gameRoot,'default.project.json'),JSON.stringify({
+      tree:{ReplicatedStorage:{DeclaredMotionSource:{$path:'../../assets/roblox/world-ghosts/refine-motion.py'}}}
+    },null,2),'utf8');
     fs.writeFileSync(path.join(root,'assets','roblox','world-ghosts','refine-motion.py'),'# declared blender recipe fixture\n','utf8');
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
@@ -174,6 +177,7 @@ test('declared DCC planner emits one existing-lane Blender task for the intended
         id:'ghost-motion-source',family:'MOTION',category:'MOTION',license:'project-original',
         status:'REPO_ASSET',productionVerified:false,verifiedCompanyReusable:false,
         intendedConsumerGameIds:['horror-demo'],
+        sourceFiles:['assets/roblox/world-ghosts/refine-motion.py'],
         authoringRecipes:[{
           id:'ghost-motion-v3',executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX','UNITY'],
           script:'assets/roblox/world-ghosts/refine-motion.py',

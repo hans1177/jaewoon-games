@@ -106,7 +106,7 @@ import {
   createStudioAssetUniversePlan
 } from '../assets/vibe-studio-asset-universe.js';
 import {createVibeCharacterPersona,resolveVibeCharacterBehaviorIntent,createVibePopulationPersonaDiversity,VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,createVibeCharacterCustomizationRecipe,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
-import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {synchronizeCompanyCommonAssetRegistry,synchronizeSourceBoundAssetConsumers,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 
 const fullQualityEvidence=Object.freeze({
   SILHOUETTE_FORM:100,
@@ -4771,9 +4771,12 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
     assert.deepEqual(byId.get('roblox-common-motion-walk').consumerGameIds,['manual-game']);
     assert.equal(byId.get('roblox-common-motion-walk').productionVerified,undefined);
     assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
+    assert.equal(result.summary.runtimeVerificationUnchanged,true);
     assert.equal(result.summary.newQueueCreated,false);
     assert.equal(result.summary.newSchedulerCreated,false);
     assert.ok(result.summary.boundAssetCount>=3);
+    assert.ok(result.summary.relationStates.ACTUAL_SOURCE_BOUND>=3);
+    assert.ok(result.relations.some(row=>row.assetId==='roblox-common-motion-walk'&&row.gameId==='manual-game'&&row.classification==='CONFIRMED_CONSUMER'));
     assert.ok(result.bindings.some(row=>row.assetId==='roblox-world-ghost-yurei'&&row.mode==='PACK_PATH_AND_IDENTITY'));
     assert.ok(result.bindings.some(row=>row.assetId==='roblox-common-motion-walk'&&row.mode==='MANAGED_LIBRARY_IDENTITY'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -4811,9 +4814,97 @@ test('dynamic source consumers stay outside registry identity and refresh on the
     fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
       tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-b.luau'}}}
     }));
+    const stale=synchronizeSourceBoundAssetConsumers({
+      repoRoot:root,
+      registry:first.sourceConsumerRegistry,
+      gameCatalog:{games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxProjectPath:'roblox-games/demo'}]}
+    });
+    assert.equal(stale.registry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
+    assert.ok(stale.relations.some(row=>row.assetId==='shared-a'&&row.gameId==='demo'&&row.classification==='STALE_SOURCE_BINDING'));
     const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseline.registry,persist:false});
     assert.equal(second.changed,false,JSON.stringify(second.changedSections));
     assert.equal(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
     assert.deepEqual(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['demo']);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('real horror-escape-room source fixture resolves project pack identity and managed motion without verification promotion',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const result=synchronizeSourceBoundAssetConsumers({
+    repoRoot:root,
+    registry,
+    gameCatalog:{games:[{
+      id:'horror-escape-room',
+      lifecycleState:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      robloxProjectPath:'roblox-games/horror-escape-room'
+    }]}
+  });
+  const byId=new Map(result.registry.assets.map(row=>[row.id,row]));
+  const yurei=byId.get('roblox-world-ghost-yurei');
+  const walk=byId.get('roblox-common-motion-walk');
+  assert.ok(yurei);
+  assert.ok(walk);
+  assert.deepEqual(yurei.sourceBoundConsumerGameIds,['horror-escape-room']);
+  assert.deepEqual(walk.sourceBoundConsumerGameIds,['horror-escape-room']);
+  assert.ok(result.bindings.some(row=>
+    row.assetId==='roblox-world-ghost-yurei'
+    &&row.gameId==='horror-escape-room'
+    &&row.classification==='ACTUAL_SOURCE_BOUND'
+    &&row.bindingMode==='PACK_PATH_AND_IDENTITY'
+    &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/default.project.json')
+    &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/client/Game.client.luau')
+  ));
+  assert.ok(result.bindings.some(row=>
+    row.assetId==='roblox-common-motion-walk'
+    &&row.gameId==='horror-escape-room'
+    &&row.classification==='ACTUAL_SOURCE_BOUND'
+    &&row.bindingMode==='MANAGED_LIBRARY_IDENTITY'
+  ));
+  assert.equal(yurei.productionVerified,false);
+  assert.equal(yurei.verifiedCompanyReusable,false);
+  assert.equal(yurei.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(walk.productionVerified,false);
+  assert.equal(walk.verifiedCompanyReusable,false);
+  assert.equal(walk.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
+  assert.equal(result.summary.productionVerificationUnchanged,true);
+  assert.equal(result.summary.runtimeVerificationUnchanged,true);
+  assert.equal(result.summary.gameSummaries[0].gameId,'horror-escape-room');
+  assert.ok(result.summary.gameSummaries[0].currentConsumers>=2);
+});
+
+test('demand-bound asset supply uses five decisions and holds quantity-only library work',()=>{
+  const registry={assets:[
+    {id:'used-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
+    {id:'common-motion',family:'MOTION',platform:'SHARED',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'intended-only-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',intendedConsumerGameIds:['demo'],internalAuditScore:980}
+  ]};
+  const summary=buildAssetSupplyDecisionSummary({
+    gameId:'demo',
+    target:'roblox',
+    request:'몬스터 부족',
+    registry,
+    executionPlan:{
+      nextQualityActions:[{assetId:'used-creature',family:'CREATURE',consumerGameIds:['demo'],sourceFiles:['assets/used-creature.luau']}],
+      nextVolumeActions:[{domain:'BUILDING',ideaId:'BUILDING_DISTINCT_VARIATION_01'}]
+    }
+  });
+  assert.deepEqual([...summary.decisionVocabulary],['USE','ADAPT','IMPROVE','AUTHOR','HOLD']);
+  assert.equal(summary.currentConsumers,1);
+  assert.equal(summary.intendedOnly,1);
+  assert.ok(summary.requiredFamilies.includes('CREATURE'));
+  assert.ok(summary.requiredFamilies.includes('MOTION'));
+  assert.ok(summary.nextActions.some(row=>row.action==='IMPROVE'&&row.assetId==='used-creature'));
+  assert.ok(summary.nextActions.some(row=>row.action==='ADAPT'&&row.assetId==='common-motion'));
+  assert.ok(summary.nextActions.some(row=>row.action==='AUTHOR'&&['VFX','AUDIO'].includes(row.family)));
+  assert.equal(summary.heldVolumeActionCount,1);
+  assert.equal(summary.heldActions[0].action,'HOLD');
+  assert.equal(summary.heldActions[0].reason,'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND');
+  assert.equal(summary.volumeTargetsAdvisoryOnly,true);
+  assert.equal(summary.safeWorkShortageMayLeaveSlotsIdle,true);
+  assert.equal(summary.productionVerificationGranted,false);
+  assert.equal(summary.runtimeVerificationGranted,false);
 });
