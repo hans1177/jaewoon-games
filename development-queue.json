@@ -968,10 +968,10 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T08:33:16.563Z",
+      "updatedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceCommit": "0e0e007e8fe66f32d3e626e4404671797da0a010",
       "robloxSourceBootstrapPassedAt": "2026-10-06T07:33:03.057Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-06T08:33:16.563Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -7712,17 +7712,17 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T08:33:16.563Z",
+      "updatedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceCommit": "21012669529777fdb8140260c55626579fef28de",
       "robloxSourceBootstrapPassedAt": "2026-10-06T08:33:16.563Z",
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -7774,7 +7774,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-source-bootstrap:source-generation-failed"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -35727,9 +35727,9 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T08:28:42.768Z",
+      "updatedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceCommit": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T08:28:42.768Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -35780,9 +35780,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-build-package-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -41306,9 +41306,9 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-06T08:32:09.972Z",
+      "updatedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceCommit": "0efd322e2f50bbf70f3f610d6a78528051eeb0b7",
-      "robloxSourceBootstrapPassedAt": "2026-10-06T08:32:09.972Z",
+      "robloxSourceBootstrapPassedAt": "2026-10-06T08:33:24.549Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -46948,7 +46948,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-06T08:33:16.563Z",
+  "updatedAt": "2026-10-06T08:33:24.549Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
