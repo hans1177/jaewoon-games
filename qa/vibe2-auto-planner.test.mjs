@@ -4675,3 +4675,17 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
 });
+
+test('Roblox package asset source repair stays on GAME_PRIMARY while ordinary presentation stays asset-development',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs',import.meta.url),'utf8');
+  const start=source.indexOf('function bindSharedBuildUpDirective');
+  const end=source.indexOf('\nfunction hasCurrentAutonomousContentExpansionDirective',start);
+  assert.ok(start>=0&&end>start);
+  const block=source.slice(start,end);
+  assert.match(block,/packageAssetSourceRepair=.*roblox-package-asset-binding-failure/);
+  assert.match(block,/assetProductionLane:packageAssetSourceRepair\?false:\(presentationFocus\?true:taskInput\.assetProductionLane\)/);
+  assert.match(block,/roblox-package-asset-source-repair-lane:GAME_PRIMARY/);
+  assert.match(block,/roblox-package-asset-repair-authority:GAME_SOURCE_BINDINGS_ONLY/);
+  assert.match(block,/presentationFocus&&!packageAssetSourceRepair/);
+  assert.match(block,/asset-production-parallel:v1/);
+});
