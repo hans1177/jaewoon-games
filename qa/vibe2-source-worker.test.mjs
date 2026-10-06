@@ -4208,6 +4208,12 @@ test('zero-output focused Roblox Studio recovery bounds oversized build-up guida
     'gameIdentity=demo survival',
     'primaryGoal=make combat presentation readable',
     'implementationUnit='+huge,
+    'buildReadyBlueprint=status:BUILD_READY_IMPLEMENTATION_BLUEPRINT mode:VERTICAL_SLICE_BUILD_UP foundationRepairFirst:false',
+    'verticalSlice={"playerAction":"attack","validatedStateChange":"enemy hp changes","nextLoopConnection":"reward"}',
+    'stateTransitions=[{"from":"READY","to":"ACTION_REQUESTED"},{"from":"ACTION_REQUESTED","to":"AUTHORITATIVE_STATE_CHANGED"}]',
+    'responsibleSourcePlan=[{"file":"client/Game.client.luau","symbol":"render"}]',
+    'runtimeAcceptance=["ACTUAL_PLAYER_INPUT_OR_PLATFORM_NATIVE_INTERACTION","EXPECTED_STATE_TRANSITION_OBSERVED"]',
+    'buildCompletionGate={"realGameplaySourceDeltaRequired":true,"bootstrapOnlyCompletionForbidden":true}',
     ...Array.from({length:8},(_,index)=>'sourceAnchors='+relative+':'+(index+1)+' METHOD Visual'+index+' CURRENT=weak INTENDED='+huge+' ACCEPT=visible'),
     'contentTheme='+huge,
     'contentCompletionAcceptance='+huge,
@@ -4234,6 +4240,12 @@ test('zero-output focused Roblox Studio recovery bounds oversized build-up guida
   assert.ok(focused);
   assert.equal(verifiedExternalLearningBlockFromPrompt(focused.prompt),external);
   assert.match(focused.prompt,/primaryGoal=make combat presentation readable/);
+  assert.match(focused.prompt,/buildReadyBlueprint=status:BUILD_READY_IMPLEMENTATION_BLUEPRINT/);
+  assert.match(focused.prompt,/verticalSlice=/);
+  assert.match(focused.prompt,/stateTransitions=/);
+  assert.match(focused.prompt,/responsibleSourcePlan=/);
+  assert.match(focused.prompt,/runtimeAcceptance=/);
+  assert.match(focused.prompt,/buildCompletionGate=/);
   assert.match(focused.prompt,/preserve=SAVE_KEYS\|DAMAGE_VALUES\|PROGRESSION/);
   assert.match(focused.prompt,/VISIBLE_NATIVE_DELTA/);
   assert.ok(Buffer.byteLength(focused.prompt,'utf8')<19000);
@@ -5306,6 +5318,10 @@ test('game-specific BUILD_UP directive survives compact generation retries',()=>
   });
   assert.match(retry,/bug-defense-build-up-g3-demo/);
   assert.match(retry,/벌 돌진, 거미 속박, 사마귀 베기/);
+  assert.match(retry,/BUILD_READY_IMPLEMENTATION_BLUEPRINT/);
+  assert.match(retry,/verticalSlice=/);
+  assert.match(retry,/runtimeAcceptance=/);
+  assert.match(retry,/bootstrapOnlyCompletionForbidden/);
   assert.match(retry,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
 });
 
@@ -5327,6 +5343,14 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/continuity=/);
   assert.match(source,/derivedRuleEvolution=/);
   assert.match(source,/contentCompletionAcceptance=/);
+  assert.match(source,/buildReadyBlueprint=/);
+  assert.match(source,/verticalSlice=/);
+  assert.match(source,/stateTransitions=/);
+  assert.match(source,/systemContracts=/);
+  assert.match(source,/responsibleSourcePlan=/);
+  assert.match(source,/presentationPlan=/);
+  assert.match(source,/runtimeAcceptance=/);
+  assert.match(source,/buildCompletionGate=/);
   assert.match(source,/FORTNITE_UEFN/);
 });
 
