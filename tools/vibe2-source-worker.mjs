@@ -89,11 +89,9 @@ const ROBLOX_REBUILD_FOCUSED_MAX_PREDICT=1024;
 const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math.max(120000,DEFAULT_TIMEOUT_MS);
 const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
-const ASSET_DEVELOPMENT_ROBLOX_MOTION_MAX_PREDICT=1536;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_WEB_TIMEOUT_MS=Math.max(240000,DEFAULT_TIMEOUT_MS);
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
-const ASSET_DEVELOPMENT_ROBLOX_MOTION_LEARNING_BYTES=6000;
 const ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3;
 const SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES=16000;
 const SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW=12288;
@@ -105,9 +103,8 @@ export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONT
   const base=Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW);
   const estimatedPromptTokens=Math.ceil(Buffer.byteLength(String(prompt??''),'utf8')/3);
   const required=estimatedPromptTokens+Math.max(512,Number(maxPredict)||DEFAULT_MAX_PREDICT)+1024;
-  for(const size of [8192,12288,16384,24576,32768]){
-    if(size>=base&&required<=size)return size;
-  }
+  if(required<=base)return base;
+  if(required<=24576)return Math.max(base,24576);
   return Math.max(base,32768);
 }
 const MAX_GENERATION_ATTEMPTS=4;
@@ -4391,26 +4388,11 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   let repeatedFailureShiftKey='';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
-  const assetDevelopmentSingleMotion=assetDevelopmentLane&&target==='roblox'&&singleMotionWorkUnit;
-  let singleMotionInitialPrompt=prompt;
-  if(assetDevelopmentSingleMotion){
-    const learningBlock=verifiedExternalLearningBlockFromPrompt(prompt);
-    if(learningBlock){
-      const compactLearningBlock=compactVerifiedExternalLearningBlockFromPrompt(prompt,{
-        triggerBytes:ASSET_DEVELOPMENT_ROBLOX_MOTION_LEARNING_BYTES,
-        targetBytes:ASSET_DEVELOPMENT_ROBLOX_MOTION_LEARNING_BYTES
-      });
-      if(compactLearningBlock!==learningBlock){
-        singleMotionInitialPrompt=String(prompt).replace(learningBlock,compactLearningBlock);
-        console.log(`VIBE2_ASSET_SINGLE_MOTION_PROMPT_COMPACTED=${Buffer.byteLength(prompt,'utf8')}->${Buffer.byteLength(singleMotionInitialPrompt,'utf8')}`);
-      }
-    }
-  }
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
   if(robloxGraphicsInitial)robloxFullGraphicsPackageActive=true;
-  const specializedInitialPrompt=singleMotionWorkUnit?singleMotionInitialPrompt:studioExpansion&&!allowFullRewrite
+  const specializedInitialPrompt=singleMotionWorkUnit?prompt:studioExpansion&&!allowFullRewrite
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,studioInitial:true})
     :robloxGraphicsInitial
       ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
@@ -4418,6 +4400,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   const dedicatedRobloxOversizePath=target==='roblox'
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt));
   const sourceCandidatePressureInitial=!allowFullRewrite
+    &&!assetDevelopmentLane
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
     &&!dedicatedRobloxOversizePath
@@ -4441,7 +4424,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
-  const baseMaxAttempts=assetDevelopmentLane&&target==='roblox'&&(robloxGraphicsInitial||singleMotionWorkUnit)
+  const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
     ?Math.min(ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS,configuredBaseMaxAttempts)
     :(studioExpansion&&!allowFullRewrite
       ?Math.min(3,configuredBaseMaxAttempts)
@@ -4548,7 +4531,6 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
         :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT)):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
-    if(assetDevelopmentSingleMotion)maxPredict=Math.min(maxPredict,ASSET_DEVELOPMENT_ROBLOX_MOTION_MAX_PREDICT);
     // 고정 앵커의 JSON 이스케이프 분량과 연결 작업에 필요한 여유를 먼저 배정한다.
     if(focusedReplaceOnly){
       const anchorBytes=Buffer.byteLength(JSON.stringify({replace:focusedReplaceOnly.spec.find}),'utf8');
@@ -4559,17 +4541,17 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       recoveredOutputBudget=Math.min(JSON_OUTPUT_RECOVERY_MAX_PREDICT,Math.max(recoveredOutputBudget,Number(lastError.vibe2MaxPredict||maxPredict)*2));
       console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
     }
-    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?(assetDevelopmentSingleMotion?ASSET_DEVELOPMENT_ROBLOX_MOTION_MAX_PREDICT:JSON_RETRY_MAX_PREDICT):0);
+    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget,singleMotionWorkUnit?JSON_RETRY_MAX_PREDICT:0);
     const timeoutMs=priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
       ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
       :(expansionMode
         ?FULL_WEB_EXPANSION_TIMEOUT_MS
         :(allowFullRewrite
           ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-          :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(assetDevelopmentSingleMotion?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))))));
+          :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)))));
     const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(assetDevelopmentSingleMotion?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
     // 압축·부분 수정·확장 재시도에서도 원본 관찰과 잠금/수정 범위를 보존하고 실제 전송량으로 예산을 잡는다.
     for(const label of ['IMAGE ASSET OBSERVATION','ASSET DETAIL REPAIR','RUNTIME VISUAL REVIEW','SINGLE MOTION WORK UNIT','INTERNAL MOTION COACHING','ROBLOX SOURCE COACHING','INTERNAL ASSET TEACHER PRACTICE']){
       const block=prompt.match(new RegExp('\\['+label+' BEGIN\\][\\s\\S]*?\\['+label+' END\\]'))?.[0]||'';
