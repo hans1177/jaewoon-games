@@ -313,6 +313,31 @@ test('System AI Roblox coding task consumes verified Roblox cloud coding distill
   assert.equal(context.authorityExpanded,false);
 });
 
+test('System AI consumes advanced Roblox Luau engine systems distillation without expanding authority',()=>{
+  const external=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'roblox-parallel-physics-streaming-repair',
+      target:'roblox',
+      goal:'optimize Actor Parallel Luau physics network ownership UnreliableRemoteEvent streaming UpdateAsync strict types and profiler hotspots',
+      responsibleFiles:['roblox-games/demo/src/ServerScriptService/Simulation.server.lua','roblox-games/demo/src/ReplicatedStorage/Protocol.luau']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[]},
+    masteryInput:{},
+    externalAiDistilledInput:external
+  });
+  const id='EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-roblox-engine-systems-v2';
+  assert.equal(context.resolvedTarget,'roblox');
+  assert.ok(context.exactKnowledgeIds.includes(id));
+  assert.match(context.guidance,/openai-roblox-engine-systems-v2/);
+  assert.match(context.guidance,/separate Luau VM/i);
+  assert.match(context.guidance,/Network ownership is a performance mechanism/i);
+  assert.equal(context.rawModelOutputIncluded,false);
+  assert.equal(context.advisoryOnly,true);
+  assert.equal(context.authorityExpanded,false);
+});
+
 test('System AI engine-specific distilled knowledge does not leak Roblox coding guidance into Unity work',()=>{
   const external=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
   const context=buildSystemAiLearningContext({
@@ -329,7 +354,9 @@ test('System AI engine-specific distilled knowledge does not leak Roblox coding 
   });
   assert.equal(context.resolvedTarget,'unity');
   assert.ok(!context.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-roblox-cloud-coding-v1'));
+  assert.ok(!context.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:external-ai-distilled:openai-roblox-engine-systems-v2'));
   assert.ok(!context.guidance.includes('openai-roblox-cloud-coding-v1'));
+  assert.ok(!context.guidance.includes('openai-roblox-engine-systems-v2'));
 });
 
 test('System AI workflow binds canonical distilled advisory knowledge into every supervised worker context',()=>{
