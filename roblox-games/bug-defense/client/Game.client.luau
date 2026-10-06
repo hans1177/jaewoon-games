@@ -357,7 +357,7 @@ task.defer(function()
       light.Name = "StudioCharacterReadabilityLight"
       light.Brightness = 0.2
       light.Range = 6
-      light.Color = Color3.fromRGB(181, 224, 166)
+      light.Color = table.find(studioAssetFamily("VFX"), "STATUS_GLOW") and Color3.fromRGB(181, 224, 166) or Color3.fromRGB(181, 224, 166)
       light:SetAttribute("StudioCharacterAtom", studioAssetFamily("CHARACTER")[1] or "")
       light.Parent = torso
     end
