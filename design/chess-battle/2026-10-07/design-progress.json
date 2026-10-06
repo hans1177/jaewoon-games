@@ -15,17 +15,17 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 97,
+      "calls": 98,
       "successes": 0,
-      "failures": 97,
-      "timeouts": 73,
+      "failures": 98,
+      "timeouts": 74,
       "jsonFailures": 24,
-      "totalMs": 9740224,
-      "lastMs": 77739,
-      "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
-      "updatedAt": "2026-10-06T23:26:51.933Z"
+      "totalMs": 9860277,
+      "lastMs": 120053,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-06T23:36:30.820Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-06T23:34:30.645Z"
+  "updatedAt": "2026-10-06T23:36:30.820Z"
 }
