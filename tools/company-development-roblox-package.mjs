@@ -157,18 +157,21 @@ export const ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES=Object.freeze([
 ]);
 
 const ROBLOX_PACKAGE_ASSET_SYSTEM_PATTERNS=Object.freeze({
-  CHARACTER:/\b(?:Players|LocalPlayer|CharacterAdded|Humanoid|character|avatar|npc)\b/i,
+  // Platform avatar/foundation primitives alone are not proof that the game owns a CHARACTER asset system.
+  CHARACTER:/\b(?:HumanoidDescription|BodyColors|Accessory|Shirt|Pants|ApplyDescription|characterAppearance|avatarStyle|npcAppearance)\b/i,
   CREATURE:/\b(?:enemy|monster|boss|creature|mob|wildlife|beetle|spider|wolf|bear|golem)\b/i,
   BUILDING:/\b(?:building|house|shop|school|temple|castle|dungeon|interior|wall|roof|foundation|settlement|village)\b/i,
-  ENVIRONMENT:/\b(?:Terrain|Lighting|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|world|workspace)\b/i,
+  // Generic workspace/Lighting use belongs to platform foundation or presentation overlays, not necessarily ENVIRONMENT assets.
+  ENVIRONMENT:/\b(?:Terrain|Atmosphere|biome|forest|desert|snow|swamp|cave|environment|landmark|vegetation|foliage)\b/i,
   WEAPON:/\b(?:weapon|sword|blade|spear|axe|hammer|bow|gun|staff|shield|equip|loadout)\b/i,
-  SKILL:/\b(?:skill|ability|cast|projectile|beam|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
-  MATERIAL:/\b(?:Enum\.Material|SurfaceAppearance|MaterialVariant|TextureID|material|surface)\b/i,
-  AUDIO:/\b(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|bgm|music|sfx|audio)\b/i,
-  VFX:/\b(?:ParticleEmitter|Beam|Trail|vfx|effect|burst|flash|particle|telegraph)\b/i,
+  SKILL:/\b(?:skill|ability|cast|projectile|aoe|spell|ultimate|telegraph|summon|buff|debuff)\b/i,
+  MATERIAL:/(?:SurfaceAppearance|MaterialVariant|TextureID|\.Material\s*=)/i,
+  AUDIO:/(?:SoundService|SoundId|Instance\.new\(["']Sound["']\)|\bbgm\b|\bmusic\b|\bsfx\b)/i,
+  VFX:/(?:ParticleEmitter|\bBeam\b|\bTrail\b|\bvfx\b|\bparticle\b|\btelegraph\b)/i,
   UI:/\b(?:ScreenGui|Frame|TextLabel|TextButton|ImageLabel|ImageButton|hud|menu|inventory|quest|shop|button)\b/i,
-  MOTION:/\b(?:Animator|AnimationTrack|Animation|TweenService|Motor6D|Bone|RenderStepped|Heartbeat|motion|locomotion|idle|walk|run)\b/i,
-  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock|item)\b/i
+  // Heartbeat/RenderStepped and generic run/walk words are timing/gameplay signals, not proof of a MOTION asset system.
+  MOTION:/(?:Animator|AnimationTrack|AnimationId|TweenService|Motor6D|\bBone\b|\blocomo(?:tion)?\b)/i,
+  PROP:/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup)\b/i
 });
 const ROBLOX_PACKAGE_ASSET_NATIVE_PATTERNS=Object.freeze({
   CHARACTER:/(?:Instance\.new\(["'](?:Model|MeshPart|Accessory|Attachment)["']\)|\bHumanoid\b|\bCharacter\b)/i,
@@ -219,6 +222,10 @@ function robloxPackageAssetFamilyBoundInText(text='',family=''){
 }
 function stripRobloxPackageAssetTrace(text=''){
   return String(text||'')
+    // Managed learning/foundation presentation is not evidence that the game itself owns every asset family.
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END\n/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END\n/g,' ')
+    .replace(/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END\n/g,' ')
     .replace(/--[^\n]*/g,' ')
     .replace(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{[\s\S]*?\}/g,' ')
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\}/g,' ');
