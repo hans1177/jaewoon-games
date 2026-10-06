@@ -15,17 +15,17 @@
   "lastError": "DESIGN_AUTHORING_PROVIDERS_FAILED gemini=OPTIONAL_EXTERNAL_AI_DISABLED local=schema required missing: root.identity",
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
-      "timeouts": 2,
+      "failures": 5,
+      "timeouts": 3,
       "jsonFailures": 2,
-      "totalMs": 325585,
-      "lastMs": 41768,
-      "lastError": "schema required missing: root.identity",
-      "updatedAt": "2026-10-06T10:11:01.233Z"
+      "totalMs": 445686,
+      "lastMs": 120101,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 120000ms",
+      "updatedAt": "2026-10-06T10:13:03.424Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-06T10:11:03.322Z"
+  "updatedAt": "2026-10-06T10:13:03.425Z"
 }
