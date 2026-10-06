@@ -419,6 +419,7 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/fetch_runs 'per_page=100'\n/);
   assert.match(director,/fetch_runs 'status=in_progress&per_page=100' true/);
   assert.match(director,/fetch_runs 'status=queued&per_page=100' true/);
+  assert.match(director,/fetch_runs 'status=pending&per_page=100' true \|\| true/);
   assert.match(director,/fetch_runs 'status=requested&per_page=100' true \|\| true/);
   assert.match(director,/fetch_runs 'status=waiting&per_page=100' true \|\| true/);
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
@@ -429,6 +430,16 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
 
+
+test('runner drain paginates pending release tails beyond the recent mixed page',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const mixed=director.indexOf("fetch_runs 'per_page=100'");
+  const pending=director.indexOf("fetch_runs 'status=pending&per_page=100' true || true");
+  const requested=director.indexOf("fetch_runs 'status=requested&per_page=100' true || true");
+  assert.ok(mixed>=0&&pending>mixed&&requested>pending);
+  assert.match(director,/const waiting=new Set\(\['queued','pending','requested','waiting'\]\)/);
+  assert.match(director,/ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY/);
+});
 
 test('director cancellation cleanup does not recursively wake another drain while success and failure wakes remain eligible',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
