@@ -4269,7 +4269,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const seedPlan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
   const plan=buildInternalAssetLibraryAutomationPlan({assets:registry.assets,seedPlan,uiAtomIds:ui.atoms.map(row=>row.atomId),externalSources:registry.externalSources});
 
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,13);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,14);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.countPolicy,'LOOSE_TARGET_BANDS_NOT_HARD_CAPS');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.persistentWorklistField,'internalAssetLibraryAutomation.nextVolumeActions');
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.volumeActionConsumption,'PERSISTED_PRIORITY_WORKLIST_FIRST');
@@ -4497,7 +4497,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and quality-before-volume',()=>{
-  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,13);
+  assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,14);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityTargetInternalAuditScore,1000);
   assert.equal(INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.qualityUpStartsOnlyAfterRecommendedVolume,false);
 
@@ -4574,7 +4574,7 @@ test('catalog-driven company asset registry synchronization is persistent only w
     assert.ok(stale);
     assert.equal(stale.catalogState,'STALE_CATALOG_ROW_REVIEW');
     assert.equal(stale.automaticDeletionForbidden,true);
-    assert.equal(first.registry.internalAssetLibraryAutomation.version,13);
+    assert.equal(first.registry.internalAssetLibraryAutomation.version,14);
     assert.equal(first.registry.internalAssetLibraryAutomation.releaseScopedProduction,true);
     assert.deepEqual(first.registry.internalAssetLibraryAutomation.productionScopeGameIds,['seed-demo']);
     assert.equal(first.registry.internalAssetLibraryAutomation.unscopedGenericIdeaProductionForbidden,true);
@@ -4658,7 +4658,7 @@ test('canonical company asset registry becomes dry-run idempotent after current 
   assert.equal(result.persisted,false);
   assert.equal(result.persistError,null);
   assert.equal(result.registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,result.registry.version);
-  assert.equal(result.registry.internalAssetLibraryAutomation.version,13);
+  assert.equal(result.registry.internalAssetLibraryAutomation.version,14);
   assert.ok(Array.isArray(result.registry.internalAssetLibraryAutomation.nextVolumeActions));
   assert.deepEqual(result.registry.internalAssetLibraryAutomation.nextVolumeActions,result.automationPlan.nextVolumeActions);
   assert.equal(result.registry.internalAssetLibraryAutomation.releaseScopedProduction,true);
