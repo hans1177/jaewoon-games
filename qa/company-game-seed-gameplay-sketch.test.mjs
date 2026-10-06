@@ -224,14 +224,17 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
     irreducibilityTest:{removeFirstAxis:'오해를 빼면 단순한 투표 퍼즐이 된다.',removeSecondAxis:'합의 현실을 빼면 대화 개그로 끝난다.',verdict:'두 인과축과 시스템 융복합이 함께 있어야 대화가 월드 편집 행동이 된다.'},
     storyWorldBindings:{emotionalConflict:'인정받고 싶은 욕망과 들킬까 두려운 마음이 충돌한다.',characterRule:'NPC마다 믿고 싶은 이야기가 다르다.',monsterRule:'소문에서 태어난 괴물은 믿는 사람이 줄면 약해진다.',regionRule:'지역마다 권위 있는 증언자가 달라 현실 변경 조건이 다르다.',storyRule:'플레이어가 만든 현실의 후폭풍이 다음 사건 원인이 된다.',plausibility:'도시는 오래전부터 공동 증언을 계약과 법의 근거로 삼아 왔다.'},
     gameplaySystemFusion:{
-      formula:'MAIN × A × B × C',
+      formula:'MAIN × A × B × c',
       main:{name:'설득',purpose:'주민의 믿음 상태를 바꾸는 중심 행동.',playerAction:'대상 주민에게 어떤 이야기를 믿게 할지 선택해 설득한다.',stateContribution:'믿음 수치와 이야기별 지지 상태를 만든다.'},
-      axes:[
-        {key:'A',name:'증언 네트워크',purpose:'믿음이 주민 사이에서 전달되는 일반 사회 시스템.',playerChoice:'누구를 먼저 설득해 전파 경로를 만들지 선택한다.',stateContribution:'증언 확산 속도와 신뢰 연결망을 바꾼다.'},
-        {key:'B',name:'공간 퍼즐',purpose:'합의된 믿음을 실제 맵 상태로 변환하는 퍼즐 시스템.',playerChoice:'어떤 현실 변경을 이용해 이동 문제를 풀지 선택한다.',stateContribution:'문·벽·통로·위험 구역 상태를 바꾼다.'},
-        {key:'C',name:'평판과 후폭풍',purpose:'현실 조작의 장기 사회 결과를 누적하는 시스템.',playerChoice:'누구의 평판을 희생하고 어떤 거짓 현실을 유지할지 결정한다.',stateContribution:'다음 사건·NPC 태도·새 소문 조건을 바꾼다.'}
+      majorAxes:[
+        {key:'A',name:'증언 네트워크',purpose:'믿음이 주민 사이에서 전달되는 첫 번째 대축.',playerChoice:'누구를 먼저 설득해 전파 경로를 만들지 선택한다.',stateContribution:'증언 확산 속도와 신뢰 연결망을 바꾼다.'},
+        {key:'B',name:'공간 퍼즐',purpose:'합의된 믿음을 실제 맵 상태로 변환하는 두 번째 대축.',playerChoice:'어떤 현실 변경을 이용해 이동 문제를 풀지 선택한다.',stateContribution:'문·벽·통로·위험 구역 상태를 바꾼다.'}
       ],
-      crossSystemRules:['설득 결과가 증언 네트워크의 전파 확률을 바꾼다.','증언 네트워크가 임계치를 넘으면 공간 퍼즐 상태가 실제로 변한다.','공간 변화로 생긴 피해나 이득이 평판과 후폭풍에 기록된다.','누적된 평판이 다음 설득의 신뢰도와 사용 가능한 이야기를 다시 바꾼다.']
+      subElements:[
+        {name:'평판',role:'설득과 공간 변화의 사회적 반작용을 조절하는 c 서브요소.',supports:['MAIN','A'],variationEffect:'평판에 따라 같은 소문의 설득 비용과 전파 속도가 달라진다.'},
+        {name:'시간대',role:'공간 퍼즐과 증언 네트워크의 조건을 바꾸는 c 서브요소.',supports:['A','B'],variationEffect:'시간대에 따라 증언자 위치와 현실 변경 지속시간이 달라진다.'}
+      ],
+      crossSystemRules:['설득 결과가 증언 네트워크의 전파 확률을 바꾼다.','증언 네트워크가 임계치를 넘으면 공간 퍼즐 상태가 실제로 변한다.','c 서브요소인 평판과 시간대가 설득·전파·공간 변화의 비용과 조건을 변주한다.','공간 변화의 후폭풍이 다음 설득 신뢰도와 사용할 수 있는 이야기를 다시 바꾼다.']
     },
     delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[
       {name:'거짓말 연쇄',discoveryCondition:'서로 모순되는 두 소문을 다른 집단에 동시에 퍼뜨린다.',masteryOrInsight:'집단마다 다른 현실을 잠시 유지할 수 있음을 발견한다.',gameplayEffect:'같은 지역 안에 서로 다른 통로 상태를 만든다.',connectsTo:['MAIN','A','B']},
@@ -239,7 +242,7 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
       {name:'재방문 재해석',discoveryCondition:'과거에 만든 거짓 현실이 굳어진 뒤 같은 동네로 돌아온다.',masteryOrInsight:'이전 퍼즐 해결이 다음 시대의 상식이 되었음을 발견한다.',gameplayEffect:'예전 벽과 문이 새로운 퀘스트와 지름길이 된다.',connectsTo:['B','C']},
       {name:'합의 붕괴 콤보',discoveryCondition:'두 집단의 지지율을 동시에 임계값 직전까지 올린 뒤 한 번에 진실을 공개한다.',masteryOrInsight:'현실 규칙의 생성뿐 아니라 붕괴 순서도 조작할 수 있음을 이해한다.',gameplayEffect:'기존에는 만들 수 없던 일시적 빈 공간과 특수 사건을 연다.',connectsTo:['MAIN','A','B','C']}
     ]},
-    emergentGenre:{name:'합의현실 소문 퍼즐극',definition:'설득을 중심으로 증언 네트워크·공간 퍼즐·평판 후폭풍을 순환시키고 숨은 소문 조합을 파고드는 복합장르.',whyNotSingleConventionalGenre:'대화 퍼즐이나 사회 시뮬레이션 하나로 설명되지 않고 믿음이 실제 공간 규칙이 되는 인과와 시스템 순환이 장르를 만든다.',grammarFormula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × C) + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
+    emergentGenre:{name:'합의현실 소문 퍼즐극',definition:'설득을 중심으로 증언 네트워크·공간 퍼즐·평판 후폭풍을 순환시키고 숨은 소문 조합을 파고드는 복합장르.',whyNotSingleConventionalGenre:'대화 퍼즐이나 사회 시뮬레이션 하나로 설명되지 않고 믿음이 실제 공간 규칙이 되는 인과와 시스템 순환이 장르를 만든다.',grammarFormula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
     expansionVectors:['새 지역은 다른 증언 권위 구조를 가진다.','새 괴물은 증언 네트워크를 왜곡한다.','새 NPC는 평판과 공간 규칙 사이를 거래한다.','새 @ 요소는 기존 설득·네트워크·공간·평판을 새로운 순서로 엮는다.'],
     culturalAbstractionRule:'희극·철학·역사 재료는 높낮이 없이 동등하며 고유 표현이 아니라 인과구조만 재해석한다.'
   };
@@ -257,7 +260,9 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
   assert.equal(pass.pass,true,pass.errors.join(','));
   const flow=evaluateGameFlowArchitecture(flowArchitecture);
   assert.equal(flow.pass,true,flow.blockers.join(','));
-  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.gameplaySystemFusion.formula,'MAIN × A × B × C');
+  assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.gameplaySystemFusion.formula,'MAIN × A × B × c');
+  assert.deepEqual(flowArchitecture.systemBlueprint.novelGrammarContract.gameplaySystemFusion.majorAxes.map(row=>row.key),['A','B']);
+  assert.ok(flowArchitecture.systemBlueprint.novelGrammarContract.gameplaySystemFusion.subElements.length>=2);
   assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.delveLayer.role,'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS');
   assert.equal(flowArchitecture.systemBlueprint.novelGrammarContract.emergentGenre.categoryRole,'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE');
   const broken=structuredClone(seed);

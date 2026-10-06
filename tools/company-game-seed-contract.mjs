@@ -122,12 +122,18 @@ function validateGameplaySketch(sketch,errors){
       const fusion=grammar.gameplaySystemFusion;
       if(!fusion||typeof fusion!=='object'||Array.isArray(fusion))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion is required');
       else{
-        if(fusion.formula!=='MAIN × A × B × C')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula must be MAIN × A × B × C');
+        if(fusion.formula!=='MAIN × A × B × c')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula must be MAIN × A × B × c');
         if(!fusion.main||!isNonEmptyString(fusion.main.name)||!isNonEmptyString(fusion.main.playerAction)||!isNonEmptyString(fusion.main.stateContribution))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.main is incomplete');
-        const axes=Array.isArray(fusion.axes)?fusion.axes:[];
+        const axes=Array.isArray(fusion.majorAxes)?fusion.majorAxes:[];
         const keys=axes.map(row=>String(row?.key||'').toUpperCase());
-        if(axes.length!==3||new Set(keys).size!==3||!['A','B','C'].every(key=>keys.includes(key)))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.axes must be exactly A/B/C');
-        for(const row of axes)if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.purpose)||!isNonEmptyString(row?.playerChoice)||!isNonEmptyString(row?.stateContribution))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion axis ${row?.key||'?'} is incomplete`);
+        if(axes.length!==2||new Set(keys).size!==2||!['A','B'].every(key=>keys.includes(key)))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes must be exactly A/B');
+        for(const row of axes)if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.purpose)||!isNonEmptyString(row?.playerChoice)||!isNonEmptyString(row?.stateContribution))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion major axis ${row?.key||'?'} is incomplete`);
+        const subs=Array.isArray(fusion.subElements)?fusion.subElements:[];
+        if(subs.length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements requires at least 2 c elements');
+        for(const row of subs){
+          const supports=uniq(row?.supports).filter(value=>['MAIN','A','B'].includes(value));
+          if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.role)||!isNonEmptyString(row?.variationEffect)||supports.length<1)errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion c sub-element ${row?.name||'?'} is incomplete`);
+        }
         if(!Array.isArray(fusion.crossSystemRules)||uniq(fusion.crossSystemRules).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.crossSystemRules requires at least 4 items');
       }
       const delve=grammar.delveLayer;
@@ -144,7 +150,7 @@ function validateGameplaySketch(sketch,errors){
       if(!emergent||typeof emergent!=='object'||Array.isArray(emergent))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre is required');
       else{
         for(const field of ['name','definition','whyNotSingleConventionalGenre'])if(!isNonEmptyString(emergent[field]))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.${field} is required`);
-        if(emergent.grammarFormula!=='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × C) + @')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula is invalid');
+        if(emergent.grammarFormula!=='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula is invalid');
         if(emergent.categoryRole!=='SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.categoryRole must mark category as hint only');
       }
       if(!Array.isArray(grammar.expansionVectors)||uniq(grammar.expansionVectors).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.expansionVectors requires at least 4 items');
