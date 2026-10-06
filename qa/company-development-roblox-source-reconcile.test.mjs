@@ -579,6 +579,51 @@ test('existing Roblox source rebind applies all verified APK learning without ch
   }
 });
 
+test('source reconciliation accepts a more specific source subgenre only when design subgenre is unspecified',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-source-subgenre-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    const baseProfile={
+      version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',
+      genre:'Simulation',subgenre:null,playMode:'SINGLE',
+      multiplayerRequired:false,coopImplementationRequired:false,competitiveImplementationRequired:false,
+      networkingRequired:false,multiplayerQaRequired:false,minimumParticipantsForRequiredQa:1,displayLabelKo:'Simulation'
+    };
+    const sourceProfile={...baseProfile,subgenre:'Tycoon',displayLabelKo:'Simulation · Tycoon'};
+    const baselineWithoutSubgenre={...baseline,content:{...baseline.content,robloxBuildProfile:baseProfile}};
+    const sourceBaseline={...baseline,content:{...baseline.content,robloxBuildProfile:sourceProfile}};
+    const compiled=compileRobloxSource({
+      gameId,gameName:'Pocket Foundry',baseline:sourceBaseline,artbook:{},
+      playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary
+    });
+    fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'server'),{recursive:true});
+    fs.mkdirSync(path.join(root,'client'),{recursive:true});
+    fs.writeFileSync(path.join(root,'default.project.json'),JSON.stringify(projectJsonForGame(gameId),null,2)+'\n');
+    fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),compiled.result.sharedConfig);
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),compiled.result.serverCode);
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),compiled.result.clientCode);
+    const sourceLearning=createRobloxVibe3LearningContext({gameId,profile:sourceProfile,playbooks:verifiedPlaybooks});
+    applyVerifiedExternalLearningToExistingRobloxSource({root,learning:sourceLearning});
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const inspect=loadBaseline=>evaluateExistingRobloxSources({
+      queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,
+      assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline
+    });
+    assert.deepEqual(inspect(()=>baselineWithoutSubgenre),[]);
+
+    const explicitDifferentSubgenre={
+      ...baselineWithoutSubgenre,
+      content:{...baselineWithoutSubgenre.content,robloxBuildProfile:{...baseProfile,subgenre:'Life sim',displayLabelKo:'Simulation · Life sim'}}
+    };
+    assert.equal(inspect(()=>explicitDifferentSubgenre)[0]?.failure,'existing-source-verified-external-learning-required');
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('source reconciliation accepts a compatible newer client without a no-change refresh loop',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-compatible-client-'));
   try{

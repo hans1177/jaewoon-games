@@ -8,6 +8,7 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,robloxBuildProfileFromBaseline,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
+import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -74,7 +75,8 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
 
 function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',profile=null}={}){
   const expectedContract=verifiedExternalBlackBoxPlaybookContract(playbooks);
-  const expectedLearning=createRobloxVibe3LearningContext({gameId,profile:profile||existingRobloxGameLearningProfile(gameId),playbooks});
+  const expectedProfile=profile||existingRobloxGameLearningProfile(gameId);
+  const expectedLearning=createRobloxVibe3LearningContext({gameId,profile:expectedProfile,playbooks});
   if(!expectedContract.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
   const configFile=path.join(root,'shared','GameConfig.luau');
   const clientFile=path.join(root,'client','Game.client.luau');
@@ -83,6 +85,29 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
   }
   const config=fs.readFileSync(configFile,'utf8');
   const client=fs.readFileSync(clientFile,'utf8');
+  const sourceProfile=robloxLearningProfileFromSource({
+    gameId,
+    config,
+    fallback:existingRobloxGameLearningProfile(gameId)
+  });
+  const expectedGenre=clean(expectedProfile?.genre);
+  const expectedPlayMode=clean(expectedProfile?.playMode).toUpperCase();
+  const expectedSubgenre=clean(expectedProfile?.subgenre);
+  const sourceGenre=clean(sourceProfile?.genre);
+  const sourcePlayMode=clean(sourceProfile?.playMode).toUpperCase();
+  const sourceSubgenre=clean(sourceProfile?.subgenre);
+  const sourceSubgenreRefinementAllowed=
+    expectedGenre===sourceGenre
+    &&expectedPlayMode===sourcePlayMode
+    &&!expectedSubgenre
+    &&Boolean(sourceSubgenre);
+  const sourceLearning=sourceSubgenreRefinementAllowed
+    ?createRobloxVibe3LearningContext({gameId,profile:sourceProfile,playbooks})
+    :null;
+  const acceptedSemanticMappingFingerprints=[...new Set([
+    clean(expectedLearning.semanticMappingFingerprint),
+    sourceLearning?clean(sourceLearning.semanticMappingFingerprint):''
+  ].filter(Boolean))];
   const managed=config.match(/-- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN\n([\s\S]*?)-- VERIFIED_EXTERNAL_LEARNING_BINDING_END/);
   const full=config.match(/LearningContext\s*=\s*\{([\s\S]*?)\n\s*\},\n\s*InitialState\s*=/);
   const block=managed?.[1]||full?.[1]||'';
@@ -102,6 +127,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
   const truncation=/TruncationForbidden\s*=\s*true/.test(block);
   const fingerprint=clean(block.match(/MemoryFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const exactIds=ids.length===expectedIds.length&&expectedIds.every(id=>ids.includes(id));
+  const semanticMappingFingerprintAccepted=acceptedSemanticMappingFingerprints.includes(semanticMappingFingerprint);
   const fullNativeClient=
     /VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(client)
     &&/VerifiedExternalLearningSemanticMappingVersion/.test(client)
@@ -123,7 +149,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
     ||nativeBindingVersion<ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
     ||clientNativeBindingVersion<nativeBindingVersion
     ||semanticMappingVersion!==ROBLOX_SEMANTIC_MAPPING_VERSION
-    ||semanticMappingFingerprint!==clean(expectedLearning.semanticMappingFingerprint)
+    ||!semanticMappingFingerprintAccepted
     ||!semanticVariant
     ||mappingCount<=0
     ||!gameSpecificMappingsPresent
@@ -139,7 +165,10 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId='',pr
     semanticMappingVersion:ROBLOX_SEMANTIC_MAPPING_VERSION,
     currentSemanticMappingVersion:semanticMappingVersion,
     semanticMappingFingerprint:expectedLearning.semanticMappingFingerprint,
+    acceptedSemanticMappingFingerprints:Object.freeze([...acceptedSemanticMappingFingerprints]),
     currentSemanticMappingFingerprint:semanticMappingFingerprint,
+    sourceSubgenreRefinementAllowed,
+    sourceProfile,
     semanticVariant,
     mappingCount,
     gameSpecificMappingsPresent,
@@ -241,7 +270,32 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
     const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId,profile:learningProfile}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     if(learningState.refreshRequired===true){
-      results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',verifiedExternalLearningRefreshRequired:true,verifiedExternalLearningExpectedIds:learningState.expectedIds,verifiedExternalLearningCurrentIds:learningState.currentIds||[],verifiedExternalLearningFingerprint:learningState.fingerprint,verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null});
+      results.push({
+        gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,
+        blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',
+        verifiedExternalLearningRefreshRequired:true,
+        verifiedExternalLearningExpectedIds:learningState.expectedIds,
+        verifiedExternalLearningCurrentIds:learningState.currentIds||[],
+        verifiedExternalLearningFingerprint:learningState.fingerprint,
+        verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null,
+        verifiedExternalLearningExpectedSemanticMappingFingerprints:learningState.acceptedSemanticMappingFingerprints||[],
+        verifiedExternalLearningCurrentSemanticMappingFingerprint:learningState.currentSemanticMappingFingerprint||null,
+        verifiedExternalLearningSourceSubgenreRefinementAllowed:learningState.sourceSubgenreRefinementAllowed===true,
+        verifiedExternalLearningSourceProfile:learningState.sourceProfile||null,
+        verifiedExternalLearningDiagnostics:{
+          coverage:learningState.coverage,
+          retrieved:learningState.retrieved,
+          applied:learningState.applied,
+          currentSemanticMappingVersion:learningState.currentSemanticMappingVersion,
+          mappingCount:learningState.mappingCount,
+          gameSpecificMappingsPresent:learningState.gameSpecificMappingsPresent===true,
+          learningDispositionsPresent:learningState.learningDispositionsPresent===true,
+          expectedNativeBindingVersion:learningState.expectedNativeBindingVersion,
+          nativeBindingVersion:learningState.nativeBindingVersion,
+          clientNativeBindingVersion:learningState.clientNativeBindingVersion,
+          fullNativeClient:learningState.fullNativeClient===true,
+        }
+      });
       continue;
     }
     if(studioState.refreshRequired===true){
