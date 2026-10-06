@@ -295,9 +295,9 @@ function validateGameplaySketch(sketch,errors){
   if(!style||typeof style!=='object'||Array.isArray(style)){
     errors.push('GAMEPLAY_SKETCH.styleWorldDepth is required for version 3+');
   }else{
-    const styleRequiredStrings=['styleFusion','architectureSettlement','environmentBiomes','materialPropLanguage','characterCostumeSilhouette','paletteLightingWeather','backgroundStorytelling'];
+    const styleRequiredStrings=['styleFusion','architectureSettlement','environmentBiomes','materialPropLanguage','characterCostumeSilhouette','paletteLightingWeather','backgroundStorytelling','sceneStagingLanguage'];
     for(const field of styleRequiredStrings)if(!isNonEmptyString(style[field]))errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} is required for version 3+`);
-    const styleArrays=[['styleDnaSources',2],['regionalStyleVariation',3],['gameplayReadabilityLinks',3],['styleExpansionHooks',2],['artRightsRules',3]];
+    const styleArrays=[['styleDnaSources',2],['regionalStyleVariation',3],['gameplayReadabilityLinks',3],['styleExpansionHooks',2],['sceneStoryBeats',3],['transitionSetpieces',2],['ambientWorldCues',2],['monsterOpponentSceneLinks',2],['artRightsRules',3]];
     for(const [field,min] of styleArrays){
       if(!Array.isArray(style[field])||uniq(style[field]).length<min)errors.push(`GAMEPLAY_SKETCH.styleWorldDepth.${field} requires at least ${min} meaningful items for version 3+`);
     }
@@ -315,7 +315,7 @@ function validateGameplaySketch(sketch,errors){
     if(world.allGenreApplicable!==true)errors.push('GAMEPLAY_SKETCH.worldbuildingDepth.allGenreApplicable must be true for every game genre');
     const worldStrings=['worldPremise','sharedConceptAnchor','civilizationPowerOrder','geographyEcology','economyDailyLife','beliefMythTaboo','technologyInstitutions','placeNameLogic','journalArchiveLogic','monsterOpponentEcology','dialogueMemoryLogic','genreExpression'];
     for(const field of worldStrings)if(!isNonEmptyString(world[field]))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} is required for version 3+`);
-    const worldArrays=[['worldDnaSources',3],['componentConceptLinks',6],['causalChains',4],['worldStateEvolution',2],['crossMediaClueLinks',3]];
+    const worldArrays=[['worldDnaSources',3],['componentConceptLinks',6],['causalChains',4],['worldStateEvolution',2],['crossMediaClueLinks',3],['regionalOppositionCausality',3],['bossWorldLinks',1],['oppositionStateChanges',2]];
     for(const [field,min] of worldArrays)if(!Array.isArray(world[field])||uniq(world[field]).length<min)errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.${field} requires at least ${min} meaningful items for version 3+`);
     const worldFamilies=new Set(GAMEPLAY_WORLDBUILDING_DNA_FAMILIES);
     for(const family of uniq(world.worldDnaSources))if(!worldFamilies.has(family))errors.push(`GAMEPLAY_SKETCH.worldbuildingDepth.worldDnaSources invalid family: ${family}`);
