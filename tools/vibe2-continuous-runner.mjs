@@ -807,7 +807,19 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const releaseGameBuildUpShare=(clean(task.releaseState).toLowerCase()==='release-confirmed'||task.postReleaseFocused===true)
+    &&task?.buildUpDirective?.ownerBuildUpShare
+      ?freeze({
+        ...task.buildUpDirective.ownerBuildUpShare,
+        qualityWorkSession:assetProduction?.internalLibraryEvolution?.qualityWorkSession||assetProduction?.companyGraphicsLibrary?.fullAssetQualityWorkSession||null,
+        activeQualityAction:assetProduction?.internalLibraryEvolution?.nextQualityActions?.[0]||null,
+        activeVolumeIdea:assetProduction?.internalLibraryEvolution?.nextVolumeActions?.[0]||null
+      })
+      :null;
+  const releaseGameShareGuidance=releaseGameBuildUpShare
+    ?'[RELEASE GAME DESIGN / BUILD-UP SHARE] '+JSON.stringify(releaseGameBuildUpShare)
+    :'';
+  const executionGoal = [packageGuidance, reusedGuidance, releaseGameShareGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const taskEvidence=new Set((task.evidence||[]).map(clean));
   const webSourceRootBootstrapAllowed=plan.target==='web'
     &&taskEvidence.has('source-root-bootstrap-required')
@@ -853,6 +865,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     supervisionContract,
     compiledWorkContract,
+    releaseGameBuildUpShare,
     neuralDiagnosis,
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
@@ -961,6 +974,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_AUTO_DEPLOY_ELIGIBLE=${order.deployment.automaticEligible?'YES':'NO'}`);
     console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
+    if(order.releaseGameBuildUpShare){
+      console.log('VIBE2_RELEASE_GAME_BUILD_UP_SHARE='+JSON.stringify(order.releaseGameBuildUpShare));
+      console.log(`VIBE2_RELEASE_GAME_BUILD_UP_GENERATION=${order.releaseGameBuildUpShare.generation||0}`);
+      console.log(`VIBE2_RELEASE_GAME_BUILD_UP_FOCUS=${order.releaseGameBuildUpShare.buildUp?.primaryFocus||'NONE'}`);
+      console.log(`VIBE2_RELEASE_GAME_BUILD_UP_GOAL=${String(order.releaseGameBuildUpShare.buildUp?.primaryGoal||'').replace(/\s+/g,' ').slice(0,1200)}`);
+    }
     console.log(`VIBE2_KNOWLEDGE_APPLICATION_IDS=${order.knowledgeApplicationContract?.exactInjectedKnowledgeIds?.length||0}`);
     console.log(`VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION=${order.assetProduction?.commercialDistillation?.required?(order.assetProduction.commercialDistillation.ready?'PASS':'FAIL'):'NOT_REQUIRED'}`);
     console.log(`VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT=${order.assetProduction?.commercialDistillation?.verifiedReuseCount||0}`);
