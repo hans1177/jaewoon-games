@@ -7215,9 +7215,26 @@ test('package asset repair evidence survives focused and oversized worker prompt
   try{
     const content='local panel = script.Parent\npanel.BackgroundColor3=Color3.fromRGB(20,30,40)\n';
     write(path.join(cwd,relative),content);
-    const prefix=['Engine: roblox','Goal: repair the current package asset binding',block,'Allowed edit paths: '+relative].join('\n');
+    const learningIds=Array.from({length:7},(_,index)=>'external-asset-repair-'+index);
+    const learning=[
+      '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+      'dispositions=7/7; sourcePrinciples=7; validationOnly=0; truncation=FORBIDDEN',
+      'sourcePromptScope=ALL_DISPOSED_APPLICATION_PRINCIPLES; nonSourceAvoidanceAndUsePolicy=RETAINED_IN_VERIFIED_MEMORY_AND_QA',
+      'HARD SOURCE-WORKER RULE: preserve verified application intent.',
+      ...learningIds.flatMap((id,index)=>[
+        '[EXTERNAL_LEARNING '+id+']',
+        'DISPOSITION=principle-'+index+':APPLIED_GAME_SOURCE;GAME=demo;TARGET=roblox;DOMAINS=PRESENTATION;GENRE_MOOD=repair',
+        'APPLY=id=principle-'+index+';lesson='+('bind the selected family to the existing native visual owner without changing gameplay authority '.repeat(220)),
+        '[END_EXTERNAL_LEARNING '+id+']'
+      ]),
+      '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+    ].join('\n');
+    const prefix=['Engine: roblox','Goal: repair the current package asset binding',learning,block,'Allowed edit paths: '+relative].join('\n');
     const focused=buildFocusedReplaceOnlyPrompt(prefix+'\n=== FILE '+relative+' [EDITABLE] ===\n'+content,{sourceRoot:cwd,responsibleFiles:[relative]});
     verify(focused.prompt);
+    assertVerifiedExternalLearningPromptCoverage(focused.prompt,{required:true,ids:learningIds});
+    assert.ok(Buffer.byteLength(focused.prompt,'utf8')<19000,'source-repair focused prompt must stay inside the 8192-context request budget');
+    assert.equal(sourcePromptContextWindow(focused.prompt,{baseContextWindow:8192,maxPredict:768}),8192);
     const oversized=prefix+'\nOVERSIZED_PLANNING_CONTEXT='+('unrelated planning detail '.repeat(16000));
     const retry=buildGenerationRetryPrompt(oversized,{sourceRoot:cwd,responsibleFiles:[relative],attempt:1,oversizedInitial:true});
     verify(retry);

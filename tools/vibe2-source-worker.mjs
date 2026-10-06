@@ -3180,10 +3180,11 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
   return raw.slice(start,end+VERIFIED_EXTERNAL_LEARNING_END.length);
 }
 
-export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
+export function compactVerifiedExternalLearningBlockFromPrompt(prompt='',{maxBytes=16000}={}){
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)return'';
-  if(Buffer.byteLength(block,'utf8')<=18000)return block;
+  const budget=Math.max(3000,Math.min(16000,Math.floor(Number(maxBytes)||16000)));
+  if(Buffer.byteLength(block,'utf8')<=budget)return block;
   const itemPattern=/\[EXTERNAL_LEARNING ([^\]]+)\]\n([\s\S]*?)\n\[END_EXTERNAL_LEARNING \1\]/g;
   const items=[...block.matchAll(itemPattern)];
   if(!items.length)return block;
@@ -3240,13 +3241,13 @@ export function compactVerifiedExternalLearningBlockFromPrompt(prompt=''){
     suffix
   ].filter(Boolean).join('\n');
   const first=render(
-    Math.max(96,Math.min(640,Math.floor(9000/Math.max(1,applyCount)))),
-    Math.max(48,Math.min(220,Math.floor(4000/Math.max(1,dispositionCount))))
+    Math.max(24,Math.min(640,Math.floor((budget*0.58)/Math.max(1,applyCount)))),
+    budget>=9000?Math.max(48,Math.min(220,Math.floor((budget*0.22)/Math.max(1,dispositionCount)))):0
   );
-  if(Buffer.byteLength(first,'utf8')<=16000)return first;
-  for(const budget of [128,96,72,56,40,24]){
-    const compact=render(budget,0);
-    if(Buffer.byteLength(compact,'utf8')<=16000)return compact;
+  if(Buffer.byteLength(first,'utf8')<=budget)return first;
+  for(const applyBudget of [128,96,72,56,40,24]){
+    const compact=render(applyBudget,0);
+    if(Buffer.byteLength(compact,'utf8')<=budget)return compact;
   }
   return render(24,0);
 }
@@ -3870,6 +3871,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
   const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
+  const sourceRepairFocused=SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>raw.includes(prefix));
+  const focusedLearning=compactVerifiedExternalLearningBlockFromPrompt(raw,{maxBytes:sourceRepairFocused?6000:12000});
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
   // 같은 앵커에서 거절된 코드만 수리 문맥으로 전달하고 출력 계약은 유지한다.
@@ -3882,16 +3885,14 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       if(typeof replacement==='string'&&Buffer.byteLength(replacement,'utf8')<=6000)rejectedReplacement=JSON.stringify(replacement);
     }catch{}
   }
-  return{
-    spec,
-    prompt:[
+  const focusedPrompt=[
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
-      verifiedExternalLearningBlockFromPrompt(raw),
+      focusedLearning,
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       gameContextCapsuleBlockFromPrompt(raw),
       preSubmitSelfReviewBlockFromPrompt(raw),
-      studioAssetQualityCoreBlockFromPrompt(raw),
+      sourceRepairFocused?'':studioAssetQualityCoreBlockFromPrompt(raw),
       repeatedFailureStrategyGuidance(generationFailureClass(error),failureRepeatCount),
       reason?'Previous failure: '+reason:'',
       /SOURCE_LINE_REPETITION/.test(reason)?'SOURCE REPETITION REPAIR: the prior stream repeated the same assignment without completing. Rebuild only the fixed anchor replacement; do not copy the surrounding function or repeat identical assignments. Preserve every required behavior.':'',
@@ -3919,8 +3920,9 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'SOURCE CONTEXT AROUND FIXED ANCHOR:',
       /Engine:\s*roblox/i.test(raw)?'Only the EXACT FIND ANCHOR is replaced. Code before and after it remains in the file unchanged. Do not copy the enclosing function or retained statements into replace. The boundary labels below are not source code.':'',
       /Engine:\s*roblox/i.test(raw)?spec.context.replace(spec.find,()=>'\n[EXACT FIND ANCHOR BEGIN]\n'+spec.find+'\n[EXACT FIND ANCHOR END]\n'):spec.context
-    ].filter(Boolean).join('\n')
-  };
+    ].filter(Boolean).join('\n');
+  if(sourceRepairFocused)console.log('VIBE2_SOURCE_REPAIR_FOCUSED_PROMPT_BYTES='+Buffer.byteLength(focusedPrompt,'utf8'));
+  return{spec,prompt:focusedPrompt};
 }
 export function normalizeFocusedReplaceOnly(raw,spec={}){
   const parsed=typeof raw==='string'?extractJson(raw):raw;
