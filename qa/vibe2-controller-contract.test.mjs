@@ -918,8 +918,8 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
 });
 
-test('24H asset-first pre-plan scheduler block stays valid Bash',()=>{
-  const stepName='- name: Dispatch queued asset work first, otherwise GAME_PRIMARY before full planning';
+test('24H production pre-plan scheduler block stays valid Bash',()=>{
+  const stepName='- name: Dispatch queued GAME_PRIMARY and independent asset work before full planning';
   const stepStart=safetyNetWorkflow.indexOf(stepName);
   const stepEnd=safetyNetWorkflow.indexOf('\n      - name:',stepStart+1);
   assert.ok(stepStart>=0&&stepEnd>stepStart);
