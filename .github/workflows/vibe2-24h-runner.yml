@@ -822,6 +822,91 @@ jobs:
           set -euo pipefail
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
 
+          # 완료됐거나 최신 core에 의해 대체된 asset reservation run은 실제 worker capacity를 점유하지 않는다.
+          # queue mutation은 기존 continuous-core recovery가 소유하고, 여기서는 refill gate가 교착되지 않도록
+          # 정확한 reservation run 상태만 관찰해 reclaimable capacity를 계산한다.
+          asset_reservation_runs="$(node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const ids=[...new Set((q.tasks||[])
+            .filter(t=>
+              String(t.status||'').toLowerCase()==='running'
+              &&String(t.reservationRunId||'').trim()
+              &&!String(t.blocker||'').trim()
+              &&(t.assetProductionLane===true||(t.evidence||[]).map(String).includes('asset-production-parallel:v1'))
+            )
+            .map(t=>String(t.reservationRunId||'').trim())
+            .filter(id=>/^\d+$/.test(id))
+          )];
+          process.stdout.write(ids.join(','));
+          NODE
+          )"
+          asset_reclaimable_runs=''
+          asset_reservation_probe_failures=0
+          rm -f /tmp/vibe2-24h-asset-reservation-*.reclaim /tmp/vibe2-24h-asset-reservation-*.error
+          if [ -n "$asset_reservation_runs" ]; then
+            latest_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
+            latest_core_blob=''
+            if [ -n "$latest_main_sha" ]; then
+              latest_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=$latest_main_sha" --jq '.sha' 2>/dev/null || true)"
+            fi
+            IFS=',' read -r -a asset_reservation_run_ids <<< "$asset_reservation_runs"
+            probe_pids=()
+            for reservation_run_id in "${asset_reservation_run_ids[@]}"; do
+              [ -n "$reservation_run_id" ] || continue
+              (
+                run_file="/tmp/vibe2-24h-asset-reservation-${reservation_run_id}.json"
+                jobs_file="/tmp/vibe2-24h-asset-reservation-${reservation_run_id}.jobs.json"
+                if gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" > "$run_file" 2>/dev/null; then
+                  reservation_run_status="$(jq -r '.status // ""' "$run_file")"
+                  reservation_run_head="$(jq -r '.head_sha // ""' "$run_file")"
+                  if [ "$reservation_run_status" = 'completed' ]; then
+                    printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-24h-asset-reservation-${reservation_run_id}.reclaim"
+                  elif [[ "$reservation_run_status" =~ ^(queued|pending|requested|in_progress)$ ]] \
+                    && [ -n "$latest_main_sha" ] \
+                    && [ -n "$reservation_run_head" ] \
+                    && [ "$reservation_run_head" != "$latest_main_sha" ] \
+                    && [ -n "$latest_core_blob" ]; then
+                    old_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${reservation_run_head}" --jq '.sha' 2>/dev/null || true)"
+                    if [ -n "$old_core_blob" ] && [ "$old_core_blob" != "$latest_core_blob" ] \
+                      && gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}/jobs?per_page=100" > "$jobs_file" 2>/dev/null; then
+                      queued_workers="$(jq '[.jobs[] | select((.status=="queued" or .status=="pending" or .status=="requested") and (.name | test("(^| / )worker \\(")))] | length' "$jobs_file")"
+                      active_workers="$(jq '[.jobs[] | select(.status=="in_progress" and (.name | test("(^| / )worker \\(")))] | length' "$jobs_file")"
+                      if [ "${queued_workers:-0}" -gt 0 ] && [ "${active_workers:-0}" -eq 0 ]; then
+                        printf '%s\n' "$reservation_run_id" > "/tmp/vibe2-24h-asset-reservation-${reservation_run_id}.reclaim"
+                      fi
+                    fi
+                  fi
+                else
+                  : > "/tmp/vibe2-24h-asset-reservation-${reservation_run_id}.error"
+                fi
+              ) &
+              probe_pids+=("$!")
+              if [ "${#probe_pids[@]}" -ge 8 ]; then
+                for probe_pid in "${probe_pids[@]}"; do wait "$probe_pid" || true; done
+                probe_pids=()
+              fi
+            done
+            for probe_pid in "${probe_pids[@]}"; do wait "$probe_pid" || true; done
+            mapfile -t reclaimable_ids < <(
+              while IFS= read -r probe_file; do cat "$probe_file"; done < <(
+                find /tmp -maxdepth 1 -type f -name 'vibe2-24h-asset-reservation-*.reclaim' | sort
+              )
+            )
+            asset_reservation_probe_failures="$(find /tmp -maxdepth 1 -type f -name 'vibe2-24h-asset-reservation-*.error' | wc -l | tr -d ' ')"
+            if [ "${#reclaimable_ids[@]}" -gt 0 ]; then
+              asset_reclaimable_runs="$(IFS=,; echo "${reclaimable_ids[*]}")"
+            fi
+          fi
+          if [ "$asset_reservation_probe_failures" -eq 0 ]; then
+            echo 'VIBE2_24H_ASSET_RESERVATION_PROBE=PASS'
+          else
+            echo "VIBE2_24H_ASSET_RESERVATION_PROBE=PARTIAL_FAIL_OPEN:${asset_reservation_probe_failures}"
+          fi
+          echo "VIBE2_24H_ASSET_RESERVATION_RUNS=${asset_reservation_runs:-NONE}"
+          echo "VIBE2_24H_ASSET_RECLAIMABLE_RUNS=${asset_reclaimable_runs:-NONE}"
+          export VIBE2_24H_ASSET_RECLAIMABLE_RUNS="$asset_reclaimable_runs"
+
           runner_pressure='YES'
           pressure_count='unknown'
           job_pressure_count='unknown'
@@ -916,7 +1001,10 @@ jobs:
           const tasks=q.tasks||[];
           const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
           const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
-          const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
+          const reclaimableAssetRuns=new Set(String(process.env.VIBE2_24H_ASSET_RECLAIMABLE_RUNS||'').split(',').map(v=>v.trim()).filter(Boolean));
+          const activeAssetRows=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT');
+          const reclaimableAssetReservations=activeAssetRows.filter(t=>reclaimableAssetRuns.has(String(t.reservationRunId||'').trim())).length;
+          const activeAsset=activeAssetRows.filter(t=>!reclaimableAssetRuns.has(String(t.reservationRunId||'').trim())).length;
           const assetQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
@@ -953,6 +1041,7 @@ jobs:
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
           console.log('VIBE2_ASSET_DEVELOPMENT_QUEUED='+assetQueued);
           console.log('VIBE2_ASSET_DEVELOPMENT_ACTIVE='+activeAsset);
+          console.log('VIBE2_ASSET_DEVELOPMENT_RECLAIMABLE_RESERVATIONS='+reclaimableAssetReservations);
           console.log('VIBE2_ASSET_DEVELOPMENT_REFILL_READY='+assetRefillReady);
           console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
           console.log('VIBE2_24H_RECOVERY_FAST_QUEUED='+recoveryQueued);
