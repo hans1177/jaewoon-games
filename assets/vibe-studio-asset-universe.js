@@ -563,7 +563,7 @@ function detectCompanySeedRuleIds(source,rules){
   return uniq(result);
 }
 
-export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[]}={}){
+export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[],scope='ALL_COMPANY_COMMON_SEEDS'}={}){
   const seedRows=[];
   const aggregate=new Map();
   const detectedSignalSet=new Set();
@@ -651,7 +651,7 @@ export function createCompanySeedAssetIdeationPlan({seeds=[],assets=[]}={}){
 
   return Object.freeze({
     version:1,
-    scope:'ALL_COMPANY_COMMON_SEEDS',
+    scope:text(scope)||'ALL_COMPANY_COMMON_SEEDS',
     sourcePattern:COMPANY_COMMON_SEED_ASSET_IDEA_AXES.sourcePattern,
     seedCount:seedRows.length,
     detectedSignals:Object.freeze(detectedSignals),
@@ -2065,18 +2065,31 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[]}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],productionScopeGameIds=[],releaseScopedProduction=false}={}){
   const inventoryAssets=assets;
+  const scopedGameIds=uniq(productionScopeGameIds).map(text).filter(Boolean);
+  const scopedGameIdSet=new Set(scopedGameIds);
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
     &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
     &&asset?.rightsPass!==false);
   const depth=auditCommonLibrarySystemDepth({assets});
-  const seedIdeas=seedPlan?.ideas||[];
+  const allSeedIdeas=seedPlan?.ideas||[];
+  const seedIdeas=releaseScopedProduction
+    ?allSeedIdeas.filter(idea=>(idea?.sourceSeedIds||[]).some(id=>scopedGameIdSet.has(text(id))))
+    :allSeedIdeas;
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
   const audioRoles=uniq(audioRoleIds).map(upper);
   const audioRoleTokens=new Set(audioRoles);
   const actualVerifiedAudioAssetCount=verifiedAudioFileCount(assets);
-  const maintenance=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
+  const maintenanceBase=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
+  const maintenance=releaseScopedProduction
+    ?Object.freeze({
+      ...maintenanceBase,
+      nextQualityActions:Object.freeze((maintenanceBase.nextQualityActions||[]).filter(action=>(action?.consumerGameIds||[]).some(id=>scopedGameIdSet.has(text(id))))),
+      releaseScopedProduction:true,
+      productionScopeGameIds:Object.freeze(scopedGameIds)
+    })
+    :maintenanceBase;
   const domains=[];
   const freeSourceCategoriesByDomain=Object.freeze({
     BUILDING:Object.freeze(['BUILDING','PROP','ENVIRONMENT']),
@@ -2191,48 +2204,56 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       candidates.push(Object.freeze(candidate));
       return true;
     };
-    for(const required of missing){
-      pushCandidate({
-        ideaId:[domain,required,'BASE'].join('_'),
-        source:'SYSTEM_DEPTH_GAP',
-        domain,
-        role:required,
-        priority:300
-      });
+    if(!releaseScopedProduction){
+      for(const required of missing){
+        pushCandidate({
+          ideaId:[domain,required,'BASE'].join('_'),
+          source:'SYSTEM_DEPTH_GAP',
+          domain,
+          role:required,
+          priority:300
+        });
+      }
     }
     for(const idea of seedIdeas.filter(row=>row.domain===domain)){
       if(candidates.length>=ideaBudget)break;
       pushCandidate({
         ideaId:idea.ideaId,
-        source:'COMPANY_COMMON_SEED_DEMAND',
+        source:releaseScopedProduction?'RELEASE_CONFIRMED_GAME_DEMAND':'COMPANY_COMMON_SEED_DEMAND',
         domain,
         role:idea.role,
         stateVariants:idea.stateVariants,
+        sourceGameIds:Object.freeze(uniq(idea.sourceSeedIds||[]).filter(id=>!releaseScopedProduction||scopedGameIdSet.has(text(id)))),
+        sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),
+        worldThemes:Object.freeze([...(idea.worldThemes||[])]),
+        releaseGameScoped:releaseScopedProduction,
         priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)
       });
     }
-    const domainPool=uniq([...(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[]),...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS[domain]||[])]);
-    for(const ideaId of domainPool){
-      if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
-      pushCandidate({
-        ideaId,
-        source:'DOMAIN_IDEA_POOL',
-        domain,
-        role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
-        priority:150
-      });
-    }
-    let slot=1;
-    while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin&&slot<=9999){
-      const ideaId=[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_');
-      slot++;
-      pushCandidate({
-        ideaId,
-        source:'LOOSE_VOLUME_TARGET',
-        domain,
-        role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
-        priority:120
-      });
+    if(!releaseScopedProduction){
+      const domainPool=uniq([...(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[]),...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS[domain]||[])]);
+      for(const ideaId of domainPool){
+        if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
+        pushCandidate({
+          ideaId,
+          source:'DOMAIN_IDEA_POOL',
+          domain,
+          role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
+          priority:150
+        });
+      }
+      let slot=1;
+      while(candidates.length<ideaBudget&&currentCount+candidates.length<targetMin&&slot<=9999){
+        const ideaId=[domain,'DISTINCT_VARIATION',String(slot).padStart(2,'0')].join('_');
+        slot++;
+        pushCandidate({
+          ideaId,
+          source:'LOOSE_VOLUME_TARGET',
+          domain,
+          role:'DISTINCT_ROLE_STATE_STYLE_COMBINATION',
+          priority:120
+        });
+      }
     }
     domains.push(Object.freeze({
       domain,
@@ -2262,7 +2283,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const state=currentCount<band.targetMin?'EXPAND_TOWARD_RECOMMENDED_RANGE':
       currentCount<=band.targetMax?'HEALTHY_VOLUME':
       currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
-    const suggestedCount=Math.min(12,Math.max(0,band.targetMin-currentCount));
+    const suggestedCount=releaseScopedProduction?0:Math.min(12,Math.max(0,band.targetMin-currentCount));
     const pool=COMMON_UI_SUBSYSTEM_IDEA_POOLS[id]||[];
     const suggestedIdeas=[],candidateKeys=new Set();
     const pushUiIdea=(ideaId,source,priority)=>{
@@ -2317,8 +2338,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
-    ...uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)})))
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,sourceGameIds:Object.freeze([...(idea.sourceGameIds||[])]),sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),worldThemes:Object.freeze([...(idea.worldThemes||[])]),releaseGameScoped:idea.releaseGameScoped===true,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
+    ...(!releaseScopedProduction?uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))):[])
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96).sort((a,b)=>{
     const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
     const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
@@ -2382,6 +2403,10 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       });
   return Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
+    releaseScopedProduction:releaseScopedProduction===true,
+    productionScopeGameIds:Object.freeze(scopedGameIds),
+    releasedGameDemandAvailable:scopedGameIds.length>0,
+    unscopedGenericIdeaProductionForbidden:releaseScopedProduction===true,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
     hardMaximum:null,
     domains:Object.freeze(sortedDomains),
