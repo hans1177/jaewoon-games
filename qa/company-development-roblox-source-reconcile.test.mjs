@@ -952,6 +952,45 @@ test('verified learning sweep supports exact per-game and exact batched scope wi
 });
 
 
+test('stale family status rebind takes precedence over current package repair evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-family-status-rebind-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const currentClient=fs.readFileSync(clientFile,'utf8');
+    assert.match(currentClient,/\bUI\s*=\s*["']APPLIED["']/);
+    fs.writeFileSync(clientFile,currentClient.replace(/\bUI\s*=\s*["']APPLIED["']/,'UI = "NOT_APPLICABLE"'));
+    initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD');
+    const sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const item={
+      ...staleItem(),
+      robloxSourceCommit:revision,
+      robloxQualityBuildUpRequired:true,
+      robloxQualityBuildUpSourceRevision:revision,
+      robloxQualityBuildUpEvidence:{
+        gameId,sourceRevision:revision,sourceTreeSha,artifactIdentity:null,
+        authority:'roblox-package-asset-binding-failure',
+        assetThreshold:{pass:false,blockers:['ROBLOX_PACKAGE_ASSET_NOT_APPLICABLE_WITH_EXISTING_SYSTEM:UI']},
+        assetRepairContext:robloxPackageAssetRepairContext({assetLibrary:companyAssetLibrary,baseline})
+      }
+    };
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,
+      loadBaseline:()=>baseline,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks
+    });
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
+    assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
+    assert.equal(rows[0].studioAssetBindingRefreshReason,'FAMILY_STATUS_SOURCE_MISMATCH');
+    assert.deepEqual(rows[0].studioAssetFamilyStatusMismatches,['UI']);
+    assert.notEqual(rows[0].sourceRepairPending,true);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
 test('unchanged package asset failure cannot be turned into a new source PASS by shallow reconciliation',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-repair-reconcile-'));
   try{
