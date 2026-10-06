@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import {validateGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES} from './company-game-seed-contract.mjs';
+import {validateGameSeed,GAMEPLAY_COMPOSITION_MECHANIC_FAMILIES,GAMEPLAY_NARRATIVE_DNA_FAMILIES,GAMEPLAY_NARRATIVE_RIGHTS_MODES} from './company-game-seed-contract.mjs';
 import {normalizeSeedState,SEED_MATERIAL_POOL_TARGET,SEED_MATERIAL_SOURCE_FAMILIES} from './game-seed-state.mjs';
 import {categorySeedProfile,loadPlatformProfiles,normalizeSeedPlatform} from './game-seed-platform-profile.mjs';
 import {evaluateGameFlowArchitecture} from './company-vibe2-game-flow-architect.mjs';
@@ -174,6 +174,80 @@ function v2GameplaySketchFailures(sketch){
     ];
     const depthCoverage=semanticGroupCoverage(deepText,depthGroups);
     if(depthCoverage<4)out.push(`v3-fusion-depth-coverage=${depthCoverage}/4`);
+
+    const narrative=sketch?.narrativeDepth||{};
+    const narrativeFamilies=uniq(narrative.narrativeDnaSources);
+    const rightsModes=uniq(narrative.rightsModes);
+    const npc=uniq(narrative.npcRelationshipWeb);
+    const companions=uniq(narrative.companionArcs);
+    const sublinks=uniq(narrative.mainSubquestLinks);
+    const foreshadow=uniq(narrative.foreshadowPayoffs);
+    const factions=uniq(narrative.factionCultureHooks);
+    const reinterpretations=uniq(narrative.historicalMythReinterpretations);
+    const worldFusion=uniq(narrative.worldbuildingFusion);
+    const storyLinks=uniq(narrative.storySystemLinks);
+    const contentCausality=uniq(narrative.contentCausalityLinks);
+    const worldEvolution=uniq(narrative.worldEvolutionHooks);
+    const respect=uniq(narrative.culturalRespectRules);
+    if(narrative.applicable!==true)out.push('v3-narrative-applicable-required');
+    if(!['LIGHT','MEDIUM','HEAVY'].includes(clean(narrative.storyWeight).toUpperCase()))out.push('v3-narrative-story-weight-invalid');
+    if(clean(narrative.worldConflict).length<20)out.push('v3-world-conflict-too-shallow');
+    if(clean(narrative.mainStoryArc).length<30)out.push('v3-main-story-arc-too-shallow');
+    if(narrativeFamilies.length<2)out.push(`v3-narrative-dna-families=${narrativeFamilies.length}/2`);
+    if(npc.length<2)out.push(`v3-npc-relationship-web=${npc.length}/2`);
+    if(companions.length<1)out.push('v3-companion-arcs=0/1');
+    if(sublinks.length<2)out.push(`v3-main-subquest-links=${sublinks.length}/2`);
+    if(foreshadow.length<2)out.push(`v3-foreshadow-payoffs=${foreshadow.length}/2`);
+    if(factions.length<2)out.push(`v3-faction-culture-hooks=${factions.length}/2`);
+    if(reinterpretations.length<2)out.push(`v3-historical-myth-reinterpretations=${reinterpretations.length}/2`);
+    if(worldFusion.length<3)out.push(`v3-worldbuilding-fusion=${worldFusion.length}/3`);
+    if(storyLinks.length<3)out.push(`v3-story-system-links=${storyLinks.length}/3`);
+    if(contentCausality.length<4)out.push(`v3-content-causality-links=${contentCausality.length}/4`);
+    if(worldEvolution.length<2)out.push(`v3-world-evolution-hooks=${worldEvolution.length}/2`);
+    if(respect.length<3)out.push(`v3-cultural-respect-rules=${respect.length}/3`);
+
+    const allowedNarrativeFamilies=new Set(GAMEPLAY_NARRATIVE_DNA_FAMILIES);
+    for(const family of narrativeFamilies)if(!allowedNarrativeFamilies.has(family))out.push(`v3-invalid-narrative-family=${family}`);
+    const allowedRightsModes=new Set(GAMEPLAY_NARRATIVE_RIGHTS_MODES);
+    for(const mode of rightsModes)if(!allowedRightsModes.has(mode))out.push(`v3-invalid-narrative-rights-mode=${mode}`);
+
+    const relationText=[...npc,...companions,...sublinks,...storyLinks].join(' ');
+    const relationGroups=[
+      [/npc|인물|동료|companion|party|파티|주민|상인/i],
+      [/관계|호감|충성|갈등|동맹|경쟁|relation|affinity|loyal|rival/i],
+      [/메인|main|서브|side.?quest|퀘스트|quest/i],
+      [/상점|무역|trade|market|제작|craft|탐험|explor|전투|combat|보스|boss/i]
+    ];
+    const relationCoverage=semanticGroupCoverage(relationText,relationGroups);
+    if(relationCoverage<3)out.push(`v3-narrative-system-relation-coverage=${relationCoverage}/3`);
+
+    const worldText=[...worldFusion,...factions,...reinterpretations,clean(narrative.worldConflict),clean(narrative.mainStoryArc)].join(' ');
+    const worldGroups=[
+      [/세력|faction|권력|정치|politic|가문|원로원|senate|군단|legion/i],
+      [/역사|history|신화|myth|민담|folklore|전설|legend/i],
+      [/경제|무역|trade|산업|industry|도시|urban|노동|labor|시장|market/i],
+      [/전쟁|war|혁명|revolution|첩보|espionage|냉전|cold war|제국|empire|식민|colon/i],
+      [/지역|region|도시|city|마을|village|문화|culture|신앙|belief|금기|taboo/i]
+    ];
+    const worldCoverage=semanticGroupCoverage(worldText,worldGroups);
+    if(worldCoverage<3)out.push(`v3-worldbuilding-fusion-semantic-coverage=${worldCoverage}/3`);
+
+    const causalityText=contentCausality.join(' ');
+    const causalityGroups=[
+      [/지역|던전|보스|아이템|유물|펫|미니게임|무역|하우징|수집|region|dungeon|boss|item|relic|pet|minigame|trade|housing|collection/i],
+      [/원인|이유|기원|과거|세력|npc|world reason|origin|history|faction/i],
+      [/플레이|행동|전투|탐험|거래|제작|play|action|combat|explor|trade|craft/i],
+      [/보상|상태 변화|관계|평판|지도|상점|reward|state change|relation|reputation|map|shop/i],
+      [/후속|메인|서브|퀘스트|사건|대사|follow|main|side|quest|event|dialogue/i]
+    ];
+    const causalityCoverage=semanticGroupCoverage(causalityText,causalityGroups);
+    if(causalityCoverage<4)out.push(`v3-content-causality-semantic-coverage=${causalityCoverage}/4`);
+
+    const rightsText=[...respect,...reinterpretations].join(' ');
+    const protectedWorkCopy=/고유 (?:인물|캐릭터|명칭|대사|장면)|직접 복제|copy (?:character|world|dialogue|scene)/i;
+    const abstractTransform=/추상|구조|기법|재해석|변형|original|abstract|reinterpret|transform|공공영역|historical/i;
+    if(protectedWorkCopy.test(rightsText)&&!abstractTransform.test(rightsText))out.push('v3-protected-expression-copy-risk');
+
   }
   return out;
 }
@@ -194,4 +268,4 @@ for(const seed of active){
 // Concept duplication is blocked when a new material-composed GAME_SEED is created.
 // Do not retroactively reject historical or owner-enrolled projects as duplicate pairs here.
 if(failures.length){console.error('GAME_SEED_SEMANTIC_QUALITY=FAIL');for(const failure of failures)console.error(`- ${failure}`);process.exit(1);}
-console.log('GAME_SEED_SEMANTIC_QUALITY=PASS');console.log('GAMEPLAY_SKETCH_V2_V3_SEMANTIC_QUALITY=ENFORCED');console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);console.log(`GAME_SEED_MATERIAL_COMPOSED_COUNT=${active.filter(isMaterialComposed).length}`);console.log('LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO');console.log('CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY');console.log(`SEED_MATERIAL_POOL_TARGET=${SEED_MATERIAL_POOL_TARGET}`);console.log('SEED_MATERIAL_IS_GAME=NO');console.log('GAME_REFERENCE_REQUIRED=NO');console.log('TARGET_SESSION_MINUTES=30');console.log('MULTIPLAYER_DECISION_STAGE=DESIGN');console.log('GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO');console.log('GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO');console.log('GAME_SEED_POLICY_DOCUMENT=COMPANY_FLOW.md');
+console.log('GAME_SEED_SEMANTIC_QUALITY=PASS');console.log('GAMEPLAY_SKETCH_V3_SYSTEM_NARRATIVE_WORLD_CAUSALITY=ENFORCED');console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);console.log(`GAME_SEED_MATERIAL_COMPOSED_COUNT=${active.filter(isMaterialComposed).length}`);console.log('LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO');console.log('CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY');console.log(`SEED_MATERIAL_POOL_TARGET=${SEED_MATERIAL_POOL_TARGET}`);console.log('SEED_MATERIAL_IS_GAME=NO');console.log('GAME_REFERENCE_REQUIRED=NO');console.log('TARGET_SESSION_MINUTES=30');console.log('MULTIPLAYER_DECISION_STAGE=DESIGN');console.log('GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO');console.log('GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO');console.log('GAME_SEED_POLICY_DOCUMENT=COMPANY_FLOW.md');
