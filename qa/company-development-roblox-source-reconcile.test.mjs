@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline} from '../tools/company-development-roblox-bootstrap.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
@@ -361,6 +361,13 @@ test('current Roblox Studio asset binding version does not re-enter refresh fore
     writeCompiledTree(root);
     const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     assert.equal(applied.studioAssets.bindingVersion,2);
+    const reboundClient=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(reboundClient,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+    assert.match(reboundClient,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      assert.match(reboundClient,new RegExp('\\b'+family+'\\s*='));
+      assert.match(reboundClient,new RegExp('\\b'+family+'\\s*=\\s*["\\\'](?:APPLIED|NOT_APPLICABLE)["\\\']'));
+    }
     initGitRepo(tmp);
     const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
     const rows=evaluateExistingRobloxSources({
@@ -477,6 +484,11 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
     assert.match(client,/C\.StudioAssets/);
     assert.match(client,/StudioAssetFramePanel/);
     assert.match(client,/StudioAssetAtoms/);
+    assert.match(client,/STUDIO_ASSET_SELECTION\s*=\s*\{/);
+    assert.match(client,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
+    for(const family of ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES){
+      assert.match(client,new RegExp('\\b'+family+'\\s*='));
+    }
     applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     const configAgain=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
     const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
@@ -900,4 +912,18 @@ test('unchanged package asset failure cannot be turned into a new source PASS by
     fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- repaired source change\n');git('add','.');git('commit','-m','real game source repair');
     assert.notEqual(evaluate()[0]?.sourceRepairPending,true,'changed game tree must run source validation');
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+
+test('verified learning refresh debt coalesces into one existing batch sweep',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Dispatch verified learning sweep per game when reconciliation finds refresh debt');
+  const end=workflow.indexOf('      - name: Resolve next Roblox source execution slice',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/Roblox verified learning sweep · batch/);
+  assert.match(block,/ROBLOX_VERIFIED_LEARNING_SWEEP_DISPATCH=YES_BATCH/);
+  assert.match(block,/company-roblox-verified-learning-sweep\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.doesNotMatch(block,/while IFS= read -r game_id/);
+  assert.doesNotMatch(block,/-f game_id=/);
 });
