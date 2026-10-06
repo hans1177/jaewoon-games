@@ -777,10 +777,6 @@ function bindExistingClientStudioAssets(source=''){
   const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
   if(!requireMatch)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_CONFIG_REQUIRE_MISSING');
   const configVar=requireMatch[1];
-  const statusAlreadyPresent=/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/.test(output);
-  const selectionAlreadyPresent=/\bSTUDIO_ASSET_SELECTION\s*=\s*\{/.test(output);
-  const selectionRows=ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>`  ${family} = studioAssetFamily("${family}"),`).join('\n');
-  const statusRows=ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`).join('\n');
   const block=`-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = ${configVar}.StudioAssets or {}
@@ -795,8 +791,6 @@ local function hasStudioAssetAtom(familyOrAtom, atom)
   local assetAtom = atom == nil and familyOrAtom or atom
   return table.find(studioAssetFamily(family), assetAtom) ~= nil
 end
-${selectionAlreadyPresent?'':`local STUDIO_ASSET_SELECTION = {\n${selectionRows}\n}\n`}
-${statusAlreadyPresent?'':`local STUDIO_ASSET_FAMILY_STATUS = {\n${statusRows}\n}\n`}
 -- STUDIO_ASSET_BINDING_CLIENT_END
 `;
   if(managed.test(output)){
@@ -807,6 +801,26 @@ ${statusAlreadyPresent?'':`local STUDIO_ASSET_FAMILY_STATUS = {\n${statusRows}\n
       const insertAt=requireMatch.index+requireMatch[0].length;
       output=output.slice(0,insertAt)+'\n'+block+output.slice(insertAt);
     }
+  }
+  const managedEnd='-- STUDIO_ASSET_BINDING_CLIENT_END\n';
+  const traceAt=output.indexOf(managedEnd);
+  if(traceAt<0)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_MANAGED_BLOCK_MISSING');
+  const traceInsertAt=traceAt+managedEnd.length;
+  if(!/\bSTUDIO_ASSET_SELECTION\s*=\s*\{/.test(output)){
+    const selectionRows=ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>`  ${family} = studioAssetFamily("${family}"),`).join('\n');
+    output=output.slice(0,traceInsertAt)+`local STUDIO_ASSET_SELECTION = {
+${selectionRows}
+}
+`+output.slice(traceInsertAt);
+  }
+  if(!/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/.test(output)){
+    const statusRows=ROBLOX_STUDIO_ASSET_FAMILIES.map(family=>`  ${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}",`).join('\n');
+    const selectionEnd=output.indexOf('}\n',traceInsertAt);
+    const insertAt=selectionEnd>=0?selectionEnd+2:traceInsertAt;
+    output=output.slice(0,insertAt)+`local STUDIO_ASSET_FAMILY_STATUS = {
+${statusRows}
+}
+`+output.slice(insertAt);
   }
   if(!/StudioAssetBindingVersion/.test(output)){
     const frameMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*Instance\.new\(\s*["']Frame["']\s*\)/);
@@ -829,7 +843,6 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"
 `;
     output=output.slice(0,insertAt)+visible+output.slice(insertAt);
   }
-  // 기존 managed block 교체로 사라진 studioUi를 기존 실제 UI 소비 위치에서 직접 정리한다.
   output=output.replace(/\btable\.concat\(\s*studioUi\s*,/g,'table.concat(studioAssetFamily("UI"),');
   return output;
 }
