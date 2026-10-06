@@ -307,6 +307,71 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-engine-systems-v2",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-5.6-SOL",
+      "engine": "roblox",
+      "gameId": "cross-game",
+      "domains": [
+        "PERFORMANCE",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER",
+        "ROBLOX_DATASTORE",
+        "DEBUGGING",
+        "ROBLOX_PARALLEL_LUAU",
+        "ROBLOX_NETWORK_OWNERSHIP",
+        "ROBLOX_STREAMING",
+        "LUAU_TYPE_SYSTEM"
+      ],
+      "patterns": [
+        "Use Actors for measured CPU-heavy independent work; run parallel compute with task.desynchronize() or parallel callbacks, then synchronize only for DataModel operations that are not thread-safe.",
+        "Treat each Actor as a separate Luau VM: module state is not shared across Actors. Use Actor messages or SharedTable intentionally, and avoid large copied message payloads across VM boundaries.",
+        "Check API thread-safety tags before parallel access; require needed modules before entering parallel phases and keep cross-Actor mutation explicit instead of assuming ordinary tables are shared.",
+        "Network ownership is a performance mechanism, not gameplay authority. Validate critical physics on the server and force server ownership only where exploit risk outweighs responsiveness cost.",
+        "Never trust Touched or client-owned physics alone for damage, rewards, or objectives. Re-check reach, state, timing, target validity, and finite numeric values on the server.",
+        "Use UnreliableRemoteEvent only for disposable continuously changing data. Critical state, rewards, inventory, and ordered transitions need reliable protocols plus sequence or revision handling.",
+        "Do not depend on ordering across RemoteEvent and RemoteFunction channels; when ordering matters, use one protocol stream or explicit sequence numbers and reject stale messages.",
+        "For multi-server save updates, use UpdateAsync-style transforms when the new value depends on prior state; keep transforms non-yielding and preserve existing metadata and user IDs unless intentionally changing them.",
+        "Write streaming-aware client code that tolerates absent instances. Pre-stream predicted teleport destinations from the server when needed and treat streaming availability as local and temporary, not global world presence.",
+        "Profile before parallelizing or pooling. Use Script Profiler and MicroProfiler to identify CPU or frame hotspots, then move only measured hot computation away from the serial path.",
+        "Use --!strict and explicit types at subsystem boundaries where practical; model protocol and state variants to catch invalid shapes early while retaining runtime validation for all network input."
+      ],
+      "cautions": [
+        "Do not move authoritative combat, economy, inventory, or save mutation to clients or parallel workers merely for performance.",
+        "Do not force server network ownership on every moving assembly; measure responsiveness and reserve it for gameplay-critical physics.",
+        "Do not repair dropped unreliable packets, streaming absence, or cross-channel reordering by replaying side effects without idempotency."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "1409fbde1800df716873b6b18f20f334d91b70879571e4fa7a8a1a3694d3fbb7",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://create.roblox.com/docs/scripting/multithreading",
+          "source:https://create.roblox.com/docs/scripting/security/network-ownership",
+          "source:https://create.roblox.com/docs/scripting/events/remote",
+          "source:https://create.roblox.com/docs/cloud-services/data-stores/best-practices",
+          "source:https://create.roblox.com/docs/workspace/streaming",
+          "source:https://luau.org/types/",
+          "qa:qa/company-system-ai-learning.test.mjs#advanced-roblox-luau-v2"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
