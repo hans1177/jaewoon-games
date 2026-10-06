@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 
 const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+const coreQa=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
 const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
 const recoveryFast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
@@ -449,6 +450,35 @@ test('24h runner keeps asset lane independent from generic repository runner pre
   assert.match(assetBlock,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
   assert.match(assetBlock,/execution_lane: asset-development/);
   assert.match(assetBlock,/lane_max: '63'/);
+  assert.match(core,/VIBE2_ASSET_FIXED_RUNNER_SLOTS: '5'/);
+  const workerStart=core.indexOf('\n  worker:\n');
+  const workerEnd=core.indexOf('\n  fan_in:',workerStart);
+  assert.ok(workerStart>=0&&workerEnd>workerStart);
+  const workerBlock=core.slice(workerStart,workerEnd);
+  assert(workerBlock.includes("max-parallel: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 5 || 256 }}"));
+  assert(workerBlock.includes('VIBE2_ASSET_FIXED_RUNNER_SLOTS=$VIBE2_ASSET_FIXED_RUNNER_SLOTS'));
+  assert(workerBlock.includes('VIBE2_ASSET_ROLLING_REFILL=NEXT_MATRIX_JOB_ON_WORKER_COMPLETION'));
+  assert.match(core,/Event-driven fan-in refill fallback/);
+  assert.match(core,/VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH/);
+});
+
+test('Core QA skips duplicate heavy suites only for dedicated parallelism workflow-only changes',()=>{
+  const scopeStart=coreQa.indexOf('\n  scope:\n');
+  const scopeEnd=coreQa.indexOf('\n  test:\n',scopeStart);
+  assert.ok(scopeStart>=0&&scopeEnd>scopeStart);
+  const scopeBlock=coreQa.slice(scopeStart,scopeEnd);
+  assert.match(scopeBlock,/Resolve impact-scoped Core QA work/);
+  assert.match(scopeBlock,/VIBE2_CORE_QA_PARALLELISM_ONLY=/);
+  assert.match(scopeBlock,/vibe2-\(continuous-core\|24h-runner\|parallelism-contract-qa\)/);
+  assert.match(scopeBlock,/qa\/vibe2-parallelism-\(main\|20\)-contract/);
+  assert.doesNotMatch(scopeBlock,/vibe2-core-qa\.yml/);
+  assert.match(scopeBlock,/grep -Eq '\^0\+\$'/);
+  assert.equal((coreQa.match(/\n  test:\n/g)||[]).length,1);
+  assert.equal((coreQa.match(/\n  browser-smoke:\n/g)||[]).length,1);
+  assert.equal((coreQa.match(/\n  practice-runtime:\n/g)||[]).length,1);
+  assert.match(coreQa,/\n  test:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}/);
+  assert.match(coreQa,/\n  browser-smoke:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}/);
+  assert.match(coreQa,/\n  practice-runtime:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}/);
 });
 
 test('24h runner does not treat many workflow runs as runner saturation when queued jobs are zero',()=>{
