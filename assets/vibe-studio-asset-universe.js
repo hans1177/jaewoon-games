@@ -2069,16 +2069,17 @@ function uiSubsystemCount(ids=[],spec={}){
   }).length;
 }
 
-export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],productionScopeGameIds=[],releaseScopedProduction=false}={}){
+export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null,uiAtomIds=[],audioRoleIds=[],externalSources=[],previousMaintenance=null,consumerGames=[],productionScopeGameIds=[],priorityGameIds=[],gameDemandScopedProduction=false}={}){
   const inventoryAssets=assets;
   const scopedGameIds=uniq(productionScopeGameIds).map(text).filter(Boolean);
   const scopedGameIdSet=new Set(scopedGameIds);
+  const priorityGameIdSet=new Set(uniq(priorityGameIds).map(text).filter(Boolean));
   assets=(assets||[]).filter(asset=>asset?.catalogActive!==false
     &&!/(STALE|QUARANTIN|RETIRED|REJECTED)/.test(upper(asset?.catalogState)+' '+upper(asset?.status))
     &&asset?.rightsPass!==false);
   const depth=auditCommonLibrarySystemDepth({assets});
   const allSeedIdeas=seedPlan?.ideas||[];
-  const seedIdeas=releaseScopedProduction
+  const seedIdeas=gameDemandScopedProduction
     ?allSeedIdeas.filter(idea=>(idea?.sourceSeedIds||[]).some(id=>scopedGameIdSet.has(text(id))))
     :allSeedIdeas;
   const depthByDomain=new Map(depth.rows.map(row=>[row.domain,row]));
@@ -2088,8 +2089,9 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   const maintenanceBase=buildInternalAssetMaintenanceSnapshot({assets:inventoryAssets,uiAtomIds,audioRoleIds,previous:previousMaintenance,consumerGames});
   const maintenance=Object.freeze({
     ...maintenanceBase,
-    releaseScopedProduction:releaseScopedProduction===true,
+    gameDemandScopedProduction:gameDemandScopedProduction===true,
     productionScopeGameIds:Object.freeze(scopedGameIds),
+    priorityGameIds:Object.freeze([...priorityGameIdSet]),
     qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
     releasedGameDemandAffectsPriorityNotQualityEligibility:true
   });
@@ -2207,7 +2209,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       candidates.push(Object.freeze(candidate));
       return true;
     };
-    if(!releaseScopedProduction){
+    if(!gameDemandScopedProduction){
       for(const required of missing){
         pushCandidate({
           ideaId:[domain,required,'BASE'].join('_'),
@@ -2222,18 +2224,19 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       if(candidates.length>=ideaBudget)break;
       pushCandidate({
         ideaId:idea.ideaId,
-        source:releaseScopedProduction?'RELEASE_CONFIRMED_GAME_DEMAND':'COMPANY_COMMON_SEED_DEMAND',
+        source:gameDemandScopedProduction?'GAME_DEMAND':'COMPANY_COMMON_SEED_DEMAND',
         domain,
         role:idea.role,
         stateVariants:idea.stateVariants,
-        sourceGameIds:Object.freeze(uniq(idea.sourceSeedIds||[]).filter(id=>!releaseScopedProduction||scopedGameIdSet.has(text(id)))),
+        sourceGameIds:Object.freeze(uniq(idea.sourceSeedIds||[]).filter(id=>!gameDemandScopedProduction||scopedGameIdSet.has(text(id)))),
         sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),
         worldThemes:Object.freeze([...(idea.worldThemes||[])]),
-        releaseGameScoped:releaseScopedProduction,
-        priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)
+        gameDemandScoped:gameDemandScopedProduction,
+        releasePriority:uniq(idea.sourceSeedIds||[]).some(id=>priorityGameIdSet.has(text(id))),
+        priority:220+Math.min(60,(idea.sourceSeedIds||[]).length*6)+(uniq(idea.sourceSeedIds||[]).some(id=>priorityGameIdSet.has(text(id)))?120:0)
       });
     }
-    if(!releaseScopedProduction){
+    if(!gameDemandScopedProduction){
       const domainPool=uniq([...(COMMON_LIBRARY_AUTOMATED_IDEA_POOLS[domain]||[]),...(INTERNAL_ASSET_REFERENCE_IDEA_POOLS[domain]||[])]);
       for(const ideaId of domainPool){
         if(candidates.length>=ideaBudget||currentCount+candidates.length>=targetMin)break;
@@ -2286,7 +2289,7 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     const state=currentCount<band.targetMin?'EXPAND_TOWARD_RECOMMENDED_RANGE':
       currentCount<=band.targetMax?'HEALTHY_VOLUME':
       currentCount<band.softReviewAt?'BROAD_LIBRARY_KEEP_IF_DISTINCT':'SOFT_DEDUP_REVIEW_ONLY';
-    const suggestedCount=releaseScopedProduction?0:Math.min(12,Math.max(0,band.targetMin-currentCount));
+    const suggestedCount=gameDemandScopedProduction?0:Math.min(12,Math.max(0,band.targetMin-currentCount));
     const pool=COMMON_UI_SUBSYSTEM_IDEA_POOLS[id]||[];
     const suggestedIdeas=[],candidateKeys=new Set();
     const pushUiIdea=(ideaId,source,priority)=>{
@@ -2341,8 +2344,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
     .map(row=>Object.freeze({subsystem:row.subsystem,currentCount:row.currentCount,targetMin:row.targetMin}));
   const volumeReady=volumeBlockingDomains.length===0&&uiBlockingSubsystems.length===0;
   const nextVolumeActionRows=volumeReady?[]:[
-    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,sourceGameIds:Object.freeze([...(idea.sourceGameIds||[])]),sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),worldThemes:Object.freeze([...(idea.worldThemes||[])]),releaseGameScoped:idea.releaseGameScoped===true,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
-    ...(!releaseScopedProduction?uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))):[])
+    ...sortedDomains.flatMap(row=>(row.suggestedIdeas||[]).slice(0,4).map(idea=>({kind:'DOMAIN_VOLUME',domain:row.domain,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,sourceGameIds:Object.freeze([...(idea.sourceGameIds||[])]),sourceSignals:Object.freeze([...(idea.sourceSignals||[])]),worldThemes:Object.freeze([...(idea.worldThemes||[])]),gameDemandScoped:idea.gameDemandScoped===true,releasePriority:idea.releasePriority===true,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain(row.domain).slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))),
+    ...(!gameDemandScopedProduction?uiSubsystems.flatMap(row=>(row.suggestedIdeas||[]).slice(0,3).map(idea=>({kind:'UI_SUBSYSTEM_VOLUME',domain:'UI',subsystem:row.subsystem,ideaId:idea.ideaId,source:idea.source,role:idea.role||null,priority:Number(idea.priority||0),targetMin:row.targetMin,currentCount:row.currentCount,freeSourceCandidateIds:freeSourceIdsForDomain('UI').slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.freeSourceCandidateLimitPerAction)}))):[])
   ].sort((a,b)=>b.priority-a.priority||String(a.domain).localeCompare(String(b.domain))||String(a.ideaId).localeCompare(String(b.ideaId))).slice(0,96).sort((a,b)=>{
     const deficitA=Math.max(0,Number(a.targetMin||0)-Number(a.currentCount||0));
     const deficitB=Math.max(0,Number(b.targetMin||0)-Number(b.currentCount||0));
@@ -2406,10 +2409,11 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
       });
   return Object.freeze({
     version:INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.version,
-    releaseScopedProduction:releaseScopedProduction===true,
+    gameDemandScopedProduction:gameDemandScopedProduction===true,
     productionScopeGameIds:Object.freeze(scopedGameIds),
-    releasedGameDemandAvailable:scopedGameIds.length>0,
-    unscopedGenericIdeaProductionForbidden:releaseScopedProduction===true,
+    priorityGameIds:Object.freeze([...priorityGameIdSet]),
+    releasedGameDemandAvailable:priorityGameIdSet.size>0,
+    unscopedGenericIdeaProductionForbidden:gameDemandScopedProduction===true,
     qualityScope:'ALL_ELIGIBLE_INTERNAL_LIBRARY_ASSETS',
     releasedGameDemandAffectsPriorityNotQualityEligibility:true,
     countPolicy:'LOOSE_TARGET_BANDS_NOT_HARD_CAPS',
