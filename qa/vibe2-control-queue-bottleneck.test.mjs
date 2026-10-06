@@ -37,5 +37,12 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE_EXACT:/);
   assert.match(workflow,/String\(run\.id\|\|''\)!==String\(process\.env\.CURRENT_RUN\|\|''\)/);
   assert.match(workflow,/String\(run\.head_sha\|\|''\)===String\(process\.env\.CURRENT_MAIN\|\|''\)/);
+  assert.doesNotMatch(workflow,/refill_active="\$\(REFILL_TITLE=[\s\S]{0,300}node - <<'NODE'/);
+  assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-neuron-refill-active\.txt/);
+  assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-regression-refill-active\.txt/);
+  assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-fanin-refill-active\.txt/);
+  assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-neuron-refill-active\.txt\)"/);
+  assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-regression-refill-active\.txt\)"/);
+  assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-fanin-refill-active\.txt\)"/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
